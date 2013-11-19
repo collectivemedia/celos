@@ -5,7 +5,7 @@ package com.collective.celos;
  */
 public class WorkflowID extends ValueObject {
 
-    private final String id;
+    protected final String id;
     
     public WorkflowID(String id) {
         this.id = Util.requireNonNull(id);
