@@ -10,25 +10,25 @@ public class MiscTests {
     // EQUALS
     
     @Test
-    public void nominalTimeEqualsWorks() {
-        Assert.assertEquals(new NominalTime("2013-11-18T20:00Z"), new NominalTime("2013-11-18T20:00Z"));
-        Assert.assertNotSame(new NominalTime("2014-11-18T20:00Z"), new NominalTime("2013-11-18T20:00Z"));
+    public void scheduledTimeEqualsWorks() {
+        Assert.assertEquals(new ScheduledTime("2013-11-18T20:00Z"), new ScheduledTime("2013-11-18T20:00Z"));
+        Assert.assertNotSame(new ScheduledTime("2014-11-18T20:00Z"), new ScheduledTime("2013-11-18T20:00Z"));
     }
     
     @Test
     public void slotIDEqualsWorks() {    
-        Assert.assertEquals(new SlotID(new WorkflowID("foo"), new NominalTime("2013-11-18T20:00Z")),
-                            new SlotID(new WorkflowID("foo"), new NominalTime("2013-11-18T20:00Z")));
-        Assert.assertNotSame(new SlotID(new WorkflowID("bar"), new NominalTime("2013-11-18T20:00Z")),
-                             new SlotID(new WorkflowID("foo"), new NominalTime("2013-11-18T20:00Z")));
-        Assert.assertNotSame(new SlotID(new WorkflowID("foo"), new NominalTime("2014-11-18T20:00Z")),
-                             new SlotID(new WorkflowID("foo"), new NominalTime("2013-11-18T20:00Z")));
+        Assert.assertEquals(new SlotID(new WorkflowID("foo"), new ScheduledTime("2013-11-18T20:00Z")),
+                            new SlotID(new WorkflowID("foo"), new ScheduledTime("2013-11-18T20:00Z")));
+        Assert.assertNotSame(new SlotID(new WorkflowID("bar"), new ScheduledTime("2013-11-18T20:00Z")),
+                             new SlotID(new WorkflowID("foo"), new ScheduledTime("2013-11-18T20:00Z")));
+        Assert.assertNotSame(new SlotID(new WorkflowID("foo"), new ScheduledTime("2014-11-18T20:00Z")),
+                             new SlotID(new WorkflowID("foo"), new ScheduledTime("2013-11-18T20:00Z")));
     }        
         
     @Test
     public void slotStateEqualsWorks() {
-        SlotID slotID1 = new SlotID(new WorkflowID("foo"), new NominalTime("2013-11-18T20:00Z"));
-        SlotID slotID2= new SlotID(new WorkflowID("bar"), new NominalTime("2013-11-18T20:00Z"));
+        SlotID slotID1 = new SlotID(new WorkflowID("foo"), new ScheduledTime("2013-11-18T20:00Z"));
+        SlotID slotID2= new SlotID(new WorkflowID("bar"), new ScheduledTime("2013-11-18T20:00Z"));
 
         Assert.assertEquals(new SlotState(slotID1, SlotState.Status.READY),
                             new SlotState(slotID1, SlotState.Status.READY));
@@ -56,19 +56,19 @@ public class MiscTests {
     }
     
     @Test
-    public void nominalTimeHashCodeWorks() {
-        hashCodeTest(new NominalTime("2013-11-18T20:00Z"), new NominalTime("2013-11-19T20:00Z"));
+    public void scheduledTimeHashCodeWorks() {
+        hashCodeTest(new ScheduledTime("2013-11-18T20:00Z"), new ScheduledTime("2013-11-19T20:00Z"));
     }
     
     @Test
     public void slotIDHashCodeWorks() {
-        hashCodeTest(new SlotID(new WorkflowID("foo"), new NominalTime("2013-11-18T20:00Z")),
-                     new SlotID(new WorkflowID("bar"), new NominalTime("2013-11-18T20:00Z")));
+        hashCodeTest(new SlotID(new WorkflowID("foo"), new ScheduledTime("2013-11-18T20:00Z")),
+                     new SlotID(new WorkflowID("bar"), new ScheduledTime("2013-11-18T20:00Z")));
     }
     
     @Test
     public void slotStateHashCodeWorks() {
-        SlotID slotID = new SlotID(new WorkflowID("foo"), new NominalTime("2013-11-18T20:00Z"));
+        SlotID slotID = new SlotID(new WorkflowID("foo"), new ScheduledTime("2013-11-18T20:00Z"));
         hashCodeTest(new SlotState(slotID, SlotState.Status.READY),
                      new SlotState(slotID, SlotState.Status.WAITING));
     }
@@ -86,8 +86,8 @@ public class MiscTests {
     }
     
     @Test(expected=IllegalArgumentException.class)
-    public void nominalTimeMustBeUTC() {
-        new NominalTime("2013-11-12T20:00");
+    public void scheduledTimeMustBeUTC() {
+        new ScheduledTime("2013-11-12T20:00");
     }
     
     @Test(expected=NullPointerException.class)

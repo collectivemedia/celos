@@ -1,24 +1,24 @@
 package com.collective.celos;
 
 /**
- * A slot is uniquely identified by its workflow ID and the nominal time
+ * A slot is uniquely identified by its workflow ID and the scheduled time.
  */
 public class SlotID extends ValueObject {
     
     protected final WorkflowID workflowID;
-    protected final NominalTime nominalTime;
+    protected final ScheduledTime scheduledTime;
 
-    public SlotID(WorkflowID workflowID, NominalTime nominalTime) {
+    public SlotID(WorkflowID workflowID, ScheduledTime scheduledTime) {
         this.workflowID = Util.requireNonNull(workflowID);
-        this.nominalTime = Util.requireNonNull(nominalTime);
+        this.scheduledTime = Util.requireNonNull(scheduledTime);
     }
     
     public WorkflowID getWorkflowID() {
         return workflowID;
     }
     
-    public NominalTime getNominalTime() {
-        return nominalTime;
+    public ScheduledTime getScheduledTime() {
+        return scheduledTime;
     }
     
 }
