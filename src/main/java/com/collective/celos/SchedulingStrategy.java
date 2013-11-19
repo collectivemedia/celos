@@ -12,6 +12,8 @@ import java.util.List;
  * 
  * As input for making this decision, the scheduling strategy receives
  * all slot states of the given workflow within the sliding window.  
+ * 
+ * There's no guarantee that all slots returned by a strategy will be executed.
  */
 public interface SchedulingStrategy {
 
