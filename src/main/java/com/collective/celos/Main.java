@@ -4,9 +4,10 @@ import java.util.Properties;
 
 public class Main {
 
+    /*
+     * NOTE: this is just so that I can do manual testing.
+     */
     public static void main(String[] args) throws Exception {
-        System.out.println("main():");
-        System.out.flush();
         
         ExternalService service = new OozieExternalService();
 
@@ -16,12 +17,18 @@ public class Main {
         }
         
         if (args[0].equals("-run")) {
-            String jobId = service.run(new Properties());
+            Properties props = new Properties();
+            props.setProperty("user.name", "iwilliams");
+            props.setProperty("oozie.wf.application.path", "/user/iwilliams/celos-workflow.xml");
+            props.setProperty("jobTracker", "nn01.ny7.collective-media.net:8032");
+            props.setProperty("nameNode", "hdfs://cluster-ny7");
+            String jobId = service.run(props);
             System.out.println("jobId=" + jobId);
         } else if (args[0].equals("-info")) {
             ExternalStatus status = service.getStatus(args[1]);
-            System.out.println("status=" + status);
+            System.out.println("status=" + status.getStatus());
         }
         
     }
 }
+

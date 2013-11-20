@@ -19,7 +19,7 @@ public class OozieExternalService implements ExternalService {
     @Override
     public String run(Properties props) throws ExternalServiceException {
         try {
-            return client.dryrun(props);
+            return client.run(props);
         } catch (OozieClientException e) {
             throw new ExternalServiceException(e);
         }
