@@ -49,22 +49,5 @@ public class SerialSchedulingStrategy implements SchedulingStrategy {
 
         return result;
     }
-    
-    /*
-     * I couldn't resist: here's a Scala implementation of the same method.
-     * 
-     *  def getSchedulingCandidates(
-     *    states: List[SlotState]): List[SlotID] = {
-     *   
-     *   if (states.exists(_.status == RUNNING)) {
-     *     List()
-     *   } else {
-     *     states
-     *       .filter(_.status == READY)
-     *       .take(1)
-     *       .map(_.slotID)
-     *     }
-     *   }
-     */
 
 }
