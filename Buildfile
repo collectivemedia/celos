@@ -8,4 +8,5 @@ define 'Celos' do
 
   compile.with 'commons-lang:commons-lang:jar:2.6'
   compile.with 'joda-time:joda-time:jar:2.3'
+  compile.with 'commons-collections:commons-collections:jar:3.2.1'
 end
