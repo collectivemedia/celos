@@ -1,7 +1,8 @@
 package com.collective.celos;
 
 import java.util.Arrays;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.apache.commons.collections.Predicate;
 
@@ -15,10 +16,10 @@ import com.collective.celos.SlotState.Status;
  */
 public class SlotStateStatusPredicate implements Predicate {
 	
-	private List<Status> targetValues;
+	private Set<Status> targetValues;
 
 	public SlotStateStatusPredicate(Status... targetValues) {
-		this.targetValues = Arrays.asList(targetValues);
+		this.targetValues = new HashSet<Status>(Arrays.asList(targetValues));
 		if (this.targetValues.isEmpty()) {
 			throw new IllegalArgumentException("please specify some status values");
 		}
