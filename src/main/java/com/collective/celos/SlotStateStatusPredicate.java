@@ -15,20 +15,20 @@ import com.collective.celos.SlotState.Status;
  * Instances of this predicate are for use with CollectionUtils methods.
  */
 public class SlotStateStatusPredicate implements Predicate {
-	
-	private Set<Status> targetValues;
+    
+    private Set<Status> targetValues;
 
-	public SlotStateStatusPredicate(Status... targetValues) {
-		this.targetValues = new HashSet<Status>(Arrays.asList(targetValues));
-		if (this.targetValues.isEmpty()) {
-			throw new IllegalArgumentException("please specify some status values");
-		}
-	}
+    public SlotStateStatusPredicate(Status... targetValues) {
+        this.targetValues = new HashSet<Status>(Arrays.asList(targetValues));
+        if (this.targetValues.isEmpty()) {
+            throw new IllegalArgumentException("please specify some status values");
+        }
+    }
 
-	@Override
-	public boolean evaluate(Object object) {
-		SlotState state = (SlotState) object;
-		return targetValues.contains(state.status);
-	}
+    @Override
+    public boolean evaluate(Object object) {
+        SlotState state = (SlotState) object;
+        return targetValues.contains(state.status);
+    }
 
 }

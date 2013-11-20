@@ -20,51 +20,51 @@ import org.apache.commons.collections.Predicate;
  */
 public class SerialSchedulingStrategy implements SchedulingStrategy {
 
-	/*
-	 * Predicate for finding RUNNING slots.
-	 */
-	private final Predicate RUNNING_PREDICATE
-			= new SlotStateStatusPredicate(RUNNING);
+    /*
+     * Predicate for finding RUNNING slots.
+     */
+    private final Predicate RUNNING_PREDICATE
+            = new SlotStateStatusPredicate(RUNNING);
 
-	/*
-	 * Candidates for submission are slots that are READY. We may want to
-	 * include WAITING jobs in the future, too.
-	 */
-	private final Predicate CANDIDATE_PREDICATE
-			= new SlotStateStatusPredicate(READY /* , WAITING */);
+    /*
+     * Candidates for submission are slots that are READY. We may want to
+     * include WAITING jobs in the future, too.
+     */
+    private final Predicate CANDIDATE_PREDICATE
+            = new SlotStateStatusPredicate(READY /* , WAITING */);
 
-	@Override
-	public List<SlotID> getSchedulingCandidates(List<SlotState> states) {
+    @Override
+    public List<SlotID> getSchedulingCandidates(List<SlotState> states) {
 
-		List<SlotID> result = new LinkedList<SlotID>();
+        List<SlotID> result = new LinkedList<SlotID>();
 
-		if (CollectionUtils.exists(states, RUNNING_PREDICATE)) {
-			return result;
-		}
+        if (CollectionUtils.exists(states, RUNNING_PREDICATE)) {
+            return result;
+        }
 
-		SlotState first = (SlotState) CollectionUtils.find(states, CANDIDATE_PREDICATE);
-		if (first != null) {
-			result.add(first.getSlotID());
-		}
+        SlotState first = (SlotState) CollectionUtils.find(states, CANDIDATE_PREDICATE);
+        if (first != null) {
+            result.add(first.getSlotID());
+        }
 
-		return result;
-	}
-	
-	/*
-	 * I couldn't resist: here's a Scala implementation of the same method.
-	 * 
-	 *  def getSchedulingCandidates(
+        return result;
+    }
+    
+    /*
+     * I couldn't resist: here's a Scala implementation of the same method.
+     * 
+     *  def getSchedulingCandidates(
      *    states: List[SlotState]): List[SlotID] = {
      *   
      *   if (states.exists(_.status == RUNNING)) {
      *     List()
      *   } else {
-	 *     states
-	 *       .filter(_.status == READY)
-	 *       .take(1)
-	 *       .map(_.slotID)
+     *     states
+     *       .filter(_.status == READY)
+     *       .take(1)
+     *       .map(_.slotID)
      *     }
      *   }
-	 */
+     */
 
 }

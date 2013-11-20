@@ -13,40 +13,40 @@ import org.junit.Test;
 
 public class SlotStateStatusPredicateTest {
 
-	@Test(expected = IllegalArgumentException.class)
-	public void testNoValues() {
-		new SlotStateStatusPredicate();
-	}
+    @Test(expected = IllegalArgumentException.class)
+    public void testNoValues() {
+        new SlotStateStatusPredicate();
+    }
 
-	@Test
-	public void testSingleValue() {
-		SlotStateStatusPredicate predicate = new SlotStateStatusPredicate(READY);
-		SlotID id = new SlotID(new WorkflowID("x"), new ScheduledTime(
-				"2013-11-18T20:00Z"));
+    @Test
+    public void testSingleValue() {
+        SlotStateStatusPredicate predicate = new SlotStateStatusPredicate(READY);
+        SlotID id = new SlotID(new WorkflowID("x"), new ScheduledTime(
+                "2013-11-18T20:00Z"));
 
-		assertTrue(predicate.evaluate(new SlotState(id, READY)));
+        assertTrue(predicate.evaluate(new SlotState(id, READY)));
 
-		assertFalse(predicate.evaluate(new SlotState(id, WAITING)));
-		assertFalse(predicate.evaluate(new SlotState(id, TIMEOUT)));
-		assertFalse(predicate.evaluate(new SlotState(id, RUNNING)));
-		assertFalse(predicate.evaluate(new SlotState(id, SUCCESS)));
-		assertFalse(predicate.evaluate(new SlotState(id, FAILURE)));
-	}
+        assertFalse(predicate.evaluate(new SlotState(id, WAITING)));
+        assertFalse(predicate.evaluate(new SlotState(id, TIMEOUT)));
+        assertFalse(predicate.evaluate(new SlotState(id, RUNNING)));
+        assertFalse(predicate.evaluate(new SlotState(id, SUCCESS)));
+        assertFalse(predicate.evaluate(new SlotState(id, FAILURE)));
+    }
 
-	@Test
-	public void testMultipleValues() {
-		SlotStateStatusPredicate predicate = new SlotStateStatusPredicate(
-				WAITING, TIMEOUT, FAILURE);
-		SlotID id = new SlotID(new WorkflowID("x"), new ScheduledTime(
-				"2013-11-18T20:00Z"));
+    @Test
+    public void testMultipleValues() {
+        SlotStateStatusPredicate predicate = new SlotStateStatusPredicate(
+                WAITING, TIMEOUT, FAILURE);
+        SlotID id = new SlotID(new WorkflowID("x"), new ScheduledTime(
+                "2013-11-18T20:00Z"));
 
-		assertTrue(predicate.evaluate(new SlotState(id, WAITING)));
-		assertTrue(predicate.evaluate(new SlotState(id, TIMEOUT)));
-		assertTrue(predicate.evaluate(new SlotState(id, FAILURE)));
+        assertTrue(predicate.evaluate(new SlotState(id, WAITING)));
+        assertTrue(predicate.evaluate(new SlotState(id, TIMEOUT)));
+        assertTrue(predicate.evaluate(new SlotState(id, FAILURE)));
 
-		assertFalse(predicate.evaluate(new SlotState(id, READY)));
-		assertFalse(predicate.evaluate(new SlotState(id, RUNNING)));
-		assertFalse(predicate.evaluate(new SlotState(id, SUCCESS)));
-	}
+        assertFalse(predicate.evaluate(new SlotState(id, READY)));
+        assertFalse(predicate.evaluate(new SlotState(id, RUNNING)));
+        assertFalse(predicate.evaluate(new SlotState(id, SUCCESS)));
+    }
 
 }
