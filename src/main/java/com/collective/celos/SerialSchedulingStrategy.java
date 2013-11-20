@@ -3,7 +3,6 @@ package com.collective.celos;
 import static com.collective.celos.SlotState.Status.READY;
 import static com.collective.celos.SlotState.Status.RUNNING;
 
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -43,13 +42,8 @@ public class SerialSchedulingStrategy implements SchedulingStrategy {
 			return result;
 		}
 
-		// These generics drive me nuts. Can someone fix this the right way?
-		@SuppressWarnings("unchecked")
-		Collection<SlotState> readyStates = CollectionUtils.select(states,
-				CANDIDATE_PREDICATE);
-
-		if (!readyStates.isEmpty()) {
-			SlotState first = readyStates.iterator().next();
+		SlotState first = (SlotState) CollectionUtils.find(states, CANDIDATE_PREDICATE);
+		if (first != null) {
 			result.add(first.getSlotID());
 		}
 
