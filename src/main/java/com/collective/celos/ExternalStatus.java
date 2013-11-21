@@ -1,14 +1,30 @@
 package com.collective.celos;
 
-public class ExternalStatus {
+import static com.collective.celos.SlotState.Status.FAILURE;
+import static com.collective.celos.SlotState.Status.RUNNING;
+import static com.collective.celos.SlotState.Status.SUCCESS;
 
-    private String status;
+import com.collective.celos.SlotState.Status;
 
-    public ExternalStatus(String status) {
-        this.status = status;
+public abstract class ExternalStatus {
+
+    public abstract Status getStatus();
+
+    /*
+     * I'm not sure which of these methods is needed. If none are (that is, if
+     * the getStatus() call is sufficient), then we can remove these methods and
+     * change this abstract class to an interface.
+     */
+    public boolean isRunning() {
+        return getStatus().equals(RUNNING);
     }
-    
-    public String getStatus() {
-        return status;
+
+    public boolean isSuccess() {
+        return getStatus().equals(SUCCESS);
     }
+
+    public boolean isFailure() {
+        return getStatus().equals(FAILURE);
+    }
+
 }

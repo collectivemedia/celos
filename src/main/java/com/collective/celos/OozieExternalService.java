@@ -32,7 +32,7 @@ public class OozieExternalService implements ExternalService {
         try {
             WorkflowJob jobInfo = client.getJobInfo(jobId);
             String status = jobInfo.getStatus().toString();
-            return new ExternalStatus(status);
+            return new OozieExternalStatus(status);
         } catch (OozieClientException e) {
             throw new ExternalServiceException(e);
         }
