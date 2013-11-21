@@ -20,4 +20,9 @@ public class OozieExternalStatusTest {
         Assert.assertEquals(new OozieExternalStatus("FAILED").getStatus(), FAILURE);
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void testInvalidStatus() {
+        new OozieExternalStatus("unexpected value");
+    }
+
 }

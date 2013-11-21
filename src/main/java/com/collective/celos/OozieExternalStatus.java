@@ -33,6 +33,10 @@ public class OozieExternalStatus extends ExternalStatus {
     private final Status status;
 
     public OozieExternalStatus(String oozieStatusString) {
+        if (!statusMap.containsKey(oozieStatusString)) {
+            throw new IllegalArgumentException(
+                    "Invalid status string: '" + oozieStatusString + "'");
+        }
         this.status = statusMap.get(oozieStatusString);
     }
     
