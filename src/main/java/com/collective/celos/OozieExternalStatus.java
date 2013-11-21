@@ -28,7 +28,5 @@ public class OozieExternalStatus implements ExternalStatus {
     public boolean isRunning() { return externalStatus.equals("RUNNING") || externalStatus.equals("PREP"); } 
 
     public boolean isSuccess() { return externalStatus.equals("SUCCEEDED"); }
-
-    public boolean isFailure() { return externalStatus.equals("FAILED") || externalStatus.equals("KILLED"); }
     
 }

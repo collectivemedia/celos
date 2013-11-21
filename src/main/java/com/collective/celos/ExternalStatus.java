@@ -6,6 +6,4 @@ public interface ExternalStatus {
 
     boolean isSuccess();
 
-    boolean isFailure();
-
 }
