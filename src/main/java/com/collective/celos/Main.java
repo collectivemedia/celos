@@ -28,7 +28,7 @@ public class Main {
             System.out.println("jobId=" + jobId);
         } else if (args[0].equals("-info")) {
             ExternalStatus status = service.getStatus(args[1]);
-            System.out.println("status=" + status.getStatus());
+            System.out.println("status=" + status);
         }
         
     }

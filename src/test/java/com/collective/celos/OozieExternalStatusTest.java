@@ -1,23 +1,38 @@
 package com.collective.celos;
 
-import static com.collective.celos.SlotState.Status.FAILURE;
-import static com.collective.celos.SlotState.Status.RUNNING;
-import static com.collective.celos.SlotState.Status.SUCCESS;
-import static com.collective.celos.SlotState.Status.WAITING;
-
 import org.junit.Assert;
 import org.junit.Test;
 
 public class OozieExternalStatusTest {
 
     @Test
-    public void testGetStatus() {
-        Assert.assertEquals(new OozieExternalStatus("PREP").getStatus(), WAITING);
-        Assert.assertEquals(new OozieExternalStatus("RUNNING").getStatus(), RUNNING);
-        Assert.assertEquals(new OozieExternalStatus("SUSPENDED").getStatus(), WAITING);
-        Assert.assertEquals(new OozieExternalStatus("SUCCEEDED").getStatus(), SUCCESS);
-        Assert.assertEquals(new OozieExternalStatus("KILLED").getStatus(), FAILURE);
-        Assert.assertEquals(new OozieExternalStatus("FAILED").getStatus(), FAILURE);
+    public void testIsRunning() {
+        Assert.assertEquals(new OozieExternalStatus("PREP").isRunning(), true);
+        Assert.assertEquals(new OozieExternalStatus("RUNNING").isRunning(), true);
+        Assert.assertEquals(new OozieExternalStatus("SUSPENDED").isRunning(), false);
+        Assert.assertEquals(new OozieExternalStatus("SUCCEEDED").isRunning(), false);
+        Assert.assertEquals(new OozieExternalStatus("KILLED").isRunning(), false);
+        Assert.assertEquals(new OozieExternalStatus("FAILED").isRunning(), false);
+    }
+
+    @Test
+    public void testIsSuccess() {
+        Assert.assertEquals(new OozieExternalStatus("PREP").isSuccess(), false);
+        Assert.assertEquals(new OozieExternalStatus("RUNNING").isSuccess(), false);
+        Assert.assertEquals(new OozieExternalStatus("SUSPENDED").isSuccess(), false);
+        Assert.assertEquals(new OozieExternalStatus("SUCCEEDED").isSuccess(), true);
+        Assert.assertEquals(new OozieExternalStatus("KILLED").isSuccess(), false);
+        Assert.assertEquals(new OozieExternalStatus("FAILED").isSuccess(), false);
+    }
+
+    @Test
+    public void testIsFailure() {
+        Assert.assertEquals(new OozieExternalStatus("PREP").isFailure(), false);
+        Assert.assertEquals(new OozieExternalStatus("RUNNING").isFailure(), false);
+        Assert.assertEquals(new OozieExternalStatus("SUSPENDED").isFailure(), false);
+        Assert.assertEquals(new OozieExternalStatus("SUCCEEDED").isFailure(), false);
+        Assert.assertEquals(new OozieExternalStatus("KILLED").isFailure(), true);
+        Assert.assertEquals(new OozieExternalStatus("FAILED").isFailure(), true);
     }
 
     @Test(expected = IllegalArgumentException.class)

@@ -1,47 +1,34 @@
 package com.collective.celos;
 
-import static com.collective.celos.SlotState.Status.FAILURE;
-import static com.collective.celos.SlotState.Status.RUNNING;
-import static com.collective.celos.SlotState.Status.SUCCESS;
-import static com.collective.celos.SlotState.Status.WAITING;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
-import com.collective.celos.SlotState.Status;
-
-public class OozieExternalStatus extends ExternalStatus {
+public class OozieExternalStatus implements ExternalStatus {
     
     /*
      * Oozie workflow job states
      * 
      * - PREP, RUNNING, SUSPENDED, SUCCEEDED, KILLED and FAILED
      */
-    private static final Map<String, Status> statusMap;
-    static {
-        Map<String, Status> map = new HashMap<String, Status>();
-        map.put("PREP", WAITING); // TODO: to be verified
-        map.put("RUNNING", RUNNING);
-        map.put("SUSPENDED", WAITING); // TODO: to be verified
-        map.put("SUCCEEDED", SUCCESS);
-        map.put("KILLED", FAILURE);
-        map.put("FAILED", FAILURE);
-        statusMap = Collections.unmodifiableMap(map);
-    }
+    private static final Set<String> universe = new HashSet<String>(
+            Arrays.asList("PREP", "RUNNING", "SUSPENDED", "SUCCEEDED",
+                    "KILLED", "FAILED"));
 
-    private final Status status;
+    private String externalStatus;
 
-    public OozieExternalStatus(String oozieStatusString) {
-        if (!statusMap.containsKey(oozieStatusString)) {
+    public OozieExternalStatus(String externalStatus) {
+        this.externalStatus = externalStatus;
+        if (!universe.contains(externalStatus)) {
             throw new IllegalArgumentException(
-                    "Invalid status string: '" + oozieStatusString + "'");
+                    "Invalid status string: '" + externalStatus + "'");
         }
-        this.status = statusMap.get(oozieStatusString);
     }
-    
-    public Status getStatus() {
-        return status;
-    }
+        
+    public boolean isRunning() { return externalStatus.equals("RUNNING") || externalStatus.equals("PREP"); } 
+
+    public boolean isSuccess() { return externalStatus.equals("SUCCEEDED"); }
+
+    public boolean isFailure() { return externalStatus.equals("FAILED") || externalStatus.equals("KILLED"); }
     
 }
