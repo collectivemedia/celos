@@ -4,12 +4,14 @@ import java.util.Properties;
 
 public class Main {
 
+    private static final String OOZIE_URL = "http://oj01.ny7.collective-media.net:11000/oozie";
+
     /*
      * NOTE: this is just so that I can do manual testing.
      */
     public static void main(String[] args) throws Exception {
         
-        ExternalService service = new OozieExternalService();
+        ExternalService service = new OozieExternalService(OOZIE_URL);
 
         if (args.length == 0) {
             System.out.println("Usage: Main [ -run | -info jobId ]");

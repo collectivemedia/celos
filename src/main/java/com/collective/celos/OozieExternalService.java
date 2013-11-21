@@ -11,9 +11,8 @@ public class OozieExternalService implements ExternalService {
     
     private OozieClient client;
 
-    public OozieExternalService() {
-        client = new AuthOozieClient("http://oj01.ny7.collective-media.net:11000/oozie");
-        System.out.println("client=" + client);
+    public OozieExternalService(String oozieUrl) {
+        client = new AuthOozieClient(oozieUrl);
     }
 
     @Override
