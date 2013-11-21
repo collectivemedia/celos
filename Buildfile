@@ -10,7 +10,6 @@ COMMONS = [
 JODA = 'joda-time:joda-time:jar:2.3'
 # used by Oozie (as per rrman Buildfile)
 JSON_SIMPLE = 'com.googlecode.json-simple:json-simple:jar:1.1.1'
-APACHEIO = transitive('org.apache.directory.studio:org.apache.commons.io:jar:2.4')
 
 DEPENDENCIES = [
   OOZIE_CLIENT,
@@ -18,7 +17,6 @@ DEPENDENCIES = [
   COMMONS,
   JODA,
   JSON_SIMPLE,
-  APACHEIO,
 ]
 
 define 'Celos' do
