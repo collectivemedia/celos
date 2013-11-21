@@ -3,6 +3,7 @@ package com.collective.celos;
 import static com.collective.celos.SlotState.Status.FAILURE;
 import static com.collective.celos.SlotState.Status.RUNNING;
 import static com.collective.celos.SlotState.Status.SUCCESS;
+import static com.collective.celos.SlotState.Status.WAITING;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -20,9 +21,9 @@ public class OozieExternalStatus extends ExternalStatus {
     private static final Map<String, Status> statusMap;
     static {
         Map<String, Status> map = new HashMap<String, Status>();
-        map.put("PREP", null);
+        map.put("PREP", WAITING); // TODO: to be verified
         map.put("RUNNING", RUNNING);
-        map.put("SUSPENDED", null);
+        map.put("SUSPENDED", WAITING); // TODO: to be verified
         map.put("SUCCEEDED", SUCCESS);
         map.put("KILLED", FAILURE);
         map.put("FAILED", FAILURE);
