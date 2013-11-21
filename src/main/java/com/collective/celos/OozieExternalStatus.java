@@ -1,32 +1,29 @@
 package com.collective.celos;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import static org.apache.oozie.client.WorkflowJob.Status.PREP;
+import static org.apache.oozie.client.WorkflowJob.Status.RUNNING;
+import static org.apache.oozie.client.WorkflowJob.Status.SUCCEEDED;
+
+import org.apache.oozie.client.WorkflowJob.Status;
 
 public class OozieExternalStatus implements ExternalStatus {
-    
-    /*
-     * Oozie workflow job states
-     * 
-     * - PREP, RUNNING, SUSPENDED, SUCCEEDED, KILLED and FAILED
-     */
-    private static final Set<String> universe = new HashSet<String>(
-            Arrays.asList("PREP", "RUNNING", "SUSPENDED", "SUCCEEDED",
-                    "KILLED", "FAILED"));
 
-    private String externalStatus;
+    private Status status;
 
-    public OozieExternalStatus(String externalStatus) {
-        this.externalStatus = externalStatus;
-        if (!universe.contains(externalStatus)) {
-            throw new IllegalArgumentException(
-                    "Invalid status string: '" + externalStatus + "'");
+    public OozieExternalStatus(String statusString) {
+        this.status = Status.valueOf(statusString);
+        if (status == null) {
+            throw new IllegalArgumentException("Invalid status string: '"
+                    + statusString + "'");
         }
     }
-        
-    public boolean isRunning() { return externalStatus.equals("RUNNING") || externalStatus.equals("PREP"); } 
 
-    public boolean isSuccess() { return externalStatus.equals("SUCCEEDED"); }
-    
+    public boolean isRunning() {
+        return status == RUNNING || status == PREP;
+    }
+
+    public boolean isSuccess() {
+        return status == SUCCEEDED;
+    }
+
 }
