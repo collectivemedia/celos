@@ -7,7 +7,7 @@ import java.util.Properties;
  * for use when a workflow doesn't have any data dependencies
  * and simply needs to run at every scheduled time. 
  */
-public class TrivialTrigger implements Trigger {
+public class AlwaysTrigger implements Trigger {
 
     public boolean isDataAvailable(ScheduledTime t, Properties unusedProps) {
         return true;

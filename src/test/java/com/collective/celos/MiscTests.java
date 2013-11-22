@@ -97,8 +97,8 @@ public class MiscTests {
     }
     
     @Test
-    public void tooTrivialButStill_trivialTriggerAlwaysTriggers() {
-        Assert.assertTrue(new TrivialTrigger().isDataAvailable(new ScheduledTime("2013-11-21T20:00Z"), new Properties()));
+    public void tooTrivialButStill_alwaysTriggerAlwaysTriggers() {
+        Assert.assertTrue(new AlwaysTrigger().isDataAvailable(new ScheduledTime("2013-11-21T20:00Z"), new Properties()));
     }
     
 }
