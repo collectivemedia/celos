@@ -2,22 +2,11 @@ package com.collective.celos;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 
 /**
  * Scheduled time of a workflow run in UTC.
  */
 public class ScheduledTime extends ValueObject {
-
-    private static final DateTimeFormatter YEAR_FORMATTER = DateTimeFormat
-            .forPattern("yyyy");
-    private static final DateTimeFormatter MONTH_FORMATTER = DateTimeFormat
-            .forPattern("MM");
-    private static final DateTimeFormatter DAY_FORMATTER = DateTimeFormat
-            .forPattern("dd");
-    private static final DateTimeFormatter HOUR_FORMATTER = DateTimeFormat
-            .forPattern("HH");
 
     protected final DateTime dateTime;
 
@@ -33,20 +22,20 @@ public class ScheduledTime extends ValueObject {
         }
     }
 
-    public String getYear() {
-        return dateTime.toString(YEAR_FORMATTER);
+    public int getYear() {
+        return dateTime.getYear();
     }
 
-    public String getMonth() {
-        return dateTime.toString(MONTH_FORMATTER);
+    public int getMonth() {
+        return dateTime.getMonthOfYear();
     }
 
-    public String getDay() {
-        return dateTime.toString(DAY_FORMATTER);
+    public int getDay() {
+        return dateTime.getDayOfMonth();
     }
 
-    public String getHour() {
-        return dateTime.toString(HOUR_FORMATTER);
+    public int getHour() {
+        return dateTime.getHourOfDay();
     }
 
 }
