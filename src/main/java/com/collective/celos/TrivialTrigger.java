@@ -1,6 +1,6 @@
 package com.collective.celos;
 
-import java.util.Map;
+import java.util.Properties;
 
 /**
  * Trivial trigger that always signals data availability,
@@ -9,7 +9,7 @@ import java.util.Map;
  */
 public class TrivialTrigger implements Trigger {
 
-    public boolean isDataAvailable(ScheduledTime t, Map<String, String> unusedProps) {
+    public boolean isDataAvailable(ScheduledTime t, Properties unusedProps) {
         return true;
     }
 

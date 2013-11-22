@@ -1,6 +1,6 @@
 package com.collective.celos;
 
-import java.util.Map;
+import java.util.Properties;
 
 /**
  * A trigger is called to determine data availability for a workflow.
@@ -13,6 +13,6 @@ public interface Trigger {
      * The props come from the workflow configuration and are
      * specific to each trigger implementation.
      */
-    public boolean isDataAvailable(ScheduledTime t, Map<String, String> props);
+    public boolean isDataAvailable(ScheduledTime t, Properties props);
 
 }

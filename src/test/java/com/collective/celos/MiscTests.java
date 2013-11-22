@@ -1,7 +1,7 @@
 package com.collective.celos;
 
-import java.util.Collections;
 import java.util.HashMap;
+import java.util.Properties;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -98,7 +98,7 @@ public class MiscTests {
     
     @Test
     public void tooTrivialButStill_trivialTriggerAlwaysTriggers() {
-        Assert.assertTrue(new TrivialTrigger().isDataAvailable(new ScheduledTime("2013-11-21T20:00Z"), Collections.<String, String>emptyMap()));
+        Assert.assertTrue(new TrivialTrigger().isDataAvailable(new ScheduledTime("2013-11-21T20:00Z"), new Properties()));
     }
     
 }
