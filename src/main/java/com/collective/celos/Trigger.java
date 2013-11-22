@@ -1,0 +1,18 @@
+package com.collective.celos;
+
+import java.util.Properties;
+
+/**
+ * A trigger is called to determine data availability for a workflow.
+ */
+public interface Trigger {
+    
+    /**
+     * Returns true if data is available for the given scheduled time, false if not.
+     * 
+     * The props come from the workflow configuration and are
+     * specific to each trigger implementation.
+     */
+    public boolean isDataAvailable(ScheduledTime t, Properties props);
+
+}
