@@ -3,7 +3,7 @@ package com.collective.celos;
 import java.util.Map;
 
 /**
- * A trigger is called to determined data availability for a workflow.
+ * A trigger is called to determine data availability for a workflow.
  */
 public interface Trigger {
     
