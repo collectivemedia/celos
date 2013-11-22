@@ -1,5 +1,6 @@
 package com.collective.celos;
 
+import java.util.Collections;
 import java.util.HashMap;
 
 import org.junit.Assert;
@@ -93,6 +94,11 @@ public class MiscTests {
     @Test(expected=NullPointerException.class)
     public void requireNonNullWorks() {
         Util.requireNonNull(null);
+    }
+    
+    @Test
+    public void tooTrivialButStill_trivialTriggerAlwaysTriggers() {
+        Assert.assertTrue(new TrivialTrigger().isDataAvailable(new ScheduledTime("2013-11-21T20:00Z"), Collections.<String, String>emptyMap()));
     }
     
 }
