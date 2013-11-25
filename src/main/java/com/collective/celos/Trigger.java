@@ -13,6 +13,6 @@ public interface Trigger {
      * The props come from the workflow configuration and are
      * specific to each trigger implementation.
      */
-    public boolean isDataAvailable(ScheduledTime t, Properties props);
+    public boolean isDataAvailable(ScheduledTime t, Properties props) throws Exception;
 
 }

@@ -7,18 +7,35 @@ import org.joda.time.DateTimeZone;
  * Scheduled time of a workflow run in UTC.
  */
 public class ScheduledTime extends ValueObject {
-    
+
     protected final DateTime dateTime;
-    
+
     public ScheduledTime(String formattedDate) {
         this(DateTime.parse(formattedDate));
     }
-    
+
     public ScheduledTime(DateTime dateTime) {
         this.dateTime = Util.requireNonNull(dateTime);
         if (!dateTime.getZone().equals(DateTimeZone.UTC)) {
-            throw new IllegalArgumentException("Scheduled time must be in UTC, but isn't: " + dateTime);
+            throw new IllegalArgumentException(
+                    "Scheduled time must be in UTC, but isn't: " + dateTime);
         }
     }
-    
+
+    public int getYear() {
+        return dateTime.getYear();
+    }
+
+    public int getMonth() {
+        return dateTime.getMonthOfYear();
+    }
+
+    public int getDay() {
+        return dateTime.getDayOfMonth();
+    }
+
+    public int getHour() {
+        return dateTime.getHourOfDay();
+    }
+
 }
