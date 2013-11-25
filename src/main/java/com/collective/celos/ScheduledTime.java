@@ -21,4 +21,8 @@ public class ScheduledTime extends ValueObject {
         }
     }
     
+    public DateTime getDateTime() {
+        return dateTime;
+    }
+    
 }
