@@ -4,7 +4,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Properties;
 
 import org.junit.Rule;
@@ -17,13 +16,13 @@ public class HDFSCheckTriggerTest {
     public TemporaryFolder tempFolder = new TemporaryFolder();
     
     @Test(expected = NullPointerException.class)
-    public void testNeedsPath() {
+    public void testNeedsPath() throws Exception {
         Trigger trigger = new HDFSCheckTrigger();
         trigger.isDataAvailable(null, new Properties());
     }
 
     @Test
-    public void testDirectoryExists() {
+    public void testDirectoryExists() throws Exception {
         Trigger trigger = new HDFSCheckTrigger();
         Properties props = new Properties();
         props.setProperty(HDFSCheckTrigger.PATH_KEY, "/tmp");
@@ -31,7 +30,7 @@ public class HDFSCheckTriggerTest {
     }
 
     @Test
-    public void testDirectoryDoesNotExist() {
+    public void testDirectoryDoesNotExist() throws Exception {
         Trigger trigger = new HDFSCheckTrigger();
         Properties props = new Properties();
         props.setProperty(HDFSCheckTrigger.PATH_KEY, "/tmp-does-not-exist");
@@ -39,7 +38,7 @@ public class HDFSCheckTriggerTest {
     }
 
     @Test
-    public void testFileExists() throws IOException {
+    public void testFileExists() throws Exception {
         String root = tempFolder.getRoot().getPath();
         
         File triggerFile = new File(root, "2013-11-22/1500/_READY");
@@ -54,7 +53,7 @@ public class HDFSCheckTriggerTest {
     }
 
     @Test
-    public void testFileDoesNotExist() {
+    public void testFileDoesNotExist() throws Exception {
         String root = tempFolder.getRoot().getPath();
         
         File triggerFile = new File(root, "2013-11-22/1500/_READY");
@@ -67,6 +66,19 @@ public class HDFSCheckTriggerTest {
         props.setProperty(HDFSCheckTrigger.PATH_KEY, root + "/${year}-${month}-${day}/${hour}00/_READY");
         
         assertFalse(trigger.isDataAvailable(new ScheduledTime("2013-11-22T15:00Z"), props));
+    }
+    
+    /*
+     * I was expecting to see an UnknownHostException here, but to my surprise
+     * org.apache.hadoop.security.SecurityUtil ends up wrapping it in an
+     * IllegalArgumentException.
+     */
+    @Test(expected = IllegalArgumentException.class)
+    public void testIOExceptionIsPropagated() throws Exception {
+        Trigger trigger = new HDFSCheckTrigger();
+        Properties props = new Properties();
+        props.setProperty(HDFSCheckTrigger.PATH_KEY, "hdfs://no-such-host/some/path");
+        trigger.isDataAvailable(new ScheduledTime("2013-11-22T15:00Z"), props);
     }
 
 }
