@@ -13,7 +13,6 @@ import org.apache.hadoop.fs.Path;
  */
 public class HDFSCheckTrigger implements Trigger {
 
-    // TODO: move this to somewhere that other code can access it?
     public static final String PATH_KEY = "path";
 
     /*
