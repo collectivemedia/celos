@@ -11,18 +11,26 @@ public class HourlySchedule implements Schedule {
     public Set<ScheduledTime> getScheduledTimes(ScheduledTime start, ScheduledTime end) {
         DateTime startDT = start.getDateTime();
         DateTime endDT = end.getDateTime();
-        DateTime hour = startDT.withMillisOfSecond(0).withSecondOfMinute(0).withMinuteOfHour(0);
+        DateTime hour;
+        // If start time of window is full hour, use it as first hour
+        // otherwise use next full hour as first one.
+        if (isFullHour(startDT)) {
+            hour = startDT;
+        } else {
+            hour = startDT.plusHours(1).withMillisOfSecond(0).withSecondOfMinute(0).withMinuteOfHour(0);
+        }
         Set<ScheduledTime> hours = new HashSet<ScheduledTime>();
         while(hour.isBefore(endDT)) {
-            // FIXME: ugly but couldn't find out a much better way
-            // to handle the case when the start is a full hour
-            // and should therefore be included
-            if (hour.equals(startDT) || hour.isAfter(startDT)) {
-                hours.add(new ScheduledTime(hour));
-            }
+            hours.add(new ScheduledTime(hour));
             hour = hour.plusHours(1);
         }
         return hours;
+    }
+
+    private boolean isFullHour(DateTime t) {
+        return t.getMillisOfSecond() == 0
+            && t.getSecondOfMinute() == 0
+            && t.getMinuteOfHour() == 0;
     }
 
 }
