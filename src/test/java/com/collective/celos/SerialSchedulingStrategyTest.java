@@ -42,7 +42,7 @@ public class SerialSchedulingStrategyTest {
     public void testHasNoSlots() {
         List<SlotState> input = Arrays
                 .asList(new SlotState[] {});
-        List<SlotID> expected = Arrays.asList(new SlotID[] {});
+        List<SlotState> expected = Arrays.asList(new SlotState[] {});
 
         SchedulingStrategy strategy = new SerialSchedulingStrategy();
         Assert.assertEquals(expected, strategy.getSchedulingCandidates(input));
@@ -58,7 +58,7 @@ public class SerialSchedulingStrategyTest {
                         new SlotState(slot3, SUCCESS),
                         new SlotState(slot4, TIMEOUT),
                         new SlotState(slot5, WAITING), });
-        List<SlotID> expected = Arrays.asList(new SlotID[] {});
+        List<SlotState> expected = Arrays.asList(new SlotState[] {});
 
         SchedulingStrategy strategy = new SerialSchedulingStrategy();
         Assert.assertEquals(expected, strategy.getSchedulingCandidates(input));
@@ -66,14 +66,15 @@ public class SerialSchedulingStrategyTest {
 
     @Test
     public void testHasReadySlot() {
+        SlotState scheduledSlot = new SlotState(slot1, READY);
         List<SlotState> input = Arrays
                 .asList(new SlotState[] {
                         new SlotState(slot1, FAILURE),
-                        new SlotState(slot1, READY),
+                        scheduledSlot,
                         new SlotState(slot3, SUCCESS),
                         new SlotState(slot4, TIMEOUT),
                         new SlotState(slot5, WAITING), });
-        List<SlotID> expected = Arrays.asList(new SlotID[] { slot1 });
+        List<SlotState> expected = Arrays.asList(new SlotState[] { scheduledSlot });
 
         SchedulingStrategy strategy = new SerialSchedulingStrategy();
         Assert.assertEquals(expected, strategy.getSchedulingCandidates(input));
@@ -81,14 +82,15 @@ public class SerialSchedulingStrategyTest {
 
     @Test
     public void testHasMultipleReadySlots() {
+        SlotState scheduledSlot = new SlotState(slot1, READY);
         List<SlotState> input = Arrays
                 .asList(new SlotState[] {
                         new SlotState(slot1, FAILURE),
-                        new SlotState(slot1, READY),
+                        scheduledSlot,
                         new SlotState(slot3, SUCCESS),
                         new SlotState(slot4, READY),
                         new SlotState(slot5, READY), });
-        List<SlotID> expected = Arrays.asList(new SlotID[] { slot1 });
+        List<SlotState> expected = Arrays.asList(new SlotState[] { scheduledSlot });
 
         SchedulingStrategy strategy = new SerialSchedulingStrategy();
         Assert.assertEquals(expected, strategy.getSchedulingCandidates(input));
@@ -103,7 +105,7 @@ public class SerialSchedulingStrategyTest {
                         new SlotState(slot3, SUCCESS),
                         new SlotState(slot4, WAITING),
                         new SlotState(slot5, SUCCESS), });
-        List<SlotID> expected = Arrays.asList(new SlotID[] {});
+        List<SlotState> expected = Arrays.asList(new SlotState[] {});
 
         SchedulingStrategy strategy = new SerialSchedulingStrategy();
         Assert.assertEquals(expected, strategy.getSchedulingCandidates(input));

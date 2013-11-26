@@ -34,9 +34,9 @@ public class SerialSchedulingStrategy implements SchedulingStrategy {
             = new SlotStateStatusPredicate(READY /* , WAITING */);
 
     @Override
-    public List<SlotID> getSchedulingCandidates(List<SlotState> states) {
+    public List<SlotState> getSchedulingCandidates(List<SlotState> states) {
 
-        List<SlotID> result = new LinkedList<SlotID>();
+        List<SlotState> result = new LinkedList<SlotState>();
 
         if (CollectionUtils.exists(states, RUNNING_PREDICATE)) {
             return result;
@@ -44,7 +44,7 @@ public class SerialSchedulingStrategy implements SchedulingStrategy {
 
         SlotState first = (SlotState) CollectionUtils.find(states, CANDIDATE_PREDICATE);
         if (first != null) {
-            result.add(first.getSlotID());
+            result.add(first);
         }
 
         return result;

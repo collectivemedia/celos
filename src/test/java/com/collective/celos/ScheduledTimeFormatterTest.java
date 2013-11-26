@@ -4,7 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-public class TokenReplacerTest {
+public class ScheduledTimeFormatterTest {
 
     @Test
     public void testReplaceYearTokens() {
@@ -34,16 +34,16 @@ public class TokenReplacerTest {
 
     @Test
     public void testReplaceTokensPadding() {
-        TokenReplacer replacer = new TokenReplacer();
-        String actual = replacer.replaceTimeTokens(
+        ScheduledTimeFormatter formatter = new ScheduledTimeFormatter();
+        String actual = formatter.replaceTimeTokens(
                 "/${year}/${month}/${day}/${hour}", new ScheduledTime(
                         "0001-02-03T04:00Z"));
         assertEquals("/0001/02/03/04", actual);
     }
 
     public void testReplaceTokens(String input, String expected) {
-        TokenReplacer replacer = new TokenReplacer();
-        String actual = replacer.replaceTimeTokens(input, new ScheduledTime(
+        ScheduledTimeFormatter formatter = new ScheduledTimeFormatter();
+        String actual = formatter.replaceTimeTokens(input, new ScheduledTime(
                 "2013-11-22T14:00Z"));
         assertEquals(expected, actual);
     }
