@@ -6,5 +6,9 @@ public class Util {
         if (object == null) throw new NullPointerException();
         else return object;
     }
+
+    public static void logException(Exception e) {
+        e.printStackTrace(System.err);
+    }
     
 }
