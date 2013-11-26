@@ -25,6 +25,6 @@ public interface SchedulingStrategy {
      * @param states The states of all slots within sliding window for this workflow, with oldest ones first.
      * @return List of slots this strategy wishes to execute - the first in the list will be executed first.
      */
-    public List<SlotID> getSchedulingCandidates(List<SlotState> states);
+    public List<SlotState> getSchedulingCandidates(List<SlotState> states);
 
 }

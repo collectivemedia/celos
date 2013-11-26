@@ -12,7 +12,7 @@ public class TrivialSchedulingStrategyTest {
     public void trivialSchedulingWorksForEmptyStates() {
         SchedulingStrategy strategy = new TrivialSchedulingStrategy();
         List<SlotState> states = new LinkedList<SlotState>();
-        List<SlotID> slots = strategy.getSchedulingCandidates(states);
+        List<SlotState> slots = strategy.getSchedulingCandidates(states);
         Assert.assertEquals(slots.size(), 0);
     }
     
@@ -42,12 +42,12 @@ public class TrivialSchedulingStrategyTest {
         SlotState state5 = new SlotState(slot5, SlotState.Status.READY);
         states.add(state5);
         
-        List<SlotID> expectedSlots = new LinkedList<SlotID>();
-        expectedSlots.add(slot1);
-        expectedSlots.add(slot4);
-        expectedSlots.add(slot5);
+        List<SlotState> expectedSlots = new LinkedList<SlotState>();
+        expectedSlots.add(state1);
+        expectedSlots.add(state4);
+        expectedSlots.add(state5);
 
-        List<SlotID> slots = strategy.getSchedulingCandidates(states);        
+        List<SlotState> slots = strategy.getSchedulingCandidates(states);        
         Assert.assertEquals(expectedSlots, slots);
     }
     

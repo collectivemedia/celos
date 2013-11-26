@@ -9,12 +9,12 @@ import java.util.List;
  */
 public class TrivialSchedulingStrategy implements SchedulingStrategy {
 
-    public List<SlotID> getSchedulingCandidates(List<SlotState> states) {
-        List<SlotID> slots = new LinkedList<SlotID>();
+    public List<SlotState> getSchedulingCandidates(List<SlotState> states) {
+        List<SlotState> slots = new LinkedList<SlotState>();
         for (Iterator<SlotState> it = states.iterator(); it.hasNext();) {
             SlotState slotState = it.next();
             if (slotState.getStatus() == SlotState.Status.READY) {
-                slots.add(slotState.getSlotID());
+                slots.add(slotState);
             }
         }
         return slots;
