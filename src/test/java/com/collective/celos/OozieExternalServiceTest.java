@@ -13,6 +13,7 @@ public class OozieExternalServiceTest {
         new OozieExternalService(new Properties());
     }
 
+    @Test
     public void runPropertiesAreCorrectlySetup() {
         Properties defaults = new Properties();
         defaults.setProperty("foo", "bar");
