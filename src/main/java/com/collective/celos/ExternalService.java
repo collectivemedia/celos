@@ -1,11 +1,18 @@
 package com.collective.celos;
 
-import java.util.Properties;
 
 public interface ExternalService {
-    // returns external ID or throws Exception if something goes wrong
-    // the system will set YEAR/MONTH/DAY/HOUR in the props automatically
-    // other properties like path to workflow.xml will simply be passed through from the workflow configuration
-    public String run(Properties props) throws ExternalServiceException;
+
+    /**
+     * Runs workflow in external service for the scheduled time.
+     * 
+     * Returns external ID of launched workflow, or throws an exception.
+     */
+    public String run(ScheduledTime t) throws ExternalServiceException;
+    
+    /**
+     * Gets the status of the externally running workflow with the given ID.
+     */
     public ExternalStatus getStatus(String externalWorkflowID) throws ExternalServiceException;
+
 }

@@ -17,14 +17,14 @@ public class HDFSCheckTrigger implements Trigger {
     /*
      * This object knows how to replace the date/time tokens in the path.
      */
-    private TokenReplacer tokenReplacer = new TokenReplacer();
+    private ScheduledTimeFormatter formatter = new ScheduledTimeFormatter();
 
     @Override
     public boolean isDataAvailable(ScheduledTime t, Properties props) throws Exception {
         String rawPathString = props.getProperty(PATH_KEY);
         Util.requireNonNull(rawPathString);
 
-        String cookedPathString = tokenReplacer.replaceTimeTokens(
+        String cookedPathString = formatter.replaceTimeTokens(
                 rawPathString, t);
 
         /*
