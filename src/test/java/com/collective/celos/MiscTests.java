@@ -79,6 +79,18 @@ public class MiscTests {
         hashCodeTest(new WorkflowID("foo"), new WorkflowID("bar"));
     }
     
+    // TIME COMPARISON
+    
+    @Test
+    public void scheduledTimeCompareToWorks() {
+        ScheduledTime t1 = new ScheduledTime("2013-11-26T13:00Z");
+        ScheduledTime t2 = new ScheduledTime("2013-11-26T13:01Z");
+        Assert.assertEquals(-1, t1.compareTo(t2));
+        Assert.assertEquals(1, t2.compareTo(t1));
+        Assert.assertEquals(0, t1.compareTo(t1));
+        Assert.assertEquals(0, t2.compareTo(t2));
+    }
+    
     // OTHER
     
     @Test(expected=IllegalArgumentException.class)

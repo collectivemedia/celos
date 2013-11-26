@@ -1,13 +1,14 @@
 package com.collective.celos;
 
+import org.apache.commons.lang.builder.CompareToBuilder;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
 /**
  * Scheduled time of a workflow run in UTC.
  */
-public class ScheduledTime extends ValueObject {
-
+public class ScheduledTime extends ValueObject implements Comparable<ScheduledTime> {
+    
     protected final DateTime dateTime;
 
     public ScheduledTime(String formattedDate) {
@@ -22,6 +23,15 @@ public class ScheduledTime extends ValueObject {
         }
     }
 
+    public DateTime getDateTime() {
+        return dateTime;
+    }
+
+    @Override
+    public int compareTo(ScheduledTime t) {
+        return CompareToBuilder.reflectionCompare(this, t);
+    }
+    
     public int getYear() {
         return dateTime.getYear();
     }
