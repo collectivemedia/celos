@@ -10,18 +10,19 @@ import org.joda.time.DateTimeZone;
 public class ScheduledTime extends ValueObject implements Comparable<ScheduledTime> {
     
     protected final DateTime dateTime;
-    
+
     public ScheduledTime(String formattedDate) {
         this(DateTime.parse(formattedDate));
     }
-    
+
     public ScheduledTime(DateTime dateTime) {
         this.dateTime = Util.requireNonNull(dateTime);
         if (!dateTime.getZone().equals(DateTimeZone.UTC)) {
-            throw new IllegalArgumentException("Scheduled time must be in UTC, but isn't: " + dateTime);
+            throw new IllegalArgumentException(
+                    "Scheduled time must be in UTC, but isn't: " + dateTime);
         }
     }
-    
+
     public DateTime getDateTime() {
         return dateTime;
     }
@@ -31,4 +32,20 @@ public class ScheduledTime extends ValueObject implements Comparable<ScheduledTi
         return CompareToBuilder.reflectionCompare(this, t);
     }
     
+    public int getYear() {
+        return dateTime.getYear();
+    }
+
+    public int getMonth() {
+        return dateTime.getMonthOfYear();
+    }
+
+    public int getDay() {
+        return dateTime.getDayOfMonth();
+    }
+
+    public int getHour() {
+        return dateTime.getHourOfDay();
+    }
+
 }
