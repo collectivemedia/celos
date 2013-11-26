@@ -1,7 +1,6 @@
 package com.collective.celos;
 
 import java.util.HashMap;
-import java.util.Properties;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -110,7 +109,7 @@ public class MiscTests {
     
     @Test
     public void tooTrivialButStill_alwaysTriggerAlwaysTriggers() {
-        Assert.assertTrue(new AlwaysTrigger().isDataAvailable(new ScheduledTime("2013-11-21T20:00Z"), new Properties()));
+        Assert.assertTrue(new AlwaysTrigger().isDataAvailable(new ScheduledTime("2013-11-21T20:00Z")));
     }
     
 }

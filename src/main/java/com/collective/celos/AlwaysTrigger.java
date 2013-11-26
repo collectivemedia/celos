@@ -9,7 +9,7 @@ import java.util.Properties;
  */
 public class AlwaysTrigger implements Trigger {
 
-    public boolean isDataAvailable(ScheduledTime t, Properties unusedProps) {
+    public boolean isDataAvailable(ScheduledTime t) {
         return true;
     }
 

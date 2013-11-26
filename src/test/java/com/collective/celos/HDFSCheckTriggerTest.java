@@ -15,26 +15,23 @@ public class HDFSCheckTriggerTest {
     @Rule
     public TemporaryFolder tempFolder = new TemporaryFolder();
     
-    @Test(expected = NullPointerException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void testNeedsPath() throws Exception {
-        Trigger trigger = new HDFSCheckTrigger();
-        trigger.isDataAvailable(null, new Properties());
+        new HDFSCheckTrigger(new Properties());
     }
 
     @Test
     public void testDirectoryExists() throws Exception {
-        Trigger trigger = new HDFSCheckTrigger();
         Properties props = new Properties();
-        props.setProperty(HDFSCheckTrigger.PATH_KEY, "/tmp");
-        assertTrue(trigger.isDataAvailable(new ScheduledTime("2013-11-22T15:00Z"), props));
+        props.setProperty(HDFSCheckTrigger.PATH_PROP, "/tmp");
+        assertTrue(new HDFSCheckTrigger(props).isDataAvailable(new ScheduledTime("2013-11-22T15:00Z")));
     }
 
     @Test
     public void testDirectoryDoesNotExist() throws Exception {
-        Trigger trigger = new HDFSCheckTrigger();
         Properties props = new Properties();
-        props.setProperty(HDFSCheckTrigger.PATH_KEY, "/tmp-does-not-exist");
-        assertFalse(trigger.isDataAvailable(new ScheduledTime("2013-11-22T15:00Z"), props));
+        props.setProperty(HDFSCheckTrigger.PATH_PROP, "/tmp-does-not-exist");
+        assertFalse(new HDFSCheckTrigger(props).isDataAvailable(new ScheduledTime("2013-11-22T15:00Z")));
     }
 
     @Test
@@ -45,11 +42,10 @@ public class HDFSCheckTriggerTest {
         triggerFile.getParentFile().mkdirs();
         triggerFile.createNewFile();
        
-        Trigger trigger = new HDFSCheckTrigger();
         Properties props = new Properties();
-        props.setProperty(HDFSCheckTrigger.PATH_KEY, root + "/${year}-${month}-${day}/${hour}00/_READY");
+        props.setProperty(HDFSCheckTrigger.PATH_PROP, root + "/${year}-${month}-${day}/${hour}00/_READY");
         
-        assertTrue(trigger.isDataAvailable(new ScheduledTime("2013-11-22T15:00Z"), props));
+        assertTrue(new HDFSCheckTrigger(props).isDataAvailable(new ScheduledTime("2013-11-22T15:00Z")));
     }
 
     @Test
@@ -61,11 +57,10 @@ public class HDFSCheckTriggerTest {
             triggerFile.delete(); // Make sure it doesn't exist
         }
        
-        Trigger trigger = new HDFSCheckTrigger();
         Properties props = new Properties();
-        props.setProperty(HDFSCheckTrigger.PATH_KEY, root + "/${year}-${month}-${day}/${hour}00/_READY");
+        props.setProperty(HDFSCheckTrigger.PATH_PROP, root + "/${year}-${month}-${day}/${hour}00/_READY");
         
-        assertFalse(trigger.isDataAvailable(new ScheduledTime("2013-11-22T15:00Z"), props));
+        assertFalse(new HDFSCheckTrigger(props).isDataAvailable(new ScheduledTime("2013-11-22T15:00Z")));
     }
     
     /*
@@ -75,10 +70,9 @@ public class HDFSCheckTriggerTest {
      */
     @Test(expected = IllegalArgumentException.class)
     public void testIOExceptionIsPropagated() throws Exception {
-        Trigger trigger = new HDFSCheckTrigger();
         Properties props = new Properties();
-        props.setProperty(HDFSCheckTrigger.PATH_KEY, "hdfs://no-such-host/some/path");
-        trigger.isDataAvailable(new ScheduledTime("2013-11-22T15:00Z"), props);
+        props.setProperty(HDFSCheckTrigger.PATH_PROP, "hdfs://no-such-host/some/path");
+        new HDFSCheckTrigger(props).isDataAvailable(new ScheduledTime("2013-11-22T15:00Z"));
     }
 
 }

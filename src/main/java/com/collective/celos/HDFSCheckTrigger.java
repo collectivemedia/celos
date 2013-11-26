@@ -12,17 +12,24 @@ import org.apache.hadoop.fs.Path;
  */
 public class HDFSCheckTrigger implements Trigger {
 
-    public static final String PATH_KEY = "path";
+    public static final String PATH_PROP = "path";
 
     /*
      * This object knows how to replace the date/time tokens in the path.
      */
-    private ScheduledTimeFormatter formatter = new ScheduledTimeFormatter();
+    private final ScheduledTimeFormatter formatter = new ScheduledTimeFormatter();
 
+    private final String rawPathString;
+
+    public HDFSCheckTrigger(Properties properties) {
+        this.rawPathString = properties.getProperty(PATH_PROP);
+        if (this.rawPathString == null) {
+            throw new IllegalArgumentException(PATH_PROP + " property not set.");
+        }
+    }
+    
     @Override
-    public boolean isDataAvailable(ScheduledTime t, Properties props) throws Exception {
-        String rawPathString = props.getProperty(PATH_KEY);
-        Util.requireNonNull(rawPathString);
+    public boolean isDataAvailable(ScheduledTime t) throws Exception {
 
         String cookedPathString = formatter.replaceTimeTokens(
                 rawPathString, t);
