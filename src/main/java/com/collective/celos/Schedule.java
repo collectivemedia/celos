@@ -1,6 +1,6 @@
 package com.collective.celos;
 
-import java.util.Set;
+import java.util.SortedSet;
 
 /**
  * Determines the times at which a workflow is supposed to run.
@@ -11,6 +11,6 @@ public interface Schedule {
      * Returns the set of scheduled times of this schedule within the
      * window defined by start (inclusive) and end (exclusive).
      */
-    public Set<ScheduledTime> getScheduledTimes(ScheduledTime start, ScheduledTime end);
+    public SortedSet<ScheduledTime> getScheduledTimes(ScheduledTime start, ScheduledTime end);
 
 }

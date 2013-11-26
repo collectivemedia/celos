@@ -1,14 +1,14 @@
 package com.collective.celos;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import org.joda.time.DateTime;
 
 public class HourlySchedule implements Schedule {
 
     @Override
-    public Set<ScheduledTime> getScheduledTimes(ScheduledTime start, ScheduledTime end) {
+    public SortedSet<ScheduledTime> getScheduledTimes(ScheduledTime start, ScheduledTime end) {
         DateTime startDT = start.getDateTime();
         DateTime endDT = end.getDateTime();
         DateTime hour;
@@ -19,7 +19,7 @@ public class HourlySchedule implements Schedule {
         } else {
             hour = startDT.plusHours(1).withMillisOfSecond(0).withSecondOfMinute(0).withMinuteOfHour(0);
         }
-        Set<ScheduledTime> hours = new HashSet<ScheduledTime>();
+        SortedSet<ScheduledTime> hours = new TreeSet<ScheduledTime>();
         while(hour.isBefore(endDT)) {
             hours.add(new ScheduledTime(hour));
             hour = hour.plusHours(1);

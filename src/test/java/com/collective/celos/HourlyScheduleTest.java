@@ -1,9 +1,9 @@
 package com.collective.celos;
 
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -24,7 +24,7 @@ public class HourlyScheduleTest {
         ScheduledTime t1 = new ScheduledTime("2013-11-25T20:00Z");
         ScheduledTime t2 = new ScheduledTime("2013-11-25T21:00Z");
         Set<ScheduledTime> hours = sch.getScheduledTimes(t1, t2);
-        Assert.assertEquals(new HashSet<ScheduledTime>(Arrays.asList(t1)), hours);
+        Assert.assertEquals(new TreeSet<ScheduledTime>(Arrays.asList(t1)), hours);
     }
     
     @Test
@@ -46,7 +46,7 @@ public class HourlyScheduleTest {
                 Arrays.asList(new ScheduledTime("2013-11-25T21:00Z"),
                               new ScheduledTime("2013-11-25T22:00Z"),
                               new ScheduledTime("2013-11-25T23:00Z"));
-        Assert.assertEquals(new HashSet<ScheduledTime>(expectedHours), hours);
+        Assert.assertEquals(new TreeSet<ScheduledTime>(expectedHours), hours);
     }
     
     @Test
@@ -60,6 +60,6 @@ public class HourlyScheduleTest {
                               new ScheduledTime("2013-11-25T21:00Z"),
                               new ScheduledTime("2013-11-25T22:00Z"),
                               new ScheduledTime("2013-11-25T23:00Z"));
-        Assert.assertEquals(new HashSet<ScheduledTime>(expectedHours), hours);
+        Assert.assertEquals(new TreeSet<ScheduledTime>(expectedHours), hours);
     }
 }
