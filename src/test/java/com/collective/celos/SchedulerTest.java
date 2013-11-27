@@ -121,7 +121,7 @@ public class SchedulerTest {
      * Creates running slots in memory database, with mock external service
      * that always says the external jobs are successful.
      * 
-     * Makes sure that the slots are still marked as successful after step.
+     * Makes sure that the slots are marked as successful after step.
      */
     @Test
     public void marksRunningSlotsAsSuccessfulIfExternalStatusIsSuccess() throws Exception {
@@ -132,7 +132,7 @@ public class SchedulerTest {
      * Creates running slots in memory database, with mock external service
      * that always says the external jobs are failed.
      * 
-     * Makes sure that the slots are still marked as failed after step.
+     * Makes sure that the slots are marked as failed after step.
      */
     @Test
     public void marksRunningSlotsAsFailedIfExternalStatusIsFailure() throws Exception {
