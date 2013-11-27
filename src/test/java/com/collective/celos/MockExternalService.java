@@ -1,19 +1,19 @@
 package com.collective.celos;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Fake implementation of external service for testing.
  * 
  * Always returns the external status passed to its constructor.
  * 
- * Remembers scheduled times that have been submitted for running.
+ * Remembers scheduled times that have been submitted for running and their associated fake external IDs.
  */
 public class MockExternalService implements ExternalService {
 
     private final ExternalStatus status;
-    private final Set<ScheduledTime> times = new HashSet<ScheduledTime>();
+    private final Map<ScheduledTime, String> times2ExternalID = new HashMap<ScheduledTime, String>();
 
     public MockExternalService(ExternalStatus status) {
         this.status = Util.requireNonNull(status);
@@ -21,8 +21,9 @@ public class MockExternalService implements ExternalService {
     
     @Override
     public String run(ScheduledTime t) {
-        times.add(t);
-        return "mock-" + Math.random();
+        String externalID = "mock-" + Math.random();
+        times2ExternalID.put(t, externalID);
+        return externalID;
     }
 
     @Override
@@ -30,8 +31,8 @@ public class MockExternalService implements ExternalService {
         return status;
     }
     
-    public Set<ScheduledTime> getTimes() {
-        return times;
+    public Map<ScheduledTime, String> getTimes2ExternalID() {
+        return times2ExternalID;
     }
 
     public static class MockExternalStatusRunning implements ExternalStatus {

@@ -214,17 +214,19 @@ public class SchedulerTest {
         sched.step(new ScheduledTime(current), cfg, db);
         
         Assert.assertEquals(slidingWindowHours, db.size());
-        Assert.assertEquals(slidingWindowHours, srv1.getTimes().size());
+        Assert.assertEquals(slidingWindowHours, srv1.getTimes2ExternalID().size());
         
         for (int i = 0; i < slidingWindowHours; i++) {
             ScheduledTime scheduledTime = new ScheduledTime(currentFullHour.minusHours(i));
-            Assert.assertTrue(srv1.getTimes().contains(scheduledTime));
             SlotID id = new SlotID(wfID1, scheduledTime);
             SlotState state = db.getSlotState(id);
             if (state == null) {
                 throw new AssertionError("Slot " + id + " not found.");
             }
             Assert.assertEquals(SlotState.Status.RUNNING, state.getStatus());
+            String externalID = state.getExternalID();
+            Assert.assertNotNull(externalID);
+            Assert.assertEquals(externalID, srv1.getTimes2ExternalID().get(scheduledTime));
         }
     }
     
