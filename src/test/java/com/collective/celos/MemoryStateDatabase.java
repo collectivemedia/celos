@@ -19,5 +19,9 @@ public class MemoryStateDatabase implements StateDatabase {
     public void putSlotState(SlotState state) throws Exception {
         map.put(state.getSlotID(), state);
     }
+    
+    public int size() {
+        return map.size();
+    }
 
 }
