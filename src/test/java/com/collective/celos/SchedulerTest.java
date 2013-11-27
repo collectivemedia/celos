@@ -39,7 +39,7 @@ public class SchedulerTest {
         Schedule sch1 = new HourlySchedule();
         SchedulingStrategy str1 = new SerialSchedulingStrategy();
         Trigger tr1 = new AlwaysTrigger();
-        ExternalService srv1 = new MockExternalService();
+        ExternalService srv1 = new MockExternalService(new MockExternalService.MockExternalStatusRunning());
         Workflow wf1 = new Workflow(wfID1, sch1, str1, tr1, srv1);
         
         Set<Workflow> workflows = new HashSet<Workflow>();
@@ -82,7 +82,7 @@ public class SchedulerTest {
         Schedule sch1 = new HourlySchedule();
         SchedulingStrategy str1 = new SerialSchedulingStrategy();
         Trigger tr1 = new NeverTrigger();
-        ExternalService srv1 = new MockExternalService();
+        ExternalService srv1 = new MockExternalService(new MockExternalService.MockExternalStatusRunning());
         Workflow wf1 = new Workflow(wfID1, sch1, str1, tr1, srv1);
         
         Set<Workflow> workflows = new HashSet<Workflow>();
