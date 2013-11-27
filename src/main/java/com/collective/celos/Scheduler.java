@@ -94,7 +94,7 @@ public class Scheduler {
             // this gives us a rudimentary form of concurrency control.
             SlotState scheduledSlot = scheduledSlots.get(0);
             Assert.assertEquals(SlotState.Status.READY, scheduledSlot.getStatus());
-            String externalID = wf.getExternalService().run(scheduledSlot.getSlotID().getScheduledTime());
+            String externalID = wf.getExternalService().run(scheduledSlot.getScheduledTime());
             db.putSlotState(scheduledSlot.transitionToRunning(externalID));
         }
     }
