@@ -112,4 +112,11 @@ public class MiscTests {
         Assert.assertTrue(new AlwaysTrigger().isDataAvailable(new ScheduledTime("2013-11-21T20:00Z")));
     }
     
+    @Test
+    public void slotStateGetScheduledTimeWorks() {
+        ScheduledTime t = new ScheduledTime("2013-11-26T13:00Z");
+        SlotState slotState = new SlotState(new SlotID(new WorkflowID("foo"), t), SlotState.Status.READY);
+        Assert.assertEquals(t, slotState.getScheduledTime());
+    }
+    
 }
