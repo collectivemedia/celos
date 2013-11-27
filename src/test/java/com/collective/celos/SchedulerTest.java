@@ -89,7 +89,7 @@ public class SchedulerTest {
         workflows.add(wf1);
         WorkflowConfiguration cfg = new WorkflowConfiguration(workflows);
         
-        StateDatabase db = new MemoryStateDatabase();
+        MemoryStateDatabase db = new MemoryStateDatabase();
 
         int slidingWindowHours = 24;
         DateTime current = DateTime.parse("2013-11-27T15:01Z");
@@ -98,12 +98,7 @@ public class SchedulerTest {
         Scheduler sched = new Scheduler(slidingWindowHours);
         sched.step(new ScheduledTime(current), cfg, db);
         
-        for (int i = 0; i < slidingWindowHours; i++) {
-            SlotID id = new SlotID(wfID1, new ScheduledTime(currentFullHour.minusHours(i)));
-            SlotState state = db.getSlotState(id);
-            Assert.assertEquals(null, state);
-        }
-        
+        Assert.assertEquals(0, db.size());
     }
     
     /**
