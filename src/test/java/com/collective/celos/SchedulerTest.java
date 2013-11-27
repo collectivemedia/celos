@@ -114,11 +114,37 @@ public class SchedulerTest {
      */
     @Test
     public void leavesRunningSlotsAsIsIfStillRunning() throws Exception {
+        runningSlotUtil(new MockExternalService.MockExternalStatusRunning(), SlotState.Status.RUNNING);
+    }
+    
+    /**
+     * Creates running slots in memory database, with mock external service
+     * that always says the external jobs are successful.
+     * 
+     * Makes sure that the slots are still marked as successful after step.
+     */
+    @Test
+    public void marksRunningSlotsAsSuccessfulIfExternalStatusIsSuccess() throws Exception {
+        runningSlotUtil(new MockExternalService.MockExternalStatusSuccess(), SlotState.Status.SUCCESS);
+    }
+    
+    /**
+     * Creates running slots in memory database, with mock external service
+     * that always says the external jobs are failed.
+     * 
+     * Makes sure that the slots are still marked as failed after step.
+     */
+    @Test
+    public void marksRunningSlotsAsFailedIfExternalStatusIsFailure() throws Exception {
+        runningSlotUtil(new MockExternalService.MockExternalStatusFailure(), SlotState.Status.FAILURE);
+    }
+
+    private void runningSlotUtil(ExternalStatus externalStatus, SlotState.Status expectedSlotStatus) throws Exception, AssertionError {
         WorkflowID wfID1 = new WorkflowID("wf1");
         Schedule sch1 = new HourlySchedule();
         SchedulingStrategy str1 = new SerialSchedulingStrategy();
         Trigger tr1 = new AlwaysTrigger();
-        ExternalService srv1 = new MockExternalService(new MockExternalService.MockExternalStatusRunning());
+        ExternalService srv1 = new MockExternalService(externalStatus);
         Workflow wf1 = new Workflow(wfID1, sch1, str1, tr1, srv1);
         
         Set<Workflow> workflows = new HashSet<Workflow>();
@@ -148,9 +174,8 @@ public class SchedulerTest {
             if (state == null) {
                 throw new AssertionError("Slot " + id + " not found.");
             }
-            Assert.assertEquals(SlotState.Status.RUNNING, state.getStatus());
+            Assert.assertEquals(expectedSlotStatus, state.getStatus());
         }
-        
     }
 
 }
