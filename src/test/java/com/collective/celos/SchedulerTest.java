@@ -7,6 +7,10 @@ import org.joda.time.DateTime;
 import org.junit.Assert;
 import org.junit.Test;
 
+/**
+ * TODO: test exception handling and logging
+ * TODO: more fine-grained tests like multipleSlotsTest
+ */
 public class SchedulerTest {
 
     @Test(expected=IllegalArgumentException.class)
