@@ -88,14 +88,11 @@ public class Scheduler {
      */
     private void runExternalWorkflows(Workflow wf, List<SlotState> slotStates, StateDatabase db) throws Exception {
         List<SlotState> scheduledSlots = wf.getSchedulingStrategy().getSchedulingCandidates(slotStates);
-        if (!scheduledSlots.isEmpty()) {
-            // Currently, only submit first scheduled slot.
-            // Together with using only the SerialSchedulingStrategy
-            // this gives us a rudimentary form of concurrency control.
-            SlotState scheduledSlot = scheduledSlots.get(0);
-            Assert.assertEquals(SlotState.Status.READY, scheduledSlot.getStatus());
-            String externalID = wf.getExternalService().run(scheduledSlot.getScheduledTime());
-            db.putSlotState(scheduledSlot.transitionToRunning(externalID));
+        for (Iterator<SlotState> it = scheduledSlots.iterator(); it.hasNext();) {
+            SlotState slotState = it.next();
+            Assert.assertEquals(SlotState.Status.READY, slotState.getStatus());
+            String externalID = wf.getExternalService().run(slotState.getScheduledTime());
+            db.putSlotState(slotState.transitionToRunning(externalID));
         }
     }
 
