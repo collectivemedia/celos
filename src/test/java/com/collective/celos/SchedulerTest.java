@@ -106,4 +106,51 @@ public class SchedulerTest {
         
     }
     
+    /**
+     * Creates running slots in memory database, with mock external service
+     * that always says the external jobs are still running.
+     * 
+     * Makes sure that the slots are still marked as running after step.
+     */
+    @Test
+    public void leavesRunningSlotsAsIsIfStillRunning() throws Exception {
+        WorkflowID wfID1 = new WorkflowID("wf1");
+        Schedule sch1 = new HourlySchedule();
+        SchedulingStrategy str1 = new SerialSchedulingStrategy();
+        Trigger tr1 = new AlwaysTrigger();
+        ExternalService srv1 = new MockExternalService(new MockExternalService.MockExternalStatusRunning());
+        Workflow wf1 = new Workflow(wfID1, sch1, str1, tr1, srv1);
+        
+        Set<Workflow> workflows = new HashSet<Workflow>();
+        workflows.add(wf1);
+        WorkflowConfiguration cfg = new WorkflowConfiguration(workflows);
+        
+        MemoryStateDatabase db = new MemoryStateDatabase();
+
+        int slidingWindowHours = 24;
+        DateTime current = DateTime.parse("2013-11-27T15:01Z");
+        DateTime currentFullHour = Util.toFullHour(current);
+
+        for (int i = 0; i < slidingWindowHours; i++) {
+            SlotID id = new SlotID(wfID1, new ScheduledTime(currentFullHour.minusHours(i)));
+            SlotState state = new SlotState(id, SlotState.Status.READY).transitionToRunning("fake-external-ID");
+            db.putSlotState(state);
+        }
+        
+        Scheduler sched = new Scheduler(slidingWindowHours);
+        sched.step(new ScheduledTime(current), cfg, db);
+        
+        Assert.assertEquals(slidingWindowHours, db.size());
+        
+        for (int i = 0; i < slidingWindowHours; i++) {
+            SlotID id = new SlotID(wfID1, new ScheduledTime(currentFullHour.minusHours(i)));
+            SlotState state = db.getSlotState(id);
+            if (state == null) {
+                throw new AssertionError("Slot " + id + " not found.");
+            }
+            Assert.assertEquals(SlotState.Status.RUNNING, state.getStatus());
+        }
+        
+    }
+
 }
