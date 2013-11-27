@@ -225,4 +225,66 @@ public class SchedulerTest {
         }
     }
     
+    /**
+     * Use a serial scheduling strategy.
+     * 
+     * Create one waiting and two ready slots.
+     * 
+     * Make sure that after a step:
+     * 
+     * - the waiting slot is ready
+     * 
+     * - the first ready slot is running
+     * 
+     * - the second ready slot is still ready
+     * 
+     * - the running slot's external ID matches the one handed out by the mock external service
+     */
+    @Test
+    public void multipleSlotsTest() throws Exception {
+        WorkflowID wfID1 = new WorkflowID("wf1");
+        Schedule sch1 = new HourlySchedule();
+        SchedulingStrategy str1 = new SerialSchedulingStrategy();
+        Trigger tr1 = new AlwaysTrigger();
+        MockExternalService srv1 = new MockExternalService(new MockExternalService.MockExternalStatusRunning());
+        Workflow wf1 = new Workflow(wfID1, sch1, str1, tr1, srv1);
+        
+        Set<Workflow> workflows = new HashSet<Workflow>();
+        workflows.add(wf1);
+        WorkflowConfiguration cfg = new WorkflowConfiguration(workflows);
+        
+        MemoryStateDatabase db = new MemoryStateDatabase();
+
+        SlotID id1 = new SlotID(wfID1, new ScheduledTime("2013-11-27T20:00Z"));
+        SlotID id2 = new SlotID(wfID1, new ScheduledTime("2013-11-27T21:00Z"));
+        SlotID id3 = new SlotID(wfID1, new ScheduledTime("2013-11-27T22:00Z"));
+        
+        SlotState slot1 = new SlotState(id1, SlotState.Status.WAITING);
+        SlotState slot2 = new SlotState(id2, SlotState.Status.WAITING).transitionToReady();
+        SlotState slot3 = new SlotState(id3, SlotState.Status.WAITING).transitionToReady();
+        
+        db.putSlotState(slot1);
+        db.putSlotState(slot2);
+        db.putSlotState(slot3);
+        
+        int slidingWindowHours = 3;
+        DateTime current = DateTime.parse("2013-11-27T22:01Z");
+
+        Scheduler sched = new Scheduler(slidingWindowHours);
+        sched.step(new ScheduledTime(current), cfg, db);
+        
+        SlotState slot1After = db.getSlotState(id1);
+        Assert.assertEquals(SlotState.Status.READY, slot1After.getStatus());
+        
+        SlotState slot2After = db.getSlotState(id2);
+        Assert.assertEquals(SlotState.Status.RUNNING, slot2After.getStatus());
+
+        SlotState slot3After = db.getSlotState(id3);
+        Assert.assertEquals(SlotState.Status.READY, slot3After.getStatus());
+        
+        String externalID = slot2After.getExternalID();
+        Assert.assertNotNull(externalID);
+        Assert.assertEquals(externalID, srv1.getTimes2ExternalID().get(slot2.getScheduledTime()));
+    }
+    
 }
