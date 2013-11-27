@@ -178,4 +178,54 @@ public class SchedulerTest {
         }
     }
 
+    /**
+     * Creates ready slots in memory database.
+     * 
+     * Uses trivial scheduling strategy so all ready slots will be used.
+     * 
+     * Makes sure all are running after step, and have been submitted to external service.
+     */
+    @Test
+    public void updatesReadySlotsToRunningAndSubmitsThemToExternalSystem() throws Exception, AssertionError {
+        WorkflowID wfID1 = new WorkflowID("wf1");
+        Schedule sch1 = new HourlySchedule();
+        SchedulingStrategy str1 = new TrivialSchedulingStrategy();
+        Trigger tr1 = new AlwaysTrigger();
+        MockExternalService srv1 = new MockExternalService(new MockExternalService.MockExternalStatusRunning());
+        Workflow wf1 = new Workflow(wfID1, sch1, str1, tr1, srv1);
+        
+        Set<Workflow> workflows = new HashSet<Workflow>();
+        workflows.add(wf1);
+        WorkflowConfiguration cfg = new WorkflowConfiguration(workflows);
+        
+        MemoryStateDatabase db = new MemoryStateDatabase();
+
+        int slidingWindowHours = 24;
+        DateTime current = DateTime.parse("2013-11-27T15:01Z");
+        DateTime currentFullHour = Util.toFullHour(current);
+
+        for (int i = 0; i < slidingWindowHours; i++) {
+            SlotID id = new SlotID(wfID1, new ScheduledTime(currentFullHour.minusHours(i)));
+            SlotState state = new SlotState(id, SlotState.Status.READY);
+            db.putSlotState(state);
+        }
+        
+        Scheduler sched = new Scheduler(slidingWindowHours);
+        sched.step(new ScheduledTime(current), cfg, db);
+        
+        Assert.assertEquals(slidingWindowHours, db.size());
+        Assert.assertEquals(slidingWindowHours, srv1.getTimes().size());
+        
+        for (int i = 0; i < slidingWindowHours; i++) {
+            ScheduledTime scheduledTime = new ScheduledTime(currentFullHour.minusHours(i));
+            Assert.assertTrue(srv1.getTimes().contains(scheduledTime));
+            SlotID id = new SlotID(wfID1, scheduledTime);
+            SlotState state = db.getSlotState(id);
+            if (state == null) {
+                throw new AssertionError("Slot " + id + " not found.");
+            }
+            Assert.assertEquals(SlotState.Status.RUNNING, state.getStatus());
+        }
+    }
+    
 }
