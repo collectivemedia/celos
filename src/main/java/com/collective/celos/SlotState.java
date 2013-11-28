@@ -50,7 +50,6 @@ public class SlotState extends ValueObject {
     }
     
     // TODO: test these transitions
-    // TODO: replace Assert with IllegalStateException
     
     public SlotState transitionToReady() {
         assertStatus(Status.WAITING);
