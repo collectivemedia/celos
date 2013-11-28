@@ -1,7 +1,5 @@
 package com.collective.celos;
 
-import org.junit.Assert;
-
 /**
  * The execution status of a slot.
  */
@@ -51,29 +49,38 @@ public class SlotState extends ValueObject {
         return externalID;
     }
     
+    // TODO: test these transitions
+    // TODO: replace Assert with IllegalStateException
+    
     public SlotState transitionToReady() {
-        Assert.assertEquals(Status.WAITING, this.status);
+        assertStatus(Status.WAITING);
         SlotState newState = new SlotState(this.slotID, Status.READY);
         return newState;
     }
     
     public SlotState transitionToRunning(String externalID) {
-        Assert.assertEquals(Status.READY, this.status);
+        assertStatus(Status.READY);
         SlotState newState = new SlotState(this.slotID, Status.RUNNING);
         newState.externalID = Util.requireNonNull(externalID);
         return newState;
     }
 
     public SlotState transitionToSuccess() {
-        Assert.assertEquals(Status.RUNNING, this.status);
+        assertStatus(Status.RUNNING);
         SlotState newState = new SlotState(this.slotID, Status.SUCCESS);
         return newState;
     }
 
     public SlotState transitionToFailure() {
-        Assert.assertEquals(Status.RUNNING, this.status);
+        assertStatus(Status.RUNNING);
         SlotState newState = new SlotState(this.slotID, Status.FAILURE);
         return newState;
+    }
+
+    private void assertStatus(Status st) {
+        if (!status.equals(st)) {
+            throw new IllegalStateException("Expected state " + st + " but was " + status + " (slot: " + this + ")");
+        }
     }
 
 }

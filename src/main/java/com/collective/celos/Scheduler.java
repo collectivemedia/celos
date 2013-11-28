@@ -5,8 +5,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.SortedSet;
 
-import org.junit.Assert;
-
 /**
  * TODO: timeout slots if trigger doesn't return true for too long
  * TODO: retry handling
@@ -87,7 +85,9 @@ public class Scheduler {
     private void runExternalWorkflows(Workflow wf, List<SlotState> slotStates, StateDatabase db) throws Exception {
         List<SlotState> scheduledSlots = wf.getSchedulingStrategy().getSchedulingCandidates(slotStates);
         for (SlotState slotState : scheduledSlots) {
-            Assert.assertEquals(SlotState.Status.READY, slotState.getStatus());
+            if (!slotState.getStatus().equals(SlotState.Status.READY)) {
+                throw new IllegalStateException("Scheduling strategy returned non-ready slot: " + slotState);
+            }
             String externalID = wf.getExternalService().run(slotState.getScheduledTime());
             db.putSlotState(slotState.transitionToRunning(externalID));
         }
