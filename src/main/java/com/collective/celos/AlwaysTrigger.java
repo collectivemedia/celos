@@ -1,7 +1,5 @@
 package com.collective.celos;
 
-import java.util.Properties;
-
 /**
  * Trivial trigger that always signals data availability,
  * for use when a workflow doesn't have any data dependencies
@@ -9,7 +7,7 @@ import java.util.Properties;
  */
 public class AlwaysTrigger implements Trigger {
 
-    public boolean isDataAvailable(ScheduledTime t, Properties unusedProps) {
+    public boolean isDataAvailable(ScheduledTime t) {
         return true;
     }
 

@@ -5,8 +5,12 @@ package com.collective.celos;
  */
 public class SlotState extends ValueObject {
     
+    /** Never null. */
     protected final SlotID slotID;
+    /** Never null. */
     protected final Status status;
+    /** Only set in RUNNING, SUCCESS, FAILURE states; null otherwise. */
+    private String externalID;
     
     public enum Status {
         /** No data availability yet. */
@@ -28,7 +32,7 @@ public class SlotState extends ValueObject {
         this.slotID = Util.requireNonNull(slotID);
         this.status = Util.requireNonNull(status);
     }
-    
+
     public SlotID getSlotID() {
         return slotID;
     }
@@ -37,4 +41,45 @@ public class SlotState extends ValueObject {
         return status;
     }
     
+    public ScheduledTime getScheduledTime() {
+        return slotID.getScheduledTime();
+    }
+
+    public String getExternalID() {
+        return externalID;
+    }
+    
+    // TODO: test these transitions
+    
+    public SlotState transitionToReady() {
+        assertStatus(Status.WAITING);
+        SlotState newState = new SlotState(this.slotID, Status.READY);
+        return newState;
+    }
+    
+    public SlotState transitionToRunning(String externalID) {
+        assertStatus(Status.READY);
+        SlotState newState = new SlotState(this.slotID, Status.RUNNING);
+        newState.externalID = Util.requireNonNull(externalID);
+        return newState;
+    }
+
+    public SlotState transitionToSuccess() {
+        assertStatus(Status.RUNNING);
+        SlotState newState = new SlotState(this.slotID, Status.SUCCESS);
+        return newState;
+    }
+
+    public SlotState transitionToFailure() {
+        assertStatus(Status.RUNNING);
+        SlotState newState = new SlotState(this.slotID, Status.FAILURE);
+        return newState;
+    }
+
+    private void assertStatus(Status st) {
+        if (!status.equals(st)) {
+            throw new IllegalStateException("Expected status " + st + " but was " + status + " (slot: " + this + ")");
+        }
+    }
+
 }

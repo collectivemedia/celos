@@ -1,8 +1,8 @@
 package com.collective.celos;
 
 import java.util.HashMap;
-import java.util.Properties;
 
+import org.joda.time.DateTime;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -110,7 +110,24 @@ public class MiscTests {
     
     @Test
     public void tooTrivialButStill_alwaysTriggerAlwaysTriggers() {
-        Assert.assertTrue(new AlwaysTrigger().isDataAvailable(new ScheduledTime("2013-11-21T20:00Z"), new Properties()));
+        Assert.assertTrue(new AlwaysTrigger().isDataAvailable(new ScheduledTime("2013-11-21T20:00Z")));
     }
     
+    @Test
+    public void slotStateGetScheduledTimeWorks() {
+        ScheduledTime t = new ScheduledTime("2013-11-26T13:00Z");
+        SlotState slotState = new SlotState(new SlotID(new WorkflowID("foo"), t), SlotState.Status.READY);
+        Assert.assertEquals(t, slotState.getScheduledTime());
+    }
+    
+    @Test
+    public void toFullHourWorks() {
+        Assert.assertEquals(new DateTime("2013-11-27T15:00Z"), Util.toFullHour(new DateTime("2013-11-27T15:36Z")));
+    }
+    
+    @Test
+    public void isFullHourWorks() {
+        Assert.assertTrue(Util.isFullHour(new DateTime("2013-11-27T15:00Z")));
+        Assert.assertFalse(Util.isFullHour(new DateTime("2013-11-27T15:36Z")));
+    }
 }
