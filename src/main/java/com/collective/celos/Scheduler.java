@@ -5,8 +5,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.SortedSet;
 
-import com.collective.celos.SlotState.Status;
-
 /**
  * TODO: timeout slots if trigger doesn't return true for too long
  * TODO: retry handling
@@ -106,7 +104,7 @@ public class Scheduler {
      * Check the external status of all RUNNING slots, and update them to SUCCESS or FAILURE if they're finished.
      */
     private void updateSlotState(Workflow wf, SlotState slotState) throws Exception {
-        Status status = slotState.getStatus();
+        SlotState.Status status = slotState.getStatus();
         if (status.equals(SlotState.Status.WAITING)) {
             if (wf.getTrigger().isDataAvailable(slotState.getScheduledTime())) {
                 database.putSlotState(slotState.transitionToReady());
