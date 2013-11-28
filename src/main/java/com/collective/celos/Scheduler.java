@@ -58,8 +58,10 @@ public class Scheduler {
     private void stepWorkflow(Workflow wf, ScheduledTime current) throws Exception {
         List<SlotState> slotStates = getSlotStates(wf, current);
         runExternalWorkflows(wf, slotStates);
-        checkDataAvailability(wf, slotStates);
-        checkExternalWorkflowStatuses(wf, slotStates);
+        for (SlotState slotState : slotStates) {
+            checkDataAvailability(wf, slotState);
+            checkExternalWorkflowStatus(wf, slotState);
+        }
     }
 
     /**
@@ -100,16 +102,14 @@ public class Scheduler {
     /**
      * Check the trigger for all WAITING slots, and update them to READY if data is available.
      */
-    private void checkDataAvailability(Workflow wf, List<SlotState> slotStates) {
-        for (SlotState slotState : slotStates) {
-            if (slotState.getStatus().equals(SlotState.Status.WAITING)) {
-                try {
-                    if (wf.getTrigger().isDataAvailable(slotState.getScheduledTime())) {
-                        database.putSlotState(slotState.transitionToReady());
-                    }
-                } catch(Exception e) {
-                    Util.logException(e);
+    private void checkDataAvailability(Workflow wf, SlotState slotState) {
+        if (slotState.getStatus().equals(SlotState.Status.WAITING)) {
+            try {
+                if (wf.getTrigger().isDataAvailable(slotState.getScheduledTime())) {
+                    database.putSlotState(slotState.transitionToReady());
                 }
+            } catch(Exception e) {
+                Util.logException(e);
             }
         }
     }
@@ -117,21 +117,19 @@ public class Scheduler {
     /**
      * Check the external status of all RUNNING slots, and update them to SUCCESS or FAILURE if they're finished.
      */
-    private void checkExternalWorkflowStatuses(Workflow wf, List<SlotState> slotStates) {
-        for (SlotState slotState : slotStates) {
-            if (slotState.getStatus().equals(SlotState.Status.RUNNING)) {
-                try {
-                    ExternalStatus xStatus = wf.getExternalService().getStatus(slotState.getExternalID());
-                    if (!xStatus.isRunning()) {
-                        if (xStatus.isSuccess()) {
-                            database.putSlotState(slotState.transitionToSuccess());
-                        } else {
-                            database.putSlotState(slotState.transitionToFailure());
-                        }
+    private void checkExternalWorkflowStatus(Workflow wf, SlotState slotState) {
+        if (slotState.getStatus().equals(SlotState.Status.RUNNING)) {
+            try {
+                ExternalStatus xStatus = wf.getExternalService().getStatus(slotState.getExternalID());
+                if (!xStatus.isRunning()) {
+                    if (xStatus.isSuccess()) {
+                        database.putSlotState(slotState.transitionToSuccess());
+                    } else {
+                        database.putSlotState(slotState.transitionToFailure());
                     }
-                } catch(Exception e) {
-                    Util.logException(e);
                 }
+            } catch(Exception e) {
+                Util.logException(e);
             }
         }
     }
