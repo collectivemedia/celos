@@ -39,7 +39,7 @@ public class Scheduler {
     public void step(ScheduledTime current) {
         for (Workflow wf : configuration.getWorkflows()) {
             try {
-                stepWorkflow(current, wf);
+                stepWorkflow(wf, current);
             } catch(Exception e) {
                 Util.logException(e);
             }
@@ -55,8 +55,8 @@ public class Scheduler {
      * 
      * - Check any RUNNING slots for their current external status.
      */
-    private void stepWorkflow(ScheduledTime current, Workflow wf) throws Exception {
-        List<SlotState> slotStates = getSlotStates(current, wf);
+    private void stepWorkflow(Workflow wf, ScheduledTime current) throws Exception {
+        List<SlotState> slotStates = getSlotStates(wf, current);
         runExternalWorkflows(wf, slotStates);
         checkDataAvailability(wf, slotStates);
         checkExternalWorkflowStatuses(wf, slotStates);
@@ -65,7 +65,7 @@ public class Scheduler {
     /**
      * Get the slot states of all slots of the workflow from within the sliding window.
      */
-    private List<SlotState> getSlotStates(ScheduledTime current, Workflow wf) throws Exception {
+    private List<SlotState> getSlotStates(Workflow wf, ScheduledTime current) throws Exception {
         SortedSet<ScheduledTime> scheduledTimes =  wf.getSchedule().getScheduledTimes(getStartTime(current), current);
         List<SlotState> slotStates = new ArrayList<SlotState>(scheduledTimes.size());
         for (ScheduledTime t : scheduledTimes) {
