@@ -2,7 +2,6 @@ package com.collective.celos;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.SortedSet;
 
@@ -36,8 +35,7 @@ public class Scheduler {
      * Steps through all workflows.
      */
     public void step(ScheduledTime current, WorkflowConfiguration cfg, StateDatabase db) {
-        for (Iterator<Workflow> it = cfg.getWorkflows().iterator(); it.hasNext();) {
-            Workflow wf = it.next();
+        for (Workflow wf: cfg.getWorkflows()) {
             try {
                 stepWorkflow(current, db, wf);
             } catch(Exception e) {
@@ -68,8 +66,8 @@ public class Scheduler {
     private List<SlotState> getSlotStates(ScheduledTime current, StateDatabase db, Workflow wf) throws Exception {
         SortedSet<ScheduledTime> scheduledTimes =  wf.getSchedule().getScheduledTimes(getStartTime(current), current);
         List<SlotState> slotStates = new ArrayList<SlotState>(scheduledTimes.size());
-        for (Iterator<ScheduledTime> it = scheduledTimes.iterator(); it.hasNext();) {
-            SlotID slotID = new SlotID(wf.getID(), it.next());
+        for (ScheduledTime t : scheduledTimes) {
+            SlotID slotID = new SlotID(wf.getID(), t);
             SlotState slotState = db.getSlotState(slotID);
             if (slotState != null) {
                 slotStates.add(slotState);
@@ -88,8 +86,7 @@ public class Scheduler {
      */
     private void runExternalWorkflows(Workflow wf, List<SlotState> slotStates, StateDatabase db) throws Exception {
         List<SlotState> scheduledSlots = wf.getSchedulingStrategy().getSchedulingCandidates(slotStates);
-        for (Iterator<SlotState> it = scheduledSlots.iterator(); it.hasNext();) {
-            SlotState slotState = it.next();
+        for (SlotState slotState : scheduledSlots) {
             Assert.assertEquals(SlotState.Status.READY, slotState.getStatus());
             String externalID = wf.getExternalService().run(slotState.getScheduledTime());
             db.putSlotState(slotState.transitionToRunning(externalID));
@@ -100,8 +97,7 @@ public class Scheduler {
      * Check the trigger for all WAITING slots, and update them to READY if data is available.
      */
     private void checkDataAvailability(Workflow wf, List<SlotState> slotStates, StateDatabase db) {
-        for (Iterator<SlotState> it = slotStates.iterator(); it.hasNext();) {
-            SlotState slotState = it.next();
+        for (SlotState slotState : slotStates) {
             if (slotState.getStatus().equals(SlotState.Status.WAITING)) {
                 try {
                     if (wf.getTrigger().isDataAvailable(slotState.getScheduledTime())) {
@@ -118,8 +114,7 @@ public class Scheduler {
      * Check the external status of all RUNNING slots, and update them to SUCCESS or FAILURE if they're finished.
      */
     private void checkExternalWorkflowStatuses(Workflow wf, List<SlotState> slotStates, StateDatabase db) {
-        for (Iterator<SlotState> it = slotStates.iterator(); it.hasNext();) {
-            SlotState slotState = it.next();
+        for (SlotState slotState : slotStates) {
             if (slotState.getStatus().equals(SlotState.Status.RUNNING)) {
                 try {
                     ExternalStatus xStatus = wf.getExternalService().getStatus(slotState.getExternalID());
