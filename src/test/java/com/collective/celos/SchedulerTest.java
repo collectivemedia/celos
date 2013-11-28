@@ -15,19 +15,30 @@ public class SchedulerTest {
 
     @Test(expected=IllegalArgumentException.class)
     public void slidingWindowHoursPositive1() {
-        new Scheduler(0);
+        new Scheduler(new WorkflowConfiguration(new HashSet<Workflow>()), new MemoryStateDatabase(), 0);
     }
     
     @Test(expected=IllegalArgumentException.class)
     public void slidingWindowHoursPositive2() {
-        new Scheduler(-23);
+        new Scheduler(new WorkflowConfiguration(new HashSet<Workflow>()), new MemoryStateDatabase(), -23);
     }
 
+    @Test(expected=NullPointerException.class)
+    public void configurationCannotBeNull() {
+        new Scheduler(null, new MemoryStateDatabase(), 1);
+    }
+
+    @Test(expected=NullPointerException.class)
+    public void databaseCannotBeNull() {
+        new Scheduler(new WorkflowConfiguration(new HashSet<Workflow>()), null, 1);
+    }
+    
     @Test
     public void slidingWindowSizeWorks() {
         ScheduledTime t = new ScheduledTime("2013-11-26T20:00Z");
         int hours = 5;
-        Assert.assertEquals(new Scheduler(hours).getStartTime(t), new ScheduledTime("2013-11-26T15:00Z"));
+        Scheduler scheduler = new Scheduler(new WorkflowConfiguration(new HashSet<Workflow>()), new MemoryStateDatabase(), hours);
+        Assert.assertEquals(scheduler.getStartTime(t), new ScheduledTime("2013-11-26T15:00Z"));
     }
     
     /**
@@ -56,8 +67,8 @@ public class SchedulerTest {
         DateTime current = DateTime.parse("2013-11-27T15:01Z");
         DateTime currentFullHour = Util.toFullHour(current);
         
-        Scheduler sched = new Scheduler(slidingWindowHours);
-        sched.step(new ScheduledTime(current), cfg, db);
+        Scheduler sched = new Scheduler(cfg, db, slidingWindowHours);
+        sched.step(new ScheduledTime(current));
         
         Assert.assertEquals(slidingWindowHours, db.size());
         
@@ -98,8 +109,8 @@ public class SchedulerTest {
         int slidingWindowHours = 24;
         DateTime current = DateTime.parse("2013-11-27T15:01Z");
         
-        Scheduler sched = new Scheduler(slidingWindowHours);
-        sched.step(new ScheduledTime(current), cfg, db);
+        Scheduler sched = new Scheduler(cfg, db, slidingWindowHours);
+        sched.step(new ScheduledTime(current));
         
         Assert.assertEquals(0, db.size());
     }
@@ -161,8 +172,8 @@ public class SchedulerTest {
             db.putSlotState(state);
         }
         
-        Scheduler sched = new Scheduler(slidingWindowHours);
-        sched.step(new ScheduledTime(current), cfg, db);
+        Scheduler sched = new Scheduler(cfg, db, slidingWindowHours);
+        sched.step(new ScheduledTime(current));
         
         Assert.assertEquals(slidingWindowHours, db.size());
         
@@ -208,8 +219,8 @@ public class SchedulerTest {
             db.putSlotState(state);
         }
         
-        Scheduler sched = new Scheduler(slidingWindowHours);
-        sched.step(new ScheduledTime(current), cfg, db);
+        Scheduler sched = new Scheduler(cfg, db, slidingWindowHours);
+        sched.step(new ScheduledTime(current));
         
         Assert.assertEquals(slidingWindowHours, db.size());
         Assert.assertEquals(slidingWindowHours, srv1.getTimes2ExternalID().size());
@@ -273,8 +284,8 @@ public class SchedulerTest {
         int slidingWindowHours = 3;
         DateTime current = DateTime.parse("2013-11-27T22:01Z");
 
-        Scheduler sched = new Scheduler(slidingWindowHours);
-        sched.step(new ScheduledTime(current), cfg, db);
+        Scheduler sched = new Scheduler(cfg, db, slidingWindowHours);
+        sched.step(new ScheduledTime(current));
         
         SlotState slot1After = db.getSlotState(id1);
         Assert.assertEquals(SlotState.Status.READY, slot1After.getStatus());

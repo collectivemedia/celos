@@ -12,12 +12,16 @@ import java.util.SortedSet;
 public class Scheduler {
 
     private final int slidingWindowHours;
+    private final WorkflowConfiguration configuration;
+    private final StateDatabase database;
 
-    public Scheduler(int slidingWindowHours) {
+    public Scheduler(WorkflowConfiguration configuration, StateDatabase database, int slidingWindowHours) {
         if (slidingWindowHours <= 0) {
             throw new IllegalArgumentException("Sliding window hours must greater then zero.");
         }
         this.slidingWindowHours = slidingWindowHours;
+        this.configuration = Util.requireNonNull(configuration);
+        this.database = Util.requireNonNull(database);
     }
     
     /**
@@ -32,10 +36,10 @@ public class Scheduler {
      * 
      * Steps through all workflows.
      */
-    public void step(ScheduledTime current, WorkflowConfiguration cfg, StateDatabase db) {
-        for (Workflow wf: cfg.getWorkflows()) {
+    public void step(ScheduledTime current) {
+        for (Workflow wf : configuration.getWorkflows()) {
             try {
-                stepWorkflow(current, db, wf);
+                stepWorkflow(current, wf);
             } catch(Exception e) {
                 Util.logException(e);
             }
@@ -51,22 +55,22 @@ public class Scheduler {
      * 
      * - Check any RUNNING slots for their current external status.
      */
-    private void stepWorkflow(ScheduledTime current, StateDatabase db, Workflow wf) throws Exception {
-        List<SlotState> slotStates = getSlotStates(current, db, wf);
-        runExternalWorkflows(wf, slotStates, db);
-        checkDataAvailability(wf, slotStates, db);
-        checkExternalWorkflowStatuses(wf, slotStates, db);
+    private void stepWorkflow(ScheduledTime current, Workflow wf) throws Exception {
+        List<SlotState> slotStates = getSlotStates(current, wf);
+        runExternalWorkflows(wf, slotStates);
+        checkDataAvailability(wf, slotStates);
+        checkExternalWorkflowStatuses(wf, slotStates);
     }
 
     /**
      * Get the slot states of all slots of the workflow from within the sliding window.
      */
-    private List<SlotState> getSlotStates(ScheduledTime current, StateDatabase db, Workflow wf) throws Exception {
+    private List<SlotState> getSlotStates(ScheduledTime current, Workflow wf) throws Exception {
         SortedSet<ScheduledTime> scheduledTimes =  wf.getSchedule().getScheduledTimes(getStartTime(current), current);
         List<SlotState> slotStates = new ArrayList<SlotState>(scheduledTimes.size());
         for (ScheduledTime t : scheduledTimes) {
             SlotID slotID = new SlotID(wf.getID(), t);
-            SlotState slotState = db.getSlotState(slotID);
+            SlotState slotState = database.getSlotState(slotID);
             if (slotState != null) {
                 slotStates.add(slotState);
             } else {
@@ -82,26 +86,26 @@ public class Scheduler {
     /**
      * Get scheduled slots from scheduling strategy and submit them to external system.
      */
-    private void runExternalWorkflows(Workflow wf, List<SlotState> slotStates, StateDatabase db) throws Exception {
+    private void runExternalWorkflows(Workflow wf, List<SlotState> slotStates) throws Exception {
         List<SlotState> scheduledSlots = wf.getSchedulingStrategy().getSchedulingCandidates(slotStates);
         for (SlotState slotState : scheduledSlots) {
             if (!slotState.getStatus().equals(SlotState.Status.READY)) {
                 throw new IllegalStateException("Scheduling strategy returned non-ready slot: " + slotState);
             }
             String externalID = wf.getExternalService().run(slotState.getScheduledTime());
-            db.putSlotState(slotState.transitionToRunning(externalID));
+            database.putSlotState(slotState.transitionToRunning(externalID));
         }
     }
 
     /**
      * Check the trigger for all WAITING slots, and update them to READY if data is available.
      */
-    private void checkDataAvailability(Workflow wf, List<SlotState> slotStates, StateDatabase db) {
+    private void checkDataAvailability(Workflow wf, List<SlotState> slotStates) {
         for (SlotState slotState : slotStates) {
             if (slotState.getStatus().equals(SlotState.Status.WAITING)) {
                 try {
                     if (wf.getTrigger().isDataAvailable(slotState.getScheduledTime())) {
-                        db.putSlotState(slotState.transitionToReady());
+                        database.putSlotState(slotState.transitionToReady());
                     }
                 } catch(Exception e) {
                     Util.logException(e);
@@ -113,16 +117,16 @@ public class Scheduler {
     /**
      * Check the external status of all RUNNING slots, and update them to SUCCESS or FAILURE if they're finished.
      */
-    private void checkExternalWorkflowStatuses(Workflow wf, List<SlotState> slotStates, StateDatabase db) {
+    private void checkExternalWorkflowStatuses(Workflow wf, List<SlotState> slotStates) {
         for (SlotState slotState : slotStates) {
             if (slotState.getStatus().equals(SlotState.Status.RUNNING)) {
                 try {
                     ExternalStatus xStatus = wf.getExternalService().getStatus(slotState.getExternalID());
                     if (!xStatus.isRunning()) {
                         if (xStatus.isSuccess()) {
-                            db.putSlotState(slotState.transitionToSuccess());
+                            database.putSlotState(slotState.transitionToSuccess());
                         } else {
-                            db.putSlotState(slotState.transitionToFailure());
+                            database.putSlotState(slotState.transitionToFailure());
                         }
                     }
                 } catch(Exception e) {
