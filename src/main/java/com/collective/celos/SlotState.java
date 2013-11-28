@@ -78,7 +78,7 @@ public class SlotState extends ValueObject {
 
     private void assertStatus(Status st) {
         if (!status.equals(st)) {
-            throw new IllegalStateException("Expected state " + st + " but was " + status + " (slot: " + this + ")");
+            throw new IllegalStateException("Expected status " + st + " but was " + status + " (slot: " + this + ")");
         }
     }
 
