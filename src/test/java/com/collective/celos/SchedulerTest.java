@@ -97,7 +97,6 @@ public class SchedulerTest {
 
         int slidingWindowHours = 24;
         DateTime current = DateTime.parse("2013-11-27T15:01Z");
-        DateTime currentFullHour = Util.toFullHour(current);
         
         Scheduler sched = new Scheduler(slidingWindowHours);
         sched.step(new ScheduledTime(current), cfg, db);
