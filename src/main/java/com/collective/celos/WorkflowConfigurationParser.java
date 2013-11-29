@@ -39,7 +39,7 @@ public class WorkflowConfigurationParser {
 
     private Workflow parseFile(File f) throws Exception {
         JsonNode workflowNode = new ObjectMapper().readTree(f);
-        WorkflowID id = new WorkflowID(workflowNode.get(ID_PROP).textValue());
+        WorkflowID id = getWorkflowID(workflowNode);
         Schedule schedule =
                 (Schedule) createInstance(workflowNode.get(SCHEDULE_PROP));
         SchedulingStrategy schedulingStrategy =
@@ -49,6 +49,14 @@ public class WorkflowConfigurationParser {
         ExternalService externalService =
                 (ExternalService) createInstance(workflowNode.get(EXTERNAL_SERVICE_PROP));
         return new Workflow(id, schedule, schedulingStrategy, trigger, externalService);
+    }
+
+    private WorkflowID getWorkflowID(JsonNode workflowNode) {
+        JsonNode idNode = workflowNode.get(ID_PROP);
+        if (idNode == null || !idNode.isTextual()) {
+            throw new IllegalArgumentException("ID must be a string: " + workflowNode.asText());
+        }
+        return new WorkflowID(idNode.textValue());
     }
 
     private Object createInstance(JsonNode workflowNode) throws Exception {

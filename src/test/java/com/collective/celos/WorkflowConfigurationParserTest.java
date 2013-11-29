@@ -139,6 +139,16 @@ public class WorkflowConfigurationParserTest {
         parseDir("type-not-a-string");
     }
     
+    @Test(expected=IllegalArgumentException.class)
+    public void idMustExist() throws Exception {
+        parseDir("id-missing");
+    }
+    
+    @Test(expected=IllegalArgumentException.class)
+    public void idMustBeAString() throws Exception {
+        parseDir("id-not-a-string");
+    }
+    
     private WorkflowConfiguration parseDir(String label) throws Exception {
         File dir = getConfigurationDir(label);
         return new WorkflowConfigurationParser().parseConfiguration(dir);
