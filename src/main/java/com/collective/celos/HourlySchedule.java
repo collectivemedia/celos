@@ -8,9 +8,6 @@ import org.joda.time.DateTime;
 
 public class HourlySchedule implements Schedule {
 
-    HourlySchedule() {
-    }
-    
     public HourlySchedule(Properties ignored) {
     }
     

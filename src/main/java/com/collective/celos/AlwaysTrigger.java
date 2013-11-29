@@ -9,9 +9,6 @@ import java.util.Properties;
  */
 public class AlwaysTrigger implements Trigger {
 
-    AlwaysTrigger() {    
-    }
-
     public AlwaysTrigger(Properties ignored) {    
     }
     

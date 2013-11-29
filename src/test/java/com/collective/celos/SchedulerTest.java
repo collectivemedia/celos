@@ -1,6 +1,7 @@
 package com.collective.celos;
 
 import java.util.HashSet;
+import java.util.Properties;
 import java.util.Set;
 
 import org.joda.time.DateTime;
@@ -51,9 +52,9 @@ public class SchedulerTest {
     @Test
     public void updatesWaitingSlotsToReady() throws Exception {
         WorkflowID wfID1 = new WorkflowID("wf1");
-        Schedule sch1 = new HourlySchedule();
-        SchedulingStrategy str1 = new SerialSchedulingStrategy();
-        Trigger tr1 = new AlwaysTrigger();
+        Schedule sch1 = makeHourlySchedule();
+        SchedulingStrategy str1 = makeSerialSchedulingStrategy();
+        Trigger tr1 = new AlwaysTrigger(new Properties());
         ExternalService srv1 = new MockExternalService(new MockExternalService.MockExternalStatusRunning());
         Workflow wf1 = new Workflow(wfID1, sch1, str1, tr1, srv1);
         
@@ -94,8 +95,8 @@ public class SchedulerTest {
     @Test
     public void doesNotUpdateWaitingSlotsToReadyWhenNoDataAvailability() throws Exception {
         WorkflowID wfID1 = new WorkflowID("wf1");
-        Schedule sch1 = new HourlySchedule();
-        SchedulingStrategy str1 = new SerialSchedulingStrategy();
+        Schedule sch1 = makeHourlySchedule();
+        SchedulingStrategy str1 = makeSerialSchedulingStrategy();
         Trigger tr1 = new NeverTrigger();
         ExternalService srv1 = new MockExternalService(new MockExternalService.MockExternalStatusRunning());
         Workflow wf1 = new Workflow(wfID1, sch1, str1, tr1, srv1);
@@ -150,9 +151,9 @@ public class SchedulerTest {
 
     private void runningSlotUtil(ExternalStatus externalStatus, SlotState.Status expectedSlotStatus) throws Exception, AssertionError {
         WorkflowID wfID1 = new WorkflowID("wf1");
-        Schedule sch1 = new HourlySchedule();
-        SchedulingStrategy str1 = new SerialSchedulingStrategy();
-        Trigger tr1 = new AlwaysTrigger();
+        Schedule sch1 = makeHourlySchedule();
+        SchedulingStrategy str1 = makeSerialSchedulingStrategy();
+        Trigger tr1 = new AlwaysTrigger(new Properties());
         ExternalService srv1 = new MockExternalService(externalStatus);
         Workflow wf1 = new Workflow(wfID1, sch1, str1, tr1, srv1);
         
@@ -197,9 +198,9 @@ public class SchedulerTest {
     @Test
     public void updatesReadySlotsToRunningAndSubmitsThemToExternalSystem() throws Exception, AssertionError {
         WorkflowID wfID1 = new WorkflowID("wf1");
-        Schedule sch1 = new HourlySchedule();
-        SchedulingStrategy str1 = new TrivialSchedulingStrategy();
-        Trigger tr1 = new AlwaysTrigger();
+        Schedule sch1 = makeHourlySchedule();
+        SchedulingStrategy str1 = makeTrivialSchedulingStrategy();
+        Trigger tr1 = new AlwaysTrigger(new Properties());
         MockExternalService srv1 = new MockExternalService(new MockExternalService.MockExternalStatusRunning());
         Workflow wf1 = new Workflow(wfID1, sch1, str1, tr1, srv1);
         
@@ -238,7 +239,7 @@ public class SchedulerTest {
             Assert.assertEquals(externalID, srv1.getTimes2ExternalID().get(scheduledTime));
         }
     }
-    
+
     /**
      * Use a serial scheduling strategy.
      * 
@@ -257,9 +258,9 @@ public class SchedulerTest {
     @Test
     public void multipleSlotsTest() throws Exception {
         WorkflowID wfID1 = new WorkflowID("wf1");
-        Schedule sch1 = new HourlySchedule();
-        SchedulingStrategy str1 = new SerialSchedulingStrategy();
-        Trigger tr1 = new AlwaysTrigger();
+        Schedule sch1 = makeHourlySchedule();
+        SchedulingStrategy str1 = makeSerialSchedulingStrategy();
+        Trigger tr1 = new AlwaysTrigger(new Properties());
         MockExternalService srv1 = new MockExternalService(new MockExternalService.MockExternalStatusRunning());
         Workflow wf1 = new Workflow(wfID1, sch1, str1, tr1, srv1);
         
@@ -300,5 +301,17 @@ public class SchedulerTest {
         Assert.assertNotNull(externalID);
         Assert.assertEquals(externalID, srv1.getTimes2ExternalID().get(slot2.getScheduledTime()));
     }
+
+    private SerialSchedulingStrategy makeSerialSchedulingStrategy() {
+        return new SerialSchedulingStrategy(new Properties());
+    }
     
+    private TrivialSchedulingStrategy makeTrivialSchedulingStrategy() {
+        return new TrivialSchedulingStrategy(new Properties());
+    }
+    
+    private HourlySchedule makeHourlySchedule() {
+        return new HourlySchedule(new Properties());
+    }
+
 }

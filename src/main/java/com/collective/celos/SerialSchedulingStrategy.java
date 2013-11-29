@@ -21,9 +21,6 @@ import org.apache.commons.collections.Predicate;
  */
 public class SerialSchedulingStrategy implements SchedulingStrategy {
 
-    SerialSchedulingStrategy() {
-    }
-
     public SerialSchedulingStrategy(Properties ignored) {
     }
     

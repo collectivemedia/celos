@@ -2,6 +2,7 @@ package com.collective.celos;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Properties;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -10,15 +11,15 @@ public class TrivialSchedulingStrategyTest {
 
     @Test
     public void trivialSchedulingWorksForEmptyStates() {
-        SchedulingStrategy strategy = new TrivialSchedulingStrategy();
+        SchedulingStrategy strategy = makeTrivialSchedulingStrategy();
         List<SlotState> states = new LinkedList<SlotState>();
         List<SlotState> slots = strategy.getSchedulingCandidates(states);
         Assert.assertEquals(slots.size(), 0);
     }
-    
+
     @Test
     public void trivialSchedulingWorks() {
-        SchedulingStrategy strategy = new TrivialSchedulingStrategy();
+        SchedulingStrategy strategy = makeTrivialSchedulingStrategy();
         WorkflowID workflow = new WorkflowID("foo");
         List<SlotState> states = new LinkedList<SlotState>();
         
@@ -50,5 +51,9 @@ public class TrivialSchedulingStrategyTest {
         List<SlotState> slots = strategy.getSchedulingCandidates(states);        
         Assert.assertEquals(expectedSlots, slots);
     }
-    
+
+    private TrivialSchedulingStrategy makeTrivialSchedulingStrategy() {
+        return new TrivialSchedulingStrategy(new Properties());
+    }
+
 }

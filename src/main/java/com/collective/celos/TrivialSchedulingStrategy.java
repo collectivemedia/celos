@@ -9,9 +9,6 @@ import java.util.Properties;
  */
 public class TrivialSchedulingStrategy implements SchedulingStrategy {
 
-    TrivialSchedulingStrategy() {
-    }
-
     public TrivialSchedulingStrategy(Properties ignored) {
     }
     
