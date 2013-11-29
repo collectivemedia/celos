@@ -54,7 +54,7 @@ public class SchedulerTest {
         WorkflowID wfID1 = new WorkflowID("wf1");
         Schedule sch1 = makeHourlySchedule();
         SchedulingStrategy str1 = makeSerialSchedulingStrategy();
-        Trigger tr1 = new AlwaysTrigger(new Properties());
+        Trigger tr1 = makeAlwaysTrigger();
         ExternalService srv1 = new MockExternalService(new MockExternalService.MockExternalStatusRunning());
         Workflow wf1 = new Workflow(wfID1, sch1, str1, tr1, srv1);
         
@@ -153,7 +153,7 @@ public class SchedulerTest {
         WorkflowID wfID1 = new WorkflowID("wf1");
         Schedule sch1 = makeHourlySchedule();
         SchedulingStrategy str1 = makeSerialSchedulingStrategy();
-        Trigger tr1 = new AlwaysTrigger(new Properties());
+        Trigger tr1 = makeAlwaysTrigger();
         ExternalService srv1 = new MockExternalService(externalStatus);
         Workflow wf1 = new Workflow(wfID1, sch1, str1, tr1, srv1);
         
@@ -200,7 +200,7 @@ public class SchedulerTest {
         WorkflowID wfID1 = new WorkflowID("wf1");
         Schedule sch1 = makeHourlySchedule();
         SchedulingStrategy str1 = makeTrivialSchedulingStrategy();
-        Trigger tr1 = new AlwaysTrigger(new Properties());
+        Trigger tr1 = makeAlwaysTrigger();
         MockExternalService srv1 = new MockExternalService(new MockExternalService.MockExternalStatusRunning());
         Workflow wf1 = new Workflow(wfID1, sch1, str1, tr1, srv1);
         
@@ -260,7 +260,7 @@ public class SchedulerTest {
         WorkflowID wfID1 = new WorkflowID("wf1");
         Schedule sch1 = makeHourlySchedule();
         SchedulingStrategy str1 = makeSerialSchedulingStrategy();
-        Trigger tr1 = new AlwaysTrigger(new Properties());
+        Trigger tr1 = makeAlwaysTrigger();
         MockExternalService srv1 = new MockExternalService(new MockExternalService.MockExternalStatusRunning());
         Workflow wf1 = new Workflow(wfID1, sch1, str1, tr1, srv1);
         
@@ -300,6 +300,10 @@ public class SchedulerTest {
         String externalID = slot2After.getExternalID();
         Assert.assertNotNull(externalID);
         Assert.assertEquals(externalID, srv1.getTimes2ExternalID().get(slot2.getScheduledTime()));
+    }
+
+    private AlwaysTrigger makeAlwaysTrigger() {
+        return new AlwaysTrigger(new Properties());
     }
 
     private SerialSchedulingStrategy makeSerialSchedulingStrategy() {
