@@ -1,5 +1,6 @@
 package com.collective.celos;
 
+import java.util.Properties;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -7,6 +8,12 @@ import org.joda.time.DateTime;
 
 public class HourlySchedule implements Schedule {
 
+    HourlySchedule() {
+    }
+    
+    public HourlySchedule(Properties ignored) {
+    }
+    
     @Override
     public SortedSet<ScheduledTime> getScheduledTimes(ScheduledTime start, ScheduledTime end) {
         DateTime startDT = start.getDateTime();

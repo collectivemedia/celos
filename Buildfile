@@ -6,7 +6,11 @@ HADOOP = transitive('org.apache.hadoop:hadoop-client:jar:2.0.0-cdh4.2.1')
 COMMONS = [
   'commons-lang:commons-lang:jar:2.6',
   'commons-collections:commons-collections:jar:3.2.1',
+  'commons-io:commons-io:jar:2.4'
 ]
+JACKSON_CORE = 'com.fasterxml.jackson.core:jackson-core:jar:2.3.0'
+JACKSON_DATABIND = 'com.fasterxml.jackson.core:jackson-databind:jar:2.3.0'
+JACKSON_ANNOTATIONS = 'com.fasterxml.jackson.core:jackson-annotations:jar:2.3.0'
 JODA = 'joda-time:joda-time:jar:2.3'
 # used by Oozie (as per rrman Buildfile)
 JSON_SIMPLE = 'com.googlecode.json-simple:json-simple:jar:1.1.1'
@@ -15,6 +19,9 @@ DEPENDENCIES = [
   OOZIE_CLIENT,
   HADOOP,
   COMMONS,
+  JACKSON_CORE,
+  JACKSON_DATABIND,
+  JACKSON_ANNOTATIONS,
   JODA,
   JSON_SIMPLE,
 ]
@@ -28,5 +35,4 @@ define 'Celos' do
   compile.with(DEPENDENCIES)
   
   package(:jar).include((DEPENDENCIES - HADOOP), :path => "lib")
-  
 end
