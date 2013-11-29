@@ -9,6 +9,7 @@ import static com.collective.celos.SlotState.Status.WAITING;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Properties;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -16,6 +17,10 @@ import org.junit.Test;
 
 public class SerialSchedulingStrategyTest {
 
+    private SerialSchedulingStrategy makeSerialSchedulingStrategy() {
+        return new SerialSchedulingStrategy(new Properties());
+    }
+    
     private WorkflowID workflow;
     private SlotID slot1;
     private SlotID slot2;
@@ -44,7 +49,7 @@ public class SerialSchedulingStrategyTest {
                 .asList(new SlotState[] {});
         List<SlotState> expected = Arrays.asList(new SlotState[] {});
 
-        SchedulingStrategy strategy = new SerialSchedulingStrategy();
+        SchedulingStrategy strategy = makeSerialSchedulingStrategy();
         Assert.assertEquals(expected, strategy.getSchedulingCandidates(input));
     }
 
@@ -60,7 +65,7 @@ public class SerialSchedulingStrategyTest {
                         new SlotState(slot5, WAITING), });
         List<SlotState> expected = Arrays.asList(new SlotState[] {});
 
-        SchedulingStrategy strategy = new SerialSchedulingStrategy();
+        SchedulingStrategy strategy = makeSerialSchedulingStrategy();
         Assert.assertEquals(expected, strategy.getSchedulingCandidates(input));
     }
 
@@ -76,7 +81,7 @@ public class SerialSchedulingStrategyTest {
                         new SlotState(slot5, WAITING), });
         List<SlotState> expected = Arrays.asList(new SlotState[] { scheduledSlot });
 
-        SchedulingStrategy strategy = new SerialSchedulingStrategy();
+        SchedulingStrategy strategy = makeSerialSchedulingStrategy();
         Assert.assertEquals(expected, strategy.getSchedulingCandidates(input));
     }
 
@@ -92,7 +97,7 @@ public class SerialSchedulingStrategyTest {
                         new SlotState(slot5, READY), });
         List<SlotState> expected = Arrays.asList(new SlotState[] { scheduledSlot });
 
-        SchedulingStrategy strategy = new SerialSchedulingStrategy();
+        SchedulingStrategy strategy = makeSerialSchedulingStrategy();
         Assert.assertEquals(expected, strategy.getSchedulingCandidates(input));
     }
 
@@ -107,7 +112,7 @@ public class SerialSchedulingStrategyTest {
                         new SlotState(slot5, SUCCESS), });
         List<SlotState> expected = Arrays.asList(new SlotState[] {});
 
-        SchedulingStrategy strategy = new SerialSchedulingStrategy();
+        SchedulingStrategy strategy = makeSerialSchedulingStrategy();
         Assert.assertEquals(expected, strategy.getSchedulingCandidates(input));
     }
 

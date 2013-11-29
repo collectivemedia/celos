@@ -14,7 +14,7 @@ public class WorkflowID extends ValueObject {
         }
     }
 
-    public String getID() {
+    public String toString() {
         return id;
     }
     
