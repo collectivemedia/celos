@@ -103,7 +103,7 @@ public class Scheduler {
      * 
      * Check the external status of all RUNNING slots, and update them to SUCCESS or FAILURE if they're finished.
      */
-    private void updateSlotState(Workflow wf, SlotState slotState) throws Exception {
+    void updateSlotState(Workflow wf, SlotState slotState) throws Exception {
         SlotState.Status status = slotState.getStatus();
         if (status.equals(SlotState.Status.WAITING)) {
             if (wf.getTrigger().isDataAvailable(slotState.getScheduledTime())) {

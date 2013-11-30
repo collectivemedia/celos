@@ -1,11 +1,17 @@
 package com.collective.celos;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
+
 import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
 
 import org.joda.time.DateTime;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 /**
@@ -13,6 +19,152 @@ import org.junit.Test;
  * TODO: more fine-grained tests like multipleSlotsTest
  */
 public class SchedulerTest {
+    
+    /*
+     * I prefer setting up test data in the test method, using local variables,
+     * but a scheduler call needs a lot of data, and the objects model is quite
+     * intertwined. So, rather than bloat each test method with a lot of object
+     * creation, I've promoted common state to instance variables, initialized
+     * in the setUp() method.
+     * 
+     * Some of these instance variables are mocks. Each interaction-based test
+     * will have to configure the mocks as appropriate.
+     */
+    
+    // Mocks
+    private StateDatabase stateDatabase;
+    private Trigger trigger;
+    private Schedule schedule;
+    private SchedulingStrategy schedulingStrategy;
+    private ExternalService externalService;
+    
+    // Lots of tests need these objects, so create them once in the setUp
+    private WorkflowID workflowId;
+    private Workflow wf;
+    private ScheduledTime scheduledTime;
+    private Scheduler scheduler;
+    private SlotID slotId;
+    
+    @Before
+    public void setUp() {
+        // Mocks
+        stateDatabase = mock(StateDatabase.class);
+        trigger = mock(Trigger.class);
+        schedule = mock(Schedule.class);
+        schedulingStrategy = mock(SchedulingStrategy.class);
+        externalService = mock(ExternalService.class);
+
+        // Objects
+        workflowId = new WorkflowID("workflow-id");
+        wf = new Workflow(workflowId, schedule, schedulingStrategy, trigger,
+                externalService);
+        scheduledTime = new ScheduledTime("2013-11-26T15:00Z");
+        slotId = new SlotID(workflowId, scheduledTime);
+
+        // The object under test
+        scheduler = new Scheduler(new WorkflowConfiguration(
+                new HashSet<Workflow>()), stateDatabase, 1);
+    }
+    
+    @Test
+    public void testUpdateSlotStateWaitingAvailable() throws Exception {
+
+        SlotState slotState = new SlotState(slotId, SlotState.Status.WAITING);
+        SlotState nextSlotState = new SlotState(slotId, SlotState.Status.READY);
+
+        // The trigger should report the data as available
+        when(trigger.isDataAvailable(scheduledTime)).thenReturn(true);
+
+        scheduler.updateSlotState(wf, slotState);
+
+        verify(stateDatabase).putSlotState(nextSlotState);
+        verifyNoMoreInteractions(stateDatabase);
+    }
+
+    @Test
+    public void testUpdateSlotStateWaitingNotAvailable() throws Exception {
+
+        SlotState slotState = new SlotState(slotId, SlotState.Status.WAITING);
+
+        // The trigger should report the data as not available
+        when(trigger.isDataAvailable(scheduledTime)).thenReturn(false);
+
+        scheduler.updateSlotState(wf, slotState);
+
+        verifyNoMoreInteractions(stateDatabase);
+    }
+
+    @Test
+    public void testUpdateSlotStateTimeout() throws Exception {
+
+        SlotState slotState = new SlotState(slotId, SlotState.Status.TIMEOUT);
+
+        scheduler.updateSlotState(wf, slotState);
+
+        verifyNoMoreInteractions(stateDatabase);
+    }
+
+    @Test
+    public void testUpdateSlotStateReady() throws Exception {
+
+        SlotState slotState = new SlotState(slotId, SlotState.Status.READY);
+
+        scheduler.updateSlotState(wf, slotState);
+
+        verifyNoMoreInteractions(stateDatabase);
+    }
+
+    @Test
+    public void testUpdateSlotStateRunningExternalIsSuccess() throws Exception {
+
+        SlotState slotState = new SlotState(slotId, SlotState.Status.RUNNING);
+        SlotState nextSlotState = new SlotState(slotId, SlotState.Status.SUCCESS);
+
+        // The external service should report the status as success
+        ExternalStatus externalStatus = new MockExternalService.MockExternalStatusSuccess();
+        when(externalService.getStatus(slotState.getExternalID())).thenReturn(externalStatus);
+
+        scheduler.updateSlotState(wf, slotState);
+
+        verify(stateDatabase).putSlotState(nextSlotState);
+        verifyNoMoreInteractions(stateDatabase);
+    }
+
+    @Test
+    public void testUpdateSlotStateRunningExternalIsFailure() throws Exception {
+
+        SlotState slotState = new SlotState(slotId, SlotState.Status.RUNNING);
+        SlotState nextSlotState = new SlotState(slotId, SlotState.Status.FAILURE);
+
+        // The external service should report the status as success
+        ExternalStatus externalStatus = new MockExternalService.MockExternalStatusFailure();
+        when(externalService.getStatus(slotState.getExternalID())).thenReturn(externalStatus);
+
+        scheduler.updateSlotState(wf, slotState);
+
+        verify(stateDatabase).putSlotState(nextSlotState);
+        verifyNoMoreInteractions(stateDatabase);
+    }
+
+    @Test
+    public void testUpdateSlotStateSuccess() throws Exception {
+
+        SlotState slotState = new SlotState(slotId, SlotState.Status.SUCCESS);
+
+        scheduler.updateSlotState(wf, slotState);
+
+        verifyNoMoreInteractions(stateDatabase);
+    }
+
+    @Test
+    public void testUpdateSlotStateFailure() throws Exception {
+
+        SlotState slotState = new SlotState(slotId, SlotState.Status.FAILURE);
+
+        scheduler.updateSlotState(wf, slotState);
+
+        verifyNoMoreInteractions(stateDatabase);
+    }
 
     @Test(expected=IllegalArgumentException.class)
     public void slidingWindowHoursPositive1() {
