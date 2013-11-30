@@ -67,7 +67,7 @@ public class SchedulerTest {
     }
     
     @Test
-    public void testUpdateSlotStateWaitingAvailable() throws Exception {
+    public void updateSlotStateWaitingAvailable() throws Exception {
 
         SlotState slotState = new SlotState(slotId, SlotState.Status.WAITING);
         SlotState nextSlotState = new SlotState(slotId, SlotState.Status.READY);
@@ -82,7 +82,7 @@ public class SchedulerTest {
     }
 
     @Test
-    public void testUpdateSlotStateWaitingNotAvailable() throws Exception {
+    public void updateSlotStateWaitingNotAvailable() throws Exception {
 
         SlotState slotState = new SlotState(slotId, SlotState.Status.WAITING);
 
@@ -95,7 +95,7 @@ public class SchedulerTest {
     }
 
     @Test
-    public void testUpdateSlotStateTimeout() throws Exception {
+    public void updateSlotStateTimeout() throws Exception {
 
         SlotState slotState = new SlotState(slotId, SlotState.Status.TIMEOUT);
 
@@ -105,7 +105,7 @@ public class SchedulerTest {
     }
 
     @Test
-    public void testUpdateSlotStateReady() throws Exception {
+    public void updateSlotStateReady() throws Exception {
 
         SlotState slotState = new SlotState(slotId, SlotState.Status.READY);
 
@@ -115,7 +115,7 @@ public class SchedulerTest {
     }
 
     @Test
-    public void testUpdateSlotStateRunningExternalIsSuccess() throws Exception {
+    public void updateSlotStateRunningExternalIsSuccess() throws Exception {
 
         SlotState slotState = new SlotState(slotId, SlotState.Status.RUNNING);
         SlotState nextSlotState = new SlotState(slotId, SlotState.Status.SUCCESS);
@@ -131,7 +131,7 @@ public class SchedulerTest {
     }
 
     @Test
-    public void testUpdateSlotStateRunningExternalIsFailure() throws Exception {
+    public void updateSlotStateRunningExternalIsFailure() throws Exception {
 
         SlotState slotState = new SlotState(slotId, SlotState.Status.RUNNING);
         SlotState nextSlotState = new SlotState(slotId, SlotState.Status.FAILURE);
@@ -147,7 +147,7 @@ public class SchedulerTest {
     }
 
     @Test
-    public void testUpdateSlotStateSuccess() throws Exception {
+    public void updateSlotStateSuccess() throws Exception {
 
         SlotState slotState = new SlotState(slotId, SlotState.Status.SUCCESS);
 
@@ -157,7 +157,7 @@ public class SchedulerTest {
     }
 
     @Test
-    public void testUpdateSlotStateFailure() throws Exception {
+    public void updateSlotStateFailure() throws Exception {
 
         SlotState slotState = new SlotState(slotId, SlotState.Status.FAILURE);
 
