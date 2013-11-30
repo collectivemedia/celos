@@ -120,8 +120,8 @@ public class SchedulerTest {
         SlotState slotState = new SlotState(slotId, SlotState.Status.RUNNING);
 
         // The external service should report the status as success
-        ExternalStatus externalStatus = new MockExternalService.MockExternalStatusRunning();
-        when(externalService.getStatus(slotState.getExternalID())).thenReturn(externalStatus);
+        ExternalStatus running = new MockExternalService.MockExternalStatusRunning();
+        when(externalService.getStatus(slotState.getExternalID())).thenReturn(running);
 
         scheduler.updateSlotState(wf, slotState);
 
@@ -135,8 +135,8 @@ public class SchedulerTest {
         SlotState nextSlotState = new SlotState(slotId, SlotState.Status.SUCCESS);
 
         // The external service should report the status as success
-        ExternalStatus externalStatus = new MockExternalService.MockExternalStatusSuccess();
-        when(externalService.getStatus(slotState.getExternalID())).thenReturn(externalStatus);
+        ExternalStatus success = new MockExternalService.MockExternalStatusSuccess();
+        when(externalService.getStatus(slotState.getExternalID())).thenReturn(success);
 
         scheduler.updateSlotState(wf, slotState);
 
@@ -151,8 +151,8 @@ public class SchedulerTest {
         SlotState nextSlotState = new SlotState(slotId, SlotState.Status.FAILURE);
 
         // The external service should report the status as failure
-        ExternalStatus externalStatus = new MockExternalService.MockExternalStatusFailure();
-        when(externalService.getStatus(slotState.getExternalID())).thenReturn(externalStatus);
+        ExternalStatus failure = new MockExternalService.MockExternalStatusFailure();
+        when(externalService.getStatus(slotState.getExternalID())).thenReturn(failure);
 
         scheduler.updateSlotState(wf, slotState);
 
