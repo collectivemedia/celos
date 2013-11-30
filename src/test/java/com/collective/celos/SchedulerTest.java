@@ -136,7 +136,7 @@ public class SchedulerTest {
         SlotState slotState = new SlotState(slotId, SlotState.Status.RUNNING);
         SlotState nextSlotState = new SlotState(slotId, SlotState.Status.FAILURE);
 
-        // The external service should report the status as success
+        // The external service should report the status as failure
         ExternalStatus externalStatus = new MockExternalService.MockExternalStatusFailure();
         when(externalService.getStatus(slotState.getExternalID())).thenReturn(externalStatus);
 
