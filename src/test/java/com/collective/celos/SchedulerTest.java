@@ -115,6 +115,20 @@ public class SchedulerTest {
     }
 
     @Test
+    public void updateSlotStateRunningExternalIsRunning() throws Exception {
+
+        SlotState slotState = new SlotState(slotId, SlotState.Status.RUNNING);
+
+        // The external service should report the status as success
+        ExternalStatus externalStatus = new MockExternalService.MockExternalStatusRunning();
+        when(externalService.getStatus(slotState.getExternalID())).thenReturn(externalStatus);
+
+        scheduler.updateSlotState(wf, slotState);
+
+        verifyNoMoreInteractions(stateDatabase);
+    }
+
+    @Test
     public void updateSlotStateRunningExternalIsSuccess() throws Exception {
 
         SlotState slotState = new SlotState(slotId, SlotState.Status.RUNNING);
