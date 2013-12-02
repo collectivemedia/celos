@@ -59,7 +59,7 @@ public class FileSystemStateDatabase implements StateDatabase {
 
     @Override
     public SlotState getSlotState(SlotID id) throws Exception {
-        File file = getFile(id);
+        File file = getSlotFile(id);
         if (!file.exists()) {
             return null;
         } else {
@@ -71,12 +71,12 @@ public class FileSystemStateDatabase implements StateDatabase {
     @Override
     public void putSlotState(SlotState state) throws Exception {
         String json = slotStateToJSON(state);
-        File file = getFile(state.getSlotID());
+        File file = getSlotFile(state.getSlotID());
         FileUtils.forceMkdir(file.getParentFile());
         FileUtils.write(file, json, CHARSET);
     }
 
-    private File getFile(SlotID slotID) {
+    private File getSlotFile(SlotID slotID) {
         return new File(getWorkflowDir(slotID), getSlotFileName(slotID));
     }
 
