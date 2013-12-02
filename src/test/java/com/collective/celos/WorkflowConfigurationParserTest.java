@@ -80,8 +80,11 @@ public class WorkflowConfigurationParserTest {
     public static class TestExternalService extends RemembersProperties implements ExternalService {
         public TestExternalService(Properties properties) { super(properties); }
         @Override
-        public String run(ScheduledTime t) throws ExternalServiceException {
+        public String submit(ScheduledTime t) throws ExternalServiceException {
             return null;
+        }
+        @Override
+        public void start(String externalID) throws ExternalServiceException {
         }
         @Override
         public ExternalStatus getStatus(String externalWorkflowID) throws ExternalServiceException {
