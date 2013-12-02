@@ -87,7 +87,7 @@ public class Scheduler {
     /**
      * Get scheduled slots from scheduling strategy and submit them to external system.
      */
-    private void runExternalWorkflows(Workflow wf, List<SlotState> slotStates) throws Exception {
+    void runExternalWorkflows(Workflow wf, List<SlotState> slotStates) throws Exception {
         List<SlotState> scheduledSlots = wf.getSchedulingStrategy().getSchedulingCandidates(slotStates);
         for (SlotState slotState : scheduledSlots) {
             if (!slotState.getStatus().equals(SlotState.Status.READY)) {

@@ -1,11 +1,14 @@
 package com.collective.celos;
 
+import static org.mockito.Matchers.anyListOf;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 
@@ -64,6 +67,106 @@ public class SchedulerTest {
         // The object under test
         scheduler = new Scheduler(new WorkflowConfiguration(
                 new HashSet<Workflow>()), stateDatabase, 1);
+    }
+    
+    @Test
+    public void runExternalWorkflowsNoCandidates() throws Exception {
+        List<SlotState> slotStates = new ArrayList<SlotState>();
+        scheduler.runExternalWorkflows(wf, slotStates);
+        verifyNoMoreInteractions(stateDatabase);
+    }
+    
+    @Test(expected = IllegalStateException.class)
+    public void runExternalWorkflowsWaitingCandidate() throws Exception {
+        runExternalWorkflowsWithInvalidCandidate(SlotState.Status.WAITING);
+    }
+    
+    @Test(expected = IllegalStateException.class)
+    public void runExternalWorkflowsTimeoutCandidate() throws Exception {
+        runExternalWorkflowsWithInvalidCandidate(SlotState.Status.TIMEOUT);
+    }
+    
+    @Test(expected = IllegalStateException.class)
+    public void runExternalWorkflowsRunningCandidate() throws Exception {
+        runExternalWorkflowsWithInvalidCandidate(SlotState.Status.RUNNING);
+    }
+    
+    @Test(expected = IllegalStateException.class)
+    public void runExternalWorkflowsSuccessCandidate() throws Exception {
+        runExternalWorkflowsWithInvalidCandidate(SlotState.Status.SUCCESS);
+    }
+    
+    @Test(expected = IllegalStateException.class)
+    public void runExternalWorkflowsFailureCandidate() throws Exception {
+        runExternalWorkflowsWithInvalidCandidate(SlotState.Status.FAILURE);
+    }
+    
+    // TODO: I think this behaviour is probably wrong.  Shouldn't the READY job get processed?
+    @Test(expected = IllegalStateException.class)
+    public void runExternalWorkflowsFailureAndReadyCandidates() throws Exception {
+        runExternalWorkflowsWithInvalidCandidate(SlotState.Status.FAILURE,
+                SlotState.Status.READY);
+    }
+    
+    private void runExternalWorkflowsWithInvalidCandidate(SlotState.Status... statuses) throws Exception {
+        List<SlotState> slotStates = candidate(statuses);
+        scheduler.runExternalWorkflows(wf, slotStates);
+        verifyNoMoreInteractions(stateDatabase);
+    }
+    
+    @Test
+    public void runExternalWorkflowsReadyCandidate() throws Exception {
+        List<SlotState> slotStates = candidate(SlotState.Status.READY);
+        SlotState nextSlotState = slotStates.get(0).transitionToRunning("externalId");
+        when(externalService.run(scheduledTime)).thenReturn("externalId");
+        scheduler.runExternalWorkflows(wf, slotStates);
+        verify(stateDatabase).putSlotState(nextSlotState);
+        verifyNoMoreInteractions(stateDatabase);
+    }
+    
+    @Test
+    public void runExternalWorkflowsMultipleReadyCandidates() throws Exception {
+        SlotState slotState1 = makeReadySlotStateForTime("2013-11-26T15:01Z");
+        SlotState slotState2 = makeReadySlotStateForTime("2013-11-26T15:02Z");
+
+        List<SlotState> slotStates = new ArrayList<SlotState>();
+        slotStates.add(slotState1);
+        slotStates.add(slotState2);
+
+        stubAsSchedulingCandidates(slotStates);
+
+        SlotState nextSlotState1 = slotState1.transitionToRunning("externalId1");
+        SlotState nextSlotState2 = slotState2.transitionToRunning("externalId2");
+        
+        when(externalService.run(slotState1.getScheduledTime())).thenReturn("externalId1");
+        when(externalService.run(slotState2.getScheduledTime())).thenReturn("externalId2");
+        
+        scheduler.runExternalWorkflows(wf, slotStates);
+        verify(stateDatabase).putSlotState(nextSlotState1);
+        verify(stateDatabase).putSlotState(nextSlotState2);
+        verifyNoMoreInteractions(stateDatabase);
+    }
+
+    private SlotState makeReadySlotStateForTime(String timeString) {
+        ScheduledTime time = new ScheduledTime(timeString);
+        SlotID slotId = new SlotID(workflowId, time);
+        return new SlotState(slotId, SlotState.Status.READY);
+    }
+    
+    private List<SlotState> candidate(SlotState.Status... statuses) {
+        List<SlotState> result = new ArrayList<SlotState>();
+        for (SlotState.Status status : statuses) {
+            result.add(new SlotState(slotId, status));
+        }
+        stubAsSchedulingCandidates(result);
+        return result;
+    }
+
+    private void stubAsSchedulingCandidates(List<SlotState> slotStates) {
+        when(
+                schedulingStrategy
+                        .getSchedulingCandidates(anyListOf(SlotState.class)))
+                .thenReturn(slotStates);
     }
     
     @Test
