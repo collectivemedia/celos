@@ -12,6 +12,9 @@ public class WorkflowID extends ValueObject {
         if (id.trim().equals("")) {
             throw new IllegalArgumentException("Workflow ID can't be only whitespace.");
         }
+        if (id.contains("/")) {
+            throw new IllegalArgumentException("Workflow ID can't contain slash.");
+        }
     }
 
     public String toString() {
