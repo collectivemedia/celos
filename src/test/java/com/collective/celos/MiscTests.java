@@ -100,6 +100,11 @@ public class MiscTests {
     }
     
     @Test(expected=IllegalArgumentException.class)
+    public void cannotCreateWorkflowWithIDContainingSlash() {
+        new WorkflowID("workflow/1");
+    }
+
+    @Test(expected=IllegalArgumentException.class)
     public void scheduledTimeMustBeUTC() {
         new ScheduledTime("2013-11-12T20:00");
     }
