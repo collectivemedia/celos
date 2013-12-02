@@ -101,7 +101,6 @@ public class SchedulerTest {
         runExternalWorkflowsWithInvalidCandidate(SlotState.Status.FAILURE);
     }
     
-    // TODO: I think this behaviour is probably wrong.  Shouldn't the READY job get processed?
     @Test(expected = IllegalStateException.class)
     public void runExternalWorkflowsFailureAndReadyCandidates() throws Exception {
         runExternalWorkflowsWithInvalidCandidate(SlotState.Status.FAILURE,
