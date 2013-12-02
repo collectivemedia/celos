@@ -26,6 +26,15 @@ DEPENDENCIES = [
   JSON_SIMPLE,
 ]
 
+POWERMOCK = [
+  'org.powermock:powermock-module-junit4:jar:1.5.2',
+  'org.powermock:powermock-api-mockito:jar:1.5.2',
+]
+
+TEST_DEPENDENCIES = [
+  POWERMOCK,
+]
+
 define 'Celos' do
   project.version = '0.1.0'
 
@@ -33,6 +42,8 @@ define 'Celos' do
   compile.options.target = '1.6'
 
   compile.with(DEPENDENCIES)
+  
+  test.with(TEST_DEPENDENCIES)
   
   package(:jar).include((DEPENDENCIES - HADOOP), :path => "lib")
 end

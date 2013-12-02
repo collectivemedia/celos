@@ -87,7 +87,7 @@ public class Scheduler {
     /**
      * Get scheduled slots from scheduling strategy and submit them to external system.
      */
-    private void runExternalWorkflows(Workflow wf, List<SlotState> slotStates) throws Exception {
+    void runExternalWorkflows(Workflow wf, List<SlotState> slotStates) throws Exception {
         List<SlotState> scheduledSlots = wf.getSchedulingStrategy().getSchedulingCandidates(slotStates);
         for (SlotState slotState : scheduledSlots) {
             if (!slotState.getStatus().equals(SlotState.Status.READY)) {
@@ -103,7 +103,7 @@ public class Scheduler {
      * 
      * Check the external status of all RUNNING slots, and update them to SUCCESS or FAILURE if they're finished.
      */
-    private void updateSlotState(Workflow wf, SlotState slotState) throws Exception {
+    void updateSlotState(Workflow wf, SlotState slotState) throws Exception {
         SlotState.Status status = slotState.getStatus();
         if (status.equals(SlotState.Status.WAITING)) {
             if (wf.getTrigger().isDataAvailable(slotState.getScheduledTime())) {
