@@ -63,7 +63,7 @@ public class FileSystemStateDatabase implements StateDatabase {
         if (!file.exists()) {
             return null;
         } else {
-            String json = FileUtils.readFileToString(file);
+            String json = FileUtils.readFileToString(file, CHARSET);
             return slotStateFromJSON(id, json);            
         }
     }
