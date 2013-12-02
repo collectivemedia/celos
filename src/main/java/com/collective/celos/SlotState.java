@@ -49,6 +49,11 @@ public class SlotState extends ValueObject {
         return externalID;
     }
     
+    // Should only be used by deserialization code
+    void setExternalID(String externalID) {
+        this.externalID = externalID;
+    }
+    
     // TODO: test these transitions
     
     public SlotState transitionToReady() {
@@ -60,7 +65,7 @@ public class SlotState extends ValueObject {
     public SlotState transitionToRunning(String externalID) {
         assertStatus(Status.READY);
         SlotState newState = new SlotState(this.slotID, Status.RUNNING);
-        newState.externalID = Util.requireNonNull(externalID);
+        newState.setExternalID(Util.requireNonNull(externalID));
         return newState;
     }
 
