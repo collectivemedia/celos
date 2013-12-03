@@ -136,4 +136,24 @@ public class MiscTests {
         Assert.assertTrue(Util.isFullHour(new DateTime("2013-11-27T15:00Z")));
         Assert.assertFalse(Util.isFullHour(new DateTime("2013-11-27T15:36Z")));
     }
+    
+    // SLOT STATE TRANSITIONS
+    
+    @Test
+    public void worksAsExpected() {
+        SlotID id = new SlotID(new WorkflowID("foo"), new ScheduledTime("2013-12-04T19:18Z"));
+        SlotState waiting = new SlotState(id, SlotState.Status.WAITING);
+        SlotState ready = new SlotState(id, SlotState.Status.READY);
+        Assert.assertEquals(ready, waiting.transitionToReady());
+        SlotState running = new SlotState(id, SlotState.Status.RUNNING);
+        running.setExternalID("external");
+        Assert.assertEquals(running, ready.transitionToRunning("external"));
+        SlotState success = new SlotState(id, SlotState.Status.SUCCESS);
+        success.setExternalID("external");
+        Assert.assertEquals(success, running.transitionToSuccess());        
+        SlotState failure = new SlotState(id, SlotState.Status.FAILURE);
+        failure.setExternalID("external");
+        Assert.assertEquals(failure, running.transitionToFailure());        
+    }
+    
 }
