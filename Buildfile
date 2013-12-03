@@ -44,17 +44,6 @@ define 'Celos' do
   compile.with(DEPENDENCIES)
   
   test.with(TEST_DEPENDENCIES)
-
-  # Put everything save for the HADOOP stuff into the JAR
-  assembly_dir = file(_("target/assembly") => compile.dependencies) do |dir|
-    rm_rf assembly_dir.name
-    mkdir_p assembly_dir.name
-    deps = compile.dependencies - HADOOP
-    puts "Extracting dependencies for assembly..."
-    deps.each do |dep|
-      unzip(assembly_dir => dep).exclude("META-INF/MANIFEST.MF","META-INF/license/*").extract
-    end
-  end
-
-  package(:jar).include(assembly_dir, :as => ".")
+  
+  package(:jar).include((compile.dependencies - HADOOP), :path => "lib")
 end
