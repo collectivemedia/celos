@@ -18,15 +18,40 @@ public class LoggingStateDatabase implements StateDatabase {
 
     @Override
     public SlotState getSlotState(SlotID slot) throws Exception {
-        return wrappedDatabase.getSlotState(slot);
+        try {
+            return wrappedDatabase.getSlotState(slot);
+        } catch (Exception e) {
+            logException(null, e);
+            throw e;
+        }
     }
 
     @Override
     public void putSlotState(SlotState state) throws Exception {
-        logger.info("Changing status of slot " + state.getSlotID() + " to "
-                + state.getStatus() + " with external ID = "
-                + state.getExternalID());
-        wrappedDatabase.putSlotState(state);
+        logger.info(decorate(state) + "Changing status of slot "
+                + state.getSlotID() + " to " + state.getStatus()
+                + " with external ID = " + state.getExternalID());
+        try {
+            wrappedDatabase.putSlotState(state);
+        } catch (Exception e) {
+            logException(state, e);
+            throw e;
+        }
+    }
+
+    /*
+     * I will extract these methods so that they can be used elsewhere.
+     */
+    private void logException(SlotState state, Exception e) {
+        logger.error(decorate(state) + e);
+        for (StackTraceElement ste : e.getStackTrace()) {
+            logger.error(decorate(state) + "\t" + ste);
+        }
+    }
+    
+    private String decorate(SlotState state) {
+        String text = state == null ? "none" : state.getSlotID().toString();
+        return "[" + text + "] ";
     }
 
 }
