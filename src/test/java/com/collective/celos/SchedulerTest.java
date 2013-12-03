@@ -1,6 +1,7 @@
 package com.collective.celos;
 
 import static org.mockito.Matchers.anyListOf;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -16,6 +17,7 @@ import org.joda.time.DateTime;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.InOrder;
 
 /**
  * TODO: test exception handling and logging
@@ -117,10 +119,22 @@ public class SchedulerTest {
     public void runExternalWorkflowsReadyCandidate() throws Exception {
         List<SlotState> slotStates = candidate(SlotState.Status.READY);
         SlotState nextSlotState = slotStates.get(0).transitionToRunning("externalId");
-        when(externalService.run(scheduledTime)).thenReturn("externalId");
+        when(externalService.submit(scheduledTime)).thenReturn("externalId");
         scheduler.runExternalWorkflows(wf, slotStates);
         verify(stateDatabase).putSlotState(nextSlotState);
         verifyNoMoreInteractions(stateDatabase);
+    }
+    
+    @Test
+    public void runExternalWorkflowsCallsSchedulerCorrectly() throws Exception {
+        List<SlotState> slotStates = candidate(SlotState.Status.READY);
+        when(externalService.submit(scheduledTime)).thenReturn("externalId");
+        scheduler.runExternalWorkflows(wf, slotStates);
+        
+        InOrder inOrder = inOrder(externalService);
+        inOrder.verify(externalService).submit(slotStates.get(0).getScheduledTime());
+        inOrder.verify(externalService).start("externalId");
+        verifyNoMoreInteractions(externalService);
     }
     
     @Test
@@ -137,8 +151,8 @@ public class SchedulerTest {
         SlotState nextSlotState1 = slotState1.transitionToRunning("externalId1");
         SlotState nextSlotState2 = slotState2.transitionToRunning("externalId2");
         
-        when(externalService.run(slotState1.getScheduledTime())).thenReturn("externalId1");
-        when(externalService.run(slotState2.getScheduledTime())).thenReturn("externalId2");
+        when(externalService.submit(slotState1.getScheduledTime())).thenReturn("externalId1");
+        when(externalService.submit(slotState2.getScheduledTime())).thenReturn("externalId2");
         
         scheduler.runExternalWorkflows(wf, slotStates);
         verify(stateDatabase).putSlotState(nextSlotState1);

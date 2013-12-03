@@ -93,8 +93,9 @@ public class Scheduler {
             if (!slotState.getStatus().equals(SlotState.Status.READY)) {
                 throw new IllegalStateException("Scheduling strategy returned non-ready slot: " + slotState);
             }
-            String externalID = wf.getExternalService().run(slotState.getScheduledTime());
+            String externalID = wf.getExternalService().submit(slotState.getScheduledTime());
             database.putSlotState(slotState.transitionToRunning(externalID));
+            wf.getExternalService().start(externalID);
         }
     }
 

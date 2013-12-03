@@ -20,10 +20,14 @@ public class MockExternalService implements ExternalService {
     }
     
     @Override
-    public String run(ScheduledTime t) {
+    public String submit(ScheduledTime t) {
         String externalID = "mock-" + Math.random();
         times2ExternalID.put(t, externalID);
         return externalID;
+    }
+    
+    @Override
+    public void start(String externalID) throws ExternalServiceException {
     }
 
     @Override

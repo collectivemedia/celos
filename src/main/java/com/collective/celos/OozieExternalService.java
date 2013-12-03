@@ -29,10 +29,19 @@ public class OozieExternalService implements ExternalService {
     }
 
     @Override
-    public String run(ScheduledTime t) throws ExternalServiceException {
+    public String submit(ScheduledTime t) throws ExternalServiceException {
         Properties runProperties = setupRunProperties(properties, t);
         try {
-            return client.run(runProperties);
+            return client.submit(runProperties);
+        } catch (OozieClientException e) {
+            throw new ExternalServiceException(e);
+        }
+    }
+    
+    @Override
+    public void start(String externalID) throws ExternalServiceException {
+        try {
+            client.start(externalID);
         } catch (OozieClientException e) {
             throw new ExternalServiceException(e);
         }
