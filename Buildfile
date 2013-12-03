@@ -45,5 +45,5 @@ define 'Celos' do
   
   test.with(TEST_DEPENDENCIES)
   
-  package(:jar).include((DEPENDENCIES - HADOOP), :path => "lib")
+  package(:jar).include((compile.dependencies - HADOOP), :path => "lib")
 end
