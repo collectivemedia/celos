@@ -17,9 +17,11 @@ public class OozieExternalServiceTest {
     public void runPropertiesAreCorrectlySetup() {
         Properties defaults = new Properties();
         defaults.setProperty("foo", "bar");
+        defaults.setProperty("uses-variables", "${year}-${month}-${day}-${hour}-${year}");
         ScheduledTime t = new ScheduledTime("2013-11-26T17:00Z");
         Properties runProperties = makeOozieExternalService().setupRunProperties(defaults, t);
         Assert.assertEquals("bar", runProperties.getProperty("foo"));
+        Assert.assertEquals("2013-11-26-17-2013", runProperties.getProperty("uses-variables"));
         Assert.assertEquals("2013", runProperties.getProperty(OozieExternalService.YEAR_PROP));
         Assert.assertEquals("11", runProperties.getProperty(OozieExternalService.MONTH_PROP));
         Assert.assertEquals("26", runProperties.getProperty(OozieExternalService.DAY_PROP));
