@@ -7,8 +7,8 @@ import org.joda.time.DateTimeZone;
 
 public class Main {
 
-    private static final String DB_PATH = "/etc/celos/workflows";
-    private static final String CONFIG_PATH = "/var/run/celos/db";
+    private static final String CONFIG_PATH = "/etc/celos/workflows";
+    private static final String DB_PATH = "/var/run/celos/db";
 
     public static void main(String[] args) throws Exception {
         WorkflowConfiguration config =
