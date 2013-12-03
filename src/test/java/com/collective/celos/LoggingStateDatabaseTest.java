@@ -69,7 +69,7 @@ public class LoggingStateDatabaseTest {
                 .contains("Changing status of slot"));
         assertTrue(testingLogger.getMessages()[1].contains(oops.toString()));
         for (String message : testingLogger.getMessages()) {
-            assertTrue(message.contains("[workflow-1@2013-12-03T13:00Z] "));
+            assertTrue(message.contains("[workflow-1@2013-12-03T13:00Z]"));
         }
     }
 
@@ -90,7 +90,7 @@ public class LoggingStateDatabaseTest {
                 testingLogger.getMessages().length);
         assertTrue(testingLogger.getMessages()[0].contains(oops.toString()));
         for (String message : testingLogger.getMessages()) {
-            assertTrue(message.contains("[none] "));
+            assertTrue(message.contains("[none]"));
         }
     }
 }
