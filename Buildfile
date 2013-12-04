@@ -37,6 +37,7 @@ TEST_DEPENDENCIES = [
 
 define 'Celos' do
   project.version = '0.1.0'
+  manifest['Main-Class'] = 'com.collective.celos.Main'
 
   compile.options.source = '1.6'
   compile.options.target = '1.6'
