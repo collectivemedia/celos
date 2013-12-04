@@ -13,20 +13,38 @@ class SlotStateLogger {
         this.logger = logger;
     }
 
-    public void info(SlotState state, String string) {
-        logger.info(decorate(state) + string);
+    public void logMessage(WorkflowID workflowId, String msg) {
+        logger.info(formatString(workflowId, msg));
     }
 
-    public void logException(SlotState state, Exception e) {
-        logger.error(decorate(state) + e);
-        for (StackTraceElement ste : e.getStackTrace()) {
-            logger.error(decorate(state) + "\t" + ste);
+    public void logMessage(SlotID slotId, String msg) {
+        logger.info(formatString(slotId, msg));
+    }
+
+    public void logException(WorkflowID workflowId, Throwable t) {
+        logger.error(formatString(workflowId, t.toString()));
+        logThrowable(workflowId, t);
+    }
+
+    public void logException(SlotID slotId, Throwable t) {
+        logger.error(formatString(slotId, t.toString()));
+        logThrowable(slotId, t);
+    }
+
+    String formatString(Object obj, String msg) {
+        return format(obj, msg, " ");
+    }
+
+    String format(Object context, Object msg, String separator) {
+        String contextString = context == null ? "none" : context.toString();
+        String msgString = msg == null ? "none" : msg.toString();
+        return String.format("[%s]%s%s", contextString, separator, msgString);
+    }
+
+    void logThrowable(Object obj, Throwable t) {
+        for (StackTraceElement ste : t.getStackTrace()) {
+            logger.error(format(obj, ste, "\t"));
         }
-    }
-
-    String decorate(SlotState state) {
-        String text = state == null ? "none" : state.getSlotID().toString();
-        return "[" + text + "] ";
     }
 
 }

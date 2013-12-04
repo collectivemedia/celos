@@ -15,77 +15,73 @@ public class SlotStateLoggerTest {
     public TestingLogger testingLogger = new TestingLogger();
 
     private SlotID slotId;
-    private SlotState slotState;
+//    private SlotState slotState;
+    private WorkflowID workflowId;
 
     @Before
     public void setUp() {
         slotId = mock(SlotID.class);
-        when(slotId.toString()).thenReturn("workflow-1@2013-12-03T13:00Z");
+        when(slotId.toString()).thenReturn("slot-id");
 
-        slotState = mock(SlotState.class);
-        when(slotState.getSlotID()).thenReturn(slotId);
-        when(slotState.getStatus()).thenReturn(SlotState.Status.RUNNING);
-        when(slotState.getExternalID()).thenReturn(
-                "2398721837913-2767321868713-W");
+        workflowId = mock(WorkflowID.class);
+        when(workflowId.toString()).thenReturn("workflow-id");
     }
 
     @Test
-    public void testInfo() {
+    public void testLogMessageWorkflowID() {
         SlotStateLogger stateLogger = new SlotStateLogger(
                 Logger.getLogger(getClass()));
-        stateLogger.info(slotState, "foo");
-        assertEquals("[workflow-1@2013-12-03T13:00Z] foo",
-                testingLogger.getMessages()[0]);
+        stateLogger.logMessage(workflowId, "oops");
+        assertEquals(1,
+                testingLogger.getMessages().length);
+        assertEquals("[workflow-id] oops", testingLogger.getMessages()[0]);
     }
 
     @Test
-    public void testInfoNullSotState() {
+    public void testLogMessageSlotID() {
         SlotStateLogger stateLogger = new SlotStateLogger(
                 Logger.getLogger(getClass()));
-        stateLogger.info(null, "foo");
-        assertEquals("[none] foo", testingLogger.getMessages()[0]);
+        stateLogger.logMessage(slotId, "oops");
+        assertEquals(1,
+                testingLogger.getMessages().length);
+        assertEquals("[slot-id] oops", testingLogger.getMessages()[0]);
     }
 
     @Test
-    public void testDecorate() {
-        SlotStateLogger stateLogger = new SlotStateLogger(
-                Logger.getLogger(getClass()));
-        assertEquals("[workflow-1@2013-12-03T13:00Z] ", stateLogger.decorate(slotState));
-    }
-
-    @Test
-    public void testDecorateNullSlotState() {
-        SlotStateLogger stateLogger = new SlotStateLogger(
-                Logger.getLogger(getClass()));
-        assertEquals("[none] ", stateLogger.decorate(null));
-    }
-
-    @Test
-    public void testLogException() {
+    public void testLogExceptionWorkflowID() {
         SlotStateLogger stateLogger = new SlotStateLogger(
                 Logger.getLogger(getClass()));
         Exception oops = new Exception("put failed");
-        stateLogger.logException(slotState, oops);
+        stateLogger.logException(workflowId, oops);
         assertEquals(oops.getStackTrace().length + 1,
                 testingLogger.getMessages().length);
         assertTrue(testingLogger.getMessages()[0].contains(oops.toString()));
         for (String message : testingLogger.getMessages()) {
-            assertTrue(message.startsWith("[workflow-1@2013-12-03T13:00Z]"));
+            assertTrue(message.startsWith("[workflow-id]"));
         }
     }
 
     @Test
-    public void testLogExceptionNullSlotState() {
+    public void testLogExceptionSlotID() {
         SlotStateLogger stateLogger = new SlotStateLogger(
                 Logger.getLogger(getClass()));
         Exception oops = new Exception("put failed");
-        stateLogger.logException(null, oops);
+        stateLogger.logException(slotId, oops);
         assertEquals(oops.getStackTrace().length + 1,
                 testingLogger.getMessages().length);
         assertTrue(testingLogger.getMessages()[0].contains(oops.toString()));
         for (String message : testingLogger.getMessages()) {
-            assertTrue(message.startsWith("[none]"));
+            assertTrue(message.startsWith("[slot-id]"));
         }
+    }
+
+    @Test
+    public void testFormat() {
+        SlotStateLogger stateLogger = new SlotStateLogger(null);
+        assertEquals("[foo] bar", stateLogger.format("foo", "bar", " "));
+        assertEquals("[none] bar", stateLogger.format(null, "bar", " "));
+        assertEquals("[foo] none", stateLogger.format("foo", null, " "));
+        assertEquals("[foo]: bar", stateLogger.format("foo", "bar", ": "));
     }
 
 }

@@ -4,7 +4,7 @@ import org.apache.log4j.Logger;
 
 /**
  * A LoggingStateDatabase wraps the underlying database implementation and logs
- * state changes and exceptions as required.
+ * state changes required.
  */
 public class LoggingStateDatabase implements StateDatabase {
 
@@ -24,27 +24,17 @@ public class LoggingStateDatabase implements StateDatabase {
 
     @Override
     public SlotState getSlotState(SlotID slot) throws Exception {
-        try {
-            return wrappedDatabase.getSlotState(slot);
-        } catch (Exception e) {
-            slotStateLogger.logException(null, e);
-            throw e;
-        }
+        return wrappedDatabase.getSlotState(slot);
     }
 
     @Override
     public void putSlotState(SlotState state) throws Exception {
-        slotStateLogger.info(
-                state,
+        slotStateLogger.logMessage(
+                state.getSlotID(),
                 "Changing status of slot " + state.getSlotID() + " to "
                         + state.getStatus() + " with external ID = "
                         + state.getExternalID());
-        try {
-            wrappedDatabase.putSlotState(state);
-        } catch (Exception e) {
-            slotStateLogger.logException(state, e);
-            throw e;
-        }
+        wrappedDatabase.putSlotState(state);
     }
 
 }
