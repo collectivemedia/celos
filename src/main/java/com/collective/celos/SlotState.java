@@ -72,12 +72,14 @@ public class SlotState extends ValueObject {
     public SlotState transitionToSuccess() {
         assertStatus(Status.RUNNING);
         SlotState newState = new SlotState(this.slotID, Status.SUCCESS);
+        newState.setExternalID(externalID);
         return newState;
     }
 
     public SlotState transitionToFailure() {
         assertStatus(Status.RUNNING);
         SlotState newState = new SlotState(this.slotID, Status.FAILURE);
+        newState.setExternalID(externalID);
         return newState;
     }
 
