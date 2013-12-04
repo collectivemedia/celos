@@ -118,14 +118,7 @@ public class MiscTests {
     public void tooTrivialButStill_alwaysTriggerAlwaysTriggers() {
         Assert.assertTrue(new AlwaysTrigger(new Properties()).isDataAvailable(new ScheduledTime("2013-11-21T20:00Z")));
     }
-    
-    @Test
-    public void slotStateGetScheduledTimeWorks() {
-        ScheduledTime t = new ScheduledTime("2013-11-26T13:00Z");
-        SlotState slotState = new SlotState(new SlotID(new WorkflowID("foo"), t), SlotState.Status.READY);
-        Assert.assertEquals(t, slotState.getScheduledTime());
-    }
-    
+        
     @Test
     public void toFullHourWorks() {
         Assert.assertEquals(new DateTime("2013-11-27T15:00Z"), Util.toFullHour(new DateTime("2013-11-27T15:36Z")));
@@ -135,25 +128,6 @@ public class MiscTests {
     public void isFullHourWorks() {
         Assert.assertTrue(Util.isFullHour(new DateTime("2013-11-27T15:00Z")));
         Assert.assertFalse(Util.isFullHour(new DateTime("2013-11-27T15:36Z")));
-    }
-    
-    // SLOT STATE TRANSITIONS
-    
-    @Test
-    public void worksAsExpected() {
-        SlotID id = new SlotID(new WorkflowID("foo"), new ScheduledTime("2013-12-04T19:18Z"));
-        SlotState waiting = new SlotState(id, SlotState.Status.WAITING);
-        SlotState ready = new SlotState(id, SlotState.Status.READY);
-        Assert.assertEquals(ready, waiting.transitionToReady());
-        SlotState running = new SlotState(id, SlotState.Status.RUNNING);
-        running.setExternalID("external");
-        Assert.assertEquals(running, ready.transitionToRunning("external"));
-        SlotState success = new SlotState(id, SlotState.Status.SUCCESS);
-        success.setExternalID("external");
-        Assert.assertEquals(success, running.transitionToSuccess());        
-        SlotState failure = new SlotState(id, SlotState.Status.FAILURE);
-        failure.setExternalID("external");
-        Assert.assertEquals(failure, running.transitionToFailure());        
     }
     
 }
