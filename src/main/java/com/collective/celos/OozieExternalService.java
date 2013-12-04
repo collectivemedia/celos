@@ -48,13 +48,23 @@ public class OozieExternalService implements ExternalService {
     }
 
     Properties setupRunProperties(Properties defaults, ScheduledTime t) {
-        Properties runProperties = new Properties(defaults);
+        Properties runProperties = setupDefaultProperties(defaults, t);
         ScheduledTimeFormatter formatter = new ScheduledTimeFormatter();
         runProperties.setProperty(YEAR_PROP, formatter.formatYear(t));
         runProperties.setProperty(MONTH_PROP, formatter.formatMonth(t));
         runProperties.setProperty(DAY_PROP, formatter.formatDay(t));
         runProperties.setProperty(HOUR_PROP, formatter.formatHour(t));
         return runProperties;
+    }
+
+    private Properties setupDefaultProperties(Properties defaults, ScheduledTime t) {
+        Properties props = new Properties();
+        ScheduledTimeFormatter formatter = new ScheduledTimeFormatter();
+        for (String name : defaults.stringPropertyNames()) {
+            String value = defaults.getProperty(name);
+            props.setProperty(name, formatter.replaceTimeTokens(value, t));
+        }
+        return props;
     }
 
     @Override
