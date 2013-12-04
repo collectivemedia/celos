@@ -24,7 +24,7 @@ class SlotStateLogger {
         }
     }
 
-    public String decorate(SlotState state) {
+    String decorate(SlotState state) {
         String text = state == null ? "none" : state.getSlotID().toString();
         return "[" + text + "] ";
     }
