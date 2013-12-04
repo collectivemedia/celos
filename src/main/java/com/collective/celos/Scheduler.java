@@ -55,23 +55,33 @@ public class Scheduler {
      * 
      * - Check any RUNNING slots for their current external status.
      */
-    private void stepWorkflow(Workflow wf, ScheduledTime current) throws Exception {
+    private void stepWorkflow(Workflow wf, ScheduledTime current) {
         List<SlotState> slotStates = getSlotStates(wf, current);
         runExternalWorkflows(wf, slotStates);
         for (SlotState slotState : slotStates) {
-            updateSlotState(wf, slotState);
+            try {
+                updateSlotState(wf, slotState);
+            } catch (Exception e) {
+                Util.logException(slotState.getSlotID(), e);
+            }
         }
     }
 
     /**
      * Get the slot states of all slots of the workflow from within the sliding window.
      */
-    private List<SlotState> getSlotStates(Workflow wf, ScheduledTime current) throws Exception {
+    private List<SlotState> getSlotStates(Workflow wf, ScheduledTime current) {
         SortedSet<ScheduledTime> scheduledTimes =  wf.getSchedule().getScheduledTimes(getStartTime(current), current);
         List<SlotState> slotStates = new ArrayList<SlotState>(scheduledTimes.size());
         for (ScheduledTime t : scheduledTimes) {
             SlotID slotID = new SlotID(wf.getID(), t);
-            SlotState slotState = database.getSlotState(slotID);
+            SlotState slotState;
+            try {
+                slotState = database.getSlotState(slotID);
+            } catch (Exception e) {
+                Util.logException(wf.getID(), e);
+                slotState = null;
+            }
             if (slotState != null) {
                 slotStates.add(slotState);
             } else {
@@ -87,15 +97,19 @@ public class Scheduler {
     /**
      * Get scheduled slots from scheduling strategy and submit them to external system.
      */
-    void runExternalWorkflows(Workflow wf, List<SlotState> slotStates) throws Exception {
+    void runExternalWorkflows(Workflow wf, List<SlotState> slotStates) {
         List<SlotState> scheduledSlots = wf.getSchedulingStrategy().getSchedulingCandidates(slotStates);
         for (SlotState slotState : scheduledSlots) {
             if (!slotState.getStatus().equals(SlotState.Status.READY)) {
                 throw new IllegalStateException("Scheduling strategy returned non-ready slot: " + slotState);
             }
-            String externalID = wf.getExternalService().submit(slotState.getScheduledTime());
-            database.putSlotState(slotState.transitionToRunning(externalID));
-            wf.getExternalService().start(externalID);
+            try {
+                String externalID = wf.getExternalService().submit(slotState.getScheduledTime());
+                database.putSlotState(slotState.transitionToRunning(externalID));
+                wf.getExternalService().start(externalID);
+            } catch (Exception e) {
+                Util.logException(slotState.getSlotID(), e);
+            }
         }
     }
 
