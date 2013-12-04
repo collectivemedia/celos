@@ -1,10 +1,10 @@
 package com.collective.celos;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import org.apache.log4j.Logger;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -29,8 +29,7 @@ public class SlotStateLoggerTest {
 
     @Test
     public void testLogMessageWorkflowID() {
-        SlotStateLogger stateLogger = new SlotStateLogger(
-                Logger.getLogger(getClass()));
+        SlotStateLogger stateLogger = new SlotStateLogger();
         stateLogger.logMessage(workflowId, "oops");
         assertEquals(1,
                 testingLogger.getMessages().length);
@@ -39,8 +38,7 @@ public class SlotStateLoggerTest {
 
     @Test
     public void testLogMessageSlotID() {
-        SlotStateLogger stateLogger = new SlotStateLogger(
-                Logger.getLogger(getClass()));
+        SlotStateLogger stateLogger = new SlotStateLogger();
         stateLogger.logMessage(slotId, "oops");
         assertEquals(1,
                 testingLogger.getMessages().length);
@@ -49,8 +47,7 @@ public class SlotStateLoggerTest {
 
     @Test
     public void testLogExceptionWorkflowID() {
-        SlotStateLogger stateLogger = new SlotStateLogger(
-                Logger.getLogger(getClass()));
+        SlotStateLogger stateLogger = new SlotStateLogger();
         Exception oops = new Exception("put failed");
         stateLogger.logException(workflowId, oops);
         assertEquals(oops.getStackTrace().length + 1,
@@ -63,8 +60,7 @@ public class SlotStateLoggerTest {
 
     @Test
     public void testLogExceptionSlotID() {
-        SlotStateLogger stateLogger = new SlotStateLogger(
-                Logger.getLogger(getClass()));
+        SlotStateLogger stateLogger = new SlotStateLogger();
         Exception oops = new Exception("put failed");
         stateLogger.logException(slotId, oops);
         assertEquals(oops.getStackTrace().length + 1,
@@ -77,7 +73,7 @@ public class SlotStateLoggerTest {
 
     @Test
     public void testFormat() {
-        SlotStateLogger stateLogger = new SlotStateLogger(null);
+        SlotStateLogger stateLogger = new SlotStateLogger();
         assertEquals("[foo] bar", stateLogger.format("foo", "bar", " "));
         assertEquals("[none] bar", stateLogger.format(null, "bar", " "));
         assertEquals("[foo] none", stateLogger.format("foo", null, " "));

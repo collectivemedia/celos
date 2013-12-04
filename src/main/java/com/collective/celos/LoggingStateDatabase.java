@@ -1,7 +1,5 @@
 package com.collective.celos;
 
-import org.apache.log4j.Logger;
-
 /**
  * A LoggingStateDatabase wraps the underlying database implementation and logs
  * state changes required.
@@ -12,14 +10,13 @@ public class LoggingStateDatabase implements StateDatabase {
     private final SlotStateLogger slotStateLogger;
 
     public LoggingStateDatabase(StateDatabase wrappedDatabase) {
-        this(wrappedDatabase, new SlotStateLogger(
-                Logger.getLogger(wrappedDatabase.getClass())));
+        this(wrappedDatabase, new SlotStateLogger());
     }
 
     LoggingStateDatabase(StateDatabase wrappedDatabase,
-            SlotStateLogger slotStateLogger) {
+            SlotStateLogger stateLogger) {
         this.wrappedDatabase = Util.requireNonNull(wrappedDatabase);
-        this.slotStateLogger = slotStateLogger;
+        slotStateLogger = stateLogger;
     }
 
     @Override

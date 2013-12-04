@@ -6,12 +6,8 @@ import org.apache.log4j.Logger;
  * The SlotStateLoger helps us log SlotState information and exceptions in a
  * consistent way throughout the application.
  */
-class SlotStateLogger {
-    private final Logger logger;
-
-    public SlotStateLogger(Logger logger) {
-        this.logger = logger;
-    }
+public class SlotStateLogger {
+    private final Logger logger = Logger.getLogger(getClass());
 
     public void logMessage(WorkflowID workflowId, String msg) {
         logger.info(formatString(workflowId, msg));
