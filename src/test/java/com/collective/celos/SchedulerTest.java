@@ -84,11 +84,6 @@ public class SchedulerTest {
     }
     
     @Test(expected = IllegalStateException.class)
-    public void runExternalWorkflowsTimeoutCandidate() throws Exception {
-        runExternalWorkflowsWithInvalidCandidate(SlotState.Status.TIMEOUT);
-    }
-    
-    @Test(expected = IllegalStateException.class)
     public void runExternalWorkflowsRunningCandidate() throws Exception {
         runExternalWorkflowsWithInvalidCandidate(SlotState.Status.RUNNING);
     }
@@ -204,16 +199,6 @@ public class SchedulerTest {
 
         // The trigger should report the data as not available
         when(trigger.isDataAvailable(scheduledTime)).thenReturn(false);
-
-        scheduler.updateSlotState(wf, slotState);
-
-        verifyNoMoreInteractions(stateDatabase);
-    }
-
-    @Test
-    public void updateSlotStateTimeout() throws Exception {
-
-        SlotState slotState = new SlotState(slotId, SlotState.Status.TIMEOUT);
 
         scheduler.updateSlotState(wf, slotState);
 

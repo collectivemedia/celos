@@ -15,8 +15,6 @@ public class SlotState extends ValueObject {
     public enum Status {
         /** No data availability yet. */
         WAITING,
-        /** No data availability for too long, workflow will not run. */
-        TIMEOUT,
         /** Data is available and the workflow will be run shortly. 
             Workflow will also enter this state when it is retried. */
         READY,
