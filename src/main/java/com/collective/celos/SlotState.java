@@ -59,8 +59,6 @@ public class SlotState extends ValueObject {
         return retryCount;
     }
     
-    // TODO: test these transitions
-    
     public SlotState transitionToReady() {
         assertStatus(Status.WAITING);
         return new SlotState(slotID, Status.READY, null, 0);
