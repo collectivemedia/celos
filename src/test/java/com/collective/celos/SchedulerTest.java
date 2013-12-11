@@ -575,6 +575,152 @@ public class SchedulerTest {
         Assert.assertEquals(externalID, srv1.getTimes2ExternalID().get(slot2.getScheduledTime()));
     }
 
+    /**
+     * External service that fails a configurable number of times and then succeeds.
+     */
+    public static class RepeatedlyFailingExternalService implements ExternalService {
+
+        private int failuresLeft;
+        
+        public RepeatedlyFailingExternalService(int failures) {
+            this.failuresLeft = failures;
+        }
+        
+        @Override
+        public String submit(ScheduledTime t) throws ExternalServiceException {
+            return "fake-external-id";
+        }
+
+        @Override
+        public void start(String externalID) throws ExternalServiceException {
+            Assert.assertEquals("fake-external-id", externalID);
+            failuresLeft--;
+        }
+
+        @Override
+        public ExternalStatus getStatus(String externalWorkflowID) throws ExternalServiceException {
+            if (failuresLeft < 0) {
+                return new MockExternalService.MockExternalStatusSuccess();
+            } else {
+                return new MockExternalService.MockExternalStatusFailure();
+            }
+        }
+        
+    }
+    
+    @Test
+    public void testRepeatedlyFailingExternalService() throws ExternalServiceException {
+        ExternalService srv = new RepeatedlyFailingExternalService(2);
+        srv.start("fake-external-id");
+        Assert.assertEquals(false, srv.getStatus("fake-external-id").isSuccess());
+        srv.start("fake-external-id");
+        Assert.assertEquals(false, srv.getStatus("fake-external-id").isSuccess());
+        srv.start("fake-external-id");
+        Assert.assertEquals(true, srv.getStatus("fake-external-id").isSuccess());
+    }
+    
+    
+    /**
+     * Set up workflow with max retry count of 10.
+     * 
+     * Use repeatedly failing external service that fails 2 times.
+     * 
+     * Ensure that slot is rerun 2 times and then moves to success state.
+     */
+    @Test
+    public void retryTest() throws Exception {
+        WorkflowID wfID1 = new WorkflowID("wf1");
+        Schedule sch1 = makeHourlySchedule();
+        SchedulingStrategy str1 = new TrivialSchedulingStrategy(new Properties());
+        Trigger tr1 = makeAlwaysTrigger();
+        ExternalService srv1 = new RepeatedlyFailingExternalService(2);
+        int maxRetryCount = 10;
+        Workflow wf1 = new Workflow(wfID1, sch1, str1, tr1, srv1, maxRetryCount);
+        
+        Set<Workflow> workflows = new HashSet<Workflow>();
+        workflows.add(wf1);
+        WorkflowConfiguration cfg = new WorkflowConfiguration(workflows);
+        
+        MemoryStateDatabase db = new MemoryStateDatabase();
+
+        SlotID id1 = new SlotID(wfID1, new ScheduledTime("2013-11-27T20:00Z"));
+        SlotState initial = new SlotState(id1, SlotState.Status.READY);
+        SlotState running1 = new SlotState(id1, SlotState.Status.RUNNING, "fake-external-id", 0);
+        SlotState retry1 = new SlotState(id1, SlotState.Status.READY, null, 1);
+        SlotState running2 = new SlotState(id1, SlotState.Status.RUNNING, "fake-external-id", 1);
+        SlotState retry2 = new SlotState(id1, SlotState.Status.READY, null, 2);
+        SlotState running3 = new SlotState(id1, SlotState.Status.RUNNING, "fake-external-id", 2);
+        SlotState success = new SlotState(id1, SlotState.Status.SUCCESS, "fake-external-id", 2);
+        
+        db.putSlotState(initial);
+        
+        Scheduler sch = new Scheduler(cfg, db, 1);
+        sch.step(new ScheduledTime("2013-11-27T20:01Z"));
+        Assert.assertEquals(running1, db.getSlotState(id1));
+        sch.step(new ScheduledTime("2013-11-27T20:01Z"));
+        Assert.assertEquals(retry1, db.getSlotState(id1));
+        sch.step(new ScheduledTime("2013-11-27T20:01Z"));
+        Assert.assertEquals(running2, db.getSlotState(id1));
+        sch.step(new ScheduledTime("2013-11-27T20:01Z"));
+        Assert.assertEquals(retry2, db.getSlotState(id1));
+        sch.step(new ScheduledTime("2013-11-27T20:01Z"));
+        Assert.assertEquals(running3, db.getSlotState(id1));
+        sch.step(new ScheduledTime("2013-11-27T20:01Z"));
+        Assert.assertEquals(success, db.getSlotState(id1));
+        sch.step(new ScheduledTime("2013-11-27T20:01Z"));
+    }
+
+    /**
+     * Set up workflow with max retry count of 2.
+     * 
+     * Use repeatedly failing external service that fails 3 times.
+     * 
+     * Ensure that slot is rerun 2 (max retry count) times and then moves to failure state.
+     */
+    @Test
+    public void retryTestWithTooSmallMaxRetryCount() throws Exception {
+        WorkflowID wfID1 = new WorkflowID("wf1");
+        Schedule sch1 = makeHourlySchedule();
+        SchedulingStrategy str1 = new TrivialSchedulingStrategy(new Properties());
+        Trigger tr1 = makeAlwaysTrigger();
+        ExternalService srv1 = new RepeatedlyFailingExternalService(3);
+        int maxRetryCount = 2;
+        Workflow wf1 = new Workflow(wfID1, sch1, str1, tr1, srv1, maxRetryCount);
+        
+        Set<Workflow> workflows = new HashSet<Workflow>();
+        workflows.add(wf1);
+        WorkflowConfiguration cfg = new WorkflowConfiguration(workflows);
+        
+        MemoryStateDatabase db = new MemoryStateDatabase();
+
+        SlotID id1 = new SlotID(wfID1, new ScheduledTime("2013-11-27T20:00Z"));
+        SlotState initial = new SlotState(id1, SlotState.Status.READY);
+        SlotState running1 = new SlotState(id1, SlotState.Status.RUNNING, "fake-external-id", 0);
+        SlotState retry1 = new SlotState(id1, SlotState.Status.READY, null, 1);
+        SlotState running2 = new SlotState(id1, SlotState.Status.RUNNING, "fake-external-id", 1);
+        SlotState retry2 = new SlotState(id1, SlotState.Status.READY, null, 2);
+        SlotState running3 = new SlotState(id1, SlotState.Status.RUNNING, "fake-external-id", 2);
+        SlotState failure = new SlotState(id1, SlotState.Status.FAILURE, "fake-external-id", 2);
+        
+        db.putSlotState(initial);
+        
+        Scheduler sch = new Scheduler(cfg, db, 1);
+        sch.step(new ScheduledTime("2013-11-27T20:01Z"));
+        Assert.assertEquals(running1, db.getSlotState(id1));
+        sch.step(new ScheduledTime("2013-11-27T20:01Z"));
+        Assert.assertEquals(retry1, db.getSlotState(id1));
+        sch.step(new ScheduledTime("2013-11-27T20:01Z"));
+        Assert.assertEquals(running2, db.getSlotState(id1));
+        sch.step(new ScheduledTime("2013-11-27T20:01Z"));
+        Assert.assertEquals(retry2, db.getSlotState(id1));
+        sch.step(new ScheduledTime("2013-11-27T20:01Z"));
+        Assert.assertEquals(running3, db.getSlotState(id1));
+        sch.step(new ScheduledTime("2013-11-27T20:01Z"));
+        Assert.assertEquals(failure, db.getSlotState(id1));
+        sch.step(new ScheduledTime("2013-11-27T20:01Z"));
+    }
+    
+    
     private AlwaysTrigger makeAlwaysTrigger() {
         return new AlwaysTrigger(new Properties());
     }
