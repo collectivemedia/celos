@@ -11,15 +11,14 @@ public class SlotStateTest {
         SlotState waiting = new SlotState(id, SlotState.Status.WAITING);
         SlotState ready = new SlotState(id, SlotState.Status.READY);
         Assert.assertEquals(ready, waiting.transitionToReady());
-        SlotState running = new SlotState(id, SlotState.Status.RUNNING);
-        running.setExternalID("external");
+        SlotState running = new SlotState(id, SlotState.Status.RUNNING, "external", 0);
         Assert.assertEquals(running, ready.transitionToRunning("external"));
-        SlotState success = new SlotState(id, SlotState.Status.SUCCESS);
-        success.setExternalID("external");
+        SlotState success = new SlotState(id, SlotState.Status.SUCCESS, "external", 0);
         Assert.assertEquals(success, running.transitionToSuccess());        
-        SlotState failure = new SlotState(id, SlotState.Status.FAILURE);
-        failure.setExternalID("external");
+        SlotState failure = new SlotState(id, SlotState.Status.FAILURE, "external", 0);
         Assert.assertEquals(failure, running.transitionToFailure());        
+        SlotState retry = new SlotState(id, SlotState.Status.READY, null, 1);
+        Assert.assertEquals(retry, running.transitionToRetry());        
     }
 
     @Test

@@ -10,9 +10,9 @@ public class SlotState extends ValueObject {
     /** Never null. */
     protected final Status status;
     /** Only set in RUNNING, SUCCESS, FAILURE states; null otherwise. */
-    private String externalID;
+    private final String externalID;
     /** Initially zero, increased every time the slot is rerun. */
-    private int retryCount;
+    private final int retryCount;
     
     public enum Status {
         /** No data availability yet. */
@@ -55,11 +55,6 @@ public class SlotState extends ValueObject {
         return externalID;
     }
     
-    // Should only be used by deserialization code
-    void setExternalID(String externalID) {
-        this.externalID = externalID;
-    }
-    
     public int getRetryCount() {
         return retryCount;
     }
@@ -84,6 +79,11 @@ public class SlotState extends ValueObject {
     public SlotState transitionToFailure() {
         assertStatus(Status.RUNNING);
         return new SlotState(slotID, Status.FAILURE, externalID, retryCount);
+    }
+
+    public SlotState transitionToRetry() {
+        assertStatus(Status.RUNNING);
+        return new SlotState(slotID, Status.READY, null, retryCount + 1);
     }
 
     private void assertStatus(Status st) {
