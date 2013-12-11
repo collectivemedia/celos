@@ -8,6 +8,7 @@ import java.util.Set;
 
 import junit.framework.Assert;
 
+import org.apache.commons.io.IOUtils;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -45,8 +46,8 @@ public class FileSystemStateDatabaseTest {
         SlotState state1 = new SlotState(id, SlotState.Status.WAITING);
         SlotState state2 = new SlotState(id, SlotState.Status.READY).transitionToRunning("foo-external-ID");
         FileSystemStateDatabase db = new FileSystemStateDatabase(makeDatabaseDir());
-        String json1 = "{\"status\":\"WAITING\"}";
-        String json2 = "{\"status\":\"RUNNING\",\"externalID\":\"foo-external-ID\"}";
+        String json1 = "{\"status\":\"WAITING\",\"externalID\":null,\"retryCount\":0}";
+        String json2 = "{\"status\":\"RUNNING\",\"externalID\":\"foo-external-ID\",\"retryCount\":0}";
 
         Assert.assertEquals(json1, db.slotStateToJSON(state1));
         Assert.assertEquals(json2, db.slotStateToJSON(state2));
@@ -85,7 +86,12 @@ public class FileSystemStateDatabaseTest {
      */
     private boolean diff(File a, File b) throws Exception {
         Process diff = new ProcessBuilder("diff", "-r", a.getAbsolutePath(), b.getAbsolutePath()).start();
-        return (diff.waitFor() != 0);
+        int exitValue = diff.waitFor();
+        if (exitValue != 0) {
+            String diffOut = IOUtils.toString(diff.getInputStream(), "UTF-8");
+            System.err.print(diffOut);
+        }
+        return (exitValue != 0);
     }
 
     /**
@@ -108,7 +114,7 @@ public class FileSystemStateDatabaseTest {
         states.add(new SlotState(new SlotID(wf1, new ScheduledTime("2013-12-02T17:00Z")), 
                 SlotState.Status.WAITING));
         states.add(new SlotState(new SlotID(wf1, new ScheduledTime("2013-12-02T18:00Z")), 
-                SlotState.Status.READY));
+                SlotState.Status.READY, null, 14));
         states.add(new SlotState(new SlotID(wf1, new ScheduledTime("2013-12-02T19:00Z")), 
                 SlotState.Status.READY).transitionToRunning("foo-bar"));
 
@@ -117,7 +123,7 @@ public class FileSystemStateDatabaseTest {
         states.add(new SlotState(new SlotID(wf2, new ScheduledTime("2013-12-02T18:00Z")), 
                 SlotState.Status.READY));
         states.add(new SlotState(new SlotID(wf2, new ScheduledTime("2013-12-02T19:00Z")), 
-                SlotState.Status.READY).transitionToRunning("quux"));
+                SlotState.Status.READY, null, 2).transitionToRunning("quux"));
         
         return states;
     }

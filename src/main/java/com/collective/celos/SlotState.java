@@ -11,6 +11,8 @@ public class SlotState extends ValueObject {
     protected final Status status;
     /** Only set in RUNNING, SUCCESS, FAILURE states; null otherwise. */
     private String externalID;
+    /** Initially zero, increased every time the slot is rerun. */
+    private int retryCount;
     
     public enum Status {
         /** No data availability yet. */
@@ -27,10 +29,16 @@ public class SlotState extends ValueObject {
     };
     
     public SlotState(SlotID slotID, Status status) {
-        this.slotID = Util.requireNonNull(slotID);
-        this.status = Util.requireNonNull(status);
+        this(slotID, status, null, 0);
     }
 
+    public SlotState(SlotID slotID, Status status, String externalID, int retryCount) {
+        this.slotID = Util.requireNonNull(slotID);
+        this.status = Util.requireNonNull(status);
+        this.externalID = externalID;
+        this.retryCount = retryCount;
+    }
+    
     public SlotID getSlotID() {
         return slotID;
     }
@@ -52,33 +60,30 @@ public class SlotState extends ValueObject {
         this.externalID = externalID;
     }
     
+    public int getRetryCount() {
+        return retryCount;
+    }
+    
     // TODO: test these transitions
     
     public SlotState transitionToReady() {
         assertStatus(Status.WAITING);
-        SlotState newState = new SlotState(this.slotID, Status.READY);
-        return newState;
+        return new SlotState(slotID, Status.READY, null, 0);
     }
     
     public SlotState transitionToRunning(String externalID) {
         assertStatus(Status.READY);
-        SlotState newState = new SlotState(this.slotID, Status.RUNNING);
-        newState.setExternalID(Util.requireNonNull(externalID));
-        return newState;
+        return new SlotState(slotID, Status.RUNNING, externalID, retryCount);
     }
 
     public SlotState transitionToSuccess() {
         assertStatus(Status.RUNNING);
-        SlotState newState = new SlotState(this.slotID, Status.SUCCESS);
-        newState.setExternalID(externalID);
-        return newState;
+        return new SlotState(slotID, Status.SUCCESS, externalID, retryCount);
     }
 
     public SlotState transitionToFailure() {
         assertStatus(Status.RUNNING);
-        SlotState newState = new SlotState(this.slotID, Status.FAILURE);
-        newState.setExternalID(externalID);
-        return newState;
+        return new SlotState(slotID, Status.FAILURE, externalID, retryCount);
     }
 
     private void assertStatus(Status st) {

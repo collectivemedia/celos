@@ -2,13 +2,11 @@ package com.collective.celos;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
  * Brutally simple persistent implementation of StateDatabase
@@ -41,6 +39,7 @@ public class FileSystemStateDatabase implements StateDatabase {
 
     private static final String STATUS_PROP = "status";
     private static final String EXTERNAL_ID_PROP = "externalID";
+    private static final String RETRY_COUNT_PROP = "retryCount";
     
     private static final String CHARSET = "UTF-8";
 
@@ -89,25 +88,19 @@ public class FileSystemStateDatabase implements StateDatabase {
     }
 
     SlotState slotStateFromJSON(SlotID id, String json) throws Exception {
-        TypeReference<HashMap<String,String>> typeRef =
-                new TypeReference<HashMap<String,String>>() {}; 
-        Map<String, String> properties = mapper.readValue(json, typeRef);
-        SlotState.Status status = SlotState.Status.valueOf(properties.get(STATUS_PROP));
-        SlotState state = new SlotState(id, status);
-        String externalID = properties.get(EXTERNAL_ID_PROP);
-        if (externalID != null) {
-            state.setExternalID(externalID);
-        }
-        return state;
+        ObjectNode node = (ObjectNode) mapper.readTree(json);
+        SlotState.Status status = SlotState.Status.valueOf(node.get(STATUS_PROP).textValue());
+        String externalID = node.get(EXTERNAL_ID_PROP).textValue();
+        int retryCount = node.get(RETRY_COUNT_PROP).intValue();
+        return new SlotState(id, status, externalID, retryCount);
     }
 
     String slotStateToJSON(SlotState state) throws Exception {
-        Map<String, String> properties = new HashMap<String, String>();
-        properties.put(STATUS_PROP, state.getStatus().toString());
-        if (state.getExternalID() != null) {
-            properties.put(EXTERNAL_ID_PROP, state.getExternalID());
-        }
-        return mapper.writeValueAsString(properties);
+        ObjectNode node = mapper.createObjectNode();
+        node.put(STATUS_PROP, state.getStatus().toString());
+        node.put(EXTERNAL_ID_PROP, state.getExternalID());
+        node.put(RETRY_COUNT_PROP, state.getRetryCount());
+        return mapper.writeValueAsString(node);
     }
 
 }
