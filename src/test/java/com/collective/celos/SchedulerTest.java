@@ -612,11 +612,11 @@ public class SchedulerTest {
     public void testRepeatedlyFailingExternalService() throws ExternalServiceException {
         ExternalService srv = new RepeatedlyFailingExternalService(2);
         srv.start("fake-external-id");
-        Assert.assertEquals(false, srv.getStatus("fake-external-id").isSuccess());
+        Assert.assertFalse(srv.getStatus("fake-external-id").isSuccess());
         srv.start("fake-external-id");
-        Assert.assertEquals(false, srv.getStatus("fake-external-id").isSuccess());
+        Assert.assertFalse(srv.getStatus("fake-external-id").isSuccess());
         srv.start("fake-external-id");
-        Assert.assertEquals(true, srv.getStatus("fake-external-id").isSuccess());
+        Assert.assertTrue(srv.getStatus("fake-external-id").isSuccess());
     }
     
     
@@ -667,7 +667,6 @@ public class SchedulerTest {
         Assert.assertEquals(running3, db.getSlotState(id1));
         sch.step(new ScheduledTime("2013-11-27T20:01Z"));
         Assert.assertEquals(success, db.getSlotState(id1));
-        sch.step(new ScheduledTime("2013-11-27T20:01Z"));
     }
 
     /**
