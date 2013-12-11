@@ -716,7 +716,6 @@ public class SchedulerTest {
         Assert.assertEquals(running3, db.getSlotState(id1));
         sch.step(new ScheduledTime("2013-11-27T20:01Z"));
         Assert.assertEquals(failure, db.getSlotState(id1));
-        sch.step(new ScheduledTime("2013-11-27T20:01Z"));
     }
     
     
