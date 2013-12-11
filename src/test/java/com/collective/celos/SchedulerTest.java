@@ -58,11 +58,12 @@ public class SchedulerTest {
         schedule = mock(Schedule.class);
         schedulingStrategy = mock(SchedulingStrategy.class);
         externalService = mock(ExternalService.class);
+        int maxRetryCount = 0;
 
         // Objects
         workflowId = new WorkflowID("workflow-id");
         wf = new Workflow(workflowId, schedule, schedulingStrategy, trigger,
-                externalService);
+                externalService, maxRetryCount);
         scheduledTime = new ScheduledTime("2013-11-26T15:00Z");
         slotId = new SlotID(workflowId, scheduledTime);
 
@@ -323,7 +324,8 @@ public class SchedulerTest {
         SchedulingStrategy str1 = makeSerialSchedulingStrategy();
         Trigger tr1 = makeAlwaysTrigger();
         ExternalService srv1 = new MockExternalService(new MockExternalService.MockExternalStatusRunning());
-        Workflow wf1 = new Workflow(wfID1, sch1, str1, tr1, srv1);
+        int maxRetryCount = 0;
+        Workflow wf1 = new Workflow(wfID1, sch1, str1, tr1, srv1, maxRetryCount);
         
         Set<Workflow> workflows = new HashSet<Workflow>();
         workflows.add(wf1);
@@ -366,7 +368,8 @@ public class SchedulerTest {
         SchedulingStrategy str1 = makeSerialSchedulingStrategy();
         Trigger tr1 = new NeverTrigger();
         ExternalService srv1 = new MockExternalService(new MockExternalService.MockExternalStatusRunning());
-        Workflow wf1 = new Workflow(wfID1, sch1, str1, tr1, srv1);
+        int maxRetryCount = 0;
+        Workflow wf1 = new Workflow(wfID1, sch1, str1, tr1, srv1, maxRetryCount);
         
         Set<Workflow> workflows = new HashSet<Workflow>();
         workflows.add(wf1);
@@ -422,7 +425,8 @@ public class SchedulerTest {
         SchedulingStrategy str1 = makeSerialSchedulingStrategy();
         Trigger tr1 = makeAlwaysTrigger();
         ExternalService srv1 = new MockExternalService(externalStatus);
-        Workflow wf1 = new Workflow(wfID1, sch1, str1, tr1, srv1);
+        int maxRetryCount = 0;
+        Workflow wf1 = new Workflow(wfID1, sch1, str1, tr1, srv1, maxRetryCount);
         
         Set<Workflow> workflows = new HashSet<Workflow>();
         workflows.add(wf1);
@@ -469,7 +473,8 @@ public class SchedulerTest {
         SchedulingStrategy str1 = makeTrivialSchedulingStrategy();
         Trigger tr1 = makeAlwaysTrigger();
         MockExternalService srv1 = new MockExternalService(new MockExternalService.MockExternalStatusRunning());
-        Workflow wf1 = new Workflow(wfID1, sch1, str1, tr1, srv1);
+        int maxRetryCount = 0;
+        Workflow wf1 = new Workflow(wfID1, sch1, str1, tr1, srv1, maxRetryCount);
         
         Set<Workflow> workflows = new HashSet<Workflow>();
         workflows.add(wf1);
@@ -529,7 +534,8 @@ public class SchedulerTest {
         SchedulingStrategy str1 = makeSerialSchedulingStrategy();
         Trigger tr1 = makeAlwaysTrigger();
         MockExternalService srv1 = new MockExternalService(new MockExternalService.MockExternalStatusRunning());
-        Workflow wf1 = new Workflow(wfID1, sch1, str1, tr1, srv1);
+        int maxRetryCount = 0;
+        Workflow wf1 = new Workflow(wfID1, sch1, str1, tr1, srv1, maxRetryCount);
         
         Set<Workflow> workflows = new HashSet<Workflow>();
         workflows.add(wf1);

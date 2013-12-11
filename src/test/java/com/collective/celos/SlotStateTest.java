@@ -20,7 +20,7 @@ public class SlotStateTest {
         SlotState retry = new SlotState(id, SlotState.Status.READY, null, 1);
         Assert.assertEquals(retry, running.transitionToRetry());        
     }
-
+    
     @Test
     public void slotStateGetScheduledTimeWorks() {
         ScheduledTime t = new ScheduledTime("2013-11-26T13:00Z");
