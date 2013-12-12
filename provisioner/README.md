@@ -1,4 +1,4 @@
-# Credentials
+## Credentials
 
 Send an email to Sarguru, cc'ing sysadmins@collective.com,
 and ask for AWS access to the virtual testing cluster.
@@ -7,10 +7,13 @@ You will get:
 
 Username:
 sample_your_name
+
 Access Key ID:
 SAMPLEKJHDKUAEMACSDAILRULESKDKLAJ
+
 Secret Access Key:
 sampleAAHdfDfgLGNUKJAHjIShDUINOTHDWWJUNIXDOIAAA
+
 Password:
 sample98313379843$hfs
 
@@ -26,11 +29,11 @@ usual public key, giving it a unique name.
 
 You need to set the following variables:
 
-export EC2_KEYPAIR="keypair-name-from-previous-step"
-export CELOS_GROUP_UID=$EC2_KEYPAIR
-export AWS_ACCESS_KEY_ID="SAMPLEKJHDKUAEMACSDAILRULESKDKLAJ"
-export AWS_SECRET_ACCESS_KEY="sampleAAHdfDfgLGNUKJAHjIShDUINOTHDWWJUNIXDOIAAA"
-export ANSIBLE_HOST_KEY_CHECKING=False
+    export EC2_KEYPAIR="keypair-name-from-previous-step"
+    export CELOS_GROUP_UID=$EC2_KEYPAIR
+    export AWS_ACCESS_KEY_ID="SAMPLEKJHDKUAEMACSDAILRULESKDKLAJ"
+    export AWS_SECRET_ACCESS_KEY="sampleAAHdfDfgLGNUKJAHjIShDUINOTHDWWJUNIXDOIAAA"
+    export ANSIBLE_HOST_KEY_CHECKING=False
 
 (Add these to your shell RC file.)
 
@@ -41,11 +44,11 @@ export ANSIBLE_HOST_KEY_CHECKING=False
 
 # Gooooooooooooooo!
 
-./bootstrap.sh
+    ./bootstrap.sh
 
 (Of course, this will not work the first time.  I mean, we're talking
 about computers here, right?  Heck, distributed computers!)
 
 Once you're done, you can shut down the cluster with:
 
-./destroy.sh
+    ./destroy.sh
