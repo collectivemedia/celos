@@ -33,7 +33,6 @@ usual public key, giving it a unique name.
 You need to set the following variables:
 
     export EC2_KEYPAIR="keypair-name-from-previous-step"
-    export CELOS_GROUP_UID=$EC2_KEYPAIR
     export AWS_ACCESS_KEY_ID="SAMPLEKJHDKUAEMACSDAILRULESKDKLAJ"
     export AWS_SECRET_ACCESS_KEY="sampleAAHdfDfgLGNUKJAHjIShDUINOTHDWWJUNIXDOIAAA"
     export ANSIBLE_HOST_KEY_CHECKING=False
