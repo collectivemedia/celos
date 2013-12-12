@@ -17,7 +17,7 @@ import com.collective.celos.Scheduler;
 @SuppressWarnings("serial")
 public class SchedulerServlet extends AbstractServlet {
     
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException {
+    protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException {
         try {
             Scheduler scheduler = DefaultConfiguration.makeDefaultScheduler();
             ScheduledTime current = new ScheduledTime(DateTime.now(DateTimeZone.UTC));

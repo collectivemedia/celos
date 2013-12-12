@@ -17,7 +17,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 @SuppressWarnings("serial")
 public class JSONWorkflowListServlet extends AbstractJSONServlet {
     
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException {
+    protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException {
         try {
             Scheduler sch = DefaultConfiguration.makeDefaultScheduler();
             WorkflowConfiguration cfg = sch.getWorkflowConfiguration();
@@ -27,7 +27,7 @@ public class JSONWorkflowListServlet extends AbstractJSONServlet {
             }
             ObjectNode object = mapper.createObjectNode();
             object.put("ids", list);
-            writer.writeValue(resp.getOutputStream(), object);
+            writer.writeValue(res.getOutputStream(), object);
         } catch(Exception e) {
             throw new ServletException(e);
         }

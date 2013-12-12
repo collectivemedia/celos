@@ -9,9 +9,10 @@ public class DefaultConfiguration {
 
     public static Scheduler makeDefaultScheduler() throws Exception {
         File configFile = new File(CONFIG_PATH);
+        File dbFile = new File(DB_PATH);
         WorkflowConfiguration config =
                 new WorkflowConfigurationParser().parseConfiguration(configFile);
-        StateDatabase db = new FileSystemStateDatabase(new File(DB_PATH));
+        StateDatabase db = new FileSystemStateDatabase(dbFile);
         int slidingWindowHours = 24 * 7;
         return new Scheduler(config, db, slidingWindowHours);
     }
