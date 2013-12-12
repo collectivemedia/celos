@@ -14,7 +14,7 @@ public class Scheduler {
     private final int slidingWindowHours;
     private final WorkflowConfiguration configuration;
     private final StateDatabase database;
-
+    
     public Scheduler(WorkflowConfiguration configuration, StateDatabase database, int slidingWindowHours) {
         if (slidingWindowHours <= 0) {
             throw new IllegalArgumentException("Sliding window hours must greater then zero.");
@@ -120,6 +120,18 @@ public class Scheduler {
                 }
             }
         }
+    }
+    
+    public int getSlidingWindowHours() {
+        return slidingWindowHours;
+    }
+
+    public WorkflowConfiguration getWorkflowConfiguration() {
+        return configuration;
+    }
+
+    public StateDatabase getStateDatabase() {
+        return database;
     }
 
 }
