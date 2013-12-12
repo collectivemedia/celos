@@ -1,3 +1,5 @@
+# Virtual Testing Cluster Provisioner
+
 ## Credentials
 
 Send an email to Sarguru, cc'ing sysadmins@collective.com,
@@ -17,7 +19,7 @@ sampleAAHdfDfgLGNUKJAHjIShDUINOTHDWWJUNIXDOIAAA
 Password:
 sample98313379843$hfs
 
-# Get EC2 Keypair from AWS Console
+## Get EC2 Keypair from AWS Console
 
 Sign in to https://collective.signin.aws.amazon.com/console using
 username and password from above.
@@ -25,7 +27,7 @@ username and password from above.
 Go to EC2 Console -> Key Pairs -> Import Key Pair and upload your
 usual public key, giving it a unique name.
 
-# Environment Variables
+## Environment Variables
 
 You need to set the following variables:
 
@@ -37,12 +39,12 @@ You need to set the following variables:
 
 (Add these to your shell RC file.)
 
-# Software Prerequisites
+## Software Prerequisites
 
 - Ansible: http://ansibleworks.com/docs/intro_installation.html
 - Ruby Gems: gem install aws-sdk clap
 
-# Gooooooooooooooo!
+## Gooooooooooooooo!
 
     ./bootstrap.sh
 
