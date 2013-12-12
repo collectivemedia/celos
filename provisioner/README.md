@@ -51,6 +51,9 @@ You need to set the following variables:
 (Of course, this will not work the first time.  I mean, we're talking
 about computers here, right?  Heck, distributed computers!)
 
+Once it works, look into `tmp/inventory` to find the assigned host
+names.  You can ssh into them using username `ubuntu`.
+
 Once you're done, you can shut down the cluster with:
 
     ./destroy.sh
