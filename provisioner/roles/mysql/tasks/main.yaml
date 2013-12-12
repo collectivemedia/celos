@@ -1,0 +1,25 @@
+---
+# file: roles/hadoop_master/tasks/main.yml
+
+- name: Install the mysql packages
+  apt: name={{ item }} update_cache=yes
+  with_items:
+    - mysql-server
+    - mysql-client
+  tags: mysql
+
+- name: Start mysql service
+  service: name=mysql state=started enabled=true
+  tags: mysql
+
+- name: Install python Mysql package #required for mysql_db tasks
+  apt: name=python-mysqldb state=present
+  tags: mysql
+
+- name: 3. Create  demo database
+  mysql_db: name=demo state=present collation=utf8_general_ci
+  tags: mysql
+
+- name: Create demo database user
+  mysql_user: name=demo password=demo priv=*.*:ALL host=localhost state=present
+  tags: mysql
