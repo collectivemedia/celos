@@ -26,7 +26,7 @@ public class SchedulerServlet extends HttpServlet {
     public static final Object LOCK = new Object();
 
     private static final String CONFIG_PATH = "/etc/celos/workflows";
-    private static final String DB_PATH = "/var/run/celos/db";
+    private static final String DB_PATH = "/var/lib/celos/db";
 
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException {
         synchronized(LOCK) {
