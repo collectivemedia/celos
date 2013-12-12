@@ -2,8 +2,9 @@
 
 ## Credentials
 
-Send an email to Sarguru, cc'ing sysadmins@collective.com,
-and ask for AWS access to the virtual testing cluster.
+Send an email to Sarguru (smohan@collective.com), cc'ing
+sysadmins@collective.com, and ask for AWS access to the virtual
+testing cluster, if you don't have them already.
 
 You will get:
 
