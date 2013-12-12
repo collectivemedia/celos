@@ -2,7 +2,7 @@ package com.collective.celos;
 
 import java.io.File;
 
-public class DefaultConfiguration {
+public class SchedulerConfiguration {
 
     private static final String CONFIG_PATH = "/etc/celos/workflows";
     private static final String DB_PATH = "/var/lib/celos/db";

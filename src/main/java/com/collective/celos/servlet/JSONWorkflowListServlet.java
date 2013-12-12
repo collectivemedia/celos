@@ -4,7 +4,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.collective.celos.DefaultConfiguration;
+import com.collective.celos.SchedulerConfiguration;
 import com.collective.celos.Scheduler;
 import com.collective.celos.Workflow;
 import com.collective.celos.WorkflowConfiguration;
@@ -19,7 +19,7 @@ public class JSONWorkflowListServlet extends AbstractJSONServlet {
     
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException {
         try {
-            Scheduler sch = DefaultConfiguration.makeDefaultScheduler();
+            Scheduler sch = SchedulerConfiguration.makeDefaultScheduler();
             WorkflowConfiguration cfg = sch.getWorkflowConfiguration();
             ArrayNode list = mapper.createArrayNode();
             for (Workflow wf : cfg.getWorkflows()) {

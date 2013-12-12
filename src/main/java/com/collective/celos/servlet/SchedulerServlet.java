@@ -7,7 +7,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
-import com.collective.celos.DefaultConfiguration;
+import com.collective.celos.SchedulerConfiguration;
 import com.collective.celos.ScheduledTime;
 import com.collective.celos.Scheduler;
 
@@ -19,7 +19,7 @@ public class SchedulerServlet extends AbstractServlet {
     
     protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException {
         try {
-            Scheduler scheduler = DefaultConfiguration.makeDefaultScheduler();
+            Scheduler scheduler = SchedulerConfiguration.makeDefaultScheduler();
             ScheduledTime current = new ScheduledTime(DateTime.now(DateTimeZone.UTC));
             scheduler.step(current);
         } catch(Exception e) {
