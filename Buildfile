@@ -46,6 +46,5 @@ define 'Celos' do
   
   test.with(TEST_DEPENDENCIES)
   
-#  package(:war).include((compile.dependencies - HADOOP), :path => "WEB-INF/lib")
-  package :war
+  package(:war).libs -= artifacts('javax.servlet:servlet-api:jar:2.3')
 end
