@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServlet;
 /**
  * Superclass for all servlets that access the database.
  * 
- * Serializes all database with a lock.
+ * Serializes all database accesses with a lock.
  */
 @SuppressWarnings("serial")
 public abstract class AbstractServlet extends HttpServlet {
