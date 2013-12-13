@@ -1,11 +1,14 @@
 package com.collective.celos.servlet;
 
+import java.util.SortedSet;
+import java.util.TreeSet;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.collective.celos.SchedulerConfiguration;
 import com.collective.celos.Scheduler;
+import com.collective.celos.SchedulerConfiguration;
 import com.collective.celos.Workflow;
 import com.collective.celos.WorkflowConfiguration;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -29,9 +32,14 @@ public class JSONWorkflowListServlet extends AbstractJSONServlet {
     }
 
     ObjectNode createJSONObject(WorkflowConfiguration cfg) {
-        ArrayNode list = mapper.createArrayNode();
+        // Make sure the IDs are sorted
+        SortedSet<String> ids = new TreeSet<String>();
         for (Workflow wf : cfg.getWorkflows()) {
-            list.add(wf.getID().toString());
+            ids.add(wf.getID().toString());
+        }
+        ArrayNode list = mapper.createArrayNode();
+        for (String id : ids) {
+            list.add(id);
         }
         ObjectNode object = mapper.createObjectNode();
         object.put("ids", list);
