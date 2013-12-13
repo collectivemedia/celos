@@ -1,0 +1,23 @@
+---
+# The main playbook to deploy the site
+
+- hosts: hadoop_all
+  sudo: yes
+  remote_user: ubuntu
+  roles:
+   - oracle_jdk
+   - cdh4_common
+
+- hosts: hadoop_masters
+  sudo: yes
+  remote_user: ubuntu
+  roles:
+   - hadoop_master
+   - mysql
+   - oozie
+
+- hosts: hadoop_slaves
+  sudo: yes
+  remote_user: ubuntu
+  roles:
+    - hadoop_slave

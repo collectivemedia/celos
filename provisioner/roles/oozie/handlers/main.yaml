@@ -1,0 +1,8 @@
+---
+# Handlers for the hadoop master services
+
+- name: restart oozie services
+  service: name=${item} state=restarted
+  with_items: 
+    - oozie
+  tags: oozie
