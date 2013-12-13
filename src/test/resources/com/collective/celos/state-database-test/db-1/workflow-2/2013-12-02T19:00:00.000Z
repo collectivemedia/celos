@@ -1,1 +1,1 @@
-{"status":"RUNNING","externalID":"quux"}
+{"status":"RUNNING","externalID":"quux","retryCount":2}

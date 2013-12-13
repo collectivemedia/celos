@@ -27,6 +27,7 @@ public class WorkflowConfigurationParser {
     private static final String SCHEDULING_STRATEGY_PROP = "schedulingStrategy";
     private static final String SCHEDULE_PROP = "schedule";
     private static final String ID_PROP = "id";
+    private static final String MAX_RETRY_COUNT_PROP = "maxRetryCount";
 
     public WorkflowConfiguration parseConfiguration(File dir) throws Exception {
         Collection<File> files = FileUtils.listFiles(dir, new String[] { "json" }, false);
@@ -40,21 +41,42 @@ public class WorkflowConfigurationParser {
     private Workflow parseFile(File f) throws Exception {
         JsonNode workflowNode = new ObjectMapper().readTree(f);
         WorkflowID id = getWorkflowID(workflowNode);
-        Schedule schedule =
-                (Schedule) createInstance(workflowNode.get(SCHEDULE_PROP));
-        SchedulingStrategy schedulingStrategy =
-                (SchedulingStrategy) createInstance(workflowNode.get(SCHEDULING_STRATEGY_PROP));
-        Trigger trigger =
-                (Trigger) createInstance(workflowNode.get(TRIGGER_PROP));
-        ExternalService externalService =
-                (ExternalService) createInstance(workflowNode.get(EXTERNAL_SERVICE_PROP));
-        return new Workflow(id, schedule, schedulingStrategy, trigger, externalService);
+        Schedule schedule = getScheduleFromJSON(workflowNode);
+        SchedulingStrategy schedulingStrategy = getSchedulingStrategyFromJSON(workflowNode);
+        Trigger trigger = getTriggerFromJSON(workflowNode);
+        ExternalService externalService = getExternalServiceFromJSON(workflowNode);
+        int maxRetryCount = getMaxRetryCountFromJSON(workflowNode);
+        return new Workflow(id, schedule, schedulingStrategy, trigger, externalService, maxRetryCount);
+    }
+
+    private int getMaxRetryCountFromJSON(JsonNode workflowNode) {
+        JsonNode maxRetryCountNode = workflowNode.get(MAX_RETRY_COUNT_PROP);
+        if (!maxRetryCountNode.isNumber()) {
+            throw new IllegalArgumentException("maxRetryCount must be a number: " + workflowNode.toString());
+        }
+        return maxRetryCountNode.intValue();
+    }
+
+    private ExternalService getExternalServiceFromJSON(JsonNode workflowNode) throws Exception {
+        return (ExternalService) createInstance(workflowNode.get(EXTERNAL_SERVICE_PROP));
+    }
+
+    private Trigger getTriggerFromJSON(JsonNode workflowNode) throws Exception {
+        return (Trigger) createInstance(workflowNode.get(TRIGGER_PROP));
+    }
+
+    private SchedulingStrategy getSchedulingStrategyFromJSON(JsonNode workflowNode) throws Exception {
+        return (SchedulingStrategy) createInstance(workflowNode.get(SCHEDULING_STRATEGY_PROP));
+    }
+
+    private Schedule getScheduleFromJSON(JsonNode workflowNode) throws Exception {
+        return (Schedule) createInstance(workflowNode.get(SCHEDULE_PROP));
     }
 
     private WorkflowID getWorkflowID(JsonNode workflowNode) {
         JsonNode idNode = workflowNode.get(ID_PROP);
         if (idNode == null || !idNode.isTextual()) {
-            throw new IllegalArgumentException("ID must be a string: " + workflowNode.asText());
+            throw new IllegalArgumentException("ID must be a string: " + workflowNode.toString());
         }
         return new WorkflowID(idNode.textValue());
     }
@@ -68,7 +90,7 @@ public class WorkflowConfigurationParser {
     private Constructor<?> getConstructor(JsonNode workflowNode) throws ClassNotFoundException {
         JsonNode typeNode = workflowNode.get(TYPE_PROP);
         if (typeNode == null || !typeNode.isTextual()) {
-            throw new IllegalArgumentException("Type must be a string: " + workflowNode.asText());
+            throw new IllegalArgumentException("Type must be a string: " + workflowNode.toString());
         }
         String className = typeNode.textValue();
         Class<?> c = Class.forName(className);

@@ -125,6 +125,8 @@ public class WorkflowConfigurationParserTest {
         Properties triggerProperties = new Properties();
         triggerProperties.setProperty("foo", "bar");
         Assert.assertEquals(triggerProperties, trigger.getProperties());
+        
+        Assert.assertEquals(55, wf.getMaxRetryCount());
     }
     
     @Test(expected=ClassNotFoundException.class)
@@ -150,6 +152,16 @@ public class WorkflowConfigurationParserTest {
     @Test(expected=IllegalArgumentException.class)
     public void idMustBeAString() throws Exception {
         parseDir("id-not-a-string");
+    }
+    
+    @Test(expected=NullPointerException.class)
+    public void maxRetryCountMustBeSet() throws Exception {
+        parseDir("maxretrycount-missing");
+    }
+    
+    @Test(expected=IllegalArgumentException.class)
+    public void maxRetryCountMustBeANumber() throws Exception {
+        parseDir("maxretrycount-not-a-number");
     }
     
     public static WorkflowConfiguration parseDir(String label) throws Exception {

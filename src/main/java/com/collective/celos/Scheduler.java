@@ -116,7 +116,11 @@ public class Scheduler {
                 if (xStatus.isSuccess()) {
                     database.putSlotState(slotState.transitionToSuccess());
                 } else {
-                    database.putSlotState(slotState.transitionToFailure());
+                    if (slotState.getRetryCount() < wf.getMaxRetryCount()) {
+                        database.putSlotState(slotState.transitionToRetry());
+                    } else {
+                        database.putSlotState(slotState.transitionToFailure());
+                    }
                 }
             }
         }

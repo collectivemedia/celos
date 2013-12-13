@@ -5,7 +5,7 @@ require "clap"
 
 access_key_id = ENV["AWS_ACCESS_KEY_ID"]
 secret_access_key = ENV["AWS_SECRET_ACCESS_KEY"]
-celos_sec_gp = ENV["CELOS_GROUP_UID"]
+celos_sec_gp = ENV["EC2_KEYPAIR"]
 
 if access_key_id.nil? || secret_access_key.nil?
   abort("You must set $AWS_ACCESS_KEY_ID and $AWS_SECRET_ACCESS_KEY in environment variables.")
