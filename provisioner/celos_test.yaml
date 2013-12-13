@@ -15,6 +15,8 @@
 
   tasks:
 
+  # TODO: move these 2 to celos_deploy
+
   - name: Prepare configuration dir
     shell: sudo rm -rf {{celos_workflows_dir}}/* && sudo mkdir -p {{celos_workflows_dir}}
       && sudo chown {{celos_user}}:{{celos_user}} {{celos_workflows_dir}}
@@ -23,5 +25,12 @@
     shell: sudo rm -rf {{celos_db_dir}}/* && sudo mkdir -p {{celos_db_dir}}
       && sudo chown {{celos_user}}:{{celos_user}} {{celos_db_dir}}
 
-  - name: Testing servlet /celos/workflow-list
+  - name: Testing servlet /celos/workflow-list with empty configuration
     local_action: shell curl {{inventory_hostname}}:8080/celos/workflow-list | diff - test_files/empty_workflow_list.json
+
+  - name: Upload sample workflow configuration files
+    local_action: command rsync -az -e ssh {{local_celos}}/src/test/resources/com/collective/celos/workflow-configuration-test/json-workflow-list-servlet-test/
+      {{celos_user}}@{{inventory_hostname}}:{{celos_workflows_dir}}
+
+  - name: Testing servlet /celos/workflow-list with non-empty configuration
+    local_action: shell curl {{inventory_hostname}}:8080/celos/workflow-list | diff - test_files/workflow_list.json
