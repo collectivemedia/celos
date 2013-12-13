@@ -15,6 +15,7 @@
    - hadoop_master
    - mysql
    - oozie
+   - tomcat
 
 - hosts: hadoop_slaves
   sudo: yes
