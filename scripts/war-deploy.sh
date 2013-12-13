@@ -2,7 +2,7 @@
 set -e
 set -x
 
-# Deploy WAR to local Tomcat (usually ran on test cluster)
+# Deploy WAR to local Tomcat (usually run on test cluster)
 
 sudo /etc/init.d/tomcat7 stop
 sudo rm -rf /var/lib/tomcat7/webapps/celos
