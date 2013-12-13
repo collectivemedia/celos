@@ -2,6 +2,6 @@
 set -e
 set -x
 
-# Deploy currently checked-out local source on test cluster
+# Run integration tests against currently checkout local source on test cluster.
 
 ansible-playbook -i provisioner/tmp/inventory -u ubuntu provisioner/celos_test.yaml
