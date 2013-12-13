@@ -1,5 +1,8 @@
 # Virtual Testing Cluster Provisioner
 
+This will set up a virtual Hadoop cluster in AWS with a master node,
+and three data nodes.
+
 ## Credentials
 
 Send an email to Sarguru (smohan@collective.com), cc'ing
