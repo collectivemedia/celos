@@ -1,0 +1,13 @@
+# Stuff needed for building Celos
+---
+
+  - name: Ensure RubyGems is installed
+    apt: pkg=rubygems
+    tags:
+      - build_celos
+
+  - name: Ensure Buildr is installed
+    shell: curl http://buildr.apache.org/scripts/install-linux.sh | bash && gem install buildr
+      creates="/usr/local/bin/buildr"
+    tags:
+      - build_celos
