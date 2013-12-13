@@ -7,7 +7,7 @@ and three data nodes.
 
 Send an email to Sarguru (smohan@collective.com), cc'ing
 sysadmins@collective.com, and ask for AWS access to the virtual
-testing cluster, if you don't have them already.
+testing cluster, if you don't have it already.
 
 You will get:
 
