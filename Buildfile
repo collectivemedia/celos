@@ -36,7 +36,7 @@ TEST_DEPENDENCIES = [
 ]
 
 define 'celos' do
-  project.version = '0.1'
+  project.version = '0.1.0'
   manifest['Main-Class'] = 'com.collective.celos.Main'
 
   compile.options.source = '1.6'
