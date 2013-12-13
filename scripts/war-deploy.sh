@@ -2,7 +2,8 @@
 set -e
 set -x
 
-buildr clean package
+# Deploy WAR to local Tomcat (usually ran on test cluster)
+
 sudo /etc/init.d/tomcat7 stop
 sudo rm -rf /var/lib/tomcat7/webapps/celos
 sudo cp target/celos-0.1.war /var/lib/tomcat7/webapps/celos.war
