@@ -21,16 +21,21 @@ public class JSONWorkflowListServlet extends AbstractJSONServlet {
         try {
             Scheduler sch = new SchedulerConfiguration().makeDefaultScheduler();
             WorkflowConfiguration cfg = sch.getWorkflowConfiguration();
-            ArrayNode list = mapper.createArrayNode();
-            for (Workflow wf : cfg.getWorkflows()) {
-                list.add(wf.getID().toString());
-            }
-            ObjectNode object = mapper.createObjectNode();
-            object.put("ids", list);
+            ObjectNode object = createJSONObject(cfg);
             writer.writeValue(res.getOutputStream(), object);
         } catch(Exception e) {
             throw new ServletException(e);
         }
+    }
+
+    ObjectNode createJSONObject(WorkflowConfiguration cfg) {
+        ArrayNode list = mapper.createArrayNode();
+        for (Workflow wf : cfg.getWorkflows()) {
+            list.add(wf.getID().toString());
+        }
+        ObjectNode object = mapper.createObjectNode();
+        object.put("ids", list);
+        return object;
     }
 
 }
