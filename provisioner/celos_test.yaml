@@ -28,6 +28,12 @@
   - name: Testing servlet /celos/workflow-list with empty configuration
     local_action: shell curl {{inventory_hostname}}:8080/celos/workflow-list | diff - test_files/empty_workflow_list.json
 
+  - name: Check servlet /celos/scheduler responds to POST
+    local_action: shell curl --fail -X POST {{inventory_hostname}}:8080/celos/scheduler
+
+  - name: Check servlet /celos/scheduler doesn't respond to GET
+    local_action: shell ! curl --fail {{inventory_hostname}}:8080/celos/scheduler
+
   - name: Upload sample workflow configuration files
     local_action: command rsync -az -e ssh {{local_celos}}/src/test/resources/com/collective/celos/workflow-configuration-test/json-workflow-list-servlet-test/
       {{celos_user}}@{{inventory_hostname}}:{{celos_workflows_dir}}
