@@ -7,18 +7,18 @@ import java.io.File;
  */
 public class SchedulerConfiguration {
 
-    private static final String CONFIG_PATH = "/etc/celos/workflows";
-    private static final String DB_PATH = "/var/lib/celos/db";
+    private static final String WORKFLOW_CONFIGURATION_PATH = "/etc/celos/workflows";
+    private static final String STATE_DATABASE_PATH = "/var/lib/celos/db";
 
     public SchedulerConfiguration() {        
     }
     
     public Scheduler makeDefaultScheduler() throws Exception {
-        File configFile = new File(CONFIG_PATH);
-        File dbFile = new File(DB_PATH);
+        File configDir = new File(WORKFLOW_CONFIGURATION_PATH);
+        File dbDir = new File(STATE_DATABASE_PATH);
         WorkflowConfiguration config =
-                new WorkflowConfigurationParser().parseConfiguration(configFile);
-        StateDatabase db = new FileSystemStateDatabase(dbFile);
+                new WorkflowConfigurationParser().parseConfiguration(configDir);
+        StateDatabase db = new FileSystemStateDatabase(dbDir);
         int slidingWindowHours = 24 * 7;
         return new Scheduler(config, db, slidingWindowHours);
     }
