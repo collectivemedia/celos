@@ -1,0 +1,23 @@
+---
+# Playbook to deploy the current Celos source to the cluster.
+
+- hosts: hadoop_masters
+  gather_facts: no
+  vars:
+    local_celos: ..
+    remote_celos: ~/celos-deploy
+
+  tasks:
+
+  - name: Remove old files
+    shell: rm -rf {{remote_celos}}/*
+
+  - name: Copy files
+    local_action: command rsync -az -e ssh {{local_celos}}/Buildfile {{local_celos}}/src {{local_celos}}/scripts
+      ubuntu@{{inventory_hostname}}:{{remote_celos}}
+
+  - name: Build
+    shell: cd {{remote_celos}} && buildr TEST=no package
+
+  - name: Deploy WAR
+    shell: cd {{remote_celos}} && ./scripts/war-deploy.sh
