@@ -1,6 +1,6 @@
 # Virtual Testing Cluster Provisioner
 
-This will set up a virtual Hadoop cluster in AWS with a master node,
+This will set up a virtual Hadoop cluster in AWS with a master node
 and three data nodes.
 
 ## Credentials
@@ -21,7 +21,7 @@ You will get:
 Sign in to https://collective.signin.aws.amazon.com/console using
 username and password from above.
 
-Go to EC2 Console -> Key Pairs -> Import Key Pair and upload your
+Go to *EC2 Console -> Key Pairs -> Import Key Pair* and upload your
 usual public key, giving it a unique name.
 
 ## Environment Variables
@@ -38,7 +38,7 @@ You need to set the following variables:
 ## Software Prerequisites
 
 - Ansible: http://ansibleworks.com/docs/intro_installation.html
-- Ruby Gems: gem install aws-sdk clap
+- Ruby Gems: `gem install aws-sdk clap`
 
 ## Gooooooooooooooo!
 
@@ -47,12 +47,14 @@ You need to set the following variables:
 (Of course, this will not work the first time.  I mean, we're talking
 about computers here, right?  Heck, distributed computers!)
 
-Please make sure not to run the bootstrap script twice, it might lead
-to creating of multiple instances on the cloud. 
+Once it works, look into `tmp/inventory` to find the host names
+assigned to the master and data nodes.  You can `ssh` into them using
+username `ubuntu`.
 
-Once it works, look into `tmp/inventory` to find the assigned host
-names.  You can ssh into them using username `ubuntu`.
-
-Once you're done, you can shut down the cluster with:
+When you're done, you can shut down the cluster with:
 
     ./destroy.sh
+
+**Note:** Do not run `bootstrap.sh` when you already have a cluster
+running, or you'll end up with two clusters which will probably
+confuse the provisioner.
