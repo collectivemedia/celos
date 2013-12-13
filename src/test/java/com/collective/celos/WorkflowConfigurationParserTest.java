@@ -152,12 +152,12 @@ public class WorkflowConfigurationParserTest {
         parseDir("id-not-a-string");
     }
     
-    private WorkflowConfiguration parseDir(String label) throws Exception {
+    public static WorkflowConfiguration parseDir(String label) throws Exception {
         File dir = getConfigurationDir(label);
         return new WorkflowConfigurationParser().parseConfiguration(dir);
     }
 
-    private File getConfigurationDir(String label) throws URISyntaxException {
+    public static File getConfigurationDir(String label) throws URISyntaxException {
         String path = "com/collective/celos/workflow-configuration-test/" + label;
         URL resource = Thread.currentThread().getContextClassLoader().getResource(path);
         return new File(resource.toURI());

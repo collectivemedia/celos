@@ -35,8 +35,8 @@ TEST_DEPENDENCIES = [
   POWERMOCK,
 ]
 
-define 'Celos' do
-  project.version = '0.1.0'
+define 'celos' do
+  project.version = '0.1'
   manifest['Main-Class'] = 'com.collective.celos.Main'
 
   compile.options.source = '1.6'
@@ -46,5 +46,5 @@ define 'Celos' do
   
   test.with(TEST_DEPENDENCIES)
   
-  package(:jar).include((compile.dependencies - HADOOP), :path => "lib")
+  package(:war).libs -= artifacts('javax.servlet:servlet-api:jar:2.3')
 end
