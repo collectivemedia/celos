@@ -11,13 +11,17 @@
     celos_port: 8080
     celos_workflows_dir: /etc/celos/workflows
     celos_db_dir: /var/lib/celos/db
+    celos_user: ubuntu
 
   tasks:
 
-  - name: Remove old files, if any
-    shell: sudo rm -rf {{celos_workflows_dir}}/* {{celos_db_dir}}/*
-      && sudo mkdir -p {{celos_workflows_dir}}
-      && sudo mkdir -p {{celos_db_dir}}
+  - name: Prepare configuration dir
+    shell: sudo rm -rf {{celos_workflows_dir}}/* && sudo mkdir -p {{celos_workflows_dir}}
+      && sudo chown {{celos_user}}:{{celos_user}} {{celos_workflows_dir}}
+
+  - name: Prepare database dir
+    shell: sudo rm -rf {{celos_db_dir}}/* && sudo mkdir -p {{celos_db_dir}}
+      && sudo chown {{celos_user}}:{{celos_user}} {{celos_db_dir}}
 
   - name: Testing servlet /celos/workflow-list
     local_action: shell curl {{inventory_hostname}}:8080/celos/workflow-list | diff - test_files/empty_workflow_list.json
