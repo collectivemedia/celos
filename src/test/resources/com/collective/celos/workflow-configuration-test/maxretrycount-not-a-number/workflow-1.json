@@ -22,5 +22,5 @@
             "yippie": "yeah"
         }
     },
-    "maxRetryCount": 55
+    "maxRetryCount": "foo"
 }

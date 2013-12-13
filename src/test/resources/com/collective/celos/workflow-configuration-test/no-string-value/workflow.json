@@ -23,5 +23,6 @@
             "jobTracker": "nn01.ny7.collective-media.net:8032",
             "nameNode": "hdfs://cluster-ny7"
         }
-    }
+    },
+    "maxRetryCount": 0
 }

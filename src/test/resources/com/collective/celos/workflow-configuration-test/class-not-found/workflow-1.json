@@ -21,5 +21,6 @@
         "properties": {
             "yippie": "yeah"
         }
-    }
+    },
+    "maxRetryCount": 0
 }

@@ -4,7 +4,6 @@ import static com.collective.celos.SlotState.Status.FAILURE;
 import static com.collective.celos.SlotState.Status.READY;
 import static com.collective.celos.SlotState.Status.RUNNING;
 import static com.collective.celos.SlotState.Status.SUCCESS;
-import static com.collective.celos.SlotState.Status.TIMEOUT;
 import static com.collective.celos.SlotState.Status.WAITING;
 
 import java.util.Arrays;
@@ -61,7 +60,7 @@ public class SerialSchedulingStrategyTest {
                         new SlotState(slot1, READY),
                         new SlotState(slot2, RUNNING),
                         new SlotState(slot3, SUCCESS),
-                        new SlotState(slot4, TIMEOUT),
+                        new SlotState(slot4, READY),
                         new SlotState(slot5, WAITING), });
         List<SlotState> expected = Arrays.asList(new SlotState[] {});
 
@@ -77,7 +76,7 @@ public class SerialSchedulingStrategyTest {
                         new SlotState(slot1, FAILURE),
                         scheduledSlot,
                         new SlotState(slot3, SUCCESS),
-                        new SlotState(slot4, TIMEOUT),
+                        new SlotState(slot4, WAITING),
                         new SlotState(slot5, WAITING), });
         List<SlotState> expected = Arrays.asList(new SlotState[] { scheduledSlot });
 
@@ -106,7 +105,7 @@ public class SerialSchedulingStrategyTest {
         List<SlotState> input = Arrays
                 .asList(new SlotState[] {
                         new SlotState(slot1, FAILURE),
-                        new SlotState(slot1, TIMEOUT),
+                        new SlotState(slot1, WAITING),
                         new SlotState(slot3, SUCCESS),
                         new SlotState(slot4, WAITING),
                         new SlotState(slot5, SUCCESS), });
