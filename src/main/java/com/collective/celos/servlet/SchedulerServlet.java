@@ -19,7 +19,7 @@ public class SchedulerServlet extends AbstractServlet {
     
     protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException {
         try {
-            Scheduler scheduler = SchedulerConfiguration.makeDefaultScheduler();
+            Scheduler scheduler = new SchedulerConfiguration().makeDefaultScheduler();
             ScheduledTime current = new ScheduledTime(DateTime.now(DateTimeZone.UTC));
             scheduler.step(current);
         } catch(Exception e) {

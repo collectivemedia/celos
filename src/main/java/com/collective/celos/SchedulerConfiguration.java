@@ -2,12 +2,18 @@ package com.collective.celos;
 
 import java.io.File;
 
+/**
+ * Reads configuration and database from filesystem at well-known paths.
+ */
 public class SchedulerConfiguration {
 
     private static final String CONFIG_PATH = "/etc/celos/workflows";
     private static final String DB_PATH = "/var/lib/celos/db";
 
-    public static Scheduler makeDefaultScheduler() throws Exception {
+    public SchedulerConfiguration() {        
+    }
+    
+    public Scheduler makeDefaultScheduler() throws Exception {
         File configFile = new File(CONFIG_PATH);
         File dbFile = new File(DB_PATH);
         WorkflowConfiguration config =

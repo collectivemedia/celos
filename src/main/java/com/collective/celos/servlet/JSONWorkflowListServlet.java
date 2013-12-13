@@ -19,7 +19,7 @@ public class JSONWorkflowListServlet extends AbstractJSONServlet {
     
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException {
         try {
-            Scheduler sch = SchedulerConfiguration.makeDefaultScheduler();
+            Scheduler sch = new SchedulerConfiguration().makeDefaultScheduler();
             WorkflowConfiguration cfg = sch.getWorkflowConfiguration();
             ArrayNode list = mapper.createArrayNode();
             for (Workflow wf : cfg.getWorkflows()) {
