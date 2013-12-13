@@ -8,17 +8,10 @@ testing cluster, if you don't have them already.
 
 You will get:
 
-Username:
-sample_your_name
-
-Access Key ID:
-SAMPLEKJHDKUAEMACSDAILRULESKDKLAJ
-
-Secret Access Key:
-sampleAAHdfDfgLGNUKJAHjIShDUINOTHDWWJUNIXDOIAAA
-
-Password:
-sample98313379843$hfs
+* Username: sample_your_name
+* Password: sample98313379843$hfs
+* Access Key ID: SAMPLEKJHDKUAEMACSDAILRULESKDKLAJ
+* Secret Access Key: sampleAAHdfDfgLGNUKJAHjIShDUINOTHDWWJUNIXDOIAAA
 
 ## Get EC2 Keypair from AWS Console
 
@@ -34,8 +27,7 @@ You need to set the following variables:
 
     export EC2_KEYPAIR="keypair-name-from-previous-step"
     export AWS_ACCESS_KEY_ID="SAMPLEKJHDKUAEMACSDAILRULESKDKLAJ"
-    export
-AWS_SECRET_ACCESS_KEY="sampleAAHdfDfgLGNUKJAHjIShDUINOTHDWWJUNIXDOIAAA"
+    export AWS_SECRET_ACCESS_KEY="sampleAAHdfDfgLGNUKJAHjIShDUINOTHDWWJUNIXDOIAAA"
     export ANSIBLE_HOST_KEY_CHECKING=False
 
 (Add these to your shell RC file.)
