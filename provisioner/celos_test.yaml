@@ -1,8 +1,7 @@
 ---
 # Playbook to perform integration testing on Celos
 #
-# Uploads sample workflows to the Celos master node and verifies that
-# the result of the /celos/workflow-list servlet lists the workflows.
+# Performs various tests against the servlets.
 
 - hosts: hadoop_masters
   gather_facts: no
@@ -25,14 +24,14 @@
     shell: sudo rm -rf {{celos_db_dir}}/* && sudo mkdir -p {{celos_db_dir}}
       && sudo chown {{celos_user}}:{{celos_user}} {{celos_db_dir}}
 
-  - name: Testing servlet /celos/workflow-list with empty configuration
-    local_action: shell curl {{inventory_hostname}}:8080/celos/workflow-list | diff - test_files/empty_workflow_list.json
-
   - name: Check servlet /celos/scheduler responds to POST
     local_action: shell curl --fail -X POST {{inventory_hostname}}:8080/celos/scheduler
 
   - name: Check servlet /celos/scheduler doesn't respond to GET
     local_action: shell ! curl --fail {{inventory_hostname}}:8080/celos/scheduler
+
+  - name: Testing servlet /celos/workflow-list with empty configuration
+    local_action: shell curl {{inventory_hostname}}:8080/celos/workflow-list | diff - test_files/empty_workflow_list.json
 
   - name: Upload sample workflow configuration files
     local_action: command rsync -az -e ssh {{local_celos}}/src/test/resources/com/collective/celos/workflow-configuration-test/json-workflow-list-servlet-test/
