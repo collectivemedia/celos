@@ -52,6 +52,9 @@ AWS_SECRET_ACCESS_KEY="sampleAAHdfDfgLGNUKJAHjIShDUINOTHDWWJUNIXDOIAAA"
 (Of course, this will not work the first time.  I mean, we're talking
 about computers here, right?  Heck, distributed computers!)
 
+Please make sure not to run the bootstrap script twice, it might lead
+to creating of multiple instances on the cloud. 
+
 Once it works, look into `tmp/inventory` to find the assigned host
 names.  You can ssh into them using username `ubuntu`.
 
