@@ -3,10 +3,13 @@
 
 - name: Install the namenode and jobtracker packages
   apt: name={{ item }} update_cache=yes
+  tags: hadoop_master
   with_items:
     - hadoop-client
     - hadoop-hdfs-namenode
-    - hadoop-0.20-mapreduce-jobtracker
+    - hadoop-yarn-resourcemanager
+    - hadoop-yarn-proxyserver
+    - hadoop-mapreduce-historyserver
 
 - name: copy hadoop name node config files
   copy: src=roles/hadoop_master/files/conf/{{ item }} dest=/etc/hadoop/conf/{{ item }} owner=root group=hadoop
