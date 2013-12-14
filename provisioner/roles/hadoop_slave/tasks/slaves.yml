@@ -4,7 +4,8 @@
 - name: Install the datanode and tasktracker packages
   apt: name=${item} state=installed update_cache=yes
   with_items: 
-   - hadoop-0.20-mapreduce-tasktracker
+   - hadoop-yarn-nodemanager
+   - hadoop-mapreduce
    - hadoop-hdfs-datanode
 
 - name: copy hadoop data node config files
