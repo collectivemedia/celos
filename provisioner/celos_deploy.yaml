@@ -1,4 +1,4 @@
-        ---
+---
 # Playbook to deploy the current Celos source to the cluster.
 #
 # Copies src/, scripts/, and Buildfile into ~/celos-deploy on the Hadoop master.
