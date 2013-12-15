@@ -28,8 +28,9 @@ public class WorkflowConfigurationParser {
     private static final String SCHEDULE_PROP = "schedule";
     private static final String ID_PROP = "id";
     private static final String MAX_RETRY_COUNT_PROP = "maxRetryCount";
-
+    
     public WorkflowConfiguration parseConfiguration(File dir) throws Exception {
+        Util.logInfo("Workflow configuration directory: " + dir);
         Collection<File> files = FileUtils.listFiles(dir, new String[] { "json" }, false);
         Set<Workflow> workflows = new HashSet<Workflow>();
         for (File f : files) {
@@ -39,6 +40,7 @@ public class WorkflowConfigurationParser {
     }
 
     private Workflow parseFile(File f) throws Exception {
+        Util.logInfo("Configuring workflow: " + f);
         JsonNode workflowNode = new ObjectMapper().readTree(f);
         WorkflowID id = getWorkflowID(workflowNode);
         Schedule schedule = getScheduleFromJSON(workflowNode);

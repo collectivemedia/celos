@@ -1,16 +1,25 @@
 package com.collective.celos;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.joda.time.DateTime;
 
 public class Util {
 
+    private static final Logger LOGGER = Logger.getLogger("celos");
+    
     public static <T> T requireNonNull(T object) {
         if (object == null) throw new NullPointerException();
         else return object;
     }
 
+    public static void logInfo(Object msg) {
+        LOGGER.log(Level.INFO, msg.toString());
+    }
+    
     public static void logException(Exception e) {
-        e.printStackTrace(System.err);
+        LOGGER.log(Level.SEVERE, "", e);
     }
 
     static DateTime toFullHour(DateTime dt) {

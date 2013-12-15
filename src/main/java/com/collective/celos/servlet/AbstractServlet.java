@@ -5,6 +5,8 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServlet;
 
+import com.collective.celos.Util;
+
 /**
  * Superclass for all servlets that access the database.
  * 
@@ -21,7 +23,12 @@ public abstract class AbstractServlet extends HttpServlet {
     @Override
     public void service(ServletRequest req, ServletResponse res) throws ServletException, java.io.IOException {
         synchronized(LOCK) {
-            super.service(req, res);
+            try {
+                super.service(req, res);
+            } catch(ServletException e) {
+                Util.logException(e);
+                throw e;
+            }
         }
     }
 

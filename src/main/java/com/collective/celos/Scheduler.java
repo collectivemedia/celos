@@ -37,11 +37,13 @@ public class Scheduler {
      * Steps through all workflows.
      */
     public void step(ScheduledTime current) {
+        Util.logInfo("Starting scheduler step: " + current);
         for (Workflow wf : configuration.getWorkflows()) {
             try {
                 stepWorkflow(wf, current);
             } catch(Exception e) {
                 Util.logException(e);
+                Util.logInfo("Aborted processing workflow: " + wf.getID() + " due to exception.");
             }
         }
     }
@@ -56,6 +58,7 @@ public class Scheduler {
      * - Check any RUNNING slots for their current external status.
      */
     private void stepWorkflow(Workflow wf, ScheduledTime current) throws Exception {
+        Util.logInfo("Processing workflow: " + wf.getID() + " at: " + current);
         List<SlotState> slotStates = getSlotStates(wf, current);
         runExternalWorkflows(wf, slotStates);
         for (SlotState slotState : slotStates) {
@@ -108,7 +111,10 @@ public class Scheduler {
         SlotState.Status status = slotState.getStatus();
         if (status.equals(SlotState.Status.WAITING)) {
             if (wf.getTrigger().isDataAvailable(slotState.getScheduledTime())) {
+                Util.logInfo("Data available: " + slotState.getSlotID());
                 database.putSlotState(slotState.transitionToReady());
+            } else {
+                Util.logInfo("No data available: " + slotState.getSlotID());
             }
         } else if (status.equals(SlotState.Status.RUNNING)) {
             ExternalStatus xStatus = wf.getExternalService().getStatus(slotState.getExternalID());
