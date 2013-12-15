@@ -15,6 +15,7 @@
    - hadoop_master
    - mysql
    - oozie
+   - yarn
 
 - hosts: hadoop_slaves
   sudo: yes
