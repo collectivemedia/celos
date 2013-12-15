@@ -16,6 +16,8 @@
    - mysql
    - oozie
    - yarn
+   - tomcat
+   - build_celos
 
 - hosts: hadoop_slaves
   sudo: yes

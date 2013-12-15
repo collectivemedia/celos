@@ -8,3 +8,10 @@
   sudo: yes
   tags:
     - java
+
+- name: set JAVA_HOME
+  lineinfile: dest=/etc/environment state=present
+    regexp="^JAVA_HOME="
+    line="JAVA_HOME=/usr/lib/jvm/java-7-oracle"
+  tags:
+    - java
