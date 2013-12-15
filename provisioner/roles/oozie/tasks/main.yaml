@@ -54,6 +54,6 @@
 
 - name: set OOZIE_URL
   lineinfile: dest=/etc/environment state=present
-    regexp="^OOZIE_URL"
+    regexp="^OOZIE_URL="
     line="OOZIE_URL=http://localhost:11000/oozie"
-  tags: yarn
+  tags: oozie
