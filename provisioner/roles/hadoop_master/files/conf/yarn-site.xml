@@ -18,48 +18,60 @@
 <?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
 
 <configuration>
-  <property>
-    <name>yarn.nodemanager.aux-services</name>
-    <value>mapreduce.shuffle</value>
-  </property>
-
-  <property>
-    <name>yarn.nodemanager.aux-services.mapreduce.shuffle.class</name>
-    <value>org.apache.hadoop.mapred.ShuffleHandler</value>
-  </property>
-
-  <property>
-    <name>yarn.log-aggregation-enable</name>
-    <value>true</value>
-  </property>
-
-  <property>
-    <description>List of directories to store localized files in.</description>
-    <name>yarn.nodemanager.local-dirs</name>
-    <value>/var/lib/hadoop-yarn/cache/${user.name}/nm-local-dir</value>
-  </property>
-
-  <property>
-    <description>Where to store container logs.</description>
-    <name>yarn.nodemanager.log-dirs</name>
-    <value>/var/log/hadoop-yarn/containers</value>
-  </property>
-
-  <property>
-    <description>Where to aggregate logs to.</description>
-    <name>yarn.nodemanager.remote-app-log-dir</name>
-    <value>/var/log/hadoop-yarn/apps</value>
-  </property>
-
-  <property>
-    <description>Classpath for typical applications.</description>
-     <name>yarn.application.classpath</name>
-     <value>
+<property>
+ <name>yarn.resourcemanager.resource-tracker.address</name>
+ <value>nn.celos.collective-media.net:8031</value>
+</property>
+<property>
+ <name>yarn.resourcemanager.address</name>
+ <value>nn.celos.collective-media.net:8032</value>
+</property>
+<property>
+ <name>yarn.resourcemanager.scheduler.address</name>
+ <value>nn.celos.collective-media.net:8030</value>
+</property>
+<property>
+ <name>yarn.resourcemanager.admin.address</name>
+ <value>nn.celos.collective-media.net:8033</value>
+</property>
+<property>
+ <name>yarn.resourcemanager.webapp.address</name>
+ <value>nn.celos.collective-media.net:8088</value>
+</property>
+<property>
+ <description>Classpath for typical applications.</description>
+ <name>yarn.application.classpath</name>
+ <value>
         $HADOOP_CONF_DIR,
         $HADOOP_COMMON_HOME/*,$HADOOP_COMMON_HOME/lib/*,
         $HADOOP_HDFS_HOME/*,$HADOOP_HDFS_HOME/lib/*,
         $HADOOP_MAPRED_HOME/*,$HADOOP_MAPRED_HOME/lib/*,
         $YARN_HOME/*,$YARN_HOME/lib/*
-     </value>
-  </property>
+ </value>	
+</property>
+<property>
+ <name>yarn.nodemanager.aux-services</name>
+ <value>mapreduce.shuffle</value>
+</property>
+<property>
+ <name>yarn.nodemanager.aux-services.mapreduce.shuffle.class</name>
+ <value>org.apache.hadoop.mapred.ShuffleHandler</value>
+</property>
+<property>
+ <name>yarn.nodemanager.local-dirs</name>
+ <value>/data/1/yarn/local,/data/2/yarn/local,/data/3/yarn/local</value>
+</property>
+<property>
+ <name>yarn.nodemanager.log-dirs</name>
+ <value>/data/1/yarn/logs,/data/2/yarn/logs,/data/3/yarn/logs</value>
+</property>
+<property>
+ <description>Where to aggregate logs</description>
+ <name>yarn.nodemanager.remote-app-log-dir</name>
+ <value>/var/log/hadoop-yarn/apps</value>
+</property>
+<property>
+  <name>yarn.web-proxy.address</name>
+  <value>0.0.0.0</value>
+</property>
 </configuration>

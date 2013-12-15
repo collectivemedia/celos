@@ -3,6 +3,5 @@
 
 - name: restart hadoop master services
   service: name=${item} state=restarted
-  with_items: 
-    - hadoop-0.20-mapreduce-jobtracker
+  with_items:
     - hadoop-hdfs-namenode
