@@ -1,0 +1,10 @@
+---
+# Handlers for the hadoop master services
+
+- name: restart yarn services
+  service: name=${item} state=restarted
+  with_items: 
+    - hadoop-yarn-resourcemanager
+    - hadoop-yarn-proxyserver
+    - hadoop-mapreduce-historyserver
+  tags: yarn
