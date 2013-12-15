@@ -1,4 +1,4 @@
----
+        ---
 # Playbook to deploy the current Celos source to the cluster.
 #
 # Copies src/, scripts/, and Buildfile into ~/celos-deploy on the Hadoop master.
@@ -8,8 +8,9 @@
 - hosts: hadoop_masters
   gather_facts: no
   vars:
+    celos_user: celos
     local_celos: ..
-    remote_celos: ~/celos-deploy
+    remote_celos: ~/deploy
 
   tasks:
 
@@ -18,7 +19,7 @@
 
   - name: Copy files
     local_action: command rsync -az -e ssh {{local_celos}}/Buildfile {{local_celos}}/src {{local_celos}}/scripts
-      ubuntu@{{inventory_hostname}}:{{remote_celos}}
+      {{celos_user}}@{{inventory_hostname}}:{{remote_celos}}
 
   - name: Build
     shell: cd {{remote_celos}} && buildr TEST=no package

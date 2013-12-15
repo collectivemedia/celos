@@ -6,11 +6,11 @@
 - hosts: hadoop_masters
   gather_facts: no
   vars:
+    celos_user: celos
     local_celos: ..
     celos_port: 8080
     celos_workflows_dir: /etc/celos/workflows
     celos_db_dir: /var/lib/celos/db
-    celos_user: ubuntu
 
   tasks:
 
