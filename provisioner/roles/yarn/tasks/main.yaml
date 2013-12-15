@@ -35,6 +35,14 @@
   action: user name=celos password=$1TKWzZdkb9vI
   tags: yarn
 
+- name: Ensure .ssh dir for Celos
+  file: path=/home/celos/.ssh owner=celos group=celos state=directory
+  tags: yarn
+
+- name: Copy SSH keys for scripts to work
+  shell: creates=/home/celos/.ssh/authorized_keys cp -avf /home/ubuntu/.ssh/authorized_keys /home/celos/.ssh/authorized_keys  
+  tags: yarn  
+
 - name: Create hdfs home dir for celos
   shell: creates=/usr/lib/hadoop-mapreduce/celos.homedired su -hdfs -c "hadoop fs -mkdir /user/celos  && hadoop fs -chown  celos /user/celos" && touch /usr/lib/hadoop-mapreduce/celos.homedired
   tags: yarn
