@@ -4,7 +4,8 @@
 - name: Install the datanode and tasktracker packages
   apt: name=${item} state=installed update_cache=yes
   with_items: 
-   - hadoop-0.20-mapreduce-tasktracker
+   - hadoop-yarn-nodemanager
+   - hadoop-mapreduce
    - hadoop-hdfs-datanode
 
 - name: copy hadoop data node config files
@@ -14,6 +15,7 @@
     - hdfs-site.xml
     - slaves
     - mapred-site.xml
+    - yarn-site.xml
   notify: restart hadoop slave services
   tags: hadoop_master
 
@@ -24,15 +26,21 @@
     - /data/2/dfs/dn
     - /data/3/dfs/dn
 
-- name: Create the data directory for the slave nodes for mapreduce
-  file: path={{ item }} owner=mapred group=mapred state=directory
+- name: Create the data directory for the slave nodes for yarn
+  file: path={{ item }} owner=yarn group=yarn state=directory
   with_items:
-    - /data/1/mapred/local
-    - /data/2/mapred/local
-    - /data/3/mapred/local
-
-- name: start hadoop slave services
+    - /data/1/yarn/local
+    - /data/2/yarn/local
+    - /data/3/yarn/local
+    - /data/4/yarn/local
+    - /data/1/yarn/logs
+    - /data/2/yarn/logs
+    - /data/3/yarn/logs
+    - /data/4/yarn/logs
+   
+- name: start hadoop datanode services
   service: name={{ item }} state=started
   with_items:
-    - hadoop-0.20-mapreduce-tasktracker
     - hadoop-hdfs-datanode
+    - hadoop-yarn-nodemanager
+  tags: yarn

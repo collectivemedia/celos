@@ -19,11 +19,7 @@
 
 <configuration>
 <property>
- <name>mapred.job.tracker</name>
- <value>nn.celos.collective-media.net:8021</value>
-</property>
-<property>
- <name>mapred.local.dir</name>
- <value>/data/1/mapred/local,/data/2/mapred/local,/data/3/mapred/local</value>
+ <name>mapreduce.framework.name</name>
+ <value>yarn</value>
 </property>
 </configuration>

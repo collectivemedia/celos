@@ -4,5 +4,5 @@
 - name: restart hadoop slave services
   service: name=${item} state=restarted
   with_items: 
-    - hadoop-0.20-mapreduce-tasktracker
     - hadoop-hdfs-datanode
+    - hadoop-yarn-nodemanager
