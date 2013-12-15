@@ -23,6 +23,11 @@
   notify: restart oozie services
   tags: oozie
 
+- name: Oozie oozie-env.sh config file
+  copy: src=roles/oozie/files/oozie-env.sh dest=/etc/oozie/conf/oozie-env.sh
+  notify: restart oozie services
+  tags: oozie
+
 - name: Link mysql jdbc jar to oozie
   file: src=/usr/share/java/mysql.jar dest=/var/lib/oozie/mysql-connector.jar state=link
   tags: oozie
@@ -36,7 +41,7 @@
   tags: oozie
 
 - name: untar oozie sharelib
-  shell: creates=/tmp/ooziesharelib/untarred mkdir -p /tmp/ooziesharelib/share && /bin/tar -C /tmp/ooziesharelib/share --strip-components 1 -zxf /usr/lib/oozie/oozie-sharelib.tar.gz && touch /tmp/ooziesharelib/untarred 
+  shell: creates=/tmp/ooziesharelib/untarred mkdir -p /tmp/ooziesharelib/share && /bin/tar -C /tmp/ooziesharelib/share --strip-components 1 -zxf /usr/lib/oozie/oozie-sharelib-yarn.tar.gz && touch /tmp/ooziesharelib/untarred 
   tags: oozie
 
 - name: Upload sharelib to hdfs
@@ -46,3 +51,9 @@
 - name: Start oozie service
   service: name=oozie state=started
   tags: oozie
+
+- name: set OOZIE_URL
+  lineinfile: dest=/etc/environment state=present
+    regexp="^OOZIE_URL"
+    line="OOZIE_URL=http://localhost:11000/oozie"
+  tags: yarn
