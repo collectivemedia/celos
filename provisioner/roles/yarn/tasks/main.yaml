@@ -43,6 +43,9 @@
   shell: creates=/home/celos/.ssh/authorized_keys cp -avf /home/ubuntu/.ssh/authorized_keys /home/celos/.ssh/authorized_keys && chown celos /home/celos/.ssh/authorized_keys  
   tags: yarn  
 
+- name: Make Celos a sudoer
+  copy: src=roles/yarn/files/sudoer dest=/etc/sudoers.d/91-celos owner=root group=root mode=0440
+
 - name: Create hdfs home dir for celos
   shell: creates=/usr/lib/hadoop-mapreduce/celos.homedired su -hdfs -c "hadoop fs -mkdir /user/celos  && hadoop fs -chown  celos /user/celos" && touch /usr/lib/hadoop-mapreduce/celos.homedired
   tags: yarn
