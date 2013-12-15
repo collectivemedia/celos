@@ -13,7 +13,8 @@
     "trigger": {
         "type": "com.collective.celos.HDFSCheckTrigger",
         "properties": {
-            "path": "foo"
+            "path": "foo",
+            "fs": "file:///"
         }
     },
     "externalService": {
