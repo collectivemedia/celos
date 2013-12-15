@@ -40,7 +40,8 @@
   tags: yarn
 
 - name: Copy SSH keys for scripts to work
-  shell: creates=/home/celos/.ssh/authorized_keys cp -avf /home/ubuntu/.ssh/authorized_keys /home/celos/.ssh/authorized_keys  
+  shell: creates=/home/celos/.ssh/authorized_keys cp -avf
+/home/ubuntu/.ssh/authorized_keys /home/celos/.ssh/authorized_keys && chown celos /home/celos/.ssh/authorized_keys  
   tags: yarn  
 
 - name: Create hdfs home dir for celos
