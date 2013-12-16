@@ -48,7 +48,7 @@
   tags: yarn
  
 - name: Create hdfs home dir for celos
-  shell: creates=/usr/lib/hadoop-mapreduce/celos.homedired su -hdfs -c "hadoop fs -mkdir /user/celos  && hadoop fs -chown  celos /user/celos" && touch /usr/lib/hadoop-mapreduce/celos.homedired
+  shell: creates=/usr/lib/hadoop-mapreduce/celos.homedired su - hdfs -c "hadoop fs -mkdir /user/celos  && hadoop fs -chown  celos:mapred /user/celos" && touch /usr/lib/hadoop-mapreduce/celos.homedired
   tags: yarn
 
 - name: set HADOOP_MAPRED_HOME
