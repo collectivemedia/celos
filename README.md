@@ -12,7 +12,7 @@
 
 *(from the [Devil's Dictionary of Programming](http://programmingisterrible.com/post/65781074112/devils-dictionary-of-programming))*
 
-## Prerequisties
+## Prerequisites
 
 * JDK 1.6 or higher
 
