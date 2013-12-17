@@ -24,6 +24,7 @@ public class HDFSCheckTriggerTest {
     public void testDirectoryExists() throws Exception {
         Properties props = new Properties();
         props.setProperty(HDFSCheckTrigger.PATH_PROP, "/tmp");
+        props.setProperty(HDFSCheckTrigger.FS_PROP, "file:///");
         assertTrue(new HDFSCheckTrigger(props).isDataAvailable(new ScheduledTime("2013-11-22T15:00Z")));
     }
 
@@ -31,6 +32,7 @@ public class HDFSCheckTriggerTest {
     public void testDirectoryDoesNotExist() throws Exception {
         Properties props = new Properties();
         props.setProperty(HDFSCheckTrigger.PATH_PROP, "/tmp-does-not-exist");
+        props.setProperty(HDFSCheckTrigger.FS_PROP, "file:///");
         assertFalse(new HDFSCheckTrigger(props).isDataAvailable(new ScheduledTime("2013-11-22T15:00Z")));
     }
 
@@ -44,7 +46,8 @@ public class HDFSCheckTriggerTest {
        
         Properties props = new Properties();
         props.setProperty(HDFSCheckTrigger.PATH_PROP, root + "/${year}-${month}-${day}/${hour}00/_READY");
-        
+        props.setProperty(HDFSCheckTrigger.FS_PROP, "file:///");
+
         assertTrue(new HDFSCheckTrigger(props).isDataAvailable(new ScheduledTime("2013-11-22T15:00Z")));
     }
 
@@ -59,7 +62,8 @@ public class HDFSCheckTriggerTest {
        
         Properties props = new Properties();
         props.setProperty(HDFSCheckTrigger.PATH_PROP, root + "/${year}-${month}-${day}/${hour}00/_READY");
-        
+        props.setProperty(HDFSCheckTrigger.FS_PROP, "file:///");
+
         assertFalse(new HDFSCheckTrigger(props).isDataAvailable(new ScheduledTime("2013-11-22T15:00Z")));
     }
     
@@ -71,7 +75,8 @@ public class HDFSCheckTriggerTest {
     @Test(expected = IllegalArgumentException.class)
     public void testIOExceptionIsPropagated() throws Exception {
         Properties props = new Properties();
-        props.setProperty(HDFSCheckTrigger.PATH_PROP, "hdfs://no-such-host/some/path");
+        props.setProperty(HDFSCheckTrigger.PATH_PROP, "/some/path");
+        props.setProperty(HDFSCheckTrigger.FS_PROP, "hdfs://no-such-host");
         new HDFSCheckTrigger(props).isDataAvailable(new ScheduledTime("2013-11-22T15:00Z"));
     }
 
