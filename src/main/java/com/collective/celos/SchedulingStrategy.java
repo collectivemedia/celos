@@ -20,7 +20,7 @@ public interface SchedulingStrategy {
     /**
      * Returns the slots that this strategy wishes to execute.
      * 
-     * Only slots in READY state should be returned.  Others will be ignored.
+     * Only slots in READY state must be returned.
      * 
      * @param states The states of all slots within sliding window for this workflow, with oldest ones first.
      * @return List of slots this strategy wishes to execute - the first in the list will be executed first.

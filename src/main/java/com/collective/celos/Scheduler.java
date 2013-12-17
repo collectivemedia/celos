@@ -5,10 +5,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.SortedSet;
 
-/**
- * TODO: timeout slots if trigger doesn't return true for too long
- * TODO: retry handling
- */
 public class Scheduler {
 
     private final int slidingWindowHours;
