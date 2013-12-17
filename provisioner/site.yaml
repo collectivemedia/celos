@@ -18,6 +18,8 @@
    - yarn
    - tomcat
    - build_celos
+   - hive
+   - pig
 
 - hosts: hadoop_slaves
   sudo: yes
