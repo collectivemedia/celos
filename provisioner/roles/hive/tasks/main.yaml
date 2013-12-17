@@ -1,0 +1,13 @@
+---
+# file: roles/hadoop_master/tasks/main.yml
+- name: Install the hive package
+  apt: name=${item} state=installed update_cache=yes
+  tags: hive
+  with_items: 
+   - hive
+
+
+- name: Create hdfs home dir for hive
+  shell: creates=/usr/lib/hadoop-mapreduce/hive.homedired su - hdfs -c "hadoop fs -mkdir /user/hive && hadoop fs -mkdir /user/hive/warehouse  && hadoop fs -chmod -R 1777 /user/hive/" && touch /usr/lib/hadoop-mapreduce/hive.homedired
+  tags: hive
+
