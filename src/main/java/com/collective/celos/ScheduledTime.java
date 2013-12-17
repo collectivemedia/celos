@@ -48,4 +48,8 @@ public class ScheduledTime extends ValueObject implements Comparable<ScheduledTi
         return dateTime.getHourOfDay();
     }
 
+    public String toString() {
+        return dateTime.toString();
+    }
+    
 }

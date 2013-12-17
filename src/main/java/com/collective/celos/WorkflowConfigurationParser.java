@@ -28,8 +28,9 @@ public class WorkflowConfigurationParser {
     private static final String SCHEDULE_PROP = "schedule";
     private static final String ID_PROP = "id";
     private static final String MAX_RETRY_COUNT_PROP = "maxRetryCount";
-
+    
     public WorkflowConfiguration parseConfiguration(File dir) throws Exception {
+        Util.logInfo("Workflow configuration directory: " + dir);
         Collection<File> files = FileUtils.listFiles(dir, new String[] { "json" }, false);
         Set<Workflow> workflows = new HashSet<Workflow>();
         for (File f : files) {
@@ -39,12 +40,13 @@ public class WorkflowConfigurationParser {
     }
 
     private Workflow parseFile(File f) throws Exception {
+        Util.logInfo("Configuring workflow: " + f);
         JsonNode workflowNode = new ObjectMapper().readTree(f);
         WorkflowID id = getWorkflowID(workflowNode);
-        Schedule schedule = getScheduleFromJSON(workflowNode);
-        SchedulingStrategy schedulingStrategy = getSchedulingStrategyFromJSON(workflowNode);
-        Trigger trigger = getTriggerFromJSON(workflowNode);
-        ExternalService externalService = getExternalServiceFromJSON(workflowNode);
+        Schedule schedule = getScheduleFromJSON(id, workflowNode);
+        SchedulingStrategy schedulingStrategy = getSchedulingStrategyFromJSON(id, workflowNode);
+        Trigger trigger = getTriggerFromJSON(id, workflowNode);
+        ExternalService externalService = getExternalServiceFromJSON(id, workflowNode);
         int maxRetryCount = getMaxRetryCountFromJSON(workflowNode);
         return new Workflow(id, schedule, schedulingStrategy, trigger, externalService, maxRetryCount);
     }
@@ -57,20 +59,20 @@ public class WorkflowConfigurationParser {
         return maxRetryCountNode.intValue();
     }
 
-    private ExternalService getExternalServiceFromJSON(JsonNode workflowNode) throws Exception {
-        return (ExternalService) createInstance(workflowNode.get(EXTERNAL_SERVICE_PROP));
+    private ExternalService getExternalServiceFromJSON(WorkflowID id, JsonNode workflowNode) throws Exception {
+        return (ExternalService) createInstance(id, workflowNode.get(EXTERNAL_SERVICE_PROP));
     }
 
-    private Trigger getTriggerFromJSON(JsonNode workflowNode) throws Exception {
-        return (Trigger) createInstance(workflowNode.get(TRIGGER_PROP));
+    private Trigger getTriggerFromJSON(WorkflowID id, JsonNode workflowNode) throws Exception {
+        return (Trigger) createInstance(id, workflowNode.get(TRIGGER_PROP));
     }
 
-    private SchedulingStrategy getSchedulingStrategyFromJSON(JsonNode workflowNode) throws Exception {
-        return (SchedulingStrategy) createInstance(workflowNode.get(SCHEDULING_STRATEGY_PROP));
+    private SchedulingStrategy getSchedulingStrategyFromJSON(WorkflowID id, JsonNode workflowNode) throws Exception {
+        return (SchedulingStrategy) createInstance(id, workflowNode.get(SCHEDULING_STRATEGY_PROP));
     }
 
-    private Schedule getScheduleFromJSON(JsonNode workflowNode) throws Exception {
-        return (Schedule) createInstance(workflowNode.get(SCHEDULE_PROP));
+    private Schedule getScheduleFromJSON(WorkflowID id, JsonNode workflowNode) throws Exception {
+        return (Schedule) createInstance(id, workflowNode.get(SCHEDULE_PROP));
     }
 
     private WorkflowID getWorkflowID(JsonNode workflowNode) {
@@ -81,9 +83,10 @@ public class WorkflowConfigurationParser {
         return new WorkflowID(idNode.textValue());
     }
 
-    private Object createInstance(JsonNode workflowNode) throws Exception {
+    private Object createInstance(WorkflowID id, JsonNode workflowNode) throws Exception {
         Properties properties = getProperties(workflowNode);
         Constructor<?> ctor = getConstructor(workflowNode);
+        Util.logInfo("Instantiating " + ctor + " for: " + id);
         return ctor.newInstance(properties);
     }
 

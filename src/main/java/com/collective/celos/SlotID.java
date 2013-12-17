@@ -21,4 +21,8 @@ public class SlotID extends ValueObject {
         return scheduledTime;
     }
     
+    public String toString() {
+        return workflowID + "@" + scheduledTime;
+    }
+    
 }
