@@ -15,4 +15,14 @@ public class WorkflowConfiguration {
         return workflows;
     }
     
+    public Workflow findWorkflow(WorkflowID id) {
+        Util.requireNonNull(id);
+        for (Workflow wf : workflows) {
+            if (wf.getID().equals(id)) {
+                return wf;
+            }
+        }
+        return null;
+    }
+    
 }
