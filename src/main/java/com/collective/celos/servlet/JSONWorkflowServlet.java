@@ -1,0 +1,65 @@
+package com.collective.celos.servlet;
+
+import java.util.List;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+
+import com.collective.celos.ScheduledTime;
+import com.collective.celos.Scheduler;
+import com.collective.celos.SchedulerConfiguration;
+import com.collective.celos.SlotState;
+import com.collective.celos.Workflow;
+import com.collective.celos.WorkflowID;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
+/**
+ * Returns information about the slot states of a single workflow as JSON.
+ * 
+ * GET /workflow?id=workflow-1
+ * ==>
+ * {
+ *   "slots": {
+ *       "2013-12-07T13:00:00.000Z": { "status": "RUNNING", "externalID": "237982137-371832798321-W" },
+ *       "2013-12-07T14:00:00.000Z": { "status": "READY", "externalID": null },
+ *       ...
+ *   }
+ * }
+ */
+@SuppressWarnings("serial")
+public class JSONWorkflowServlet extends AbstractJSONServlet {
+
+    private static final String ID_PARAM = "id";
+
+    protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException {
+        String id = req.getParameter(ID_PARAM);
+        if (id == null) {
+            throw new IllegalArgumentException(ID_PARAM + " parameter missing.");
+        }
+        try {
+            Scheduler scheduler = new SchedulerConfiguration().makeDefaultScheduler();
+            Workflow wf = scheduler.getWorkflowConfiguration().findWorkflow(new WorkflowID(id));
+            if (wf == null) {
+                throw new IllegalArgumentException("Workflow not found: " + id);
+            }
+            List<SlotState> slotStates = scheduler.getSlotStates(wf, new ScheduledTime(DateTime.now(DateTimeZone.UTC)));
+            ObjectNode object = createJSONObject(slotStates);
+            writer.writeValue(res.getOutputStream(), object);
+        } catch (Exception e) {
+            throw new ServletException(e);
+        }
+    }
+
+    ObjectNode createJSONObject(List<SlotState> slotStates) {
+        ObjectNode node = mapper.createObjectNode();
+        for (SlotState state : slotStates) {
+            node.put(state.getScheduledTime().toString(), state.toJSONNode());
+        }
+        return node;
+    }
+
+}
