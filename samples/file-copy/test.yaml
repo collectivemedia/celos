@@ -42,3 +42,5 @@
 
   - name: Verify outputs
     shell: hadoop fs -cat hdfs:/user/celos/samples/file-copy/output/2013-12-20T1600.txt | diff - ~/deploy/samples/file-copy/input/2013-12-20T1600.txt
+      && hadoop fs -cat hdfs:/user/celos/samples/file-copy/output/2013-12-20T1700.txt | diff - ~/deploy/samples/file-copy/input/2013-12-20T1700.txt
+      && hadoop fs -cat hdfs:/user/celos/samples/file-copy/output/2013-12-20T1800.txt | diff - ~/deploy/samples/file-copy/input/2013-12-20T1800.txt
