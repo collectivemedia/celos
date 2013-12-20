@@ -6,10 +6,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
-
-import com.collective.celos.ScheduledTime;
 import com.collective.celos.Scheduler;
 import com.collective.celos.SchedulerConfiguration;
 import com.collective.celos.SlotState;
@@ -29,6 +25,9 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  *       ...
  *   }
  * }
+ * 
+ * If the "time" parameter is supplied, information is returned about 
+ * slot states up to that time.
  */
 @SuppressWarnings("serial")
 public class JSONWorkflowServlet extends AbstractJSONServlet {
@@ -46,7 +45,7 @@ public class JSONWorkflowServlet extends AbstractJSONServlet {
             if (wf == null) {
                 throw new IllegalArgumentException("Workflow not found: " + id);
             }
-            List<SlotState> slotStates = scheduler.getSlotStates(wf, new ScheduledTime(DateTime.now(DateTimeZone.UTC)));
+            List<SlotState> slotStates = scheduler.getSlotStates(wf, getRequestTime(req));
             ObjectNode object = createJSONObject(slotStates);
             writer.writeValue(res.getOutputStream(), object);
         } catch (Exception e) {
