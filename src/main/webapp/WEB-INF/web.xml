@@ -20,4 +20,13 @@
     <url-pattern>/workflow-list</url-pattern>
   </servlet-mapping>
 
+  <servlet>
+    <servlet-name>JSONWorkflowServlet</servlet-name>
+    <servlet-class>com.collective.celos.servlet.JSONWorkflowServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>JSONWorkflowServlet</servlet-name>
+    <url-pattern>/workflow</url-pattern>
+  </servlet-mapping>
+
 </web-app>
