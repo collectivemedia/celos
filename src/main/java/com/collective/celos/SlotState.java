@@ -1,5 +1,8 @@
 package com.collective.celos;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
 /**
  * The execution status of a slot.
  */
@@ -13,6 +16,12 @@ public class SlotState extends ValueObject {
     private final String externalID;
     /** Initially zero, increased every time the slot is rerun. */
     private final int retryCount;
+    
+    // JSON support
+    private static final ObjectMapper MAPPER = new ObjectMapper();
+    private static final String STATUS_PROP = "status";
+    private static final String EXTERNAL_ID_PROP = "externalID";
+    private static final String RETRY_COUNT_PROP = "retryCount";
     
     public enum Status {
         /** No data availability yet. */
@@ -88,6 +97,21 @@ public class SlotState extends ValueObject {
         if (!status.equals(st)) {
             throw new IllegalStateException("Expected status " + st + " but was " + status + " (slot: " + this + ")");
         }
+    }
+
+    public ObjectNode toJSONNode() {
+        ObjectNode node = MAPPER.createObjectNode();
+        node.put(STATUS_PROP, this.getStatus().toString());
+        node.put(EXTERNAL_ID_PROP, this.getExternalID());
+        node.put(RETRY_COUNT_PROP, this.getRetryCount());
+        return node;
+    }
+
+    public static SlotState fromJSONNode(SlotID id, ObjectNode node) {
+        SlotState.Status status = SlotState.Status.valueOf(node.get(STATUS_PROP).textValue());
+        String externalID = node.get(EXTERNAL_ID_PROP).textValue();
+        int retryCount = node.get(RETRY_COUNT_PROP).intValue();
+        return new SlotState(id, status, externalID, retryCount);
     }
 
 }
