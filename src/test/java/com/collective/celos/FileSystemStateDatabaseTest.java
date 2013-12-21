@@ -40,21 +40,6 @@ public class FileSystemStateDatabaseTest {
         return new File(tempFolder.getRoot(), "db");
     }
     
-    @Test
-    public void properlyReadsAndWritesJSON() throws Exception {
-        SlotID id = new SlotID(new WorkflowID("workflow-1"), new ScheduledTime("2013-12-02T13:37Z"));
-        SlotState state1 = new SlotState(id, SlotState.Status.WAITING);
-        SlotState state2 = new SlotState(id, SlotState.Status.READY).transitionToRunning("foo-external-ID");
-        FileSystemStateDatabase db = new FileSystemStateDatabase(makeDatabaseDir());
-        String json1 = "{\"status\":\"WAITING\",\"externalID\":null,\"retryCount\":0}";
-        String json2 = "{\"status\":\"RUNNING\",\"externalID\":\"foo-external-ID\",\"retryCount\":0}";
-
-        Assert.assertEquals(json1, db.slotStateToJSON(state1));
-        Assert.assertEquals(json2, db.slotStateToJSON(state2));
-        Assert.assertEquals(state1, db.slotStateFromJSON(id, json1));
-        Assert.assertEquals(state2, db.slotStateFromJSON(id, json2));
-    }
-
     /**
      * Compare slot states returned by getStates against those under src/test/resources.
      */

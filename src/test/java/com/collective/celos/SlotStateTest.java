@@ -3,6 +3,9 @@ package com.collective.celos;
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
 public class SlotStateTest {
     
     @Test
@@ -26,6 +29,21 @@ public class SlotStateTest {
         ScheduledTime t = new ScheduledTime("2013-11-26T13:00Z");
         SlotState slotState = new SlotState(new SlotID(new WorkflowID("foo"), t), SlotState.Status.READY);
         Assert.assertEquals(t, slotState.getScheduledTime());
+    }
+    
+    @Test
+    public void canRoundtripToJSON() throws Exception {
+        ObjectMapper mapper = new ObjectMapper();
+        SlotID id = new SlotID(new WorkflowID("workflow-1"), new ScheduledTime("2013-12-02T13:37Z"));
+        SlotState state1 = new SlotState(id, SlotState.Status.WAITING);
+        SlotState state2 = new SlotState(id, SlotState.Status.READY).transitionToRunning("foo-external-ID");
+        String json1 = "{\"status\":\"WAITING\",\"externalID\":null,\"retryCount\":0}";
+        String json2 = "{\"status\":\"RUNNING\",\"externalID\":\"foo-external-ID\",\"retryCount\":0}";
+
+        Assert.assertEquals(json1, mapper.writeValueAsString(state1.toJSONNode()));
+        Assert.assertEquals(json2, mapper.writeValueAsString(state2.toJSONNode()));
+        Assert.assertEquals(state1, SlotState.fromJSONNode(id, (ObjectNode) mapper.readTree(json1)));
+        Assert.assertEquals(state2, SlotState.fromJSONNode(id, (ObjectNode) mapper.readTree(json2)));
     }
 
 }

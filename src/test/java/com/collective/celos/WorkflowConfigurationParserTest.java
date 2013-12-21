@@ -129,6 +129,14 @@ public class WorkflowConfigurationParserTest {
         Assert.assertEquals(55, wf.getMaxRetryCount());
     }
     
+    @Test
+    public void canFindWorkflow() throws Exception {
+        WorkflowConfiguration cfg = parseDir("properties-test");
+        Workflow wf1 = cfg.findWorkflow(new WorkflowID("workflow-1"));
+        Assert.assertEquals(55, wf1.getMaxRetryCount());
+        Assert.assertNull(cfg.findWorkflow(new WorkflowID("foobar")));
+    }
+    
     @Test(expected=ClassNotFoundException.class)
     public void classMustExist() throws Exception {
         parseDir("class-not-found");
