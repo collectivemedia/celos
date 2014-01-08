@@ -40,7 +40,7 @@
   - name: Run scheduler
     shell: ~/deploy/scripts/run-scheduler.sh 2013-12-20T20:00Z file-copy
 
-  - name: Verify outputs
-    shell: hadoop fs -cat hdfs:/user/celos/samples/file-copy/output/2013-12-20T1600.txt | diff - ~/deploy/samples/file-copy/input/2013-12-20T1600.txt
-      && hadoop fs -cat hdfs:/user/celos/samples/file-copy/output/2013-12-20T1700.txt | diff - ~/deploy/samples/file-copy/input/2013-12-20T1700.txt
-      && hadoop fs -cat hdfs:/user/celos/samples/file-copy/output/2013-12-20T1800.txt | diff - ~/deploy/samples/file-copy/input/2013-12-20T1800.txt
+  - name: Verify produced outputs by comparing them against fixtures
+    shell: hadoop fs -cat hdfs:/user/celos/samples/file-copy/output/2013-12-20T1600.txt | diff - ~/deploy/samples/file-copy/output/2013-12-20T1600.txt
+      && hadoop fs -cat hdfs:/user/celos/samples/file-copy/output/2013-12-20T1700.txt | diff - ~/deploy/samples/file-copy/output/2013-12-20T1700.txt
+      && hadoop fs -cat hdfs:/user/celos/samples/file-copy/output/2013-12-20T1800.txt | diff - ~/deploy/samples/file-copy/output/2013-12-20T1800.txt
