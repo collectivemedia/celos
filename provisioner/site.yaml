@@ -5,6 +5,7 @@
   sudo: yes
   remote_user: ubuntu
   roles:
+   - prepare
    - oracle_jdk
    - cdh4_common
 
