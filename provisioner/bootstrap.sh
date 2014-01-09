@@ -1,5 +1,4 @@
 #!/bin/bash
-set -e
 
 echo "creating security groups now ...."
 ./sec_groups.rb
