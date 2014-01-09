@@ -4,7 +4,12 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
 
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+
+import com.collective.celos.ScheduledTime;
 import com.collective.celos.Util;
 
 /**
@@ -15,6 +20,8 @@ import com.collective.celos.Util;
 @SuppressWarnings("serial")
 public abstract class AbstractServlet extends HttpServlet {
 
+    private static final String TIME_PARAM = "time";
+    
     /**
      * This lock serves to synchronize all operations.
      */
@@ -29,6 +36,15 @@ public abstract class AbstractServlet extends HttpServlet {
                 Util.logException(e);
                 throw e;
             }
+        }
+    }
+    
+    protected ScheduledTime getRequestTime(HttpServletRequest req) {
+        String t = req.getParameter(TIME_PARAM);
+        if (t == null) {
+            return new ScheduledTime(DateTime.now(DateTimeZone.UTC));
+        } else {
+            return new ScheduledTime(t);
         }
     }
 

@@ -37,10 +37,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  */
 public class FileSystemStateDatabase implements StateDatabase {
 
-    private static final String STATUS_PROP = "status";
-    private static final String EXTERNAL_ID_PROP = "externalID";
-    private static final String RETRY_COUNT_PROP = "retryCount";
-    
     private static final String CHARSET = "UTF-8";
 
     private final ObjectMapper mapper = new ObjectMapper();
@@ -63,13 +59,13 @@ public class FileSystemStateDatabase implements StateDatabase {
             return null;
         } else {
             String json = FileUtils.readFileToString(file, CHARSET);
-            return slotStateFromJSON(id, json);            
+            return SlotState.fromJSONNode(id, (ObjectNode) mapper.readTree(json));
         }
     }
 
     @Override
     public void putSlotState(SlotState state) throws Exception {
-        String json = slotStateToJSON(state);
+        String json = mapper.writeValueAsString(state.toJSONNode());
         File file = getSlotFile(state.getSlotID());
         FileUtils.forceMkdir(file.getParentFile());
         FileUtils.write(file, json, CHARSET);
@@ -85,22 +81,6 @@ public class FileSystemStateDatabase implements StateDatabase {
     
     private String getSlotFileName(SlotID slotID) {
         return slotID.getScheduledTime().getDateTime().toString();
-    }
-
-    SlotState slotStateFromJSON(SlotID id, String json) throws Exception {
-        ObjectNode node = (ObjectNode) mapper.readTree(json);
-        SlotState.Status status = SlotState.Status.valueOf(node.get(STATUS_PROP).textValue());
-        String externalID = node.get(EXTERNAL_ID_PROP).textValue();
-        int retryCount = node.get(RETRY_COUNT_PROP).intValue();
-        return new SlotState(id, status, externalID, retryCount);
-    }
-
-    String slotStateToJSON(SlotState state) throws Exception {
-        ObjectNode node = mapper.createObjectNode();
-        node.put(STATUS_PROP, state.getStatus().toString());
-        node.put(EXTERNAL_ID_PROP, state.getExternalID());
-        node.put(RETRY_COUNT_PROP, state.getRetryCount());
-        return mapper.writeValueAsString(node);
     }
 
 }

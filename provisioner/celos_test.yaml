@@ -39,3 +39,19 @@
 
   - name: Testing servlet /celos/workflow-list with non-empty configuration
     local_action: shell curl {{inventory_hostname}}:8080/celos/workflow-list | diff - test_files/workflow_list.json
+
+  - name: Check servlet /celos/workflow fails when id parameter not set
+    local_action: shell ! curl --fail {{inventory_hostname}}:8080/celos/workflow
+
+  - name: Check servlet /celos/workflow fails when id parameter specifies missing workflow
+    local_action: shell ! curl --fail {{inventory_hostname}}:8080/celos/workflow?id=foobar
+
+  - name: Upload sample state database
+    local_action: command rsync -az -e ssh {{local_celos}}/src/test/resources/com/collective/celos/state-database-test/db-1/
+      celos@{{inventory_hostname}}:{{celos_db_dir}}
+
+  - name: Check servlet /celos/workflow returns correct JSON object for workflow-1
+    local_action: shell curl --fail "{{inventory_hostname}}:8080/celos/workflow?id=workflow-1&time=2013-12-02T20:00Z" | diff - test_files/workflow_states_workflow_1.json
+
+  - name: Check servlet /celos/workflow returns correct JSON object for workflow-2
+    local_action: shell curl --fail "{{inventory_hostname}}:8080/celos/workflow?id=workflow-2&time=2013-12-02T20:00Z" | diff - test_files/workflow_states_workflow_2.json

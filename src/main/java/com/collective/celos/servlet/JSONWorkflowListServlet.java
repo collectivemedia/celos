@@ -15,7 +15,13 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
- * Returns list of configured workflows as JSON.
+ * Returns list of IDs of configured workflows as JSON.
+ *
+ * GET /workflow-list
+ * ==>
+ * {
+ *   "ids": [ "workflow-1", "workflow-2" ]
+ * }
  */
 @SuppressWarnings("serial")
 public class JSONWorkflowListServlet extends AbstractJSONServlet {
