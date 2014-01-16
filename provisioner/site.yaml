@@ -6,7 +6,7 @@
   remote_user: ubuntu
   roles:
    - prepare
-   - oracle_jdk
+   - openjdk_jdk
    - cdh4_common
 
 - hosts: hadoop_masters

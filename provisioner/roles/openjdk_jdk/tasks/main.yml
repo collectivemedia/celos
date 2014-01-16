@@ -1,10 +1,10 @@
 ---
 # file: roles/oracle_jdk/tasks/main.yml
 
-- name: install Oracle Java 7 JDK via apt
-  apt: pkg={{ item }}
+- name: install openjdk Java 7 JDK via apt
+  apt: name={{ item }} update_cache=yes
   with_items:
-       - oracle-java7-jdk
+       - openjdk-7-jdk
   sudo: yes
   tags:
     - java
@@ -12,6 +12,6 @@
 - name: set JAVA_HOME
   lineinfile: dest=/etc/environment state=present
     regexp="^JAVA_HOME="
-    line="JAVA_HOME=/usr/lib/jvm/java-7-oracle"
+    line="JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64"
   tags:
     - java
