@@ -1,0 +1,46 @@
+---
+- hosts: hadoop_masters
+  gather_facts: no
+  remote_user: celos
+  vars:
+    local_celos: ..
+    remote_celos: ~/deploy
+    celos_port: 8080
+    celos_workflows_dir: /etc/celos/workflows
+    celos_db_dir: /var/lib/celos/db
+    sample_workflow: ~/deploy/samples/file-copy/file-copy.json
+    sample_time: 2013-12-20T19:00Z
+    sample_input: ~/deploy/samples/file-copy/input
+    sample_oozie_workflow: ~/deploy/samples/file-copy/workflow
+
+  tasks:
+
+  - name: Prepare configuration dir
+    shell: sudo rm -rf {{celos_workflows_dir}}/* && sudo mkdir -p {{celos_workflows_dir}}
+      && sudo chown celos:celos {{celos_workflows_dir}}
+
+  - name: Prepare database dir
+    shell: sudo rm -rf {{celos_db_dir}}/* && sudo mkdir -p {{celos_db_dir}}
+      && sudo chown celos:celos {{celos_db_dir}} && sudo chmod g+w -R {{celos_db_dir}}
+
+  - name: Copy workflow to configuration dir
+    shell: cp {{sample_workflow}} {{celos_workflows_dir}}
+
+  - name: Prepare HDFS dirs
+    shell: hadoop fs -rm -r -f /user/celos/samples
+      && hadoop fs -mkdir /user/celos/samples/file-copy
+      && hadoop fs -mkdir /user/celos/samples/file-copy/output
+
+  - name: Copy inputs to HDFS
+    shell: hadoop fs -put {{sample_input}} hdfs:/user/celos/samples/file-copy/input
+
+  - name: Copy Oozie workflow to HDFS
+    shell: hadoop fs -put {{sample_oozie_workflow}} hdfs:/user/celos/samples/file-copy/workflow
+
+  - name: Run scheduler
+    shell: ~/deploy/scripts/run-scheduler.sh 2013-12-20T20:00Z file-copy
+
+  - name: Verify produced outputs by comparing them against fixtures
+    shell: hadoop fs -cat hdfs:/user/celos/samples/file-copy/output/2013-12-20T1600.txt | diff - ~/deploy/samples/file-copy/output/2013-12-20T1600.txt
+      && hadoop fs -cat hdfs:/user/celos/samples/file-copy/output/2013-12-20T1700.txt | diff - ~/deploy/samples/file-copy/output/2013-12-20T1700.txt
+      && hadoop fs -cat hdfs:/user/celos/samples/file-copy/output/2013-12-20T1800.txt | diff - ~/deploy/samples/file-copy/output/2013-12-20T1800.txt

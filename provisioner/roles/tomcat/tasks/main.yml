@@ -4,3 +4,7 @@
   with_items:
     - tomcat7
   tags: tomcat
+
+- name: Add tomcat to celos and other groups
+  action: user name=tomcat7 groups=celos,hadoop append=true
+  tags: tomcat

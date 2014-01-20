@@ -19,7 +19,7 @@ public class Util {
     }
     
     public static void logException(Exception e) {
-        LOGGER.log(Level.SEVERE, "", e);
+        LOGGER.log(Level.SEVERE, "", e); // TODO: add message
     }
 
     static DateTime toFullHour(DateTime dt) {

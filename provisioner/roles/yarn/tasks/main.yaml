@@ -32,7 +32,7 @@
     - hadoop-mapreduce-historyserver
 
 - name: Create celos user
-  action: user name=celos password=$1TKWzZdkb9vI
+  action: user name=celos password=$1TKWzZdkb9vI group=celos
   tags: yarn
 
 - name: Ensure .ssh dir for Celos
@@ -46,7 +46,7 @@
 - name: Make Celos a sudoer
   copy: src=roles/yarn/files/sudoer dest=/etc/sudoers.d/91-celos owner=root group=root mode=0440
   tags: yarn
- 
+  
 - name: Create hdfs home dir for celos
   shell: creates=/usr/lib/hadoop-mapreduce/celos.homedired su - hdfs -c "hadoop fs -mkdir /user/celos  && hadoop fs -chown  celos:mapred /user/celos" && touch /usr/lib/hadoop-mapreduce/celos.homedired
   tags: yarn
