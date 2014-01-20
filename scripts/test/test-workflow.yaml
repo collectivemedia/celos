@@ -8,10 +8,9 @@
     celos_port: 8080
     celos_workflows_dir: /etc/celos/workflows
     celos_db_dir: /var/lib/celos/db
-    sample_workflow: ~/deploy/samples/file-copy/file-copy.json
-    sample_time: 2013-12-20T19:00Z
-    sample_input: ~/deploy/samples/file-copy/input
-    sample_oozie_workflow: ~/deploy/samples/file-copy/workflow
+    sample_workflow: ~/deploy/samples/{{ workflow }}/{{ workflow }}.json
+    sample_input: ~/deploy/samples/{{ workflow }}/input
+    sample_oozie_workflow: ~/deploy/samples/{{ workflow }}/workflow
 
   tasks:
 
@@ -27,18 +26,18 @@
     shell: cp {{sample_workflow}} {{celos_workflows_dir}}
 
   - name: Prepare HDFS dirs
-    shell: hadoop fs -rm -r -f /user/celos/samples
-      && hadoop fs -mkdir /user/celos/samples/file-copy
-      && hadoop fs -mkdir /user/celos/samples/file-copy/output
+    shell: hadoop fs -rm -r -f /user/celos/samples/{{ workflow }}
+      && hadoop fs -mkdir /user/celos/samples/{{ workflow }}
+      && hadoop fs -mkdir /user/celos/samples/{{ workflow }}/output
 
   - name: Copy inputs to HDFS
-    shell: hadoop fs -put {{sample_input}} hdfs:/user/celos/samples/file-copy/input
+    shell: hadoop fs -put {{sample_input}} hdfs:/user/celos/samples/{{ workflow }}/input
 
   - name: Copy Oozie workflow to HDFS
-    shell: hadoop fs -put {{sample_oozie_workflow}} hdfs:/user/celos/samples/file-copy/workflow
+    shell: hadoop fs -put {{sample_oozie_workflow}} hdfs:/user/celos/samples/{{ workflow }}/workflow
 
   - name: Run scheduler
-    shell: ~/deploy/scripts/run-scheduler.sh 2013-12-20T20:00Z file-copy
+    shell: ~/deploy/scripts/run-scheduler.sh {{ sample_time }} {{ workflow }}
 
   - name: Verify produced outputs by comparing them against fixtures
-    shell: ~/deploy/scripts/test-workflow-results.sh file-copy
+    shell: ~/deploy/scripts/test/test-workflow-results.sh {{ workflow }}

@@ -11,7 +11,7 @@ declare -a hdfsResultFiles
 # for each file in Celos HDFS find corresponding file in local fs and make a diff
 # result is stored in exitStatus
 
-for f in $(hadoop fs -ls -R hdfs:///user/celos/samples/$WORKFLOW | tr -s " " |  cut -d " " -f 8)
+for f in $(hadoop fs -ls -R hdfs:///user/celos/samples/$WORKFLOW/output | tr -s " " |  cut -d " " -f 8)
 do
     if ! hadoop fs -test -d $f
     then
@@ -30,7 +30,7 @@ declare -a missedResultFiles
 
 # Check that all expected result files were there in actual results on HDFS
 
-for f in $(find $HOME/deploy/samples/$WORKFLOW -type f)
+for f in $(find $HOME/deploy/samples/$WORKFLOW/output -type f)
 do
     fileWasProcessed=false;
     for i in "${!hdfsResultFiles[@]}"; do
