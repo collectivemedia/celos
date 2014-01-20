@@ -6,5 +6,5 @@
   tags: tomcat
 
 - name: Add tomcat to celos and other groups
-  action: user name=tomcat7 groups=hadoop append=true
+  action: user name=tomcat7 groups=celos,hadoop append=true
   tags: tomcat

@@ -1,0 +1,4 @@
+---
+
+- name: create group Celos
+  group: name=celos state=present
