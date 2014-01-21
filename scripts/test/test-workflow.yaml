@@ -1,4 +1,10 @@
 ---
+
+# Playbook for testing workflows. It starts workflow on Celos and compares workflow output with expected results.
+# User has to provide "sample_time" and "workflow" parameters. "workflow" is workflow name e.g. "file-copy" and
+# "sample_time" is the time that Celos will consider to start workflow e.g. 2013-12-20T20:00Z
+# Example of running playbook: ansible-playbook -i provisioner/tmp/inventory -u celos  scripts/test/test-workflow.yaml --extra-vars "workflow=file-copy sample_time=2013-12-20T20:00Z"
+
 - hosts: hadoop_masters
   gather_facts: no
   remote_user: celos
