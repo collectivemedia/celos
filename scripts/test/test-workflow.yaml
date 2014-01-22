@@ -47,5 +47,3 @@
 
   - name: Verify produced outputs by comparing them against fixtures
     shell: ~/deploy/scripts/test/test-workflow-results.sh {{ workflow }}
-    register: command_result
-    failed_when: "command_result.rc != 0"
