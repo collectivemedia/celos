@@ -13,15 +13,18 @@ declare -a hdfsResultFiles
 
 for f in $(hadoop fs -ls -R hdfs:///user/celos/samples/$WORKFLOW/output | tr -s " " |  cut -d " " -f 8)
 do
-    if ! hadoop fs -test -d $f
+    if [ ${f##*/} != "_SUCCESS" ] ;
     then
-	    expectedFile=$HOME$(sed "s/hdfs:[/]\+user\/celos/\/deploy/" <<< $f)
+        if ! hadoop fs -test -d $f
+        then
+        expectedFile=$HOME$(sed "s/hdfs:[/]\+user\/celos/\/deploy/" <<< $f)
         # echo "result file = $f    expectedFile = $expectedFile"
         hadoop fs -cat $f | diff - $expectedFile
         status=$?;
         # echo "status = $status"
         if [ $exitStatus -eq 0 ]; then exitStatus=$status; fi
-	    hdfsResultFiles+=($expectedFile)
+            hdfsResultFiles+=($expectedFile)
+        fi
     fi
 done
 
@@ -40,7 +43,7 @@ do
         fi
     done
     if ! $fileWasProcessed; then
-    	missedResultFiles+=($f)
+    missedResultFiles+=($f)
     fi
 done
 

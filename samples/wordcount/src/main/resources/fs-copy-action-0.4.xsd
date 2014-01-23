@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+                 xmlns:fscopy="uri:oozie:fs-copy-action:0.4"
+     elementFormDefault="qualified"
+     targetNamespace="uri:oozie:fs-copy-action:0.4">
+
+  <xs:element name="fscopy" type="fscopy:FSCOPY"/>
+
+    <xs:complexType name="FSCOPY">
+       <xs:all>
+          <xs:element name="paths" minOccurs="1" maxOccurs="1" type="fscopy:PATHS"/>
+          <xs:element name="overwrite" type="xs:boolean" minOccurs="0" maxOccurs="1" />
+     </xs:all>
+    </xs:complexType>
+
+  <xs:complexType name="PATHS">
+    <xs:sequence>
+        <xs:element name="copy" maxOccurs="unbounded">
+            <xs:complexType>
+                <xs:simpleContent>
+                    <xs:extension base="xs:string">
+                        <xs:attribute name="source" type="xs:string"/>
+                        <xs:attribute name="target" type="xs:string"/>
+                    </xs:extension>
+                </xs:simpleContent>
+            </xs:complexType>
+        </xs:element>
+   </xs:sequence>
+  </xs:complexType>
+</xs:schema>

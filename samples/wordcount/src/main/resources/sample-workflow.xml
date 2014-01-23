@@ -1,0 +1,18 @@
+<workflow-app name="copySomeHDFSFiles" xmlns="uri:oozie:workflow:0.4">
+    <start to="Shell"/>
+    <action name="Shell">
+        <fscopy xmlns="uri:oozie:fs-copy-action:0.4">
+            <paths>
+                <copy source="hdfs://localhost:8020/user/cloudera/mySource" target="hdfs://localhost:8020/user/cloudera/target"/>
+                <copy source="hdfs://localhost:8020/user/cloudera/mySource2" target="hdfs://localhost:8020/user/cloudera/target2"/>
+            </paths>
+            <overwrite>true</overwrite>
+        </fscopy>
+        <ok to="end"/>
+        <error to="fail"/>
+    </action>
+    <kill name="fail">
+        <message>Workflow failed, error message[${wf:errorMessage(wf:lastErrorNode())}]</message>
+    </kill>
+    <end name='end'/>
+</workflow-app>
