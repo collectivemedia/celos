@@ -16,9 +16,9 @@ do
     if ! hadoop fs -test -d $f
     then
         expectedFile=$HOME$(sed "s/hdfs:[/]\+user\/celos/\/deploy/" <<< $f)
-	# echo "result file = $f    expectedFile = $expectedFile"
+        # echo "result file = $f    expectedFile = $expectedFile"
         hadoop fs -cat $f | diff - $expectedFile
-	status=$?;
+        status=$?;
         # echo "status = $status"
         if [ $exitStatus -eq 0 ]; then exitStatus=$status; fi
         hdfsResultFiles+=($expectedFile)
