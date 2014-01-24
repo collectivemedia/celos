@@ -1,0 +1,21 @@
+---
+# Playbook to deploy the current Celos source to the cluster.
+#
+# Copies src/, scripts/, and Buildfile into ~/celos-deploy on the Hadoop master.
+#
+# Then builds the WAR and deploys it to Tomcat using scripts/war-deploy.sh.
+
+- hosts: hadoop_masters
+  gather_facts: no
+  remote_user: celos
+  vars:
+    remote_celos: ~/deploy
+
+  tasks:
+
+  - name: Remove old files
+    shell: rm -rf {{remote_celos}}/samples/{{ workflow  }}
+
+  - name: Copy files
+    local_action: command rsync -az -e ssh {{workflow_dir}}/input {{workflow_dir}}/output {{workflow_dir}}/workflow {{workflow_dir}}/{{workflow}}.json
+        celos@{{inventory_hostname}}:{{remote_celos}}/samples/{{ workflow }}

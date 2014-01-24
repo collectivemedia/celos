@@ -1,6 +1,8 @@
 repositories.remote << 'http://repo1.maven.org/maven2/'
 repositories.remote << 'https://repository.cloudera.com/artifactory/cloudera-repos/'
 
+require 'fileutils'
+
 HADOOP = transitive('org.apache.hadoop:hadoop-client:jar:2.0.0-cdh4.2.1')
 
 
@@ -8,6 +10,10 @@ DEPENDENCIES = [
   HADOOP
 ]
 
+Project.local_task :cluster_test
+
+lib_folder='workflow/lib'
+workflow_name='wordcount'
 
 define 'wordcount' do
   project.version = '0.1.0'
@@ -17,6 +23,20 @@ define 'wordcount' do
   compile.options.target = '1.6'
 
   compile.with(DEPENDENCIES)
-  
+
   package :jar
+
+  task :cluster_test => :package do
+    FileUtils.rm_rf(lib_folder)
+    Dir.mkdir(lib_folder)
+    jarspath = _('target') + '/**/*.jar'
+    jars = Dir.glob (jarspath)
+    jars.each do |jarf|
+      FileUtils.copy(jarf, lib_folder)
+    end
+    system 'ansible-playbook -i $CELOS_HOME/provisioner/tmp/inventory -u celos $CELOS_HOME/provisioner/celos_deploy_workflow.yaml --extra-vars "workflow=' + workflow_name + ' workflow_dir=' + _  + '"'
+    system 'ansible-playbook -i $CELOS_HOME/provisioner/tmp/inventory -u celos $CELOS_HOME/scripts/test/test-workflow.yaml --extra-vars "workflow=' + workflow_name + ' sample_time=2013-12-20T20:00Z"'
+  end
+
 end
+
