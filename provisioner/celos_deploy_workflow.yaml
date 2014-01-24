@@ -1,9 +1,11 @@
 ---
-# Playbook to deploy the current Celos source to the cluster.
+# Playbook to deploy workflow to the cluster for testing
 #
-# Copies src/, scripts/, and Buildfile into ~/celos-deploy on the Hadoop master.
+# Copies input/, output/, workflow/, and workflow_name.json into ~/celos-deploy/workflow_name on the Hadoop master.
 #
-# Then builds the WAR and deploys it to Tomcat using scripts/war-deploy.sh.
+# User must provide 'workflow' and 'workflow_dir' variables like this:
+#
+# ansible-playbook -i provisioner/tmp/inventory -u celos provisioner/celos_deploy_workflow.yaml --extra-vars "workflow=workflow_name workflow_dir=/home/user/workflow_name'
 
 - hosts: hadoop_masters
   gather_facts: no

@@ -34,8 +34,12 @@ define 'wordcount' do
     jars.each do |jarf|
       FileUtils.copy(jarf, lib_folder)
     end
-    system 'ansible-playbook -i $CELOS_HOME/provisioner/tmp/inventory -u celos $CELOS_HOME/provisioner/celos_deploy_workflow.yaml --extra-vars "workflow=' + workflow_name + ' workflow_dir=' + _  + '"'
-    system 'ansible-playbook -i $CELOS_HOME/provisioner/tmp/inventory -u celos $CELOS_HOME/scripts/test/test-workflow.yaml --extra-vars "workflow=' + workflow_name + ' sample_time=2013-12-20T20:00Z"'
+    if ENV['CELOS_HOME'] == nil
+      raise "CELOS_HOME variable must be set"
+    else 
+      system 'ansible-playbook -i $CELOS_HOME/provisioner/tmp/inventory -u celos $CELOS_HOME/provisioner/celos_deploy_workflow.yaml --extra-vars "workflow=' + workflow_name + ' workflow_dir=' + _  + '"'
+      system 'ansible-playbook -i $CELOS_HOME/provisioner/tmp/inventory -u celos $CELOS_HOME/scripts/test/test-workflow.yaml --extra-vars "workflow=' + workflow_name + ' sample_time=2013-12-20T20:00Z"'
+    end
   end
 
 end
