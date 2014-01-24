@@ -1,0 +1,23 @@
+---
+# Playbook to deploy workflow to the cluster for testing
+#
+# Copies input/, output/, workflow/, and workflow_name.json into ~/celos-deploy/workflow_name on the Hadoop master.
+#
+# User must provide 'workflow' and 'workflow_dir' variables like this:
+#
+# ansible-playbook -i provisioner/tmp/inventory -u celos provisioner/celos_deploy_workflow.yaml --extra-vars "workflow=workflow_name workflow_dir=/home/user/workflow_name'
+
+- hosts: hadoop_masters
+  gather_facts: no
+  remote_user: celos
+  vars:
+    remote_celos: ~/deploy
+
+  tasks:
+
+  - name: Remove old files
+    shell: rm -rf {{remote_celos}}/samples/{{ workflow  }}
+
+  - name: Copy files
+    local_action: command rsync -az -e ssh {{workflow_dir}}/input {{workflow_dir}}/output {{workflow_dir}}/workflow {{workflow_dir}}/{{workflow}}.json
+        celos@{{inventory_hostname}}:{{remote_celos}}/samples/{{ workflow }}
