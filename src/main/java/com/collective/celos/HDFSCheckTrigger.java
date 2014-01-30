@@ -12,8 +12,8 @@ import org.apache.hadoop.fs.Path;
  */
 public class HDFSCheckTrigger implements Trigger {
 
-    public static final String PATH_PROP = "path";
-    public static final String FS_PROP = "fs";
+    public static final String PATH_PROP = "celos.hdfs.path";
+    public static final String FS_PROP = "celos.hdfs.fs";
 
     private final ScheduledTimeFormatter formatter = new ScheduledTimeFormatter();
     private final FileSystem fs;

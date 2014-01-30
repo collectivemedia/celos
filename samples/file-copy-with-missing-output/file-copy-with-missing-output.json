@@ -9,14 +9,14 @@
     "trigger": {
         "type": "com.collective.celos.HDFSCheckTrigger",
         "properties": {
-            "fs": "hdfs://nn",
-            "path": "/user/celos/samples/file-copy-with-missing-output/input/${year}-${month}-${day}T${hour}00.txt"
+            "celos.hdfs.fs": "hdfs://nn",
+            "celos.hdfs.path": "/user/celos/samples/file-copy-with-missing-output/input/${year}-${month}-${day}T${hour}00.txt"
         }
     },
     "externalService": {
         "type": "com.collective.celos.OozieExternalService",
         "properties": {
-            "oozie-url": "http://nn:11000/oozie",
+            "celos.oozie.url": "http://nn:11000/oozie",
             "user.name": "celos",
             "oozie.wf.application.path": "/user/celos/samples/file-copy-with-missing-output/workflow/workflow.xml",
             "inputDir": "hdfs:/user/celos/samples/file-copy-with-missing-output/input",
