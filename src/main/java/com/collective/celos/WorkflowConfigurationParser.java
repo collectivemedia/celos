@@ -14,6 +14,7 @@ import org.apache.commons.io.FileUtils;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.log4j.Logger;
 
 /**
  * Reads a set of JSON files from a directory and creates a WorkflowConfiguration.
@@ -28,9 +29,13 @@ public class WorkflowConfigurationParser {
     private static final String SCHEDULE_PROP = "schedule";
     private static final String ID_PROP = "id";
     private static final String MAX_RETRY_COUNT_PROP = "maxRetryCount";
+
+    private static final Logger LOGGER = Logger.getLogger(WorkflowConfigurationParser.class);
     
     public WorkflowConfiguration parseConfiguration(File dir) throws Exception {
-        Util.logInfo("Workflow configuration directory: " + dir);
+        if (LOGGER.isInfoEnabled()) {
+            LOGGER.info("Workflow configuration directory: " + dir);
+        }
         Collection<File> files = FileUtils.listFiles(dir, new String[] { "json" }, false);
         Set<Workflow> workflows = new HashSet<Workflow>();
         for (File f : files) {
@@ -40,7 +45,9 @@ public class WorkflowConfigurationParser {
     }
 
     private Workflow parseFile(File f) throws Exception {
-        Util.logInfo("Configuring workflow: " + f);
+        if (LOGGER.isInfoEnabled()) {
+            LOGGER.info("Configuring workflow: " + f);
+        }
         JsonNode workflowNode = new ObjectMapper().readTree(f);
         WorkflowID id = getWorkflowID(workflowNode);
         Schedule schedule = getScheduleFromJSON(id, workflowNode);
@@ -86,7 +93,9 @@ public class WorkflowConfigurationParser {
     private Object createInstance(WorkflowID id, JsonNode workflowNode) throws Exception {
         Properties properties = getProperties(workflowNode);
         Constructor<?> ctor = getConstructor(workflowNode);
-        Util.logInfo("Instantiating " + ctor + " for: " + id);
+        if (LOGGER.isInfoEnabled()) {
+            LOGGER.info("Instantiating " + ctor + " for: " + id);
+        }
         return ctor.newInstance(properties);
     }
 
