@@ -6,6 +6,7 @@
   vars:
     celos_workflows_dir: /etc/celos/workflows
     celos_db_dir: /var/lib/celos/db
+    celos_db_dir: /var/log/celos
   roles:
    - openjdk
    - buildr
