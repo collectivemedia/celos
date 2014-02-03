@@ -97,14 +97,10 @@ public class Scheduler {
             if (!slotState.getStatus().equals(SlotState.Status.READY)) {
                 throw new IllegalStateException("Scheduling strategy returned non-ready slot: " + slotState);
             }
-            if (LOGGER.isInfoEnabled()) {
-                LOGGER.info("Submitting slot to external service: " + slotState.getSlotID());
-            }
+            LOGGER.info("Submitting slot to external service: " + slotState.getSlotID());
             String externalID = wf.getExternalService().submit(slotState.getScheduledTime());
             database.putSlotState(slotState.transitionToRunning(externalID));
-            if (LOGGER.isInfoEnabled()) {
-                LOGGER.info("Starting slot: " + slotState.getSlotID() + " with external ID: " + externalID);
-            }
+            LOGGER.info("Starting slot: " + slotState.getSlotID() + " with external ID: " + externalID);
             wf.getExternalService().start(externalID);
         }
     }
@@ -118,33 +114,23 @@ public class Scheduler {
         SlotState.Status status = slotState.getStatus();
         if (status.equals(SlotState.Status.WAITING)) {
             if (wf.getTrigger().isDataAvailable(slotState.getScheduledTime())) {
-                if (LOGGER.isInfoEnabled()) {
-                    LOGGER.info("Data available: " + slotState.getSlotID());
-                }
+                LOGGER.info("Data available: " + slotState.getSlotID());
                 database.putSlotState(slotState.transitionToReady());
             } else {
-                if (LOGGER.isInfoEnabled()) {
-                    LOGGER.info("No data available: " + slotState.getSlotID());
-                }
+                LOGGER.info("No data available: " + slotState.getSlotID());
             }
         } else if (status.equals(SlotState.Status.RUNNING)) {
             ExternalStatus xStatus = wf.getExternalService().getStatus(slotState.getExternalID());
             if (!xStatus.isRunning()) {
                 if (xStatus.isSuccess()) {
-                    if (LOGGER.isInfoEnabled()) {
-                        LOGGER.info("Slot successful: " + slotState.getSlotID() + " external ID: " + slotState.getExternalID());
-                    }
+                    LOGGER.info("Slot successful: " + slotState.getSlotID() + " external ID: " + slotState.getExternalID());
                     database.putSlotState(slotState.transitionToSuccess());
                 } else {
                     if (slotState.getRetryCount() < wf.getMaxRetryCount()) {
-                        if (LOGGER.isInfoEnabled()) {
-                            LOGGER.info("Slot failed, preparing for retry: " + slotState.getSlotID() + " external ID: " + slotState.getExternalID());
-                        }
+                        LOGGER.info("Slot failed, preparing for retry: " + slotState.getSlotID() + " external ID: " + slotState.getExternalID());
                         database.putSlotState(slotState.transitionToRetry());
                     } else {
-                        if (LOGGER.isInfoEnabled()) {
-                            LOGGER.info("Slot failed permanently: " + slotState.getSlotID() + " external ID: " + slotState.getExternalID());
-                        }
+                        LOGGER.info("Slot failed permanently: " + slotState.getSlotID() + " external ID: " + slotState.getExternalID());
                         database.putSlotState(slotState.transitionToFailure());
                     }
                 }

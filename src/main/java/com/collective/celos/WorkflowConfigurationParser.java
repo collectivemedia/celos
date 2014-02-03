@@ -33,9 +33,7 @@ public class WorkflowConfigurationParser {
     private static final Logger LOGGER = Logger.getLogger(WorkflowConfigurationParser.class);
     
     public WorkflowConfiguration parseConfiguration(File dir) throws Exception {
-        if (LOGGER.isInfoEnabled()) {
-            LOGGER.info("Workflow configuration directory: " + dir);
-        }
+        LOGGER.info("Workflow configuration directory: " + dir);
         Collection<File> files = FileUtils.listFiles(dir, new String[] { "json" }, false);
         Set<Workflow> workflows = new HashSet<Workflow>();
         for (File f : files) {
@@ -45,9 +43,7 @@ public class WorkflowConfigurationParser {
     }
 
     private Workflow parseFile(File f) throws Exception {
-        if (LOGGER.isInfoEnabled()) {
-            LOGGER.info("Configuring workflow: " + f);
-        }
+        LOGGER.info("Configuring workflow: " + f);
         JsonNode workflowNode = new ObjectMapper().readTree(f);
         WorkflowID id = getWorkflowID(workflowNode);
         Schedule schedule = getScheduleFromJSON(id, workflowNode);
@@ -93,9 +89,7 @@ public class WorkflowConfigurationParser {
     private Object createInstance(WorkflowID id, JsonNode workflowNode) throws Exception {
         Properties properties = getProperties(workflowNode);
         Constructor<?> ctor = getConstructor(workflowNode);
-        if (LOGGER.isInfoEnabled()) {
-            LOGGER.info("Instantiating " + ctor + " for: " + id);
-        }
+        LOGGER.info("Instantiating " + ctor + " for: " + id);
         return ctor.newInstance(properties);
     }
 
