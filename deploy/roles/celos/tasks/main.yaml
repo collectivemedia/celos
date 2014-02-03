@@ -2,7 +2,7 @@
 
   - name: Install cron entry
     lineinfile: dest=/etc/crontab state=present
-      line="* * * * * manuel curl -X POST localhost:8080/celos/scheduler"
+      line="* * * * * {{celos_user}} curl -X POST localhost:8080/celos/scheduler"
       regexp="celos/scheduler"
     sudo: yes
     tags: cron

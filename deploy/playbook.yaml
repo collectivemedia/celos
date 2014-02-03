@@ -2,7 +2,7 @@
 # The main playbook to deploy to celos001
 
 - hosts: masters
-  remote_user: manuel
+  remote_user: "{{celos_user}}"
   roles:
    - openjdk
    - buildr
