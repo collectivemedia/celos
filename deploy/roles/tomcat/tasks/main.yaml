@@ -1,0 +1,7 @@
+---
+
+  - name: Install tomcat
+    yum: name={{ item }}
+    sudo: yes
+    with_items:
+      - tomcat6

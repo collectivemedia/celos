@@ -1,0 +1,9 @@
+---
+# The main playbook to deploy to celos001
+
+- hosts: masters
+  remote_user: manuel
+  roles:
+   - openjdk
+   - buildr
+   - tomcat

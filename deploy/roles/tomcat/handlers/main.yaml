@@ -1,0 +1,5 @@
+---
+# Handlers for Tomcat
+
+- name: restart tomcat service
+  service: tomcat6 state=restarted
