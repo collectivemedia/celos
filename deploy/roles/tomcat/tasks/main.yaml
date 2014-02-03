@@ -5,3 +5,23 @@
     sudo: yes
     with_items:
       - tomcat6
+    tags: tomcat
+
+  - name: Configure Tomcat to run as celos user
+    lineinfile: dest=/etc/sysconfig/tomcat6 state=present
+      line="TOMCAT_USER={{celos_user}}"
+      regexp="TOMCAT_USER="
+    sudo: yes
+    tags: tomcat
+
+  - name: Configure Tomcat to run as celos group
+    lineinfile: dest=/etc/sysconfig/tomcat6 state=present
+      line="TOMCAT_GROUP={{celos_user}}"
+      regexp="TOMCAT_GROUP="
+    sudo: yes
+    tags: tomcat
+
+  - name: Change tomcat logdir owner
+    shell: chown -R {{celos_user}}:{{celos_user}} /var/log/tomcat6
+    sudo: yes
+    tags: tomcat
