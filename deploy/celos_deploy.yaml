@@ -7,7 +7,7 @@
 
 - hosts: masters
   gather_facts: no
-  remote_user: {{celos_user}}
+  remote_user: "{{celos_user}}"
   vars:
     local_celos: ..
     remote_celos: ~/deploy
@@ -18,7 +18,7 @@
     shell: rm -rf {{remote_celos}}/*
 
   - name: Copy files
-    local_action: command rsync -az -e ssh {{local_celos}}/Buildfile {{local_celos}}/src {{local_celos}}/deploy {{local_celos}}
+    local_action: command rsync -az -e ssh {{local_celos}}/Buildfile {{local_celos}}/src {{local_celos}}/deploy
       {{celos_user}}@{{inventory_hostname}}:{{remote_celos}}
 
   - name: Build
