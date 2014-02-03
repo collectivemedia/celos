@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+
+<log4j:configuration>
+
+    <appender name="LOGGER" class="org.apache.log4j.rolling.RollingFileAppender">
+
+        <param name="file" value="/var/log/celos/celos.log"/>
+        <param name="append" value="true"/>
+
+        <rollingPolicy class="org.apache.log4j.rolling.TimeBasedRollingPolicy">
+            <param name="FileNamePattern" value="/var/log/celos/celos-%d{yyyy-MM-dd}.log.gz"/>
+        </rollingPolicy>
+
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="[%d{HH:mm:ss.SSS}] %-5p %C{1}[%t]: %m%n"/>
+        </layout>
+    </appender>
+
+    <root>
+        <priority value="info"/>
+        <appender-ref ref="LOGGER"/>
+    </root>
+
+</log4j:configuration>
