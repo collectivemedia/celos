@@ -14,6 +14,7 @@ JACKSON_ANNOTATIONS = 'com.fasterxml.jackson.core:jackson-annotations:jar:2.3.0'
 JODA = 'joda-time:joda-time:jar:2.3'
 # used by Oozie (as per rrman Buildfile)
 JSON_SIMPLE = 'com.googlecode.json-simple:json-simple:jar:1.1.1'
+LOG4J = 'log4j:log4j:jar:1.2.17'
 
 GET_OUTTA_MY_JAR = ['log4j-']
 
@@ -28,7 +29,7 @@ DEPENDENCIES = [
   JSON_SIMPLE,
 ].flatten.reject {|tdep|
   GET_OUTTA_MY_JAR.select {|x| tdep.to_s.include?(x)}.any?
-}.push('log4j:log4j:jar:1.2.17')
+}.push(LOG4J)
 
 POWERMOCK = [
   'org.powermock:powermock-module-junit4:jar:1.5.2',
