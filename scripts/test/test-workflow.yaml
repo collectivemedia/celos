@@ -47,9 +47,3 @@
 
   - name: Verify produced outputs by comparing them against fixtures
     shell: ~/deploy/scripts/test/test-workflow-results.sh {{ workflow }}
-
-  - name: Check debug log file exists and not empty
-    shell: ~/deploy/scripts/test/test-file-exist-not-empty.sh /var/log/celos/debug.log
-
-  - name: Check error log file exists and not empty
-    shell: ~/deploy/scripts/test/test-file-exist-not-empty.sh /var/log/celos/debug.log
