@@ -25,7 +25,7 @@
       && sudo chown celos:celos {{celos_db_dir}}
 
   - name: Clean logs dir
-    shell: sudo rm -rf /val/log/celos/*
+    shell: sudo rm -rf /var/log/celos/*
 
   - name: Check servlet /celos/scheduler responds to POST
     local_action: shell curl --fail -X POST {{inventory_hostname}}:8080/celos/scheduler
