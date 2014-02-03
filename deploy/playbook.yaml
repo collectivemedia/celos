@@ -3,6 +3,9 @@
 
 - hosts: masters
   remote_user: "{{celos_user}}"
+  vars:
+    celos_workflows_dir: /etc/celos/workflows
+    celos_db_dir: /var/lib/celos/db
   roles:
    - openjdk
    - buildr

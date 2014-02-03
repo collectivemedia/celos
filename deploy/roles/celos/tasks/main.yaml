@@ -6,3 +6,9 @@
       regexp="celos/scheduler"
     sudo: yes
     tags: cron
+
+  - name: Prepare configuration dir
+    shell: sudo mkdir -p {{celos_workflows_dir}} && sudo chown {{celos_user}}:{{celos_user}} {{celos_workflows_dir}}
+
+  - name: Prepare database dir
+    shell: sudo mkdir -p {{celos_db_dir}} && sudo chown {{celos_user}}:{{celos_user}} {{celos_db_dir}}
