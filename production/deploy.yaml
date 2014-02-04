@@ -18,11 +18,11 @@
     shell: rm -rf {{remote_celos}}/*
 
   - name: Copy files
-    local_action: command rsync -az -e ssh {{local_celos}}/Buildfile {{local_celos}}/src {{local_celos}}/deploy
+    local_action: command rsync -az -e ssh {{local_celos}}/Buildfile {{local_celos}}/src {{local_celos}}/production
       {{celos_user}}@{{inventory_hostname}}:{{remote_celos}}
 
   - name: Build
     shell: cd {{remote_celos}} && buildr TEST=no package
 
   - name: Deploy WAR
-    shell: cd {{remote_celos}} && ./deploy/war-deploy.sh
+    shell: cd {{remote_celos}} && ./production/war-deploy.sh
