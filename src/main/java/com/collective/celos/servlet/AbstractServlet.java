@@ -1,5 +1,7 @@
 package com.collective.celos.servlet;
 
+import java.io.IOException;
+
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
@@ -11,7 +13,6 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
 import com.collective.celos.ScheduledTime;
-import com.collective.celos.Util;
 
 /**
  * Superclass for all servlets that access the database.
@@ -30,12 +31,12 @@ public abstract class AbstractServlet extends HttpServlet {
     protected static final Object LOCK = new Object();
 
     @Override
-    public void service(ServletRequest req, ServletResponse res) throws ServletException, java.io.IOException {
+    public void service(ServletRequest req, ServletResponse res) throws ServletException, IOException {
         synchronized(LOCK) {
             try {
                 super.service(req, res);
-            } catch(ServletException e) {
-                LOGGER.error("Exception", e);
+            } catch(Exception e) {
+                LOGGER.error(e.getMessage(), e);
                 throw e;
             }
         }
