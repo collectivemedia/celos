@@ -35,7 +35,7 @@ public abstract class AbstractServlet extends HttpServlet {
         synchronized(LOCK) {
             try {
                 super.service(req, res);
-            } catch(Exception e) {
+            } catch(ServletException|IOException|RuntimeException e) {
                 LOGGER.error(e.getMessage(), e);
                 throw e;
             }
