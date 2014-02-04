@@ -1,5 +1,7 @@
 package com.collective.celos.servlet;
 
+import java.io.IOException;
+
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
@@ -29,12 +31,12 @@ public abstract class AbstractServlet extends HttpServlet {
     protected static final Object LOCK = new Object();
 
     @Override
-    public void service(ServletRequest req, ServletResponse res) throws ServletException, java.io.IOException {
+    public void service(ServletRequest req, ServletResponse res) throws ServletException, IOException {
         synchronized(LOCK) {
             try {
                 super.service(req, res);
-            } catch(ServletException e) {
-                LOGGER.error("Exception", e);
+            } catch(ServletException|IOException|RuntimeException e) {
+                LOGGER.error(e.getMessage(), e);
                 throw e;
             }
         }
