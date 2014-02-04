@@ -9,11 +9,11 @@
         <param name="append" value="true"/>
 
         <rollingPolicy class="org.apache.log4j.rolling.TimeBasedRollingPolicy">
-            <param name="FileNamePattern" value="/var/log/celos/celos-%d{yyyy-MM-dd}.log.gz"/>
+            <param name="FileNamePattern" value="/var/log/celos/celos-%d{yyyy-MM-dd}.log"/>
         </rollingPolicy>
 
         <layout class="org.apache.log4j.PatternLayout">
-            <param name="ConversionPattern" value="[%d{HH:mm:ss.SSS}] %-5p %C{1}[%t]: %m%n"/>
+            <param name="ConversionPattern" value="[%d{YYYY-MM-DD HH:mm:ss.SSS}] %-5p: %m%n"/>
         </layout>
     </appender>
 
