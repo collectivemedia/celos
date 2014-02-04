@@ -1,6 +1,5 @@
 package com.collective.celos;
 
-import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 
 public class Util {

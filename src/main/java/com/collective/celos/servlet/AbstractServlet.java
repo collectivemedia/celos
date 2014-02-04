@@ -11,7 +11,6 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
 import com.collective.celos.ScheduledTime;
-import com.collective.celos.Util;
 
 /**
  * Superclass for all servlets that access the database.
