@@ -39,6 +39,10 @@
   file: path=/home/celos/.ssh owner=celos group=celos state=directory
   tags: yarn
 
+- name: Ensure log dir for Celos
+  file: path=/var/log/celos owner=celos group=celos state=directory mode=0775
+  tags: yarn
+
 - name: Copy SSH keys for scripts to work
   shell: creates=/home/celos/.ssh/authorized_keys cp -avf /home/ubuntu/.ssh/authorized_keys /home/celos/.ssh/authorized_keys && chown celos /home/celos/.ssh/authorized_keys  
   tags: yarn  

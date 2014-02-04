@@ -6,6 +6,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
@@ -21,6 +22,7 @@ import com.collective.celos.Util;
 public abstract class AbstractServlet extends HttpServlet {
 
     private static final String TIME_PARAM = "time";
+    private static Logger LOGGER = Logger.getLogger(AbstractServlet.class);
     
     /**
      * This lock serves to synchronize all operations.
@@ -33,7 +35,7 @@ public abstract class AbstractServlet extends HttpServlet {
             try {
                 super.service(req, res);
             } catch(ServletException e) {
-                Util.logException(e);
+                LOGGER.error("Exception", e);
                 throw e;
             }
         }

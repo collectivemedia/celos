@@ -7,7 +7,7 @@
   gather_facts: no
   remote_user: celos
   vars:
-    local_celos: ..
+    local_celos: ../..
     celos_port: 8080
     celos_workflows_dir: /etc/celos/workflows
     celos_db_dir: /var/lib/celos/db
@@ -23,6 +23,9 @@
   - name: Prepare database dir
     shell: sudo rm -rf {{celos_db_dir}}/* && sudo mkdir -p {{celos_db_dir}}
       && sudo chown celos:celos {{celos_db_dir}}
+
+  - name: Clean logs dir
+    shell: sudo rm -rf /var/log/celos/*
 
   - name: Check servlet /celos/scheduler responds to POST
     local_action: shell curl --fail -X POST {{inventory_hostname}}:8080/celos/scheduler
@@ -55,3 +58,9 @@
 
   - name: Check servlet /celos/workflow returns correct JSON object for workflow-2
     local_action: shell curl --fail "{{inventory_hostname}}:8080/celos/workflow?id=workflow-2&time=2013-12-02T20:00Z" | diff - test_files/workflow_states_workflow_2.json
+
+  - name: Check error log file exists and contains record about test workflow
+    shell: ~/deploy/scripts/test/test-file-contains.sh /var/log/celos/celos.log 'Workflow not found{{':'}} foobar'
+
+  - name: Check error log file exists and not empty
+    shell: ~/deploy/scripts/test/test-file-contains.sh /var/log/celos/celos.log 'Configuring workflow{{':'}} /etc/celos/workflows/workflow-1.json'

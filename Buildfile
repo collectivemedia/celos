@@ -15,6 +15,10 @@ JODA = 'joda-time:joda-time:jar:2.3'
 # used by Oozie (as per rrman Buildfile)
 JSON_SIMPLE = 'com.googlecode.json-simple:json-simple:jar:1.1.1'
 
+LOG4J = ['log4j:log4j:jar:1.2.17', 'log4j:apache-log4j-extras:jar:1.2.17']
+
+GET_OUTTA_MY_JAR = ['log4j-']
+
 DEPENDENCIES = [
   OOZIE_CLIENT,
   HADOOP,
@@ -24,7 +28,9 @@ DEPENDENCIES = [
   JACKSON_ANNOTATIONS,
   JODA,
   JSON_SIMPLE,
-]
+].flatten.reject {|tdep|
+  GET_OUTTA_MY_JAR.select {|x| tdep.to_s.include?(x)}.any?
+}.push(LOG4J)
 
 POWERMOCK = [
   'org.powermock:powermock-module-junit4:jar:1.5.2',
@@ -43,8 +49,7 @@ define 'celos' do
   compile.options.target = '1.6'
 
   compile.with(DEPENDENCIES)
-  
   test.with(TEST_DEPENDENCIES)
-  
   package(:war).libs -= artifacts('javax.servlet:servlet-api:jar:2.3')
+
 end
