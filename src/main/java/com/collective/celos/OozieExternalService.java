@@ -10,7 +10,7 @@ import org.apache.oozie.client.WorkflowJob;
 // TODO: mock AuthOozieClient and check that its methods are called with the right args
 public class OozieExternalService implements ExternalService {
     
-    public static final String OOZIE_URL_PROP = "oozie-url";
+    public static final String OOZIE_URL_PROP = "celos.oozie.url";
     public static final String YEAR_PROP = "year";
     public static final String MONTH_PROP = "month";
     public static final String DAY_PROP = "day";
