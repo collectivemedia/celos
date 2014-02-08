@@ -29,7 +29,7 @@
     <url-pattern>/workflow</url-pattern>
   </servlet-mapping>
 
-g  <servlet>
+  <servlet>
     <servlet-name>RerunServlet</servlet-name>
     <servlet-class>com.collective.celos.servlet.RerunServlet</servlet-class>
   </servlet>
