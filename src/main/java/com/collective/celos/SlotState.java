@@ -93,6 +93,14 @@ public class SlotState extends ValueObject {
         return new SlotState(slotID, Status.READY, null, retryCount + 1);
     }
 
+    public SlotState transitionToRerun() {
+        boolean successOrFailure = (status.equals(Status.SUCCESS)) || (status.equals(Status.FAILURE));
+        if (!successOrFailure) {
+            throw new IllegalStateException("Slot must be successful or failed, but is: " + status);
+        }
+        return new SlotState(slotID, Status.READY, null, 0); // reset retryCount to 0
+    }
+    
     private void assertStatus(Status st) {
         if (!status.equals(st)) {
             throw new IllegalStateException("Expected status " + st + " but was " + status + " (slot: " + this + ")");
