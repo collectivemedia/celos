@@ -269,4 +269,3 @@ curl http://celos001.ny7.collective-media.net:8080/celos/workflow?id=workflow-1
 <pre>
 curl -X POST http://celos001.ny7.collective-media.net:8080/celos/rerun?id=workflow-1&time=2014-02-10T20:00Z
 </pre>
-xs
