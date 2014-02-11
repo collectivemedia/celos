@@ -198,3 +198,18 @@ Submits jobs to Oozie.
 }
 ...
 </pre>
+
+## Workflow properties
+
+### `maxRetryCount` (number)
+
+Determines number of times a slot should be automatically retried when
+it fails.
+
+#### Example
+
+<pre>
+...
+"maxRetryCount": 15
+...
+</pre>
