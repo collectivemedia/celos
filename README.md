@@ -213,3 +213,49 @@ it fails.
 "maxRetryCount": 15
 ...
 </pre>
+
+## Deploying workflows
+
+Workflow JSON files are put into `/etc/celos/workflows` on the host
+`celos001.ny7.collective-media.net`.
+
+## HTTP API
+
+### List installed workflows
+
+`GET celos001.ny7.collective-media.net:8080/celos/workflow-list`
+
+<pre>
+{
+  "ids" : [ "workflow-1", "workflow-2", "workflow-3" ]
+}
+</pre>
+
+### Get workflow information
+
+`GET celos001.ny7.collective-media.net:8080/celos/workflow?id=...`
+
+<pre>
+{
+  "2014-02-10T04:00:00.000Z" : {
+    "status" : "SUCCESS",
+    "externalID" : "0001828-140209102019171-oozie-oozi-W",
+    "retryCount" : 0
+  },
+  "2014-02-10T05:00:00.000Z" : {
+    "status" : "SUCCESS",
+    "externalID" : "0001830-140209102019171-oozie-oozi-W",
+    "retryCount" : 0
+  },
+  "2014-02-10T06:00:00.000Z" : {
+    "status" : "SUCCESS",
+    "externalID" : "0001823-140209102019171-oozie-oozi-W",
+    "retryCount" : 0
+  },
+  ...
+}
+</pre>
+
+### Rerun slot
+
+`PUT celos001.ny7.collective-media.net:8080/celos/rerun?id=...&time=...`
