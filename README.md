@@ -221,21 +221,25 @@ Workflow JSON files are put into `/etc/celos/workflows` on the host
 
 ## HTTP API
 
-### List installed workflows
+### List installed workflows -- `GET /celos/workflow-list`
 
-`GET celos001.ny7.collective-media.net:8080/celos/workflow-list`
+#### Example
 
 <pre>
+GET celos001.ny7.collective-media.net:8080/celos/workflow-list
+==>
 {
   "ids" : [ "workflow-1", "workflow-2", "workflow-3" ]
 }
 </pre>
 
-### Get workflow information
+### Get workflow information -- `GET /celos/workflow?id=...`
 
-`GET celos001.ny7.collective-media.net:8080/celos/workflow?id=...`
+#### Example
 
 <pre>
+GET celos001.ny7.collective-media.net:8080/celos/workflow?id=workflow-1
+==>
 {
   "2014-02-10T04:00:00.000Z" : {
     "status" : "SUCCESS",
@@ -256,6 +260,10 @@ Workflow JSON files are put into `/etc/celos/workflows` on the host
 }
 </pre>
 
-### Rerun slot
+### Rerun slot -- `PUT /celos/rerun?id=...&time=...` 
 
-`PUT celos001.ny7.collective-media.net:8080/celos/rerun?id=...&time=...`
+#### Example
+
+<pre>
+PUT celos001.ny7.collective-media.net:8080/celos/rerun?id=workflow-1&time=2014-02-10T20:00Z
+</pre>
