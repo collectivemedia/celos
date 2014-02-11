@@ -148,9 +148,11 @@ slot running at any time.
 #### Example
 
 <pre>
+...
 "schedulingStrategy": {
     "type": "com.collective.celos.SerialSchedulingStrategy"
 }
+...
 </pre>
 
 ### TrivialSchedulingStrategy
@@ -161,9 +163,11 @@ service, so use it only if you know what you're doing.
 #### Example
 
 <pre>
+...
 "schedulingStrategy": {
     "type": "com.collective.celos.TrivialSchedulingStrategy"
 }
+...
 </pre>
 
 ## External Services
@@ -181,6 +185,7 @@ Submits jobs to Oozie.
 #### Example
 
 <pre>
+...
 "externalService": {
     "type": "com.collective.celos.OozieExternalService",
     "properties": {
@@ -191,4 +196,5 @@ Submits jobs to Oozie.
         "outputDir": "/user/celos/samples/wordcount/output"
     }
 }
+...
 </pre>
