@@ -37,13 +37,17 @@ public class WorkflowConfigurationParser {
         Collection<File> files = FileUtils.listFiles(dir, new String[] { "json" }, false);
         Set<Workflow> workflows = new HashSet<Workflow>();
         for (File f : files) {
-            workflows.add(parseFile(f));
+            try {
+                workflows.add(parseFile(f));
+            } catch(Exception e) {
+                LOGGER.error("Failed to load workflow: " + f, e);
+            }
         }
         return new WorkflowConfiguration(workflows);
     }
 
-    private Workflow parseFile(File f) throws Exception {
-        LOGGER.info("Configuring workflow: " + f);
+    Workflow parseFile(File f) throws Exception {
+        LOGGER.info("Loading workflow: " + f);
         JsonNode workflowNode = new ObjectMapper().readTree(f);
         WorkflowID id = getWorkflowID(workflowNode);
         Schedule schedule = getScheduleFromJSON(id, workflowNode);
