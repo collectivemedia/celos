@@ -44,4 +44,9 @@ public class ScheduledTimeFormatter {
     public String formatTimestamp(ScheduledTime t) {
         return formatHour(t) + ":" + formatMinute(t) + ":" + formatSecond(t) + "." + formatMillisecond(t) + "Z";
     }
+    
+    public String formatDatestamp(ScheduledTime t) {
+        return formatYear(t) + "-" + formatMonth(t) + "-" + formatDay(t);
+    }
+
 }

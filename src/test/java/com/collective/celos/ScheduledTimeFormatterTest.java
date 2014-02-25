@@ -58,9 +58,16 @@ public class ScheduledTimeFormatterTest {
         assertEquals("100", formatter.formatMillisecond(new ScheduledTime("2014-02-25T01:02:03.100Z")));
     }
     
+    @Test
     public void timestampTest() {
         ScheduledTimeFormatter formatter = new ScheduledTimeFormatter();
         assertEquals("20:15:00.053Z", formatter.formatTimestamp(new ScheduledTime("2014-02-25T20:15:00.053Z")));
+    }
+    
+    @Test
+    public void datestampTest() {
+        ScheduledTimeFormatter formatter = new ScheduledTimeFormatter();
+        assertEquals("2014-02-25", formatter.formatDatestamp(new ScheduledTime("2014-02-25T20:15:00.053Z")));
     }
     
     @Test
