@@ -1,28 +1,31 @@
 package com.collective.celos;
 
-import java.util.Collections;
-import java.util.Set;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 public class WorkflowConfiguration {
 
-    private final Set<Workflow> workflows;
+    private final Map<WorkflowID, Workflow> workflows = new HashMap<>();
     
-    public WorkflowConfiguration(Set<Workflow> workflows) {
-        this.workflows = Collections.unmodifiableSet(Util.requireNonNull(workflows));
+    public WorkflowConfiguration() {
     }
 
-    public Set<Workflow> getWorkflows() {
-        return workflows;
+    public Collection<Workflow> getWorkflows() {
+        return workflows.values();
     }
     
     public Workflow findWorkflow(WorkflowID id) {
-        Util.requireNonNull(id);
-        for (Workflow wf : workflows) {
-            if (wf.getID().equals(id)) {
-                return wf;
-            }
+        return workflows.get(Util.requireNonNull(id));
+    }
+
+    public void addWorkflow(Workflow wf) {
+        Util.requireNonNull(wf);
+        WorkflowID id = wf.getID();
+        if (findWorkflow(id) != null) {
+            throw new IllegalArgumentException("Workflow with this ID already exists: " + id);
         }
-        return null;
+        workflows.put(id, wf);
     }
     
 }

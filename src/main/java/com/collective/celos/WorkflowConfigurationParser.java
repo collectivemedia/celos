@@ -3,18 +3,16 @@ package com.collective.celos;
 import java.io.File;
 import java.lang.reflect.Constructor;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Set;
 
 import org.apache.commons.beanutils.ConstructorUtils;
 import org.apache.commons.io.FileUtils;
+import org.apache.log4j.Logger;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.log4j.Logger;
 
 /**
  * Reads a set of JSON files from a directory and creates a WorkflowConfiguration.
@@ -35,15 +33,15 @@ public class WorkflowConfigurationParser {
     public WorkflowConfiguration parseConfiguration(File dir) throws Exception {
         LOGGER.info("Workflow configuration directory: " + dir);
         Collection<File> files = FileUtils.listFiles(dir, new String[] { "json" }, false);
-        Set<Workflow> workflows = new HashSet<Workflow>();
+        WorkflowConfiguration cfg = new WorkflowConfiguration();
         for (File f : files) {
             try {
-                workflows.add(parseFile(f));
+                cfg.addWorkflow(parseFile(f));
             } catch(Exception e) {
                 LOGGER.error("Failed to load workflow: " + f, e);
             }
         }
-        return new WorkflowConfiguration(workflows);
+        return cfg;
     }
 
     Workflow parseFile(File f) throws Exception {

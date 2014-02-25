@@ -179,6 +179,13 @@ public class WorkflowConfigurationParserTest {
         Assert.assertNotNull(cfg.findWorkflow(new WorkflowID("workflow-3")));
     }
     
+    @Test
+    public void doesntAllowDuplicateIDs() throws Exception {
+        // Directory contains 2 workflows, but one will be dropped because of duplicate ID.
+        WorkflowConfiguration cfg = parseDir("duplicate-ids");
+        Assert.assertEquals(1, cfg.getWorkflows().size());
+    }
+    
     public static Workflow parseFile(String label) throws Exception {
         File dir = getConfigurationDir(label);
         File workflow = new File(dir, "workflow-1.json");
