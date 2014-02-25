@@ -41,4 +41,7 @@ public class ScheduledTimeFormatter {
         return String.format("%04d", t.getYear());
     }
     
+    public String formatTimestamp(ScheduledTime t) {
+        return formatHour(t) + ":" + formatMinute(t) + ":" + formatSecond(t) + "." + formatMillisecond(t) + "Z";
+    }
 }
