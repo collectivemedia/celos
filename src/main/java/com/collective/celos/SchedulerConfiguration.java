@@ -1,6 +1,7 @@
 package com.collective.celos;
 
 import java.io.File;
+import java.io.IOException;
 
 /**
  * Reads configuration and database from filesystem at well-known paths.
@@ -15,12 +16,16 @@ public class SchedulerConfiguration {
     
     public Scheduler makeDefaultScheduler() throws Exception {
         File configDir = new File(WORKFLOW_CONFIGURATION_PATH);
-        File dbDir = new File(STATE_DATABASE_PATH);
         WorkflowConfiguration config =
                 new WorkflowConfigurationParser().parseConfiguration(configDir);
-        StateDatabase db = new FileSystemStateDatabase(dbDir);
+        StateDatabase db = makeDefaultStateDatabase();
         int slidingWindowHours = 24 * 7;
         return new Scheduler(config, db, slidingWindowHours);
+    }
+
+    public StateDatabase makeDefaultStateDatabase() throws IOException {
+        File dbDir = new File(STATE_DATABASE_PATH);
+        return new FileSystemStateDatabase(dbDir);
     }
 
 }

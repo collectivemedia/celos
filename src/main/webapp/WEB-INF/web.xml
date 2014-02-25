@@ -29,4 +29,13 @@
     <url-pattern>/workflow</url-pattern>
   </servlet-mapping>
 
+  <servlet>
+    <servlet-name>RerunServlet</servlet-name>
+    <servlet-class>com.collective.celos.servlet.RerunServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>RerunServlet</servlet-name>
+    <url-pattern>/rerun</url-pattern>
+  </servlet-mapping>
+
 </web-app>

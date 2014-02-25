@@ -8,9 +8,10 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public class SlotStateTest {
     
+    private final SlotID id = new SlotID(new WorkflowID("foo"), new ScheduledTime("2013-12-04T19:18Z"));
+    
     @Test
     public void transitionsWorkAsExpected() {
-        SlotID id = new SlotID(new WorkflowID("foo"), new ScheduledTime("2013-12-04T19:18Z"));
         SlotState waiting = new SlotState(id, SlotState.Status.WAITING);
         SlotState ready = new SlotState(id, SlotState.Status.READY);
         Assert.assertEquals(ready, waiting.transitionToReady());
@@ -24,6 +25,33 @@ public class SlotStateTest {
         Assert.assertEquals(retry, running.transitionToRetry());        
     }
     
+    @Test(expected = IllegalStateException.class)
+    public void rerunFailsAsExpectedForWaiting() {
+        new SlotState(id, SlotState.Status.WAITING).transitionToRerun();
+    }
+    
+    @Test(expected = IllegalStateException.class)
+    public void rerunFailsAsExpectedForReady() {
+        new SlotState(id, SlotState.Status.READY).transitionToRerun();
+    }
+    
+    @Test(expected = IllegalStateException.class)
+    public void rerunFailsAsExpectedForRunning() {
+        new SlotState(id, SlotState.Status.RUNNING).transitionToRerun();
+    }
+    
+    public void rerunWorksAsExpectedForSuccess() {
+        SlotState success = new SlotState(id, SlotState.Status.SUCCESS, "external-ID", 14);
+        SlotState expected = new SlotState(id, SlotState.Status.READY);
+        Assert.assertEquals(expected, success.transitionToRerun());        
+    }
+    
+    public void rerunWorksAsExpectedForFailure() {
+        SlotState failure = new SlotState(id, SlotState.Status.FAILURE, "external-ID", 14);
+        SlotState expected = new SlotState(id, SlotState.Status.READY);
+        Assert.assertEquals(expected, failure.transitionToRerun());        
+    }
+    
     @Test
     public void slotStateGetScheduledTimeWorks() {
         ScheduledTime t = new ScheduledTime("2013-11-26T13:00Z");
@@ -34,7 +62,6 @@ public class SlotStateTest {
     @Test
     public void canRoundtripToJSON() throws Exception {
         ObjectMapper mapper = new ObjectMapper();
-        SlotID id = new SlotID(new WorkflowID("workflow-1"), new ScheduledTime("2013-12-02T13:37Z"));
         SlotState state1 = new SlotState(id, SlotState.Status.WAITING);
         SlotState state2 = new SlotState(id, SlotState.Status.READY).transitionToRunning("foo-external-ID");
         String json1 = "{\"status\":\"WAITING\",\"externalID\":null,\"retryCount\":0}";
