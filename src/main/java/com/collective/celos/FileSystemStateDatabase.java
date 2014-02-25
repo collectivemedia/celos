@@ -14,16 +14,19 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  * 
  * The database has a top-level directory.  Inside it, there
  * is a subdirectory for each workflow.  Inside each workflow directory
- * is one JSON file for each scheduled time.
+ * is one directory per day.  Inside each day directory is one JSON file
+ * per workflow run.
  * 
  * /
  *   workflow-1/
- *     2013-12-02T16:00:00.000Z
- *     2013-12-02T17:00:00.000Z
+ *     2013-12-02/
+ *       16:00:00.000Z
+ *       17:00:00.000Z
  *     ...
  *   workflow-2/
- *     2013-12-02T16:00:00.000Z
- *     2013-12-02T17:00:00.000Z
+ *     2013-12-02/
+ *       16:00:00.000Z
+ *       17:00:00.000Z
  *     ...
  *   ...
  *   
@@ -40,6 +43,7 @@ public class FileSystemStateDatabase implements StateDatabase {
     private static final String CHARSET = "UTF-8";
 
     private final ObjectMapper mapper = new ObjectMapper();
+    private final ScheduledTimeFormatter formatter = new ScheduledTimeFormatter();
     private final File dir;
     
     /**
@@ -72,15 +76,23 @@ public class FileSystemStateDatabase implements StateDatabase {
     }
 
     private File getSlotFile(SlotID slotID) {
-        return new File(getWorkflowDir(slotID), getSlotFileName(slotID));
+        return new File(getDayDir(slotID), getSlotFileName(slotID));
     }
 
+    /** Returns the directory containing a day's data inside the workflow dir. */
+    private File getDayDir(SlotID slotID) {
+        File workflowDir = getWorkflowDir(slotID);
+        File dayDir = new File(workflowDir, formatter.formatDatestamp(slotID.getScheduledTime()));
+        return dayDir;
+    }
+
+    /** Returns the directory containing all data for the slot's workflow. */
     private File getWorkflowDir(SlotID slotID) {
         return new File(dir, slotID.getWorkflowID().toString());
     }
     
     private String getSlotFileName(SlotID slotID) {
-        return slotID.getScheduledTime().getDateTime().toString();
+        return formatter.formatTimestamp(slotID.getScheduledTime());
     }
 
 }
