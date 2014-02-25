@@ -8,10 +8,8 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
-import java.util.Set;
 
 import org.joda.time.DateTime;
 import org.junit.Assert;
@@ -68,8 +66,7 @@ public class SchedulerTest {
         slotId = new SlotID(workflowId, scheduledTime);
 
         // The object under test
-        scheduler = new Scheduler(new WorkflowConfiguration(
-                new HashSet<Workflow>()), stateDatabase, 1);
+        scheduler = new Scheduler(new WorkflowConfiguration(), stateDatabase, 1);
     }
     
     @Test
@@ -284,12 +281,12 @@ public class SchedulerTest {
 
     @Test(expected=IllegalArgumentException.class)
     public void slidingWindowHoursPositive1() {
-        new Scheduler(new WorkflowConfiguration(new HashSet<Workflow>()), new MemoryStateDatabase(), 0);
+        new Scheduler(new WorkflowConfiguration(), new MemoryStateDatabase(), 0);
     }
     
     @Test(expected=IllegalArgumentException.class)
     public void slidingWindowHoursPositive2() {
-        new Scheduler(new WorkflowConfiguration(new HashSet<Workflow>()), new MemoryStateDatabase(), -23);
+        new Scheduler(new WorkflowConfiguration(), new MemoryStateDatabase(), -23);
     }
 
     @Test(expected=NullPointerException.class)
@@ -299,14 +296,14 @@ public class SchedulerTest {
 
     @Test(expected=NullPointerException.class)
     public void databaseCannotBeNull() {
-        new Scheduler(new WorkflowConfiguration(new HashSet<Workflow>()), null, 1);
+        new Scheduler(new WorkflowConfiguration(), null, 1);
     }
     
     @Test
     public void slidingWindowSizeWorks() {
         ScheduledTime t = new ScheduledTime("2013-11-26T20:00Z");
         int hours = 5;
-        Scheduler scheduler = new Scheduler(new WorkflowConfiguration(new HashSet<Workflow>()), new MemoryStateDatabase(), hours);
+        Scheduler scheduler = new Scheduler(new WorkflowConfiguration(), new MemoryStateDatabase(), hours);
         Assert.assertEquals(scheduler.getStartTime(t), new ScheduledTime("2013-11-26T15:00Z"));
     }
     
@@ -327,9 +324,8 @@ public class SchedulerTest {
         int maxRetryCount = 0;
         Workflow wf1 = new Workflow(wfID1, sch1, str1, tr1, srv1, maxRetryCount);
         
-        Set<Workflow> workflows = new HashSet<Workflow>();
-        workflows.add(wf1);
-        WorkflowConfiguration cfg = new WorkflowConfiguration(workflows);
+        WorkflowConfiguration cfg = new WorkflowConfiguration();
+        cfg.addWorkflow(wf1);
         
         MemoryStateDatabase db = new MemoryStateDatabase();
 
@@ -371,9 +367,8 @@ public class SchedulerTest {
         int maxRetryCount = 0;
         Workflow wf1 = new Workflow(wfID1, sch1, str1, tr1, srv1, maxRetryCount);
         
-        Set<Workflow> workflows = new HashSet<Workflow>();
-        workflows.add(wf1);
-        WorkflowConfiguration cfg = new WorkflowConfiguration(workflows);
+        WorkflowConfiguration cfg = new WorkflowConfiguration();
+        cfg.addWorkflow(wf1);
         
         MemoryStateDatabase db = new MemoryStateDatabase();
 
@@ -428,9 +423,8 @@ public class SchedulerTest {
         int maxRetryCount = 0;
         Workflow wf1 = new Workflow(wfID1, sch1, str1, tr1, srv1, maxRetryCount);
         
-        Set<Workflow> workflows = new HashSet<Workflow>();
-        workflows.add(wf1);
-        WorkflowConfiguration cfg = new WorkflowConfiguration(workflows);
+        WorkflowConfiguration cfg = new WorkflowConfiguration();
+        cfg.addWorkflow(wf1);
         
         MemoryStateDatabase db = new MemoryStateDatabase();
 
@@ -476,9 +470,8 @@ public class SchedulerTest {
         int maxRetryCount = 0;
         Workflow wf1 = new Workflow(wfID1, sch1, str1, tr1, srv1, maxRetryCount);
         
-        Set<Workflow> workflows = new HashSet<Workflow>();
-        workflows.add(wf1);
-        WorkflowConfiguration cfg = new WorkflowConfiguration(workflows);
+        WorkflowConfiguration cfg = new WorkflowConfiguration();
+        cfg.addWorkflow(wf1);
         
         MemoryStateDatabase db = new MemoryStateDatabase();
 
@@ -537,9 +530,8 @@ public class SchedulerTest {
         int maxRetryCount = 0;
         Workflow wf1 = new Workflow(wfID1, sch1, str1, tr1, srv1, maxRetryCount);
         
-        Set<Workflow> workflows = new HashSet<Workflow>();
-        workflows.add(wf1);
-        WorkflowConfiguration cfg = new WorkflowConfiguration(workflows);
+        WorkflowConfiguration cfg = new WorkflowConfiguration();
+        cfg.addWorkflow(wf1);
         
         MemoryStateDatabase db = new MemoryStateDatabase();
 
@@ -637,9 +629,8 @@ public class SchedulerTest {
         int maxRetryCount = 10;
         Workflow wf1 = new Workflow(wfID1, sch1, str1, tr1, srv1, maxRetryCount);
         
-        Set<Workflow> workflows = new HashSet<Workflow>();
-        workflows.add(wf1);
-        WorkflowConfiguration cfg = new WorkflowConfiguration(workflows);
+        WorkflowConfiguration cfg = new WorkflowConfiguration();
+        cfg.addWorkflow(wf1);
         
         MemoryStateDatabase db = new MemoryStateDatabase();
 
@@ -686,9 +677,8 @@ public class SchedulerTest {
         int maxRetryCount = 2;
         Workflow wf1 = new Workflow(wfID1, sch1, str1, tr1, srv1, maxRetryCount);
         
-        Set<Workflow> workflows = new HashSet<Workflow>();
-        workflows.add(wf1);
-        WorkflowConfiguration cfg = new WorkflowConfiguration(workflows);
+        WorkflowConfiguration cfg = new WorkflowConfiguration();
+        cfg.addWorkflow(wf1);
         
         MemoryStateDatabase db = new MemoryStateDatabase();
 
