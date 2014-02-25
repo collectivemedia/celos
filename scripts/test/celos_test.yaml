@@ -59,8 +59,8 @@
   - name: Check servlet /celos/workflow returns correct JSON object for workflow-2
     local_action: shell curl --fail "{{inventory_hostname}}:8080/celos/workflow?id=workflow-2&time=2013-12-02T20:00Z" | diff - test_files/workflow_states_workflow_2.json
 
-  - name: Check error log file exists and contains record about test workflow
-    shell: ~/deploy/scripts/test/test-file-contains.sh /var/log/celos/celos.log 'Workflow not found{{':'}} foobar'
+  - name: Check log file contains error for non-existent foobar workflow used above
+    shell: grep 'ERROR:.*foobar' /var/log/celos/celos.log
 
-  - name: Check error log file exists and not empty
-    shell: ~/deploy/scripts/test/test-file-contains.sh /var/log/celos/celos.log 'Configuring workflow{{':'}} /etc/celos/workflows/workflow-1.json'
+  - name: Check log file contains info about workflow-1 loaded above
+    shell: grep 'INFO :.*/etc/celos/workflows/workflow-1.json' /var/log/celos/celos.log
