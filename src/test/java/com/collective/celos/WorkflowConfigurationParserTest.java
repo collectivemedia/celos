@@ -22,7 +22,7 @@ public class WorkflowConfigurationParserTest {
 
     @Test(expected=JsonProcessingException.class)
     public void failsOnIllFormattedFile() throws Exception {
-        parseDir("ill-formatted");
+        parseFile("ill-formatted");
     }
     
     public static class ScheduleWithoutPropertiesConstructor implements Schedule {
@@ -35,7 +35,7 @@ public class WorkflowConfigurationParserTest {
     @Test
     public void everyObjectMustHavePropertiesConstructor() throws Exception {
         try {
-            parseDir("no-properties-constructor");
+            parseFile("no-properties-constructor");
         } catch(RuntimeException e) {
             Assert.assertTrue(e.getMessage().contains("Constructor with Properties argument not found for com.collective.celos.WorkflowConfigurationParserTest$ScheduleWithoutPropertiesConstructor"));
         }
@@ -44,7 +44,7 @@ public class WorkflowConfigurationParserTest {
     @Test
     public void propertyValuesMustBeStrings() throws Exception {
         try {
-            parseDir("no-string-value");
+            parseFile("no-string-value");
         } catch(IllegalArgumentException e) {
             Assert.assertTrue(e.getMessage().contains("Only string values supported"));
         }
@@ -102,8 +102,7 @@ public class WorkflowConfigurationParserTest {
 
     @Test
     public void propertiesAreCorrectlySet() throws Exception {
-        WorkflowConfiguration cfg = parseDir("properties-test");
-        Workflow wf = cfg.getWorkflows().iterator().next();
+        Workflow wf = parseFile("properties-test");
         
         Assert.assertEquals("workflow-1", wf.getID().toString());
         
@@ -139,37 +138,51 @@ public class WorkflowConfigurationParserTest {
     
     @Test(expected=ClassNotFoundException.class)
     public void classMustExist() throws Exception {
-        parseDir("class-not-found");
+        parseFile("class-not-found");
     }
     
     @Test(expected=IllegalArgumentException.class)
     public void typeMustExist() throws Exception {
-        parseDir("type-missing");
+        parseFile("type-missing");
     }
     
     @Test(expected=IllegalArgumentException.class)
     public void typeMustBeAString() throws Exception {
-        parseDir("type-not-a-string");
+        parseFile("type-not-a-string");
     }
     
     @Test(expected=IllegalArgumentException.class)
     public void idMustExist() throws Exception {
-        parseDir("id-missing");
+        parseFile("id-missing");
     }
     
     @Test(expected=IllegalArgumentException.class)
     public void idMustBeAString() throws Exception {
-        parseDir("id-not-a-string");
+        parseFile("id-not-a-string");
     }
     
     @Test(expected=NullPointerException.class)
     public void maxRetryCountMustBeSet() throws Exception {
-        parseDir("maxretrycount-missing");
+        parseFile("maxretrycount-missing");
     }
     
     @Test(expected=IllegalArgumentException.class)
     public void maxRetryCountMustBeANumber() throws Exception {
-        parseDir("maxretrycount-not-a-number");
+        parseFile("maxretrycount-not-a-number");
+    }
+    
+    @Test
+    public void doesntFailOnSingleWorkflowError() throws Exception {
+        WorkflowConfiguration cfg = parseDir("single-error");
+        Assert.assertEquals(2, cfg.getWorkflows().size());
+        Assert.assertNotNull(cfg.findWorkflow(new WorkflowID("workflow-1")));
+        Assert.assertNotNull(cfg.findWorkflow(new WorkflowID("workflow-3")));
+    }
+    
+    public static Workflow parseFile(String label) throws Exception {
+        File dir = getConfigurationDir(label);
+        File workflow = new File(dir, "workflow-1.json");
+        return new WorkflowConfigurationParser().parseFile(workflow);
     }
     
     public static WorkflowConfiguration parseDir(String label) throws Exception {
