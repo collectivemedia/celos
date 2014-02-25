@@ -31,7 +31,33 @@ public class ScheduledTimeFormatterTest {
         testReplaceTokens("/foo/${hour}/bar", "/foo/14/bar");
         testReplaceTokens("/foo/${hour}/bar/${hour}/baz", "/foo/14/bar/14/baz");
     }
+    
+    @Test
+    public void testReplaceMinuteTokens() {
+        testReplaceTokens("/foo/${minute}/bar", "/foo/00/bar");
+        testReplaceTokens("/foo/${minute}/bar/${minute}/baz", "/foo/00/bar/00/baz");
+    }
+    
+    @Test
+    public void testReplaceSecondTokens() {
+        testReplaceTokens("/foo/${second}/bar", "/foo/53/bar");
+        testReplaceTokens("/foo/${second}/bar/${second}/baz", "/foo/53/bar/53/baz");
+    }
 
+    @Test
+    public void testReplaceMillisecondTokens() {
+        testReplaceTokens("/foo/${millisecond}/bar", "/foo/023/bar");
+        testReplaceTokens("/foo/${millisecond}/bar/${millisecond}/baz", "/foo/023/bar/023/baz");
+    }
+
+    @Test
+    public void millisecondPaddingTest() {
+        ScheduledTimeFormatter formatter = new ScheduledTimeFormatter();
+        assertEquals("001", formatter.formatMillisecond(new ScheduledTime("2014-02-25T01:02:03.001Z")));
+        assertEquals("010", formatter.formatMillisecond(new ScheduledTime("2014-02-25T01:02:03.010Z")));
+        assertEquals("100", formatter.formatMillisecond(new ScheduledTime("2014-02-25T01:02:03.100Z")));
+    }
+    
     @Test
     public void testReplaceTokensPadding() {
         ScheduledTimeFormatter formatter = new ScheduledTimeFormatter();
@@ -44,7 +70,7 @@ public class ScheduledTimeFormatterTest {
     public void testReplaceTokens(String input, String expected) {
         ScheduledTimeFormatter formatter = new ScheduledTimeFormatter();
         String actual = formatter.replaceTimeTokens(input, new ScheduledTime(
-                "2013-11-22T14:00Z"));
+                "2013-11-22T14:00:53.023Z"));
         assertEquals(expected, actual);
     }
 

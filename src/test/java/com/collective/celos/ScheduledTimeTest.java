@@ -30,4 +30,22 @@ public class ScheduledTimeTest {
         assertEquals(20, t.getHour());
     }
 
+    @Test
+    public void testGetMinute() {
+        ScheduledTime t = new ScheduledTime("2013-11-18T20:12Z");
+        assertEquals(12, t.getMinute());
+    }
+    
+    @Test
+    public void testGetSecond() {
+        ScheduledTime t = new ScheduledTime("2013-11-18T20:12:53Z");
+        assertEquals(53, t.getSecond());
+    }
+    
+    @Test
+    public void testGetMillisecond() {
+        ScheduledTime t = new ScheduledTime("2013-11-18T20:12:53.023Z");
+        assertEquals(23, t.getMillisecond());
+    }
+
 }

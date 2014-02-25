@@ -7,7 +7,22 @@ public class ScheduledTimeFormatter {
             .replace("${year}", formatYear(t))
             .replace("${month}", formatMonth(t))
             .replace("${day}", formatDay(t))
-            .replace("${hour}", formatHour(t));
+            .replace("${hour}", formatHour(t))
+            .replace("${minute}", formatMinute(t))
+            .replace("${second}", formatSecond(t))
+            .replace("${millisecond}", formatMillisecond(t));
+    }
+
+    public String formatMillisecond(ScheduledTime t) {
+        return String.format("%03d", t.getMillisecond());
+    }
+
+    public String formatSecond(ScheduledTime t) {
+        return String.format("%02d", t.getSecond());
+    }
+
+    public String formatMinute(ScheduledTime t) {
+        return String.format("%02d", t.getMinute());
     }
 
     public String formatHour(ScheduledTime t) {
