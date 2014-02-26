@@ -37,7 +37,7 @@ public class WorkflowConfigurationParserTest {
         try {
             parseFile("no-properties-constructor");
         } catch(RuntimeException e) {
-            Assert.assertTrue(e.getMessage().contains("Constructor with Properties argument not found for com.collective.celos.WorkflowConfigurationParserTest$ScheduleWithoutPropertiesConstructor"));
+            Assert.assertTrue(e.getMessage().contains("Constructor with ObjectNode argument not found for com.collective.celos.WorkflowConfigurationParserTest$ScheduleWithoutPropertiesConstructor"));
         }
     }
     
