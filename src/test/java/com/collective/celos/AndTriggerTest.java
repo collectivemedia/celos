@@ -52,6 +52,12 @@ public class AndTriggerTest {
         Assert.assertTrue(trigger.isDataAvailable(new ScheduledTime("2014-02-26T16:13:00Z")));
     }
     
+    @Test(expected=IllegalArgumentException.class)
+    public void failsWhenThereTriggersPropertyNotSet() throws Exception {
+        ObjectNode properties = Util.newObjectNode();
+        AndTrigger trigger = new AndTrigger(properties);
+    }
+    
     private ObjectNode createAlwaysTriggerConfiguration() {
         ObjectNode config = Util.newObjectNode();
         config.put("type", "com.collective.celos.AlwaysTrigger");
