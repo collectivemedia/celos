@@ -1,6 +1,6 @@
 package com.collective.celos;
 
-import java.util.Properties;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
  * Trivial trigger that always signals data availability,
@@ -9,7 +9,7 @@ import java.util.Properties;
  */
 public class AlwaysTrigger implements Trigger {
 
-    public AlwaysTrigger(Properties ignored) {    
+    public AlwaysTrigger(ObjectNode ignored) {    
     }
     
     public boolean isDataAvailable(ScheduledTime t) {

@@ -2,7 +2,6 @@ package com.collective.celos;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Properties;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -53,7 +52,7 @@ public class TrivialSchedulingStrategyTest {
     }
 
     private TrivialSchedulingStrategy makeTrivialSchedulingStrategy() {
-        return new TrivialSchedulingStrategy(new Properties());
+        return new TrivialSchedulingStrategy(Util.newObjectNode());
     }
 
 }

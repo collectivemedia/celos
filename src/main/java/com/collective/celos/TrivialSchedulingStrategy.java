@@ -2,14 +2,15 @@ package com.collective.celos;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Properties;
+
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
  * Trivial scheduling strategy that submits as many ready jobs as possible in parallel. 
  */
 public class TrivialSchedulingStrategy implements SchedulingStrategy {
 
-    public TrivialSchedulingStrategy(Properties ignored) {
+    public TrivialSchedulingStrategy(ObjectNode ignored) {
     }
     
     public List<SlotState> getSchedulingCandidates(List<SlotState> states) {

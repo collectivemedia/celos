@@ -5,10 +5,11 @@ import static com.collective.celos.SlotState.Status.RUNNING;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Properties;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
+
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /*
  * This SchedulingStrategy implementation will be used for Pythia. It runs jobs
@@ -21,7 +22,7 @@ import org.apache.commons.collections.Predicate;
  */
 public class SerialSchedulingStrategy implements SchedulingStrategy {
 
-    public SerialSchedulingStrategy(Properties ignored) {
+    public SerialSchedulingStrategy(ObjectNode ignored) {
     }
     
     /*
