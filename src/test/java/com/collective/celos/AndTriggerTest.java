@@ -43,7 +43,15 @@ public class AndTriggerTest {
         AndTrigger trigger = new AndTrigger(properties);
         Assert.assertFalse(trigger.isDataAvailable(new ScheduledTime("2014-02-26T16:13:00Z")));
     }
-
+    
+    @Test
+    public void returnsTrueWhenThereAreNoSubTriggers() throws Exception {
+        ObjectNode properties = Util.newObjectNode();
+        properties.put(AndTrigger.TRIGGERS_PROP, Util.newArrayNode());
+        AndTrigger trigger = new AndTrigger(properties);
+        Assert.assertTrue(trigger.isDataAvailable(new ScheduledTime("2014-02-26T16:13:00Z")));
+    }
+    
     private ObjectNode createAlwaysTriggerConfiguration() {
         ObjectNode config = Util.newObjectNode();
         config.put("type", "com.collective.celos.AlwaysTrigger");
