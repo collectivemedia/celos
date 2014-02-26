@@ -1,11 +1,12 @@
 package com.collective.celos;
 
 import java.net.URI;
-import java.util.Properties;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
+
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
  * Check in HDFS for a data dependency.
@@ -19,15 +20,9 @@ public class HDFSCheckTrigger implements Trigger {
     private final FileSystem fs;
     private final String rawPathString;
 
-    public HDFSCheckTrigger(Properties properties) throws Exception {
-        this.rawPathString = properties.getProperty(PATH_PROP);
-        if (this.rawPathString == null) {
-            throw new IllegalArgumentException(PATH_PROP + " property not set.");
-        }
-        String fsString = properties.getProperty(FS_PROP);
-        if (fsString == null) {
-            throw new IllegalArgumentException(FS_PROP + " property not set.");
-        }
+    public HDFSCheckTrigger(ObjectNode properties) throws Exception {
+        this.rawPathString = Util.getStringProperty(properties, PATH_PROP);
+        String fsString = Util.getStringProperty(properties, FS_PROP);
         this.fs = FileSystem.get(new URI(fsString), new Configuration());
     }
     

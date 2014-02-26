@@ -2,7 +2,6 @@ package com.collective.celos;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Properties;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -65,6 +64,6 @@ public class HourlyScheduleTest {
     }
 
     private HourlySchedule makeHourlySchedule() {
-        return new HourlySchedule(new Properties());
+        return new HourlySchedule(Util.newObjectNode());
     }
 }

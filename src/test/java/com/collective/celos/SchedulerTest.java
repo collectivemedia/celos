@@ -9,7 +9,6 @@ import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 
 import org.joda.time.DateTime;
 import org.junit.Assert;
@@ -623,7 +622,7 @@ public class SchedulerTest {
     public void retryTest() throws Exception {
         WorkflowID wfID1 = new WorkflowID("wf1");
         Schedule sch1 = makeHourlySchedule();
-        SchedulingStrategy str1 = new TrivialSchedulingStrategy(new Properties());
+        SchedulingStrategy str1 = new TrivialSchedulingStrategy(Util.newObjectNode());
         Trigger tr1 = makeAlwaysTrigger();
         ExternalService srv1 = new RepeatedlyFailingExternalService(2);
         int maxRetryCount = 10;
@@ -671,7 +670,7 @@ public class SchedulerTest {
     public void retryTestWithTooSmallMaxRetryCount() throws Exception {
         WorkflowID wfID1 = new WorkflowID("wf1");
         Schedule sch1 = makeHourlySchedule();
-        SchedulingStrategy str1 = new TrivialSchedulingStrategy(new Properties());
+        SchedulingStrategy str1 = new TrivialSchedulingStrategy(Util.newObjectNode());
         Trigger tr1 = makeAlwaysTrigger();
         ExternalService srv1 = new RepeatedlyFailingExternalService(3);
         int maxRetryCount = 2;
@@ -710,19 +709,19 @@ public class SchedulerTest {
     
     
     private AlwaysTrigger makeAlwaysTrigger() {
-        return new AlwaysTrigger(new Properties());
+        return new AlwaysTrigger(Util.newObjectNode());
     }
 
     private SerialSchedulingStrategy makeSerialSchedulingStrategy() {
-        return new SerialSchedulingStrategy(new Properties());
+        return new SerialSchedulingStrategy(Util.newObjectNode());
     }
     
     private TrivialSchedulingStrategy makeTrivialSchedulingStrategy() {
-        return new TrivialSchedulingStrategy(new Properties());
+        return new TrivialSchedulingStrategy(Util.newObjectNode());
     }
     
     private HourlySchedule makeHourlySchedule() {
-        return new HourlySchedule(new Properties());
+        return new HourlySchedule(Util.newObjectNode());
     }
 
 }

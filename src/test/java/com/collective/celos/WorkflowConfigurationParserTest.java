@@ -4,13 +4,13 @@ import java.io.File;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
-import java.util.Properties;
 import java.util.SortedSet;
 
 import org.junit.Assert;
 import org.junit.Test;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public class WorkflowConfigurationParserTest {
 
@@ -41,28 +41,18 @@ public class WorkflowConfigurationParserTest {
         }
     }
     
-    @Test
-    public void propertyValuesMustBeStrings() throws Exception {
-        try {
-            parseFile("no-string-value");
-        } catch(IllegalArgumentException e) {
-            Assert.assertTrue(e.getMessage().contains("Only string values supported"));
-        }
-
-    }
-    
     public static class RemembersProperties {
-        private Properties properties;
-        protected RemembersProperties(Properties props) {
+        private ObjectNode properties;
+        protected RemembersProperties(ObjectNode props) {
             this.properties = Util.requireNonNull(props);
         }
-        public Properties getProperties() {
+        public ObjectNode getProperties() {
             return properties;
         }
     }
 
     public static class TestSchedule extends RemembersProperties implements Schedule {
-        public TestSchedule(Properties properties) { super(properties); }
+        public TestSchedule(ObjectNode properties) { super(properties); }
         @Override
         public SortedSet<ScheduledTime> getScheduledTimes(ScheduledTime start, ScheduledTime end) {
             return null;
@@ -70,7 +60,7 @@ public class WorkflowConfigurationParserTest {
     }
     
     public static class TestSchedulingStrategy extends RemembersProperties implements SchedulingStrategy {
-        public TestSchedulingStrategy(Properties properties) { super(properties); }
+        public TestSchedulingStrategy(ObjectNode properties) { super(properties); }
         @Override
         public List<SlotState> getSchedulingCandidates(List<SlotState> states) {
             return null;
@@ -78,7 +68,7 @@ public class WorkflowConfigurationParserTest {
     }
 
     public static class TestExternalService extends RemembersProperties implements ExternalService {
-        public TestExternalService(Properties properties) { super(properties); }
+        public TestExternalService(ObjectNode properties) { super(properties); }
         @Override
         public String submit(ScheduledTime t) throws ExternalServiceException {
             return null;
@@ -93,7 +83,7 @@ public class WorkflowConfigurationParserTest {
     }
         
     public static class TestTrigger extends RemembersProperties implements Trigger {
-        public TestTrigger(Properties properties) { super(properties); }
+        public TestTrigger(ObjectNode properties) { super(properties); }
         @Override
         public boolean isDataAvailable(ScheduledTime t) throws Exception {
             return false;
@@ -107,22 +97,22 @@ public class WorkflowConfigurationParserTest {
         Assert.assertEquals("workflow-1", wf.getID().toString());
         
         TestSchedule schedule = (TestSchedule) wf.getSchedule();
-        Properties scheduleProperties = new Properties();
-        scheduleProperties.setProperty("a", "1");
-        scheduleProperties.setProperty("b", "2");
+        ObjectNode scheduleProperties = Util.newObjectNode();
+        scheduleProperties.put("a", "1");
+        scheduleProperties.put("b", "2");
         Assert.assertEquals(scheduleProperties, schedule.getProperties());
         
         TestSchedulingStrategy schedulingStrategy = (TestSchedulingStrategy) wf.getSchedulingStrategy();
-        Assert.assertEquals(new Properties(), schedulingStrategy.getProperties());
+        Assert.assertEquals(Util.newObjectNode(), schedulingStrategy.getProperties());
         
         TestExternalService externalService = (TestExternalService) wf.getExternalService();
-        Properties externalServiceProperties = new Properties();
-        externalServiceProperties.setProperty("yippie", "yeah");
+        ObjectNode externalServiceProperties = Util.newObjectNode();
+        externalServiceProperties.put("yippie", "yeah");
         Assert.assertEquals(externalServiceProperties, externalService.getProperties());
         
         TestTrigger trigger = (TestTrigger) wf.getTrigger();
-        Properties triggerProperties = new Properties();
-        triggerProperties.setProperty("foo", "bar");
+        ObjectNode triggerProperties = Util.newObjectNode();
+        triggerProperties.put("foo", "bar");
         Assert.assertEquals(triggerProperties, trigger.getProperties());
         
         Assert.assertEquals(55, wf.getMaxRetryCount());
@@ -184,6 +174,19 @@ public class WorkflowConfigurationParserTest {
         // Directory contains 2 workflows, but one will be dropped because of duplicate ID.
         WorkflowConfiguration cfg = parseDir("duplicate-ids");
         Assert.assertEquals(1, cfg.getWorkflows().size());
+    }
+    
+    @Test(expected=IllegalArgumentException.class)
+    public void propertiesMustBeAnObject() {
+        ObjectNode node = Util.newObjectNode();
+        node.put("properties", 12);
+        new WorkflowConfigurationParser().getProperties(node);
+    }
+    
+    @Test
+    public void returnsEmptyPropertiesIfNotSet() {
+        ObjectNode node = Util.newObjectNode();
+        Assert.assertEquals(Util.newObjectNode(), new WorkflowConfigurationParser().getProperties(node));
     }
     
     public static Workflow parseFile(String label) throws Exception {

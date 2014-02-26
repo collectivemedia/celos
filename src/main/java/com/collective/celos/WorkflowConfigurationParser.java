@@ -3,9 +3,6 @@ package com.collective.celos;
 import java.io.File;
 import java.lang.reflect.Constructor;
 import java.util.Collection;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Properties;
 
 import org.apache.commons.beanutils.ConstructorUtils;
 import org.apache.commons.io.FileUtils;
@@ -13,6 +10,7 @@ import org.apache.log4j.Logger;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
  * Reads a set of JSON files from a directory and creates a WorkflowConfiguration.
@@ -88,11 +86,24 @@ public class WorkflowConfigurationParser {
         return new WorkflowID(idNode.textValue());
     }
 
-    private Object createInstance(WorkflowID id, JsonNode workflowNode) throws Exception {
-        Properties properties = getProperties(workflowNode);
-        Constructor<?> ctor = getConstructor(workflowNode);
+    private Object createInstance(WorkflowID id, JsonNode node) throws Exception {
+        ObjectNode properties = getProperties(node);
+        Constructor<?> ctor = getConstructor(node);
         LOGGER.info("Instantiating " + ctor + " for: " + id);
         return ctor.newInstance(properties);
+    }
+
+    ObjectNode getProperties(JsonNode node) {
+        JsonNode properties = node.get(PROPERTIES_PROP);
+        if (properties == null) {
+            return Util.newObjectNode();
+        } else {
+            if (!properties.isObject()) {
+                throw new IllegalArgumentException("Properties must be an object, but is: " + properties);
+            } else {
+                return (ObjectNode) properties;
+            }
+        }
     }
 
     private Constructor<?> getConstructor(JsonNode workflowNode) throws ClassNotFoundException {
@@ -102,35 +113,11 @@ public class WorkflowConfigurationParser {
         }
         String className = typeNode.textValue();
         Class<?> c = Class.forName(className);
-        Constructor<?> ctor = ConstructorUtils.getAccessibleConstructor(c, Properties.class);
+        Constructor<?> ctor = ConstructorUtils.getAccessibleConstructor(c, ObjectNode.class);
         if (ctor == null) {
             throw new RuntimeException("Constructor with Properties argument not found for " + className);
         }
         return ctor;
     }
 
-    Properties getProperties(JsonNode jsonNode) {
-        JsonNode propertiesNode = jsonNode.get(PROPERTIES_PROP);
-        Properties properties = null;
-        if (propertiesNode != null) {
-            properties = jsonPropertiesToProperties(propertiesNode);
-        } else {
-            properties = new Properties();
-        }
-        return properties;
-    }
-
-    Properties jsonPropertiesToProperties(JsonNode propertiesNode) {
-        Properties props = new Properties();
-        for (Iterator<Map.Entry<String, JsonNode>> it = propertiesNode.fields(); it.hasNext();) {
-            Map.Entry<String, JsonNode> entry = it.next();
-            JsonNode value = entry.getValue();
-            if (!value.isTextual()) {
-                throw new IllegalArgumentException("Only string values supported: " + value);
-            }
-            props.setProperty(entry.getKey(), value.textValue());
-        }
-        return props;
-    }
-    
 }
