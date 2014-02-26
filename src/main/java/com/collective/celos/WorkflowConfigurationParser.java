@@ -1,9 +1,14 @@
 package com.collective.celos;
 
 import java.io.File;
+import java.io.FileReader;
 import java.util.Collection;
 
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -26,6 +31,8 @@ public class WorkflowConfigurationParser {
     private static final Logger LOGGER = Logger.getLogger(WorkflowConfigurationParser.class);
     
     private final JSONInstanceCreator creator = new JSONInstanceCreator();
+    private final ObjectMapper mapper = new ObjectMapper();
+    private final ScriptEngine engine = new ScriptEngineManager().getEngineByName("JavaScript");
     
     public WorkflowConfiguration parseConfiguration(File dir) throws Exception {
         LOGGER.info("Workflow configuration directory: " + dir);
@@ -43,7 +50,7 @@ public class WorkflowConfigurationParser {
 
     Workflow parseFile(File f) throws Exception {
         LOGGER.info("Loading workflow: " + f);
-        JsonNode workflowNode = new ObjectMapper().readTree(f);
+        JsonNode workflowNode = fileToJSON(f);
         WorkflowID id = getWorkflowID(workflowNode);
         Schedule schedule = getScheduleFromJSON(id, workflowNode);
         SchedulingStrategy schedulingStrategy = getSchedulingStrategyFromJSON(id, workflowNode);
@@ -51,6 +58,16 @@ public class WorkflowConfigurationParser {
         ExternalService externalService = getExternalServiceFromJSON(id, workflowNode);
         int maxRetryCount = getMaxRetryCountFromJSON(workflowNode);
         return new Workflow(id, schedule, schedulingStrategy, trigger, externalService, maxRetryCount);
+    }
+
+    private JsonNode fileToJSON(File f) throws Exception {
+        // B*TT UGLY HACK!!!
+        // In order not to have to deal with the, err, intricacies
+        // of JS objects we turn them into a JSON string inside the
+        // JS engine, and then parse that JSON string in Java again.
+        String contents = IOUtils.toString(new FileReader(f));
+        String hack = "JSON.stringify(" + contents + ")";
+        return mapper.readTree((String) engine.eval(hack));
     }
 
     private int getMaxRetryCountFromJSON(JsonNode workflowNode) {

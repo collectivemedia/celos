@@ -9,7 +9,6 @@ import java.util.SortedSet;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public class WorkflowConfigurationParserTest {
@@ -20,7 +19,7 @@ public class WorkflowConfigurationParserTest {
         Assert.assertEquals(0, cfg.getWorkflows().size());
     }
 
-    @Test(expected=JsonProcessingException.class)
+    @Test(expected=Exception.class)
     public void failsOnIllFormattedFile() throws Exception {
         parseFile("ill-formatted");
     }
