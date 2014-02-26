@@ -2,7 +2,6 @@ package com.collective.celos;
 
 import java.util.HashMap;
 
-import org.joda.time.DateTime;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -79,18 +78,6 @@ public class MiscTests {
         hashCodeTest(new WorkflowID("foo"), new WorkflowID("bar"));
     }
     
-    // TIME COMPARISON
-    
-    @Test
-    public void scheduledTimeCompareToWorks() {
-        ScheduledTime t1 = new ScheduledTime("2013-11-26T13:00Z");
-        ScheduledTime t2 = new ScheduledTime("2013-11-26T13:01Z");
-        Assert.assertEquals(-1, t1.compareTo(t2));
-        Assert.assertEquals(1, t2.compareTo(t1));
-        Assert.assertEquals(0, t1.compareTo(t1));
-        Assert.assertEquals(0, t2.compareTo(t2));
-    }
-    
     // OTHER
     
     @Test(expected=IllegalArgumentException.class)
@@ -108,25 +95,9 @@ public class MiscTests {
         new ScheduledTime("2013-11-12T20:00");
     }
     
-    @Test(expected=NullPointerException.class)
-    public void requireNonNullWorks() {
-        Util.requireNonNull(null);
-    }
-    
     @Test
     public void tooTrivialButStill_alwaysTriggerAlwaysTriggers() {
         Assert.assertTrue(new AlwaysTrigger(Util.newObjectNode()).isDataAvailable(new ScheduledTime("2013-11-21T20:00Z")));
     }
         
-    @Test
-    public void toFullHourWorks() {
-        Assert.assertEquals(new DateTime("2013-11-27T15:00Z"), Util.toFullHour(new DateTime("2013-11-27T15:36Z")));
-    }
-    
-    @Test
-    public void isFullHourWorks() {
-        Assert.assertTrue(Util.isFullHour(new DateTime("2013-11-27T15:00Z")));
-        Assert.assertFalse(Util.isFullHour(new DateTime("2013-11-27T15:36Z")));
-    }
-    
 }

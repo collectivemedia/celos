@@ -14,15 +14,33 @@ public class Util {
         else return object;
     }
 
-    static DateTime toFullHour(DateTime dt) {
-        return dt.withMillisOfSecond(0).withSecondOfMinute(0).withMinuteOfHour(0);
+    // DATETIME UTILITIES
+    
+    public static DateTime toFullHour(DateTime dt) {
+        return toFullMinute(dt).withMinuteOfHour(0);
     }
 
-    static boolean isFullHour(DateTime dt) {
-        return dt.getMillisOfSecond() == 0
-            && dt.getSecondOfMinute() == 0
-            && dt.getMinuteOfHour() == 0;
+    public static DateTime toFullMinute(DateTime dt) {
+        return toFullSecond(dt).withSecondOfMinute(0);
     }
+    
+    public static DateTime toFullSecond(DateTime dt) {
+        return dt.withMillisOfSecond(0);
+    }
+
+    public static boolean isFullHour(DateTime dt) {
+        return isFullMinute(dt) && dt.getMinuteOfHour() == 0;
+    }
+    
+    public static boolean isFullMinute(DateTime dt) {
+        return isFullSecond(dt) && dt.getSecondOfMinute() == 0;
+    }
+    
+    public static boolean isFullSecond(DateTime dt) {
+        return dt.getMillisOfSecond() == 0;
+    }
+    
+    // JSON UTILITIES
     
     public static ObjectNode newObjectNode() {
         return JsonNodeFactory.instance.objectNode();

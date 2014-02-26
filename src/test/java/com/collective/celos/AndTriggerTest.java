@@ -55,7 +55,7 @@ public class AndTriggerTest {
     @Test(expected=IllegalArgumentException.class)
     public void failsWhenThereTriggersPropertyNotSet() throws Exception {
         ObjectNode properties = Util.newObjectNode();
-        AndTrigger trigger = new AndTrigger(properties);
+        new AndTrigger(properties);
     }
     
     private ObjectNode createAlwaysTriggerConfiguration() {
