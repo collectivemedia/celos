@@ -12,6 +12,7 @@ public class AlwaysTrigger implements Trigger {
     public AlwaysTrigger(ObjectNode ignored) {    
     }
     
+    @Override
     public boolean isDataAvailable(ScheduledTime t) {
         return true;
     }
