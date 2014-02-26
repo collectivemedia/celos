@@ -2,6 +2,8 @@ package com.collective.celos;
 
 import java.io.File;
 import java.io.FileReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.Collection;
 
 import javax.script.ScriptEngine;
@@ -33,6 +35,11 @@ public class WorkflowConfigurationParser {
     private final JSONInstanceCreator creator = new JSONInstanceCreator();
     private final ObjectMapper mapper = new ObjectMapper();
     private final ScriptEngine engine = new ScriptEngineManager().getEngineByName("JavaScript");
+    
+    public WorkflowConfigurationParser() throws Exception {
+        InputStream scripts = WorkflowConfigurationParser.class.getResourceAsStream("celos-scripts.js");
+        engine.eval(new InputStreamReader(scripts));
+    }
     
     public WorkflowConfiguration parseConfiguration(File dir) throws Exception {
         LOGGER.info("Workflow configuration directory: " + dir);
