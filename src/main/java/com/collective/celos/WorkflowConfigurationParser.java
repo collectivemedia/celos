@@ -14,6 +14,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 public class WorkflowConfigurationParser {
 
+    public static final String WORKFLOW_FILE_EXTENSION = "js";
+    
     private static final String EXTERNAL_SERVICE_PROP = "externalService";
     private static final String TRIGGER_PROP = "trigger";
     private static final String SCHEDULING_STRATEGY_PROP = "schedulingStrategy";
@@ -27,7 +29,7 @@ public class WorkflowConfigurationParser {
     
     public WorkflowConfiguration parseConfiguration(File dir) throws Exception {
         LOGGER.info("Workflow configuration directory: " + dir);
-        Collection<File> files = FileUtils.listFiles(dir, new String[] { "json" }, false);
+        Collection<File> files = FileUtils.listFiles(dir, new String[] { WORKFLOW_FILE_EXTENSION }, false);
         WorkflowConfiguration cfg = new WorkflowConfiguration();
         for (File f : files) {
             try {

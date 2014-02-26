@@ -178,7 +178,7 @@ public class WorkflowConfigurationParserTest {
     
     public static Workflow parseFile(String label) throws Exception {
         File dir = getConfigurationDir(label);
-        File workflow = new File(dir, "workflow-1.json");
+        File workflow = new File(dir, "workflow-1." + WorkflowConfigurationParser.WORKFLOW_FILE_EXTENSION);
         return new WorkflowConfigurationParser().parseFile(workflow);
     }
     
