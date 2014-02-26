@@ -93,13 +93,13 @@ public class WorkflowConfigurationParser {
         return ctor.newInstance(properties);
     }
 
-    private ObjectNode getProperties(JsonNode node) {
+    ObjectNode getProperties(JsonNode node) {
         JsonNode properties = node.get(PROPERTIES_PROP);
         if (properties == null) {
             return Util.newObjectNode();
         } else {
             if (!properties.isObject()) {
-                throw new IllegalArgumentException();
+                throw new IllegalArgumentException("Properties must be an object, but is: " + properties);
             } else {
                 return (ObjectNode) properties;
             }

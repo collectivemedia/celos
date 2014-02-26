@@ -176,6 +176,19 @@ public class WorkflowConfigurationParserTest {
         Assert.assertEquals(1, cfg.getWorkflows().size());
     }
     
+    @Test(expected=IllegalArgumentException.class)
+    public void propertiesMustBeAnObject() {
+        ObjectNode node = Util.newObjectNode();
+        node.put("properties", 12);
+        new WorkflowConfigurationParser().getProperties(node);
+    }
+    
+    @Test
+    public void returnsEmptyPropertiesIfNotSet() {
+        ObjectNode node = Util.newObjectNode();
+        Assert.assertEquals(Util.newObjectNode(), new WorkflowConfigurationParser().getProperties(node));
+    }
+    
     public static Workflow parseFile(String label) throws Exception {
         File dir = getConfigurationDir(label);
         File workflow = new File(dir, "workflow-1.json");
