@@ -12,6 +12,7 @@
     "trigger": {
         "type": "com.collective.celos.HDFSCheckTrigger",
         "properties": {
+            "celos.hdfs.fs": "file:///",
             "celos.hdfs.path": "/logs/nym1/dorado/${year}-${month}-${day}/${hour}00/_READY"
         }
     },

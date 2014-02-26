@@ -1,13 +1,8 @@
 package com.collective.celos;
 
 import java.io.File;
-import java.lang.reflect.Constructor;
 import java.util.Collection;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Properties;
 
-import org.apache.commons.beanutils.ConstructorUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 
@@ -19,8 +14,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 public class WorkflowConfigurationParser {
 
-    private static final String PROPERTIES_PROP = "properties";
-    private static final String TYPE_PROP = "type";
     private static final String EXTERNAL_SERVICE_PROP = "externalService";
     private static final String TRIGGER_PROP = "trigger";
     private static final String SCHEDULING_STRATEGY_PROP = "schedulingStrategy";
@@ -29,6 +22,8 @@ public class WorkflowConfigurationParser {
     private static final String MAX_RETRY_COUNT_PROP = "maxRetryCount";
 
     private static final Logger LOGGER = Logger.getLogger(WorkflowConfigurationParser.class);
+    
+    private final JSONInstanceCreator creator = new JSONInstanceCreator();
     
     public WorkflowConfiguration parseConfiguration(File dir) throws Exception {
         LOGGER.info("Workflow configuration directory: " + dir);
@@ -65,19 +60,27 @@ public class WorkflowConfigurationParser {
     }
 
     private ExternalService getExternalServiceFromJSON(WorkflowID id, JsonNode workflowNode) throws Exception {
-        return (ExternalService) createInstance(id, workflowNode.get(EXTERNAL_SERVICE_PROP));
+        LOGGER.info("Creating external service for: " + id);
+        return (ExternalService) createInstance(workflowNode.get(EXTERNAL_SERVICE_PROP));
     }
 
     private Trigger getTriggerFromJSON(WorkflowID id, JsonNode workflowNode) throws Exception {
-        return (Trigger) createInstance(id, workflowNode.get(TRIGGER_PROP));
+        LOGGER.info("Creating trigger for: " + id);
+        return (Trigger) createInstance(workflowNode.get(TRIGGER_PROP));
     }
 
     private SchedulingStrategy getSchedulingStrategyFromJSON(WorkflowID id, JsonNode workflowNode) throws Exception {
-        return (SchedulingStrategy) createInstance(id, workflowNode.get(SCHEDULING_STRATEGY_PROP));
+        LOGGER.info("Creating scheduling strategy for: " + id);
+        return (SchedulingStrategy) createInstance(workflowNode.get(SCHEDULING_STRATEGY_PROP));
     }
 
     private Schedule getScheduleFromJSON(WorkflowID id, JsonNode workflowNode) throws Exception {
-        return (Schedule) createInstance(id, workflowNode.get(SCHEDULE_PROP));
+        LOGGER.info("Creating schedule for: " + id);
+        return (Schedule) createInstance(workflowNode.get(SCHEDULE_PROP));
+    }
+
+    private Object createInstance(JsonNode jsonNode) throws Exception {
+        return creator.createInstance(jsonNode);
     }
 
     private WorkflowID getWorkflowID(JsonNode workflowNode) {
@@ -88,49 +91,4 @@ public class WorkflowConfigurationParser {
         return new WorkflowID(idNode.textValue());
     }
 
-    private Object createInstance(WorkflowID id, JsonNode workflowNode) throws Exception {
-        Properties properties = getProperties(workflowNode);
-        Constructor<?> ctor = getConstructor(workflowNode);
-        LOGGER.info("Instantiating " + ctor + " for: " + id);
-        return ctor.newInstance(properties);
-    }
-
-    private Constructor<?> getConstructor(JsonNode workflowNode) throws ClassNotFoundException {
-        JsonNode typeNode = workflowNode.get(TYPE_PROP);
-        if (typeNode == null || !typeNode.isTextual()) {
-            throw new IllegalArgumentException("Type must be a string: " + workflowNode.toString());
-        }
-        String className = typeNode.textValue();
-        Class<?> c = Class.forName(className);
-        Constructor<?> ctor = ConstructorUtils.getAccessibleConstructor(c, Properties.class);
-        if (ctor == null) {
-            throw new RuntimeException("Constructor with Properties argument not found for " + className);
-        }
-        return ctor;
-    }
-
-    Properties getProperties(JsonNode jsonNode) {
-        JsonNode propertiesNode = jsonNode.get(PROPERTIES_PROP);
-        Properties properties = null;
-        if (propertiesNode != null) {
-            properties = jsonPropertiesToProperties(propertiesNode);
-        } else {
-            properties = new Properties();
-        }
-        return properties;
-    }
-
-    Properties jsonPropertiesToProperties(JsonNode propertiesNode) {
-        Properties props = new Properties();
-        for (Iterator<Map.Entry<String, JsonNode>> it = propertiesNode.fields(); it.hasNext();) {
-            Map.Entry<String, JsonNode> entry = it.next();
-            JsonNode value = entry.getValue();
-            if (!value.isTextual()) {
-                throw new IllegalArgumentException("Only string values supported: " + value);
-            }
-            props.setProperty(entry.getKey(), value.textValue());
-        }
-        return props;
-    }
-    
 }

@@ -1,11 +1,14 @@
 package com.collective.celos;
 
+import java.util.Iterator;
 import java.util.Properties;
 
 import org.apache.oozie.client.AuthOozieClient;
 import org.apache.oozie.client.OozieClient;
 import org.apache.oozie.client.OozieClientException;
 import org.apache.oozie.client.WorkflowJob;
+
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 // TODO: mock AuthOozieClient and check that its methods are called with the right args
 public class OozieExternalService implements ExternalService {
@@ -17,13 +20,10 @@ public class OozieExternalService implements ExternalService {
     public static final String HOUR_PROP = "hour";
     
     private final OozieClient client;
-    private final Properties properties;
+    private final ObjectNode properties;
 
-    public OozieExternalService(Properties properties) {
-        String oozieURL = properties.getProperty(OOZIE_URL_PROP);
-        if (oozieURL == null) {
-            throw new IllegalArgumentException(OOZIE_URL_PROP + " property not set.");
-        }
+    public OozieExternalService(ObjectNode properties) {
+        String oozieURL = Util.getStringProperty(properties, OOZIE_URL_PROP);
         this.client = new AuthOozieClient(oozieURL);
         this.properties = properties;
     }
@@ -47,21 +47,23 @@ public class OozieExternalService implements ExternalService {
         }
     }
 
-    Properties setupRunProperties(Properties defaults, ScheduledTime t) {
+    Properties setupRunProperties(ObjectNode defaults, ScheduledTime t) {
         Properties runProperties = setupDefaultProperties(defaults, t);
         ScheduledTimeFormatter formatter = new ScheduledTimeFormatter();
         runProperties.setProperty(YEAR_PROP, formatter.formatYear(t));
         runProperties.setProperty(MONTH_PROP, formatter.formatMonth(t));
         runProperties.setProperty(DAY_PROP, formatter.formatDay(t));
         runProperties.setProperty(HOUR_PROP, formatter.formatHour(t));
+        // TODO: set minute etc
         return runProperties;
     }
 
-    private Properties setupDefaultProperties(Properties defaults, ScheduledTime t) {
+    private Properties setupDefaultProperties(ObjectNode defaults, ScheduledTime t) {
         Properties props = new Properties();
         ScheduledTimeFormatter formatter = new ScheduledTimeFormatter();
-        for (String name : defaults.stringPropertyNames()) {
-            String value = defaults.getProperty(name);
+        for (Iterator<String> names = defaults.fieldNames(); names.hasNext();) {
+            String name = names.next();
+            String value = defaults.get(name).textValue();
             props.setProperty(name, formatter.replaceTimeTokens(value, t));
         }
         return props;

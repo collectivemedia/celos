@@ -1,14 +1,15 @@
 package com.collective.celos;
 
-import java.util.Properties;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.joda.time.DateTime;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
 public class HourlySchedule implements Schedule {
 
-    public HourlySchedule(Properties ignored) {
+    public HourlySchedule(ObjectNode ignored) {
     }
     
     @Override

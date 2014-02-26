@@ -6,18 +6,20 @@ import junit.framework.Assert;
 
 import org.junit.Test;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
 public class OozieExternalServiceTest {
 
     @Test(expected=IllegalArgumentException.class)
     public void oozieURLIsRequired() {
-        new OozieExternalService(new Properties());
+        new OozieExternalService(Util.newObjectNode());
     }
 
     @Test
     public void runPropertiesAreCorrectlySetup() {
-        Properties defaults = new Properties();
-        defaults.setProperty("foo", "bar");
-        defaults.setProperty("uses-variables", "${year}-${month}-${day}-${hour}-${year}");
+        ObjectNode defaults = Util.newObjectNode();
+        defaults.put("foo", "bar");
+        defaults.put("uses-variables", "${year}-${month}-${day}-${hour}-${year}");
         ScheduledTime t = new ScheduledTime("2013-11-26T17:00Z");
         Properties runProperties = makeOozieExternalService().setupRunProperties(defaults, t);
         Assert.assertEquals("bar", runProperties.getProperty("foo"));
@@ -29,8 +31,8 @@ public class OozieExternalServiceTest {
     }
 
     private OozieExternalService makeOozieExternalService() {
-        Properties props = new Properties();
-        props.setProperty(OozieExternalService.OOZIE_URL_PROP, "http://example.com");
+        ObjectNode props = Util.newObjectNode();
+        props.put(OozieExternalService.OOZIE_URL_PROP, "http://example.com");
         return new OozieExternalService(props);
     }
     

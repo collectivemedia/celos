@@ -8,7 +8,6 @@ import static com.collective.celos.SlotState.Status.WAITING;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Properties;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -17,7 +16,7 @@ import org.junit.Test;
 public class SerialSchedulingStrategyTest {
 
     private SerialSchedulingStrategy makeSerialSchedulingStrategy() {
-        return new SerialSchedulingStrategy(new Properties());
+        return new SerialSchedulingStrategy(Util.newObjectNode());
     }
     
     private WorkflowID workflow;
