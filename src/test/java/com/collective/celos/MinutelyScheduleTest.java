@@ -31,7 +31,7 @@ public class MinutelyScheduleTest {
     public void minutelyScheduleOneMinuteWithSeconds() {
         Schedule sch = makeMinutelySchedule();
         ScheduledTime t1 = new ScheduledTime("2013-11-25T20:01:05Z");
-        ScheduledTime t2 = new ScheduledTime("2013-11-25T20:01:00Z");
+        ScheduledTime t2 = new ScheduledTime("2013-11-25T20:02:00Z");
         Set<ScheduledTime> minutes = sch.getScheduledTimes(t1, t2);
         Assert.assertEquals(0, minutes.size());
     }
