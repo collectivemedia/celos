@@ -361,7 +361,7 @@ public class SchedulerTest {
         WorkflowID wfID1 = new WorkflowID("wf1");
         Schedule sch1 = makeHourlySchedule();
         SchedulingStrategy str1 = makeSerialSchedulingStrategy();
-        Trigger tr1 = new NeverTrigger();
+        Trigger tr1 = new NeverTrigger(Util.newObjectNode());
         ExternalService srv1 = new MockExternalService(new MockExternalService.MockExternalStatusRunning());
         int maxRetryCount = 0;
         Workflow wf1 = new Workflow(wfID1, sch1, str1, tr1, srv1, maxRetryCount);
