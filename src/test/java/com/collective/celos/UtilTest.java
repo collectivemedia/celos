@@ -18,13 +18,35 @@ public class UtilTest {
     
     @Test
     public void toFullHourWorks() {
-        Assert.assertEquals(new DateTime("2013-11-27T15:00Z"), Util.toFullHour(new DateTime("2013-11-27T15:36Z")));
+        Assert.assertEquals(new DateTime("2013-11-27T15:00:00.000Z"), Util.toFullHour(new DateTime("2013-11-27T15:36:23.475Z")));
+    }
+    
+    @Test
+    public void toFullMinuteWorks() {
+        Assert.assertEquals(new DateTime("2013-11-27T15:36:00.000Z"), Util.toFullMinute(new DateTime("2013-11-27T15:36:23.475Z")));
+    }
+    
+    @Test
+    public void toFullSecondWorks() {
+        Assert.assertEquals(new DateTime("2013-11-27T15:36:23.000Z"), Util.toFullSecond(new DateTime("2013-11-27T15:36:23.475Z")));
     }
     
     @Test
     public void isFullHourWorks() {
-        Assert.assertTrue(Util.isFullHour(new DateTime("2013-11-27T15:00Z")));
-        Assert.assertFalse(Util.isFullHour(new DateTime("2013-11-27T15:36Z")));
+        Assert.assertTrue(Util.isFullHour(new DateTime("2013-11-27T15:00:00.000Z")));
+        Assert.assertFalse(Util.isFullHour(new DateTime("2013-11-27T15:36:00.000Z")));
+    }
+    
+    @Test
+    public void isFullMinuteWorks() {
+        Assert.assertTrue(Util.isFullMinute(new DateTime("2013-11-27T15:01:00.000Z")));
+        Assert.assertFalse(Util.isFullMinute(new DateTime("2013-11-27T15:36:01.000Z")));
+    }
+    
+    @Test
+    public void isFullSecondWorks() {
+        Assert.assertTrue(Util.isFullSecond(new DateTime("2013-11-27T15:01:00.000Z")));
+        Assert.assertFalse(Util.isFullSecond(new DateTime("2013-11-27T15:36:01.001Z")));
     }
     
     // JSON TESTS
