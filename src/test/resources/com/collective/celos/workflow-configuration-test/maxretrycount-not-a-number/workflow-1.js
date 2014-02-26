@@ -1,12 +1,6 @@
 {
     "id": "workflow-1",
-    "schedule": {
-        "type": "com.collective.celos.WorkflowConfigurationParserTest$TestSchedule",
-        "properties": {
-            "a": "1",
-            "b": "2"
-        }
-    },
+    "schedule": hourlySchedule(),
     "schedulingStrategy": {
         "type": "com.collective.celos.WorkflowConfigurationParserTest$TestSchedulingStrategy"
     },
