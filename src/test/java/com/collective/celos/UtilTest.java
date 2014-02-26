@@ -1,5 +1,6 @@
 package com.collective.celos;
 
+import org.joda.time.DateTime;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -7,7 +8,27 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public class UtilTest {
+    
+    @Test(expected=NullPointerException.class)
+    public void requireNonNullWorks() {
+        Util.requireNonNull(null);
+    }
 
+    // DATETIME TESTS
+    
+    @Test
+    public void toFullHourWorks() {
+        Assert.assertEquals(new DateTime("2013-11-27T15:00Z"), Util.toFullHour(new DateTime("2013-11-27T15:36Z")));
+    }
+    
+    @Test
+    public void isFullHourWorks() {
+        Assert.assertTrue(Util.isFullHour(new DateTime("2013-11-27T15:00Z")));
+        Assert.assertFalse(Util.isFullHour(new DateTime("2013-11-27T15:36Z")));
+    }
+    
+    // JSON TESTS
+    
     @Test(expected=IllegalArgumentException.class)
     public void getStringPropertyDetectsUnsetProperty() {
         ObjectNode node = Util.newObjectNode();
