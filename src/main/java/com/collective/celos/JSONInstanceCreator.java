@@ -50,7 +50,7 @@ public class JSONInstanceCreator {
         Class<?> c = Class.forName(className);
         Constructor<?> ctor = ConstructorUtils.getAccessibleConstructor(c, ObjectNode.class);
         if (ctor == null) {
-            throw new RuntimeException("Constructor with Properties argument not found for " + className);
+            throw new RuntimeException("Constructor with ObjectNode argument not found for " + className);
         }
         return ctor;
     }
