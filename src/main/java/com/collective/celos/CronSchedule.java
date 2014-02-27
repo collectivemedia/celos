@@ -15,16 +15,13 @@ public class CronSchedule implements Schedule {
     private CronExpression cronExpression;
 
     public CronSchedule(ObjectNode ignored) {
-
         String cronConfig = ignored.get(CRON_CONFIG_PROPERTY).asText();
-        if (!CronExpression.isValidExpression(cronConfig)) {
-            throw new IllegalArgumentException("Invalid Cron configuration: " + cronConfig);
-        }
         try {
+            CronExpression.validateExpression(cronConfig);
             cronExpression = new CronExpression(cronConfig);
             cronExpression.setTimeZone(DateTimeZone.UTC.toTimeZone());
-        } catch (Exception exc) {
-            throw new RuntimeException(exc);
+        } catch (ParseException e) {
+            throw new IllegalArgumentException("Error in cron expression", e);
         }
     }
 
