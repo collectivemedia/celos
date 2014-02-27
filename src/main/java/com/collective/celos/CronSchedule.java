@@ -16,8 +16,8 @@ public class CronSchedule implements Schedule {
     private final static String CRON_CONFIG_PROPERTY = "cron_config";
     private CronExpression cronExpression;
 
-    public CronSchedule(ObjectNode ignored) {
-        String cronConfig = ignored.get(CRON_CONFIG_PROPERTY).asText();
+    public CronSchedule(ObjectNode properties) {
+        String cronConfig = properties.get(CRON_CONFIG_PROPERTY).asText();
         try {
             CronExpression.validateExpression(cronConfig);
             cronExpression = new CronExpression(cronConfig);
