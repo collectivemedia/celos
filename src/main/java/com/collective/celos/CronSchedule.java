@@ -1,13 +1,15 @@
 package com.collective.celos;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import java.text.ParseException;
+import java.util.Date;
+import java.util.SortedSet;
+import java.util.TreeSet;
+
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.quartz.CronExpression;
 
-import java.util.Date;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public class CronSchedule implements Schedule {
 
@@ -34,7 +36,7 @@ public class CronSchedule implements Schedule {
         Date startDT = start.getDateTime().toDate();
 
         SortedSet<ScheduledTime> sheduledTimes = new TreeSet<ScheduledTime>();
-        if (cronExpression.isSatisfiedBy(startDT)) {
+        if (cronExpression.isSatisfiedBy(startDT) && start.getDateTime().isBefore(end.getDateTime())) {
             sheduledTimes.add(start);
         }
 
