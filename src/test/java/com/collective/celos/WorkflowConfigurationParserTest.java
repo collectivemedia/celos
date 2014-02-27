@@ -117,7 +117,17 @@ public class WorkflowConfigurationParserTest {
         
         Assert.assertEquals(55, wf.getMaxRetryCount());
     }
-    
+
+    @Test
+    public void propertiesForCronAreCorrectlySet() throws Exception {
+        Workflow wf = parseFile("cron-task-test");
+        Assert.assertEquals("workflow-1", wf.getID().toString());
+
+        CronSchedule schedule = (CronSchedule) wf.getSchedule();
+        Assert.assertEquals(schedule.getCronExpression(), "0 12 * * * ?");
+    }
+
+
     @Test
     public void canFindWorkflow() throws Exception {
         WorkflowConfiguration cfg = parseDir("properties-test");
