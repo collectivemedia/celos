@@ -101,4 +101,62 @@ public class CronScheduleTest {
     private CronSchedule makeCronSchedule(String config) {
         return new CronSchedule(Util.newObjectNode().put("cron_config", config));
     }
+    
+    @Test
+    public void hourlyScheduleEmpty() {
+        Schedule sch = makeHourlySchedule();
+        ScheduledTime t = new ScheduledTime("2013-11-25T20:00Z");
+        Set<ScheduledTime> hours = sch.getScheduledTimes(t, t);
+        Assert.assertEquals(0, hours.size());
+    }
+
+    @Test
+    public void hourlyScheduleOneHour() {
+        Schedule sch = makeHourlySchedule();
+        ScheduledTime t1 = new ScheduledTime("2013-11-25T20:00Z");
+        ScheduledTime t2 = new ScheduledTime("2013-11-25T21:00Z");
+        Set<ScheduledTime> hours = sch.getScheduledTimes(t1, t2);
+        Assert.assertEquals(new TreeSet<ScheduledTime>(Arrays.asList(t1)), hours);
+    }
+    
+    @Test
+    public void hourlyScheduleOneHourWithMinutes() {
+        Schedule sch = makeHourlySchedule();
+        ScheduledTime t1 = new ScheduledTime("2013-11-25T20:05Z");
+        ScheduledTime t2 = new ScheduledTime("2013-11-25T21:00Z");
+        Set<ScheduledTime> hours = sch.getScheduledTimes(t1, t2);
+        Assert.assertEquals(0, hours.size());
+    }
+
+    @Test
+    public void hourlyScheduleSomeHours() {
+        Schedule sch = makeHourlySchedule();
+        ScheduledTime t1 = new ScheduledTime("2013-11-25T20:05:12.00182Z");
+        ScheduledTime t2 = new ScheduledTime("2013-11-25T23:05:56.2182Z");
+        Set<ScheduledTime> hours = sch.getScheduledTimes(t1, t2);
+        List<ScheduledTime> expectedHours =
+                Arrays.asList(new ScheduledTime("2013-11-25T21:00Z"),
+                              new ScheduledTime("2013-11-25T22:00Z"),
+                              new ScheduledTime("2013-11-25T23:00Z"));
+        Assert.assertEquals(new TreeSet<ScheduledTime>(expectedHours), hours);
+    }
+    
+    @Test
+    public void hourlyScheduleSomeHoursWithStartingFullHour() {
+        Schedule sch = makeHourlySchedule();
+        ScheduledTime t1 = new ScheduledTime("2013-11-25T20:00Z");
+        ScheduledTime t2 = new ScheduledTime("2013-11-25T23:05:56.2182Z");
+        Set<ScheduledTime> hours = sch.getScheduledTimes(t1, t2);
+        List<ScheduledTime> expectedHours =
+                Arrays.asList(new ScheduledTime("2013-11-25T20:00Z"),
+                              new ScheduledTime("2013-11-25T21:00Z"),
+                              new ScheduledTime("2013-11-25T22:00Z"),
+                              new ScheduledTime("2013-11-25T23:00Z"));
+        Assert.assertEquals(new TreeSet<ScheduledTime>(expectedHours), hours);
+    }
+
+    private Schedule makeHourlySchedule() {
+        return makeCronSchedule("0 0 * * * ?");
+    }
+
 }
