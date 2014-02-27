@@ -35,9 +35,9 @@ public class CronSchedule implements Schedule {
     public SortedSet<ScheduledTime> getScheduledTimes(ScheduledTime start, ScheduledTime end) {
         Date startDT = start.getDateTime().toDate();
 
-        SortedSet<ScheduledTime> sheduledTimes = new TreeSet<ScheduledTime>();
+        SortedSet<ScheduledTime> scheduledTimes = new TreeSet<ScheduledTime>();
         if (cronExpression.isSatisfiedBy(startDT) && start.getDateTime().isBefore(end.getDateTime())) {
-            sheduledTimes.add(start);
+            scheduledTimes.add(start);
         }
 
         DateTime candidateTime = start.getDateTime();
@@ -45,9 +45,9 @@ public class CronSchedule implements Schedule {
         while((candidateTime = getNextDateTime(candidateTime)) != null &&
                 candidateTime.isBefore(end.getDateTime())) {
 
-            sheduledTimes.add(new ScheduledTime(candidateTime));
+            scheduledTimes.add(new ScheduledTime(candidateTime));
         }
-        return sheduledTimes;
+        return scheduledTimes;
     }
 
     private DateTime getNextDateTime(DateTime candidateTime) {
