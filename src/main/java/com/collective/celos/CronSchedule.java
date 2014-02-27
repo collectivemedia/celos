@@ -38,7 +38,11 @@ public class CronSchedule implements Schedule {
         DateTime startDT = start.getDateTime();
         DateTime endDT = end.getDateTime();
 
-        if (cronExpression.isSatisfiedBy(startDT.toDate()) && startDT.isBefore(endDT)) {
+        if (!startDT.isBefore(endDT)) {
+            return scheduledTimes;
+        }
+        
+        if (cronExpression.isSatisfiedBy(startDT.toDate())) {
             scheduledTimes.add(start);
         }
 
