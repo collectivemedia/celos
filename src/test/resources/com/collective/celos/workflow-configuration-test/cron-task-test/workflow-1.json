@@ -3,7 +3,7 @@
     "schedule": {
         "type": "com.collective.celos.CronSchedule",
         "properties": {
-            "cron_config": "0 12 * * * ?"
+            "celos.cron.config": "0 12 * * * ?"
         }
     },
     "schedulingStrategy": {

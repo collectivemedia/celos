@@ -13,11 +13,12 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public class CronSchedule implements Schedule {
 
-    private final static String CRON_CONFIG_PROPERTY = "cron_config";
+    public final static String CONFIG_PROP = "celos.cron.config";
+    
     private CronExpression cronExpression;
 
     public CronSchedule(ObjectNode properties) {
-        String cronConfig = properties.get(CRON_CONFIG_PROPERTY).asText();
+        String cronConfig = properties.get(CONFIG_PROP).asText();
         try {
             CronExpression.validateExpression(cronConfig);
             cronExpression = new CronExpression(cronConfig);
