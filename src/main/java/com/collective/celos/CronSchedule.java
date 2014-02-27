@@ -34,29 +34,29 @@ public class CronSchedule implements Schedule {
 
     @Override
     public SortedSet<ScheduledTime> getScheduledTimes(ScheduledTime start, ScheduledTime end) {
-        Date startDT = start.getDateTime().toDate();
-
         SortedSet<ScheduledTime> scheduledTimes = new TreeSet<ScheduledTime>();
-        if (cronExpression.isSatisfiedBy(startDT) && start.getDateTime().isBefore(end.getDateTime())) {
+        DateTime startDT = start.getDateTime();
+        DateTime endDT = end.getDateTime();
+
+        if (cronExpression.isSatisfiedBy(startDT.toDate()) && startDT.isBefore(endDT)) {
             scheduledTimes.add(start);
         }
 
-        DateTime candidateTime = start.getDateTime();
-
-        while((candidateTime = getNextDateTime(candidateTime)) != null &&
-                candidateTime.isBefore(end.getDateTime())) {
-
-            scheduledTimes.add(new ScheduledTime(candidateTime));
+        DateTime candidate = startDT;
+        while((candidate = getNextDateTime(candidate)) != null && candidate.isBefore(endDT)) {
+            scheduledTimes.add(new ScheduledTime(candidate));
         }
+        
         return scheduledTimes;
     }
 
-    private DateTime getNextDateTime(DateTime candidateTime) {
-        Date date = cronExpression.getNextValidTimeAfter(candidateTime.toDate());
+    private DateTime getNextDateTime(DateTime candidate) {
+        Date date = cronExpression.getNextValidTimeAfter(candidate.toDate());
         if (date != null) {
-            return new DateTime(date).withZone(DateTimeZone.UTC);
+            return new DateTime(date, DateTimeZone.UTC);
+        } else {
+            return null;
         }
-        return null;
     }
 
 }
