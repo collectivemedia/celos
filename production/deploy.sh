@@ -1,1 +1,1 @@
-ansible-playbook -vvvv -i inventory deploy.yaml --extra-vars "celos_user=celos"
+ansible-playbook -vvvvv -i inventory deploy.yaml --extra-vars "celos_user=celos"
