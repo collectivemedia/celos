@@ -14,6 +14,7 @@ JACKSON_ANNOTATIONS = 'com.fasterxml.jackson.core:jackson-annotations:jar:2.3.0'
 JODA = 'joda-time:joda-time:jar:2.3'
 # used by Oozie (as per rrman Buildfile)
 JSON_SIMPLE = 'com.googlecode.json-simple:json-simple:jar:1.1.1'
+QUARTZ_SCHEDULER = 'org.quartz-scheduler:quartz:jar:2.1.1'
 
 LOG4J = ['log4j:log4j:jar:1.2.17', 'log4j:apache-log4j-extras:jar:1.2.17']
 
@@ -28,6 +29,7 @@ DEPENDENCIES = [
   JACKSON_ANNOTATIONS,
   JODA,
   JSON_SIMPLE,
+  QUARTZ_SCHEDULER
 ].flatten.reject {|tdep|
   GET_OUTTA_MY_JAR.select {|x| tdep.to_s.include?(x)}.any?
 }.push(LOG4J)
