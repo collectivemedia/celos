@@ -135,9 +135,7 @@ public class Scheduler {
                     }
                 }
             } else {
-                if (LOGGER.isInfoEnabled()) {
-                    LOGGER.info("Slot still running: " + slotState.getSlotID() + " external ID: " + slotState.getExternalID());
-                }
+                LOGGER.info("Slot still running: " + slotState.getSlotID() + " external ID: " + slotState.getExternalID());
             }
         }
     }
