@@ -1,0 +1,11 @@
+---
+
+- name: install openjdk Java 7 JDK via yum
+  yum: name=java-1.7.0-openjdk-devel
+  sudo: yes
+
+- name: set JAVA_HOME
+  lineinfile: dest=/etc/environment state=present
+    regexp="^JAVA_HOME="
+    line="JAVA_HOME=/usr/lib/jvm/java-openjdk"
+  sudo: yes

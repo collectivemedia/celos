@@ -1,0 +1,14 @@
+---
+# The main playbook to deploy to celos001
+
+- hosts: masters
+  remote_user: "{{celos_user}}"
+  vars:
+    celos_workflows_dir: /etc/celos/workflows
+    celos_db_dir: /var/lib/celos/db
+    celos_log_dir: /var/log/celos
+  roles:
+   - openjdk
+   - buildr
+   - tomcat
+   - celos
