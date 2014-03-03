@@ -8,10 +8,10 @@
     tags: cron
 
   - name: Prepare configuration dir
-    shell: sudo mkdir -p {{celos_workflows_dir}} && sudo chown {{celos_user}}:{{celos_user}} {{celos_workflows_dir}}
+    shell: sudo mkdir -p {{celos_workflows_dir}} && sudo chown {{celos_user}} {{celos_workflows_dir}}
 
   - name: Prepare database dir
-    shell: sudo mkdir -p {{celos_db_dir}} && sudo chown {{celos_user}}:{{celos_user}} {{celos_db_dir}}
+    shell: sudo mkdir -p {{celos_db_dir}} && sudo chown {{celos_user}} {{celos_db_dir}}
 
   - name: Prepare log dir
-    shell: sudo mkdir -p {{celos_log_dir}} && sudo chown {{celos_user}}:{{celos_user}} {{celos_log_dir}}
+    shell: sudo mkdir -p {{celos_log_dir}} && sudo chown {{celos_user}} {{celos_log_dir}}
