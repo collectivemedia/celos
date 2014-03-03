@@ -66,7 +66,6 @@ public class WorkflowConfigurationParser {
     }
     
     public void addWorkflowFromJSONString(String json) throws Exception {
-        System.err.println(json);
         JsonNode workflowNode = mapper.readTree(json);
         WorkflowID id = getWorkflowID(workflowNode);
         Schedule schedule = getScheduleFromJSON(id, workflowNode);
