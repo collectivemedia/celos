@@ -14,19 +14,12 @@
     sudo: yes
     tags: tomcat
 
-  - name: Configure Tomcat to run as celos group
-    lineinfile: dest=/etc/sysconfig/tomcat6 state=present
-      line="TOMCAT_GROUP={{celos_user}}"
-      regexp="TOMCAT_GROUP="
-    sudo: yes
-    tags: tomcat
-
   - name: Change tomcat logdir owner
-    shell: chown -R {{celos_user}}:{{celos_user}} /var/log/tomcat6
+    shell: chown -R {{celos_user}} /var/log/tomcat6
     sudo: yes
     tags: tomcat
 
   - name: Change tomcat webapps owner
-    shell: chgrp -R {{celos_user}} /var/lib/tomcat6/webapps
+    shell: chown -R {{celos_user}} /var/lib/tomcat6/webapps
     sudo: yes
     tags: tomcat
