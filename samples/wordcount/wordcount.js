@@ -1,4 +1,4 @@
-{
+addWorkflow({
     "id": "wordcount",
     "schedule": {
         "type": "com.collective.celos.HourlySchedule"
@@ -26,4 +26,4 @@
         }
     },
     "maxRetryCount": 0
-}
+});
