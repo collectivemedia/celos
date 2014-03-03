@@ -42,8 +42,7 @@ public class Scheduler {
             try {
                 stepWorkflow(wf, current);
             } catch(Exception e) {
-                LOGGER.error("Exception in workflow", e);
-                LOGGER.info("Aborted processing workflow: " + wf.getID() + " due to exception.");
+                LOGGER.error("Exception in workflow: " + wf.getID(), e);
             }
         }
         LOGGER.info("Ending scheduler step: " + current + " -- " + getStartTime(current));
@@ -135,9 +134,7 @@ public class Scheduler {
                     }
                 }
             } else {
-                if (LOGGER.isInfoEnabled()) {
-                    LOGGER.info("Slot still running: " + slotState.getSlotID() + " external ID: " + slotState.getExternalID());
-                }
+                LOGGER.info("Slot still running: " + slotState.getSlotID() + " external ID: " + slotState.getExternalID());
             }
         }
     }
