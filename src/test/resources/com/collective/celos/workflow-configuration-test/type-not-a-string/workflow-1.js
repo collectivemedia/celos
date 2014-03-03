@@ -1,4 +1,4 @@
-{
+addWorkflow({
     "id": "workflow-1",
     "schedule": {
         "type": 12,
@@ -23,4 +23,4 @@
         }
     },
     "maxRetryCount": 0
-}
+});

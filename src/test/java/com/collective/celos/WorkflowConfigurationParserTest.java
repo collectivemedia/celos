@@ -35,7 +35,7 @@ public class WorkflowConfigurationParserTest {
     public void everyObjectMustHavePropertiesConstructor() throws Exception {
         try {
             parseFile("no-properties-constructor");
-        } catch(RuntimeException e) {
+        } catch(Exception e) {
             Assert.assertTrue(e.getMessage().contains("Constructor with ObjectNode argument not found for com.collective.celos.WorkflowConfigurationParserTest$ScheduleWithoutPropertiesConstructor"));
         }
     }
@@ -91,7 +91,7 @@ public class WorkflowConfigurationParserTest {
 
     @Test
     public void propertiesAreCorrectlySet() throws Exception {
-        Workflow wf = parseFile("properties-test");
+        Workflow wf = parseDir("properties-test").findWorkflow(new WorkflowID("workflow-1"));
         
         Assert.assertEquals("workflow-1", wf.getID().toString());
         
@@ -119,7 +119,7 @@ public class WorkflowConfigurationParserTest {
 
     @Test
     public void propertiesForCronAreCorrectlySet() throws Exception {
-        Workflow wf = parseFile("cron-task-test");
+        Workflow wf = parseDir("cron-task-test").findWorkflow(new WorkflowID("workflow-1"));
         Assert.assertEquals("workflow-1", wf.getID().toString());
 
         CronSchedule schedule = (CronSchedule) wf.getSchedule();
@@ -135,37 +135,37 @@ public class WorkflowConfigurationParserTest {
         Assert.assertNull(cfg.findWorkflow(new WorkflowID("foobar")));
     }
     
-    @Test(expected=ClassNotFoundException.class)
+    @Test(expected=Exception.class)
     public void classMustExist() throws Exception {
         parseFile("class-not-found");
     }
     
-    @Test(expected=IllegalArgumentException.class)
+    @Test(expected=Exception.class)
     public void typeMustExist() throws Exception {
         parseFile("type-missing");
     }
     
-    @Test(expected=IllegalArgumentException.class)
+    @Test(expected=Exception.class)
     public void typeMustBeAString() throws Exception {
         parseFile("type-not-a-string");
     }
     
-    @Test(expected=IllegalArgumentException.class)
+    @Test(expected=Exception.class)
     public void idMustExist() throws Exception {
         parseFile("id-missing");
     }
     
-    @Test(expected=IllegalArgumentException.class)
+    @Test(expected=Exception.class)
     public void idMustBeAString() throws Exception {
         parseFile("id-not-a-string");
     }
     
-    @Test(expected=NullPointerException.class)
+    @Test(expected=Exception.class)
     public void maxRetryCountMustBeSet() throws Exception {
         parseFile("maxretrycount-missing");
     }
     
-    @Test(expected=IllegalArgumentException.class)
+    @Test(expected=Exception.class)
     public void maxRetryCountMustBeANumber() throws Exception {
         parseFile("maxretrycount-not-a-number");
     }
@@ -185,15 +185,15 @@ public class WorkflowConfigurationParserTest {
         Assert.assertEquals(1, cfg.getWorkflows().size());
     }
     
-    public static Workflow parseFile(String label) throws Exception {
+    public static void parseFile(String label) throws Exception {
         File dir = getConfigurationDir(label);
         File workflow = new File(dir, "workflow-1." + WorkflowConfigurationParser.WORKFLOW_FILE_EXTENSION);
-        return new WorkflowConfigurationParser().parseFile(workflow);
+        new WorkflowConfigurationParser(dir).parseFile(workflow);
     }
     
     public static WorkflowConfiguration parseDir(String label) throws Exception {
         File dir = getConfigurationDir(label);
-        return new WorkflowConfigurationParser().parseConfiguration(dir);
+        return new WorkflowConfigurationParser(dir).getWorkflowConfiguration();
     }
 
     public static File getConfigurationDir(String label) throws URISyntaxException {

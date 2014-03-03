@@ -1,4 +1,4 @@
-{
+addWorkflow({
     "id": "workflow-2",
     "schedule": {
         "type": "com.collective.celos.HourlySchedule",
@@ -24,4 +24,4 @@
         }
     },
     "maxRetryCount": 0
-}
+});

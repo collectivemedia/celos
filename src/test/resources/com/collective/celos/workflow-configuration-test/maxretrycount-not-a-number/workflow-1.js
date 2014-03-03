@@ -1,4 +1,4 @@
-{
+addWorkflow({
     "id": "workflow-1",
     "schedule": hourlySchedule(),
     "schedulingStrategy": {
@@ -17,4 +17,4 @@
         }
     },
     "maxRetryCount": "foo"
-}
+});

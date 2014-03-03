@@ -17,7 +17,7 @@ public class SchedulerConfiguration {
     public Scheduler makeDefaultScheduler() throws Exception {
         File configDir = new File(WORKFLOW_CONFIGURATION_PATH);
         WorkflowConfiguration config =
-                new WorkflowConfigurationParser().parseConfiguration(configDir);
+                new WorkflowConfigurationParser(configDir).getWorkflowConfiguration();
         StateDatabase db = makeDefaultStateDatabase();
         int slidingWindowHours = 24 * 7;
         return new Scheduler(config, db, slidingWindowHours);

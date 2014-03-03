@@ -1,4 +1,4 @@
-{
+addWorkflow({
     "schedule": {
         "type": "com.collective.celos.WorkflowConfigurationParserTest$TestSchedule",
         "properties": {
@@ -22,4 +22,4 @@
         }
     },
     "maxRetryCount": 0
-}
+});

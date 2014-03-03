@@ -1,4 +1,4 @@
-{
+addWorkflow({
     "id": "workflow-1",
     "schedule": {
         "properties": {
@@ -22,4 +22,4 @@
         }
     },
     "maxRetryCount": 0
-}
+});

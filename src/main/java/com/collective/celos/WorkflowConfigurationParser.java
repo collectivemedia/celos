@@ -35,48 +35,48 @@ public class WorkflowConfigurationParser {
     private final JSONInstanceCreator creator = new JSONInstanceCreator();
     private final ObjectMapper mapper = new ObjectMapper();
     private final ScriptEngine engine = new ScriptEngineManager().getEngineByName("JavaScript");
-    
-    public WorkflowConfigurationParser() throws Exception {
+    private final WorkflowConfiguration cfg = new WorkflowConfiguration();;
+
+    public WorkflowConfigurationParser(File dir) throws Exception {
         InputStream scripts = WorkflowConfigurationParser.class.getResourceAsStream("celos-scripts.js");
         engine.eval(new InputStreamReader(scripts));
+        engine.put("celosWorkflowConfigurationParser", this);
+        parseConfiguration(dir);
     }
     
-    public WorkflowConfiguration parseConfiguration(File dir) throws Exception {
+    public void parseConfiguration(File dir) {
         LOGGER.info("Workflow configuration directory: " + dir);
         Collection<File> files = FileUtils.listFiles(dir, new String[] { WORKFLOW_FILE_EXTENSION }, false);
-        WorkflowConfiguration cfg = new WorkflowConfiguration();
         for (File f : files) {
             try {
-                cfg.addWorkflow(parseFile(f));
+                LOGGER.info("Evaluating file: " + f);
+                parseFile(f);
             } catch(Exception e) {
                 LOGGER.error("Failed to load workflow: " + f, e);
             }
         }
-        return cfg;
     }
 
-    Workflow parseFile(File f) throws Exception {
-        LOGGER.info("Loading workflow: " + f);
-        JsonNode workflowNode = fileToJSON(f);
+    public void parseFile(File f) throws Exception {
+        engine.eval(IOUtils.toString(new FileReader(f)));
+    }
+
+    public WorkflowConfiguration getWorkflowConfiguration() {
+        return cfg;
+    }
+    
+    public void addWorkflowFromJSONString(String json) throws Exception {
+        System.err.println(json);
+        JsonNode workflowNode = mapper.readTree(json);
         WorkflowID id = getWorkflowID(workflowNode);
         Schedule schedule = getScheduleFromJSON(id, workflowNode);
         SchedulingStrategy schedulingStrategy = getSchedulingStrategyFromJSON(id, workflowNode);
         Trigger trigger = getTriggerFromJSON(id, workflowNode);
         ExternalService externalService = getExternalServiceFromJSON(id, workflowNode);
         int maxRetryCount = getMaxRetryCountFromJSON(workflowNode);
-        return new Workflow(id, schedule, schedulingStrategy, trigger, externalService, maxRetryCount);
+        cfg.addWorkflow(new Workflow(id, schedule, schedulingStrategy, trigger, externalService, maxRetryCount));
     }
-
-    private JsonNode fileToJSON(File f) throws Exception {
-        // B*TT UGLY HACK!!!
-        // In order not to have to deal with the, err, intricacies
-        // of JS objects we turn them into a JSON string inside the
-        // JS engine, and then parse that JSON string in Java again.
-        String contents = IOUtils.toString(new FileReader(f));
-        String hack = "JSON.stringify(" + contents + ")";
-        return mapper.readTree((String) engine.eval(hack));
-    }
-
+    
     private int getMaxRetryCountFromJSON(JsonNode workflowNode) {
         JsonNode maxRetryCountNode = workflowNode.get(MAX_RETRY_COUNT_PROP);
         if (!maxRetryCountNode.isNumber()) {
