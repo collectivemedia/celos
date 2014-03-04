@@ -17,7 +17,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
- * Reads a set of JSON files from a directory and creates a WorkflowConfiguration.
+ * Reads a set of JS files from a directory and creates a WorkflowConfiguration.
  */
 public class WorkflowConfigurationParser {
 
