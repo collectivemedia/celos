@@ -18,6 +18,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Reads a set of JS files from a directory and creates a WorkflowConfiguration.
+ * 
+ * The JS engine has one variable defined, celosWorkflowConfigurationParser, which
+ * points to the parser instance.
+ * 
+ * The helper script celos-scripts.js defines the utility function addWorkflow(object),
+ * which stringifies the input JS object, and passes the string to the parser's
+ * addWorkflowFromJSONString method.
  */
 public class WorkflowConfigurationParser {
 
