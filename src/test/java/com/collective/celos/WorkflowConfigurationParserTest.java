@@ -91,10 +91,20 @@ public class WorkflowConfigurationParserTest {
 
     @Test
     public void propertiesAreCorrectlySet() throws Exception {
-        Workflow wf = parseDir("properties-test").findWorkflow(new WorkflowID("workflow-1"));
+        WorkflowConfiguration cfg = parseDir("properties-test");
         
-        Assert.assertEquals("workflow-1", wf.getID().toString());
+        Workflow wf1 = cfg.findWorkflow(new WorkflowID("workflow-1"));
+        Assert.assertEquals("workflow-1", wf1.getID().toString());
+        verifyWorkflowProperties(wf1);
+        Assert.assertEquals(55, wf1.getMaxRetryCount());
         
+        Workflow wf2 = cfg.findWorkflow(new WorkflowID("workflow-2"));
+        Assert.assertEquals("workflow-2", wf2.getID().toString());
+        verifyWorkflowProperties(wf2);
+        Assert.assertEquals(66, wf2.getMaxRetryCount());
+    }
+
+    private void verifyWorkflowProperties(Workflow wf) {
         TestSchedule schedule = (TestSchedule) wf.getSchedule();
         ObjectNode scheduleProperties = Util.newObjectNode();
         scheduleProperties.put("a", "1");
@@ -113,8 +123,6 @@ public class WorkflowConfigurationParserTest {
         ObjectNode triggerProperties = Util.newObjectNode();
         triggerProperties.put("foo", "bar");
         Assert.assertEquals(triggerProperties, trigger.getProperties());
-        
-        Assert.assertEquals(55, wf.getMaxRetryCount());
     }
 
     @Test
