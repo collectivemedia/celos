@@ -1,7 +1,7 @@
 ---
 # Playbook to deploy workflow to the cluster for testing
 #
-# Copies input/, output/, workflow/, and workflow_name.json into ~/celos-deploy/workflow_name on the Hadoop master.
+# Copies input/, output/, workflow/, and workflow_name.js into ~/celos-deploy/workflow_name on the Hadoop master.
 #
 # User must provide 'workflow' and 'workflow_dir' variables like this:
 #
@@ -19,5 +19,5 @@
     shell: rm -rf {{remote_celos}}/samples/{{ workflow  }}
 
   - name: Copy files
-    local_action: command rsync -az -e ssh {{workflow_dir}}/input {{workflow_dir}}/output {{workflow_dir}}/workflow {{workflow_dir}}/{{workflow}}.json
+    local_action: command rsync -az -e ssh {{workflow_dir}}/input {{workflow_dir}}/output {{workflow_dir}}/workflow {{workflow_dir}}/{{workflow}}.js
         celos@{{inventory_hostname}}:{{remote_celos}}/samples/{{ workflow }}
