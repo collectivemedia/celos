@@ -49,82 +49,75 @@ A sample workflow configuration looks like this:
 
 <pre>
 addWorkflow({
+
     "id": "wordcount",
-    "schedule": {
-        "type": "com.collective.celos.HourlySchedule"
-    },
-    "schedulingStrategy": {
-        "type": "com.collective.celos.SerialSchedulingStrategy"
-    },
-    "trigger": {
-        "type": "com.collective.celos.HDFSCheckTrigger",
-        "properties": {
-            "celos.hdfs.fs": "hdfs://nn",
-            "celos.hdfs.path": "/user/celos/samples/wordcount/input/${year}-${month}-${day}T${hour}00.txt"
-        }
-    },
-    "externalService": {
-        "type": "com.collective.celos.OozieExternalService",
-        "properties": {
+
+    "maxRetryCount": 0,
+
+    "schedule": hourlySchedule(),
+
+    "schedulingStrategy": serialSchedulingStrategy(),
+
+    "trigger": hdfsCheckTrigger(
+        "/user/celos/samples/wordcount/input/${year}-${month}-${day}T${hour}00.txt",
+        "hdfs://nn"
+    ),
+
+    "externalService": oozieExternalService(
+        {
             "nameNode": "hdfs://nn",
             "jobTracker": "hdfs://nn",
-            "celos.oozie.url": "http://nn:11000/oozie",
             "user.name": "celos",
             "oozie.wf.application.path": "/user/celos/samples/wordcount/workflow/workflow.xml",
             "inputDir": "/user/celos/samples/wordcount/input",
             "outputDir": "/user/celos/samples/wordcount/output"
-        }
-    },
-    "maxRetryCount": 0
+        },
+        "http://nn:11000/oozie"
+    )
+
 });
 </pre>
 
 ## Triggers
 
-### AlwaysTrigger
+### alwaysTrigger()
 
 The simplest kind of trigger: it always signals data availability.
 
-To use when you simply want to run a workflow at every scheduled time,
-like in `cron`.
+To use when you simply want to run a workflow at every scheduled time.
 
 #### Example
 
 <pre>
 ...
-"trigger": {
-    "type": "com.collective.celos.AlwaysTrigger"
-}
+"trigger": alwaysTrigger()
 ...
 </pre>
 
-### HDFSCheckTrigger
+### hdfsCheckTrigger(path, fs)
 
 Waits for the existence of a file or directory in HDFS.
 
-#### Required properties
+#### Parameters
 
-* `celos.hdfs.fs` -- the HDFS filesystem namenode
+* `path` -- the path in HDFS to check the existence of
 
-* `celos.hdfs.path` -- the path in HDFS to check the existence of
+* `fs` -- the HDFS filesystem namenode
 
 #### Example
 
 <pre>
 ...
-"trigger": {
-    "type": "com.collective.celos.HDFSCheckTrigger",
-    "properties": {
-        "celos.hdfs.fs": "hdfs://nameservice1",
-        "celos.hdfs.path": "/foo/bar/${year}-${month}-${day}/${hour}/file.txt"
-    }
-}
+"trigger": hdfsCheckTrigger(
+    "/foo/bar/${year}-${month}-${day}/${hour}/file.txt"
+    "hdfs://nameservice1",
+)
 ...
 </pre>
 
 ## Schedules
 
-### HourlySchedule
+### hourlySchedule()
 
 Schedules a workflow to run every hour.
 
@@ -132,13 +125,11 @@ Schedules a workflow to run every hour.
 
 <pre>
 ...
-"schedule": {
-    "type": "com.collective.celos.HourlySchedule"
-}
+"schedule": hourlySchedule()
 ...
 </pre>
 
-### MinutelySchedule
+### minutelySchedule()
 
 Schedules a workflow to run every minute.
 
@@ -146,19 +137,17 @@ Schedules a workflow to run every minute.
 
 <pre>
 ...
-"schedule": {
-    "type": "com.collective.celos.minutelySchedule"
-}
+"schedule": minutelySchedule()
 ...
 </pre>
 
-### CronSchedule
+### cronSchedule(cronExpression)
 
 Schedules a workflow to run via a `cron`-like expression.
 
-#### Required properties
+#### Parameters
 
-* `celos.cron.config` -- The cron expression. Syntax: http://quartz-scheduler.org/api/2.0.0/org/quartz/CronExpression.html
+* `cronExpression` -- The cron expression. Syntax: http://quartz-scheduler.org/api/2.0.0/org/quartz/CronExpression.html
 
 #### Example
 
@@ -166,18 +155,13 @@ Run a workflow at minute 15 of every hour of every day of the year.
 
 <pre>
 ...
-"schedule": {
-    "type": "com.collective.celos.CronSchedule",
-    "properties": {
-        "celos.cron.config": "15 * * * * ?"
-    }
-}
+"schedule": cronSchedule("15 * * * * ?")
 ...
 </pre>
 
 ## Scheduling Strategies
 
-### SerialSchedulingStrategy
+### serialSchedulingStrategy()
 
 Runs the oldest ready slot first, and ensures there's only a single
 slot running at any time.
@@ -186,53 +170,36 @@ slot running at any time.
 
 <pre>
 ...
-"schedulingStrategy": {
-    "type": "com.collective.celos.SerialSchedulingStrategy"
-}
+"schedulingStrategy": serialSchedulingStrategy()
 ...
 </pre>
 
-### TrivialSchedulingStrategy
-
-Runs all ready slots in parallel.  Might overload the external
-service, so use it only if you know what you're doing.
-
-#### Example
-
-<pre>
-...
-"schedulingStrategy": {
-    "type": "com.collective.celos.TrivialSchedulingStrategy"
-}
-...
-</pre>
 
 ## External Services
 
-### OozieExternalService
+### oozieExternalService(workflowProperties, oozieURL)
 
 Submits jobs to Oozie.
 
-#### Required properties
+#### Parameters
 
-* `celos.oozie.url` -- the URL of the Oozie API endpoint
+* `workflowProperties` --- The properties to pass to the Oozie workflow.
 
-(All other properties are passed on to Oozie as-is.)
+* `oozieURL` --- The Oozie API URL.
 
 #### Example
 
 <pre>
 ...
-"externalService": {
-    "type": "com.collective.celos.OozieExternalService",
-    "properties": {
-        "celos.oozie.url": "http://nn:11000/oozie",
+"externalService": oozieExternalService(
+    {
         "user.name": "celos",
         "oozie.wf.application.path": "/user/celos/samples/wordcount/workflow/workflow.xml",
         "inputDir": "/user/celos/samples/wordcount/input",
         "outputDir": "/user/celos/samples/wordcount/output"
-    }
-}
+    },
+    "http://nn:11000/oozie"
+)
 ...
 </pre>
 
