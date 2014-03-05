@@ -63,4 +63,4 @@
     shell: grep 'ERROR:.*foobar' /var/log/celos/celos.log
 
   - name: Check log file contains info about workflow-1 loaded above
-    shell: grep 'INFO :.*/etc/celos/workflows/workflow-1.json' /var/log/celos/celos.log
+    shell: grep 'INFO :.*/etc/celos/workflows/workflow-1.js' /var/log/celos/celos.log
