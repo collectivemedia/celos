@@ -27,7 +27,7 @@ public class Scheduler {
     /**
      * Returns the start of the sliding window, given the current time.
      */
-    ScheduledTime getStartTime(ScheduledTime current) {
+    ScheduledTime getSlidingWindowStartTime(ScheduledTime current) {
         return new ScheduledTime(current.getDateTime().minusHours(slidingWindowHours));
     }
     
@@ -37,7 +37,7 @@ public class Scheduler {
      * Steps through all workflows.
      */
     public void step(ScheduledTime current) {
-        LOGGER.info("Starting scheduler step: " + current + " -- " + getStartTime(current));
+        LOGGER.info("Starting scheduler step: " + current + " -- " + getSlidingWindowStartTime(current));
         for (Workflow wf : configuration.getWorkflows()) {
             try {
                 stepWorkflow(wf, current);
@@ -45,7 +45,7 @@ public class Scheduler {
                 LOGGER.error("Exception in workflow: " + wf.getID(), e);
             }
         }
-        LOGGER.info("Ending scheduler step: " + current + " -- " + getStartTime(current));
+        LOGGER.info("Ending scheduler step: " + current + " -- " + getSlidingWindowStartTime(current));
     }
 
     /**
@@ -70,7 +70,7 @@ public class Scheduler {
      * Get the slot states of all slots of the workflow from within the sliding window.
      */
     public List<SlotState> getSlotStates(Workflow wf, ScheduledTime current) throws Exception {
-        SortedSet<ScheduledTime> scheduledTimes =  wf.getSchedule().getScheduledTimes(getStartTime(current), current);
+        SortedSet<ScheduledTime> scheduledTimes =  wf.getSchedule().getScheduledTimes(getSlidingWindowStartTime(current), current);
         List<SlotState> slotStates = new ArrayList<SlotState>(scheduledTimes.size());
         for (ScheduledTime t : scheduledTimes) {
             SlotID slotID = new SlotID(wf.getID(), t);

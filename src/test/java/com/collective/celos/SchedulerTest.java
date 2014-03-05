@@ -303,7 +303,7 @@ public class SchedulerTest {
         ScheduledTime t = new ScheduledTime("2013-11-26T20:00Z");
         int hours = 5;
         Scheduler scheduler = new Scheduler(new WorkflowConfiguration(), new MemoryStateDatabase(), hours);
-        Assert.assertEquals(scheduler.getStartTime(t), new ScheduledTime("2013-11-26T15:00Z"));
+        Assert.assertEquals(scheduler.getSlidingWindowStartTime(t), new ScheduledTime("2013-11-26T15:00Z"));
     }
     
     /**
