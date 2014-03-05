@@ -1,7 +1,7 @@
-{
-    "id": "workflow-1",
+addWorkflow({
+    "id": [ "foo" ],
     "schedule": {
-        "type": 12,
+        "type": "com.collective.celos.WorkflowConfigurationParserTest$TestSchedule",
         "properties": {
             "a": "1",
             "b": "2"
@@ -23,4 +23,4 @@
         }
     },
     "maxRetryCount": 0
-}
+});

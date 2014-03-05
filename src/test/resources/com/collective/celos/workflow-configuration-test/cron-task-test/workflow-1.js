@@ -1,10 +1,9 @@
-{
+addWorkflow({
     "id": "workflow-1",
     "schedule": {
-        "type": "com.collective.celos.HourlySchedule",
+        "type": "com.collective.celos.CronSchedule",
         "properties": {
-            "a": "1",
-            "b": "2"
+            "celos.cron.config": "0 12 * * * ?"
         }
     },
     "schedulingStrategy": {
@@ -24,4 +23,4 @@
         }
     },
     "maxRetryCount": 0
-}
+});

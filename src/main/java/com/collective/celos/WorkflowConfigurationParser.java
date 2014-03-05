@@ -1,19 +1,35 @@
 package com.collective.celos;
 
 import java.io.File;
+import java.io.FileReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.Collection;
 
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
- * Reads a set of JSON files from a directory and creates a WorkflowConfiguration.
+ * Reads a set of JS files from a directory and creates a WorkflowConfiguration.
+ * 
+ * The JS engine has one variable defined, celosWorkflowConfigurationParser, which
+ * points to the parser instance.
+ * 
+ * The helper script celos-scripts.js defines the utility function addWorkflow(object),
+ * which stringifies the input JS object, and passes the string to the parser's
+ * addWorkflowFromJSONString method.
  */
 public class WorkflowConfigurationParser {
 
+    public static final String WORKFLOW_FILE_EXTENSION = "js";
+    
     private static final String EXTERNAL_SERVICE_PROP = "externalService";
     private static final String TRIGGER_PROP = "trigger";
     private static final String SCHEDULING_STRATEGY_PROP = "schedulingStrategy";
@@ -25,24 +41,40 @@ public class WorkflowConfigurationParser {
     private static final Logger LOGGER = Logger.getLogger(WorkflowConfigurationParser.class);
     
     private final JSONInstanceCreator creator = new JSONInstanceCreator();
+    private final ObjectMapper mapper = new ObjectMapper();
+    private final ScriptEngine engine = new ScriptEngineManager().getEngineByName("JavaScript");
+    private final WorkflowConfiguration cfg = new WorkflowConfiguration();;
+
+    public WorkflowConfigurationParser(File dir) throws Exception {
+        InputStream scripts = WorkflowConfigurationParser.class.getResourceAsStream("celos-scripts.js");
+        engine.eval(new InputStreamReader(scripts));
+        engine.put("celosWorkflowConfigurationParser", this);
+        parseConfiguration(dir);
+    }
     
-    public WorkflowConfiguration parseConfiguration(File dir) throws Exception {
+    public void parseConfiguration(File dir) {
         LOGGER.info("Workflow configuration directory: " + dir);
-        Collection<File> files = FileUtils.listFiles(dir, new String[] { "json" }, false);
-        WorkflowConfiguration cfg = new WorkflowConfiguration();
+        Collection<File> files = FileUtils.listFiles(dir, new String[] { WORKFLOW_FILE_EXTENSION }, false);
         for (File f : files) {
             try {
-                cfg.addWorkflow(parseFile(f));
+                LOGGER.info("Evaluating file: " + f);
+                parseFile(f);
             } catch(Exception e) {
                 LOGGER.error("Failed to load workflow: " + f, e);
             }
         }
-        return cfg;
     }
 
-    Workflow parseFile(File f) throws Exception {
-        LOGGER.info("Loading workflow: " + f);
-        JsonNode workflowNode = new ObjectMapper().readTree(f);
+    public void parseFile(File f) throws Exception {
+        engine.eval(IOUtils.toString(new FileReader(f)));
+    }
+
+    public WorkflowConfiguration getWorkflowConfiguration() {
+        return cfg;
+    }
+    
+    public void addWorkflowFromJSONString(String json) throws Exception {
+        JsonNode workflowNode = mapper.readTree(json);
         WorkflowID id = getWorkflowID(workflowNode);
         Schedule schedule = getScheduleFromJSON(id, workflowNode);
         SchedulingStrategy schedulingStrategy = getSchedulingStrategyFromJSON(id, workflowNode);
@@ -50,9 +82,9 @@ public class WorkflowConfigurationParser {
         ExternalService externalService = getExternalServiceFromJSON(id, workflowNode);
         int maxRetryCount = getMaxRetryCountFromJSON(workflowNode);
         ScheduledTime startTime = getStartTimeFromJSON(workflowNode);
-        return new Workflow(id, schedule, schedulingStrategy, trigger, externalService, maxRetryCount, startTime);
+        cfg.addWorkflow(new Workflow(id, schedule, schedulingStrategy, trigger, externalService, maxRetryCount, startTime));
     }
-
+    
     private int getMaxRetryCountFromJSON(JsonNode workflowNode) {
         JsonNode maxRetryCountNode = workflowNode.get(MAX_RETRY_COUNT_PROP);
         if (!maxRetryCountNode.isNumber()) {

@@ -1,12 +1,6 @@
-{
-    "id": [ "foo" ],
-    "schedule": {
-        "type": "com.collective.celos.WorkflowConfigurationParserTest$TestSchedule",
-        "properties": {
-            "a": "1",
-            "b": "2"
-        }
-    },
+addWorkflow({
+    "id": "workflow-1",
+    "schedule": hourlySchedule(),
     "schedulingStrategy": {
         "type": "com.collective.celos.WorkflowConfigurationParserTest$TestSchedulingStrategy"
     },
@@ -22,5 +16,5 @@
             "yippie": "yeah"
         }
     },
-    "maxRetryCount": 0
-}
+    "maxRetryCount": "foo"
+});
