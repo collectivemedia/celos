@@ -5,6 +5,7 @@ import java.util.Collection;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
+import org.joda.time.DateTime;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -20,6 +21,7 @@ public class WorkflowConfigurationParser {
     private static final String SCHEDULE_PROP = "schedule";
     private static final String ID_PROP = "id";
     private static final String MAX_RETRY_COUNT_PROP = "maxRetryCount";
+    private static final String START_TIME_PROP = "startTime";
 
     private static final Logger LOGGER = Logger.getLogger(WorkflowConfigurationParser.class);
     
@@ -48,7 +50,8 @@ public class WorkflowConfigurationParser {
         Trigger trigger = getTriggerFromJSON(id, workflowNode);
         ExternalService externalService = getExternalServiceFromJSON(id, workflowNode);
         int maxRetryCount = getMaxRetryCountFromJSON(workflowNode);
-        return new Workflow(id, schedule, schedulingStrategy, trigger, externalService, maxRetryCount);
+        DateTime startTime = getStartTimeFromJSON(workflowNode);
+        return new Workflow(id, schedule, schedulingStrategy, trigger, externalService, maxRetryCount, startTime);
     }
 
     private int getMaxRetryCountFromJSON(JsonNode workflowNode) {
@@ -57,6 +60,19 @@ public class WorkflowConfigurationParser {
             throw new IllegalArgumentException("maxRetryCount must be a number: " + workflowNode.toString());
         }
         return maxRetryCountNode.intValue();
+    }
+
+    private DateTime getStartTimeFromJSON(JsonNode workflowNode) {
+        DateTime start;
+        JsonNode startTimeNode = workflowNode.get(START_TIME_PROP);
+        if (startTimeNode == null) {
+            start = Workflow.DEFAULT_START_TIME;
+        } else if (!startTimeNode.isTextual()) {
+            throw new IllegalArgumentException("startTime must be a string: " + workflowNode.toString());
+        } else {
+            start = DateTime.parse(startTimeNode.textValue());
+        }
+        return start;
     }
 
     private ExternalService getExternalServiceFromJSON(WorkflowID id, JsonNode workflowNode) throws Exception {

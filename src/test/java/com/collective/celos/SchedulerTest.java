@@ -60,7 +60,7 @@ public class SchedulerTest {
         // Objects
         workflowId = new WorkflowID("workflow-id");
         wf = new Workflow(workflowId, schedule, schedulingStrategy, trigger,
-                externalService, maxRetryCount);
+                externalService, maxRetryCount, Workflow.DEFAULT_START_TIME);
         scheduledTime = new ScheduledTime("2013-11-26T15:00Z");
         slotId = new SlotID(workflowId, scheduledTime);
 
@@ -321,7 +321,7 @@ public class SchedulerTest {
         Trigger tr1 = makeAlwaysTrigger();
         ExternalService srv1 = new MockExternalService(new MockExternalService.MockExternalStatusRunning());
         int maxRetryCount = 0;
-        Workflow wf1 = new Workflow(wfID1, sch1, str1, tr1, srv1, maxRetryCount);
+        Workflow wf1 = new Workflow(wfID1, sch1, str1, tr1, srv1, maxRetryCount, Workflow.DEFAULT_START_TIME);
         
         WorkflowConfiguration cfg = new WorkflowConfiguration();
         cfg.addWorkflow(wf1);
@@ -364,7 +364,7 @@ public class SchedulerTest {
         Trigger tr1 = new NeverTrigger(Util.newObjectNode());
         ExternalService srv1 = new MockExternalService(new MockExternalService.MockExternalStatusRunning());
         int maxRetryCount = 0;
-        Workflow wf1 = new Workflow(wfID1, sch1, str1, tr1, srv1, maxRetryCount);
+        Workflow wf1 = new Workflow(wfID1, sch1, str1, tr1, srv1, maxRetryCount, Workflow.DEFAULT_START_TIME);
         
         WorkflowConfiguration cfg = new WorkflowConfiguration();
         cfg.addWorkflow(wf1);
@@ -420,7 +420,7 @@ public class SchedulerTest {
         Trigger tr1 = makeAlwaysTrigger();
         ExternalService srv1 = new MockExternalService(externalStatus);
         int maxRetryCount = 0;
-        Workflow wf1 = new Workflow(wfID1, sch1, str1, tr1, srv1, maxRetryCount);
+        Workflow wf1 = new Workflow(wfID1, sch1, str1, tr1, srv1, maxRetryCount, Workflow.DEFAULT_START_TIME);
         
         WorkflowConfiguration cfg = new WorkflowConfiguration();
         cfg.addWorkflow(wf1);
@@ -467,7 +467,7 @@ public class SchedulerTest {
         Trigger tr1 = makeAlwaysTrigger();
         MockExternalService srv1 = new MockExternalService(new MockExternalService.MockExternalStatusRunning());
         int maxRetryCount = 0;
-        Workflow wf1 = new Workflow(wfID1, sch1, str1, tr1, srv1, maxRetryCount);
+        Workflow wf1 = new Workflow(wfID1, sch1, str1, tr1, srv1, maxRetryCount, Workflow.DEFAULT_START_TIME);
         
         WorkflowConfiguration cfg = new WorkflowConfiguration();
         cfg.addWorkflow(wf1);
@@ -527,7 +527,7 @@ public class SchedulerTest {
         Trigger tr1 = makeAlwaysTrigger();
         MockExternalService srv1 = new MockExternalService(new MockExternalService.MockExternalStatusRunning());
         int maxRetryCount = 0;
-        Workflow wf1 = new Workflow(wfID1, sch1, str1, tr1, srv1, maxRetryCount);
+        Workflow wf1 = new Workflow(wfID1, sch1, str1, tr1, srv1, maxRetryCount, Workflow.DEFAULT_START_TIME);
         
         WorkflowConfiguration cfg = new WorkflowConfiguration();
         cfg.addWorkflow(wf1);
@@ -626,7 +626,7 @@ public class SchedulerTest {
         Trigger tr1 = makeAlwaysTrigger();
         ExternalService srv1 = new RepeatedlyFailingExternalService(2);
         int maxRetryCount = 10;
-        Workflow wf1 = new Workflow(wfID1, sch1, str1, tr1, srv1, maxRetryCount);
+        Workflow wf1 = new Workflow(wfID1, sch1, str1, tr1, srv1, maxRetryCount, Workflow.DEFAULT_START_TIME);
         
         WorkflowConfiguration cfg = new WorkflowConfiguration();
         cfg.addWorkflow(wf1);
@@ -674,7 +674,7 @@ public class SchedulerTest {
         Trigger tr1 = makeAlwaysTrigger();
         ExternalService srv1 = new RepeatedlyFailingExternalService(3);
         int maxRetryCount = 2;
-        Workflow wf1 = new Workflow(wfID1, sch1, str1, tr1, srv1, maxRetryCount);
+        Workflow wf1 = new Workflow(wfID1, sch1, str1, tr1, srv1, maxRetryCount, Workflow.DEFAULT_START_TIME);
         
         WorkflowConfiguration cfg = new WorkflowConfiguration();
         cfg.addWorkflow(wf1);
