@@ -80,7 +80,7 @@ addWorkflow({
 
 ## Triggers
 
-### alwaysTrigger()
+### `alwaysTrigger()`
 
 The simplest kind of trigger: it always signals data availability.
 
@@ -94,7 +94,7 @@ To use when you simply want to run a workflow at every scheduled time.
 ...
 </pre>
 
-### hdfsCheckTrigger(path, fs)
+### `hdfsCheckTrigger(path, fs)`
 
 Waits for the existence of a file or directory in HDFS.
 
@@ -109,15 +109,15 @@ Waits for the existence of a file or directory in HDFS.
 <pre>
 ...
 "trigger": hdfsCheckTrigger(
-    "/foo/bar/${year}-${month}-${day}/${hour}/file.txt"
-    "hdfs://nameservice1",
+    "/foo/bar/${year}-${month}-${day}/${hour}/file.txt",
+    "hdfs://nameservice1"
 )
 ...
 </pre>
 
 ## Schedules
 
-### hourlySchedule()
+### `hourlySchedule()`
 
 Schedules a workflow to run every hour.
 
@@ -129,7 +129,7 @@ Schedules a workflow to run every hour.
 ...
 </pre>
 
-### minutelySchedule()
+### `minutelySchedule()`
 
 Schedules a workflow to run every minute.
 
@@ -141,7 +141,7 @@ Schedules a workflow to run every minute.
 ...
 </pre>
 
-### cronSchedule(cronExpression)
+### `cronSchedule(cronExpression)`
 
 Schedules a workflow to run via a `cron`-like expression.
 
@@ -177,15 +177,15 @@ slot running at any time.
 
 ## External Services
 
-### oozieExternalService(workflowProperties, oozieURL)
+### `oozieExternalService(workflowProperties, oozieURL)`
 
 Submits jobs to Oozie.
 
 #### Parameters
 
-* `workflowProperties` --- The properties to pass to the Oozie workflow.
+* `workflowProperties` -- The properties to pass to the Oozie workflow.
 
-* `oozieURL` --- The Oozie API URL.
+* `oozieURL` -- The Oozie API URL.
 
 #### Example
 
