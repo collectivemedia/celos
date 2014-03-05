@@ -8,10 +8,9 @@ import java.util.Collection;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
-
-import sun.org.mozilla.javascript.Context;
-import sun.org.mozilla.javascript.Scriptable;
-import sun.org.mozilla.javascript.ScriptableObject;
+import org.mozilla.javascript.Context;
+import org.mozilla.javascript.ScriptableObject;
+import org.mozilla.javascript.tools.shell.Global;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -41,16 +40,24 @@ public class WorkflowConfigurationParser {
     
     private final JSONInstanceCreator creator = new JSONInstanceCreator();
     private final ObjectMapper mapper = new ObjectMapper();
-    private final WorkflowConfiguration cfg = new WorkflowConfiguration();;
+    private final WorkflowConfiguration cfg = new WorkflowConfiguration();
 
     // JavaScript
-    private final Context context = Context.enter();
-    private final Scriptable scope = context.initStandardObjects();
+    private final Global scope = new Global();
+    private final Context context;
     
     public WorkflowConfigurationParser(File dir) throws Exception {
-        loadBuiltinScripts();
+        context = Context.enter();
+        scope.initStandardObjects(context, true);
+        context.setLanguageVersion(170);
         setupBindings();
+        loadBuiltinScripts();
         parseConfiguration(dir);
+    }
+
+    private void setupBindings() {
+        Object wrapped = Context.javaToJS(this, scope);
+        ScriptableObject.putProperty(scope, "celosWorkflowConfigurationParser", wrapped);
     }
 
     private void loadBuiltinScripts() throws Exception {
@@ -58,11 +65,6 @@ public class WorkflowConfigurationParser {
         context.evaluateReader(scope, new InputStreamReader(scripts), "celos-scripts.js", 1, null);
     }
     
-    private void setupBindings() {
-        Object wrapped = Context.javaToJS(this, scope);
-        ScriptableObject.putProperty(scope, "celosWorkflowConfigurationParser", wrapped);
-    }
-
     public void parseConfiguration(File dir) {
         LOGGER.info("Workflow configuration directory: " + dir);
         Collection<File> files = FileUtils.listFiles(dir, new String[] { WORKFLOW_FILE_EXTENSION }, false);
