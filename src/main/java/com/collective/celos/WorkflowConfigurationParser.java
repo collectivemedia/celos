@@ -41,7 +41,7 @@ public class WorkflowConfigurationParser {
     
     private final JSONInstanceCreator creator = new JSONInstanceCreator();
     private final ObjectMapper mapper = new ObjectMapper();
-    private final ScriptEngine engine = new ScriptEngineManager().getEngineByName("JavaScript");
+    private final ScriptEngine engine = new ScriptEngineManager().getEngineByName("rhino");
     private final WorkflowConfiguration cfg = new WorkflowConfiguration();;
 
     public WorkflowConfigurationParser(File dir) throws Exception {
