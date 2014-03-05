@@ -48,7 +48,7 @@ A workflow consists of:
 A sample workflow configuration looks like this:
 
 <pre>
-{
+addWorkflow({
     "id": "wordcount",
     "schedule": {
         "type": "com.collective.celos.HourlySchedule"
@@ -76,7 +76,7 @@ A sample workflow configuration looks like this:
         }
     },
     "maxRetryCount": 0
-}
+});
 </pre>
 
 ## Triggers
@@ -134,6 +134,43 @@ Schedules a workflow to run every hour.
 ...
 "schedule": {
     "type": "com.collective.celos.HourlySchedule"
+}
+...
+</pre>
+
+### MinutelySchedule
+
+Schedules a workflow to run every minute.
+
+#### Example
+
+<pre>
+...
+"schedule": {
+    "type": "com.collective.celos.minutelySchedule"
+}
+...
+</pre>
+
+### CronSchedule
+
+Schedules a workflow to run via a `cron`-like expression.
+
+#### Required properties
+
+* `celos.cron.config` -- The cron expression. Syntax: http://quartz-scheduler.org/api/2.0.0/org/quartz/CronExpression.html
+
+#### Example
+
+Run a workflow at minute 15 of every hour of every day of the year.
+
+<pre>
+...
+"schedule": {
+    "type": "com.collective.celos.CronSchedule",
+    "properties": {
+        "celos.cron.config": "15 * * * * ?"
+    }
 }
 ...
 </pre>
@@ -216,7 +253,7 @@ it fails.
 
 ## Deploying workflows
 
-Workflow JSON files are put into `/etc/celos/workflows` on the host
+Workflow JS files are put into `/etc/celos/workflows` on the host
 `celos001.ny7.collective-media.net`.
 
 Logs are stored under `/var/log/celos`.

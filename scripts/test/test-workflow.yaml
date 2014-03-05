@@ -14,7 +14,7 @@
     celos_port: 8080
     celos_workflows_dir: /etc/celos/workflows
     celos_db_dir: /var/lib/celos/db
-    sample_workflow: ~/deploy/samples/{{ workflow }}/{{ workflow }}.json
+    sample_workflow: ~/deploy/samples/{{ workflow }}/{{ workflow }}.js
     sample_input: ~/deploy/samples/{{ workflow }}/input
     sample_oozie_workflow: ~/deploy/samples/{{ workflow }}/workflow
 

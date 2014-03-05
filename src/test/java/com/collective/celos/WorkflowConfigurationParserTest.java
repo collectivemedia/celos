@@ -9,7 +9,6 @@ import java.util.SortedSet;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public class WorkflowConfigurationParserTest {
@@ -20,7 +19,7 @@ public class WorkflowConfigurationParserTest {
         Assert.assertEquals(0, cfg.getWorkflows().size());
     }
 
-    @Test(expected=JsonProcessingException.class)
+    @Test(expected=Exception.class)
     public void failsOnIllFormattedFile() throws Exception {
         parseFile("ill-formatted");
     }
@@ -36,7 +35,7 @@ public class WorkflowConfigurationParserTest {
     public void everyObjectMustHavePropertiesConstructor() throws Exception {
         try {
             parseFile("no-properties-constructor");
-        } catch(RuntimeException e) {
+        } catch(Exception e) {
             Assert.assertTrue(e.getMessage().contains("Constructor with ObjectNode argument not found for com.collective.celos.WorkflowConfigurationParserTest$ScheduleWithoutPropertiesConstructor"));
         }
     }
@@ -92,10 +91,20 @@ public class WorkflowConfigurationParserTest {
 
     @Test
     public void propertiesAreCorrectlySet() throws Exception {
-        Workflow wf = parseFile("properties-test");
+        WorkflowConfiguration cfg = parseDir("properties-test");
         
-        Assert.assertEquals("workflow-1", wf.getID().toString());
+        Workflow wf1 = cfg.findWorkflow(new WorkflowID("workflow-1"));
+        Assert.assertEquals("workflow-1", wf1.getID().toString());
+        verifyWorkflowProperties(wf1);
+        Assert.assertEquals(55, wf1.getMaxRetryCount());
         
+        Workflow wf2 = cfg.findWorkflow(new WorkflowID("workflow-2"));
+        Assert.assertEquals("workflow-2", wf2.getID().toString());
+        verifyWorkflowProperties(wf2);
+        Assert.assertEquals(66, wf2.getMaxRetryCount());
+    }
+
+    private void verifyWorkflowProperties(Workflow wf) {
         TestSchedule schedule = (TestSchedule) wf.getSchedule();
         ObjectNode scheduleProperties = Util.newObjectNode();
         scheduleProperties.put("a", "1");
@@ -114,13 +123,11 @@ public class WorkflowConfigurationParserTest {
         ObjectNode triggerProperties = Util.newObjectNode();
         triggerProperties.put("foo", "bar");
         Assert.assertEquals(triggerProperties, trigger.getProperties());
-        
-        Assert.assertEquals(55, wf.getMaxRetryCount());
     }
 
     @Test
     public void propertiesForCronAreCorrectlySet() throws Exception {
-        Workflow wf = parseFile("cron-task-test");
+        Workflow wf = parseDir("cron-task-test").findWorkflow(new WorkflowID("workflow-1"));
         Assert.assertEquals("workflow-1", wf.getID().toString());
 
         CronSchedule schedule = (CronSchedule) wf.getSchedule();
@@ -136,37 +143,37 @@ public class WorkflowConfigurationParserTest {
         Assert.assertNull(cfg.findWorkflow(new WorkflowID("foobar")));
     }
     
-    @Test(expected=ClassNotFoundException.class)
+    @Test(expected=Exception.class)
     public void classMustExist() throws Exception {
         parseFile("class-not-found");
     }
     
-    @Test(expected=IllegalArgumentException.class)
+    @Test(expected=Exception.class)
     public void typeMustExist() throws Exception {
         parseFile("type-missing");
     }
     
-    @Test(expected=IllegalArgumentException.class)
+    @Test(expected=Exception.class)
     public void typeMustBeAString() throws Exception {
         parseFile("type-not-a-string");
     }
     
-    @Test(expected=IllegalArgumentException.class)
+    @Test(expected=Exception.class)
     public void idMustExist() throws Exception {
         parseFile("id-missing");
     }
     
-    @Test(expected=IllegalArgumentException.class)
+    @Test(expected=Exception.class)
     public void idMustBeAString() throws Exception {
         parseFile("id-not-a-string");
     }
     
-    @Test(expected=NullPointerException.class)
+    @Test(expected=Exception.class)
     public void maxRetryCountMustBeSet() throws Exception {
         parseFile("maxretrycount-missing");
     }
     
-    @Test(expected=IllegalArgumentException.class)
+    @Test(expected=Exception.class)
     public void maxRetryCountMustBeANumber() throws Exception {
         parseFile("maxretrycount-not-a-number");
     }
@@ -186,15 +193,15 @@ public class WorkflowConfigurationParserTest {
         Assert.assertEquals(1, cfg.getWorkflows().size());
     }
     
-    public static Workflow parseFile(String label) throws Exception {
+    public static void parseFile(String label) throws Exception {
         File dir = getConfigurationDir(label);
-        File workflow = new File(dir, "workflow-1.json");
-        return new WorkflowConfigurationParser().parseFile(workflow);
+        File workflow = new File(dir, "workflow-1." + WorkflowConfigurationParser.WORKFLOW_FILE_EXTENSION);
+        new WorkflowConfigurationParser(dir).parseFile(workflow);
     }
     
     public static WorkflowConfiguration parseDir(String label) throws Exception {
         File dir = getConfigurationDir(label);
-        return new WorkflowConfigurationParser().parseConfiguration(dir);
+        return new WorkflowConfigurationParser(dir).getWorkflowConfiguration();
     }
 
     public static File getConfigurationDir(String label) throws URISyntaxException {

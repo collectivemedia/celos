@@ -1,6 +1,7 @@
-{
+addWorkflow({
+    "id": "workflow-1",
     "schedule": {
-        "type": "com.collective.celos.WorkflowConfigurationParserTest$TestSchedule",
+        "type": "ThisClassDoesNotExist",
         "properties": {
             "a": "1",
             "b": "2"
@@ -22,4 +23,4 @@
         }
     },
     "maxRetryCount": 0
-}
+});

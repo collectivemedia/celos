@@ -1,5 +1,5 @@
-{
-    "id": "this-is-a-duplicate",
+addWorkflow({
+    "id": "workflow-1",
     "schedule": {
         "type": "com.collective.celos.WorkflowConfigurationParserTest$TestSchedule"
     },
@@ -13,4 +13,4 @@
         "type": "com.collective.celos.WorkflowConfigurationParserTest$TestExternalService"
     },
     "maxRetryCount": 0
-}
+});
