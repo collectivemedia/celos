@@ -1,10 +1,8 @@
 package com.collective.celos;
 
-import org.joda.time.DateTime;
-
 public class Workflow {
 
-    public static final DateTime DEFAULT_START_TIME = DateTime.parse("1970-01-01T00:00:00.000Z");
+    public static final ScheduledTime DEFAULT_START_TIME = new ScheduledTime("1970-01-01T00:00:00.000Z");
     
     private final WorkflowID id;
     private final Schedule schedule;
@@ -12,7 +10,7 @@ public class Workflow {
     private final Trigger trigger;
     private final ExternalService externalService;
     private final int maxRetryCount;
-    private final DateTime startTime;
+    private final ScheduledTime startTime;
     
     public Workflow(WorkflowID id,
             Schedule schedule,
@@ -20,7 +18,7 @@ public class Workflow {
             Trigger trigger,
             ExternalService service,
             int maxRetryCount,
-            DateTime startTime) {
+            ScheduledTime startTime) {
         
         this.id = Util.requireNonNull(id);
         this.schedule = Util.requireNonNull(schedule);
@@ -55,7 +53,7 @@ public class Workflow {
         return maxRetryCount;
     }
 
-    public DateTime getStartTime() {
+    public ScheduledTime getStartTime() {
         return startTime;
     }
 

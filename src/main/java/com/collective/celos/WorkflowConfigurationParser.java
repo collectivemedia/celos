@@ -96,7 +96,7 @@ public class WorkflowConfigurationParser {
         Trigger trigger = getTriggerFromJSON(id, workflowNode);
         ExternalService externalService = getExternalServiceFromJSON(id, workflowNode);
         int maxRetryCount = getMaxRetryCountFromJSON(workflowNode);
-        DateTime startTime = getStartTimeFromJSON(workflowNode);
+        ScheduledTime startTime = getStartTimeFromJSON(workflowNode);
         return new Workflow(id, schedule, schedulingStrategy, trigger, externalService, maxRetryCount, startTime);
     }
     
@@ -108,15 +108,15 @@ public class WorkflowConfigurationParser {
         return maxRetryCountNode.intValue();
     }
 
-    private DateTime getStartTimeFromJSON(JsonNode workflowNode) {
-        DateTime start;
+    private ScheduledTime getStartTimeFromJSON(JsonNode workflowNode) {
+        ScheduledTime start;
         JsonNode startTimeNode = workflowNode.get(START_TIME_PROP);
         if (startTimeNode == null) {
             start = Workflow.DEFAULT_START_TIME;
         } else if (!startTimeNode.isTextual()) {
             throw new IllegalArgumentException("startTime must be a string: " + workflowNode.toString());
         } else {
-            start = DateTime.parse(startTimeNode.textValue());
+            start = new ScheduledTime(startTimeNode.textValue());
         }
         return start;
     }

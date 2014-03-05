@@ -1,11 +1,11 @@
 package com.collective.celos;
 
-import org.apache.log4j.Logger;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.SortedSet;
+
+import org.apache.log4j.Logger;
 
 public class Scheduler {
 
@@ -70,7 +70,7 @@ public class Scheduler {
      * Get the slot states of all slots of the workflow from within the sliding window.
      */
     public List<SlotState> getSlotStates(Workflow wf, ScheduledTime current) throws Exception {
-        SortedSet<ScheduledTime> scheduledTimes =  wf.getSchedule().getScheduledTimes(getSlidingWindowStartTime(current), current);
+        SortedSet<ScheduledTime> scheduledTimes =  wf.getSchedule().getScheduledTimes(getWorkflowStartTime(wf, current), current);
         List<SlotState> slotStates = new ArrayList<SlotState>(scheduledTimes.size());
         for (ScheduledTime t : scheduledTimes) {
             SlotID slotID = new SlotID(wf.getID(), t);
@@ -85,6 +85,12 @@ public class Scheduler {
             }
         }
         return Collections.unmodifiableList(slotStates);
+    }
+
+    private ScheduledTime getWorkflowStartTime(Workflow wf, ScheduledTime current) {
+        ScheduledTime slidingWindowStartTime = getSlidingWindowStartTime(current);
+        ScheduledTime workflowStartTime = wf.getStartTime();
+        return ScheduledTime.max(slidingWindowStartTime, workflowStartTime);
     }
     
     /**
