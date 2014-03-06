@@ -113,10 +113,10 @@ public class Scheduler {
         SlotState.Status status = slotState.getStatus();
         if (status.equals(SlotState.Status.WAITING)) {
             if (wf.getTrigger().isDataAvailable(slotState.getScheduledTime())) {
-                LOGGER.info("Data available: " + slotState.getSlotID());
+                LOGGER.info("Slot is ready: " + slotState.getSlotID());
                 database.putSlotState(slotState.transitionToReady());
             } else {
-                LOGGER.info("No data available: " + slotState.getSlotID());
+                LOGGER.info("Waiting for slot: " + slotState.getSlotID());
             }
         } else if (status.equals(SlotState.Status.RUNNING)) {
             ExternalStatus xStatus = wf.getExternalService().getStatus(slotState.getExternalID());
