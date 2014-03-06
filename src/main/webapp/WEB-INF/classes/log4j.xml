@@ -19,7 +19,7 @@
     <param name="Facility" value="USER"/>
     <param name="SyslogHost" value="10.122.10.30:5544"/>
     <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="[%d{YYYY-MM-dd HH:mm:ss.SSS}] %-5p: %m%n"/>
+      <param name="ConversionPattern" value="celos: [%d{YYYY-MM-dd HH:mm:ss.SSS}] %-5p: %m%n"/>
     </layout>
   </appender>
 
