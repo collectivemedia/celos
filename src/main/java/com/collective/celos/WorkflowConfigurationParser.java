@@ -66,14 +66,14 @@ public class WorkflowConfigurationParser {
     }
     
     public void parseConfiguration(File dir) {
-        LOGGER.info("Workflow configuration directory: " + dir);
+        LOGGER.info("Using workflows directory: " + dir);
         Collection<File> files = FileUtils.listFiles(dir, new String[] { WORKFLOW_FILE_EXTENSION }, false);
         for (File f : files) {
             try {
-                LOGGER.info("Evaluating file: " + f);
+                LOGGER.info("Loading file: " + f);
                 parseFile(f);
             } catch(Exception e) {
-                LOGGER.error("Failed to load workflow: " + f, e);
+                LOGGER.error("Failed to load file: " + f + ": " + e.getMessage(), e);
             }
         }
     }

@@ -42,7 +42,7 @@ public class Scheduler {
             try {
                 stepWorkflow(wf, current);
             } catch(Exception e) {
-                LOGGER.error("Exception in workflow: " + wf.getID(), e);
+                LOGGER.error("Exception in workflow: " + wf.getID() + ": " + e.getMessage(), e);
             }
         }
         LOGGER.info("Ending scheduler step: " + current + " -- " + getStartTime(current));
