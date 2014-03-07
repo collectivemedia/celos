@@ -115,6 +115,27 @@ Waits for the existence of a file or directory in HDFS.
 ...
 </pre>
 
+### `andTrigger(triggers...)`
+
+Combines multiple triggers and waits for all of them (logical AND).
+
+#### Parameters
+
+* `triggers` -- any number of other triggers are passed as parameters
+
+#### Example
+
+<pre>
+...
+// Wait for HDFS paths /foo, /bar, and /quux
+"trigger": andTrigger(
+   hdfsCheckTrigger("/foo", ...),
+   hdfsCheckTrigger("/bar", ...),
+   hdfsCheckTrigger("/quux", ...)
+)
+...
+</pre>
+
 ## Schedules
 
 ### `hourlySchedule()`
