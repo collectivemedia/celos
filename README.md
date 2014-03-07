@@ -138,7 +138,7 @@ Celos automatically supplies the date-based properties like `year`,
 ### Complex workflow definitions
 
 A Celos JavaScript file doesn't have to contain only a single workflow
-- any number of `addWorkflow(...)` calls can appear in a file.
+-- any number of `addWorkflow(...)` calls can appear in a file.
 
 This makes it possible to group together related workflows.  Shared
 functionality can be factored out into JavaScript utility functions,
