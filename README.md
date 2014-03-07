@@ -58,8 +58,10 @@ Workflows are defined using **JavaScript**.
 Here's a sample JavaScript file that defines a single workflow,
 `wordcount`.  
 
-It runs every hour (`hourlySchedule()`) and executes slots one after
-another, oldest first (`serialSchedulingStrategy()`).
+`addWorkflow(...)` is the Celos API call that registers a workflow.
+
+The workflow runs every hour (`hourlySchedule()`) and executes slots
+one after another, oldest first (`serialSchedulingStrategy()`).
 
 Every hourly slot waits for a file in HDFS following the pattern
 `/user/celos/samples/wordcount/input/${year}-${month}-${day}T${hour}00.txt`.
@@ -133,25 +135,40 @@ The `workflow.xml` looks as follows:
 Celos automatically supplies the date-based properties like `year`,
 `month`, `day`, etc.
 
-## Prerequisites
+### Complex workflow definitions
+
+A Celos JavaScript file doesn't have to contain only a single workflow
+- any number of `addWorkflow(...)` calls can appear in a file.
+
+This makes it possible to group together related workflows.  Shared
+functionality can be factored out into JavaScript utility functions,
+and all features of JavaScript (conditionals, loops, etc) can be used.
+
+For example,
+[`dorado.js`](https://github.com/collectivemedia/dorado-flume/blob/16e2e59164d961c00236ebfae20d00c48650968e/dorado.js)
+defines six related workflows that only differ in minor details
+(e.g. name of data center).
+
+## Installing and Running
+
+### Prerequisites
 
 * JDK 1.7 or higher
-
 * Buildr 1.4.12 or higher
 
-## Unit testing and packaging
+### Unit testing and packaging
 
 * `buildr test` runs the unit test suite.
-
 * `buildr package` packages the WAR file under `target/`.
 
-## Integration testing
+### Integration testing
 
 This assumes you have the [test cluster](provisioner/README.md) running.
 
 * `./scripts/cluster-deploy.sh` deploys the current state of your repo to the cluster.
-
 * `./scripts/cluster-test.sh` runs the integration tests against the cluster.
+
+# Reference
 
 ## Triggers
 
