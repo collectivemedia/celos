@@ -155,7 +155,7 @@ Celos comes with an AWS-based [virtual test cluster](/provisioner)
 containing Oozie, HDFS, Hive and other Hadoop tools.
 
 Workflows can be automatically submitted to this test cluster from
-their Buildfile for integration testing.  The [Wordcount
+their build process for integration testing.  The [Wordcount
 sample](samples/wordcount) shows how to do this.
 
 ### Where to go from here
