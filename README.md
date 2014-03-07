@@ -37,7 +37,7 @@ run a workflow, say, every 12 minutes between 9am and 11am on Mondays.
 
 Before a given slot is run, Celos checks a **trigger** to make sure
 the data that is needed by that slot is available.  A typical trigger
-would be a check that given `_SUCCESS` file or hourly directory in
+would be a check that a given `_SUCCESS` file or hourly directory in
 HDFS exists, but triggers can also be more complex - for example, it's
 possible to wait for multiple files.
 
