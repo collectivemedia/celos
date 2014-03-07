@@ -356,6 +356,8 @@ Logs are stored under `/var/log/celos`.
 
 ### List installed workflows -- `GET /celos/workflow-list`
 
+Returns the IDs of all active workflows.
+
 #### Example
 
 <pre>
@@ -367,6 +369,8 @@ curl http://celos001.ny7.collective-media.net:8080/celos/workflow-list
 </pre>
 
 ### Get workflow information -- `GET /celos/workflow?id=...`
+
+Returns the list of the given workflow's slots.
 
 #### Example
 
@@ -394,6 +398,8 @@ curl http://celos001.ny7.collective-media.net:8080/celos/workflow?id=workflow-1
 </pre>
 
 ### Rerun slot -- `POST /celos/rerun?id=...&time=...` 
+
+Reruns a specific slot.
 
 #### Example
 
