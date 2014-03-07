@@ -12,42 +12,60 @@
 
 *(from the [Devil's Dictionary of Programming](http://programmingisterrible.com/post/65781074112/devils-dictionary-of-programming))*
 
-## Prerequisites
+## Overview
 
-* JDK 1.7 or higher
+Celos is a tool for running, testing, and maintaining Hadoop
+data applications that is designed to be simple and flexible.
 
-* Buildr 1.4.12 or higher
+### Concepts
 
-## Unit testing and packaging
+Celos uses a small number of concepts:
 
-* `buildr test` runs the unit test suite.
+A **workflow** is a recurring job for some specific purpose, and has a
+unique identifier, e.g. `my-workflow`.  A workflow's "meat" is an
+[Oozie `workflow.xml` file](http://oozie.apache.org/docs/3.2.0-incubating/WorkflowFunctionalSpec.html)
+that describes the tasks to perform.
 
-* `buildr package` packages the WAR file under `target/`.
+A **slot** is a single invocation of a workflow at a particular time
+and is identified by the workflow ID and time,
+e.g. `my-workflow@2013-03-07T20:00Z`.
 
-## Integration testing
+A **schedule** determines the points in time at which a workflow
+should run, i.e. its slots.  A typical schedule would be "every hour",
+but Celos supports arbitrary `cron`-like schedules so you could also
+run a workflow, say, every 12 minutes between 9am and 11am on Mondays.
 
-This assumes you have the [test cluster](provisioner/README.md) running.
+Before a given slot is run, Celos checks a **trigger** to make sure
+the data that is needed by that slot is available.  A typical trigger
+would be a check that given `_SUCCESS` file or hourly directory in
+HDFS exists, but triggers can also be more complex - for example, it's
+possible to wait for multiple files.
 
-* `./scripts/cluster-deploy.sh` deploys the current state of your repo to the cluster.
+A **scheduling strategy** picks the order in which slots are run.  The
+usual *serial scheduling strategy* simply always picks the oldest slot
+and runs it, but it would also be possible to define scheduling
+strategies that pick the newest slot, or a random slot, or a number of
+slots in parallel.
 
-* `./scripts/cluster-test.sh` runs the integration tests against the cluster.
+An **external service** is responsible for actually running workflows.
+Currently only Oozie is supported, but Celos is extensible to submit
+jobs to other services in the future (e.g. directly to Hadoop/YARN).
 
-## Defining Workflows
+### Defining Workflows
 
-A workflow consists of:
+Workflows are defined using **JavaScript**.
 
-* A *trigger* which determines data availability.
+Here's a sample JavaScript file that defines a single workflow,
+`wordcount`.  
 
-* A *schedule* which determines the points in time at which the workflow should run.
+It runs every hour (`hourlySchedule()`) and executes slots one after
+another, oldest first (`serialSchedulingStrategy()`).
 
-* A *scheduling strategy* which determines which of the points in time should be run first.
+Every hourly slot waits for a file in HDFS following the pattern
+`/user/celos/samples/wordcount/input/${year}-${month}-${day}T${hour}00.txt`.
+The `hdfsCheckTrigger(...)` is used to specify this.
 
-* An *external service* which is responsible for actually running the
-  service (currently Oozie is the only supported external service).
-
-A sample workflow configuration looks like this:
-
-<pre>
+```javascript
 addWorkflow({
 
     "id": "wordcount",
@@ -76,7 +94,64 @@ addWorkflow({
     )
 
 });
-</pre>
+```
+
+The `oozieExternalService(...)` specifies which Oozie workflow file to
+use (`/user/celos/samples/wordcount/workflow/workflow.xml`), and also
+supplies some properties (`inputDir`, `outputDir`) to the workflow.
+
+The `workflow.xml` looks as follows:
+
+```xml
+<?xml version="1.0"?>
+<workflow-app name="wordcount@${year}-${month}-${day}T${hour}:00Z" xmlns="uri:oozie:workflow:0.4">
+  <start to="main"/>
+  <action name="main">
+    <java>
+        <job-tracker>${jobTracker}</job-tracker>
+        <name-node>${nameNode}</name-node>
+        <configuration>
+            <property>
+               <name>mapred.job.queue.name</name>
+               <value>default</value>
+            </property>
+        </configuration>
+        <main-class>com.collective.celos.examples.wordcount.WordCount</main-class>
+        <arg>${inputDir}/${year}-${month}-${day}T${hour}00.txt</arg>
+        <arg>${outputDir}/${year}-${month}-${day}T${hour}00</arg>
+    </java>
+    <ok to="end"/>
+    <error to="kill"/>
+  </action>
+  <kill name="kill">
+    <message>${wf:errorCode("failed")}</message>
+  </kill>
+  <end name="end"/>
+</workflow-app>
+```
+
+Celos automatically supplies the date-based properties like `year`,
+`month`, `day`, etc.
+
+## Prerequisites
+
+* JDK 1.7 or higher
+
+* Buildr 1.4.12 or higher
+
+## Unit testing and packaging
+
+* `buildr test` runs the unit test suite.
+
+* `buildr package` packages the WAR file under `target/`.
+
+## Integration testing
+
+This assumes you have the [test cluster](provisioner/README.md) running.
+
+* `./scripts/cluster-deploy.sh` deploys the current state of your repo to the cluster.
+
+* `./scripts/cluster-test.sh` runs the integration tests against the cluster.
 
 ## Triggers
 
