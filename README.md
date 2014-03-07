@@ -149,6 +149,20 @@ For example,
 defines six related workflows that only differ in minor details
 (e.g. name of data center).
 
+### Testing of workflows
+
+Celos comes with an AWS-based [virtual test cluster](/provisioner)
+containing Oozie, HDFS, Hive and other Hadoop tools.
+
+Workflows can be automatically submitted to this test cluster from
+their Buildfile for integration testing.  The [Wordcount
+sample](samples/wordcount) shows how to do this.
+
+### Where to go from here
+
+Check out the [samples](/samples), [reference materials](#reference),
+and start defining your own workflows with Celos. It's fun!
+
 ## Installing and Running
 
 ### Prerequisites
