@@ -12,42 +12,62 @@
 
 *(from the [Devil's Dictionary of Programming](http://programmingisterrible.com/post/65781074112/devils-dictionary-of-programming))*
 
-## Prerequisites
+## Overview
 
-* JDK 1.7 or higher
+Celos is a tool for running, testing, and maintaining Hadoop
+data applications that is designed to be simple and flexible.
 
-* Buildr 1.4.12 or higher
+### Concepts
 
-## Unit testing and packaging
+Celos uses a small number of concepts:
 
-* `buildr test` runs the unit test suite.
+A **workflow** is a recurring job for some specific purpose, and has a
+unique identifier, e.g. `my-workflow`.  A workflow's "meat" is an
+[Oozie `workflow.xml` file](http://oozie.apache.org/docs/3.2.0-incubating/WorkflowFunctionalSpec.html)
+that describes the tasks to perform.
 
-* `buildr package` packages the WAR file under `target/`.
+A **slot** is a single invocation of a workflow at a particular time
+and is identified by the workflow ID and time,
+e.g. `my-workflow@2013-03-07T20:00Z`.
 
-## Integration testing
+A **schedule** determines the points in time at which a workflow
+should run, i.e. its slots.  A typical schedule would be "every hour",
+but Celos supports arbitrary `cron`-like schedules so you could also
+run a workflow, say, every 12 minutes between 9am and 11am on Mondays.
 
-This assumes you have the [test cluster](provisioner/README.md) running.
+Before a given slot is run, Celos checks a **trigger** to make sure
+the data that is needed by that slot is available.  A typical trigger
+would be a check that a given `_SUCCESS` file or hourly directory in
+HDFS exists, but triggers can also be more complex - for example, it's
+possible to wait for multiple files.
 
-* `./scripts/cluster-deploy.sh` deploys the current state of your repo to the cluster.
+A **scheduling strategy** picks the order in which slots are run.  The
+usual *serial scheduling strategy* simply always picks the oldest slot
+and runs it, but it would also be possible to define scheduling
+strategies that pick the newest slot, or a random slot, or a number of
+slots in parallel.
 
-* `./scripts/cluster-test.sh` runs the integration tests against the cluster.
+An **external service** is responsible for actually running workflows.
+Currently only Oozie is supported, but Celos is extensible to submit
+jobs to other services in the future (e.g. directly to Hadoop/YARN).
 
-## Defining Workflows
+### Defining Workflows
 
-A workflow consists of:
+Workflows are defined using **JavaScript**.
 
-* A *trigger* which determines data availability.
+Here's a sample JavaScript file that defines a single workflow,
+`wordcount`.  
 
-* A *schedule* which determines the points in time at which the workflow should run.
+`addWorkflow(...)` is the Celos API call that registers a workflow.
 
-* A *scheduling strategy* which determines which of the points in time should be run first.
+The workflow runs every hour (`hourlySchedule()`) and executes slots
+one after another, oldest first (`serialSchedulingStrategy()`).
 
-* An *external service* which is responsible for actually running the
-  service (currently Oozie is the only supported external service).
+Every hourly slot waits for a file in HDFS following the pattern
+`/user/celos/samples/wordcount/input/${year}-${month}-${day}T${hour}00.txt`.
+The `hdfsCheckTrigger(...)` is used to specify this.
 
-A sample workflow configuration looks like this:
-
-<pre>
+```javascript
 addWorkflow({
 
     "id": "wordcount",
@@ -76,7 +96,93 @@ addWorkflow({
     )
 
 });
-</pre>
+```
+
+The `oozieExternalService(...)` specifies which Oozie workflow file to
+use (`/user/celos/samples/wordcount/workflow/workflow.xml`), and also
+supplies some properties (`inputDir`, `outputDir`) to the workflow.
+
+The `workflow.xml` looks as follows:
+
+```xml
+<?xml version="1.0"?>
+<workflow-app name="wordcount@${year}-${month}-${day}T${hour}:00Z" xmlns="uri:oozie:workflow:0.4">
+  <start to="main"/>
+  <action name="main">
+    <java>
+        <job-tracker>${jobTracker}</job-tracker>
+        <name-node>${nameNode}</name-node>
+        <configuration>
+            <property>
+               <name>mapred.job.queue.name</name>
+               <value>default</value>
+            </property>
+        </configuration>
+        <main-class>com.collective.celos.examples.wordcount.WordCount</main-class>
+        <arg>${inputDir}/${year}-${month}-${day}T${hour}00.txt</arg>
+        <arg>${outputDir}/${year}-${month}-${day}T${hour}00</arg>
+    </java>
+    <ok to="end"/>
+    <error to="kill"/>
+  </action>
+  <kill name="kill">
+    <message>${wf:errorCode("failed")}</message>
+  </kill>
+  <end name="end"/>
+</workflow-app>
+```
+
+Celos automatically supplies the date-based properties like `year`,
+`month`, `day`, etc.
+
+### Complex workflow definitions
+
+A Celos JavaScript file doesn't have to contain only a single workflow
+-- any number of `addWorkflow(...)` calls can appear in a file.
+
+This makes it possible to group together related workflows.  Shared
+functionality can be factored out into JavaScript utility functions,
+and all features of JavaScript (conditionals, loops, etc) can be used.
+
+For example,
+[`dorado.js`](https://github.com/collectivemedia/dorado-flume/blob/16e2e59164d961c00236ebfae20d00c48650968e/dorado.js)
+defines six related workflows that only differ in minor details
+(e.g. name of data center).
+
+### Testing of workflows
+
+Celos comes with an AWS-based [virtual test cluster](/provisioner)
+containing Oozie, HDFS, Hive and other Hadoop tools.
+
+Workflows can be automatically submitted to this test cluster from
+their build process for integration testing.  The [Wordcount
+sample](samples/wordcount) shows how to do this.
+
+### Where to go from here
+
+Check out the [samples](/samples), [reference materials](#reference),
+and start defining your own workflows with Celos. It's fun!
+
+## Installing and Running
+
+### Prerequisites
+
+* JDK 1.7 or higher
+* Buildr 1.4.12 or higher
+
+### Unit testing and packaging
+
+* `buildr test` runs the unit test suite.
+* `buildr package` packages the WAR file under `target/`.
+
+### Integration testing
+
+This assumes you have the [test cluster](provisioner/README.md) running.
+
+* `./scripts/cluster-deploy.sh` deploys the current state of your repo to the cluster.
+* `./scripts/cluster-test.sh` runs the integration tests against the cluster.
+
+# Reference
 
 ## Triggers
 
@@ -115,6 +221,27 @@ Waits for the existence of a file or directory in HDFS.
 ...
 </pre>
 
+### `andTrigger(triggers...)`
+
+Combines multiple triggers and waits for all of them (logical AND).
+
+#### Parameters
+
+* `triggers` -- any number of other triggers are passed as parameters
+
+#### Example
+
+<pre>
+...
+// Wait for HDFS paths /foo, /bar, and /quux
+"trigger": andTrigger(
+   hdfsCheckTrigger("/foo", ...),
+   hdfsCheckTrigger("/bar", ...),
+   hdfsCheckTrigger("/quux", ...)
+)
+...
+</pre>
+
 ## Schedules
 
 ### `hourlySchedule()`
@@ -147,7 +274,7 @@ Schedules a workflow to run via a `cron`-like expression.
 
 #### Parameters
 
-* `cronExpression` -- The cron expression. Syntax: http://quartz-scheduler.org/api/2.0.0/org/quartz/CronExpression.html
+* `cronExpression` -- The [cron expression](http://quartz-scheduler.org/api/2.0.0/org/quartz/CronExpression.html)
 
 #### Example
 
@@ -155,13 +282,13 @@ Run a workflow at minute 15 of every hour of every day of the year.
 
 <pre>
 ...
-"schedule": cronSchedule("15 * * * * ?")
+"schedule": cronSchedule("* 15 * * * ?")
 ...
 </pre>
 
 ## Scheduling Strategies
 
-### serialSchedulingStrategy()
+### `serialSchedulingStrategy()`
 
 Runs the oldest ready slot first, and ensures there's only a single
 slot running at any time.
@@ -229,6 +356,8 @@ Logs are stored under `/var/log/celos`.
 
 ### List installed workflows -- `GET /celos/workflow-list`
 
+Returns the IDs of all active workflows.
+
 #### Example
 
 <pre>
@@ -240,6 +369,8 @@ curl http://celos001.ny7.collective-media.net:8080/celos/workflow-list
 </pre>
 
 ### Get workflow information -- `GET /celos/workflow?id=...`
+
+Returns the list of the given workflow's slots.
 
 #### Example
 
@@ -267,6 +398,8 @@ curl http://celos001.ny7.collective-media.net:8080/celos/workflow?id=workflow-1
 </pre>
 
 ### Rerun slot -- `POST /celos/rerun?id=...&time=...` 
+
+Reruns a specific slot.
 
 #### Example
 
