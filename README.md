@@ -274,7 +274,7 @@ Schedules a workflow to run via a `cron`-like expression.
 
 #### Parameters
 
-* `cronExpression` -- The cron expression. Syntax: http://quartz-scheduler.org/api/2.0.0/org/quartz/CronExpression.html
+* `cronExpression` -- The [cron expression](http://quartz-scheduler.org/api/2.0.0/org/quartz/CronExpression.html)
 
 #### Example
 
@@ -282,7 +282,7 @@ Run a workflow at minute 15 of every hour of every day of the year.
 
 <pre>
 ...
-"schedule": cronSchedule("15 * * * * ?")
+"schedule": cronSchedule("* 15 * * * ?")
 ...
 </pre>
 
