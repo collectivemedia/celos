@@ -161,7 +161,7 @@ Run a workflow at minute 15 of every hour of every day of the year.
 
 ## Scheduling Strategies
 
-### serialSchedulingStrategy()
+### `serialSchedulingStrategy()`
 
 Runs the oldest ready slot first, and ensures there's only a single
 slot running at any time.
