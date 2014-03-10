@@ -11,7 +11,6 @@ import org.apache.log4j.Logger;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ScriptableObject;
 import org.mozilla.javascript.tools.shell.Global;
-import org.joda.time.DateTime;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -97,7 +96,7 @@ public class WorkflowConfigurationParser {
         ExternalService externalService = getExternalServiceFromJSON(id, workflowNode);
         int maxRetryCount = getMaxRetryCountFromJSON(workflowNode);
         ScheduledTime startTime = getStartTimeFromJSON(workflowNode);
-        return new Workflow(id, schedule, schedulingStrategy, trigger, externalService, maxRetryCount, startTime);
+        cfg.addWorkflow(new Workflow(id, schedule, schedulingStrategy, trigger, externalService, maxRetryCount, startTime));
     }
     
     private int getMaxRetryCountFromJSON(JsonNode workflowNode) {
