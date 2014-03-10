@@ -49,5 +49,6 @@ addWorkflow({
             "yippie": "yeah"
         }
     },
-    "maxRetryCount": 66
+    "maxRetryCount": 66,
+    "startTime": "2014-03-10T12:34:56.789Z"
 });

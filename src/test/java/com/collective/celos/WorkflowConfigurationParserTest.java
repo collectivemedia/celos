@@ -97,11 +97,13 @@ public class WorkflowConfigurationParserTest {
         Assert.assertEquals("workflow-1", wf1.getID().toString());
         verifyWorkflowProperties(wf1);
         Assert.assertEquals(55, wf1.getMaxRetryCount());
+        Assert.assertEquals(Workflow.DEFAULT_START_TIME, wf1.getStartTime());
         
         Workflow wf2 = cfg.findWorkflow(new WorkflowID("workflow-2"));
         Assert.assertEquals("workflow-2", wf2.getID().toString());
         verifyWorkflowProperties(wf2);
         Assert.assertEquals(66, wf2.getMaxRetryCount());
+        Assert.assertEquals(new ScheduledTime("2014-03-10T12:34:56.789Z"), wf2.getStartTime());
     }
 
     private void verifyWorkflowProperties(Workflow wf) {
