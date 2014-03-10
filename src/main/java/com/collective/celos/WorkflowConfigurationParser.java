@@ -108,16 +108,14 @@ public class WorkflowConfigurationParser {
     }
 
     ScheduledTime getStartTimeFromJSON(JsonNode workflowNode) {
-        ScheduledTime start;
         JsonNode startTimeNode = workflowNode.get(START_TIME_PROP);
         if (startTimeNode == null) {
-            start = Workflow.DEFAULT_START_TIME;
+            return Workflow.DEFAULT_START_TIME;
         } else if (!startTimeNode.isTextual()) {
             throw new IllegalArgumentException("startTime must be a string: " + workflowNode.toString());
         } else {
-            start = new ScheduledTime(startTimeNode.textValue());
+            return new ScheduledTime(startTimeNode.textValue());
         }
-        return start;
     }
 
     private ExternalService getExternalServiceFromJSON(WorkflowID id, JsonNode workflowNode) throws Exception {
