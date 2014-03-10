@@ -29,13 +29,13 @@ public class WorkflowConfigurationParser {
 
     public static final String WORKFLOW_FILE_EXTENSION = "js";
     
-    private static final String EXTERNAL_SERVICE_PROP = "externalService";
-    private static final String TRIGGER_PROP = "trigger";
-    private static final String SCHEDULING_STRATEGY_PROP = "schedulingStrategy";
-    private static final String SCHEDULE_PROP = "schedule";
-    private static final String ID_PROP = "id";
-    private static final String MAX_RETRY_COUNT_PROP = "maxRetryCount";
-    private static final String START_TIME_PROP = "startTime";
+    public static final String EXTERNAL_SERVICE_PROP = "externalService";
+    public static final String TRIGGER_PROP = "trigger";
+    public static final String SCHEDULING_STRATEGY_PROP = "schedulingStrategy";
+    public static final String SCHEDULE_PROP = "schedule";
+    public static final String ID_PROP = "id";
+    public static final String MAX_RETRY_COUNT_PROP = "maxRetryCount";
+    public static final String START_TIME_PROP = "startTime";
 
     private static final Logger LOGGER = Logger.getLogger(WorkflowConfigurationParser.class);
     
@@ -107,7 +107,7 @@ public class WorkflowConfigurationParser {
         return maxRetryCountNode.intValue();
     }
 
-    private ScheduledTime getStartTimeFromJSON(JsonNode workflowNode) {
+    ScheduledTime getStartTimeFromJSON(JsonNode workflowNode) {
         ScheduledTime start;
         JsonNode startTimeNode = workflowNode.get(START_TIME_PROP);
         if (startTimeNode == null) {

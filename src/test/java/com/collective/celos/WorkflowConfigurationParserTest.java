@@ -9,6 +9,7 @@ import java.util.SortedSet;
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public class WorkflowConfigurationParserTest {
@@ -198,6 +199,15 @@ public class WorkflowConfigurationParserTest {
         // Directory contains 2 workflows, but one will be dropped because of duplicate ID.
         WorkflowConfiguration cfg = parseDir("duplicate-ids");
         Assert.assertEquals(1, cfg.getWorkflows().size());
+    }
+    
+    @Test(expected=IllegalArgumentException.class)
+    public void startTimeMustBeString() throws Exception {
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectNode workflowNode = mapper.createObjectNode();
+        workflowNode.put(WorkflowConfigurationParser.START_TIME_PROP, 12);
+        File dir = getConfigurationDir("empty");
+        new WorkflowConfigurationParser(dir).getStartTimeFromJSON(workflowNode);
     }
     
     public static void parseFile(String label) throws Exception {
