@@ -74,6 +74,8 @@ addWorkflow({
 
     "maxRetryCount": 0,
 
+    "startTime": "2014-03-10T00:00Z",
+
     "schedule": hourlySchedule(),
 
     "schedulingStrategy": serialSchedulingStrategy(),
@@ -342,6 +344,18 @@ it fails.
 <pre>
 ...
 "maxRetryCount": 15
+...
+</pre>
+
+### `startTime` (string in ISO 8601 UTC date format, optional)
+
+When the workflow should start.
+
+#### Example
+
+<pre>
+...
+"startTime": "2014-03-10T00:00Z",
 ...
 </pre>
 

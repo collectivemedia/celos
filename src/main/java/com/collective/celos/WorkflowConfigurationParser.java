@@ -29,12 +29,13 @@ public class WorkflowConfigurationParser {
 
     public static final String WORKFLOW_FILE_EXTENSION = "js";
     
-    private static final String EXTERNAL_SERVICE_PROP = "externalService";
-    private static final String TRIGGER_PROP = "trigger";
-    private static final String SCHEDULING_STRATEGY_PROP = "schedulingStrategy";
-    private static final String SCHEDULE_PROP = "schedule";
-    private static final String ID_PROP = "id";
-    private static final String MAX_RETRY_COUNT_PROP = "maxRetryCount";
+    public static final String EXTERNAL_SERVICE_PROP = "externalService";
+    public static final String TRIGGER_PROP = "trigger";
+    public static final String SCHEDULING_STRATEGY_PROP = "schedulingStrategy";
+    public static final String SCHEDULE_PROP = "schedule";
+    public static final String ID_PROP = "id";
+    public static final String MAX_RETRY_COUNT_PROP = "maxRetryCount";
+    public static final String START_TIME_PROP = "startTime";
 
     private static final Logger LOGGER = Logger.getLogger(WorkflowConfigurationParser.class);
     
@@ -94,7 +95,8 @@ public class WorkflowConfigurationParser {
         Trigger trigger = getTriggerFromJSON(id, workflowNode);
         ExternalService externalService = getExternalServiceFromJSON(id, workflowNode);
         int maxRetryCount = getMaxRetryCountFromJSON(workflowNode);
-        cfg.addWorkflow(new Workflow(id, schedule, schedulingStrategy, trigger, externalService, maxRetryCount));
+        ScheduledTime startTime = getStartTimeFromJSON(workflowNode);
+        cfg.addWorkflow(new Workflow(id, schedule, schedulingStrategy, trigger, externalService, maxRetryCount, startTime));
     }
     
     private int getMaxRetryCountFromJSON(JsonNode workflowNode) {
@@ -103,6 +105,17 @@ public class WorkflowConfigurationParser {
             throw new IllegalArgumentException("maxRetryCount must be a number: " + workflowNode.toString());
         }
         return maxRetryCountNode.intValue();
+    }
+
+    ScheduledTime getStartTimeFromJSON(JsonNode workflowNode) {
+        JsonNode startTimeNode = workflowNode.get(START_TIME_PROP);
+        if (startTimeNode == null) {
+            return Workflow.DEFAULT_START_TIME;
+        } else if (!startTimeNode.isTextual()) {
+            throw new IllegalArgumentException("startTime must be a string: " + workflowNode.toString());
+        } else {
+            return new ScheduledTime(startTimeNode.textValue());
+        }
     }
 
     private ExternalService getExternalServiceFromJSON(WorkflowID id, JsonNode workflowNode) throws Exception {

@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -60,7 +61,7 @@ public class SchedulerTest {
         // Objects
         workflowId = new WorkflowID("workflow-id");
         wf = new Workflow(workflowId, schedule, schedulingStrategy, trigger,
-                externalService, maxRetryCount);
+                externalService, maxRetryCount, Workflow.DEFAULT_START_TIME);
         scheduledTime = new ScheduledTime("2013-11-26T15:00Z");
         slotId = new SlotID(workflowId, scheduledTime);
 
@@ -303,7 +304,7 @@ public class SchedulerTest {
         ScheduledTime t = new ScheduledTime("2013-11-26T20:00Z");
         int hours = 5;
         Scheduler scheduler = new Scheduler(new WorkflowConfiguration(), new MemoryStateDatabase(), hours);
-        Assert.assertEquals(scheduler.getStartTime(t), new ScheduledTime("2013-11-26T15:00Z"));
+        Assert.assertEquals(scheduler.getSlidingWindowStartTime(t), new ScheduledTime("2013-11-26T15:00Z"));
     }
     
     /**
@@ -321,7 +322,7 @@ public class SchedulerTest {
         Trigger tr1 = makeAlwaysTrigger();
         ExternalService srv1 = new MockExternalService(new MockExternalService.MockExternalStatusRunning());
         int maxRetryCount = 0;
-        Workflow wf1 = new Workflow(wfID1, sch1, str1, tr1, srv1, maxRetryCount);
+        Workflow wf1 = new Workflow(wfID1, sch1, str1, tr1, srv1, maxRetryCount, Workflow.DEFAULT_START_TIME);
         
         WorkflowConfiguration cfg = new WorkflowConfiguration();
         cfg.addWorkflow(wf1);
@@ -364,7 +365,7 @@ public class SchedulerTest {
         Trigger tr1 = new NeverTrigger(Util.newObjectNode());
         ExternalService srv1 = new MockExternalService(new MockExternalService.MockExternalStatusRunning());
         int maxRetryCount = 0;
-        Workflow wf1 = new Workflow(wfID1, sch1, str1, tr1, srv1, maxRetryCount);
+        Workflow wf1 = new Workflow(wfID1, sch1, str1, tr1, srv1, maxRetryCount, Workflow.DEFAULT_START_TIME);
         
         WorkflowConfiguration cfg = new WorkflowConfiguration();
         cfg.addWorkflow(wf1);
@@ -420,7 +421,7 @@ public class SchedulerTest {
         Trigger tr1 = makeAlwaysTrigger();
         ExternalService srv1 = new MockExternalService(externalStatus);
         int maxRetryCount = 0;
-        Workflow wf1 = new Workflow(wfID1, sch1, str1, tr1, srv1, maxRetryCount);
+        Workflow wf1 = new Workflow(wfID1, sch1, str1, tr1, srv1, maxRetryCount, Workflow.DEFAULT_START_TIME);
         
         WorkflowConfiguration cfg = new WorkflowConfiguration();
         cfg.addWorkflow(wf1);
@@ -467,7 +468,7 @@ public class SchedulerTest {
         Trigger tr1 = makeAlwaysTrigger();
         MockExternalService srv1 = new MockExternalService(new MockExternalService.MockExternalStatusRunning());
         int maxRetryCount = 0;
-        Workflow wf1 = new Workflow(wfID1, sch1, str1, tr1, srv1, maxRetryCount);
+        Workflow wf1 = new Workflow(wfID1, sch1, str1, tr1, srv1, maxRetryCount, Workflow.DEFAULT_START_TIME);
         
         WorkflowConfiguration cfg = new WorkflowConfiguration();
         cfg.addWorkflow(wf1);
@@ -527,7 +528,7 @@ public class SchedulerTest {
         Trigger tr1 = makeAlwaysTrigger();
         MockExternalService srv1 = new MockExternalService(new MockExternalService.MockExternalStatusRunning());
         int maxRetryCount = 0;
-        Workflow wf1 = new Workflow(wfID1, sch1, str1, tr1, srv1, maxRetryCount);
+        Workflow wf1 = new Workflow(wfID1, sch1, str1, tr1, srv1, maxRetryCount, Workflow.DEFAULT_START_TIME);
         
         WorkflowConfiguration cfg = new WorkflowConfiguration();
         cfg.addWorkflow(wf1);
@@ -566,6 +567,91 @@ public class SchedulerTest {
         Assert.assertEquals(externalID, srv1.getTimes2ExternalID().get(slot2.getScheduledTime()));
     }
 
+    /**
+     * Create a workflow with a start time 3 days in the past.
+     * 
+     * Run scheduler for past 7 days.
+     * 
+     * Ensure that only slots for the past three days have been created in the DB.
+     */
+    @Test
+    public void workflowStartTimeTest() throws Exception {
+        WorkflowID wfID1 = new WorkflowID("wf1");
+        Schedule sch1 = makeHourlySchedule();
+        SchedulingStrategy str1 = makeSerialSchedulingStrategy();
+        Trigger tr1 = makeAlwaysTrigger();
+        MockExternalService srv1 = new MockExternalService(new MockExternalService.MockExternalStatusRunning());
+        int maxRetryCount = 0;
+        DateTime currentDT = DateTime.now(DateTimeZone.UTC);
+        ScheduledTime startTime = new ScheduledTime(currentDT.minusDays(3));
+        
+        Workflow wf1 = new Workflow(wfID1, sch1, str1, tr1, srv1, maxRetryCount, startTime);
+        
+        WorkflowConfiguration cfg = new WorkflowConfiguration();
+        cfg.addWorkflow(wf1);
+        
+        MemoryStateDatabase db = new MemoryStateDatabase();
+
+        Scheduler sched = new Scheduler(cfg, db, 7 * 24);
+        sched.step(new ScheduledTime(currentDT));
+        
+        Assert.assertEquals(3 * 24, db.size());
+    }
+    
+    /**
+     * Make sure all slots have been processed if workflow start time is before sliding window start time.
+     */
+    @Test
+    public void workflowStartTimeTest2() throws Exception {
+        WorkflowID wfID1 = new WorkflowID("wf1");
+        Schedule sch1 = makeHourlySchedule();
+        SchedulingStrategy str1 = makeSerialSchedulingStrategy();
+        Trigger tr1 = makeAlwaysTrigger();
+        MockExternalService srv1 = new MockExternalService(new MockExternalService.MockExternalStatusRunning());
+        int maxRetryCount = 0;
+        DateTime currentDT = DateTime.now(DateTimeZone.UTC);
+        ScheduledTime startTime = new ScheduledTime(currentDT.minusDays(10));
+        
+        Workflow wf1 = new Workflow(wfID1, sch1, str1, tr1, srv1, maxRetryCount, startTime);
+        
+        WorkflowConfiguration cfg = new WorkflowConfiguration();
+        cfg.addWorkflow(wf1);
+        
+        MemoryStateDatabase db = new MemoryStateDatabase();
+
+        Scheduler sched = new Scheduler(cfg, db, 7 * 24);
+        sched.step(new ScheduledTime(currentDT));
+        
+        Assert.assertEquals(7 * 24, db.size());
+    }
+    
+    /**
+     * Make sure no slots have been processed if workflow start time is in the future.
+     */
+    @Test
+    public void workflowStartTimeTest3() throws Exception {
+        WorkflowID wfID1 = new WorkflowID("wf1");
+        Schedule sch1 = makeHourlySchedule();
+        SchedulingStrategy str1 = makeSerialSchedulingStrategy();
+        Trigger tr1 = makeAlwaysTrigger();
+        MockExternalService srv1 = new MockExternalService(new MockExternalService.MockExternalStatusRunning());
+        int maxRetryCount = 0;
+        DateTime currentDT = DateTime.now(DateTimeZone.UTC);
+        ScheduledTime startTime = new ScheduledTime(currentDT.plusDays(10));
+        
+        Workflow wf1 = new Workflow(wfID1, sch1, str1, tr1, srv1, maxRetryCount, startTime);
+        
+        WorkflowConfiguration cfg = new WorkflowConfiguration();
+        cfg.addWorkflow(wf1);
+        
+        MemoryStateDatabase db = new MemoryStateDatabase();
+
+        Scheduler sched = new Scheduler(cfg, db, 7 * 24);
+        sched.step(new ScheduledTime(currentDT));
+        
+        Assert.assertEquals(0, db.size());
+    }
+    
     /**
      * External service that fails a configurable number of times and then succeeds.
      */
@@ -626,7 +712,7 @@ public class SchedulerTest {
         Trigger tr1 = makeAlwaysTrigger();
         ExternalService srv1 = new RepeatedlyFailingExternalService(2);
         int maxRetryCount = 10;
-        Workflow wf1 = new Workflow(wfID1, sch1, str1, tr1, srv1, maxRetryCount);
+        Workflow wf1 = new Workflow(wfID1, sch1, str1, tr1, srv1, maxRetryCount, Workflow.DEFAULT_START_TIME);
         
         WorkflowConfiguration cfg = new WorkflowConfiguration();
         cfg.addWorkflow(wf1);
@@ -674,7 +760,7 @@ public class SchedulerTest {
         Trigger tr1 = makeAlwaysTrigger();
         ExternalService srv1 = new RepeatedlyFailingExternalService(3);
         int maxRetryCount = 2;
-        Workflow wf1 = new Workflow(wfID1, sch1, str1, tr1, srv1, maxRetryCount);
+        Workflow wf1 = new Workflow(wfID1, sch1, str1, tr1, srv1, maxRetryCount, Workflow.DEFAULT_START_TIME);
         
         WorkflowConfiguration cfg = new WorkflowConfiguration();
         cfg.addWorkflow(wf1);

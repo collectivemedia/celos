@@ -18,6 +18,14 @@ public class ScheduledTimeTest {
     }
 
     @Test
+    public void testMax() {
+        ScheduledTime t1 = new ScheduledTime("2013-11-26T13:00Z");
+        ScheduledTime t2 = new ScheduledTime("2013-11-26T13:01Z");
+        Assert.assertEquals(t2, ScheduledTime.max(t1, t2));
+        Assert.assertEquals(t2, ScheduledTime.max(t2, t1));
+    }
+    
+    @Test
     public void testGetYear() {
         ScheduledTime t = new ScheduledTime("2013-11-18T20:00Z");
         assertEquals(2013, t.getYear());
