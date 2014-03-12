@@ -1,6 +1,7 @@
 package com.collective.celos;
 
 import com.collective.celos.api.ScheduledTime;
+import com.collective.celos.api.Util;
 
 import java.util.HashMap;
 import java.util.Map;

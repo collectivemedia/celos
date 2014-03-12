@@ -3,6 +3,7 @@ package com.collective.celos;
 import com.collective.celos.api.Schedule;
 import com.collective.celos.api.ScheduledTime;
 import com.collective.celos.api.Trigger;
+import com.collective.celos.api.Util;
 
 public class Workflow {
 

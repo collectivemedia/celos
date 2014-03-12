@@ -1,12 +1,10 @@
-package com.collective.celos;
-
-import com.collective.celos.api.ScheduledTime;
-import org.joda.time.DateTime;
+package com.collective.celos.api;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.joda.time.DateTime;
 
 public class Util {
 

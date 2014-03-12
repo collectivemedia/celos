@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.collective.celos.api.ScheduledTime;
+import com.collective.celos.api.Util;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

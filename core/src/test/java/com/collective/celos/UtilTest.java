@@ -1,5 +1,6 @@
 package com.collective.celos;
 
+import com.collective.celos.api.Util;
 import org.joda.time.DateTime;
 import org.junit.Assert;
 import org.junit.Test;

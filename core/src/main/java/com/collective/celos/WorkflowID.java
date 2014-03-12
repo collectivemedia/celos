@@ -1,5 +1,7 @@
 package com.collective.celos;
 
+import com.collective.celos.api.Util;
+
 /**
  * Uniquely identifies a workflow.
  */

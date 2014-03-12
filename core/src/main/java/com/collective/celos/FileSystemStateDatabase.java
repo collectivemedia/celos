@@ -3,6 +3,7 @@ package com.collective.celos;
 import java.io.File;
 import java.io.IOException;
 
+import com.collective.celos.api.Util;
 import org.apache.commons.io.FileUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -50,7 +51,7 @@ public class FileSystemStateDatabase implements StateDatabase {
      * Creates a new DB that stores data in the given directory, which must exist.
      */
     public FileSystemStateDatabase(File dir) throws IOException {
-        this.dir = Util.requireNonNull(dir); 
+        this.dir = Util.requireNonNull(dir);
         if (!dir.exists()) {
             throw new IOException("Database directory " + dir + " doesn't exist.");
         }

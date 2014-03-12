@@ -3,6 +3,7 @@ package com.collective.celos;
 import java.util.Properties;
 
 import com.collective.celos.api.ScheduledTime;
+import com.collective.celos.api.Util;
 import junit.framework.Assert;
 
 import org.junit.Test;

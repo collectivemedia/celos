@@ -1,6 +1,7 @@
 package com.collective.celos;
 
 import com.collective.celos.api.ScheduledTime;
+import com.collective.celos.api.Util;
 
 /**
  * A slot is uniquely identified by its workflow ID and the scheduled time.
