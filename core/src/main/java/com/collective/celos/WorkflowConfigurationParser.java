@@ -117,7 +117,7 @@ public class WorkflowConfigurationParser {
         } else if (!startTimeNode.isTextual()) {
             throw new IllegalArgumentException("startTime must be a string: " + workflowNode.toString());
         } else {
-            return new ScheduledTimeImpl(startTimeNode.textValue());
+            return new ScheduledTime(startTimeNode.textValue());
         }
     }
 

@@ -50,7 +50,7 @@ public class CronSchedule implements Schedule {
 
         DateTime candidate = startDT;
         while((candidate = getNextDateTime(candidate)) != null && candidate.isBefore(endDT)) {
-            scheduledTimes.add(new ScheduledTimeImpl(candidate));
+            scheduledTimes.add(new ScheduledTime(candidate));
         }
         
         return scheduledTimes;

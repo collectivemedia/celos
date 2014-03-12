@@ -2,6 +2,7 @@ package com.collective.celos;
 
 import java.util.HashMap;
 
+import com.collective.celos.api.ScheduledTime;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -11,24 +12,24 @@ public class MiscTests {
     
     @Test
     public void scheduledTimeEqualsWorks() {
-        Assert.assertEquals(new ScheduledTimeImpl("2013-11-18T20:00Z"), new ScheduledTimeImpl("2013-11-18T20:00Z"));
-        Assert.assertNotSame(new ScheduledTimeImpl("2014-11-18T20:00Z"), new ScheduledTimeImpl("2013-11-18T20:00Z"));
+        Assert.assertEquals(new ScheduledTime("2013-11-18T20:00Z"), new ScheduledTime("2013-11-18T20:00Z"));
+        Assert.assertNotSame(new ScheduledTime("2014-11-18T20:00Z"), new ScheduledTime("2013-11-18T20:00Z"));
     }
     
     @Test
     public void slotIDEqualsWorks() {    
-        Assert.assertEquals(new SlotID(new WorkflowID("foo"), new ScheduledTimeImpl("2013-11-18T20:00Z")),
-                            new SlotID(new WorkflowID("foo"), new ScheduledTimeImpl("2013-11-18T20:00Z")));
-        Assert.assertNotSame(new SlotID(new WorkflowID("bar"), new ScheduledTimeImpl("2013-11-18T20:00Z")),
-                             new SlotID(new WorkflowID("foo"), new ScheduledTimeImpl("2013-11-18T20:00Z")));
-        Assert.assertNotSame(new SlotID(new WorkflowID("foo"), new ScheduledTimeImpl("2014-11-18T20:00Z")),
-                             new SlotID(new WorkflowID("foo"), new ScheduledTimeImpl("2013-11-18T20:00Z")));
+        Assert.assertEquals(new SlotID(new WorkflowID("foo"), new ScheduledTime("2013-11-18T20:00Z")),
+                            new SlotID(new WorkflowID("foo"), new ScheduledTime("2013-11-18T20:00Z")));
+        Assert.assertNotSame(new SlotID(new WorkflowID("bar"), new ScheduledTime("2013-11-18T20:00Z")),
+                             new SlotID(new WorkflowID("foo"), new ScheduledTime("2013-11-18T20:00Z")));
+        Assert.assertNotSame(new SlotID(new WorkflowID("foo"), new ScheduledTime("2014-11-18T20:00Z")),
+                             new SlotID(new WorkflowID("foo"), new ScheduledTime("2013-11-18T20:00Z")));
     }        
         
     @Test
     public void slotStateEqualsWorks() {
-        SlotID slotID1 = new SlotID(new WorkflowID("foo"), new ScheduledTimeImpl("2013-11-18T20:00Z"));
-        SlotID slotID2= new SlotID(new WorkflowID("bar"), new ScheduledTimeImpl("2013-11-18T20:00Z"));
+        SlotID slotID1 = new SlotID(new WorkflowID("foo"), new ScheduledTime("2013-11-18T20:00Z"));
+        SlotID slotID2= new SlotID(new WorkflowID("bar"), new ScheduledTime("2013-11-18T20:00Z"));
 
         Assert.assertEquals(new SlotState(slotID1, SlotState.Status.READY),
                             new SlotState(slotID1, SlotState.Status.READY));
@@ -57,18 +58,18 @@ public class MiscTests {
     
     @Test
     public void scheduledTimeHashCodeWorks() {
-        hashCodeTest(new ScheduledTimeImpl("2013-11-18T20:00Z"), new ScheduledTimeImpl("2013-11-19T20:00Z"));
+        hashCodeTest(new ScheduledTime("2013-11-18T20:00Z"), new ScheduledTime("2013-11-19T20:00Z"));
     }
     
     @Test
     public void slotIDHashCodeWorks() {
-        hashCodeTest(new SlotID(new WorkflowID("foo"), new ScheduledTimeImpl("2013-11-18T20:00Z")),
-                     new SlotID(new WorkflowID("bar"), new ScheduledTimeImpl("2013-11-18T20:00Z")));
+        hashCodeTest(new SlotID(new WorkflowID("foo"), new ScheduledTime("2013-11-18T20:00Z")),
+                     new SlotID(new WorkflowID("bar"), new ScheduledTime("2013-11-18T20:00Z")));
     }
     
     @Test
     public void slotStateHashCodeWorks() {
-        SlotID slotID = new SlotID(new WorkflowID("foo"), new ScheduledTimeImpl("2013-11-18T20:00Z"));
+        SlotID slotID = new SlotID(new WorkflowID("foo"), new ScheduledTime("2013-11-18T20:00Z"));
         hashCodeTest(new SlotState(slotID, SlotState.Status.READY),
                      new SlotState(slotID, SlotState.Status.WAITING));
     }
@@ -92,12 +93,12 @@ public class MiscTests {
 
     @Test(expected=IllegalArgumentException.class)
     public void scheduledTimeMustBeUTC() {
-        new ScheduledTimeImpl("2013-11-12T20:00");
+        new ScheduledTime("2013-11-12T20:00");
     }
     
     @Test
     public void tooTrivialButStill_alwaysTriggerAlwaysTriggers() {
-        Assert.assertTrue(new AlwaysTrigger(Util.newObjectNode()).isDataAvailable(new ScheduledTimeImpl("2013-11-21T20:00Z")));
+        Assert.assertTrue(new AlwaysTrigger(Util.newObjectNode()).isDataAvailable(new ScheduledTime("2013-11-21T20:00Z")));
     }
         
 }

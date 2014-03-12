@@ -9,7 +9,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public class SlotStateTest {
     
-    private final SlotID id = new SlotID(new WorkflowID("foo"), new ScheduledTimeImpl("2013-12-04T19:18Z"));
+    private final SlotID id = new SlotID(new WorkflowID("foo"), new ScheduledTime("2013-12-04T19:18Z"));
     
     @Test
     public void transitionsWorkAsExpected() {
@@ -55,7 +55,7 @@ public class SlotStateTest {
     
     @Test
     public void slotStateGetScheduledTimeWorks() {
-        ScheduledTime t = new ScheduledTimeImpl("2013-11-26T13:00Z");
+        ScheduledTime t = new ScheduledTime("2013-11-26T13:00Z");
         SlotState slotState = new SlotState(new SlotID(new WorkflowID("foo"), t), SlotState.Status.READY);
         Assert.assertEquals(t, slotState.getScheduledTime());
     }

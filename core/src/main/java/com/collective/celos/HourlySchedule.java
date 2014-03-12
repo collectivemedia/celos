@@ -28,7 +28,7 @@ public class HourlySchedule implements Schedule {
         }
         SortedSet<ScheduledTime> hours = new TreeSet<ScheduledTime>();
         while(hour.isBefore(endDT)) {
-            hours.add(new ScheduledTimeImpl(hour));
+            hours.add(new ScheduledTime(hour));
             hour = hour.plusHours(1);
         }
         return hours;

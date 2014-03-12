@@ -8,12 +8,10 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 
-import com.collective.celos.ScheduledTimeImpl;
+import com.collective.celos.api.ScheduledTime;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
-
-import com.collective.celos.api.ScheduledTime;
 
 /**
  * Superclass for all servlets that access the database.
@@ -46,9 +44,9 @@ public abstract class AbstractServlet extends HttpServlet {
     protected ScheduledTime getRequestTime(HttpServletRequest req) {
         String t = req.getParameter(TIME_PARAM);
         if (t == null) {
-            return new ScheduledTimeImpl(DateTime.now(DateTimeZone.UTC));
+            return new ScheduledTime(DateTime.now(DateTimeZone.UTC));
         } else {
-            return new ScheduledTimeImpl(t);
+            return new ScheduledTime(t);
         }
     }
 

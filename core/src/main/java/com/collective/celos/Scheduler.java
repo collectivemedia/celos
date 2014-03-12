@@ -29,7 +29,7 @@ public class Scheduler {
      * Returns the start of the sliding window, given the current time.
      */
     ScheduledTime getSlidingWindowStartTime(ScheduledTime current) {
-        return new ScheduledTimeImpl(current.getDateTime().minusHours(slidingWindowHours));
+        return new ScheduledTime(current.getDateTime().minusHours(slidingWindowHours));
     }
     
     /**

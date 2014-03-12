@@ -8,6 +8,7 @@ import static com.collective.celos.SlotState.Status.WAITING;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import com.collective.celos.api.ScheduledTime;
 import org.junit.Test;
 
 public class SlotStateStatusPredicateTest {
@@ -20,7 +21,7 @@ public class SlotStateStatusPredicateTest {
     @Test
     public void testSingleValue() {
         SlotStateStatusPredicate predicate = new SlotStateStatusPredicate(READY);
-        SlotID id = new SlotID(new WorkflowID("x"), new ScheduledTimeImpl(
+        SlotID id = new SlotID(new WorkflowID("x"), new ScheduledTime(
                 "2013-11-18T20:00Z"));
 
         assertTrue(predicate.evaluate(new SlotState(id, READY)));
@@ -35,7 +36,7 @@ public class SlotStateStatusPredicateTest {
     public void testMultipleValues() {
         SlotStateStatusPredicate predicate = new SlotStateStatusPredicate(
                 WAITING, FAILURE);
-        SlotID id = new SlotID(new WorkflowID("x"), new ScheduledTimeImpl(
+        SlotID id = new SlotID(new WorkflowID("x"), new ScheduledTime(
                 "2013-11-18T20:00Z"));
 
         assertTrue(predicate.evaluate(new SlotState(id, WAITING)));

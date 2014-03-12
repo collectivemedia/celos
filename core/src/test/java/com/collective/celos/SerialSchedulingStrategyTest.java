@@ -9,6 +9,7 @@ import static com.collective.celos.SlotState.Status.WAITING;
 import java.util.Arrays;
 import java.util.List;
 
+import com.collective.celos.api.ScheduledTime;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -29,15 +30,15 @@ public class SerialSchedulingStrategyTest {
     @Before
     public void setUp() {
         workflow = new WorkflowID("foo");
-        slot1 = new SlotID(workflow, new ScheduledTimeImpl(
+        slot1 = new SlotID(workflow, new ScheduledTime(
                 "2013-11-18T20:00Z"));
-        slot2 = new SlotID(workflow, new ScheduledTimeImpl(
+        slot2 = new SlotID(workflow, new ScheduledTime(
                 "2013-11-18T21:00Z"));
-        slot3 = new SlotID(workflow, new ScheduledTimeImpl(
+        slot3 = new SlotID(workflow, new ScheduledTime(
                 "2013-11-18T22:00Z"));
-        slot4 = new SlotID(workflow, new ScheduledTimeImpl(
+        slot4 = new SlotID(workflow, new ScheduledTime(
                 "2013-11-18T23:00Z"));
-        slot5 = new SlotID(workflow, new ScheduledTimeImpl(
+        slot5 = new SlotID(workflow, new ScheduledTime(
                 "2013-11-19T00:00Z"));
     }
 

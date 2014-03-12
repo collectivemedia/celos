@@ -28,7 +28,7 @@ public class MinutelySchedule implements Schedule {
         }
         SortedSet<ScheduledTime> minutes = new TreeSet<ScheduledTime>();
         while(minute.isBefore(endDT)) {
-            minutes.add(new ScheduledTimeImpl(minute));
+            minutes.add(new ScheduledTime(minute));
             minute = minute.plusMinutes(1);
         }
         return minutes;

@@ -2,6 +2,7 @@ package com.collective.celos;
 
 import static org.junit.Assert.assertEquals;
 
+import com.collective.celos.api.ScheduledTime;
 import org.junit.Test;
 
 public class ScheduledTimeFormatterTest {
@@ -53,35 +54,35 @@ public class ScheduledTimeFormatterTest {
     @Test
     public void millisecondPaddingTest() {
         ScheduledTimeFormatter formatter = new ScheduledTimeFormatter();
-        assertEquals("001", formatter.formatMillisecond(new ScheduledTimeImpl("2014-02-25T01:02:03.001Z")));
-        assertEquals("010", formatter.formatMillisecond(new ScheduledTimeImpl("2014-02-25T01:02:03.010Z")));
-        assertEquals("100", formatter.formatMillisecond(new ScheduledTimeImpl("2014-02-25T01:02:03.100Z")));
+        assertEquals("001", formatter.formatMillisecond(new ScheduledTime("2014-02-25T01:02:03.001Z")));
+        assertEquals("010", formatter.formatMillisecond(new ScheduledTime("2014-02-25T01:02:03.010Z")));
+        assertEquals("100", formatter.formatMillisecond(new ScheduledTime("2014-02-25T01:02:03.100Z")));
     }
     
     @Test
     public void timestampTest() {
         ScheduledTimeFormatter formatter = new ScheduledTimeFormatter();
-        assertEquals("20:15:00.053Z", formatter.formatTimestamp(new ScheduledTimeImpl("2014-02-25T20:15:00.053Z")));
+        assertEquals("20:15:00.053Z", formatter.formatTimestamp(new ScheduledTime("2014-02-25T20:15:00.053Z")));
     }
     
     @Test
     public void datestampTest() {
         ScheduledTimeFormatter formatter = new ScheduledTimeFormatter();
-        assertEquals("2014-02-25", formatter.formatDatestamp(new ScheduledTimeImpl("2014-02-25T20:15:00.053Z")));
+        assertEquals("2014-02-25", formatter.formatDatestamp(new ScheduledTime("2014-02-25T20:15:00.053Z")));
     }
     
     @Test
     public void testReplaceTokensPadding() {
         ScheduledTimeFormatter formatter = new ScheduledTimeFormatter();
         String actual = formatter.replaceTimeTokens(
-                "/${year}/${month}/${day}/${hour}", new ScheduledTimeImpl(
+                "/${year}/${month}/${day}/${hour}", new ScheduledTime(
                         "0001-02-03T04:00Z"));
         assertEquals("/0001/02/03/04", actual);
     }
 
     public void testReplaceTokens(String input, String expected) {
         ScheduledTimeFormatter formatter = new ScheduledTimeFormatter();
-        String actual = formatter.replaceTimeTokens(input, new ScheduledTimeImpl(
+        String actual = formatter.replaceTimeTokens(input, new ScheduledTime(
                 "2013-11-22T14:00:53.023Z"));
         assertEquals(expected, actual);
     }

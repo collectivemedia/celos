@@ -107,7 +107,7 @@ public class WorkflowConfigurationParserTest {
         Assert.assertEquals("workflow-2", wf2.getID().toString());
         verifyWorkflowProperties(wf2);
         Assert.assertEquals(66, wf2.getMaxRetryCount());
-        Assert.assertEquals(new ScheduledTimeImpl("2014-03-10T12:34:56.789Z"), wf2.getStartTime());
+        Assert.assertEquals(new ScheduledTime("2014-03-10T12:34:56.789Z"), wf2.getStartTime());
     }
 
     private void verifyWorkflowProperties(Workflow wf) {

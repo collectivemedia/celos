@@ -6,6 +6,7 @@ import java.net.URISyntaxException;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.collective.celos.api.ScheduledTime;
 import junit.framework.Assert;
 
 import org.apache.commons.io.IOUtils;
@@ -27,7 +28,7 @@ public class FileSystemStateDatabaseTest {
     @Test
     public void emptyDatabaseReturnsNull() throws Exception {
         StateDatabase db = new FileSystemStateDatabase(makeDatabaseDir());
-        Assert.assertNull(db.getSlotState(new SlotID(new WorkflowID("workflow-1"), new ScheduledTimeImpl("2013-12-02T13:37Z"))));
+        Assert.assertNull(db.getSlotState(new SlotID(new WorkflowID("workflow-1"), new ScheduledTime("2013-12-02T13:37Z"))));
     }
 
     private File makeDatabaseDir() {
@@ -96,18 +97,18 @@ public class FileSystemStateDatabaseTest {
         WorkflowID wf1 = new WorkflowID("workflow-1");
         WorkflowID wf2 = new WorkflowID("workflow-2");
         
-        states.add(new SlotState(new SlotID(wf1, new ScheduledTimeImpl("2013-12-02T17:00Z")),
+        states.add(new SlotState(new SlotID(wf1, new ScheduledTime("2013-12-02T17:00Z")),
                 SlotState.Status.WAITING));
-        states.add(new SlotState(new SlotID(wf1, new ScheduledTimeImpl("2013-12-02T18:00Z")),
+        states.add(new SlotState(new SlotID(wf1, new ScheduledTime("2013-12-02T18:00Z")),
                 SlotState.Status.READY, null, 14));
-        states.add(new SlotState(new SlotID(wf1, new ScheduledTimeImpl("2013-12-02T19:00Z")),
+        states.add(new SlotState(new SlotID(wf1, new ScheduledTime("2013-12-02T19:00Z")),
                 SlotState.Status.READY).transitionToRunning("foo-bar"));
 
-        states.add(new SlotState(new SlotID(wf2, new ScheduledTimeImpl("2013-12-02T17:00Z")),
+        states.add(new SlotState(new SlotID(wf2, new ScheduledTime("2013-12-02T17:00Z")),
                 SlotState.Status.WAITING));
-        states.add(new SlotState(new SlotID(wf2, new ScheduledTimeImpl("2013-12-02T18:00Z")),
+        states.add(new SlotState(new SlotID(wf2, new ScheduledTime("2013-12-02T18:00Z")),
                 SlotState.Status.READY));
-        states.add(new SlotState(new SlotID(wf2, new ScheduledTimeImpl("2013-12-02T19:00Z")),
+        states.add(new SlotState(new SlotID(wf2, new ScheduledTime("2013-12-02T19:00Z")),
                 SlotState.Status.READY, null, 2).transitionToRunning("quux"));
         
         return states;

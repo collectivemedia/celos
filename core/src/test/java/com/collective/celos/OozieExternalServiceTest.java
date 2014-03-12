@@ -21,7 +21,7 @@ public class OozieExternalServiceTest {
         ObjectNode defaults = Util.newObjectNode();
         defaults.put("foo", "bar");
         defaults.put("uses-variables", "${year}-${month}-${day}-${hour}-${year}");
-        ScheduledTime t = new ScheduledTimeImpl("2013-11-26T17:00Z");
+        ScheduledTime t = new ScheduledTime("2013-11-26T17:00Z");
         Properties runProperties = makeOozieExternalService().setupRunProperties(defaults, t);
         Assert.assertEquals("bar", runProperties.getProperty("foo"));
         Assert.assertEquals("2013-11-26-17-2013", runProperties.getProperty("uses-variables"));

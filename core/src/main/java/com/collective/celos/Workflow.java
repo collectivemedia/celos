@@ -6,7 +6,7 @@ import com.collective.celos.api.Trigger;
 
 public class Workflow {
 
-    public static final ScheduledTime DEFAULT_START_TIME = new ScheduledTimeImpl("1970-01-01T00:00:00.000Z");
+    public static final ScheduledTime DEFAULT_START_TIME = new ScheduledTime("1970-01-01T00:00:00.000Z");
     
     private final WorkflowID id;
     private final Schedule schedule;
