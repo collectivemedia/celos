@@ -49,7 +49,7 @@ VERSION = '1.0.0'
 
 define 'celos' do
 
-  define 'interfaces' do
+  define 'api' do
     project.version = VERSION
     compile.with(DEPENDENCIES)
 
@@ -63,7 +63,7 @@ define 'celos' do
     compile.options.source = '1.7'
     compile.options.target = '1.7'
 
-    compile.with project('interfaces')
+    compile.with project('api')
 
     compile.with(DEPENDENCIES)
     test.with(TEST_DEPENDENCIES)
