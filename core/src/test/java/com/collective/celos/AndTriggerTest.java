@@ -1,6 +1,5 @@
 package com.collective.celos;
 
-import com.collective.celos.exposed.ScheduledTime;
 import org.junit.Assert;
 import org.junit.Test;
 

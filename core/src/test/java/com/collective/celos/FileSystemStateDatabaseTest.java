@@ -6,7 +6,6 @@ import java.net.URISyntaxException;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.collective.celos.exposed.ScheduledTime;
 import junit.framework.Assert;
 
 import org.apache.commons.io.IOUtils;

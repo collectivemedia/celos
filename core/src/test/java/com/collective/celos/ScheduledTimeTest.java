@@ -2,7 +2,7 @@ package com.collective.celos;
 
 import static org.junit.Assert.assertEquals;
 
-import com.collective.celos.exposed.ScheduledTime;
+import com.collective.celos.api.ScheduledTime;
 import org.junit.Assert;
 import org.junit.Test;
 

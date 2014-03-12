@@ -1,7 +1,7 @@
 package com.collective.celos;
 
 
-import com.collective.celos.exposed.ScheduledTime;
+import com.collective.celos.api.ScheduledTime;
 
 public interface ExternalService {
 

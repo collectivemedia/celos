@@ -2,8 +2,8 @@ package com.collective.celos;
 
 import java.net.URI;
 
-import com.collective.celos.exposed.ScheduledTime;
-import com.collective.celos.exposed.Trigger;
+import com.collective.celos.api.ScheduledTime;
+import com.collective.celos.api.Trigger;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;

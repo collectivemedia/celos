@@ -10,9 +10,9 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.collective.celos.exposed.Schedule;
-import com.collective.celos.exposed.ScheduledTime;
-import com.collective.celos.exposed.Trigger;
+import com.collective.celos.api.Schedule;
+import com.collective.celos.api.ScheduledTime;
+import com.collective.celos.api.Trigger;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.junit.Assert;

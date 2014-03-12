@@ -5,8 +5,8 @@ import java.util.Date;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import com.collective.celos.exposed.Schedule;
-import com.collective.celos.exposed.ScheduledTime;
+import com.collective.celos.api.Schedule;
+import com.collective.celos.api.ScheduledTime;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.quartz.CronExpression;

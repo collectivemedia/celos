@@ -3,8 +3,8 @@ package com.collective.celos;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.collective.celos.exposed.ScheduledTime;
-import com.collective.celos.exposed.Trigger;
+import com.collective.celos.api.ScheduledTime;
+import com.collective.celos.api.Trigger;
 import org.apache.log4j.Logger;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;

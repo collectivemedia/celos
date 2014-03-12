@@ -4,7 +4,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.collective.celos.exposed.ScheduledTime;
+import com.collective.celos.api.ScheduledTime;
 import com.collective.celos.SchedulerConfiguration;
 import com.collective.celos.SlotID;
 import com.collective.celos.SlotState;

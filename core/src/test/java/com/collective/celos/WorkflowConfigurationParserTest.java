@@ -6,9 +6,9 @@ import java.net.URL;
 import java.util.List;
 import java.util.SortedSet;
 
-import com.collective.celos.exposed.Schedule;
-import com.collective.celos.exposed.ScheduledTime;
-import com.collective.celos.exposed.Trigger;
+import com.collective.celos.api.Schedule;
+import com.collective.celos.api.ScheduledTime;
+import com.collective.celos.api.Trigger;
 import org.junit.Assert;
 import org.junit.Test;
 

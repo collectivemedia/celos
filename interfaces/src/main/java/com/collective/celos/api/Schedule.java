@@ -1,4 +1,4 @@
-package com.collective.celos.exposed;
+package com.collective.celos.api;
 
 import java.util.SortedSet;
 

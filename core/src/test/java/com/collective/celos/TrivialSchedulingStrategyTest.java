@@ -3,7 +3,6 @@ package com.collective.celos;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.collective.celos.exposed.ScheduledTime;
 import org.junit.Assert;
 import org.junit.Test;
 

@@ -6,9 +6,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Collection;
 
-import com.collective.celos.exposed.Schedule;
-import com.collective.celos.exposed.ScheduledTime;
-import com.collective.celos.exposed.Trigger;
+import com.collective.celos.api.Schedule;
+import com.collective.celos.api.ScheduledTime;
+import com.collective.celos.api.Trigger;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.mozilla.javascript.Context;

@@ -9,7 +9,6 @@ import static com.collective.celos.SlotState.Status.WAITING;
 import java.util.Arrays;
 import java.util.List;
 
-import com.collective.celos.exposed.ScheduledTime;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

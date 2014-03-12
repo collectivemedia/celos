@@ -1,4 +1,4 @@
-package com.collective.celos.exposed;
+package com.collective.celos.api;
 
 /**
  * A trigger is called to determine data availability for a workflow.
