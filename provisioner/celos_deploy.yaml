@@ -18,7 +18,7 @@
     shell: rm -rf {{remote_celos}}/*
 
   - name: Copy files
-    local_action: command rsync -az -e ssh {{local_celos}}/Buildfile {{local_celos}}/core {{local_celos}}/interfaces {{local_celos}}/scripts {{local_celos}}/samples
+    local_action: command rsync -az -e ssh {{local_celos}}/Buildfile {{local_celos}}/core {{local_celos}}/api {{local_celos}}/scripts {{local_celos}}/samples
       celos@{{inventory_hostname}}:{{remote_celos}}
 
   - name: Build
