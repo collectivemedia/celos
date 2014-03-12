@@ -45,15 +45,30 @@ TEST_DEPENDENCIES = [
   POWERMOCK,
 ]
 
+VERSION = '1.0.0'
+
 define 'celos' do
-  project.version = '0.1.0'
-  manifest['Main-Class'] = 'com.collective.celos.Main'
 
-  compile.options.source = '1.7'
-  compile.options.target = '1.7'
+  define 'interfaces' do
+    project.version = VERSION
+    compile.with(DEPENDENCIES)
 
-  compile.with(DEPENDENCIES)
-  test.with(TEST_DEPENDENCIES)
-  package(:war).libs -= artifacts('javax.servlet:servlet-api:jar:2.3')
+    package(:jar)
+  end
+
+  define 'core' do
+    project.version = VERSION
+    manifest['Main-Class'] = 'com.collective.celos.Main'
+
+    compile.options.source = '1.7'
+    compile.options.target = '1.7'
+
+    compile.with project('interfaces')
+
+    compile.with(DEPENDENCIES)
+    test.with(TEST_DEPENDENCIES)
+
+    package(:war).libs -= artifacts('javax.servlet:servlet-api:jar:2.3')
+  end
 
 end
