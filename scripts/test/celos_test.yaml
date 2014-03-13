@@ -46,6 +46,9 @@
   - name: Check servlet /celos/workflow fails when id parameter not set
     local_action: shell ! curl --fail {{inventory_hostname}}:8080/celos/workflow
 
+  - name: Check log file contains error from calling workflow servlet without id parameter above
+    shell: grep 'ERROR:.*id parameter missing' /var/log/celos/celos.log
+
   - name: Check servlet /celos/workflow returns 404 when id parameter specifies missing workflow
     local_action: shell curl -i {{inventory_hostname}}:8080/celos/workflow?id=foobar | head -n 1 | grep "HTTP/1.1 404"
 
