@@ -43,11 +43,12 @@ public class JSONWorkflowServlet extends AbstractJSONServlet {
             Scheduler scheduler = new SchedulerConfiguration().makeDefaultScheduler();
             Workflow wf = scheduler.getWorkflowConfiguration().findWorkflow(new WorkflowID(id));
             if (wf == null) {
-                throw new IllegalArgumentException("Workflow not found: " + id);
+                res.sendError(HttpServletResponse.SC_NOT_FOUND, "Workflow not found: " + id);
+            } else {
+                List<SlotState> slotStates = scheduler.getSlotStates(wf, getRequestTime(req));
+                ObjectNode object = createJSONObject(slotStates);
+                writer.writeValue(res.getOutputStream(), object);
             }
-            List<SlotState> slotStates = scheduler.getSlotStates(wf, getRequestTime(req));
-            ObjectNode object = createJSONObject(slotStates);
-            writer.writeValue(res.getOutputStream(), object);
         } catch (Exception e) {
             throw new ServletException(e);
         }
