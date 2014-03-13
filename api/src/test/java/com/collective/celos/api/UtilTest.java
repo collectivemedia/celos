@@ -96,7 +96,7 @@ public class UtilTest {
     @Test
     public void toNominalTimeFormat() {
         String formatted = new DateTime(2013, 1, 3, 12, 10).toString(DateTimeFormat.forPattern("YYYY-MM-dd'T'HH:mm'Z"));
-        Assert.assertEquals(formatted, "2013-01-01T12:10Z");
+        Assert.assertEquals(formatted, "2013-01-03T12:10Z");
     }
     
 }
