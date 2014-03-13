@@ -46,8 +46,11 @@
   - name: Check servlet /celos/workflow fails when id parameter not set
     local_action: shell ! curl --fail {{inventory_hostname}}:8080/celos/workflow
 
-  - name: Check servlet /celos/workflow fails when id parameter specifies missing workflow
-    local_action: shell ! curl --fail {{inventory_hostname}}:8080/celos/workflow?id=foobar
+  - name: Check log file contains error from calling workflow servlet without id parameter above
+    shell: grep 'ERROR:.*id parameter missing' /var/log/celos/celos.log
+
+  - name: Check servlet /celos/workflow returns 404 when id parameter specifies missing workflow
+    local_action: shell curl -i {{inventory_hostname}}:8080/celos/workflow?id=foobar | head -n 1 | grep "HTTP/1.1 404"
 
   - name: Upload sample state database
     local_action: command rsync -az -e ssh {{local_celos}}/core/src/test/resources/com/collective/celos/state-database-test/db-1/
@@ -58,9 +61,6 @@
 
   - name: Check servlet /celos/workflow returns correct JSON object for workflow-2
     local_action: shell curl --fail "{{inventory_hostname}}:8080/celos/workflow?id=workflow-2&time=2013-12-02T20:00Z" | diff - test_files/workflow_states_workflow_2.json
-
-  - name: Check log file contains error for non-existent foobar workflow used above
-    shell: grep 'ERROR:.*foobar' /var/log/celos/celos.log
 
   - name: Check log file contains info about workflow-1 loaded above
     shell: grep 'INFO :.*/etc/celos/workflows/workflow-1.js' /var/log/celos/celos.log
