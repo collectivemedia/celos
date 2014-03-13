@@ -53,6 +53,9 @@ define 'celos' do
     project.version = VERSION
     compile.with(DEPENDENCIES)
 
+    compile.options.source = '1.7'
+    compile.options.target = '1.7'
+
     package(:jar)
   end
 
