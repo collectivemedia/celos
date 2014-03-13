@@ -64,14 +64,4 @@ public class ScheduledTime extends ValueObject implements Comparable<ScheduledTi
         return dateTime.toString();
     }
 
-    public static ScheduledTime max(ScheduledTime a, ScheduledTime b) {
-        Util.requireNonNull(a);
-        Util.requireNonNull(b);
-        if (a.compareTo(b) <= 0) {
-            return b;
-        } else {
-            return a;
-        }
-    }
-
 }
