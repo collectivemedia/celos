@@ -1,12 +1,11 @@
-package com.collective.celos;
-
-import com.collective.celos.api.Util;
-import org.joda.time.DateTime;
-import org.junit.Assert;
-import org.junit.Test;
+package com.collective.celos.api;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.junit.Assert;
+import org.junit.Test;
 
 public class UtilTest {
     
@@ -92,6 +91,12 @@ public class UtilTest {
         array.add("bar");
         node.put("foo", array);
         Assert.assertEquals(array, Util.getArrayProperty(node, "foo"));
+    }
+
+    @Test
+    public void toNominalTimeFormat() {
+        String formatted = new DateTime(2013, 1, 3, 12, 10).toString(DateTimeFormat.forPattern("YYYY-MM-dd'T'HH:mm'Z"));
+        Assert.assertEquals(formatted, "2013-01-01T12:10Z");
     }
     
 }

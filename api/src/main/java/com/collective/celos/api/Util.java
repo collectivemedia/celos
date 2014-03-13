@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 public class Util {
 
@@ -38,7 +40,11 @@ public class Util {
     public static boolean isFullSecond(DateTime dt) {
         return dt.getMillisOfSecond() == 0;
     }
-    
+
+    public static String toNominalTimeFormat(DateTime dt) {
+        return dt.toString(DateTimeFormat.forPattern("YYYY-MM-dd'T'HH:mm'Z"));
+    }
+
     // JSON UTILITIES
     
     public static ObjectNode newObjectNode() {
