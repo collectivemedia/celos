@@ -214,9 +214,20 @@ public class WorkflowConfigurationParserTest {
         new WorkflowConfigurationParser(dir).getStartTimeFromJSON(workflowNode);
     }
     
+    @Test
+    public void scopesAreSeparate() throws Exception {
+        parseNamedFile("separate-scopes", "workflow-1");
+        parseNamedFile("separate-scopes", "workflow-2");
+    }
+    
     public static void parseFile(String label) throws Exception {
+        parseNamedFile(label, "workflow-1");
+    }
+
+    private static void parseNamedFile(String label, String workflowName) throws URISyntaxException,
+            Exception {
         File dir = getConfigurationDir(label);
-        File workflow = new File(dir, "workflow-1." + WorkflowConfigurationParser.WORKFLOW_FILE_EXTENSION);
+        File workflow = new File(dir, workflowName + "." + WorkflowConfigurationParser.WORKFLOW_FILE_EXTENSION);
         new WorkflowConfigurationParser(dir).parseFile(workflow);
     }
     
