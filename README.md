@@ -244,6 +244,33 @@ Combines multiple triggers and waits for all of them (logical AND).
 ...
 </pre>
 
+### `delayTrigger(seconds)`
+
+A trigger that signals data availability for a given scheduled time
+only if it is a configurable number of seconds past the current time.
+
+In combination with an `andTrigger()`, this allows to delay the firing
+of another trigger, for example to clean up data after a day.
+
+#### Parameters
+
+* `seconds` -- the number of seconds to delay data availability
+
+#### Example
+
+The following example shows a trigger that only fires if the given
+HDFS path is available, and the current time is one day after 
+the workflow's scheduled time.
+
+```javascript
+var oneDay = 60 * 60 * 24;
+andTrigger(delayTrigger(oneDay), hdfsCheckTrigger("/${year}/${month}/${day}/..."))
+```
+
+The `delayTrigger()` should always be placed as the first argument of
+an `andTrigger()` so that the relatively more expensive
+`hdfsCheckTrigger()` won't even be executed.
+
 ## Schedules
 
 ### `hourlySchedule()`
