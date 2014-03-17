@@ -64,4 +64,8 @@ public class ScheduledTime extends ValueObject implements Comparable<ScheduledTi
         return dateTime.toString();
     }
 
+    public static ScheduledTime now() {
+        return new ScheduledTime(DateTime.now(DateTimeZone.UTC));
+    }
+    
 }

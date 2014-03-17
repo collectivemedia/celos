@@ -64,7 +64,7 @@ public class Scheduler {
         List<SlotState> slotStates = getSlotStates(wf, current);
         runExternalWorkflows(wf, slotStates);
         for (SlotState slotState : slotStates) {
-            updateSlotState(wf, slotState);
+            updateSlotState(wf, slotState, current);
         }
     }
 
@@ -117,10 +117,10 @@ public class Scheduler {
      * 
      * Check the external status of all RUNNING slots, and update them to SUCCESS or FAILURE if they're finished.
      */
-    void updateSlotState(Workflow wf, SlotState slotState) throws Exception {
+    void updateSlotState(Workflow wf, SlotState slotState, ScheduledTime current) throws Exception {
         SlotState.Status status = slotState.getStatus();
         if (status.equals(SlotState.Status.WAITING)) {
-            if (wf.getTrigger().isDataAvailable(slotState.getScheduledTime())) {
+            if (wf.getTrigger().isDataAvailable(current, slotState.getScheduledTime())) {
                 LOGGER.info("Slot is ready: " + slotState.getSlotID());
                 database.putSlotState(slotState.transitionToReady());
             } else {

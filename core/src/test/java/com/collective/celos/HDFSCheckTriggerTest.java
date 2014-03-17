@@ -28,7 +28,7 @@ public class HDFSCheckTriggerTest {
         ObjectNode props = Util.newObjectNode();
         props.put(HDFSCheckTrigger.PATH_PROP, "/tmp");
         props.put(HDFSCheckTrigger.FS_PROP, "file:///");
-        assertTrue(new HDFSCheckTrigger(props).isDataAvailable(new ScheduledTime("2013-11-22T15:00Z")));
+        assertTrue(new HDFSCheckTrigger(props).isDataAvailable(ScheduledTime.now(), new ScheduledTime("2013-11-22T15:00Z")));
     }
 
     @Test
@@ -36,7 +36,7 @@ public class HDFSCheckTriggerTest {
         ObjectNode props = Util.newObjectNode();
         props.put(HDFSCheckTrigger.PATH_PROP, "/tmp-does-not-exist");
         props.put(HDFSCheckTrigger.FS_PROP, "file:///");
-        assertFalse(new HDFSCheckTrigger(props).isDataAvailable(new ScheduledTime("2013-11-22T15:00Z")));
+        assertFalse(new HDFSCheckTrigger(props).isDataAvailable(ScheduledTime.now(), new ScheduledTime("2013-11-22T15:00Z")));
     }
 
     @Test
@@ -51,7 +51,7 @@ public class HDFSCheckTriggerTest {
         props.put(HDFSCheckTrigger.PATH_PROP, root + "/${year}-${month}-${day}/${hour}00/_READY");
         props.put(HDFSCheckTrigger.FS_PROP, "file:///");
 
-        assertTrue(new HDFSCheckTrigger(props).isDataAvailable(new ScheduledTime("2013-11-22T15:00Z")));
+        assertTrue(new HDFSCheckTrigger(props).isDataAvailable(ScheduledTime.now(), new ScheduledTime("2013-11-22T15:00Z")));
     }
 
     @Test
@@ -67,7 +67,7 @@ public class HDFSCheckTriggerTest {
         props.put(HDFSCheckTrigger.PATH_PROP, root + "/${year}-${month}-${day}/${hour}00/_READY");
         props.put(HDFSCheckTrigger.FS_PROP, "file:///");
 
-        assertFalse(new HDFSCheckTrigger(props).isDataAvailable(new ScheduledTime("2013-11-22T15:00Z")));
+        assertFalse(new HDFSCheckTrigger(props).isDataAvailable(ScheduledTime.now(), new ScheduledTime("2013-11-22T15:00Z")));
     }
     
     /*
@@ -80,7 +80,7 @@ public class HDFSCheckTriggerTest {
         ObjectNode props = Util.newObjectNode();
         props.put(HDFSCheckTrigger.PATH_PROP, "/some/path");
         props.put(HDFSCheckTrigger.FS_PROP, "hdfs://no-such-host");
-        new HDFSCheckTrigger(props).isDataAvailable(new ScheduledTime("2013-11-22T15:00Z"));
+        new HDFSCheckTrigger(props).isDataAvailable(ScheduledTime.now(), new ScheduledTime("2013-11-22T15:00Z"));
     }
 
 }

@@ -9,7 +9,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public class AndTriggerTest {
-
+    
     @Test
     public void returnsTrueWhenAllSubTriggersReturnTrue() throws Exception {
         ArrayNode subTriggersArray = Util.newArrayNode();
@@ -19,7 +19,7 @@ public class AndTriggerTest {
         ObjectNode properties = Util.newObjectNode();
         properties.put(AndTrigger.TRIGGERS_PROP, subTriggersArray);
         AndTrigger trigger = new AndTrigger(properties);
-        Assert.assertTrue(trigger.isDataAvailable(new ScheduledTime("2014-02-26T16:13:00Z")));
+        Assert.assertTrue(trigger.isDataAvailable(ScheduledTime.now(), new ScheduledTime("2014-02-26T16:13:00Z")));
     }
     
     @Test
@@ -31,7 +31,7 @@ public class AndTriggerTest {
         ObjectNode properties = Util.newObjectNode();
         properties.put(AndTrigger.TRIGGERS_PROP, subTriggersArray);
         AndTrigger trigger = new AndTrigger(properties);
-        Assert.assertFalse(trigger.isDataAvailable(new ScheduledTime("2014-02-26T16:13:00Z")));
+        Assert.assertFalse(trigger.isDataAvailable(ScheduledTime.now(), new ScheduledTime("2014-02-26T16:13:00Z")));
     }
 
     @Test
@@ -43,7 +43,7 @@ public class AndTriggerTest {
         ObjectNode properties = Util.newObjectNode();
         properties.put(AndTrigger.TRIGGERS_PROP, subTriggersArray);
         AndTrigger trigger = new AndTrigger(properties);
-        Assert.assertFalse(trigger.isDataAvailable(new ScheduledTime("2014-02-26T16:13:00Z")));
+        Assert.assertFalse(trigger.isDataAvailable(ScheduledTime.now(), new ScheduledTime("2014-02-26T16:13:00Z")));
     }
     
     @Test
@@ -51,7 +51,7 @@ public class AndTriggerTest {
         ObjectNode properties = Util.newObjectNode();
         properties.put(AndTrigger.TRIGGERS_PROP, Util.newArrayNode());
         AndTrigger trigger = new AndTrigger(properties);
-        Assert.assertTrue(trigger.isDataAvailable(new ScheduledTime("2014-02-26T16:13:00Z")));
+        Assert.assertTrue(trigger.isDataAvailable(ScheduledTime.now(), new ScheduledTime("2014-02-26T16:13:00Z")));
     }
     
     @Test(expected=IllegalArgumentException.class)

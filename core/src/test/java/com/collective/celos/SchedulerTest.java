@@ -186,9 +186,10 @@ public class SchedulerTest {
         SlotState nextSlotState = new SlotState(slotId, SlotState.Status.READY);
 
         // The trigger should report the data as available
-        when(trigger.isDataAvailable(scheduledTime)).thenReturn(true);
+        ScheduledTime now = ScheduledTime.now();
+        when(trigger.isDataAvailable(now, scheduledTime)).thenReturn(true);
 
-        scheduler.updateSlotState(wf, slotState);
+        scheduler.updateSlotState(wf, slotState, now);
 
         verify(stateDatabase).putSlotState(nextSlotState);
         verifyNoMoreInteractions(stateDatabase);
@@ -200,9 +201,10 @@ public class SchedulerTest {
         SlotState slotState = new SlotState(slotId, SlotState.Status.WAITING);
 
         // The trigger should report the data as not available
-        when(trigger.isDataAvailable(scheduledTime)).thenReturn(false);
+        ScheduledTime now = ScheduledTime.now();
+        when(trigger.isDataAvailable(now, scheduledTime)).thenReturn(false);
 
-        scheduler.updateSlotState(wf, slotState);
+        scheduler.updateSlotState(wf, slotState, now);
 
         verifyNoMoreInteractions(stateDatabase);
     }
@@ -212,7 +214,7 @@ public class SchedulerTest {
 
         SlotState slotState = new SlotState(slotId, SlotState.Status.READY);
 
-        scheduler.updateSlotState(wf, slotState);
+        scheduler.updateSlotState(wf, slotState, ScheduledTime.now());
 
         verifyNoMoreInteractions(stateDatabase);
     }
@@ -226,7 +228,7 @@ public class SchedulerTest {
         ExternalStatus running = new MockExternalService.MockExternalStatusRunning();
         when(externalService.getStatus(slotState.getExternalID())).thenReturn(running);
 
-        scheduler.updateSlotState(wf, slotState);
+        scheduler.updateSlotState(wf, slotState, ScheduledTime.now());
 
         verifyNoMoreInteractions(stateDatabase);
     }
@@ -241,7 +243,7 @@ public class SchedulerTest {
         ExternalStatus success = new MockExternalService.MockExternalStatusSuccess();
         when(externalService.getStatus(slotState.getExternalID())).thenReturn(success);
 
-        scheduler.updateSlotState(wf, slotState);
+        scheduler.updateSlotState(wf, slotState, ScheduledTime.now());
 
         verify(stateDatabase).putSlotState(nextSlotState);
         verifyNoMoreInteractions(stateDatabase);
@@ -257,7 +259,7 @@ public class SchedulerTest {
         ExternalStatus failure = new MockExternalService.MockExternalStatusFailure();
         when(externalService.getStatus(slotState.getExternalID())).thenReturn(failure);
 
-        scheduler.updateSlotState(wf, slotState);
+        scheduler.updateSlotState(wf, slotState, ScheduledTime.now());
 
         verify(stateDatabase).putSlotState(nextSlotState);
         verifyNoMoreInteractions(stateDatabase);
@@ -268,7 +270,7 @@ public class SchedulerTest {
 
         SlotState slotState = new SlotState(slotId, SlotState.Status.SUCCESS);
 
-        scheduler.updateSlotState(wf, slotState);
+        scheduler.updateSlotState(wf, slotState, ScheduledTime.now());
 
         verifyNoMoreInteractions(stateDatabase);
     }
@@ -278,7 +280,7 @@ public class SchedulerTest {
 
         SlotState slotState = new SlotState(slotId, SlotState.Status.FAILURE);
 
-        scheduler.updateSlotState(wf, slotState);
+        scheduler.updateSlotState(wf, slotState, ScheduledTime.now());
 
         verifyNoMoreInteractions(stateDatabase);
     }

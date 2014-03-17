@@ -15,7 +15,7 @@ public class AlwaysTrigger implements Trigger {
     }
     
     @Override
-    public boolean isDataAvailable(ScheduledTime t) {
+    public boolean isDataAvailable(ScheduledTime now, ScheduledTime t) {
         return true;
     }
 

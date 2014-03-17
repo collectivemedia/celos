@@ -13,7 +13,7 @@ public class NeverTrigger implements Trigger {
     }
     
     @Override
-    public boolean isDataAvailable(ScheduledTime t) throws Exception {
+    public boolean isDataAvailable(ScheduledTime now, ScheduledTime t) throws Exception {
         return false;
     }
 
