@@ -89,7 +89,7 @@ public class WorkflowConfigurationParserTest {
     public static class TestTrigger extends RemembersProperties implements Trigger {
         public TestTrigger(ObjectNode properties) { super(properties); }
         @Override
-        public boolean isDataAvailable(ScheduledTime t) throws Exception {
+        public boolean isDataAvailable(ScheduledTime now, ScheduledTime t) throws Exception {
             return false;
         }
     }

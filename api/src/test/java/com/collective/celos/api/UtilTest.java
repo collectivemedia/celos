@@ -72,6 +72,26 @@ public class UtilTest {
     }
     
     @Test(expected=IllegalArgumentException.class)
+    public void getIntPropertyDetectsUnsetProperty() {
+        ObjectNode node = Util.newObjectNode();
+        Util.getIntProperty(node, "foo");
+    }
+    
+    @Test(expected=IllegalArgumentException.class)
+    public void getIntPropertyDetectsNonIntProperty() {
+        ObjectNode node = Util.newObjectNode();
+        node.put("foo", "foo");
+        Util.getIntProperty(node, "foo");
+    }
+    
+    @Test
+    public void getIntPropertyWorks() {
+        ObjectNode node = Util.newObjectNode();
+        node.put("foo", 12);
+        Assert.assertEquals(12, Util.getIntProperty(node, "foo"));
+    }
+    
+    @Test(expected=IllegalArgumentException.class)
     public void getArrayPropertyDetectsUnsetProperty() {
         ObjectNode node = Util.newObjectNode();
         Util.getArrayProperty(node, "foo");

@@ -99,7 +99,7 @@ public class MiscTests {
     
     @Test
     public void tooTrivialButStill_alwaysTriggerAlwaysTriggers() {
-        Assert.assertTrue(new AlwaysTrigger(Util.newObjectNode()).isDataAvailable(new ScheduledTime("2013-11-21T20:00Z")));
+        Assert.assertTrue(new AlwaysTrigger(Util.newObjectNode()).isDataAvailable(ScheduledTime.now(), new ScheduledTime("2013-11-21T20:00Z")));
     }
         
 }
