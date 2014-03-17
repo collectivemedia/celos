@@ -211,18 +211,29 @@ public class WorkflowConfigurationParserTest {
         ObjectNode workflowNode = mapper.createObjectNode();
         workflowNode.put(WorkflowConfigurationParser.START_TIME_PROP, 12);
         File dir = getConfigurationDir("empty");
-        new WorkflowConfigurationParser(dir).getStartTimeFromJSON(workflowNode);
+        new WorkflowConfigurationParser().parseConfiguration(dir).getStartTimeFromJSON(workflowNode);
+    }
+    
+    @Test
+    public void scopesAreSeparate() throws Exception {
+        parseNamedFile("separate-scopes", "workflow-1");
+        parseNamedFile("separate-scopes", "workflow-2");
     }
     
     public static void parseFile(String label) throws Exception {
+        parseNamedFile(label, "workflow-1");
+    }
+
+    private static void parseNamedFile(String label, String workflowName) throws URISyntaxException,
+            Exception {
         File dir = getConfigurationDir(label);
-        File workflow = new File(dir, "workflow-1." + WorkflowConfigurationParser.WORKFLOW_FILE_EXTENSION);
-        new WorkflowConfigurationParser(dir).parseFile(workflow);
+        File workflow = new File(dir, workflowName + "." + WorkflowConfigurationParser.WORKFLOW_FILE_EXTENSION);
+        new WorkflowConfigurationParser().parseConfiguration(dir).parseFile(workflow);
     }
     
     public static WorkflowConfiguration parseDir(String label) throws Exception {
         File dir = getConfigurationDir(label);
-        return new WorkflowConfigurationParser(dir).getWorkflowConfiguration();
+        return new WorkflowConfigurationParser().parseConfiguration(dir).getWorkflowConfiguration();
     }
 
     public static File getConfigurationDir(String label) throws URISyntaxException {
