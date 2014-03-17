@@ -22,17 +22,26 @@ public class HDFSCheckTrigger implements Trigger {
     private final ScheduledTimeFormatter formatter = new ScheduledTimeFormatter();
     private final FileSystem fs;
     private final String rawPathString;
+    private final String fsString;
 
     public HDFSCheckTrigger(ObjectNode properties) throws Exception {
         this.rawPathString = Util.getStringProperty(properties, PATH_PROP);
-        String fsString = Util.getStringProperty(properties, FS_PROP);
-        this.fs = FileSystem.get(new URI(fsString), new Configuration());
+        this.fsString = Util.getStringProperty(properties, FS_PROP);
+        this.fs = FileSystem.get(new URI(getFsString()), new Configuration());
     }
     
     @Override
     public boolean isDataAvailable(ScheduledTime now, ScheduledTime t) throws Exception {
-        Path path = new Path(formatter.replaceTimeTokens(rawPathString, t));
+        Path path = new Path(formatter.replaceTimeTokens(getRawPathString(), t));
         return fs.exists(path);
+    }
+
+    public String getFsString() {
+        return fsString;
+    }
+
+    public String getRawPathString() {
+        return rawPathString;
     }
 
 }
