@@ -55,6 +55,15 @@ function andTrigger() {
     };
 }
 
+function delayTrigger(seconds) {
+    return {
+        "type": "com.collective.celos.DelayTrigger",
+        "properties": {
+            "celos.delayTrigger.seconds": seconds
+        }
+    };
+}
+
 // Pass oozieURL separately so we later use a default if parameter not supplied
 function oozieExternalService(properties, oozieURL) {
     properties["celos.oozie.url"] = oozieURL;
