@@ -65,6 +65,17 @@ public class Util {
         }
     }
     
+    public static int getIntProperty(ObjectNode properties, String name) {
+        JsonNode node = properties.get(name);
+        if (node == null) {
+            throw new IllegalArgumentException("Property " + name + " not set.");
+        } else if (!node.isInt()) {
+            throw new IllegalArgumentException("Property " + name + " is not an integer, but " + node);
+        } else {
+            return node.intValue();
+        }
+    }
+    
     public static ArrayNode getArrayProperty(ObjectNode properties, String name) {
         JsonNode node = properties.get(name);
         if (node == null) {
