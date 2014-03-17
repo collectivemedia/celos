@@ -23,10 +23,11 @@ public class OozieExternalService implements ExternalService {
     
     private final OozieClient client;
     private final ObjectNode properties;
+    private final String oozieURL;
 
     public OozieExternalService(ObjectNode properties) {
-        String oozieURL = Util.getStringProperty(properties, OOZIE_URL_PROP);
-        this.client = new AuthOozieClient(oozieURL);
+        this.oozieURL = Util.getStringProperty(properties, OOZIE_URL_PROP);
+        this.client = new AuthOozieClient(getOozieURL());
         this.properties = properties;
     }
 
@@ -82,6 +83,14 @@ public class OozieExternalService implements ExternalService {
         } catch (OozieClientException e) {
             throw new ExternalServiceException(e);
         }
+    }
+
+    public String getOozieURL() {
+        return oozieURL;
+    }
+
+    public ObjectNode getProperties() {
+        return properties;
     }
 
 }

@@ -1,13 +1,13 @@
 package com.collective.celos;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.LinkedList;
+import java.util.List;
+
+import org.apache.log4j.Logger;
 
 import com.collective.celos.api.ScheduledTime;
 import com.collective.celos.api.Trigger;
 import com.collective.celos.api.Util;
-import org.apache.log4j.Logger;
-
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
@@ -42,7 +42,7 @@ public class AndTrigger implements Trigger {
 
     private static final Logger LOGGER = Logger.getLogger(WorkflowConfigurationParser.class);
     
-    private final Set<Trigger> triggers = new HashSet<>();
+    private final List<Trigger> triggers = new LinkedList<>();
     private final JSONInstanceCreator creator = new JSONInstanceCreator();
     
     public AndTrigger(ObjectNode properties) throws Exception {
@@ -61,6 +61,10 @@ public class AndTrigger implements Trigger {
             }
         }
         return true;
+    }
+
+    public List<Trigger> getTriggers() {
+        return triggers;
     }
 
 }

@@ -2,19 +2,21 @@ package com.collective.celos;
 
 import java.io.File;
 import java.io.FileReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.Collection;
 
-import com.collective.celos.api.Schedule;
-import com.collective.celos.api.ScheduledTime;
-import com.collective.celos.api.Trigger;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ScriptableObject;
 import org.mozilla.javascript.tools.shell.Global;
 
+import com.collective.celos.api.Schedule;
+import com.collective.celos.api.ScheduledTime;
+import com.collective.celos.api.Trigger;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -48,13 +50,12 @@ public class WorkflowConfigurationParser {
 
     private final Context context;
     
-    public WorkflowConfigurationParser(File dir) throws Exception {
+    public WorkflowConfigurationParser() throws Exception {
         context = Context.enter();
         context.setLanguageVersion(170);
-        parseConfiguration(dir);
     }
 
-    public void parseConfiguration(File dir) {
+    public WorkflowConfigurationParser parseConfiguration(File dir) {
         LOGGER.info("Using workflows directory: " + dir);
         Collection<File> files = FileUtils.listFiles(dir, new String[] { WORKFLOW_FILE_EXTENSION }, false);
         for (File f : files) {
@@ -65,14 +66,22 @@ public class WorkflowConfigurationParser {
                 LOGGER.error("Failed to load file: " + f + ": " + e.getMessage(), e);
             }
         }
+        return this;
     }
 
-    public void parseFile(File f) throws Exception {
+    void parseFile(File f) throws Exception {
+        FileReader fileReader = new FileReader(f);
+        String fileName = f.toString();
+        int lineNo = 1;
+        evaluateReader(fileReader, fileName, lineNo);
+    }
+
+    Object evaluateReader(Reader r, String fileName, int lineNo) throws Exception, IOException {
         Global scope = new Global();
         scope.initStandardObjects(context, true);
         setupBindings(scope);
         loadBuiltinScripts(scope);
-        context.evaluateReader(scope, new FileReader(f), f.toString(), 1, null);
+        return context.evaluateReader(scope, r, fileName, lineNo, null);
     }
     
     private void setupBindings(Global scope) {
@@ -150,6 +159,10 @@ public class WorkflowConfigurationParser {
             throw new IllegalArgumentException("ID must be a string: " + workflowNode.toString());
         }
         return new WorkflowID(idNode.textValue());
+    }
+
+    public Context getContext() {
+        return context;
     }
 
 }
