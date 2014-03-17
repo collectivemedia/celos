@@ -78,10 +78,10 @@ public class WorkflowConfigurationParser {
 
     Object evaluateReader(Reader r, String fileName, int lineNo) throws Exception, IOException {
         Global scope = new Global();
-        scope.initStandardObjects(getContext(), true);
+        scope.initStandardObjects(context, true);
         setupBindings(scope);
         loadBuiltinScripts(scope);
-        return getContext().evaluateReader(scope, r, fileName, lineNo, null);
+        return context.evaluateReader(scope, r, fileName, lineNo, null);
     }
     
     private void setupBindings(Global scope) {
@@ -91,7 +91,7 @@ public class WorkflowConfigurationParser {
 
     private void loadBuiltinScripts(Global scope) throws Exception {
         InputStream scripts = WorkflowConfigurationParser.class.getResourceAsStream("celos-scripts.js");
-        getContext().evaluateReader(scope, new InputStreamReader(scripts), "celos-scripts.js", 1, null);
+        context.evaluateReader(scope, new InputStreamReader(scripts), "celos-scripts.js", 1, null);
     }
     
     public WorkflowConfiguration getWorkflowConfiguration() {
