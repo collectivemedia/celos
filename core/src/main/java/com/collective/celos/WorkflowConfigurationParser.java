@@ -46,29 +46,14 @@ public class WorkflowConfigurationParser {
     private final ObjectMapper mapper = new ObjectMapper();
     private final WorkflowConfiguration cfg = new WorkflowConfiguration();
 
-    // JavaScript
-    private final Global scope = new Global();
     private final Context context;
     
     public WorkflowConfigurationParser(File dir) throws Exception {
         context = Context.enter();
-        scope.initStandardObjects(context, true);
         context.setLanguageVersion(170);
-        setupBindings();
-        loadBuiltinScripts();
         parseConfiguration(dir);
     }
 
-    private void setupBindings() {
-        Object wrapped = Context.javaToJS(this, scope);
-        ScriptableObject.putProperty(scope, "celosWorkflowConfigurationParser", wrapped);
-    }
-
-    private void loadBuiltinScripts() throws Exception {
-        InputStream scripts = WorkflowConfigurationParser.class.getResourceAsStream("celos-scripts.js");
-        context.evaluateReader(scope, new InputStreamReader(scripts), "celos-scripts.js", 1, null);
-    }
-    
     public void parseConfiguration(File dir) {
         LOGGER.info("Using workflows directory: " + dir);
         Collection<File> files = FileUtils.listFiles(dir, new String[] { WORKFLOW_FILE_EXTENSION }, false);
@@ -83,9 +68,23 @@ public class WorkflowConfigurationParser {
     }
 
     public void parseFile(File f) throws Exception {
+        Global scope = new Global();
+        scope.initStandardObjects(context, true);
+        setupBindings(scope);
+        loadBuiltinScripts(scope);
         context.evaluateReader(scope, new FileReader(f), f.toString(), 1, null);
     }
+    
+    private void setupBindings(Global scope) {
+        Object wrapped = Context.javaToJS(this, scope);
+        ScriptableObject.putProperty(scope, "celosWorkflowConfigurationParser", wrapped);
+    }
 
+    private void loadBuiltinScripts(Global scope) throws Exception {
+        InputStream scripts = WorkflowConfigurationParser.class.getResourceAsStream("celos-scripts.js");
+        context.evaluateReader(scope, new InputStreamReader(scripts), "celos-scripts.js", 1, null);
+    }
+    
     public WorkflowConfiguration getWorkflowConfiguration() {
         return cfg;
     }
