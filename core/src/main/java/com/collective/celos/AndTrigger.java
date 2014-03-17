@@ -49,13 +49,13 @@ public class AndTrigger implements Trigger {
         ArrayNode triggersArray = Util.getArrayProperty(properties, TRIGGERS_PROP);
         for (int i = 0; i < triggersArray.size(); i++) {
             LOGGER.info("Creating sub-trigger: " + i);
-            getTriggers().add((Trigger) creator.createInstance(triggersArray.get(i)));
+            triggers.add((Trigger) creator.createInstance(triggersArray.get(i)));
         }
     }
     
     @Override
     public boolean isDataAvailable(ScheduledTime now, ScheduledTime t) throws Exception {
-        for (Trigger trigger : getTriggers()) {
+        for (Trigger trigger : triggers) {
             if (!trigger.isDataAvailable(now, t)) {
                 return false;
             }

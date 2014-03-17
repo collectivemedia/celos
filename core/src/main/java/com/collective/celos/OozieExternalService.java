@@ -33,7 +33,7 @@ public class OozieExternalService implements ExternalService {
 
     @Override
     public String submit(ScheduledTime t) throws ExternalServiceException {
-        Properties runProperties = setupRunProperties(getProperties(), t);
+        Properties runProperties = setupRunProperties(properties, t);
         try {
             return client.submit(runProperties);
         } catch (OozieClientException e) {
