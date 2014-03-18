@@ -41,15 +41,17 @@ public class SlotStateTest {
         new SlotState(id, SlotState.Status.RUNNING).transitionToRerun();
     }
     
+    @Test
     public void rerunWorksAsExpectedForSuccess() {
         SlotState success = new SlotState(id, SlotState.Status.SUCCESS, "external-ID", 14);
-        SlotState expected = new SlotState(id, SlotState.Status.READY);
+        SlotState expected = new SlotState(id, SlotState.Status.WAITING);
         Assert.assertEquals(expected, success.transitionToRerun());        
     }
     
+    @Test
     public void rerunWorksAsExpectedForFailure() {
         SlotState failure = new SlotState(id, SlotState.Status.FAILURE, "external-ID", 14);
-        SlotState expected = new SlotState(id, SlotState.Status.READY);
+        SlotState expected = new SlotState(id, SlotState.Status.WAITING);
         Assert.assertEquals(expected, failure.transitionToRerun());        
     }
     
