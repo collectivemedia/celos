@@ -20,6 +20,9 @@ public class OozieExternalService implements ExternalService {
     public static final String MONTH_PROP = "month";
     public static final String DAY_PROP = "day";
     public static final String HOUR_PROP = "hour";
+    public static final String MINUTE_PROP = "minute";
+    public static final String SECOND_PROP = "second";
+    public static final String MILLISECOND_PROP = "millisecond";
     
     private final OozieClient client;
     private final ObjectNode properties;
@@ -57,7 +60,9 @@ public class OozieExternalService implements ExternalService {
         runProperties.setProperty(MONTH_PROP, formatter.formatMonth(t));
         runProperties.setProperty(DAY_PROP, formatter.formatDay(t));
         runProperties.setProperty(HOUR_PROP, formatter.formatHour(t));
-        // TODO: set minute etc
+        runProperties.setProperty(MINUTE_PROP, formatter.formatMinute(t));
+        runProperties.setProperty(SECOND_PROP, formatter.formatSecond(t));
+        runProperties.setProperty(MILLISECOND_PROP, formatter.formatMillisecond(t));
         return runProperties;
     }
 
