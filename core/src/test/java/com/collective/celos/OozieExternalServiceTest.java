@@ -19,13 +19,13 @@ public class OozieExternalServiceTest {
 
     @Test
     public void runPropertiesAreCorrectlySetup() {
-        WorkflowID id = new WorkflowID("test");
         ScheduledTime t = new ScheduledTime("2013-11-26T17:00:23.054Z");
+        SlotID id = new SlotID(new WorkflowID("test"), t); 
         ObjectNode defaults = Util.newObjectNode();
         defaults.put("foo", "bar");
         defaults.put("uses-variables", "${year}-${month}-${day}-${hour}-${year}");
         defaults.put("another-one", "${year}-${month}-${day}T${hour}:${minute}:${second}.${millisecond}Z");
-        Properties runProperties = makeOozieExternalService().setupRunProperties(defaults, id, t);
+        Properties runProperties = makeOozieExternalService().setupRunProperties(defaults, id);
         Assert.assertEquals("bar", runProperties.getProperty("foo"));
         Assert.assertEquals("2013-11-26-17-2013", runProperties.getProperty("uses-variables"));
         Assert.assertEquals("2013-11-26T17:00:23.054Z", runProperties.getProperty("another-one"));

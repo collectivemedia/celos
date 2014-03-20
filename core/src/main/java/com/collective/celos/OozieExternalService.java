@@ -35,8 +35,8 @@ public class OozieExternalService implements ExternalService {
     }
 
     @Override
-    public String submit(Workflow wf, ScheduledTime t) throws ExternalServiceException {
-        Properties runProperties = setupRunProperties(properties, wf.getID(), t);
+    public String submit(SlotID id) throws ExternalServiceException {
+        Properties runProperties = setupRunProperties(properties, id);
         try {
             return client.submit(runProperties);
         } catch (OozieClientException e) {
@@ -53,7 +53,8 @@ public class OozieExternalService implements ExternalService {
         }
     }
 
-    Properties setupRunProperties(ObjectNode defaults, WorkflowID workflowID, ScheduledTime t) {
+    Properties setupRunProperties(ObjectNode defaults, SlotID id) {
+        ScheduledTime t = id.getScheduledTime();
         Properties runProperties = setupDefaultProperties(defaults, t);
         ScheduledTimeFormatter formatter = new ScheduledTimeFormatter();
         runProperties.setProperty(YEAR_PROP, formatter.formatYear(t));
@@ -62,12 +63,8 @@ public class OozieExternalService implements ExternalService {
         runProperties.setProperty(HOUR_PROP, formatter.formatHour(t));
         runProperties.setProperty(MINUTE_PROP, formatter.formatMinute(t));
         runProperties.setProperty(SECOND_PROP, formatter.formatSecond(t));
-        runProperties.setProperty(WORKFLOW_NAME_PROP, getWorkflowName(workflowID, t, formatter));
+        runProperties.setProperty(WORKFLOW_NAME_PROP, id.toString());
         return runProperties;
-    }
-
-    private String getWorkflowName(WorkflowID workflowID, ScheduledTime t, ScheduledTimeFormatter formatter) {
-        return workflowID.toString() + "@" + formatter.formatDatestamp(t) + "T" + formatter.formatTimestamp(t);
     }
 
     private Properties setupDefaultProperties(ObjectNode defaults, ScheduledTime t) {

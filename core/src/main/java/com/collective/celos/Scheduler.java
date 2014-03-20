@@ -105,7 +105,7 @@ public class Scheduler {
                 throw new IllegalStateException("Scheduling strategy returned non-ready slot: " + slotState);
             }
             LOGGER.info("Submitting slot to external service: " + slotState.getSlotID());
-            String externalID = wf.getExternalService().submit(wf, slotState.getScheduledTime());
+            String externalID = wf.getExternalService().submit(slotState.getSlotID());
             database.putSlotState(slotState.transitionToRunning(externalID));
             LOGGER.info("Starting slot: " + slotState.getSlotID() + " with external ID: " + externalID);
             wf.getExternalService().start(externalID);
