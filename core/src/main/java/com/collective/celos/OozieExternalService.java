@@ -23,6 +23,7 @@ public class OozieExternalService implements ExternalService {
     public static final String MINUTE_PROP = "minute";
     public static final String SECOND_PROP = "second";
     public static final String MILLISECOND_PROP = "millisecond";
+    public static final String WORKFLOW_NAME_PROP = "celosWorkflowName";
     
     private final OozieClient client;
     private final ObjectNode properties;
@@ -36,7 +37,7 @@ public class OozieExternalService implements ExternalService {
 
     @Override
     public String submit(Workflow wf, ScheduledTime t) throws ExternalServiceException {
-        Properties runProperties = setupRunProperties(properties, t);
+        Properties runProperties = setupRunProperties(properties, wf.getID(), t);
         try {
             return client.submit(runProperties);
         } catch (OozieClientException e) {
@@ -53,7 +54,7 @@ public class OozieExternalService implements ExternalService {
         }
     }
 
-    Properties setupRunProperties(ObjectNode defaults, ScheduledTime t) {
+    Properties setupRunProperties(ObjectNode defaults, WorkflowID workflowID, ScheduledTime t) {
         Properties runProperties = setupDefaultProperties(defaults, t);
         ScheduledTimeFormatter formatter = new ScheduledTimeFormatter();
         runProperties.setProperty(YEAR_PROP, formatter.formatYear(t));
@@ -63,7 +64,12 @@ public class OozieExternalService implements ExternalService {
         runProperties.setProperty(MINUTE_PROP, formatter.formatMinute(t));
         runProperties.setProperty(SECOND_PROP, formatter.formatSecond(t));
         runProperties.setProperty(MILLISECOND_PROP, formatter.formatMillisecond(t));
+        runProperties.setProperty(WORKFLOW_NAME_PROP, getWorkflowName(workflowID, t, formatter));
         return runProperties;
+    }
+
+    private String getWorkflowName(WorkflowID workflowID, ScheduledTime t, ScheduledTimeFormatter formatter) {
+        return workflowID.toString() + "@" + formatter.formatDatestamp(t) + "T" + formatter.formatTimestamp(t);
     }
 
     private Properties setupDefaultProperties(ObjectNode defaults, ScheduledTime t) {
