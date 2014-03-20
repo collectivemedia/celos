@@ -22,7 +22,6 @@ public class OozieExternalService implements ExternalService {
     public static final String HOUR_PROP = "hour";
     public static final String MINUTE_PROP = "minute";
     public static final String SECOND_PROP = "second";
-    public static final String MILLISECOND_PROP = "millisecond";
     public static final String WORKFLOW_NAME_PROP = "celosWorkflowName";
     
     private final OozieClient client;
@@ -63,7 +62,6 @@ public class OozieExternalService implements ExternalService {
         runProperties.setProperty(HOUR_PROP, formatter.formatHour(t));
         runProperties.setProperty(MINUTE_PROP, formatter.formatMinute(t));
         runProperties.setProperty(SECOND_PROP, formatter.formatSecond(t));
-        runProperties.setProperty(MILLISECOND_PROP, formatter.formatMillisecond(t));
         runProperties.setProperty(WORKFLOW_NAME_PROP, getWorkflowName(workflowID, t, formatter));
         return runProperties;
     }

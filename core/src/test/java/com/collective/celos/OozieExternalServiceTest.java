@@ -35,7 +35,6 @@ public class OozieExternalServiceTest {
         Assert.assertEquals("17", runProperties.getProperty(OozieExternalService.HOUR_PROP));
         Assert.assertEquals("00", runProperties.getProperty(OozieExternalService.MINUTE_PROP));
         Assert.assertEquals("23", runProperties.getProperty(OozieExternalService.SECOND_PROP));
-        Assert.assertEquals("054", runProperties.getProperty(OozieExternalService.MILLISECOND_PROP));
         Assert.assertEquals("test@2013-11-26T17:00:23.054Z", runProperties.getProperty(OozieExternalService.WORKFLOW_NAME_PROP));
     }
 
