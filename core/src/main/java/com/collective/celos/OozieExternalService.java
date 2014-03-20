@@ -20,6 +20,9 @@ public class OozieExternalService implements ExternalService {
     public static final String MONTH_PROP = "month";
     public static final String DAY_PROP = "day";
     public static final String HOUR_PROP = "hour";
+    public static final String MINUTE_PROP = "minute";
+    public static final String SECOND_PROP = "second";
+    public static final String WORKFLOW_NAME_PROP = "celosWorkflowName";
     
     private final OozieClient client;
     private final ObjectNode properties;
@@ -32,8 +35,8 @@ public class OozieExternalService implements ExternalService {
     }
 
     @Override
-    public String submit(ScheduledTime t) throws ExternalServiceException {
-        Properties runProperties = setupRunProperties(properties, t);
+    public String submit(SlotID id) throws ExternalServiceException {
+        Properties runProperties = setupRunProperties(properties, id);
         try {
             return client.submit(runProperties);
         } catch (OozieClientException e) {
@@ -50,15 +53,22 @@ public class OozieExternalService implements ExternalService {
         }
     }
 
-    Properties setupRunProperties(ObjectNode defaults, ScheduledTime t) {
+    Properties setupRunProperties(ObjectNode defaults, SlotID id) {
+        ScheduledTime t = id.getScheduledTime();
         Properties runProperties = setupDefaultProperties(defaults, t);
         ScheduledTimeFormatter formatter = new ScheduledTimeFormatter();
         runProperties.setProperty(YEAR_PROP, formatter.formatYear(t));
         runProperties.setProperty(MONTH_PROP, formatter.formatMonth(t));
         runProperties.setProperty(DAY_PROP, formatter.formatDay(t));
         runProperties.setProperty(HOUR_PROP, formatter.formatHour(t));
-        // TODO: set minute etc
+        runProperties.setProperty(MINUTE_PROP, formatter.formatMinute(t));
+        runProperties.setProperty(SECOND_PROP, formatter.formatSecond(t));
+        runProperties.setProperty(WORKFLOW_NAME_PROP, getWorkflowName(id, formatter));
         return runProperties;
+    }
+
+    String getWorkflowName(SlotID id, ScheduledTimeFormatter formatter) {
+        return id.getWorkflowID() + "@" + formatter.formatPretty(id.getScheduledTime());
     }
 
     private Properties setupDefaultProperties(ObjectNode defaults, ScheduledTime t) {

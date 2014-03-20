@@ -1,10 +1,9 @@
 package com.collective.celos;
 
-import com.collective.celos.api.ScheduledTime;
-import com.collective.celos.api.Util;
-
 import java.util.HashMap;
 import java.util.Map;
+
+import com.collective.celos.api.Util;
 
 /**
  * Fake implementation of external service for testing.
@@ -16,16 +15,16 @@ import java.util.Map;
 public class MockExternalService implements ExternalService {
 
     private final ExternalStatus status;
-    private final Map<ScheduledTime, String> times2ExternalID = new HashMap<ScheduledTime, String>();
+    private final Map<SlotID, String> slots2ExternalID = new HashMap<SlotID, String>();
 
     public MockExternalService(ExternalStatus status) {
         this.status = Util.requireNonNull(status);
     }
     
     @Override
-    public String submit(ScheduledTime t) {
+    public String submit(SlotID id) {
         String externalID = "mock-" + Math.random();
-        times2ExternalID.put(t, externalID);
+        slots2ExternalID.put(id, externalID);
         return externalID;
     }
     
@@ -38,8 +37,8 @@ public class MockExternalService implements ExternalService {
         return status;
     }
     
-    public Map<ScheduledTime, String> getTimes2ExternalID() {
-        return times2ExternalID;
+    public Map<SlotID, String> getSlots2ExternalID() {
+        return slots2ExternalID;
     }
 
     public static class MockExternalStatusRunning implements ExternalStatus {

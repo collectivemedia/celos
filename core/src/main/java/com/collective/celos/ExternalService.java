@@ -1,16 +1,13 @@
 package com.collective.celos;
 
-
-import com.collective.celos.api.ScheduledTime;
-
 public interface ExternalService {
 
     /**
-     * Submits workflow in external service for the scheduled time.
+     * Submits slot to external service.
      * 
      * Returns external ID of submitted workflow, or throws an exception.
      */
-    public String submit(ScheduledTime t) throws ExternalServiceException;
+    public String submit(SlotID id) throws ExternalServiceException;
 
     /**
      * Starts workflow with the given enternal ID.

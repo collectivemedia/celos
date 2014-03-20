@@ -1,6 +1,9 @@
 package com.collective.celos;
 
+import org.joda.time.DateTime;
+
 import com.collective.celos.api.ScheduledTime;
+import com.collective.celos.api.Util;
 
 public class ScheduledTimeFormatter {
 
@@ -51,4 +54,19 @@ public class ScheduledTimeFormatter {
         return formatYear(t) + "-" + formatMonth(t) + "-" + formatDay(t);
     }
 
+    /** Only show seconds and milliseconds if they're not 0. */
+    public String formatPretty(ScheduledTime t) {
+        DateTime dt = t.getDateTime();
+        String timestamp = formatDatestamp(t) + "T" + formatHour(t) + ":" + formatMinute(t);
+        if (Util.isFullMinute(dt)) {
+            return timestamp + "Z";
+        } else {
+            if (Util.isFullSecond(dt)) {
+                return timestamp + ":" + formatSecond(t) + "Z";
+            } else {
+                return timestamp + ":" + formatSecond(t) + "." + formatMillisecond(t) + "Z";
+            }
+        }
+    }
+    
 }

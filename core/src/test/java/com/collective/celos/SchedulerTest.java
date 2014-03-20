@@ -116,7 +116,7 @@ public class SchedulerTest {
     public void runExternalWorkflowsReadyCandidate() throws Exception {
         List<SlotState> slotStates = candidate(SlotState.Status.READY);
         SlotState nextSlotState = slotStates.get(0).transitionToRunning("externalId");
-        when(externalService.submit(scheduledTime)).thenReturn("externalId");
+        when(externalService.submit(slotId)).thenReturn("externalId");
         scheduler.runExternalWorkflows(wf, slotStates);
         verify(stateDatabase).putSlotState(nextSlotState);
         verifyNoMoreInteractions(stateDatabase);
@@ -125,11 +125,11 @@ public class SchedulerTest {
     @Test
     public void runExternalWorkflowsCallsSchedulerCorrectly() throws Exception {
         List<SlotState> slotStates = candidate(SlotState.Status.READY);
-        when(externalService.submit(scheduledTime)).thenReturn("externalId");
+        when(externalService.submit(slotId)).thenReturn("externalId");
         scheduler.runExternalWorkflows(wf, slotStates);
         
         InOrder inOrder = inOrder(externalService);
-        inOrder.verify(externalService).submit(slotStates.get(0).getScheduledTime());
+        inOrder.verify(externalService).submit(slotStates.get(0).getSlotID());
         inOrder.verify(externalService).start("externalId");
         verifyNoMoreInteractions(externalService);
     }
@@ -148,8 +148,8 @@ public class SchedulerTest {
         SlotState nextSlotState1 = slotState1.transitionToRunning("externalId1");
         SlotState nextSlotState2 = slotState2.transitionToRunning("externalId2");
         
-        when(externalService.submit(slotState1.getScheduledTime())).thenReturn("externalId1");
-        when(externalService.submit(slotState2.getScheduledTime())).thenReturn("externalId2");
+        when(externalService.submit(slotState1.getSlotID())).thenReturn("externalId1");
+        when(externalService.submit(slotState2.getSlotID())).thenReturn("externalId2");
         
         scheduler.runExternalWorkflows(wf, slotStates);
         verify(stateDatabase).putSlotState(nextSlotState1);
@@ -495,7 +495,7 @@ public class SchedulerTest {
         sched.step(new ScheduledTime(current));
         
         Assert.assertEquals(slidingWindowHours, db.size());
-        Assert.assertEquals(slidingWindowHours, srv1.getTimes2ExternalID().size());
+        Assert.assertEquals(slidingWindowHours, srv1.getSlots2ExternalID().size());
         
         for (int i = 0; i < slidingWindowHours; i++) {
             ScheduledTime scheduledTime = new ScheduledTime(currentFullHour.minusHours(i));
@@ -507,7 +507,7 @@ public class SchedulerTest {
             Assert.assertEquals(SlotState.Status.RUNNING, state.getStatus());
             String externalID = state.getExternalID();
             Assert.assertNotNull(externalID);
-            Assert.assertEquals(externalID, srv1.getTimes2ExternalID().get(scheduledTime));
+            Assert.assertEquals(externalID, srv1.getSlots2ExternalID().get(id));
         }
     }
 
@@ -570,7 +570,7 @@ public class SchedulerTest {
         
         String externalID = slot2After.getExternalID();
         Assert.assertNotNull(externalID);
-        Assert.assertEquals(externalID, srv1.getTimes2ExternalID().get(slot2.getScheduledTime()));
+        Assert.assertEquals(externalID, srv1.getSlots2ExternalID().get(slot2.getSlotID()));
     }
 
     /**
@@ -670,7 +670,7 @@ public class SchedulerTest {
         }
         
         @Override
-        public String submit(ScheduledTime t) throws ExternalServiceException {
+        public String submit(SlotID id) throws ExternalServiceException {
             return "fake-external-id";
         }
 
