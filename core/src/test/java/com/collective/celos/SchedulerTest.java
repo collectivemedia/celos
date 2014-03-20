@@ -116,7 +116,7 @@ public class SchedulerTest {
     public void runExternalWorkflowsReadyCandidate() throws Exception {
         List<SlotState> slotStates = candidate(SlotState.Status.READY);
         SlotState nextSlotState = slotStates.get(0).transitionToRunning("externalId");
-        when(externalService.submit(scheduledTime)).thenReturn("externalId");
+        when(externalService.submit(wf, scheduledTime)).thenReturn("externalId");
         scheduler.runExternalWorkflows(wf, slotStates);
         verify(stateDatabase).putSlotState(nextSlotState);
         verifyNoMoreInteractions(stateDatabase);
@@ -125,11 +125,11 @@ public class SchedulerTest {
     @Test
     public void runExternalWorkflowsCallsSchedulerCorrectly() throws Exception {
         List<SlotState> slotStates = candidate(SlotState.Status.READY);
-        when(externalService.submit(scheduledTime)).thenReturn("externalId");
+        when(externalService.submit(wf, scheduledTime)).thenReturn("externalId");
         scheduler.runExternalWorkflows(wf, slotStates);
         
         InOrder inOrder = inOrder(externalService);
-        inOrder.verify(externalService).submit(slotStates.get(0).getScheduledTime());
+        inOrder.verify(externalService).submit(wf, slotStates.get(0).getScheduledTime());
         inOrder.verify(externalService).start("externalId");
         verifyNoMoreInteractions(externalService);
     }
@@ -148,8 +148,8 @@ public class SchedulerTest {
         SlotState nextSlotState1 = slotState1.transitionToRunning("externalId1");
         SlotState nextSlotState2 = slotState2.transitionToRunning("externalId2");
         
-        when(externalService.submit(slotState1.getScheduledTime())).thenReturn("externalId1");
-        when(externalService.submit(slotState2.getScheduledTime())).thenReturn("externalId2");
+        when(externalService.submit(wf, slotState1.getScheduledTime())).thenReturn("externalId1");
+        when(externalService.submit(wf, slotState2.getScheduledTime())).thenReturn("externalId2");
         
         scheduler.runExternalWorkflows(wf, slotStates);
         verify(stateDatabase).putSlotState(nextSlotState1);
@@ -670,7 +670,7 @@ public class SchedulerTest {
         }
         
         @Override
-        public String submit(ScheduledTime t) throws ExternalServiceException {
+        public String submit(Workflow wf, ScheduledTime t) throws ExternalServiceException {
             return "fake-external-id";
         }
 

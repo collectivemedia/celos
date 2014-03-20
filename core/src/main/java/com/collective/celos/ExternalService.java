@@ -10,7 +10,7 @@ public interface ExternalService {
      * 
      * Returns external ID of submitted workflow, or throws an exception.
      */
-    public String submit(ScheduledTime t) throws ExternalServiceException;
+    public String submit(Workflow wf, ScheduledTime t) throws ExternalServiceException;
 
     /**
      * Starts workflow with the given enternal ID.

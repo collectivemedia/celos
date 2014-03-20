@@ -23,7 +23,7 @@ public class MockExternalService implements ExternalService {
     }
     
     @Override
-    public String submit(ScheduledTime t) {
+    public String submit(Workflow wf, ScheduledTime t) {
         String externalID = "mock-" + Math.random();
         times2ExternalID.put(t, externalID);
         return externalID;

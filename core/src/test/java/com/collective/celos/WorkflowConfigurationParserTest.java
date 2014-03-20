@@ -74,7 +74,7 @@ public class WorkflowConfigurationParserTest {
     public static class TestExternalService extends RemembersProperties implements ExternalService {
         public TestExternalService(ObjectNode properties) { super(properties); }
         @Override
-        public String submit(ScheduledTime t) throws ExternalServiceException {
+        public String submit(Workflow wf, ScheduledTime t) throws ExternalServiceException {
             return null;
         }
         @Override
