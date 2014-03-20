@@ -63,8 +63,12 @@ public class OozieExternalService implements ExternalService {
         runProperties.setProperty(HOUR_PROP, formatter.formatHour(t));
         runProperties.setProperty(MINUTE_PROP, formatter.formatMinute(t));
         runProperties.setProperty(SECOND_PROP, formatter.formatSecond(t));
-        runProperties.setProperty(WORKFLOW_NAME_PROP, id.toString());
+        runProperties.setProperty(WORKFLOW_NAME_PROP, getWorkflowName(id, formatter));
         return runProperties;
+    }
+
+    String getWorkflowName(SlotID id, ScheduledTimeFormatter formatter) {
+        return id.getWorkflowID() + "@" + formatter.formatPretty(id.getScheduledTime());
     }
 
     private Properties setupDefaultProperties(ObjectNode defaults, ScheduledTime t) {

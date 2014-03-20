@@ -87,4 +87,13 @@ public class ScheduledTimeFormatterTest {
         assertEquals(expected, actual);
     }
 
+    @Test
+    public void testPretty() {
+        ScheduledTimeFormatter formatter = new ScheduledTimeFormatter();
+        assertEquals("2014-03-20T12:30Z", formatter.formatPretty(new ScheduledTime("2014-03-20T12:30Z")));
+        assertEquals("2014-03-20T12:30:01Z", formatter.formatPretty(new ScheduledTime("2014-03-20T12:30:01Z")));
+        assertEquals("2014-03-20T12:30:00.001Z", formatter.formatPretty(new ScheduledTime("2014-03-20T12:30:00.001Z")));
+        assertEquals("2014-03-20T12:30:01.001Z", formatter.formatPretty(new ScheduledTime("2014-03-20T12:30:01.001Z")));
+    }
+    
 }
