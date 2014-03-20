@@ -223,6 +223,11 @@ Waits for the existence of a file or directory in HDFS.
 ...
 </pre>
 
+#### Variables
+
+The `path` can contain the variables `${year}`, `${month}`, `${day}`,
+`${hour}`, `${minute}`, and `${second}`, which are zero-padded.
+
 ### `andTrigger(triggers...)`
 
 Combines multiple triggers and waits for all of them (logical AND).
@@ -358,6 +363,21 @@ Submits jobs to Oozie.
 )
 ...
 </pre>
+
+#### Variables
+
+The property values can contain the variables `${year}`, `${month}`,
+`${day}`, `${hour}`, `${minute}`, and `${second}`, which are
+zero-padded.
+
+#### Workflow Properties
+
+Celos automatically sets the variables (see above) as Oozie workflow
+properties, so they can also be used in the workflow XML file.
+
+Additionally, it sets the `celosWorkflowName` property to a string
+containing the workflow name and a timestamp, which is useful as
+workflow name in the XML file.
 
 ## Workflow properties
 
