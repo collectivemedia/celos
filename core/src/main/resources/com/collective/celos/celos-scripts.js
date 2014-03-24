@@ -64,6 +64,15 @@ function delayTrigger(seconds) {
     };
 }
 
+function shellCommandTrigger() {
+    return {
+        "type": "com.collective.celos.ShellCommandTrigger",
+        "properties": {
+            "celos.shellCommandTrigger.command": Array.prototype.slice.call(arguments)
+        }
+    };
+}
+
 // Pass oozieURL separately so we later use a default if parameter not supplied
 function oozieExternalService(properties, oozieURL) {
     properties["celos.oozie.url"] = oozieURL;
