@@ -408,6 +408,24 @@ Additionally, it sets the `celosWorkflowName` property to a string
 containing the workflow name and a timestamp, which is useful as
 workflow name in the XML file.
 
+## Defaults
+
+Files containing defaults can be placed in `/etc/celos/defaults` and
+loaded with the `importDefaults(label)` function.
+
+For example, if `/etc/celos/defaults/foo.js` contains
+
+<pre>
+var FOO = 23;
+</pre>
+
+then a workflow can load it like this:
+
+<pre>
+importDefaults("foo");
+// FOO now available
+</pre>
+
 ## Workflow properties
 
 ### `maxRetryCount` (number)
