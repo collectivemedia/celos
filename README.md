@@ -349,7 +349,7 @@ slot running at any time.
 
 ## External Services
 
-### `oozieExternalService(workflowProperties, oozieURL)`
+### `oozieExternalService(workflowProperties, [oozieURL])`
 
 Submits jobs to Oozie.
 
@@ -357,7 +357,8 @@ Submits jobs to Oozie.
 
 * `workflowProperties` -- The properties to pass to the Oozie workflow.
 
-* `oozieURL` -- The Oozie API URL.
+* `oozieURL` -- The Oozie API URL.  If the argument is not supplied,
+  the value of the `CELOS_DEFAULT_OOZIE` global will be used.
 
 #### Example
 
@@ -371,6 +372,23 @@ Submits jobs to Oozie.
         "outputDir": "/user/celos/samples/wordcount/output"
     },
     "http://nn:11000/oozie"
+)
+...
+</pre>
+
+With `CELOS_DEFAULT_OOZIE` set:
+
+<pre>
+...
+var CELOS_DEFAULT_OOZIE = "http://nn:11000/oozie";
+...
+"externalService": oozieExternalService(
+    {
+        "user.name": "celos",
+        "oozie.wf.application.path": "/user/celos/samples/wordcount/workflow/workflow.xml",
+        "inputDir": "/user/celos/samples/wordcount/input",
+        "outputDir": "/user/celos/samples/wordcount/output"
+    }
 )
 ...
 </pre>

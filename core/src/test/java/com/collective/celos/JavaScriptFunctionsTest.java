@@ -74,6 +74,7 @@ public class JavaScriptFunctionsTest {
         DelayTrigger t = (DelayTrigger) runJS("delayTrigger(25)");
         Assert.assertEquals(25, t.getSeconds());
     }
+    
     @Test
     public void testOozieExternalService() throws Exception {
         OozieExternalService s = (OozieExternalService) runJS("oozieExternalService({bla:'hello'}, 'http://foo')");
@@ -83,7 +84,19 @@ public class JavaScriptFunctionsTest {
         props.put("bla", "hello");
         Assert.assertEquals(props, s.getProperties());
     }
-        
+    
+    @Test(expected=Exception.class)
+    public void testOozieURLRequired() throws Exception {
+        runJS("oozieExternalService({bla:'hello'})");
+    }
+
+    @Test
+    public void testOozieURLUsesDefault() throws Exception {
+        String js = "var CELOS_DEFAULT_OOZIE = 'http://oooooozie'; oozieExternalService({bla:'hello'})";
+        OozieExternalService s = (OozieExternalService) runJS(js);
+        Assert.assertEquals("http://oooooozie", s.getOozieURL());
+    }
+
     private Object runJS(String js) throws Exception {
         WorkflowConfigurationParser parser = new WorkflowConfigurationParser();
         // Evaluate JS function call

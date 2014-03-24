@@ -69,8 +69,12 @@ function delayTrigger(seconds) {
     };
 }
 
-// Pass oozieURL separately so we later use a default if parameter not supplied
 function oozieExternalService(properties, oozieURL) {
+    if (oozieURL === undefined) {
+        if (typeof CELOS_DEFAULT_OOZIE !== undefined) {
+            oozieURL = CELOS_DEFAULT_OOZIE;
+        }
+    }
     properties["celos.oozie.url"] = oozieURL;
     return {
         "type": "com.collective.celos.OozieExternalService",
