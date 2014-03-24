@@ -104,7 +104,6 @@ public class WorkflowConfigurationParser {
         return cfg;
     }
     
-    @SuppressWarnings("unused") // this is used from JS only
     public void importDefaultsIntoScope(String label, Global scope) throws IOException {
         File defaultsFile = new File(defaultsDir, label + "." + WORKFLOW_FILE_EXTENSION);
         LOGGER.info("Loading defaults: " + defaultsFile);
