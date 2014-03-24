@@ -1,5 +1,6 @@
 package com.collective.celos;
 
+import java.io.File;
 import java.io.StringReader;
 
 import org.junit.Assert;
@@ -111,7 +112,7 @@ public class JavaScriptFunctionsTest {
     }
 
     private Object runJS(String js) throws Exception {
-        WorkflowConfigurationParser parser = new WorkflowConfigurationParser();
+        WorkflowConfigurationParser parser = new WorkflowConfigurationParser(new File("unused"));
         // Evaluate JS function call
         Object result = parser.evaluateReader(new StringReader(js), "string", 1);
         // Turn result JSON into Java string

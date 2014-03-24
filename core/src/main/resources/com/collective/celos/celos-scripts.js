@@ -2,6 +2,10 @@ function addWorkflow(json) {
     celosWorkflowConfigurationParser.addWorkflowFromJSONString(JSON.stringify(json));
 }
 
+function importDefaults(label) {
+    celosWorkflowConfigurationParser.importDefaultsIntoScope(label, celosScope);
+}
+
 function hourlySchedule() {
     return {
         "type": "com.collective.celos.HourlySchedule"
