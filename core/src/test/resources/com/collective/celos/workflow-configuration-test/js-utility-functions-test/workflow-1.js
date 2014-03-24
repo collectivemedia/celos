@@ -5,7 +5,7 @@ function assert(msg, that) {
 function assertEquals(msg, a, b) {
     var aString = JSON.stringify(a);
     var bString = JSON.stringify(b);
-    assert(msg, aString === bString);
+    assert(msg + ": " + aString + " === " + bString, aString === bString);
 }
 
 assertEquals("hourlySchedule() works",
@@ -74,9 +74,9 @@ assertEquals("oozieExternalService() works",
              {
                  "type": "com.collective.celos.OozieExternalService",
                  "properties": {
+                     "celos.oozie.url": "http://example.com/oozie",
                      "a": "1",
-                     "b": "2",
-                     "celos.oozie.url": "http://example.com/oozie"
+                     "b": "2"
                  }
              });
 

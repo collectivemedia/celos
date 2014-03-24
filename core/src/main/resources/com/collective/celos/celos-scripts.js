@@ -38,7 +38,7 @@ function alwaysTrigger() {
 // Pass fs as final parameter so we can later use a default if parameter not supplied
 function hdfsCheckTrigger(path, fs) {
     if (fs === undefined) {
-        if (typeof CELOS_DEFAULT_HDFS !== undefined) {
+        if (typeof CELOS_DEFAULT_HDFS !== "undefined") {
             fs = CELOS_DEFAULT_HDFS;
         }
     }
@@ -69,15 +69,26 @@ function delayTrigger(seconds) {
     };
 }
 
-function oozieExternalService(properties, oozieURL) {
+function oozieExternalService(userProperties, oozieURL) {
+    function mergeProperties(source, target) {
+        for (var name in source) {
+            target[name] = source[name];
+        }
+    }
     if (oozieURL === undefined) {
-        if (typeof CELOS_DEFAULT_OOZIE !== undefined) {
+        if (typeof CELOS_DEFAULT_OOZIE !== "undefined") {
             oozieURL = CELOS_DEFAULT_OOZIE;
         }
     }
-    properties["celos.oozie.url"] = oozieURL;
+    var theProperties = {
+        "celos.oozie.url": oozieURL
+    };
+    if (typeof CELOS_DEFAULT_OOZIE_PROPERTIES !== "undefined") {
+        mergeProperties(CELOS_DEFAULT_OOZIE_PROPERTIES, theProperties);
+    }
+    mergeProperties(userProperties, theProperties)
     return {
         "type": "com.collective.celos.OozieExternalService",
-        "properties": properties
+        "properties": theProperties
     };
 }

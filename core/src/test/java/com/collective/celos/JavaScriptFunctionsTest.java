@@ -97,6 +97,19 @@ public class JavaScriptFunctionsTest {
         Assert.assertEquals("http://oooooozie", s.getOozieURL());
     }
 
+    @Test
+    public void testUsesOozieDefaultProperties() throws Exception {
+        String js = "var CELOS_DEFAULT_OOZIE_PROPERTIES = {a:'1', b:'2'}; oozieExternalService({b: '3', c:'4'}, 'http://oozie')";
+        OozieExternalService s = (OozieExternalService) runJS(js);
+        Assert.assertEquals("http://oozie", s.getOozieURL());
+        ObjectNode props = new ObjectMapper().createObjectNode();
+        props.put(OozieExternalService.OOZIE_URL_PROP, "http://oozie");
+        props.put("a", "1");
+        props.put("b", "3");
+        props.put("c", "4");
+        Assert.assertEquals(props, s.getProperties());
+    }
+
     private Object runJS(String js) throws Exception {
         WorkflowConfigurationParser parser = new WorkflowConfigurationParser();
         // Evaluate JS function call
