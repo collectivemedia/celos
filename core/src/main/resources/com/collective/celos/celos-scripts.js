@@ -37,6 +37,11 @@ function alwaysTrigger() {
 
 // Pass fs as final parameter so we can later use a default if parameter not supplied
 function hdfsCheckTrigger(path, fs) {
+    if (fs === undefined) {
+        if (typeof CELOS_DEFAULT_HDFS !== undefined) {
+            fs = CELOS_DEFAULT_HDFS;
+        }
+    }
     return {
         "type": "com.collective.celos.HDFSCheckTrigger",
         "properties": {

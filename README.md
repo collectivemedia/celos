@@ -202,7 +202,7 @@ To use when you simply want to run a workflow at every scheduled time.
 ...
 </pre>
 
-### `hdfsCheckTrigger(path, fs)`
+### `hdfsCheckTrigger(path, [fs])`
 
 Waits for the existence of a file or directory in HDFS.
 
@@ -210,7 +210,8 @@ Waits for the existence of a file or directory in HDFS.
 
 * `path` -- the path in HDFS to check the existence of
 
-* `fs` -- the HDFS filesystem namenode
+* `fs` -- the HDFS filesystem namenode.  If the argument is not
+  supplied, the value of the `CELOS_DEFAULT_HDFS` global will be used.
 
 #### Example
 
@@ -220,6 +221,16 @@ Waits for the existence of a file or directory in HDFS.
     "/foo/bar/${year}-${month}-${day}/${hour}/file.txt",
     "hdfs://nameservice1"
 )
+...
+</pre>
+
+With `CELOS_DEFAULT_HDFS` set:
+
+<pre>
+...
+var CELOS_DEFAULT_HDFS = "hdfs://nameservice1";
+...
+"trigger": hdfsCheckTrigger("/foo/bar/${year}-${month}-${day}/${hour}/file.txt")
 ...
 </pre>
 
