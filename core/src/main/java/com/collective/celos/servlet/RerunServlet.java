@@ -4,6 +4,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Logger;
+
 import com.collective.celos.api.ScheduledTime;
 import com.collective.celos.SchedulerConfiguration;
 import com.collective.celos.SlotID;
@@ -23,6 +25,8 @@ import com.collective.celos.WorkflowID;
 @SuppressWarnings("serial")
 public class RerunServlet extends AbstractServlet {
     
+    private static Logger LOGGER = Logger.getLogger(RerunServlet.class);
+    
     private static final String ID_PARAM = "id";
     
     protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException {
@@ -35,6 +39,7 @@ public class RerunServlet extends AbstractServlet {
             SlotID slot = new SlotID(new WorkflowID(id), time);
             StateDatabase db = new SchedulerConfiguration().makeDefaultStateDatabase();
             updateSlotToRerun(slot, db);
+            LOGGER.info("Slot scheduled for rerun: " + slot);
         } catch(Exception e) {
             throw new ServletException(e);
         }
