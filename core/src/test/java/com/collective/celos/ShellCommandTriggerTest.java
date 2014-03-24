@@ -15,19 +15,19 @@ public class ShellCommandTriggerTest {
     private final ObjectMapper mapper = new ObjectMapper();
     
     @Test(expected=IllegalArgumentException.class)
-    public void testRequiresCommandAndArguments1() throws Exception {
+    public void testRequiresCommand() throws Exception {
         new ShellCommandTrigger(mapper.createObjectNode());
     }
 
     @Test(expected=IllegalArgumentException.class)
-    public void testRequiresCommandAndArguments2() throws Exception {
+    public void testCommandMustBeArray() throws Exception {
         ObjectNode node = mapper.createObjectNode();
         node.put(ShellCommandTrigger.COMMAND_PROP, "foo");
         new ShellCommandTrigger(node);
     }
 
     @Test(expected=IllegalArgumentException.class)
-    public void testOnlyStringAllowed() throws Exception {
+    public void testOnlyStringsAllowedInArray() throws Exception {
         ArrayNode array = mapper.createArrayNode();
         array.add(12);
         array.add("-h");
