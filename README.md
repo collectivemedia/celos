@@ -440,7 +440,7 @@ workflow name in the XML file.
 
 #### Oozie Workflow Defaults
 
-If the CELOS_DEFAULT_OOZIE_PROPERTIES is a JavaScript objects, its
+If `CELOS_DEFAULT_OOZIE_PROPERTIES` is a JavaScript object, its
 contents will be merged into the properties as defaults.
 
 Example:
