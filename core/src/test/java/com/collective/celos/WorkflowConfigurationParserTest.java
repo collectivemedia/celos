@@ -212,7 +212,7 @@ public class WorkflowConfigurationParserTest {
         workflowNode.put(WorkflowConfigurationParser.START_TIME_PROP, 12);
         File dir = getConfigurationDir("empty");
         File defaults = getDefaultsDir();
-        new WorkflowConfigurationParser(defaults).parseConfiguration(dir).getStartTimeFromJSON(workflowNode);
+        new WorkflowConfigurationParser(defaults).getStartTimeFromJSON(workflowNode);
     }
     
     @Test
@@ -235,7 +235,7 @@ public class WorkflowConfigurationParserTest {
         File dir = getConfigurationDir(label);
         File defaults = getDefaultsDir();
         File workflow = new File(dir, workflowName + "." + WorkflowConfigurationParser.WORKFLOW_FILE_EXTENSION);
-        new WorkflowConfigurationParser(defaults).parseConfiguration(dir).parseFile(workflow);
+        new WorkflowConfigurationParser(defaults).parseFile(workflow);
     }
     
     public static WorkflowConfiguration parseDir(String label) throws Exception {
