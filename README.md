@@ -429,7 +429,7 @@ The property values can contain the variables `${year}`, `${month}`,
 `${day}`, `${hour}`, `${minute}`, and `${second}`, which are
 zero-padded.
 
-#### Workflow Properties
+#### Oozie Workflow Properties
 
 Celos automatically sets the variables (see above) as Oozie workflow
 properties, so they can also be used in the workflow XML file.
@@ -437,6 +437,21 @@ properties, so they can also be used in the workflow XML file.
 Additionally, it sets the `celosWorkflowName` property to a string
 containing the workflow name and a timestamp, which is useful as
 workflow name in the XML file.
+
+#### Oozie Workflow Defaults
+
+If the CELOS_DEFAULT_OOZIE_PROPERTIES is a JavaScript objects, its
+contents will be merged into the properties as defaults.
+
+Example:
+
+<pre>
+var CELOS_DEFAULT_OOZIE_PROPERTIES = {
+    "user.name": "peter"
+};
+</pre>
+
+Now every Oozie workflow will run as user "peter".
 
 ## Workflow properties
 
