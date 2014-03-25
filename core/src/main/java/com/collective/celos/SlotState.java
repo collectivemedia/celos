@@ -100,7 +100,7 @@ public class SlotState extends ValueObject {
         if (!successOrFailure) {
             throw new IllegalStateException("Slot must be successful or failed, but is: " + status);
         }
-        return new SlotState(slotID, Status.READY, null, 0); // reset retryCount to 0
+        return new SlotState(slotID, Status.WAITING, null, 0); // reset retryCount to 0
     }
     
     private void assertStatus(Status st) {

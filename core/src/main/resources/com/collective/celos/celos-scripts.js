@@ -73,6 +73,15 @@ function delayTrigger(seconds) {
     };
 }
 
+function shellCommandTrigger() {
+    return {
+        "type": "com.collective.celos.ShellCommandTrigger",
+        "properties": {
+            "celos.shellCommandTrigger.command": Array.prototype.slice.call(arguments)
+        }
+    };
+}
+
 function oozieExternalService(userProperties, oozieURL) {
     function mergeProperties(source, target) {
         for (var name in source) {

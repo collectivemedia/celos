@@ -2,6 +2,7 @@ package com.collective.celos;
 
 import java.io.File;
 import java.io.StringReader;
+import java.util.Arrays;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -76,6 +77,12 @@ public class JavaScriptFunctionsTest {
         Assert.assertEquals(25, t.getSeconds());
     }
     
+    @Test
+    public void testShellCommandTrigger() throws Exception {
+        ShellCommandTrigger t = (ShellCommandTrigger) runJS("shellCommandTrigger('hello', 'this', 'is', 'cool')");
+        Assert.assertEquals(Arrays.asList("hello", "this", "is", "cool"), t.getRawCommandElements());
+    }
+
     @Test
     public void testOozieExternalService() throws Exception {
         OozieExternalService s = (OozieExternalService) runJS("oozieExternalService({bla:'hello'}, 'http://foo')");
