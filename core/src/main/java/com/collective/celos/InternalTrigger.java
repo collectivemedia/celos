@@ -14,6 +14,6 @@ import com.collective.celos.api.Trigger;
  */
 public interface InternalTrigger extends Trigger {
 
-    public boolean isDataAvailable(Scheduler s, ScheduledTime now, ScheduledTime t) throws Exception;
+    public boolean isDataAvailable(Scheduler s, ScheduledTime now, ScheduledTime scheduledTime) throws Exception;
     
 }

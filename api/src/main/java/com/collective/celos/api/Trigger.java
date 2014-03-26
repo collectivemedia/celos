@@ -8,6 +8,6 @@ public interface Trigger {
     /**
      * Returns true if data is available for the given scheduled time, false if not.
      */
-    public boolean isDataAvailable(ScheduledTime now, ScheduledTime t) throws Exception;
+    public boolean isDataAvailable(ScheduledTime now, ScheduledTime scheduledTime) throws Exception;
 
 }

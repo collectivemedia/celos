@@ -84,6 +84,12 @@ public class JavaScriptFunctionsTest {
     }
 
     @Test
+    public void testSuccessTrigger() throws Exception {
+        SuccessTrigger t = (SuccessTrigger) runJS("successTrigger('myworkflow')");
+        Assert.assertEquals("myworkflow", t.getTriggerWorkflow());
+    }
+
+    @Test
     public void testOozieExternalService() throws Exception {
         OozieExternalService s = (OozieExternalService) runJS("oozieExternalService({bla:'hello'}, 'http://foo')");
         Assert.assertEquals("http://foo", s.getOozieURL());
