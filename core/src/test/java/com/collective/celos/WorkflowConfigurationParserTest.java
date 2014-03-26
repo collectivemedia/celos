@@ -211,13 +211,19 @@ public class WorkflowConfigurationParserTest {
         ObjectNode workflowNode = mapper.createObjectNode();
         workflowNode.put(WorkflowConfigurationParser.START_TIME_PROP, 12);
         File dir = getConfigurationDir("empty");
-        new WorkflowConfigurationParser().parseConfiguration(dir).getStartTimeFromJSON(workflowNode);
+        File defaults = getDefaultsDir();
+        new WorkflowConfigurationParser(defaults).getStartTimeFromJSON(workflowNode);
     }
     
     @Test
     public void scopesAreSeparate() throws Exception {
         parseNamedFile("separate-scopes", "workflow-1");
         parseNamedFile("separate-scopes", "workflow-2");
+    }
+    
+    @Test
+    public void defaultsWork() throws Exception {
+        parseNamedFile("uses-defaults", "workflow-1");
     }
     
     public static void parseFile(String label) throws Exception {
@@ -227,17 +233,25 @@ public class WorkflowConfigurationParserTest {
     private static void parseNamedFile(String label, String workflowName) throws URISyntaxException,
             Exception {
         File dir = getConfigurationDir(label);
+        File defaults = getDefaultsDir();
         File workflow = new File(dir, workflowName + "." + WorkflowConfigurationParser.WORKFLOW_FILE_EXTENSION);
-        new WorkflowConfigurationParser().parseConfiguration(dir).parseFile(workflow);
+        new WorkflowConfigurationParser(defaults).parseFile(workflow);
     }
     
     public static WorkflowConfiguration parseDir(String label) throws Exception {
         File dir = getConfigurationDir(label);
-        return new WorkflowConfigurationParser().parseConfiguration(dir).getWorkflowConfiguration();
+        File defaults = getDefaultsDir();
+        return new WorkflowConfigurationParser(defaults).parseConfiguration(dir).getWorkflowConfiguration();
     }
 
     public static File getConfigurationDir(String label) throws URISyntaxException {
         String path = "com/collective/celos/workflow-configuration-test/" + label;
+        URL resource = Thread.currentThread().getContextClassLoader().getResource(path);
+        return new File(resource.toURI());
+    }
+    
+    public static File getDefaultsDir() throws URISyntaxException {
+        String path = "com/collective/celos/defaults";
         URL resource = Thread.currentThread().getContextClassLoader().getResource(path);
         return new File(resource.toURI());
     }

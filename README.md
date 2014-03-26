@@ -202,7 +202,7 @@ To use when you simply want to run a workflow at every scheduled time.
 ...
 </pre>
 
-### `hdfsCheckTrigger(path, fs)`
+### `hdfsCheckTrigger(path, [fs])`
 
 Waits for the existence of a file or directory in HDFS.
 
@@ -210,7 +210,8 @@ Waits for the existence of a file or directory in HDFS.
 
 * `path` -- the path in HDFS to check the existence of
 
-* `fs` -- the HDFS filesystem namenode
+* `fs` -- the HDFS filesystem namenode.  If the argument is not
+  supplied, the value of the `CELOS_DEFAULT_HDFS` global will be used.
 
 #### Example
 
@@ -220,6 +221,16 @@ Waits for the existence of a file or directory in HDFS.
     "/foo/bar/${year}-${month}-${day}/${hour}/file.txt",
     "hdfs://nameservice1"
 )
+...
+</pre>
+
+With `CELOS_DEFAULT_HDFS` set:
+
+<pre>
+...
+var CELOS_DEFAULT_HDFS = "hdfs://nameservice1";
+...
+"trigger": hdfsCheckTrigger("/foo/bar/${year}-${month}-${day}/${hour}/file.txt")
 ...
 </pre>
 
@@ -368,7 +379,7 @@ slot running at any time.
 
 ## External Services
 
-### `oozieExternalService(workflowProperties, oozieURL)`
+### `oozieExternalService(workflowProperties, [oozieURL])`
 
 Submits jobs to Oozie.
 
@@ -376,7 +387,8 @@ Submits jobs to Oozie.
 
 * `workflowProperties` -- The properties to pass to the Oozie workflow.
 
-* `oozieURL` -- The Oozie API URL.
+* `oozieURL` -- The Oozie API URL.  If the argument is not supplied,
+  the value of the `CELOS_DEFAULT_OOZIE` global will be used.
 
 #### Example
 
@@ -394,13 +406,30 @@ Submits jobs to Oozie.
 ...
 </pre>
 
+With `CELOS_DEFAULT_OOZIE` set:
+
+<pre>
+...
+var CELOS_DEFAULT_OOZIE = "http://nn:11000/oozie";
+...
+"externalService": oozieExternalService(
+    {
+        "user.name": "celos",
+        "oozie.wf.application.path": "/user/celos/samples/wordcount/workflow/workflow.xml",
+        "inputDir": "/user/celos/samples/wordcount/input",
+        "outputDir": "/user/celos/samples/wordcount/output"
+    }
+)
+...
+</pre>
+
 #### Variables
 
 The property values can contain the variables `${year}`, `${month}`,
 `${day}`, `${hour}`, `${minute}`, and `${second}`, which are
 zero-padded.
 
-#### Workflow Properties
+#### Oozie Workflow Properties
 
 Celos automatically sets the variables (see above) as Oozie workflow
 properties, so they can also be used in the workflow XML file.
@@ -408,6 +437,21 @@ properties, so they can also be used in the workflow XML file.
 Additionally, it sets the `celosWorkflowName` property to a string
 containing the workflow name and a timestamp, which is useful as
 workflow name in the XML file.
+
+#### Oozie Workflow Defaults
+
+If `CELOS_DEFAULT_OOZIE_PROPERTIES` is a JavaScript object, its
+contents will be merged into the properties as defaults.
+
+Example:
+
+<pre>
+var CELOS_DEFAULT_OOZIE_PROPERTIES = {
+    "user.name": "peter"
+};
+</pre>
+
+Now every Oozie workflow will run as user "peter".
 
 ## Workflow properties
 
@@ -434,6 +478,24 @@ When the workflow should start.
 ...
 "startTime": "2014-03-10T00:00Z",
 ...
+</pre>
+
+## Defaults
+
+Files containing defaults can be placed in `/etc/celos/defaults` and
+loaded with the `importDefaults(label)` function.
+
+For example, if `/etc/celos/defaults/foo.js` contains
+
+<pre>
+var FOO = 23;
+</pre>
+
+then a workflow can load it like this:
+
+<pre>
+importDefaults("foo");
+// FOO now available
 </pre>
 
 ## Deploying workflows

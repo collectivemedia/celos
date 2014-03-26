@@ -1,5 +1,6 @@
 package com.collective.celos;
 
+import java.io.File;
 import java.io.StringReader;
 import java.util.Arrays;
 
@@ -49,6 +50,18 @@ public class JavaScriptFunctionsTest {
         Assert.assertEquals("file:///", t.getFsString());
     }
     
+    @Test(expected=Exception.class)
+    public void testHDFSCheckTriggerRequiresFS() throws Exception {
+        runJS("hdfsCheckTrigger('/foo')");
+    }
+    
+    @Test
+    public void testHDFSCheckTriggerUsesDefaultNameNode() throws Exception {
+        HDFSCheckTrigger t = (HDFSCheckTrigger) runJS("var CELOS_DEFAULT_HDFS = 'file:///'; hdfsCheckTrigger('/foo')");
+        Assert.assertEquals("/foo", t.getRawPathString());
+        Assert.assertEquals("file:///", t.getFsString());
+    }
+
     @Test
     public void testAndTrigger() throws Exception {
         AndTrigger t = (AndTrigger) runJS("andTrigger(delayTrigger(1), alwaysTrigger())");
@@ -70,7 +83,6 @@ public class JavaScriptFunctionsTest {
         Assert.assertEquals(Arrays.asList("hello", "this", "is", "cool"), t.getRawCommandElements());
     }
 
-    
     @Test
     public void testOozieExternalService() throws Exception {
         OozieExternalService s = (OozieExternalService) runJS("oozieExternalService({bla:'hello'}, 'http://foo')");
@@ -80,9 +92,34 @@ public class JavaScriptFunctionsTest {
         props.put("bla", "hello");
         Assert.assertEquals(props, s.getProperties());
     }
-        
+    
+    @Test(expected=Exception.class)
+    public void testOozieURLRequired() throws Exception {
+        runJS("oozieExternalService({bla:'hello'})");
+    }
+
+    @Test
+    public void testOozieURLUsesDefault() throws Exception {
+        String js = "var CELOS_DEFAULT_OOZIE = 'http://oooooozie'; oozieExternalService({bla:'hello'})";
+        OozieExternalService s = (OozieExternalService) runJS(js);
+        Assert.assertEquals("http://oooooozie", s.getOozieURL());
+    }
+
+    @Test
+    public void testUsesOozieDefaultProperties() throws Exception {
+        String js = "var CELOS_DEFAULT_OOZIE_PROPERTIES = {a:'1', b:'2'}; oozieExternalService({b: '3', c:'4'}, 'http://oozie')";
+        OozieExternalService s = (OozieExternalService) runJS(js);
+        Assert.assertEquals("http://oozie", s.getOozieURL());
+        ObjectNode props = new ObjectMapper().createObjectNode();
+        props.put(OozieExternalService.OOZIE_URL_PROP, "http://oozie");
+        props.put("a", "1");
+        props.put("b", "3");
+        props.put("c", "4");
+        Assert.assertEquals(props, s.getProperties());
+    }
+
     private Object runJS(String js) throws Exception {
-        WorkflowConfigurationParser parser = new WorkflowConfigurationParser();
+        WorkflowConfigurationParser parser = new WorkflowConfigurationParser(new File("unused"));
         // Evaluate JS function call
         Object result = parser.evaluateReader(new StringReader(js), "string", 1);
         // Turn result JSON into Java string

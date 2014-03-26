@@ -17,6 +17,7 @@ import org.mozilla.javascript.tools.shell.Global;
 import com.collective.celos.api.Schedule;
 import com.collective.celos.api.ScheduledTime;
 import com.collective.celos.api.Trigger;
+import com.collective.celos.api.Util;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -47,20 +48,21 @@ public class WorkflowConfigurationParser {
     private final JSONInstanceCreator creator = new JSONInstanceCreator();
     private final ObjectMapper mapper = new ObjectMapper();
     private final WorkflowConfiguration cfg = new WorkflowConfiguration();
-
+    private final File defaultsDir;
     private final Context context;
     
-    public WorkflowConfigurationParser() throws Exception {
+    public WorkflowConfigurationParser(File defaultsDir) throws Exception {
+        this.defaultsDir = Util.requireNonNull(defaultsDir);
         context = Context.enter();
         context.setLanguageVersion(170);
     }
 
-    public WorkflowConfigurationParser parseConfiguration(File dir) {
-        LOGGER.info("Using workflows directory: " + dir);
-        Collection<File> files = FileUtils.listFiles(dir, new String[] { WORKFLOW_FILE_EXTENSION }, false);
+    public WorkflowConfigurationParser parseConfiguration(File workflowsDir) {
+        LOGGER.info("Using workflows directory: " + workflowsDir);
+        LOGGER.info("Using defaults directory: " + defaultsDir);
+        Collection<File> files = FileUtils.listFiles(workflowsDir, new String[] { WORKFLOW_FILE_EXTENSION }, false);
         for (File f : files) {
             try {
-                LOGGER.info("Loading file: " + f);
                 parseFile(f);
             } catch(Exception e) {
                 LOGGER.error("Failed to load file: " + f + ": " + e.getMessage(), e);
@@ -70,6 +72,7 @@ public class WorkflowConfigurationParser {
     }
 
     void parseFile(File f) throws Exception {
+        LOGGER.info("Loading file: " + f);
         FileReader fileReader = new FileReader(f);
         String fileName = f.toString();
         int lineNo = 1;
@@ -85,8 +88,11 @@ public class WorkflowConfigurationParser {
     }
     
     private void setupBindings(Global scope) {
-        Object wrapped = Context.javaToJS(this, scope);
-        ScriptableObject.putProperty(scope, "celosWorkflowConfigurationParser", wrapped);
+        Object wrappedThis = Context.javaToJS(this, scope);
+        ScriptableObject.putProperty(scope, "celosWorkflowConfigurationParser", wrappedThis);
+        // Need to put scope into JS so it can call importDefaultsIntoScope
+        Object wrappedScope = Context.javaToJS(scope, scope);
+        ScriptableObject.putProperty(scope, "celosScope", wrappedScope);
     }
 
     private void loadBuiltinScripts(Global scope) throws Exception {
@@ -96,6 +102,15 @@ public class WorkflowConfigurationParser {
     
     public WorkflowConfiguration getWorkflowConfiguration() {
         return cfg;
+    }
+    
+    public void importDefaultsIntoScope(String label, Global scope) throws IOException {
+        File defaultsFile = new File(defaultsDir, label + "." + WORKFLOW_FILE_EXTENSION);
+        LOGGER.info("Loading defaults: " + defaultsFile);
+        FileReader fileReader = new FileReader(defaultsFile);
+        String fileName = defaultsFile.toString();
+        int lineNo = 1;
+        context.evaluateReader(scope, fileReader, fileName, lineNo, null);
     }
     
     public void addWorkflowFromJSONString(String json) throws Exception {
