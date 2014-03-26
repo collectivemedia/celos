@@ -16,6 +16,8 @@ JODA = 'joda-time:joda-time:jar:2.3'
 JSON_SIMPLE = 'com.googlecode.json-simple:json-simple:jar:1.1.1'
 QUARTZ_SCHEDULER = 'org.quartz-scheduler:quartz:jar:2.1.1'
 RHINO = 'org.mozilla:rhino:jar:1.7R4'
+MOCKITO = 'org.mockito:mockito-all:jar:1.9.5'
+
 
 LOG4J = ['log4j:log4j:jar:1.2.17', 'log4j:apache-log4j-extras:jar:1.2.17']
 
@@ -42,7 +44,7 @@ POWERMOCK = [
 ]
 
 TEST_DEPENDENCIES = [
-  POWERMOCK,
+  POWERMOCK, MOCKITO
 ]
 
 VERSION = '1.0.0'

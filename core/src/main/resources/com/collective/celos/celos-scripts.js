@@ -82,6 +82,15 @@ function shellCommandTrigger() {
     };
 }
 
+function successTrigger(workflowName) {
+    return {
+        "type": "com.collective.celos.SuccessTrigger",
+        "properties": {
+            "celos.successTrigger.workflow": workflowName
+        }
+    };
+}
+
 function oozieExternalService(userProperties, oozieURL) {
     function mergeProperties(source, target) {
         for (var name in source) {
