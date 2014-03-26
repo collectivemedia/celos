@@ -41,7 +41,7 @@ public class SuccessTriggerTest {
     public void testUsesWorkflowProvided() throws Exception {
         ObjectNode node = mapper.createObjectNode();
         node.put(SuccessTrigger.COMMAND_PROP, "foo");
-        Assert.assertEquals("foo", new SuccessTrigger(node).getTriggerWorkflow());
+        Assert.assertEquals(new WorkflowID("foo"), new SuccessTrigger(node).getTriggerWorkflowId());
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -63,13 +63,14 @@ public class SuccessTriggerTest {
         Scheduler s = Mockito.mock(Scheduler.class);
         MemoryStateDatabase msd = new MemoryStateDatabase();
 
-        ScheduledTime stNow = new ScheduledTime(DateTime.now(DateTimeZone.UTC));
+        ScheduledTime scheduledTime = new ScheduledTime(DateTime.now(DateTimeZone.UTC));
+        ScheduledTime stNow = new ScheduledTime(DateTime.now(DateTimeZone.UTC).plusMinutes(30));
 
-        msd.putSlotState(new SlotState(new SlotID(new WorkflowID("foo"), stNow), SlotState.Status.SUCCESS));
+        msd.putSlotState(new SlotState(new SlotID(new WorkflowID("foo"), scheduledTime), SlotState.Status.SUCCESS));
 
         Mockito.when(s.getStateDatabase()).thenReturn(msd);
 
-        Assert.assertTrue(trigger.isDataAvailable(s, stNow, stNow));
+        Assert.assertTrue(trigger.isDataAvailable(s, stNow, scheduledTime));
     }
 
     @Test
@@ -82,13 +83,14 @@ public class SuccessTriggerTest {
         Scheduler s = Mockito.mock(Scheduler.class);
         MemoryStateDatabase msd = new MemoryStateDatabase();
 
-        ScheduledTime stNow = new ScheduledTime(DateTime.now(DateTimeZone.UTC));
+        ScheduledTime scheduledTime = new ScheduledTime(DateTime.now(DateTimeZone.UTC));
+        ScheduledTime stNow = new ScheduledTime(DateTime.now(DateTimeZone.UTC).plusMinutes(30));
 
-        msd.putSlotState(new SlotState(new SlotID(new WorkflowID("foo"), stNow), SlotState.Status.WAITING));
+        msd.putSlotState(new SlotState(new SlotID(new WorkflowID("foo"), scheduledTime), SlotState.Status.WAITING));
 
         Mockito.when(s.getStateDatabase()).thenReturn(msd);
 
-        Assert.assertFalse(trigger.isDataAvailable(s, stNow, stNow));
+        Assert.assertFalse(trigger.isDataAvailable(s, stNow, scheduledTime));
     }
 
     @Test
@@ -102,13 +104,14 @@ public class SuccessTriggerTest {
         Scheduler s = Mockito.mock(Scheduler.class);
         MemoryStateDatabase msd = new MemoryStateDatabase();
 
-        ScheduledTime stNow = new ScheduledTime(DateTime.now(DateTimeZone.UTC));
+        ScheduledTime scheduledTime = new ScheduledTime(DateTime.now(DateTimeZone.UTC));
+        ScheduledTime stNow = new ScheduledTime(DateTime.now(DateTimeZone.UTC).plusMinutes(30));
 
         msd.putSlotState(new SlotState(new SlotID(new WorkflowID("foo2"), stNow), SlotState.Status.SUCCESS));
 
         Mockito.when(s.getStateDatabase()).thenReturn(msd);
 
-        Assert.assertFalse(trigger.isDataAvailable(s, stNow, stNow));
+        Assert.assertFalse(trigger.isDataAvailable(s, stNow, scheduledTime));
     }
 
 

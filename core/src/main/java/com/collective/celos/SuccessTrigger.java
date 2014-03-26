@@ -8,22 +8,22 @@ public class SuccessTrigger extends AbstractInternalTrigger {
 
     public static final String COMMAND_PROP = "celos.successTrigger.workflow";
 
-    private String triggerWorkflow;
+    private WorkflowID triggerWorkflowId;
 
     public SuccessTrigger(ObjectNode properties) throws Exception {
-        triggerWorkflow = Util.getStringProperty(properties, COMMAND_PROP);
+        triggerWorkflowId = new WorkflowID(Util.getStringProperty(properties, COMMAND_PROP));
     }
 
     @Override
     public boolean isDataAvailable(Scheduler s, ScheduledTime now, ScheduledTime scheduledTime) throws Exception {
-        SlotID slotId = new SlotID(new WorkflowID(triggerWorkflow), scheduledTime);
+        SlotID slotId = new SlotID(triggerWorkflowId, scheduledTime);
         if (s.getStateDatabase().getSlotState(slotId) != null) {
             return SlotState.Status.SUCCESS == s.getStateDatabase().getSlotState(slotId).getStatus();
         }
         return false;
     }
 
-    public String getTriggerWorkflow() {
-        return triggerWorkflow;
+    public WorkflowID getTriggerWorkflowId() {
+        return triggerWorkflowId;
     }
 }
