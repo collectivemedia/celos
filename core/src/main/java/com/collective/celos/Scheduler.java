@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.SortedSet;
 
 import com.collective.celos.api.ScheduledTime;
+import com.collective.celos.api.Trigger;
 import com.collective.celos.api.Util;
 import org.apache.log4j.Logger;
 
@@ -120,7 +121,7 @@ public class Scheduler {
     void updateSlotState(Workflow wf, SlotState slotState, ScheduledTime current) throws Exception {
         SlotState.Status status = slotState.getStatus();
         if (status.equals(SlotState.Status.WAITING)) {
-            if (wf.getTrigger().isDataAvailable(current, slotState.getScheduledTime())) {
+            if (callTrigger(wf, slotState, current)) {
                 LOGGER.info("Slot is ready: " + slotState.getSlotID());
                 database.putSlotState(slotState.transitionToReady());
             } else {
@@ -144,6 +145,17 @@ public class Scheduler {
             } else {
                 LOGGER.info("Slot still running: " + slotState.getSlotID() + " external ID: " + slotState.getExternalID());
             }
+        }
+    }
+
+    private boolean callTrigger(Workflow wf, SlotState slotState, ScheduledTime current) throws Exception {
+        Trigger trigger = wf.getTrigger();
+        ScheduledTime scheduledTime = slotState.getScheduledTime();
+        if (trigger instanceof InternalTrigger) {
+            InternalTrigger internalTrigger = (InternalTrigger) trigger;
+            return internalTrigger.isDataAvailable(this, current, scheduledTime);
+        } else {
+            return trigger.isDataAvailable(current, scheduledTime);
         }
     }
     
