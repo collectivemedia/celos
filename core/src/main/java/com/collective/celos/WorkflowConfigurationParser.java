@@ -127,7 +127,9 @@ public class WorkflowConfigurationParser {
     
     private int getMaxRetryCountFromJSON(JsonNode workflowNode) {
         JsonNode maxRetryCountNode = workflowNode.get(MAX_RETRY_COUNT_PROP);
-        if (!maxRetryCountNode.isNumber()) {
+        if (maxRetryCountNode == null) {
+            return 0;
+        } else if (!maxRetryCountNode.isNumber()) {
             throw new IllegalArgumentException("maxRetryCount must be a number: " + workflowNode.toString());
         }
         return maxRetryCountNode.intValue();
