@@ -32,9 +32,6 @@ public class CommandExternalService implements ExternalService {
         this.rawCommand = Util.getStringProperty(properties, COMMAND_PROP);
         this.wrapperCommand = Util.getStringProperty(properties, WRAPPER_COMMAND_PROP);
         this.databaseDir = new File(Util.getStringProperty(properties, DATABASE_DIR_PROP));
-        if (!databaseDir.exists()) {
-            throw new RuntimeException("Database directory " + databaseDir + " doesn't exist.");
-        }
     }
     
     @Override
@@ -44,7 +41,7 @@ public class CommandExternalService implements ExternalService {
 
     @Override
     public void start(SlotID id, String externalID) throws ExternalServiceException {
-        String command = formatter.replaceTimeTokens(rawCommand, id.getScheduledTime());
+        String command = formatter.replaceTimeTokens(getRawCommand(), id.getScheduledTime());
         File jobDir = getJobDir(id, externalID);
         if (jobDir.exists()) {
             throw new IllegalStateException("Job directory " + jobDir + " already exists.");
@@ -108,6 +105,10 @@ public class CommandExternalService implements ExternalService {
         return new File(jobDir, EXIT_CODE_FILE_NAME);
     }
     
+    public String getRawCommand() {
+        return rawCommand;
+    }
+
     private static class CommandExternalStatus implements ExternalStatus {
 
         private boolean running;

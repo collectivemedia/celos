@@ -124,6 +124,19 @@ public class JavaScriptFunctionsTest {
         Assert.assertEquals(props, s.getProperties());
     }
 
+    // CommandExternalService
+    
+    @Test(expected=Exception.class)
+    public void testCESCommandRequired() throws Exception {
+        runJS("commandExternalService()");
+    }
+    
+    @Test
+    public void testCESUsesCommand() throws Exception {
+        CommandExternalService s = (CommandExternalService) runJS("commandExternalService('shutdown -h now')");
+        Assert.assertEquals("shutdown -h now", s.getRawCommand());
+    }
+    
     private Object runJS(String js) throws Exception {
         WorkflowConfigurationParser parser = new WorkflowConfigurationParser(new File("unused"));
         // Evaluate JS function call
