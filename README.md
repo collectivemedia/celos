@@ -455,10 +455,12 @@ Now every Oozie workflow will run as user "peter".
 
 ## Workflow properties
 
-### `maxRetryCount` (number)
+### `maxRetryCount` (number, optional)
 
 Determines number of times a slot should be automatically retried when
 it fails.
+
+Defaults to 0, so slots will not be automatically retried by default.
 
 #### Example
 

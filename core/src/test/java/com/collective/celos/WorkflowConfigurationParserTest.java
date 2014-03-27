@@ -175,9 +175,10 @@ public class WorkflowConfigurationParserTest {
         parseFile("id-not-a-string");
     }
     
-    @Test(expected=Exception.class)
-    public void maxRetryCountMustBeSet() throws Exception {
-        parseFile("maxretrycount-missing");
+    @Test
+    public void maxRetryCountUsesZeroIfNotSet() throws Exception {
+        Workflow wf = parseDir("maxretrycount-missing").findWorkflow(new WorkflowID("workflow-1"));
+        Assert.assertEquals(0, wf.getMaxRetryCount());
     }
     
     @Test(expected=Exception.class)
