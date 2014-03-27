@@ -45,8 +45,8 @@ public class CommandExternalServiceTest {
     private void runCommandWithExpectedStatus(String command, ExternalStatus status) throws Exception {
         ObjectNode props = mapper.createObjectNode();
         props.put(CommandExternalService.COMMAND_PROP, command);
-        props.put(CommandExternalService.DATABASE_DIR_PROP, "jobrunner/db");
-        props.put(CommandExternalService.OUTER_WRAPPER_COMMAND_PROP, "src/main/bash/celos-outer-wrapper");
+        props.put(CommandExternalService.DATABASE_DIR_PROP, getTestDatabaseDir());
+        props.put(CommandExternalService.WRAPPER_COMMAND_PROP, "src/main/bash/celos-wrapper");
         ExternalService srv = new CommandExternalService(props);
         
         SlotID slotID = new SlotID(new WorkflowID("foo"), ScheduledTime.now());

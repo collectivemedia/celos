@@ -120,8 +120,7 @@ function commandExternalService(command) {
         "type": "com.collective.celos.CommandExternalService",
         "properties": {
             "celos.commandExternalService.command": command,
-            "celos.commandExternalService.outerWrapperCommand": "celos-outer-wrapper",
-            "celos.commandExternalService.innerWrapperCommand": "celos-inner-wrapper",
+            "celos.commandExternalService.wrapperCommand": "celos-wrapper",
             "celos.commandExternalService.databaseDir": "/var/lib/celos/jobs"
         }
     };

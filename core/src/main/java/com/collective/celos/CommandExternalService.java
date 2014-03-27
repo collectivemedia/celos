@@ -13,7 +13,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 public class CommandExternalService implements ExternalService {
 
     public static final String COMMAND_PROP = "celos.commandExternalService.command";
-    public static final String OUTER_WRAPPER_COMMAND_PROP = "celos.commandExternalService.outerWrapperCommand";
+    public static final String WRAPPER_COMMAND_PROP = "celos.commandExternalService.wrapperCommand";
     public static final String DATABASE_DIR_PROP = "celos.commandExternalService.databaseDir";
     
     public static final String PID_FILE_NAME = "pid";
@@ -30,7 +30,7 @@ public class CommandExternalService implements ExternalService {
     
     public CommandExternalService(ObjectNode properties) {
         this.rawCommand = Util.getStringProperty(properties, COMMAND_PROP);
-        this.wrapperCommand = Util.getStringProperty(properties, OUTER_WRAPPER_COMMAND_PROP);
+        this.wrapperCommand = Util.getStringProperty(properties, WRAPPER_COMMAND_PROP);
         this.databaseDir = new File(Util.getStringProperty(properties, DATABASE_DIR_PROP));
         if (!databaseDir.exists()) {
             throw new RuntimeException("Database directory " + databaseDir + " doesn't exist.");
