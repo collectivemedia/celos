@@ -550,6 +550,22 @@ curl http://celos001.ny7.collective-media.net:8080/celos/workflow?id=workflow-1
 }
 </pre>
 
+### Get slot information -- `GET /celos/slot-state?id=...&time=...`
+
+Returns the state of the given slot.
+
+#### Example
+
+<pre>
+curl http://celos001.ny7.collective-media.net:8080/celos/slot-state?id=workflow-1&time=2014-02-10T04:00Z
+==>
+{
+  "status" : "SUCCESS",
+  "externalID" : "0001828-140209102019171-oozie-oozi-W",
+  "retryCount" : 0
+}
+</pre>
+
 ### Rerun slot -- `POST /celos/rerun?id=...&time=...` 
 
 Reruns a specific slot.
