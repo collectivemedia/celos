@@ -114,3 +114,15 @@ function oozieExternalService(userProperties, oozieURL) {
         "properties": theProperties
     };
 }
+
+function commandExternalService(command) {
+    return {
+        "type": "com.collective.celos.CommandExternalService",
+        "properties": {
+            "celos.commandExternalService.command": command,
+            "celos.commandExternalService.outerWrapperCommand": "celos-outer-wrapper",
+            "celos.commandExternalService.innerWrapperCommand": "celos-inner-wrapper",
+            "celos.commandExternalService.databaseDir": "/var/lib/celos/jobs"
+        }
+    };
+}

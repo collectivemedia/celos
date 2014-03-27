@@ -6,15 +6,10 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.anyObject;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import com.collective.celos.api.Schedule;
-import com.collective.celos.api.ScheduledTime;
-import com.collective.celos.api.Trigger;
-import com.collective.celos.api.Util;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.junit.Assert;
@@ -22,6 +17,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
+
+import com.collective.celos.api.Schedule;
+import com.collective.celos.api.ScheduledTime;
+import com.collective.celos.api.Trigger;
+import com.collective.celos.api.Util;
 
 /**
  * TODO: test exception handling and logging
@@ -132,7 +132,7 @@ public class SchedulerTest {
         
         InOrder inOrder = inOrder(externalService);
         inOrder.verify(externalService).submit(slotStates.get(0).getSlotID());
-        inOrder.verify(externalService).start("externalId");
+        inOrder.verify(externalService).start(slotId, "externalId");
         verifyNoMoreInteractions(externalService);
     }
     
@@ -228,7 +228,7 @@ public class SchedulerTest {
 
         // The external service should report the status as success
         ExternalStatus running = new MockExternalService.MockExternalStatusRunning();
-        when(externalService.getStatus(slotState.getExternalID())).thenReturn(running);
+        when(externalService.getStatus(slotId, slotState.getExternalID())).thenReturn(running);
 
         scheduler.updateSlotState(wf, slotState, ScheduledTime.now());
 
@@ -243,7 +243,7 @@ public class SchedulerTest {
 
         // The external service should report the status as success
         ExternalStatus success = new MockExternalService.MockExternalStatusSuccess();
-        when(externalService.getStatus(slotState.getExternalID())).thenReturn(success);
+        when(externalService.getStatus(slotId, slotState.getExternalID())).thenReturn(success);
 
         scheduler.updateSlotState(wf, slotState, ScheduledTime.now());
 
@@ -259,7 +259,7 @@ public class SchedulerTest {
 
         // The external service should report the status as failure
         ExternalStatus failure = new MockExternalService.MockExternalStatusFailure();
-        when(externalService.getStatus(slotState.getExternalID())).thenReturn(failure);
+        when(externalService.getStatus(slotId, slotState.getExternalID())).thenReturn(failure);
 
         scheduler.updateSlotState(wf, slotState, ScheduledTime.now());
 
@@ -677,13 +677,13 @@ public class SchedulerTest {
         }
 
         @Override
-        public void start(String externalID) throws ExternalServiceException {
+        public void start(SlotID id, String externalID) throws ExternalServiceException {
             Assert.assertEquals("fake-external-id", externalID);
             failuresLeft--;
         }
 
         @Override
-        public ExternalStatus getStatus(String externalWorkflowID) throws ExternalServiceException {
+        public ExternalStatus getStatus(SlotID id, String externalWorkflowID) throws ExternalServiceException {
             if (failuresLeft < 0) {
                 return new MockExternalService.MockExternalStatusSuccess();
             } else {
@@ -696,12 +696,12 @@ public class SchedulerTest {
     @Test
     public void testRepeatedlyFailingExternalService() throws ExternalServiceException {
         ExternalService srv = new RepeatedlyFailingExternalService(2);
-        srv.start("fake-external-id");
-        Assert.assertFalse(srv.getStatus("fake-external-id").isSuccess());
-        srv.start("fake-external-id");
-        Assert.assertFalse(srv.getStatus("fake-external-id").isSuccess());
-        srv.start("fake-external-id");
-        Assert.assertTrue(srv.getStatus("fake-external-id").isSuccess());
+        srv.start(slotId, "fake-external-id");
+        Assert.assertFalse(srv.getStatus(slotId, "fake-external-id").isSuccess());
+        srv.start(slotId, "fake-external-id");
+        Assert.assertFalse(srv.getStatus(slotId, "fake-external-id").isSuccess());
+        srv.start(slotId, "fake-external-id");
+        Assert.assertTrue(srv.getStatus(slotId, "fake-external-id").isSuccess());
     }
     
     

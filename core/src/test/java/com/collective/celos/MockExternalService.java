@@ -29,11 +29,11 @@ public class MockExternalService implements ExternalService {
     }
     
     @Override
-    public void start(String externalID) throws ExternalServiceException {
+    public void start(SlotID id, String externalID) throws ExternalServiceException {
     }
 
     @Override
-    public ExternalStatus getStatus(String externalWorkflowID) {
+    public ExternalStatus getStatus(SlotID id, String externalID) {
         return status;
     }
     

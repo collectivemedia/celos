@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+# This wrapper takes a command and (empty) dir as arguments.
+#
+# It forks the command, writes its pid to dir/pid and waits for it to
+# finish.  Once it's finished it writes its exit code to dir/status.
+#
+# Additionally it redirects the command's stdout and stderr to dir/out
+# and dir/err, respectively, and writes the command to dir/cmd.
+
+CMD=$1
+DIR=$2
+
+echo $CMD > $DIR/cmd
+$CMD >$DIR/out 2>$DIR/err </dev/null &
+echo $! >$DIR/pid
+wait $!
+echo $? >$DIR/status
