@@ -72,6 +72,12 @@ public class JavaScriptFunctionsTest {
     }
     
     @Test
+    public void testNotTrigger() throws Exception {
+        NotTrigger t = (NotTrigger) runJS("notTrigger(alwaysTrigger())");
+        AlwaysTrigger at = (AlwaysTrigger) t.getTrigger();
+    }
+    
+    @Test
     public void testDelayTrigger() throws Exception {
         DelayTrigger t = (DelayTrigger) runJS("delayTrigger(25)");
         Assert.assertEquals(25, t.getSeconds());

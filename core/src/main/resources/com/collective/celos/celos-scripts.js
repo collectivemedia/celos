@@ -64,6 +64,15 @@ function andTrigger() {
     };
 }
 
+function notTrigger(subTrigger) {
+    return {
+        "type": "com.collective.celos.NotTrigger",
+        "properties": {
+            "celos.notTrigger.trigger": subTrigger
+        }
+    };
+}
+
 function delayTrigger(seconds) {
     return {
         "type": "com.collective.celos.DelayTrigger",
