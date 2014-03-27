@@ -32,7 +32,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  * 
  * - pid: the process identifier of the launched process
  * 
- * - status: if the process has finished, contains its exit
+ * - status: if the process has finished, contains its exit code
  * 
  * - out: the stdout of the process
  * 
