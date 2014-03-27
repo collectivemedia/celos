@@ -94,7 +94,17 @@ public class CommandExternalService implements ExternalService {
     }
 
     private File getJobDir(SlotID id, String externalID) {
-        return new File(databaseDir, externalID);
+        return new File(getDayDir(id), externalID);
+    }
+
+    private File getDayDir(SlotID slotID) {
+        File workflowDir = getWorkflowDir(slotID);
+        File dayDir = new File(workflowDir, formatter.formatDatestamp(slotID.getScheduledTime()));
+        return dayDir;
+    }
+
+    private File getWorkflowDir(SlotID slotID) {
+        return new File(databaseDir, slotID.getWorkflowID().toString());
     }
 
     private File getPidFile(File jobDir) {
