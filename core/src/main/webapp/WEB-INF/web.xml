@@ -30,6 +30,15 @@
   </servlet-mapping>
 
   <servlet>
+    <servlet-name>JSONSlotStateServlet</servlet-name>
+    <servlet-class>com.collective.celos.servlet.JSONSlotStateServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>JSONSlotStateServlet</servlet-name>
+    <url-pattern>/slot-state</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
     <servlet-name>RerunServlet</servlet-name>
     <servlet-class>com.collective.celos.servlet.RerunServlet</servlet-class>
   </servlet>
