@@ -58,7 +58,7 @@ public class CommandExternalService implements ExternalService {
         } catch (Exception e) {
             throw new ExternalServiceException(e);
         }
-        LOGGER.info("Started command " + command);
+        LOGGER.info(id + ": Started command: " + command + " with job dir: " + jobDir);
     }
 
     @Override
