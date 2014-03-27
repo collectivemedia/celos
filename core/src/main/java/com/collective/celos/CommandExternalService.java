@@ -10,6 +10,34 @@ import org.apache.log4j.Logger;
 import com.collective.celos.api.Util;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+/**
+ * This external service launches potentially long-running UNIX processes and tracks their status.
+ * 
+ * It maintains a job database by default at /var/lib/celos/jobs containing information about each job.
+ * 
+ * It does this by means of a small wrapper script (src/main/bash/celos-wrapper), which forks the process.
+ * 
+ * The process is started as an orphan process (not a child of Celos), so it will keep on running even
+ * if Celos is restarted for maintenance or deployment.
+ * 
+ * Each started process is assigned a UUID which serves as the external ID in the Celos API.
+ * 
+ * The service creates a job directory at:
+ * 
+ * /var/lib/celos/jobs/$workflow-name/$YYYY-$MM-$DD/$UUID
+ * 
+ * The job directory contains the following files:
+ * 
+ * - cmd: the executed command line
+ * 
+ * - pid: the process identifier of the launched process
+ * 
+ * - status: if the process has finished, contains its exit
+ * 
+ * - out: the stdout of the process
+ * 
+ * - err: the stderr of the process
+ */
 public class CommandExternalService implements ExternalService {
 
     public static final String COMMAND_PROP = "celos.commandExternalService.command";
@@ -58,7 +86,7 @@ public class CommandExternalService implements ExternalService {
         } catch (Exception e) {
             throw new ExternalServiceException(e);
         }
-        LOGGER.info(id + ": Started command: " + command + " with job dir: " + jobDir);
+        LOGGER.info("Started command: " + command + " with job dir: " + jobDir + " for: " + id);
     }
 
     @Override
