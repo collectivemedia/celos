@@ -112,6 +112,27 @@ public class UtilTest {
         node.put("foo", array);
         Assert.assertEquals(array, Util.getArrayProperty(node, "foo"));
     }
+    
+    @Test(expected=IllegalArgumentException.class)
+    public void getObjectPropertyDetectsUnsetProperty() {
+        ObjectNode node = Util.newObjectNode();
+        Util.getObjectProperty(node, "foo");
+    }
+    
+    @Test(expected=IllegalArgumentException.class)
+    public void getObjectPropertyDetectsNonObjectProperty() {
+        ObjectNode node = Util.newObjectNode();
+        node.put("foo", 12);
+        Util.getObjectProperty(node, "foo");
+    }
+    
+    @Test
+    public void getObjectPropertyWorks() {
+        ObjectNode node = Util.newObjectNode();
+        ObjectNode nested = Util.newObjectNode();
+        node.put("foo", nested);
+        Assert.assertEquals(nested, Util.getObjectProperty(node, "foo"));
+    }
 
     @Test
     public void toNominalTimeFormat() {

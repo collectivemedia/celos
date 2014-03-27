@@ -60,13 +60,13 @@ public class AndTriggerTest {
         new AndTrigger(properties);
     }
     
-    private ObjectNode createAlwaysTriggerConfiguration() {
+    public static ObjectNode createAlwaysTriggerConfiguration() {
         ObjectNode config = Util.newObjectNode();
         config.put("type", "com.collective.celos.AlwaysTrigger");
         return config;
     }
     
-    private ObjectNode createNeverTriggerConfiguration() {
+    public static ObjectNode createNeverTriggerConfiguration() {
         ObjectNode config = Util.newObjectNode();
         config.put("type", "com.collective.celos.NeverTrigger");
         return config;

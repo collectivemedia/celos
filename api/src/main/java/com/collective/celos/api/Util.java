@@ -87,6 +87,17 @@ public class Util {
         }
     }
 
+    public static ObjectNode getObjectProperty(ObjectNode properties, String name) {
+        JsonNode node = properties.get(name);
+        if (node == null) {
+            throw new IllegalArgumentException("Property " + name + " not set.");
+        } else if (!node.isObject()) {
+            throw new IllegalArgumentException("Property " + name + " is not an object, but " + node);
+        } else {
+            return (ObjectNode) node;
+        }
+    }
+
     public static ScheduledTime max(ScheduledTime a, ScheduledTime b) {
         requireNonNull(a);
         requireNonNull(b);
