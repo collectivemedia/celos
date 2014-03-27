@@ -327,6 +327,28 @@ The `delayTrigger()` should always be placed as the first argument of
 an `andTrigger()` so that the relatively more expensive
 `hdfsCheckTrigger()` won't even be executed.
 
+### successTrigger
+
+Syntax: `successTrigger(workflowName)`
+
+A trigger that signals data availability for a given scheduled time
+only if another workflow has successfully run for that time.
+
+This makes it possible to describe dependencies among workflows.
+
+#### Parameters
+
+* `workflowName` -- the name of the workflow to wait for
+
+#### Example
+
+This trigger triggers for a given time if the workflow `foo-workflow`
+was successful for that time:
+
+```javascript
+successTrigger("foo-workflow")
+```
+
 ## Schedules
 
 ### hourlySchedule
