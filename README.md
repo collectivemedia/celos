@@ -1,14 +1,14 @@
 # Celos Workflow Scheduler
 
-* **C**onfigurable — It’s your job to make it usable.
+* Configurable — It’s your job to make it usable.
 
-* **E**legant — The only use case is making me feel smart.
+* Elegant — The only use case is making me feel smart.
 
-* **L**ightweight — I don’t understand the use-cases the alternatives solve.
+* Lightweight — I don’t understand the use-cases the alternatives solve.
 
-* **O**pinionated — I don’t believe that your use case exists.
+* Opinionated — I don’t believe that your use case exists.
 
-* **S**imple — It solves my use case.
+* Simple — It solves my use case.
 
 *(from the [Devil's Dictionary of Programming](http://programmingisterrible.com/post/65781074112/devils-dictionary-of-programming))*
 
@@ -188,7 +188,9 @@ This assumes you have the [test cluster](provisioner/README.md) running.
 
 ## Triggers
 
-### `alwaysTrigger()`
+### alwaysTrigger
+
+Syntax: `alwaysTrigger()`
 
 The simplest kind of trigger: it always signals data availability.
 
@@ -202,7 +204,9 @@ To use when you simply want to run a workflow at every scheduled time.
 ...
 </pre>
 
-### `hdfsCheckTrigger(path, [fs])`
+### hdfsCheckTrigger
+
+Syntax: `hdfsCheckTrigger(path, [fs])`
 
 Waits for the existence of a file or directory in HDFS.
 
@@ -239,7 +243,9 @@ var CELOS_DEFAULT_HDFS = "hdfs://nameservice1";
 The `path` can contain the variables `${year}`, `${month}`, `${day}`,
 `${hour}`, `${minute}`, and `${second}`, which are zero-padded.
 
-### `shellCommandTrigger(commandElements...)`
+### shellCommandTrigger
+
+Syntax: `shellCommandTrigger(commandElements...)`
 
 Call a shell command to determine data availability.
 
@@ -269,7 +275,9 @@ zero-padded.
 The command is executed synchronously from Celos' scheduler loop, so
 it should run quickly.
 
-### `andTrigger(triggers...)`
+### andTrigger
+
+Syntax: `andTrigger(triggers...)`
 
 Combines multiple triggers and waits for all of them (logical AND).
 
@@ -290,7 +298,9 @@ Combines multiple triggers and waits for all of them (logical AND).
 ...
 </pre>
 
-### `delayTrigger(seconds)`
+### delayTrigger
+
+Syntax: `delayTrigger(seconds)`
 
 A trigger that signals data availability for a given scheduled time
 only if it is a configurable number of seconds past the current time.
@@ -319,7 +329,9 @@ an `andTrigger()` so that the relatively more expensive
 
 ## Schedules
 
-### `hourlySchedule()`
+### hourlySchedule
+
+Syntax: `hourlySchedule()`
 
 Schedules a workflow to run every hour.
 
@@ -331,7 +343,9 @@ Schedules a workflow to run every hour.
 ...
 </pre>
 
-### `minutelySchedule()`
+### minutelySchedule
+
+Syntax: `minutelySchedule()`
 
 Schedules a workflow to run every minute.
 
@@ -343,7 +357,9 @@ Schedules a workflow to run every minute.
 ...
 </pre>
 
-### `cronSchedule(cronExpression)`
+### cronSchedule
+
+Syntax: `cronSchedule(cronExpression)`
 
 Schedules a workflow to run via a `cron`-like expression.
 
@@ -363,7 +379,9 @@ Run a workflow at minute 15 of every hour of every day of the year.
 
 ## Scheduling Strategies
 
-### `serialSchedulingStrategy()`
+### serialSchedulingStrategy
+
+Syntax: `serialSchedulingStrategy()`
 
 Runs the oldest ready slot first, and ensures there's only a single
 slot running at any time.
@@ -379,7 +397,9 @@ slot running at any time.
 
 ## External Services
 
-### `oozieExternalService(workflowProperties, [oozieURL])`
+### oozieExternalService
+
+Syntax: `oozieExternalService(workflowProperties, [oozieURL])`
 
 Submits jobs to Oozie.
 
@@ -455,7 +475,9 @@ Now every Oozie workflow will run as user "peter".
 
 ## Workflow properties
 
-### `maxRetryCount` (number, optional)
+### maxRetryCount
+
+Type: number, optional
 
 Determines number of times a slot should be automatically retried when
 it fails.
@@ -470,7 +492,9 @@ Defaults to 0, so slots will not be automatically retried by default.
 ...
 </pre>
 
-### `startTime` (string in ISO 8601 UTC date format, optional)
+### startTime
+
+Type: string in ISO 8601 UTC date format, optional
 
 When the workflow should start.
 
