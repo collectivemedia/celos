@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.util.UUID;
 
+import com.collective.celos.api.ScheduledTimeFormatter;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 
