@@ -10,13 +10,15 @@ public interface ExternalService {
     public String submit(SlotID id) throws ExternalServiceException;
 
     /**
-     * Starts workflow with the given enternal ID.
+     * Starts workflow with the given external ID.
+     * 
+     * The slot ID is the same that previously passed to submit.
      */
-    public void start(String externalID) throws ExternalServiceException;
+    public void start(SlotID id, String externalID) throws ExternalServiceException;
     
     /**
      * Gets the status of the externally running workflow with the given ID.
      */
-    public ExternalStatus getStatus(String externalWorkflowID) throws ExternalServiceException;
+    public ExternalStatus getStatus(SlotID id, String externalID) throws ExternalServiceException;
 
 }

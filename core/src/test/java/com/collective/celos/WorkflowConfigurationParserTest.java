@@ -6,13 +6,13 @@ import java.net.URL;
 import java.util.List;
 import java.util.SortedSet;
 
+import org.junit.Assert;
+import org.junit.Test;
+
 import com.collective.celos.api.Schedule;
 import com.collective.celos.api.ScheduledTime;
 import com.collective.celos.api.Trigger;
 import com.collective.celos.api.Util;
-import org.junit.Assert;
-import org.junit.Test;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
@@ -78,10 +78,10 @@ public class WorkflowConfigurationParserTest {
             return null;
         }
         @Override
-        public void start(String externalID) throws ExternalServiceException {
+        public void start(SlotID id, String externalID) throws ExternalServiceException {
         }
         @Override
-        public ExternalStatus getStatus(String externalWorkflowID) throws ExternalServiceException {
+        public ExternalStatus getStatus(SlotID slotId, String externalWorkflowID) throws ExternalServiceException {
             return null;
         }
     }
@@ -140,7 +140,6 @@ public class WorkflowConfigurationParserTest {
         CronSchedule schedule = (CronSchedule) wf.getSchedule();
         Assert.assertEquals(schedule.getCronExpression(), "0 12 * * * ?");
     }
-
 
     @Test
     public void canFindWorkflow() throws Exception {
@@ -211,7 +210,6 @@ public class WorkflowConfigurationParserTest {
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode workflowNode = mapper.createObjectNode();
         workflowNode.put(WorkflowConfigurationParser.START_TIME_PROP, 12);
-        File dir = getConfigurationDir("empty");
         File defaults = getDefaultsDir();
         new WorkflowConfigurationParser(defaults).getStartTimeFromJSON(workflowNode);
     }

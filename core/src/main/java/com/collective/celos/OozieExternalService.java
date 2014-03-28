@@ -45,7 +45,7 @@ public class OozieExternalService implements ExternalService {
     }
     
     @Override
-    public void start(String externalID) throws ExternalServiceException {
+    public void start(SlotID unused, String externalID) throws ExternalServiceException {
         try {
             client.start(externalID);
         } catch (OozieClientException e) {
@@ -83,9 +83,7 @@ public class OozieExternalService implements ExternalService {
     }
 
     @Override
-    public ExternalStatus getStatus(String jobId)
-            throws ExternalServiceException {
-
+    public ExternalStatus getStatus(SlotID unused, String jobId) throws ExternalServiceException {
         try {
             WorkflowJob jobInfo = client.getJobInfo(jobId);
             String status = jobInfo.getStatus().toString();

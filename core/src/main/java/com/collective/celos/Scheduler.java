@@ -105,11 +105,12 @@ public class Scheduler {
             if (!slotState.getStatus().equals(SlotState.Status.READY)) {
                 throw new IllegalStateException("Scheduling strategy returned non-ready slot: " + slotState);
             }
-            LOGGER.info("Submitting slot to external service: " + slotState.getSlotID());
-            String externalID = wf.getExternalService().submit(slotState.getSlotID());
+            SlotID slotID = slotState.getSlotID();
+            LOGGER.info("Submitting slot to external service: " + slotID);
+            String externalID = wf.getExternalService().submit(slotID);
             database.putSlotState(slotState.transitionToRunning(externalID));
-            LOGGER.info("Starting slot: " + slotState.getSlotID() + " with external ID: " + externalID);
-            wf.getExternalService().start(externalID);
+            LOGGER.info("Starting slot: " + slotID + " with external ID: " + externalID);
+            wf.getExternalService().start(slotID, externalID);
         }
     }
 
@@ -119,31 +120,33 @@ public class Scheduler {
      * Check the external status of all RUNNING slots, and update them to SUCCESS or FAILURE if they're finished.
      */
     void updateSlotState(Workflow wf, SlotState slotState, ScheduledTime current) throws Exception {
+        SlotID slotID = slotState.getSlotID();
         SlotState.Status status = slotState.getStatus();
         if (status.equals(SlotState.Status.WAITING)) {
             if (callTrigger(wf, slotState, current)) {
-                LOGGER.info("Slot is ready: " + slotState.getSlotID());
+                LOGGER.info("Slot is ready: " + slotID);
                 database.putSlotState(slotState.transitionToReady());
             } else {
-                LOGGER.info("Waiting for slot: " + slotState.getSlotID());
+                LOGGER.info("Waiting for slot: " + slotID);
             }
         } else if (status.equals(SlotState.Status.RUNNING)) {
-            ExternalStatus xStatus = wf.getExternalService().getStatus(slotState.getExternalID());
+            String externalID = slotState.getExternalID();
+            ExternalStatus xStatus = wf.getExternalService().getStatus(slotID, externalID);
             if (!xStatus.isRunning()) {
                 if (xStatus.isSuccess()) {
-                    LOGGER.info("Slot successful: " + slotState.getSlotID() + " external ID: " + slotState.getExternalID());
+                    LOGGER.info("Slot successful: " + slotID + " external ID: " + externalID);
                     database.putSlotState(slotState.transitionToSuccess());
                 } else {
                     if (slotState.getRetryCount() < wf.getMaxRetryCount()) {
-                        LOGGER.info("Slot failed, preparing for retry: " + slotState.getSlotID() + " external ID: " + slotState.getExternalID());
+                        LOGGER.info("Slot failed, preparing for retry: " + slotID + " external ID: " + externalID);
                         database.putSlotState(slotState.transitionToRetry());
                     } else {
-                        LOGGER.info("Slot failed permanently: " + slotState.getSlotID() + " external ID: " + slotState.getExternalID());
+                        LOGGER.info("Slot failed permanently: " + slotID + " external ID: " + externalID);
                         database.putSlotState(slotState.transitionToFailure());
                     }
                 }
             } else {
-                LOGGER.info("Slot still running: " + slotState.getSlotID() + " external ID: " + slotState.getExternalID());
+                LOGGER.info("Slot still running: " + slotID + " external ID: " + externalID);
             }
         }
     }

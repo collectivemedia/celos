@@ -29,3 +29,6 @@
 
   - name: Deploy defaults
     shell: cd {{remote_celos}} && ./production/defaults-deploy.sh
+
+  - name: Deploy wrapper
+    shell: cd {{remote_celos}} && ./production/wrapper-deploy.sh
