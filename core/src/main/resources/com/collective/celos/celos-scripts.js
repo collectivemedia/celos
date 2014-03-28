@@ -1,5 +1,5 @@
 function addWorkflow(json) {
-    celosWorkflowConfigurationParser.addWorkflowFromJSONString(JSON.stringify(json));
+    celosWorkflowConfigurationParser.addWorkflowFromJSONString(JSON.stringify(json), jsConfigFileName);
 }
 
 function importDefaults(label) {

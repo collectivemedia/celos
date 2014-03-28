@@ -25,6 +25,15 @@ public class SchedulerConfiguration {
         return new Scheduler(config, db, slidingWindowHours);
     }
 
+    public String getWorkflowConfigurationFileContents(String workflowId) throws Exception {
+        File configDir = new File(WORKFLOW_CONFIGURATION_PATH);
+        File defaultsDir = new File(DEFAULTS_CONFIGURATION_PATH);
+        WorkflowConfigurationParser parser = new WorkflowConfigurationParser(defaultsDir);
+        WorkflowConfigurationParser config = parser.parseConfiguration(configDir);
+        String fileName = config.getWorkflowConfiguration().getWorkflowJSFileName(new WorkflowID(workflowId));
+        return parser.getJSConfigContent(configDir, fileName);
+    }
+
     public StateDatabase makeDefaultStateDatabase() throws IOException {
         File dbDir = new File(STATE_DATABASE_PATH);
         return new FileSystemStateDatabase(dbDir);

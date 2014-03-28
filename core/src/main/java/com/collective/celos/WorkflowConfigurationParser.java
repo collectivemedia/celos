@@ -1,13 +1,9 @@
 package com.collective.celos;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
+import java.io.*;
 import java.util.Collection;
 
+import com.sun.java.swing.plaf.windows.resources.windows_de;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.mozilla.javascript.Context;
@@ -57,6 +53,16 @@ public class WorkflowConfigurationParser {
         context.setLanguageVersion(170);
     }
 
+    public String getJSConfigContent(File workflowsDir, String workflowFileName) throws IOException {
+        File file = FileUtils.getFile(workflowsDir, workflowFileName);
+        try {
+            return FileUtils.readFileToString(file);
+        } catch (IOException e) {
+            LOGGER.error("Failed to load JS config file: " + file + ": " + e.getMessage(), e);
+            throw e;
+        }
+    }
+
     public WorkflowConfigurationParser parseConfiguration(File workflowsDir) {
         LOGGER.info("Using workflows directory: " + workflowsDir);
         LOGGER.info("Using defaults directory: " + defaultsDir);
@@ -82,17 +88,18 @@ public class WorkflowConfigurationParser {
     Object evaluateReader(Reader r, String fileName, int lineNo) throws Exception, IOException {
         Global scope = new Global();
         scope.initStandardObjects(context, true);
-        setupBindings(scope);
+        setupBindings(scope, fileName);
         loadBuiltinScripts(scope);
         return context.evaluateReader(scope, r, fileName, lineNo, null);
     }
     
-    private void setupBindings(Global scope) {
+    private void setupBindings(Global scope, String jsConfigFileName) {
         Object wrappedThis = Context.javaToJS(this, scope);
         ScriptableObject.putProperty(scope, "celosWorkflowConfigurationParser", wrappedThis);
         // Need to put scope into JS so it can call importDefaultsIntoScope
         Object wrappedScope = Context.javaToJS(scope, scope);
         ScriptableObject.putProperty(scope, "celosScope", wrappedScope);
+        ScriptableObject.putProperty(scope, "jsConfigFileName", jsConfigFileName);
     }
 
     private void loadBuiltinScripts(Global scope) throws Exception {
@@ -113,7 +120,7 @@ public class WorkflowConfigurationParser {
         context.evaluateReader(scope, fileReader, fileName, lineNo, null);
     }
     
-    public void addWorkflowFromJSONString(String json) throws Exception {
+    public void addWorkflowFromJSONString(String json, String jsConfigFileName) throws Exception {
         JsonNode workflowNode = mapper.readTree(json);
         WorkflowID id = getWorkflowID(workflowNode);
         Schedule schedule = getScheduleFromJSON(id, workflowNode);
@@ -122,7 +129,7 @@ public class WorkflowConfigurationParser {
         ExternalService externalService = getExternalServiceFromJSON(id, workflowNode);
         int maxRetryCount = getMaxRetryCountFromJSON(workflowNode);
         ScheduledTime startTime = getStartTimeFromJSON(workflowNode);
-        cfg.addWorkflow(new Workflow(id, schedule, schedulingStrategy, trigger, externalService, maxRetryCount, startTime));
+        cfg.addWorkflow(new Workflow(id, schedule, schedulingStrategy, trigger, externalService, maxRetryCount, startTime), jsConfigFileName);
     }
     
     private int getMaxRetryCountFromJSON(JsonNode workflowNode) {
