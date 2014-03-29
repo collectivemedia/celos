@@ -72,7 +72,7 @@ public class SlotState extends ValueObject {
     
     public SlotState transitionToReady() {
         assertStatus(Status.WAITING);
-        return new SlotState(slotID, Status.READY, null, 0);
+        return new SlotState(slotID, Status.READY, null, retryCount);
     }
     
     public SlotState transitionToRunning(String externalID) {
@@ -92,7 +92,7 @@ public class SlotState extends ValueObject {
 
     public SlotState transitionToRetry() {
         assertStatus(Status.RUNNING);
-        return new SlotState(slotID, Status.READY, null, retryCount + 1);
+        return new SlotState(slotID, Status.WAITING, null, retryCount + 1);
     }
 
     public SlotState transitionToRerun() {
