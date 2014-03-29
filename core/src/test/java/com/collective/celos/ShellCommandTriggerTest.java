@@ -16,14 +16,14 @@ public class ShellCommandTriggerTest {
     
     @Test(expected=IllegalArgumentException.class)
     public void testRequiresCommand() throws Exception {
-        new ShellCommandTrigger(mapper.createObjectNode());
+        new CommandTrigger(mapper.createObjectNode());
     }
 
     @Test(expected=IllegalArgumentException.class)
     public void testCommandMustBeArray() throws Exception {
         ObjectNode node = mapper.createObjectNode();
-        node.put(ShellCommandTrigger.COMMAND_PROP, "foo");
-        new ShellCommandTrigger(node);
+        node.put(CommandTrigger.COMMAND_PROP, "foo");
+        new CommandTrigger(node);
     }
 
     @Test(expected=IllegalArgumentException.class)
@@ -33,26 +33,26 @@ public class ShellCommandTriggerTest {
         array.add("-h");
         array.add("now");
         ObjectNode node = mapper.createObjectNode();
-        node.put(ShellCommandTrigger.COMMAND_PROP, array);
-        new ShellCommandTrigger(node);
+        node.put(CommandTrigger.COMMAND_PROP, array);
+        new CommandTrigger(node);
     }
     
     @Test
     public void testUsesCommand() throws Exception {
         ObjectNode node = makeConfig("shutdown", "-h", "now");
-        Assert.assertEquals(Arrays.asList("shutdown", "-h", "now"), new ShellCommandTrigger(node).getRawCommandElements());
+        Assert.assertEquals(Arrays.asList("shutdown", "-h", "now"), new CommandTrigger(node).getRawCommandElements());
     }
 
     @Test
     public void testCheckSuccessExitValueProperly() throws Exception {
         ObjectNode node = makeConfig("true");
-        Assert.assertTrue(new ShellCommandTrigger(node).isDataAvailable(ScheduledTime.now(), ScheduledTime.now()));
+        Assert.assertTrue(new CommandTrigger(node).isDataAvailable(ScheduledTime.now(), ScheduledTime.now()));
     }
     
     @Test
     public void testChecksFailureExitValueProperly() throws Exception {
         ObjectNode node = makeConfig("false");
-        Assert.assertFalse(new ShellCommandTrigger(node).isDataAvailable(ScheduledTime.now(), ScheduledTime.now()));
+        Assert.assertFalse(new CommandTrigger(node).isDataAvailable(ScheduledTime.now(), ScheduledTime.now()));
     }
 
     @Test
@@ -61,14 +61,14 @@ public class ShellCommandTriggerTest {
         ScheduledTime t = new ScheduledTime(time);
         ObjectNode node = makeConfig("src/test/resources/com/collective/celos/shell-command-trigger-test-script.sh", 
                                      "${year}-${month}-${day}T${hour}:${minute}:${second}Z");
-        Assert.assertTrue(new ShellCommandTrigger(node).isDataAvailable(ScheduledTime.now(), t));
+        Assert.assertTrue(new CommandTrigger(node).isDataAvailable(ScheduledTime.now(), t));
     }
     
     private ObjectNode makeConfig(String... command) {
         ObjectNode node = mapper.createObjectNode();
         ArrayNode array = mapper.createArrayNode();
         for (String s : command) { array.add(s); }
-        node.put(ShellCommandTrigger.COMMAND_PROP, array);
+        node.put(CommandTrigger.COMMAND_PROP, array);
         return node;
     }
 

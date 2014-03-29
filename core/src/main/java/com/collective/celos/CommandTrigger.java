@@ -11,14 +11,14 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-public class ShellCommandTrigger implements Trigger {
+public class CommandTrigger implements Trigger {
 
-    public static final String COMMAND_PROP = "celos.shellCommandTrigger.command";
+    public static final String COMMAND_PROP = "celos.commandTrigger.command";
 
     private final ScheduledTimeFormatter formatter = new ScheduledTimeFormatter();
     private final List<String> rawCommandElements;
 
-    public ShellCommandTrigger(ObjectNode properties) throws Exception {
+    public CommandTrigger(ObjectNode properties) throws Exception {
         List<String> elements = new LinkedList<>();
         ArrayNode array = Util.getArrayProperty(properties, COMMAND_PROP);
         for (JsonNode element : array) {
