@@ -243,11 +243,11 @@ var CELOS_DEFAULT_HDFS = "hdfs://nameservice1";
 The `path` can contain the variables `${year}`, `${month}`, `${day}`,
 `${hour}`, `${minute}`, and `${second}`, which are zero-padded.
 
-### shellCommandTrigger
+### commandTrigger
 
-Syntax: `shellCommandTrigger(commandElements...)`
+Syntax: `commandTrigger(commandElements...)`
 
-Call a shell command to determine data availability.
+Call an external command to determine data availability.
 
 #### Parameters
 
@@ -260,7 +260,7 @@ formatted date as single argument.
 
 <pre>
 ...
-"trigger": shellCommandTrigger("/usr/local/bin/is-data-ready.sh", "${year}-${month}-${day}T${hour}:${minute}Z")
+"trigger": commandTrigger("/usr/local/bin/is-data-ready.sh", "${year}-${month}-${day}T${hour}:${minute}Z")
 ...
 </pre>
 
@@ -596,6 +596,25 @@ curl http://celos001.ny7.collective-media.net:8080/celos/workflow?id=workflow-1
   },
   ...
 }
+</pre>
+
+### Get workflow file -- `GET /celos/workflow-file?id=...`
+
+Returns the JS file that defined the given workflow.
+
+#### Example
+
+<pre>
+curl http://celos001.ny7.collective-media.net:8080/celos/workflow-file?id=workflow-1
+==>
+addWorkflow({
+    "id": "workflow-1",
+    "schedule": hourlySchedule(),
+    "schedulingStrategy": serialSchedulingStrategy(),
+    "trigger": hdfsCheckTrigger("foo", "file:///"),
+    "externalService": oozieExternalService({}, "oj01/oozie"),
+    "maxRetryCount": 0
+});
 </pre>
 
 ### Get slot information -- `GET /celos/slot-state?id=...&time=...`

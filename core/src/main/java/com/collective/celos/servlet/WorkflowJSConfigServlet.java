@@ -1,12 +1,10 @@
 package com.collective.celos.servlet;
 
-import com.collective.celos.*;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.List;
+
+import com.collective.celos.SchedulerConfiguration;
 
 /**
  * Returns JS-config file contents for particular workflow-id

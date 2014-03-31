@@ -1,17 +1,14 @@
 package com.collective.celos;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.log4j.Logger;
-
 import java.io.File;
 import java.io.IOException;
+
+import org.apache.commons.io.FileUtils;
 
 /**
  * Reads configuration and database from filesystem at well-known paths.
  */
 public class SchedulerConfiguration {
-
-    private static final Logger LOGGER = Logger.getLogger(SchedulerConfiguration.class);
 
     private static final String WORKFLOW_CONFIGURATION_PATH = "/etc/celos/workflows";
     private static final String DEFAULTS_CONFIGURATION_PATH = "/etc/celos/defaults";
