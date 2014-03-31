@@ -1,9 +1,6 @@
-package com.collective.celos;
+package com.collective.celos.api;
 
 import org.joda.time.DateTime;
-
-import com.collective.celos.api.ScheduledTime;
-import com.collective.celos.api.Util;
 
 public class ScheduledTimeFormatter {
 

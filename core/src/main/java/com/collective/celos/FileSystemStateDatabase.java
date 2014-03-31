@@ -3,6 +3,7 @@ package com.collective.celos;
 import java.io.File;
 import java.io.IOException;
 
+import com.collective.celos.api.ScheduledTimeFormatter;
 import com.collective.celos.api.Util;
 import org.apache.commons.io.FileUtils;
 

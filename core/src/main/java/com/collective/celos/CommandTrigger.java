@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import com.collective.celos.api.ScheduledTime;
+import com.collective.celos.api.ScheduledTimeFormatter;
 import com.collective.celos.api.Trigger;
 import com.collective.celos.api.Util;
 import com.fasterxml.jackson.databind.JsonNode;
