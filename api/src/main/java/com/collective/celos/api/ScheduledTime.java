@@ -97,6 +97,23 @@ public class ScheduledTime extends ValueObject implements Comparable<ScheduledTi
         return new ScheduledTime(getDateTime().plusHours(i));
     }
 
+    public ScheduledTime minusMinutes(int i) {
+        return new ScheduledTime(getDateTime().minusMinutes(i));
+    }
+
+    public ScheduledTime plusMinutes(int i) {
+        return new ScheduledTime(getDateTime().plusMinutes(i));
+    }
+
+
+    public ScheduledTime minusSeconds(int i) {
+        return new ScheduledTime(getDateTime().minusSeconds(i));
+    }
+
+    public ScheduledTime plusSeconds(int i) {
+        return new ScheduledTime(getDateTime().plusSeconds(i));
+    }
+
     public String year() {
         return FORMATTER.formatYear(this);
     }
@@ -113,6 +130,13 @@ public class ScheduledTime extends ValueObject implements Comparable<ScheduledTi
         return FORMATTER.formatHour(this);
     }
 
+    public String minute() {
+        return FORMATTER.formatMinute(this);
+    }
+
+    public String second() {
+        return FORMATTER.formatSecond(this);
+    }
 
     public static ScheduledTime now() {
         return new ScheduledTime(DateTime.now(DateTimeZone.UTC));
