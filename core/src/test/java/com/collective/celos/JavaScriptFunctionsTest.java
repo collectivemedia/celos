@@ -85,7 +85,7 @@ public class JavaScriptFunctionsTest {
     
     @Test
     public void testShellCommandTrigger() throws Exception {
-        ShellCommandTrigger t = (ShellCommandTrigger) runJS("shellCommandTrigger('hello', 'this', 'is', 'cool')");
+        CommandTrigger t = (CommandTrigger) runJS("commandTrigger('hello', 'this', 'is', 'cool')");
         Assert.assertEquals(Arrays.asList("hello", "this", "is", "cool"), t.getRawCommandElements());
     }
 

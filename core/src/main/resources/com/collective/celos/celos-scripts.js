@@ -82,11 +82,11 @@ function delayTrigger(seconds) {
     };
 }
 
-function shellCommandTrigger() {
+function commandTrigger() {
     return {
-        "type": "com.collective.celos.ShellCommandTrigger",
+        "type": "com.collective.celos.CommandTrigger",
         "properties": {
-            "celos.shellCommandTrigger.command": Array.prototype.slice.call(arguments)
+            "celos.commandTrigger.command": Array.prototype.slice.call(arguments)
         }
     };
 }
