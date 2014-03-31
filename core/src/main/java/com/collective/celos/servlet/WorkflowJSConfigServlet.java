@@ -9,20 +9,21 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 /**
- * Returns information about the slot states of a single workflow as JSON.
+ * Returns JS-config file contents for particular workflow-id
  * 
- * GET /workflow?id=workflow-1
+ * GET /workflow-file?id=workflow-1
  * ==>
- * {
- *   "slots": {
- *     "2013-12-07T13:00:00.000Z": { "status": "RUNNING", "externalID": "237982137-371832798321-W", retryCount: 5 },
- *     "2013-12-07T14:00:00.000Z": { "status": "READY", "externalID": null, retryCount: 0 },
- *     ...
- *   }
- * }
- * 
- * If the "time" parameter is supplied, information is returned about 
- * slot states up to that time.
+ *
+ *  addWorkflow({
+ *     "id": "workflow-1",
+ *      "schedule": hourlySchedule(),
+ *      "schedulingStrategy": serialSchedulingStrategy(),
+ *      "trigger": hdfsCheckTrigger("foo", "file:///"),
+ *      "externalService": oozieExternalService({}, "oj01/oozie"),
+ *      "maxRetryCount": 0
+ *  });
+ *
+ *
  */
 @SuppressWarnings("serial")
 public class WorkflowJSConfigServlet extends AbstractJSONServlet {
