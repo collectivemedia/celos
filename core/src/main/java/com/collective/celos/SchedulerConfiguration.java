@@ -21,19 +21,14 @@ public class SchedulerConfiguration {
     }
     
     public Scheduler makeDefaultScheduler() throws Exception {
-        File configDir = new File(WORKFLOW_CONFIGURATION_PATH);
-        File defaultsDir = new File(DEFAULTS_CONFIGURATION_PATH);
-        WorkflowConfiguration config =
-                new WorkflowConfigurationParser(defaultsDir).parseConfiguration(configDir).getWorkflowConfiguration();
+        WorkflowConfiguration config = getWorkflowConfigurationParser().getWorkflowConfiguration();
         StateDatabase db = makeDefaultStateDatabase();
         int slidingWindowHours = 24 * 7;
         return new Scheduler(config, db, slidingWindowHours);
     }
 
     public String getWorkflowConfigurationFileContents(String workflowId) throws Exception {
-        File configDir = new File(WORKFLOW_CONFIGURATION_PATH);
-        File defaultsDir = new File(DEFAULTS_CONFIGURATION_PATH);
-        WorkflowConfigurationParser parser = new WorkflowConfigurationParser(defaultsDir).parseConfiguration(configDir);
+        WorkflowConfigurationParser parser = getWorkflowConfigurationParser();
 
         String filePath = parser.getWorkflowConfiguration().getWorkflowJSFileName(new WorkflowID(workflowId));
 
@@ -41,12 +36,13 @@ public class SchedulerConfiguration {
             return null;
         }
 
-        try {
-            return FileUtils.readFileToString(new File(filePath));
-        } catch (IOException e) {
-            LOGGER.error("Failed to load JS config file: " + filePath + ": " + e.getMessage(), e);
-            throw e;
-        }
+        return FileUtils.readFileToString(new File(filePath));
+    }
+
+    private WorkflowConfigurationParser getWorkflowConfigurationParser() throws Exception {
+        File configDir = new File(WORKFLOW_CONFIGURATION_PATH);
+        File defaultsDir = new File(DEFAULTS_CONFIGURATION_PATH);
+        return new WorkflowConfigurationParser(defaultsDir).parseConfiguration(configDir);
     }
 
     public StateDatabase makeDefaultStateDatabase() throws IOException {
