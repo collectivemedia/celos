@@ -78,8 +78,12 @@
     local_action: shell curl -i "{{inventory_hostname}}:8080/celos/slot-state?id=my-missing-workflow&time=1970-12-02T18:00Z" | head -n 1 | grep "HTTP/1.1 404"
     tags: slot-state
 
-  - name: Check servlet /celos/workflow-file returns corrent file contents with workflow definition
-    local_action: shell curl --fail "{{inventory_hostname}}:8080/celos/workflow-file?id=workflow-1" | diff - test_files/workflow-1.js
+  - name: Check servlet /celos/workflow-file returns corrent file contents with workflow definition for workflow-1
+    local_action: shell curl --fail "{{inventory_hostname}}:8080/celos/workflow-file?id=workflow-1" | diff - {{local_celos}}/core/src/test/resources/com/collective/celos/workflow-configuration-test/json-workflow-list-servlet-test/workflow-1.js
+    tags: workflow-file
+
+  - name: Check servlet /celos/workflow-file returns corrent file contents with workflow definition for workflow-2
+    local_action: shell curl --fail "{{inventory_hostname}}:8080/celos/workflow-file?id=workflow-2" | diff - {{local_celos}}/core/src/test/resources/com/collective/celos/workflow-configuration-test/json-workflow-list-servlet-test/workflow-2.js
     tags: workflow-file
 
   - name: Check servlet /celos/workflow-file returns 404 for not existing workflow
