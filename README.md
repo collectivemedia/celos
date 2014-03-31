@@ -598,6 +598,25 @@ curl http://celos001.ny7.collective-media.net:8080/celos/workflow?id=workflow-1
 }
 </pre>
 
+### Get workflow file -- `GET /celos/workflow-file?id=...`
+
+Returns the JS file that defined the given workflow.
+
+#### Example
+
+<pre>
+curl http://celos001.ny7.collective-media.net:8080/celos/workflow-file?id=workflow-1
+==>
+addWorkflow({
+    "id": "workflow-1",
+    "schedule": hourlySchedule(),
+    "schedulingStrategy": serialSchedulingStrategy(),
+    "trigger": hdfsCheckTrigger("foo", "file:///"),
+    "externalService": oozieExternalService({}, "oj01/oozie"),
+    "maxRetryCount": 0
+});
+</pre>
+
 ### Get slot information -- `GET /celos/slot-state?id=...&time=...`
 
 Returns the state of the given slot.
