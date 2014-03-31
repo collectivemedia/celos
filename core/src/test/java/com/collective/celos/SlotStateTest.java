@@ -22,7 +22,7 @@ public class SlotStateTest {
         Assert.assertEquals(success, running.transitionToSuccess());        
         SlotState failure = new SlotState(id, SlotState.Status.FAILURE, "external", 0);
         Assert.assertEquals(failure, running.transitionToFailure());        
-        SlotState retry = new SlotState(id, SlotState.Status.READY, null, 1);
+        SlotState retry = new SlotState(id, SlotState.Status.WAITING, null, 1);
         Assert.assertEquals(retry, running.transitionToRetry());        
     }
     

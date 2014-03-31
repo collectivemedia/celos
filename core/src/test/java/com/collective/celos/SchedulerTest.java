@@ -730,9 +730,11 @@ public class SchedulerTest {
         SlotID id1 = new SlotID(wfID1, new ScheduledTime("2013-11-27T20:00Z"));
         SlotState initial = new SlotState(id1, SlotState.Status.READY);
         SlotState running1 = new SlotState(id1, SlotState.Status.RUNNING, "fake-external-id", 0);
-        SlotState retry1 = new SlotState(id1, SlotState.Status.READY, null, 1);
+        SlotState retry1 = new SlotState(id1, SlotState.Status.WAITING, null, 1);
+        SlotState ready1 = new SlotState(id1, SlotState.Status.READY, null, 1);
         SlotState running2 = new SlotState(id1, SlotState.Status.RUNNING, "fake-external-id", 1);
-        SlotState retry2 = new SlotState(id1, SlotState.Status.READY, null, 2);
+        SlotState retry2 = new SlotState(id1, SlotState.Status.WAITING, null, 2);
+        SlotState ready2 = new SlotState(id1, SlotState.Status.READY, null, 2);
         SlotState running3 = new SlotState(id1, SlotState.Status.RUNNING, "fake-external-id", 2);
         SlotState success = new SlotState(id1, SlotState.Status.SUCCESS, "fake-external-id", 2);
         
@@ -744,9 +746,13 @@ public class SchedulerTest {
         sch.step(new ScheduledTime("2013-11-27T20:01Z"));
         Assert.assertEquals(retry1, db.getSlotState(id1));
         sch.step(new ScheduledTime("2013-11-27T20:01Z"));
+        Assert.assertEquals(ready1, db.getSlotState(id1));
+        sch.step(new ScheduledTime("2013-11-27T20:01Z"));
         Assert.assertEquals(running2, db.getSlotState(id1));
         sch.step(new ScheduledTime("2013-11-27T20:01Z"));
         Assert.assertEquals(retry2, db.getSlotState(id1));
+        sch.step(new ScheduledTime("2013-11-27T20:01Z"));
+        Assert.assertEquals(ready2, db.getSlotState(id1));
         sch.step(new ScheduledTime("2013-11-27T20:01Z"));
         Assert.assertEquals(running3, db.getSlotState(id1));
         sch.step(new ScheduledTime("2013-11-27T20:01Z"));
@@ -778,9 +784,11 @@ public class SchedulerTest {
         SlotID id1 = new SlotID(wfID1, new ScheduledTime("2013-11-27T20:00Z"));
         SlotState initial = new SlotState(id1, SlotState.Status.READY);
         SlotState running1 = new SlotState(id1, SlotState.Status.RUNNING, "fake-external-id", 0);
-        SlotState retry1 = new SlotState(id1, SlotState.Status.READY, null, 1);
+        SlotState retry1 = new SlotState(id1, SlotState.Status.WAITING, null, 1);
+        SlotState ready1 = new SlotState(id1, SlotState.Status.READY, null, 1);
         SlotState running2 = new SlotState(id1, SlotState.Status.RUNNING, "fake-external-id", 1);
-        SlotState retry2 = new SlotState(id1, SlotState.Status.READY, null, 2);
+        SlotState retry2 = new SlotState(id1, SlotState.Status.WAITING, null, 2);
+        SlotState ready2 = new SlotState(id1, SlotState.Status.READY, null, 2);
         SlotState running3 = new SlotState(id1, SlotState.Status.RUNNING, "fake-external-id", 2);
         SlotState failure = new SlotState(id1, SlotState.Status.FAILURE, "fake-external-id", 2);
         
@@ -792,9 +800,13 @@ public class SchedulerTest {
         sch.step(new ScheduledTime("2013-11-27T20:01Z"));
         Assert.assertEquals(retry1, db.getSlotState(id1));
         sch.step(new ScheduledTime("2013-11-27T20:01Z"));
+        Assert.assertEquals(ready1, db.getSlotState(id1));
+        sch.step(new ScheduledTime("2013-11-27T20:01Z"));
         Assert.assertEquals(running2, db.getSlotState(id1));
         sch.step(new ScheduledTime("2013-11-27T20:01Z"));
         Assert.assertEquals(retry2, db.getSlotState(id1));
+        sch.step(new ScheduledTime("2013-11-27T20:01Z"));
+        Assert.assertEquals(ready2, db.getSlotState(id1));
         sch.step(new ScheduledTime("2013-11-27T20:01Z"));
         Assert.assertEquals(running3, db.getSlotState(id1));
         sch.step(new ScheduledTime("2013-11-27T20:01Z"));
