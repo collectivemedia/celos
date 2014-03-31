@@ -36,7 +36,12 @@ public class WorkflowJSConfigServlet extends AbstractJSONServlet {
         }
         try {
             String contents = new SchedulerConfiguration().getWorkflowConfigurationFileContents(id);
-            writer.writeValue(res.getOutputStream(), contents);
+
+            if (contents == null) {
+                res.sendError(HttpServletResponse.SC_NOT_FOUND, "JS config for workflow not found: " + id);
+            } else {
+                res.getOutputStream().write(contents.getBytes());
+            }
         } catch (Exception e) {
             throw new ServletException(e);
         }

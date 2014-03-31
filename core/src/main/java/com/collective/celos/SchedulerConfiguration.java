@@ -1,5 +1,8 @@
 package com.collective.celos;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.log4j.Logger;
+
 import java.io.File;
 import java.io.IOException;
 
@@ -7,6 +10,8 @@ import java.io.IOException;
  * Reads configuration and database from filesystem at well-known paths.
  */
 public class SchedulerConfiguration {
+
+    private static final Logger LOGGER = Logger.getLogger(SchedulerConfiguration.class);
 
     private static final String WORKFLOW_CONFIGURATION_PATH = "/etc/celos/workflows";
     private static final String DEFAULTS_CONFIGURATION_PATH = "/etc/celos/defaults";
@@ -28,10 +33,20 @@ public class SchedulerConfiguration {
     public String getWorkflowConfigurationFileContents(String workflowId) throws Exception {
         File configDir = new File(WORKFLOW_CONFIGURATION_PATH);
         File defaultsDir = new File(DEFAULTS_CONFIGURATION_PATH);
-        WorkflowConfigurationParser parser = new WorkflowConfigurationParser(defaultsDir);
-        WorkflowConfigurationParser config = parser.parseConfiguration(configDir);
-        String fileName = config.getWorkflowConfiguration().getWorkflowJSFileName(new WorkflowID(workflowId));
-        return parser.getJSConfigContent(configDir, fileName);
+        WorkflowConfigurationParser parser = new WorkflowConfigurationParser(defaultsDir).parseConfiguration(configDir);
+
+        String filePath = parser.getWorkflowConfiguration().getWorkflowJSFileName(new WorkflowID(workflowId));
+
+        if (filePath == null) {
+            return null;
+        }
+
+        try {
+            return FileUtils.readFileToString(new File(filePath));
+        } catch (IOException e) {
+            LOGGER.error("Failed to load JS config file: " + filePath + ": " + e.getMessage(), e);
+            throw e;
+        }
     }
 
     public StateDatabase makeDefaultStateDatabase() throws IOException {

@@ -333,7 +333,7 @@ public class SchedulerTest {
         Workflow wf1 = new Workflow(wfID1, sch1, str1, tr1, srv1, maxRetryCount, Workflow.DEFAULT_START_TIME);
         
         WorkflowConfiguration cfg = new WorkflowConfiguration();
-        cfg.addWorkflow(wf1);
+        cfg.addWorkflow(wf1, "");
         
         MemoryStateDatabase db = new MemoryStateDatabase();
 
@@ -376,7 +376,7 @@ public class SchedulerTest {
         Workflow wf1 = new Workflow(wfID1, sch1, str1, tr1, srv1, maxRetryCount, Workflow.DEFAULT_START_TIME);
         
         WorkflowConfiguration cfg = new WorkflowConfiguration();
-        cfg.addWorkflow(wf1);
+        cfg.addWorkflow(wf1, "");
         
         MemoryStateDatabase db = new MemoryStateDatabase();
 
@@ -432,7 +432,7 @@ public class SchedulerTest {
         Workflow wf1 = new Workflow(wfID1, sch1, str1, tr1, srv1, maxRetryCount, Workflow.DEFAULT_START_TIME);
         
         WorkflowConfiguration cfg = new WorkflowConfiguration();
-        cfg.addWorkflow(wf1);
+        cfg.addWorkflow(wf1, "");
         
         MemoryStateDatabase db = new MemoryStateDatabase();
 
@@ -479,7 +479,7 @@ public class SchedulerTest {
         Workflow wf1 = new Workflow(wfID1, sch1, str1, tr1, srv1, maxRetryCount, Workflow.DEFAULT_START_TIME);
         
         WorkflowConfiguration cfg = new WorkflowConfiguration();
-        cfg.addWorkflow(wf1);
+        cfg.addWorkflow(wf1, "");
         
         MemoryStateDatabase db = new MemoryStateDatabase();
 
@@ -539,7 +539,7 @@ public class SchedulerTest {
         Workflow wf1 = new Workflow(wfID1, sch1, str1, tr1, srv1, maxRetryCount, Workflow.DEFAULT_START_TIME);
         
         WorkflowConfiguration cfg = new WorkflowConfiguration();
-        cfg.addWorkflow(wf1);
+        cfg.addWorkflow(wf1, "");
         
         MemoryStateDatabase db = new MemoryStateDatabase();
 
@@ -596,7 +596,7 @@ public class SchedulerTest {
         Workflow wf1 = new Workflow(wfID1, sch1, str1, tr1, srv1, maxRetryCount, startTime);
         
         WorkflowConfiguration cfg = new WorkflowConfiguration();
-        cfg.addWorkflow(wf1);
+        cfg.addWorkflow(wf1, "");
         
         MemoryStateDatabase db = new MemoryStateDatabase();
 
@@ -623,7 +623,7 @@ public class SchedulerTest {
         Workflow wf1 = new Workflow(wfID1, sch1, str1, tr1, srv1, maxRetryCount, startTime);
         
         WorkflowConfiguration cfg = new WorkflowConfiguration();
-        cfg.addWorkflow(wf1);
+        cfg.addWorkflow(wf1, "");
         
         MemoryStateDatabase db = new MemoryStateDatabase();
 
@@ -650,7 +650,7 @@ public class SchedulerTest {
         Workflow wf1 = new Workflow(wfID1, sch1, str1, tr1, srv1, maxRetryCount, startTime);
         
         WorkflowConfiguration cfg = new WorkflowConfiguration();
-        cfg.addWorkflow(wf1);
+        cfg.addWorkflow(wf1, "");
         
         MemoryStateDatabase db = new MemoryStateDatabase();
 
@@ -723,7 +723,7 @@ public class SchedulerTest {
         Workflow wf1 = new Workflow(wfID1, sch1, str1, tr1, srv1, maxRetryCount, Workflow.DEFAULT_START_TIME);
         
         WorkflowConfiguration cfg = new WorkflowConfiguration();
-        cfg.addWorkflow(wf1);
+        cfg.addWorkflow(wf1, "");
         
         MemoryStateDatabase db = new MemoryStateDatabase();
 
@@ -771,7 +771,7 @@ public class SchedulerTest {
         Workflow wf1 = new Workflow(wfID1, sch1, str1, tr1, srv1, maxRetryCount, Workflow.DEFAULT_START_TIME);
         
         WorkflowConfiguration cfg = new WorkflowConfiguration();
-        cfg.addWorkflow(wf1);
+        cfg.addWorkflow(wf1, "");
         
         MemoryStateDatabase db = new MemoryStateDatabase();
 
@@ -817,7 +817,7 @@ public class SchedulerTest {
         Workflow wf1 = new Workflow(wfID1, sch1, str1, tr1, srv1, maxRetryCount, defaultStartTime);
         
         WorkflowConfiguration cfg = new WorkflowConfiguration();
-        cfg.addWorkflow(wf1);
+        cfg.addWorkflow(wf1, "");
         
         MemoryStateDatabase db = new MemoryStateDatabase();
         
