@@ -243,11 +243,11 @@ var CELOS_DEFAULT_HDFS = "hdfs://nameservice1";
 The `path` can contain the variables `${year}`, `${month}`, `${day}`,
 `${hour}`, `${minute}`, and `${second}`, which are zero-padded.
 
-### shellCommandTrigger
+### commandTrigger
 
-Syntax: `shellCommandTrigger(commandElements...)`
+Syntax: `commandTrigger(commandElements...)`
 
-Call a shell command to determine data availability.
+Call an external command to determine data availability.
 
 #### Parameters
 
@@ -260,7 +260,7 @@ formatted date as single argument.
 
 <pre>
 ...
-"trigger": shellCommandTrigger("/usr/local/bin/is-data-ready.sh", "${year}-${month}-${day}T${hour}:${minute}Z")
+"trigger": commandTrigger("/usr/local/bin/is-data-ready.sh", "${year}-${month}-${day}T${hour}:${minute}Z")
 ...
 </pre>
 
