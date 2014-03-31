@@ -40,7 +40,7 @@ public class AndTrigger implements Trigger {
 
     public static final String TRIGGERS_PROP = "celos.andTrigger.triggers";
 
-    private static final Logger LOGGER = Logger.getLogger(WorkflowConfigurationParser.class);
+    private static final Logger LOGGER = Logger.getLogger(AndTrigger.class);
     
     private final List<Trigger> triggers = new LinkedList<>();
     private final JSONInstanceCreator creator = new JSONInstanceCreator();
