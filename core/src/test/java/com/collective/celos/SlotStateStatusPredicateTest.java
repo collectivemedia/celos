@@ -8,7 +8,6 @@ import static com.collective.celos.SlotState.Status.WAITING;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import com.collective.celos.api.ScheduledTime;
 import org.junit.Test;
 
 public class SlotStateStatusPredicateTest {

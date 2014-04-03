@@ -3,9 +3,6 @@ package com.collective.celos;
 import java.util.Iterator;
 import java.util.Properties;
 
-import com.collective.celos.api.ScheduledTime;
-import com.collective.celos.api.ScheduledTimeFormatter;
-import com.collective.celos.api.Util;
 import org.apache.oozie.client.AuthOozieClient;
 import org.apache.oozie.client.OozieClient;
 import org.apache.oozie.client.OozieClientException;

@@ -5,9 +5,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import com.collective.celos.api.Schedule;
-import com.collective.celos.api.ScheduledTime;
-import com.collective.celos.api.Util;
 import org.junit.Assert;
 import org.junit.Test;
 

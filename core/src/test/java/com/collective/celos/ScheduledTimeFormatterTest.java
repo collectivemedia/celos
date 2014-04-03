@@ -2,8 +2,6 @@ package com.collective.celos;
 
 import static org.junit.Assert.assertEquals;
 
-import com.collective.celos.api.ScheduledTime;
-import com.collective.celos.api.ScheduledTimeFormatter;
 import org.junit.Test;
 
 public class ScheduledTimeFormatterTest {

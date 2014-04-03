@@ -1,7 +1,5 @@
 package com.collective.celos;
 
-import com.collective.celos.api.ScheduledTime;
-
 public abstract class AbstractInternalTrigger implements InternalTrigger {
 
     @Override

@@ -4,8 +4,6 @@ import junit.framework.Assert;
 
 import org.junit.Test;
 
-import com.collective.celos.api.ScheduledTime;
-import com.collective.celos.api.Util;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public class NotTriggerTest {

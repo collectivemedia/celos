@@ -1,7 +1,5 @@
 package com.collective.celos;
 
-import com.collective.celos.api.ScheduledTime;
-import com.collective.celos.api.Util;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 

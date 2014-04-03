@@ -2,9 +2,6 @@ package com.collective.celos;
 
 import org.joda.time.DateTime;
 
-import com.collective.celos.api.ScheduledTime;
-import com.collective.celos.api.Trigger;
-import com.collective.celos.api.Util;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**

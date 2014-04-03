@@ -1,10 +1,5 @@
 package com.collective.celos;
 
-import com.collective.celos.api.Schedule;
-import com.collective.celos.api.ScheduledTime;
-import com.collective.celos.api.Trigger;
-import com.collective.celos.api.Util;
-
 public class Workflow {
 
     public static final ScheduledTime DEFAULT_START_TIME = new ScheduledTime("1970-01-01T00:00:00.000Z");

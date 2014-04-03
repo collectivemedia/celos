@@ -1,4 +1,4 @@
-package com.collective.celos.api;
+package com.collective.celos;
 
 import org.joda.time.DateTime;
 

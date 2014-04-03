@@ -5,7 +5,6 @@ import java.util.Arrays;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.collective.celos.api.ScheduledTime;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;

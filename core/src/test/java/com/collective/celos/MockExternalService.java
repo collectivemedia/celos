@@ -3,8 +3,6 @@ package com.collective.celos;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.collective.celos.api.Util;
-
 /**
  * Fake implementation of external service for testing.
  * 

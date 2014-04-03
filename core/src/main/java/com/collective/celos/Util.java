@@ -1,4 +1,4 @@
-package com.collective.celos.api;
+package com.collective.celos;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;

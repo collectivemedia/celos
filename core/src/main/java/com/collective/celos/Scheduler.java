@@ -5,9 +5,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.SortedSet;
 
-import com.collective.celos.api.ScheduledTime;
-import com.collective.celos.api.Trigger;
-import com.collective.celos.api.Util;
 import org.apache.log4j.Logger;
 
 public class Scheduler {

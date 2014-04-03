@@ -18,11 +18,6 @@ import org.junit.Test;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
 
-import com.collective.celos.api.Schedule;
-import com.collective.celos.api.ScheduledTime;
-import com.collective.celos.api.Trigger;
-import com.collective.celos.api.Util;
-
 /**
  * TODO: test exception handling and logging
  * TODO: more fine-grained tests like multipleSlotsTest

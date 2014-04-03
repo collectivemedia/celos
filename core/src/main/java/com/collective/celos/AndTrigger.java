@@ -5,9 +5,6 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import com.collective.celos.api.ScheduledTime;
-import com.collective.celos.api.Trigger;
-import com.collective.celos.api.Util;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
