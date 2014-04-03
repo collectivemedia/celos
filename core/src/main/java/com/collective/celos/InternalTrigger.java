@@ -1,8 +1,5 @@
 package com.collective.celos;
 
-import com.collective.celos.api.ScheduledTime;
-import com.collective.celos.api.Trigger;
-
 /**
  * Extension of the Trigger interface for triggers that need access to Scheduler internals.
  * 

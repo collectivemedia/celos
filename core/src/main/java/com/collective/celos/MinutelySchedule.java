@@ -3,9 +3,6 @@ package com.collective.celos;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import com.collective.celos.api.Schedule;
-import com.collective.celos.api.ScheduledTime;
-import com.collective.celos.api.Util;
 import org.joda.time.DateTime;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;

@@ -51,24 +51,12 @@ VERSION = '1.0.0'
 
 define 'celos' do
 
-  define 'api' do
-    project.version = VERSION
-    compile.with(DEPENDENCIES)
-
-    compile.options.source = '1.7'
-    compile.options.target = '1.7'
-
-    package(:jar)
-  end
-
   define 'core' do
     project.version = VERSION
     manifest['Main-Class'] = 'com.collective.celos.Main'
 
     compile.options.source = '1.7'
     compile.options.target = '1.7'
-
-    compile.with project('api')
 
     compile.with(DEPENDENCIES)
     test.with(TEST_DEPENDENCIES)

@@ -3,8 +3,6 @@ package com.collective.celos;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.collective.celos.api.ScheduledTime;
-import com.collective.celos.api.Trigger;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 

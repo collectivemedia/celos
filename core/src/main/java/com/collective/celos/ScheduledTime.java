@@ -1,4 +1,4 @@
-package com.collective.celos.api;
+package com.collective.celos;
 
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.joda.time.DateTime;
@@ -7,7 +7,7 @@ import org.joda.time.DateTimeZone;
 /**
  * Scheduled time of a workflow run in UTC.
  */
-public class ScheduledTime extends ValueObject implements Comparable<ScheduledTime> {
+public class ScheduledTime extends com.collective.celos.ValueObject implements Comparable<ScheduledTime> {
 
     public static final ScheduledTimeFormatter FORMATTER = new ScheduledTimeFormatter();
     protected final DateTime dateTime;

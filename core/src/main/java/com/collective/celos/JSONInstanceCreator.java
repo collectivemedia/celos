@@ -2,7 +2,6 @@ package com.collective.celos;
 
 import java.lang.reflect.Constructor;
 
-import com.collective.celos.api.Util;
 import org.apache.commons.beanutils.ConstructorUtils;
 
 import com.fasterxml.jackson.databind.JsonNode;

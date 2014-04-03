@@ -1,7 +1,5 @@
 package com.collective.celos;
 
-import com.collective.celos.api.Util;
-
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;

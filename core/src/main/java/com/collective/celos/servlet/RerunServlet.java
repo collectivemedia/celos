@@ -6,7 +6,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 
-import com.collective.celos.api.ScheduledTime;
+import com.collective.celos.ScheduledTime;
 import com.collective.celos.SchedulerConfiguration;
 import com.collective.celos.SlotID;
 import com.collective.celos.SlotState;
