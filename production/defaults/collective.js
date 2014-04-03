@@ -8,7 +8,7 @@ var NAME_NODE = CELOS_DEFAULT_HDFS;
 
 var JOB_TRACKER = "admin1.ny7.collective-media.net:8032";
 
-var HIVE_METASTORE = "thrift://hive-meta.ny7.collective-media.net:9803";
+var HIVE_METASTORE = "thrift://hive-meta.ny7.collective-media.net:9083";
 
 var CELOS_DEFAULT_OOZIE_PROPERTIES = {
     "user.name": CELOS_USER,
