@@ -10,8 +10,6 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.apache.commons.lang.ObjectUtils;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.junit.Assert;
@@ -24,6 +22,7 @@ import com.collective.celos.api.Schedule;
 import com.collective.celos.api.ScheduledTime;
 import com.collective.celos.api.Trigger;
 import com.collective.celos.api.Util;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
  * TODO: test exception handling and logging

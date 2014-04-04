@@ -52,6 +52,7 @@ public class SerialSchedulingStrategy implements SchedulingStrategy {
             return Collections.emptyList();
         }
 
+        @SuppressWarnings("unchecked")
         Collection<SlotState> candidates = CollectionUtils.select(states, CANDIDATE_PREDICATE);
 
         if (!candidates.isEmpty()) {

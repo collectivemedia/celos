@@ -9,13 +9,13 @@ import static com.collective.celos.SlotState.Status.WAITING;
 import java.util.Arrays;
 import java.util.List;
 
-import com.collective.celos.api.ScheduledTime;
-import com.collective.celos.api.Util;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+
+import com.collective.celos.api.ScheduledTime;
+import com.collective.celos.api.Util;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public class SerialSchedulingStrategyTest {
 
@@ -228,5 +228,75 @@ public class SerialSchedulingStrategyTest {
         SchedulingStrategy strategy = makeSerialSchedulingStrategyConcurrent();
         Assert.assertEquals(expected, strategy.getSchedulingCandidates(input));
     }
+    
+    @Test
+    public void testHasMultipleRunningSlots() {
+        SlotState scheduledSlot1 = new SlotState(slot1, READY);
+        List<SlotState> input = Arrays
+                .asList(new SlotState[] {
+                        new SlotState(slot1, FAILURE),
+                        scheduledSlot1,
+                        new SlotState(slot3, SUCCESS),
+                        new SlotState(slot3, RUNNING),
+                        new SlotState(slot3, RUNNING)
+                });
+        List<SlotState> expected = Arrays.asList(new SlotState[] { scheduledSlot1 });
+
+        SchedulingStrategy strategy = makeSerialSchedulingStrategyConcurrent();
+        Assert.assertEquals(expected, strategy.getSchedulingCandidates(input));
+    }
+
+    @Test
+    public void testHasMultipleRunningSlotsDifferentOrder() {
+        SlotState scheduledSlot1 = new SlotState(slot1, READY);
+        List<SlotState> input = Arrays
+                .asList(new SlotState[] {
+                        new SlotState(slot1, FAILURE),
+                        new SlotState(slot3, SUCCESS),
+                        new SlotState(slot3, RUNNING),
+                        new SlotState(slot3, RUNNING),
+                        scheduledSlot1
+                });
+        List<SlotState> expected = Arrays.asList(new SlotState[] { scheduledSlot1 });
+
+        SchedulingStrategy strategy = makeSerialSchedulingStrategyConcurrent();
+        Assert.assertEquals(expected, strategy.getSchedulingCandidates(input));
+    }
+
+    @Test
+    public void testHasTooManyRunningSlots() {
+        SlotState scheduledSlot1 = new SlotState(slot1, READY);
+        List<SlotState> input = Arrays
+                .asList(new SlotState[] {
+                        new SlotState(slot1, RUNNING),
+                        scheduledSlot1,
+                        new SlotState(slot3, SUCCESS),
+                        new SlotState(slot3, RUNNING),
+                        new SlotState(slot3, RUNNING)
+                });
+        List<SlotState> expected = Arrays.asList(new SlotState[] { });
+
+        SchedulingStrategy strategy = makeSerialSchedulingStrategyConcurrent();
+        Assert.assertEquals(expected, strategy.getSchedulingCandidates(input));
+    }
+
+    @Test
+    public void testHasMultipleRunningSlotsAnotherOne() {
+        SlotState scheduledSlot1 = new SlotState(slot1, READY);
+        SlotState scheduledSlot2 = new SlotState(slot2, READY);
+        List<SlotState> input = Arrays
+                .asList(new SlotState[] {
+                        new SlotState(slot1, FAILURE),
+                        scheduledSlot1,
+                        new SlotState(slot3, RUNNING),
+                        new SlotState(slot3, RUNNING),
+                        scheduledSlot2
+                });
+        List<SlotState> expected = Arrays.asList(new SlotState[] { scheduledSlot1 });
+
+        SchedulingStrategy strategy = makeSerialSchedulingStrategyConcurrent();
+        Assert.assertEquals(expected, strategy.getSchedulingCandidates(input));
+    }
+
 
 }
