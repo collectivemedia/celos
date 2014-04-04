@@ -10,6 +10,8 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.apache.commons.lang.ObjectUtils;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.junit.Assert;
@@ -850,9 +852,12 @@ public class SchedulerTest {
     }
 
     private SerialSchedulingStrategy makeSerialSchedulingStrategy() {
-        return new SerialSchedulingStrategy(Util.newObjectNode());
+        ObjectNode node = Util.newObjectNode();
+        node.put(SerialSchedulingStrategy.SLOTS_NUMBER_PROP, 1);
+        return new SerialSchedulingStrategy(node);
     }
-    
+
+
     private TrivialSchedulingStrategy makeTrivialSchedulingStrategy() {
         return new TrivialSchedulingStrategy(Util.newObjectNode());
     }

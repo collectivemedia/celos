@@ -34,8 +34,15 @@ public class JavaScriptFunctionsTest {
     }
     
     @Test
-    public void testSerialSchedulingStrategy() throws Exception {
+    public void testSerialSchedulingStrategyDefault() throws Exception {
         SerialSchedulingStrategy s = (SerialSchedulingStrategy) runJS("serialSchedulingStrategy()");
+        Assert.assertEquals(s.getConcurrencyLevel(), 1);
+    }
+
+    @Test
+    public void testSerialSchedulingStrategy() throws Exception {
+        SerialSchedulingStrategy s = (SerialSchedulingStrategy) runJS("serialSchedulingStrategy(5)");
+        Assert.assertEquals(s.getConcurrencyLevel(), 5);
     }
 
     @Test
