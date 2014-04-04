@@ -22,6 +22,7 @@ import com.collective.celos.api.Schedule;
 import com.collective.celos.api.ScheduledTime;
 import com.collective.celos.api.Trigger;
 import com.collective.celos.api.Util;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
  * TODO: test exception handling and logging
@@ -850,9 +851,12 @@ public class SchedulerTest {
     }
 
     private SerialSchedulingStrategy makeSerialSchedulingStrategy() {
-        return new SerialSchedulingStrategy(Util.newObjectNode());
+        ObjectNode node = Util.newObjectNode();
+        node.put(SerialSchedulingStrategy.SLOTS_NUMBER_PROP, 1);
+        return new SerialSchedulingStrategy(node);
     }
-    
+
+
     private TrivialSchedulingStrategy makeTrivialSchedulingStrategy() {
         return new TrivialSchedulingStrategy(Util.newObjectNode());
     }

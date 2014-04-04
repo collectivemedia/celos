@@ -27,9 +27,17 @@ function cronSchedule(cronExpression) {
     };
 }
 
-function serialSchedulingStrategy() {
+
+function serialSchedulingStrategy(concurrency) {
+    if(concurrency === undefined){
+        concurrency = 1;
+    }
     return {
-        "type": "com.collective.celos.SerialSchedulingStrategy"
+        "type": "com.collective.celos.SerialSchedulingStrategy",
+        "properties": {
+            "celos.serial.concurrency": concurrency
+        }
+
     };
 }
 

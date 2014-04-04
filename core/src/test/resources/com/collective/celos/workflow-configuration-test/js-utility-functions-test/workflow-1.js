@@ -32,7 +32,19 @@ assertEquals("cronSchedule() works",
 assertEquals("serialSchedulingStrategy() works",
              serialSchedulingStrategy(),
              {
-                 "type": "com.collective.celos.SerialSchedulingStrategy"
+                 "type": "com.collective.celos.SerialSchedulingStrategy",
+                 "properties": {
+                    "celos.serial.concurrency": 1
+                 }
+             });
+
+assertEquals("serialSchedulingStrategy(5) works",
+             serialSchedulingStrategy(5),
+             {
+                 "type": "com.collective.celos.SerialSchedulingStrategy",
+                 "properties": {
+                    "celos.serial.concurrency": 5
+                 }
              });
 
 assertEquals("alwaysTrigger() works",
