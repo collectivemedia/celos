@@ -114,9 +114,9 @@ public class JavaScriptFunctionsTest {
         Assert.assertEquals(props, s.getProperties(new SlotID(new WorkflowID("foo"), ScheduledTime.now())));
     }
     
-    @Test
+    @Test(expected=Exception.class)
     public void testOozieURLRequired() throws Exception {
-        runJSObject("oozieExternalService({bla:'hello'})");
+        OozieExternalService s = (OozieExternalService) runJSObject("oozieExternalService({bla:'hello'})");
     }
 
     @Test

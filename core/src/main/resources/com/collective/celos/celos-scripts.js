@@ -4,7 +4,7 @@ importPackage(Packages.com.collective.celos);
 // FIXME: temporary solution: until all utility functions return real Java objects,
 // allow JSON also and create instances from it using the JSONInstanceCreator.
 function addWorkflow(json) {
-    if (typeof json.id !== "string") {
+    if (typeof(json.id) !== "string") {
         throw "Workflow ID must be a string: " + json.id;
     }
     celosWorkflowConfigurationParser.addWorkflow(
@@ -140,6 +140,8 @@ function oozieExternalService(userPropertiesOrFun, oozieURL) {
     if (oozieURL === undefined) {
         if (typeof CELOS_DEFAULT_OOZIE !== "undefined") {
             oozieURL = CELOS_DEFAULT_OOZIE;
+        } else {
+            throw "oozieURL is undefined";
         }
     }
     var propertiesGen = makePropertiesGen(userPropertiesOrFun);
