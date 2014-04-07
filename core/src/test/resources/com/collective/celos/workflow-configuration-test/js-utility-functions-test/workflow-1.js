@@ -80,15 +80,3 @@ assertEquals("andTrigger() works",
                      "celos.andTrigger.triggers": [alwaysTrigger(), hdfsCheckTrigger("/foo", "hdfs://example.com")]
                  }
              });
-
-assertEquals("oozieExternalService() works",
-             oozieExternalService({"a": "1", "b": "2"}, "http://example.com/oozie"),
-             {
-                 "type": "com.collective.celos.OozieExternalService",
-                 "properties": {
-                     "celos.oozie.url": "http://example.com/oozie",
-                     "a": "1",
-                     "b": "2"
-                 }
-             });
-

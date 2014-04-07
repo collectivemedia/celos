@@ -495,6 +495,23 @@ var CELOS_DEFAULT_OOZIE_PROPERTIES = {
 
 Now every Oozie workflow will run as user "peter".
 
+#### Fine-grained property control
+
+Instead of an object, the first argument of `oozieExternalService` can
+also be a function.  It will be called with the slot ID of a workflow
+slot, and should return an object containing properties for that slot.
+
+For example, this sets the Oozie property `someProperty` to last year:
+
+```
+function myOozieProperties(slotID) {
+    return {
+        someProperty: new String(slotID.getScheduledTime().minusYears(1).year())
+    }
+}
+oozieExternalService(myOozieProperties);
+```
+
 ## Workflow properties
 
 ### maxRetryCount

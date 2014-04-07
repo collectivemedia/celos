@@ -85,6 +85,10 @@ public class WorkflowConfigurationParser {
     private void setupBindings(Global scope, String celosWorkflowConfigFilePath) {
         Object wrappedThis = Context.javaToJS(this, scope);
         ScriptableObject.putProperty(scope, "celosWorkflowConfigurationParser", wrappedThis);
+        Object wrappedCreator = Context.javaToJS(creator, scope);
+        ScriptableObject.putProperty(scope, "celosCreator", wrappedCreator);
+        Object wrappedMapper = Context.javaToJS(mapper, scope);
+        ScriptableObject.putProperty(scope, "celosMapper", wrappedMapper);
         // Need to put scope into JS so it can call importDefaultsIntoScope
         Object wrappedScope = Context.javaToJS(scope, scope);
         ScriptableObject.putProperty(scope, "celosScope", wrappedScope);
@@ -118,7 +122,12 @@ public class WorkflowConfigurationParser {
         ExternalService externalService = getExternalServiceFromJSON(id, workflowNode);
         int maxRetryCount = getMaxRetryCountFromJSON(workflowNode);
         ScheduledTime startTime = getStartTimeFromJSON(workflowNode);
-        cfg.addWorkflow(new Workflow(id, schedule, schedulingStrategy, trigger, externalService, maxRetryCount, startTime), celosWorkflowConfigFilePath);
+        Workflow wf = new Workflow(id, schedule, schedulingStrategy, trigger, externalService, maxRetryCount, startTime);
+        addWorkflow(wf, celosWorkflowConfigFilePath);
+    }
+
+    public void addWorkflow(Workflow wf, String celosWorkflowConfigFilePath) {
+        cfg.addWorkflow(wf, celosWorkflowConfigFilePath);
     }
     
     private int getMaxRetryCountFromJSON(JsonNode workflowNode) {

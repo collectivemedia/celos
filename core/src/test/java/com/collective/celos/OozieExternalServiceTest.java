@@ -12,9 +12,14 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public class OozieExternalServiceTest {
 
-    @Test(expected=IllegalArgumentException.class)
+    @Test(expected=NullPointerException.class)
     public void oozieURLIsRequired() {
-        new OozieExternalService(Util.newObjectNode());
+        new OozieExternalService(null, PropertiesGenerator.EMPTY);
+    }
+
+    @Test(expected=NullPointerException.class)
+    public void propertiesGeneratorIsRequired() {
+        new OozieExternalService("http://oozie", null);
     }
 
     @Test
@@ -39,9 +44,7 @@ public class OozieExternalServiceTest {
     }
     
     private OozieExternalService makeOozieExternalService() {
-        ObjectNode props = Util.newObjectNode();
-        props.put(OozieExternalService.OOZIE_URL_PROP, "http://example.com");
-        return new OozieExternalService(props);
+        return new OozieExternalService("http://example.com", PropertiesGenerator.EMPTY);
     }
     
 }

@@ -3,20 +3,19 @@ package com.collective.celos;
 import java.util.Iterator;
 import java.util.Properties;
 
-import com.collective.celos.api.ScheduledTime;
-import com.collective.celos.api.ScheduledTimeFormatter;
-import com.collective.celos.api.Util;
 import org.apache.oozie.client.AuthOozieClient;
 import org.apache.oozie.client.OozieClient;
 import org.apache.oozie.client.OozieClientException;
 import org.apache.oozie.client.WorkflowJob;
 
+import com.collective.celos.api.ScheduledTime;
+import com.collective.celos.api.ScheduledTimeFormatter;
+import com.collective.celos.api.Util;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 // TODO: mock AuthOozieClient and check that its methods are called with the right args
 public class OozieExternalService implements ExternalService {
     
-    public static final String OOZIE_URL_PROP = "celos.oozie.url";
     public static final String YEAR_PROP = "year";
     public static final String MONTH_PROP = "month";
     public static final String DAY_PROP = "day";
@@ -26,23 +25,27 @@ public class OozieExternalService implements ExternalService {
     public static final String WORKFLOW_NAME_PROP = "celosWorkflowName";
     
     private final OozieClient client;
-    private final ObjectNode properties;
     private final String oozieURL;
+    private PropertiesGenerator gen;
 
-    public OozieExternalService(ObjectNode properties) {
-        this.oozieURL = Util.getStringProperty(properties, OOZIE_URL_PROP);
-        this.client = new AuthOozieClient(getOozieURL());
-        this.properties = properties;
+    public OozieExternalService(String oozieURL, PropertiesGenerator gen) {
+        this.oozieURL = Util.requireNonNull(oozieURL);
+        this.gen = Util.requireNonNull(gen);
+        this.client = new AuthOozieClient(oozieURL);
     }
-
+    
     @Override
     public String submit(SlotID id) throws ExternalServiceException {
-        Properties runProperties = setupRunProperties(properties, id);
         try {
+            Properties runProperties = setupRunProperties(getProperties(id), id);
             return client.submit(runProperties);
-        } catch (OozieClientException e) {
+        } catch (Exception e) {
             throw new ExternalServiceException(e);
         }
+    }
+
+    public ObjectNode getProperties(SlotID id) {
+        return gen.getProperties(id);
     }
     
     @Override
@@ -72,7 +75,7 @@ public class OozieExternalService implements ExternalService {
         return id.getWorkflowID() + "@" + formatter.formatPretty(id.getScheduledTime());
     }
 
-    private Properties setupDefaultProperties(ObjectNode defaults, ScheduledTime t) {
+    Properties setupDefaultProperties(ObjectNode defaults, ScheduledTime t) {
         Properties props = new Properties();
         ScheduledTimeFormatter formatter = new ScheduledTimeFormatter();
         for (Iterator<String> names = defaults.fieldNames(); names.hasNext();) {
@@ -96,10 +99,6 @@ public class OozieExternalService implements ExternalService {
 
     public String getOozieURL() {
         return oozieURL;
-    }
-
-    public ObjectNode getProperties() {
-        return properties;
     }
 
 }
