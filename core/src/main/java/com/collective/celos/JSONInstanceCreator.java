@@ -2,10 +2,11 @@ package com.collective.celos;
 
 import java.lang.reflect.Constructor;
 
-import com.collective.celos.api.Util;
 import org.apache.commons.beanutils.ConstructorUtils;
 
+import com.collective.celos.api.Util;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
@@ -22,6 +23,11 @@ public class JSONInstanceCreator {
 
     private static final String TYPE_PROP = "type";
     private static final String PROPERTIES_PROP = "properties";
+    private static final ObjectMapper MAPPER = new ObjectMapper();
+    
+    public Object createInstance(String json) throws Exception {
+        return createInstance(MAPPER.readTree(json));
+    }
     
     public Object createInstance(JsonNode node) throws Exception {
         ObjectNode properties = getProperties(node);

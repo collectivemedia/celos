@@ -1,5 +1,28 @@
+importPackage(Packages.com.collective.celos.api);
+importPackage(Packages.com.collective.celos);
+
+// FIXME: temporary solution: until all utility functions return real Java objects,
+// allow JSON also and create instances from it using the JSONInstanceCreator.
 function addWorkflow(json) {
-    celosWorkflowConfigurationParser.addWorkflowFromJSONString(JSON.stringify(json), celosWorkflowConfigFilePath);
+    if (typeof json.id !== "string") {
+        throw "Workflow ID must be a string: " + json.id;
+    }
+    celosWorkflowConfigurationParser.addWorkflow(
+        new Workflow(
+            new WorkflowID(json.id),
+            json.schedule instanceof Schedule ? json.schedule
+                : celosCreator.createInstance(JSON.stringify(json.schedule)),
+            json.schedulingStrategy instanceof SchedulingStrategy ? json.schedulingStrategy
+                : celosCreator.createInstance(JSON.stringify(json.schedulingStrategy)),
+            json.trigger instanceof Trigger ? json.trigger
+                : celosCreator.createInstance(JSON.stringify(json.trigger)),
+            json.externalService instanceof ExternalService ? json.externalService
+                : celosCreator.createInstance(JSON.stringify(json.externalService)),
+            json.maxRetryCount ? json.maxRetryCount : 0,
+            new ScheduledTime(json.startTime ? json.startTime : "1970-01-01T00:00:00.000Z")
+        ),
+        celosWorkflowConfigFilePath
+    );
 }
 
 function importDefaults(label) {
@@ -26,7 +49,6 @@ function cronSchedule(cronExpression) {
         }
     };
 }
-
 
 function serialSchedulingStrategy(concurrency) {
     if(concurrency === undefined){
@@ -108,28 +130,39 @@ function successTrigger(workflowName) {
     };
 }
 
-function oozieExternalService(userProperties, oozieURL) {
-    function mergeProperties(source, target) {
-        for (var name in source) {
-            target[name] = source[name];
-        }
+function mergeProperties(source, target) {
+    for (var name in source) {
+        target[name] = source[name];
     }
+}
+
+function oozieExternalService(userPropertiesOrFun, oozieURL) {
     if (oozieURL === undefined) {
         if (typeof CELOS_DEFAULT_OOZIE !== "undefined") {
             oozieURL = CELOS_DEFAULT_OOZIE;
         }
     }
-    var theProperties = {
-        "celos.oozie.url": oozieURL
-    };
-    if (typeof CELOS_DEFAULT_OOZIE_PROPERTIES !== "undefined") {
-        mergeProperties(CELOS_DEFAULT_OOZIE_PROPERTIES, theProperties);
+    var propertiesGen = makePropertiesGen(userPropertiesOrFun);
+    return new OozieExternalService(oozieURL, propertiesGen);
+}
+
+function makePropertiesGen(userPropertiesOrFun) {
+    // If user passes in a function, use it as the properties
+    // generator.  Otherwise create a a function that always
+    // returns the passed in object.
+    var userFun = (typeof userPropertiesOrFun === "function")
+        ? userPropertiesOrFun 
+        : function(ignoredSlotID) { return userPropertiesOrFun; };
+    function getPropertiesFun(slotID) {
+        var userProperties = userFun(slotID);
+        var theProperties = {};
+        if (typeof CELOS_DEFAULT_OOZIE_PROPERTIES !== "undefined") {
+            mergeProperties(CELOS_DEFAULT_OOZIE_PROPERTIES, theProperties);
+        }
+        mergeProperties(userProperties, theProperties);
+        return celosMapper.readTree(JSON.stringify(theProperties));
     }
-    mergeProperties(userProperties, theProperties)
-    return {
-        "type": "com.collective.celos.OozieExternalService",
-        "properties": theProperties
-    };
+    return new PropertiesGenerator({ getProperties: getPropertiesFun });
 }
 
 function commandExternalService(command) {

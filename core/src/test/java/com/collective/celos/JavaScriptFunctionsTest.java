@@ -3,12 +3,15 @@ package com.collective.celos;
 import java.io.File;
 import java.io.StringReader;
 import java.util.Arrays;
+import java.util.Properties;
 
 import org.junit.Assert;
 import org.junit.Test;
 import org.mozilla.javascript.NativeJSON;
+import org.mozilla.javascript.NativeJavaObject;
 import org.mozilla.javascript.tools.shell.Global;
 
+import com.collective.celos.api.ScheduledTime;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
@@ -104,39 +107,49 @@ public class JavaScriptFunctionsTest {
 
     @Test
     public void testOozieExternalService() throws Exception {
-        OozieExternalService s = (OozieExternalService) runJS("oozieExternalService({bla:'hello'}, 'http://foo')");
+        OozieExternalService s = (OozieExternalService) runJSObject("oozieExternalService({bla:'hello'}, 'http://foo')");
         Assert.assertEquals("http://foo", s.getOozieURL());
         ObjectNode props = new ObjectMapper().createObjectNode();
-        props.put(OozieExternalService.OOZIE_URL_PROP, "http://foo");
         props.put("bla", "hello");
-        Assert.assertEquals(props, s.getProperties());
+        Assert.assertEquals(props, s.getProperties(new SlotID(new WorkflowID("foo"), ScheduledTime.now())));
     }
     
-    @Test(expected=Exception.class)
+    @Test
     public void testOozieURLRequired() throws Exception {
-        runJS("oozieExternalService({bla:'hello'})");
+        runJSObject("oozieExternalService({bla:'hello'})");
     }
 
     @Test
     public void testOozieURLUsesDefault() throws Exception {
         String js = "var CELOS_DEFAULT_OOZIE = 'http://oooooozie'; oozieExternalService({bla:'hello'})";
-        OozieExternalService s = (OozieExternalService) runJS(js);
+        OozieExternalService s = (OozieExternalService) runJSObject(js);
         Assert.assertEquals("http://oooooozie", s.getOozieURL());
     }
 
     @Test
     public void testUsesOozieDefaultProperties() throws Exception {
         String js = "var CELOS_DEFAULT_OOZIE_PROPERTIES = {a:'1', b:'2'}; oozieExternalService({b: '3', c:'4'}, 'http://oozie')";
-        OozieExternalService s = (OozieExternalService) runJS(js);
+        OozieExternalService s = (OozieExternalService) runJSObject(js);
         Assert.assertEquals("http://oozie", s.getOozieURL());
         ObjectNode props = new ObjectMapper().createObjectNode();
-        props.put(OozieExternalService.OOZIE_URL_PROP, "http://oozie");
         props.put("a", "1");
         props.put("b", "3");
         props.put("c", "4");
-        Assert.assertEquals(props, s.getProperties());
+        Assert.assertEquals(props, s.getProperties(new SlotID(new WorkflowID("foo"), ScheduledTime.now())));
     }
 
+    @Test
+    public void testOoziePropertiesFunction() throws Exception {
+        String js = "var CELOS_DEFAULT_OOZIE_PROPERTIES = { a: '${year}' }; oozieExternalService(function(slot){ return { b: '${month}', c: new String(slot.getScheduledTime().minusYears(1).year()) }; }, 'http://oozie')";
+        OozieExternalService s = (OozieExternalService) runJSObject(js);
+        Properties props = new Properties();
+        props.put("a", "2014");
+        props.put("b", "03");
+        props.put("c", "2013");
+        ScheduledTime t = new ScheduledTime("2014-03-01T00:00Z");
+        Assert.assertEquals(props, s.setupDefaultProperties(s.getProperties(new SlotID(new WorkflowID("foo"), t)), t));
+    }
+    
     // CommandExternalService
     
     @Test(expected=Exception.class)
@@ -160,4 +173,12 @@ public class JavaScriptFunctionsTest {
         return creator.createInstance(mapper.readTree(resultString));
     }
     
+    // FIXME: temporary hack, to be replaced when all utility functions return real objects, not JSON
+    private Object runJSObject(String js) throws Exception {
+        WorkflowConfigurationParser parser = new WorkflowConfigurationParser(new File("unused"));
+        // Evaluate JS function call
+        NativeJavaObject result = (NativeJavaObject) parser.evaluateReader(new StringReader(js), "string", 1);
+        return result.unwrap();
+    }
+        
 }

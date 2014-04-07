@@ -96,7 +96,7 @@ public class WorkflowConfigurationParserTest {
 
     @Test
     public void propertiesAreCorrectlySet() throws Exception {
-        WorkflowConfiguration cfg = parseDir("properties-test");
+        WorkflowConfiguration cfg = parseFile("properties-test");
         
         Workflow wf1 = cfg.findWorkflow(new WorkflowID("workflow-1"));
         Assert.assertEquals("workflow-1", wf1.getID().toString());
@@ -201,7 +201,7 @@ public class WorkflowConfigurationParserTest {
     @Test
     public void doesntAllowDuplicateIDs() throws Exception {
         // Directory contains 2 workflows, but one will be dropped because of duplicate ID.
-        WorkflowConfiguration cfg = parseDir("duplicate-ids");
+        WorkflowConfiguration cfg = parseFile("duplicate-ids");
         Assert.assertEquals(1, cfg.getWorkflows().size());
     }
     
@@ -225,16 +225,18 @@ public class WorkflowConfigurationParserTest {
         parseNamedFile("uses-defaults", "workflow-1");
     }
     
-    public static void parseFile(String label) throws Exception {
-        parseNamedFile(label, "workflow-1");
+    public static WorkflowConfiguration parseFile(String label) throws Exception {
+        return parseNamedFile(label, "workflow-1");
     }
 
-    private static void parseNamedFile(String label, String workflowName) throws URISyntaxException,
+    private static WorkflowConfiguration parseNamedFile(String label, String workflowName) throws URISyntaxException,
             Exception {
         File dir = getConfigurationDir(label);
         File defaults = getDefaultsDir();
         File workflow = new File(dir, workflowName + "." + WorkflowConfigurationParser.WORKFLOW_FILE_EXTENSION);
-        new WorkflowConfigurationParser(defaults).parseFile(workflow);
+        WorkflowConfigurationParser workflowConfigurationParser = new WorkflowConfigurationParser(defaults);
+        workflowConfigurationParser.parseFile(workflow);
+        return workflowConfigurationParser.getWorkflowConfiguration();
     }
     
     public static WorkflowConfiguration parseDir(String label) throws Exception {
