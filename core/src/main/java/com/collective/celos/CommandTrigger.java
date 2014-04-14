@@ -11,11 +11,14 @@ import com.collective.celos.api.Util;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.text.StrBuilder;
+import org.apache.log4j.Logger;
 
 public class CommandTrigger implements Trigger {
 
     public static final String COMMAND_PROP = "celos.commandTrigger.command";
-
+    private static Logger LOGGER = Logger.getLogger(CommandTrigger.class);
     private final ScheduledTimeFormatter formatter = new ScheduledTimeFormatter();
     private final List<String> rawCommandElements;
 
@@ -38,6 +41,8 @@ public class CommandTrigger implements Trigger {
         for (String rawElement : rawCommandElements) {
             cookedCommandElements.add(formatter.replaceTimeTokens(rawElement, t));
         }
+
+        LOGGER.info("CommandTrigger: Prepared command: " + StringUtils.join(cookedCommandElements, " "));
         return new ProcessBuilder(cookedCommandElements).start().waitFor() == 0;
     }
 
