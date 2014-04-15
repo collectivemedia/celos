@@ -149,6 +149,28 @@ public class JavaScriptFunctionsTest {
         ScheduledTime t = new ScheduledTime("2014-03-01T00:00Z");
         Assert.assertEquals(props, s.setupDefaultProperties(s.getProperties(new SlotID(new WorkflowID("foo"), t)), t));
     }
+
+    @Test
+    public void testOoziePropertiesFunctionWithJavaObject() throws Exception {
+        String js = "var CELOS_DEFAULT_OOZIE_PROPERTIES = " +
+                "{ " +
+                "   a: '${year}' " +
+                "}; " +
+                "oozieExternalService(function(slot)" +
+                "   { " +
+                "       return { " +
+                "           b: '${month}', " +
+                "           c: slot.getScheduledTime().minusYears(1).year()" +
+                "   }; " +
+                "}, 'http://oozie')";
+        OozieExternalService s = (OozieExternalService) runJSObject(js);
+        Properties props = new Properties();
+        props.put("a", "2014");
+        props.put("b", "03");
+        props.put("c", "2013");
+        ScheduledTime t = new ScheduledTime("2014-03-01T00:00Z");
+        Assert.assertEquals(props, s.setupDefaultProperties(s.getProperties(new SlotID(new WorkflowID("foo"), t)), t));
+    }
     
     // CommandExternalService
     
