@@ -42,7 +42,9 @@ public class CommandTrigger implements Trigger {
         }
 
         LOGGER.info("CommandTrigger: Prepared command: " + StringUtils.join(cookedCommandElements, " "));
-        return new ProcessBuilder(cookedCommandElements).start().waitFor() == 0;
+        int result = new ProcessBuilder(cookedCommandElements).start().waitFor();
+        LOGGER.info("CommandTrigger: exited with code " + result);
+        return result == 0;
     }
 
     public List<String> getRawCommandElements() {
