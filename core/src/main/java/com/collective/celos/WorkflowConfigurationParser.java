@@ -7,6 +7,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ScriptableObject;
+import org.mozilla.javascript.WrapFactory;
 import org.mozilla.javascript.tools.shell.Global;
 
 import com.collective.celos.api.Schedule;
@@ -50,6 +51,10 @@ public class WorkflowConfigurationParser {
         this.defaultsDir = Util.requireNonNull(defaultsDir);
         context = Context.enter();
         context.setLanguageVersion(170);
+
+        WrapFactory wf = new WrapFactory();
+        wf.setJavaPrimitiveWrap(false);
+        context.setWrapFactory(wf);
     }
 
     public WorkflowConfigurationParser parseConfiguration(File workflowsDir) {

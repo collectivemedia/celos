@@ -136,14 +136,6 @@ function mergeProperties(source, target) {
     }
 }
 
-function wrapProperties(properties) {
-    for (var name in properties) {
-        if (typeof properties[name] !== 'string') {
-            properties[name] = new String(properties[name]);
-        }
-    }
-}
-
 function oozieExternalService(userPropertiesOrFun, oozieURL) {
     if (oozieURL === undefined) {
         if (typeof CELOS_DEFAULT_OOZIE !== "undefined") {
@@ -169,7 +161,6 @@ function makePropertiesGen(userPropertiesOrFun) {
         if (typeof CELOS_DEFAULT_OOZIE_PROPERTIES !== "undefined") {
             mergeProperties(CELOS_DEFAULT_OOZIE_PROPERTIES, theProperties);
         }
-        wrapProperties(userProperties);
         mergeProperties(userProperties, theProperties);
         return celosMapper.readTree(JSON.stringify(theProperties));
     }
