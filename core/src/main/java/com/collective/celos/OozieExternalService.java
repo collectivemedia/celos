@@ -80,7 +80,7 @@ public class OozieExternalService implements ExternalService {
         ScheduledTimeFormatter formatter = new ScheduledTimeFormatter();
         for (Iterator<String> names = defaults.fieldNames(); names.hasNext();) {
             String name = names.next();
-            String value = defaults.get(name).textValue();
+            String value = defaults.get(name).asText();
             props.setProperty(name, formatter.replaceTimeTokens(value, t));
         }
         return props;
