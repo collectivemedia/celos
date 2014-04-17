@@ -37,7 +37,7 @@
     local_action: shell curl {{inventory_hostname}}:8080/celos/workflow-list | diff - test_files/empty_workflow_list.json
 
   - name: Upload sample workflow configuration files
-    local_action: command rsync -az -e ssh {{local_celos}}/core/src/test/resources/com/collective/celos/workflow-configuration-test/json-workflow-list-servlet-test/
+    local_action: command rsync -az -e ssh {{local_celos}}/src/test/resources/com/collective/celos/workflow-configuration-test/json-workflow-list-servlet-test/
       celos@{{inventory_hostname}}:{{celos_workflows_dir}}
 
   - name: Testing servlet /celos/workflow-list with non-empty configuration
@@ -53,7 +53,7 @@
     local_action: shell curl -i {{inventory_hostname}}:8080/celos/workflow?id=foobar | head -n 1 | grep "HTTP/1.1 404"
 
   - name: Upload sample state database
-    local_action: command rsync -az -e ssh {{local_celos}}/core/src/test/resources/com/collective/celos/state-database-test/db-1/
+    local_action: command rsync -az -e ssh {{local_celos}}/src/test/resources/com/collective/celos/state-database-test/db-1/
       celos@{{inventory_hostname}}:{{celos_db_dir}}
     tags: slot-state
 
@@ -79,11 +79,11 @@
     tags: slot-state
 
   - name: Check servlet /celos/workflow-file returns corrent file contents with workflow definition for workflow-1
-    local_action: shell curl --fail "{{inventory_hostname}}:8080/celos/workflow-file?id=workflow-1" | diff - {{local_celos}}/core/src/test/resources/com/collective/celos/workflow-configuration-test/json-workflow-list-servlet-test/workflow-1.js
+    local_action: shell curl --fail "{{inventory_hostname}}:8080/celos/workflow-file?id=workflow-1" | diff - {{local_celos}}/src/test/resources/com/collective/celos/workflow-configuration-test/json-workflow-list-servlet-test/workflow-1.js
     tags: workflow-file
 
   - name: Check servlet /celos/workflow-file returns corrent file contents with workflow definition for workflow-2
-    local_action: shell curl --fail "{{inventory_hostname}}:8080/celos/workflow-file?id=workflow-2" | diff - {{local_celos}}/core/src/test/resources/com/collective/celos/workflow-configuration-test/json-workflow-list-servlet-test/workflow-2.js
+    local_action: shell curl --fail "{{inventory_hostname}}:8080/celos/workflow-file?id=workflow-2" | diff - {{local_celos}}/src/test/resources/com/collective/celos/workflow-configuration-test/json-workflow-list-servlet-test/workflow-2.js
     tags: workflow-file
 
   - name: Check servlet /celos/workflow-file returns 404 for not existing workflow

@@ -4,4 +4,4 @@ set -x
 
 # Copy defaults
 
-sudo cp core/src/main/bash/celos-wrapper /usr/local/bin
+sudo cp src/main/bash/celos-wrapper /usr/local/bin
