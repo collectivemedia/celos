@@ -52,6 +52,10 @@ public class WorkflowConfigurationParser {
         context = Context.enter();
         context.setLanguageVersion(170);
 
+        /**
+         * Treat primitives like strings returned from Java methods
+         * as native JS objects.
+         */
         WrapFactory wf = new WrapFactory();
         wf.setJavaPrimitiveWrap(false);
         context.setWrapFactory(wf);
