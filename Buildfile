@@ -52,7 +52,6 @@ VERSION = '1.0.0'
 define 'celos' do
 
   project.version = VERSION
-  manifest['Main-Class'] = 'com.collective.celos.Main'
 
   compile.options.source = '1.7'
   compile.options.target = '1.7'
