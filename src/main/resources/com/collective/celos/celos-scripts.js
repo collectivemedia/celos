@@ -1,4 +1,3 @@
-importPackage(Packages.com.collective.celos.api);
 importPackage(Packages.com.collective.celos);
 
 // FIXME: temporary solution: until all utility functions return real Java objects,
