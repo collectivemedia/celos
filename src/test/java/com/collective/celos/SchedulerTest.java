@@ -711,7 +711,7 @@ public class SchedulerTest {
     public void retryTest() throws Exception {
         WorkflowID wfID1 = new WorkflowID("wf1");
         Schedule sch1 = makeHourlySchedule();
-        SchedulingStrategy str1 = new TrivialSchedulingStrategy(Util.newObjectNode());
+        SchedulingStrategy str1 = new TrivialSchedulingStrategy();
         Trigger tr1 = makeAlwaysTrigger();
         ExternalService srv1 = new RepeatedlyFailingExternalService(2);
         int maxRetryCount = 10;
@@ -765,7 +765,7 @@ public class SchedulerTest {
     public void retryTestWithTooSmallMaxRetryCount() throws Exception {
         WorkflowID wfID1 = new WorkflowID("wf1");
         Schedule sch1 = makeHourlySchedule();
-        SchedulingStrategy str1 = new TrivialSchedulingStrategy(Util.newObjectNode());
+        SchedulingStrategy str1 = new TrivialSchedulingStrategy();
         Trigger tr1 = makeAlwaysTrigger();
         ExternalService srv1 = new RepeatedlyFailingExternalService(3);
         int maxRetryCount = 2;
@@ -848,7 +848,7 @@ public class SchedulerTest {
     }
 
     private TrivialSchedulingStrategy makeTrivialSchedulingStrategy() {
-        return new TrivialSchedulingStrategy(Util.newObjectNode());
+        return new TrivialSchedulingStrategy();
     }
     
     private HourlySchedule makeHourlySchedule() {
