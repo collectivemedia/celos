@@ -190,11 +190,6 @@ public class WorkflowConfigurationParserTest {
     }
     
     @Test
-    public void testJSUtilityFunctions() throws Exception {
-        parseFile("js-utility-functions-test");
-    }
-    
-    @Test
     public void doesntAllowDuplicateIDs() throws Exception {
         // Directory contains 2 workflows, but one will be dropped because of duplicate ID.
         WorkflowConfiguration cfg = parseFile("duplicate-ids");
