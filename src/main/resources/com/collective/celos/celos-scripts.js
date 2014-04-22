@@ -75,12 +75,11 @@ function delayTrigger(seconds) {
 }
 
 function commandTrigger() {
-    return {
-        "type": "com.collective.celos.CommandTrigger",
-        "properties": {
-            "celos.commandTrigger.command": Array.prototype.slice.call(arguments)
-        }
-    };
+    var list = new Packages.java.util.LinkedList();
+    for (var i = 0; i < arguments.length; i++) {
+        list.add(arguments[i]);
+    }
+    return new CommandTrigger(list);
 }
 
 function successTrigger(workflowName) {
