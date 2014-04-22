@@ -391,11 +391,11 @@ Schedules a workflow to run via a `cron`-like expression.
 
 #### Example
 
-Run a workflow at minute 15 of every hour of every day of the year.
+Run a workflow at second 0, minute 15 of every hour of every day of the year.
 
 <pre>
 ...
-"schedule": cronSchedule("* 15 * * * ?")
+"schedule": cronSchedule("0 15 * * * ?")
 ...
 </pre>
 
