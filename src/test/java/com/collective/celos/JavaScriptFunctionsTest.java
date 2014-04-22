@@ -37,13 +37,13 @@ public class JavaScriptFunctionsTest {
     
     @Test
     public void testSerialSchedulingStrategyDefault() throws Exception {
-        SerialSchedulingStrategy s = (SerialSchedulingStrategy) runJS("serialSchedulingStrategy()");
+        SerialSchedulingStrategy s = (SerialSchedulingStrategy) runJSObject("serialSchedulingStrategy()");
         Assert.assertEquals(s.getConcurrencyLevel(), 1);
     }
 
     @Test
     public void testSerialSchedulingStrategy() throws Exception {
-        SerialSchedulingStrategy s = (SerialSchedulingStrategy) runJS("serialSchedulingStrategy(5)");
+        SerialSchedulingStrategy s = (SerialSchedulingStrategy) runJSObject("serialSchedulingStrategy(5)");
         Assert.assertEquals(s.getConcurrencyLevel(), 5);
     }
 

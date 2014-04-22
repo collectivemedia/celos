@@ -41,16 +41,7 @@ function cronSchedule(cronExpression) {
 }
 
 function serialSchedulingStrategy(concurrency) {
-    if(concurrency === undefined){
-        concurrency = 1;
-    }
-    return {
-        "type": "com.collective.celos.SerialSchedulingStrategy",
-        "properties": {
-            "celos.serial.concurrency": concurrency
-        }
-
-    };
+    return new SerialSchedulingStrategy(concurrency === undefined ? 1 : concurrency);
 }
 
 function alwaysTrigger() {
