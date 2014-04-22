@@ -180,7 +180,7 @@ public class JavaScriptFunctionsTest {
     
     @Test
     public void testCESUsesCommand() throws Exception {
-        CommandExternalService s = (CommandExternalService) runJS("commandExternalService('shutdown -h now')");
+        CommandExternalService s = (CommandExternalService) runJSObject("commandExternalService('shutdown -h now')");
         Assert.assertEquals("shutdown -h now", s.getRawCommand());
     }
     

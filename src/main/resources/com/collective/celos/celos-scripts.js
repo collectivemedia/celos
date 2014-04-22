@@ -124,12 +124,6 @@ function makePropertiesGen(userPropertiesOrFun) {
 }
 
 function commandExternalService(command) {
-    return {
-        "type": "com.collective.celos.CommandExternalService",
-        "properties": {
-            "celos.commandExternalService.command": command,
-            "celos.commandExternalService.wrapperCommand": "celos-wrapper",
-            "celos.commandExternalService.databaseDir": "/var/lib/celos/jobs"
-        }
-    };
+    // FIXME: the wrapper and /var/lib path should probably be specified elsewhere
+    return new CommandExternalService(command, "celos-wrapper", "/var/lib/celos/jobs");
 }
