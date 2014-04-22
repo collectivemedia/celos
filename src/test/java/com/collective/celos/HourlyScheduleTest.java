@@ -64,6 +64,6 @@ public class HourlyScheduleTest {
     }
 
     private HourlySchedule makeHourlySchedule() {
-        return new HourlySchedule(Util.newObjectNode());
+        return new HourlySchedule();
     }
 }

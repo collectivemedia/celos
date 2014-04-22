@@ -857,7 +857,7 @@ public class SchedulerTest {
     }
     
     private HourlySchedule makeHourlySchedule() {
-        return new HourlySchedule(Util.newObjectNode());
+        return new HourlySchedule();
     }
 
 }

@@ -8,12 +8,6 @@ function assertEquals(msg, a, b) {
     assert(msg + ": " + aString + " === " + bString, aString === bString);
 }
 
-assertEquals("hourlySchedule() works",
-             hourlySchedule(),
-             {
-                 "type": "com.collective.celos.HourlySchedule"
-             });
-
 assertEquals("minutelySchedule() works",
              minutelySchedule(),
              {

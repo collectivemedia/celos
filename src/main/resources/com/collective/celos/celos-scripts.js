@@ -29,9 +29,7 @@ function importDefaults(label) {
 }
 
 function hourlySchedule() {
-    return {
-        "type": "com.collective.celos.HourlySchedule"
-    };
+    return new HourlySchedule();
 }
 
 function minutelySchedule() {

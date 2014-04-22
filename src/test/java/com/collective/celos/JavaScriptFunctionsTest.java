@@ -21,7 +21,7 @@ public class JavaScriptFunctionsTest {
     
     @Test
     public void testHourlySchedule() throws Exception {
-        HourlySchedule s = (HourlySchedule) runJS("hourlySchedule()");
+        HourlySchedule s = (HourlySchedule) runJSObject("hourlySchedule()");
     }
 
     @Test

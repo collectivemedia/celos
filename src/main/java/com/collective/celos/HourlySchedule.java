@@ -5,11 +5,9 @@ import java.util.TreeSet;
 
 import org.joda.time.DateTime;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
-
 public class HourlySchedule implements Schedule {
 
-    public HourlySchedule(ObjectNode ignored) {
+    public HourlySchedule() {
     }
     
     @Override
