@@ -9,14 +9,10 @@ function addWorkflow(json) {
     celosWorkflowConfigurationParser.addWorkflow(
         new Workflow(
             new WorkflowID(json.id),
-            json.schedule instanceof Schedule ? json.schedule
-                : celosCreator.createInstance(JSON.stringify(json.schedule)),
-            json.schedulingStrategy instanceof SchedulingStrategy ? json.schedulingStrategy
-                : celosCreator.createInstance(JSON.stringify(json.schedulingStrategy)),
-            json.trigger instanceof Trigger ? json.trigger
-                : celosCreator.createInstance(JSON.stringify(json.trigger)),
-            json.externalService instanceof ExternalService ? json.externalService
-                : celosCreator.createInstance(JSON.stringify(json.externalService)),
+            json.schedule,
+            json.schedulingStrategy,
+            json.trigger,
+            json.externalService,
             json.maxRetryCount ? json.maxRetryCount : 0,
             new ScheduledTime(json.startTime ? json.startTime : "1970-01-01T00:00:00.000Z")
         ),
@@ -37,6 +33,9 @@ function minutelySchedule() {
 }
 
 function cronSchedule(cronExpression) {
+    if (!cronExpression) {
+        throw "Undefined cron expression";
+    }
     return new CronSchedule(cronExpression);
 }
 
@@ -50,9 +49,14 @@ function alwaysTrigger() {
 
 // Pass fs as final parameter so we can later use a default if parameter not supplied
 function hdfsCheckTrigger(path, fs) {
-    if (fs === undefined) {
+    if (!path) {
+        throw "Undefined path in hdfsCheckTrigger";
+    }
+    if (!fs) {
         if (typeof CELOS_DEFAULT_HDFS !== "undefined") {
             fs = CELOS_DEFAULT_HDFS;
+        } else {
+            throw "Undefined fs in hdfsCheckTrigger and CELOS_DEFAULT_HDFS not set";
         }
     }
     return new HDFSCheckTrigger(path, fs);
@@ -67,10 +71,16 @@ function andTrigger() {
 }
 
 function notTrigger(subTrigger) {
+    if (!subTrigger) {
+        throw "Undefined sub trigger";
+    }
     return new NotTrigger(subTrigger);
 }
 
 function delayTrigger(seconds) {
+    if (!seconds) {
+        throw "Undefined seconds";
+    }
     return new DelayTrigger(seconds);
 }
 
@@ -83,6 +93,9 @@ function commandTrigger() {
 }
 
 function successTrigger(workflowName) {
+    if (!workflowName) {
+        throw "Undefined workflow name in success trigger";
+    }
     return new SuccessTrigger(workflowName);
 }
 
@@ -97,7 +110,7 @@ function oozieExternalService(userPropertiesOrFun, oozieURL) {
         if (typeof CELOS_DEFAULT_OOZIE !== "undefined") {
             oozieURL = CELOS_DEFAULT_OOZIE;
         } else {
-            throw "oozieURL is undefined";
+            throw "Undefined Oozie URL";
         }
     }
     var propertiesGen = makePropertiesGen(userPropertiesOrFun);
@@ -124,6 +137,9 @@ function makePropertiesGen(userPropertiesOrFun) {
 }
 
 function commandExternalService(command) {
+    if (!command) {
+        throw "Undefined command";
+    }
     // FIXME: the wrapper and /var/lib path should probably be specified elsewhere
     return new CommandExternalService(command, "celos-wrapper", "/var/lib/celos/jobs");
 }

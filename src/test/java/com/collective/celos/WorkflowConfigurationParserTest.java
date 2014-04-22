@@ -9,8 +9,6 @@ import java.util.SortedSet;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
-
 public class WorkflowConfigurationParserTest {
 
     @Test
@@ -19,55 +17,26 @@ public class WorkflowConfigurationParserTest {
         Assert.assertEquals(0, cfg.getWorkflows().size());
     }
 
-    @Test(expected=Exception.class)
-    public void failsOnIllFormattedFile() throws Exception {
-        parseFile("ill-formatted");
-    }
-    
-    public static class ScheduleWithoutPropertiesConstructor implements Schedule {
-        @Override
-        public SortedSet<ScheduledTime> getScheduledTimes(ScheduledTime start, ScheduledTime end) {
-            return null;
-        }
-    }
-
     @Test
-    public void everyObjectMustHavePropertiesConstructor() throws Exception {
-        try {
-            parseFile("no-properties-constructor");
-        } catch(Exception e) {
-            Assert.assertTrue(e.getMessage().contains("Constructor with ObjectNode argument not found for com.collective.celos.WorkflowConfigurationParserTest$ScheduleWithoutPropertiesConstructor"));
-        }
-    }
-    
-    public static class RemembersProperties {
-        private ObjectNode properties;
-        protected RemembersProperties(ObjectNode props) {
-            this.properties = Util.requireNonNull(props);
-        }
-        public ObjectNode getProperties() {
-            return properties;
-        }
+    public void failsOnIllFormattedFile() throws Exception {
+        expectMessage("ill-formatted", "missing ; before statement");
     }
 
-    public static class TestSchedule extends RemembersProperties implements Schedule {
-        public TestSchedule(ObjectNode properties) { super(properties); }
+    public static class TestSchedule implements Schedule {
         @Override
         public SortedSet<ScheduledTime> getScheduledTimes(ScheduledTime start, ScheduledTime end) {
             return null;
         }
     }
     
-    public static class TestSchedulingStrategy extends RemembersProperties implements SchedulingStrategy {
-        public TestSchedulingStrategy(ObjectNode properties) { super(properties); }
+    public static class TestSchedulingStrategy implements SchedulingStrategy {
         @Override
         public List<SlotState> getSchedulingCandidates(List<SlotState> states) {
             return null;
         }
     }
 
-    public static class TestExternalService extends RemembersProperties implements ExternalService {
-        public TestExternalService(ObjectNode properties) { super(properties); }
+    public static class TestExternalService implements ExternalService {
         @Override
         public String submit(SlotID id) throws ExternalServiceException {
             return null;
@@ -81,8 +50,7 @@ public class WorkflowConfigurationParserTest {
         }
     }
         
-    public static class TestTrigger extends RemembersProperties implements Trigger {
-        public TestTrigger(ObjectNode properties) { super(properties); }
+    public static class TestTrigger implements Trigger {
         @Override
         public boolean isDataAvailable(ScheduledTime now, ScheduledTime t) throws Exception {
             return false;
@@ -95,36 +63,13 @@ public class WorkflowConfigurationParserTest {
         
         Workflow wf1 = cfg.findWorkflow(new WorkflowID("workflow-1"));
         Assert.assertEquals("workflow-1", wf1.getID().toString());
-        verifyWorkflowProperties(wf1);
         Assert.assertEquals(55, wf1.getMaxRetryCount());
         Assert.assertEquals(Workflow.DEFAULT_START_TIME, wf1.getStartTime());
         
         Workflow wf2 = cfg.findWorkflow(new WorkflowID("workflow-2"));
         Assert.assertEquals("workflow-2", wf2.getID().toString());
-        verifyWorkflowProperties(wf2);
         Assert.assertEquals(66, wf2.getMaxRetryCount());
         Assert.assertEquals(new ScheduledTime("2014-03-10T12:34:56.789Z"), wf2.getStartTime());
-    }
-
-    private void verifyWorkflowProperties(Workflow wf) {
-        TestSchedule schedule = (TestSchedule) wf.getSchedule();
-        ObjectNode scheduleProperties = Util.newObjectNode();
-        scheduleProperties.put("a", "1");
-        scheduleProperties.put("b", "2");
-        Assert.assertEquals(scheduleProperties, schedule.getProperties());
-        
-        TestSchedulingStrategy schedulingStrategy = (TestSchedulingStrategy) wf.getSchedulingStrategy();
-        Assert.assertEquals(Util.newObjectNode(), schedulingStrategy.getProperties());
-        
-        TestExternalService externalService = (TestExternalService) wf.getExternalService();
-        ObjectNode externalServiceProperties = Util.newObjectNode();
-        externalServiceProperties.put("yippie", "yeah");
-        Assert.assertEquals(externalServiceProperties, externalService.getProperties());
-        
-        TestTrigger trigger = (TestTrigger) wf.getTrigger();
-        ObjectNode triggerProperties = Util.newObjectNode();
-        triggerProperties.put("foo", "bar");
-        Assert.assertEquals(triggerProperties, trigger.getProperties());
     }
 
     @Test
@@ -144,29 +89,14 @@ public class WorkflowConfigurationParserTest {
         Assert.assertNull(cfg.findWorkflow(new WorkflowID("foobar")));
     }
     
-    @Test(expected=Exception.class)
-    public void classMustExist() throws Exception {
-        parseFile("class-not-found");
-    }
-    
-    @Test(expected=Exception.class)
-    public void typeMustExist() throws Exception {
-        parseFile("type-missing");
-    }
-    
-    @Test(expected=Exception.class)
-    public void typeMustBeAString() throws Exception {
-        parseFile("type-not-a-string");
-    }
-    
-    @Test(expected=Exception.class)
+    @Test
     public void idMustExist() throws Exception {
-        parseFile("id-missing");
+        expectMessage("id-missing", "Workflow ID must be a string");
     }
-    
-    @Test(expected=Exception.class)
+
+    @Test
     public void idMustBeAString() throws Exception {
-        parseFile("id-not-a-string");
+        expectMessage("id-not-a-string", "Workflow ID must be a string");
     }
     
     @Test
@@ -175,9 +105,9 @@ public class WorkflowConfigurationParserTest {
         Assert.assertEquals(0, wf.getMaxRetryCount());
     }
     
-    @Test(expected=Exception.class)
+    @Test
     public void maxRetryCountMustBeANumber() throws Exception {
-        parseFile("maxretrycount-not-a-number");
+        expectMessage("maxretrycount-not-a-number", "Cannot convert foo to java.lang.Integer");
     }
     
     @Test
@@ -238,4 +168,16 @@ public class WorkflowConfigurationParserTest {
         return new File(resource.toURI());
     }
     
+    private void expectMessage(String label, String message) throws AssertionError {
+        try {
+            parseFile(label);
+        } catch(Exception e) {
+            if (e.getMessage().contains(message)) {
+                return;
+            }
+        }
+        throw new AssertionError();
+    }
+    
+
 }

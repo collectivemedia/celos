@@ -1,16 +1,8 @@
 addWorkflow({
     "id": "workflow-1",
-    "schedule": {
-        "type": "com.collective.celos.WorkflowConfigurationParserTest$TestSchedule"
-    },
-    "schedulingStrategy": {
-        "type": "com.collective.celos.WorkflowConfigurationParserTest$TestSchedulingStrategy"
-    },
-    "trigger": {
-        "type": "com.collective.celos.WorkflowConfigurationParserTest$TestTrigger"
-    },
-    "externalService": {
-        "type": "com.collective.celos.WorkflowConfigurationParserTest$TestExternalService"
-    },
+    "schedule": new WorkflowConfigurationParserTest$TestSchedule(),
+    "schedulingStrategy": new WorkflowConfigurationParserTest$TestSchedulingStrategy(),
+    "trigger": new WorkflowConfigurationParserTest$TestTrigger(),
+    "externalService": new WorkflowConfigurationParserTest$TestExternalService(),
     "maxRetryCount": 0
 });

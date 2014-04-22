@@ -41,7 +41,6 @@ public class WorkflowConfigurationParser {
 
     private static final Logger LOGGER = Logger.getLogger(WorkflowConfigurationParser.class);
     
-    private final JSONInstanceCreator creator = new JSONInstanceCreator();
     private final ObjectMapper mapper = new ObjectMapper();
     private final WorkflowConfiguration cfg = new WorkflowConfiguration();
     private final File defaultsDir;
@@ -94,8 +93,6 @@ public class WorkflowConfigurationParser {
     private void setupBindings(Global scope, String celosWorkflowConfigFilePath) {
         Object wrappedThis = Context.javaToJS(this, scope);
         ScriptableObject.putProperty(scope, "celosWorkflowConfigurationParser", wrappedThis);
-        Object wrappedCreator = Context.javaToJS(creator, scope);
-        ScriptableObject.putProperty(scope, "celosCreator", wrappedCreator);
         Object wrappedMapper = Context.javaToJS(mapper, scope);
         ScriptableObject.putProperty(scope, "celosMapper", wrappedMapper);
         // Need to put scope into JS so it can call importDefaultsIntoScope

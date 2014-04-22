@@ -7,73 +7,80 @@ import java.util.Properties;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.mozilla.javascript.NativeJSON;
 import org.mozilla.javascript.NativeJavaObject;
-import org.mozilla.javascript.tools.shell.Global;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public class JavaScriptFunctionsTest {
 
-    private final JSONInstanceCreator creator = new JSONInstanceCreator();
     private final ObjectMapper mapper = new ObjectMapper();
     
     @Test
     public void testHourlySchedule() throws Exception {
-        HourlySchedule s = (HourlySchedule) runJSObject("hourlySchedule()");
+        HourlySchedule s = (HourlySchedule) runJS("hourlySchedule()");
     }
 
     @Test
     public void testMinutelySchedule() throws Exception {
-        MinutelySchedule s = (MinutelySchedule) runJSObject("minutelySchedule()");
+        MinutelySchedule s = (MinutelySchedule) runJS("minutelySchedule()");
     }
 
     @Test
     public void testCronSchedule() throws Exception {
-        CronSchedule s = (CronSchedule) runJSObject("cronSchedule('* 15 * * * ?')");
+        CronSchedule s = (CronSchedule) runJS("cronSchedule('* 15 * * * ?')");
         Assert.assertEquals("* 15 * * * ?", s.getCronExpression());
     }
     
     @Test
+    public void testCronScheduleRequiresExpr() throws Exception {
+        expectMessage("cronSchedule()", "Undefined cron expression");
+    }
+    
+    @Test
     public void testSerialSchedulingStrategyDefault() throws Exception {
-        SerialSchedulingStrategy s = (SerialSchedulingStrategy) runJSObject("serialSchedulingStrategy()");
+        SerialSchedulingStrategy s = (SerialSchedulingStrategy) runJS("serialSchedulingStrategy()");
         Assert.assertEquals(s.getConcurrencyLevel(), 1);
     }
 
     @Test
     public void testSerialSchedulingStrategy() throws Exception {
-        SerialSchedulingStrategy s = (SerialSchedulingStrategy) runJSObject("serialSchedulingStrategy(5)");
+        SerialSchedulingStrategy s = (SerialSchedulingStrategy) runJS("serialSchedulingStrategy(5)");
         Assert.assertEquals(s.getConcurrencyLevel(), 5);
     }
 
     @Test
     public void testAlwaysTrigger() throws Exception {
-        AlwaysTrigger t = (AlwaysTrigger) runJSObject("alwaysTrigger()");
+        AlwaysTrigger t = (AlwaysTrigger) runJS("alwaysTrigger()");
     }
 
     @Test
     public void testHDFSCheckTrigger() throws Exception {
-        HDFSCheckTrigger t = (HDFSCheckTrigger) runJSObject("hdfsCheckTrigger('/foo', 'file:///')");
+        HDFSCheckTrigger t = (HDFSCheckTrigger) runJS("hdfsCheckTrigger('/foo', 'file:///')");
         Assert.assertEquals("/foo", t.getRawPathString());
         Assert.assertEquals("file:///", t.getFsString());
     }
     
-    @Test(expected=Exception.class)
-    public void testHDFSCheckTriggerRequiresFS() throws Exception {
-        runJS("hdfsCheckTrigger('/foo')");
+    @Test
+    public void testHDFSCheckTriggerRequiresPath() {
+        expectMessage("hdfsCheckTrigger()", "Undefined path");
     }
-    
+
+    @Test
+    public void testHDFSCheckTriggerRequiresFs() {
+        expectMessage("hdfsCheckTrigger('/foo')", "Undefined fs");
+    }
+
     @Test
     public void testHDFSCheckTriggerUsesDefaultNameNode() throws Exception {
-        HDFSCheckTrigger t = (HDFSCheckTrigger) runJSObject("var CELOS_DEFAULT_HDFS = 'file:///'; hdfsCheckTrigger('/foo')");
+        HDFSCheckTrigger t = (HDFSCheckTrigger) runJS("var CELOS_DEFAULT_HDFS = 'file:///'; hdfsCheckTrigger('/foo')");
         Assert.assertEquals("/foo", t.getRawPathString());
         Assert.assertEquals("file:///", t.getFsString());
     }
 
     @Test
     public void testAndTrigger() throws Exception {
-        AndTrigger t = (AndTrigger) runJSObject("andTrigger(delayTrigger(1), alwaysTrigger())");
+        AndTrigger t = (AndTrigger) runJS("andTrigger(delayTrigger(1), alwaysTrigger())");
         DelayTrigger dt = (DelayTrigger) t.getTriggers().get(0);
         Assert.assertEquals(1, dt.getSeconds());
         AlwaysTrigger at = (AlwaysTrigger) t.getTriggers().get(1);
@@ -82,53 +89,68 @@ public class JavaScriptFunctionsTest {
     
     @Test
     public void testNotTrigger() throws Exception {
-        NotTrigger t = (NotTrigger) runJSObject("notTrigger(alwaysTrigger())");
+        NotTrigger t = (NotTrigger) runJS("notTrigger(alwaysTrigger())");
         AlwaysTrigger at = (AlwaysTrigger) t.getTrigger();
     }
     
     @Test
+    public void testNotTriggerRequiresSubTrigger() throws Exception {
+        expectMessage("notTrigger()", "Undefined sub trigger");
+    }
+    
+    @Test
     public void testDelayTrigger() throws Exception {
-        DelayTrigger t = (DelayTrigger) runJSObject("delayTrigger(25)");
+        DelayTrigger t = (DelayTrigger) runJS("delayTrigger(25)");
         Assert.assertEquals(25, t.getSeconds());
     }
     
     @Test
+    public void testDelayTriggerRequiresSeconds() throws Exception {
+        expectMessage("delayTrigger()", "Undefined seconds");
+    }
+
+    @Test
     public void testShellCommandTrigger() throws Exception {
-        CommandTrigger t = (CommandTrigger) runJSObject("commandTrigger('hello', 'this', 'is', 'cool')");
+        CommandTrigger t = (CommandTrigger) runJS("commandTrigger('hello', 'this', 'is', 'cool')");
         Assert.assertEquals(Arrays.asList("hello", "this", "is", "cool"), t.getRawCommandElements());
     }
 
     @Test
     public void testSuccessTrigger() throws Exception {
-        SuccessTrigger t = (SuccessTrigger) runJSObject("successTrigger('myworkflow')");
+        SuccessTrigger t = (SuccessTrigger) runJS("successTrigger('myworkflow')");
         Assert.assertEquals(new WorkflowID("myworkflow"), t.getTriggerWorkflowId());
+    }
+    
+    @Test
+    public void testSuccessTriggerRequiresWorkflowName() throws Exception {
+        expectMessage("successTrigger()", "Undefined workflow name");
     }
 
     @Test
     public void testOozieExternalService() throws Exception {
-        OozieExternalService s = (OozieExternalService) runJSObject("oozieExternalService({bla:'hello'}, 'http://foo')");
+        OozieExternalService s = (OozieExternalService) runJS("oozieExternalService({bla:'hello'}, 'http://foo')");
         Assert.assertEquals("http://foo", s.getOozieURL());
         ObjectNode props = new ObjectMapper().createObjectNode();
         props.put("bla", "hello");
         Assert.assertEquals(props, s.getProperties(new SlotID(new WorkflowID("foo"), ScheduledTime.now())));
     }
     
-    @Test(expected=Exception.class)
+    @Test
     public void testOozieURLRequired() throws Exception {
-        OozieExternalService s = (OozieExternalService) runJSObject("oozieExternalService({bla:'hello'})");
+        expectMessage("oozieExternalService({bla:'hello'})", "Undefined Oozie URL");
     }
 
     @Test
     public void testOozieURLUsesDefault() throws Exception {
         String js = "var CELOS_DEFAULT_OOZIE = 'http://oooooozie'; oozieExternalService({bla:'hello'})";
-        OozieExternalService s = (OozieExternalService) runJSObject(js);
+        OozieExternalService s = (OozieExternalService) runJS(js);
         Assert.assertEquals("http://oooooozie", s.getOozieURL());
     }
 
     @Test
     public void testUsesOozieDefaultProperties() throws Exception {
         String js = "var CELOS_DEFAULT_OOZIE_PROPERTIES = {a:'1', b:'2'}; oozieExternalService({b: '3', c:'4'}, 'http://oozie')";
-        OozieExternalService s = (OozieExternalService) runJSObject(js);
+        OozieExternalService s = (OozieExternalService) runJS(js);
         Assert.assertEquals("http://oozie", s.getOozieURL());
         ObjectNode props = new ObjectMapper().createObjectNode();
         props.put("a", "1");
@@ -140,7 +162,7 @@ public class JavaScriptFunctionsTest {
     @Test
     public void testOoziePropertiesFunction() throws Exception {
         String js = "var CELOS_DEFAULT_OOZIE_PROPERTIES = { a: '${year}' }; oozieExternalService(function(slot){ return { b: '${month}', c: new String(slot.getScheduledTime().minusYears(1).year()) }; }, 'http://oozie')";
-        OozieExternalService s = (OozieExternalService) runJSObject(js);
+        OozieExternalService s = (OozieExternalService) runJS(js);
         Properties props = new Properties();
         props.put("a", "2014");
         props.put("b", "03");
@@ -162,7 +184,7 @@ public class JavaScriptFunctionsTest {
                 "           c: slot.getScheduledTime().minusYears(1).year()" +
                 "   }; " +
                 "}, 'http://oozie')";
-        OozieExternalService s = (OozieExternalService) runJSObject(js);
+        OozieExternalService s = (OozieExternalService) runJS(js);
         Properties props = new Properties();
         props.put("a", "2014");
         props.put("b", "03");
@@ -173,33 +195,33 @@ public class JavaScriptFunctionsTest {
     
     // CommandExternalService
     
-    @Test(expected=Exception.class)
+    @Test
     public void testCESCommandRequired() throws Exception {
-        runJS("commandExternalService()");
+        expectMessage("commandExternalService()", "Undefined command");
     }
     
     @Test
     public void testCESUsesCommand() throws Exception {
-        CommandExternalService s = (CommandExternalService) runJSObject("commandExternalService('shutdown -h now')");
+        CommandExternalService s = (CommandExternalService) runJS("commandExternalService('shutdown -h now')");
         Assert.assertEquals("shutdown -h now", s.getRawCommand());
     }
     
     private Object runJS(String js) throws Exception {
         WorkflowConfigurationParser parser = new WorkflowConfigurationParser(new File("unused"));
         // Evaluate JS function call
-        Object result = parser.evaluateReader(new StringReader(js), "string", 1);
-        // Turn result JSON into Java string
-        String resultString = (String) NativeJSON.stringify(parser.getContext(), new Global(), result, null, null);
-        // Parse JSON string and create object instance
-        return creator.createInstance(mapper.readTree(resultString));
-    }
-    
-    // FIXME: temporary hack, to be replaced when all utility functions return real objects, not JSON
-    private Object runJSObject(String js) throws Exception {
-        WorkflowConfigurationParser parser = new WorkflowConfigurationParser(new File("unused"));
-        // Evaluate JS function call
         NativeJavaObject result = (NativeJavaObject) parser.evaluateReader(new StringReader(js), "string", 1);
         return result.unwrap();
     }
-        
+    
+    private void expectMessage(String js, String string) throws AssertionError {
+        try {
+            runJS(js);
+        } catch(Exception e) {
+            if (e.getMessage().contains(string)) {
+                return;
+            }
+        }
+        throw new AssertionError();
+    }
+    
 }
