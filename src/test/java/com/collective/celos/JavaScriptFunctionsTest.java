@@ -100,7 +100,7 @@ public class JavaScriptFunctionsTest {
 
     @Test
     public void testSuccessTrigger() throws Exception {
-        SuccessTrigger t = (SuccessTrigger) runJS("successTrigger('myworkflow')");
+        SuccessTrigger t = (SuccessTrigger) runJSObject("successTrigger('myworkflow')");
         Assert.assertEquals(new WorkflowID("myworkflow"), t.getTriggerWorkflowId());
     }
 

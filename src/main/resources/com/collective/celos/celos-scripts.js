@@ -83,12 +83,7 @@ function commandTrigger() {
 }
 
 function successTrigger(workflowName) {
-    return {
-        "type": "com.collective.celos.SuccessTrigger",
-        "properties": {
-            "celos.successTrigger.workflow": workflowName
-        }
-    };
+    return new SuccessTrigger(workflowName);
 }
 
 function mergeProperties(source, target) {
