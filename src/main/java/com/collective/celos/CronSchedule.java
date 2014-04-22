@@ -11,8 +11,6 @@ import org.quartz.CronExpression;
 
 public class CronSchedule implements Schedule {
 
-    public final static String CONFIG_PROP = "celos.cron.config";
-    
     private CronExpression cronExpression;
 
     public CronSchedule(String cronConfig) {
