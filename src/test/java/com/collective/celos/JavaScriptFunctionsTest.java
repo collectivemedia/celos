@@ -54,7 +54,7 @@ public class JavaScriptFunctionsTest {
 
     @Test
     public void testHDFSCheckTrigger() throws Exception {
-        HDFSCheckTrigger t = (HDFSCheckTrigger) runJS("hdfsCheckTrigger('/foo', 'file:///')");
+        HDFSCheckTrigger t = (HDFSCheckTrigger) runJSObject("hdfsCheckTrigger('/foo', 'file:///')");
         Assert.assertEquals("/foo", t.getRawPathString());
         Assert.assertEquals("file:///", t.getFsString());
     }
@@ -66,7 +66,7 @@ public class JavaScriptFunctionsTest {
     
     @Test
     public void testHDFSCheckTriggerUsesDefaultNameNode() throws Exception {
-        HDFSCheckTrigger t = (HDFSCheckTrigger) runJS("var CELOS_DEFAULT_HDFS = 'file:///'; hdfsCheckTrigger('/foo')");
+        HDFSCheckTrigger t = (HDFSCheckTrigger) runJSObject("var CELOS_DEFAULT_HDFS = 'file:///'; hdfsCheckTrigger('/foo')");
         Assert.assertEquals("/foo", t.getRawPathString());
         Assert.assertEquals("file:///", t.getFsString());
     }

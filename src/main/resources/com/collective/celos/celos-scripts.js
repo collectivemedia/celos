@@ -55,13 +55,7 @@ function hdfsCheckTrigger(path, fs) {
             fs = CELOS_DEFAULT_HDFS;
         }
     }
-    return {
-        "type": "com.collective.celos.HDFSCheckTrigger",
-        "properties": {
-            "celos.hdfs.fs": fs,
-            "celos.hdfs.path": path
-        }
-    };
+    return new HDFSCheckTrigger(path, fs);
 }
 
 function andTrigger() {

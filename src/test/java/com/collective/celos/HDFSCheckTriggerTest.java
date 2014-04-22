@@ -9,32 +9,34 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
-
 public class HDFSCheckTriggerTest {
 
     @Rule
     public TemporaryFolder tempFolder = new TemporaryFolder();
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = NullPointerException.class)
+    public void testNeedsFs() throws Exception {
+        new HDFSCheckTrigger("/foo", null);
+    }
+    
+    @Test(expected = NullPointerException.class)
     public void testNeedsPath() throws Exception {
-        new HDFSCheckTrigger(Util.newObjectNode());
+        new HDFSCheckTrigger(null, "hdfs://foo");
+    }
+    
+    @Test(expected = NullPointerException.class)
+    public void testNeedsFsAndPath() throws Exception {
+        new HDFSCheckTrigger(null, null);
     }
 
     @Test
     public void testDirectoryExists() throws Exception {
-        ObjectNode props = Util.newObjectNode();
-        props.put(HDFSCheckTrigger.PATH_PROP, "/tmp");
-        props.put(HDFSCheckTrigger.FS_PROP, "file:///");
-        assertTrue(new HDFSCheckTrigger(props).isDataAvailable(ScheduledTime.now(), new ScheduledTime("2013-11-22T15:00Z")));
+        assertTrue(new HDFSCheckTrigger("/tmp", "file:///").isDataAvailable(ScheduledTime.now(), new ScheduledTime("2013-11-22T15:00Z")));
     }
 
     @Test
     public void testDirectoryDoesNotExist() throws Exception {
-        ObjectNode props = Util.newObjectNode();
-        props.put(HDFSCheckTrigger.PATH_PROP, "/tmp-does-not-exist");
-        props.put(HDFSCheckTrigger.FS_PROP, "file:///");
-        assertFalse(new HDFSCheckTrigger(props).isDataAvailable(ScheduledTime.now(), new ScheduledTime("2013-11-22T15:00Z")));
+        assertFalse(new HDFSCheckTrigger("/tmp-does-not-exist", "file:///").isDataAvailable(ScheduledTime.now(), new ScheduledTime("2013-11-22T15:00Z")));
     }
 
     @Test
@@ -45,11 +47,7 @@ public class HDFSCheckTriggerTest {
         triggerFile.getParentFile().mkdirs();
         triggerFile.createNewFile();
        
-        ObjectNode props = Util.newObjectNode();
-        props.put(HDFSCheckTrigger.PATH_PROP, root + "/${year}-${month}-${day}/${hour}00/_READY");
-        props.put(HDFSCheckTrigger.FS_PROP, "file:///");
-
-        assertTrue(new HDFSCheckTrigger(props).isDataAvailable(ScheduledTime.now(), new ScheduledTime("2013-11-22T15:00Z")));
+        assertTrue(new HDFSCheckTrigger(root + "/${year}-${month}-${day}/${hour}00/_READY",  "file:///").isDataAvailable(ScheduledTime.now(), new ScheduledTime("2013-11-22T15:00Z")));
     }
 
     @Test
@@ -61,11 +59,7 @@ public class HDFSCheckTriggerTest {
             triggerFile.delete(); // Make sure it doesn't exist
         }
        
-        ObjectNode props = Util.newObjectNode();
-        props.put(HDFSCheckTrigger.PATH_PROP, root + "/${year}-${month}-${day}/${hour}00/_READY");
-        props.put(HDFSCheckTrigger.FS_PROP, "file:///");
-
-        assertFalse(new HDFSCheckTrigger(props).isDataAvailable(ScheduledTime.now(), new ScheduledTime("2013-11-22T15:00Z")));
+        assertFalse(new HDFSCheckTrigger(root + "/${year}-${month}-${day}/${hour}00/_READY", "file:///").isDataAvailable(ScheduledTime.now(), new ScheduledTime("2013-11-22T15:00Z")));
     }
     
     /*
@@ -75,10 +69,7 @@ public class HDFSCheckTriggerTest {
      */
     @Test(expected = IllegalArgumentException.class)
     public void testIOExceptionIsPropagated() throws Exception {
-        ObjectNode props = Util.newObjectNode();
-        props.put(HDFSCheckTrigger.PATH_PROP, "/some/path");
-        props.put(HDFSCheckTrigger.FS_PROP, "hdfs://no-such-host");
-        new HDFSCheckTrigger(props).isDataAvailable(ScheduledTime.now(), new ScheduledTime("2013-11-22T15:00Z"));
+        new HDFSCheckTrigger("/some/path", "hdfs://no-such-host").isDataAvailable(ScheduledTime.now(), new ScheduledTime("2013-11-22T15:00Z"));
     }
 
 }
