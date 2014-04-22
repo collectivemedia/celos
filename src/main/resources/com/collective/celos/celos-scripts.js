@@ -37,12 +37,7 @@ function minutelySchedule() {
 }
 
 function cronSchedule(cronExpression) {
-    return {
-        "type": "com.collective.celos.CronSchedule",
-        "properties": {
-            "celos.cron.config": cronExpression
-        }
-    };
+    return new CronSchedule(cronExpression);
 }
 
 function serialSchedulingStrategy(concurrency) {

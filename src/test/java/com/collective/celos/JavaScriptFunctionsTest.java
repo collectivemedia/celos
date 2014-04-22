@@ -31,7 +31,7 @@ public class JavaScriptFunctionsTest {
 
     @Test
     public void testCronSchedule() throws Exception {
-        CronSchedule s = (CronSchedule) runJS("cronSchedule('* 15 * * * ?')");
+        CronSchedule s = (CronSchedule) runJSObject("cronSchedule('* 15 * * * ?')");
         Assert.assertEquals("* 15 * * * ?", s.getCronExpression());
     }
     
