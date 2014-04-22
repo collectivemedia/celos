@@ -99,7 +99,7 @@ public class CronScheduleTest {
     }
 
     private CronSchedule makeCronSchedule(String config) {
-        return new CronSchedule(Util.newObjectNode().put(CronSchedule.CONFIG_PROP, config));
+        return new CronSchedule(config);
     }
     
     @Test

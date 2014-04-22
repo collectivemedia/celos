@@ -52,7 +52,7 @@ public class TrivialSchedulingStrategyTest {
     }
 
     private TrivialSchedulingStrategy makeTrivialSchedulingStrategy() {
-        return new TrivialSchedulingStrategy(Util.newObjectNode());
+        return new TrivialSchedulingStrategy();
     }
 
 }

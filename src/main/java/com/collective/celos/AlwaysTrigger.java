@@ -1,7 +1,5 @@
 package com.collective.celos;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
-
 /**
  * Trivial trigger that always signals data availability,
  * for use when a workflow doesn't have any data dependencies
@@ -9,7 +7,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  */
 public class AlwaysTrigger implements Trigger {
 
-    public AlwaysTrigger(ObjectNode ignored) {    
+    public AlwaysTrigger() {    
     }
     
     @Override

@@ -7,8 +7,6 @@ import java.util.UUID;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
-
 /**
  * This external service launches potentially long-running UNIX processes and tracks their status.
  * 
@@ -38,10 +36,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  * - err: the stderr of the process
  */
 public class CommandExternalService implements ExternalService {
-
-    public static final String COMMAND_PROP = "celos.commandExternalService.command";
-    public static final String WRAPPER_COMMAND_PROP = "celos.commandExternalService.wrapperCommand";
-    public static final String DATABASE_DIR_PROP = "celos.commandExternalService.databaseDir";
     
     public static final String PID_FILE_NAME = "pid";
     public static final String EXIT_CODE_FILE_NAME = "status";
@@ -55,10 +49,10 @@ public class CommandExternalService implements ExternalService {
     
     private final Logger LOGGER = Logger.getLogger(CommandExternalService.class);
     
-    public CommandExternalService(ObjectNode properties) {
-        this.rawCommand = Util.getStringProperty(properties, COMMAND_PROP);
-        this.wrapperCommand = Util.getStringProperty(properties, WRAPPER_COMMAND_PROP);
-        this.databaseDir = new File(Util.getStringProperty(properties, DATABASE_DIR_PROP));
+    public CommandExternalService(String rawCommand, String wrapperCommand, String databaseDir) {
+        this.rawCommand = Util.requireNonNull(rawCommand);
+        this.wrapperCommand = Util.requireNonNull(wrapperCommand);
+        this.databaseDir = new File(Util.requireNonNull(databaseDir));
     }
     
     @Override

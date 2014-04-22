@@ -7,7 +7,6 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public class CommandExternalServiceTest {
 
@@ -42,11 +41,7 @@ public class CommandExternalServiceTest {
     }
 
     private void runCommandWithExpectedStatus(String command, ExternalStatus status) throws Exception {
-        ObjectNode props = mapper.createObjectNode();
-        props.put(CommandExternalService.COMMAND_PROP, command);
-        props.put(CommandExternalService.DATABASE_DIR_PROP, getTestDatabaseDir());
-        props.put(CommandExternalService.WRAPPER_COMMAND_PROP, "src/main/bash/celos-wrapper");
-        ExternalService srv = new CommandExternalService(props);
+        ExternalService srv = new CommandExternalService(command, "src/main/bash/celos-wrapper", getTestDatabaseDir());
         
         SlotID slotID = new SlotID(new WorkflowID("foo"), ScheduledTime.now());
         String extID = srv.submit(slotID);

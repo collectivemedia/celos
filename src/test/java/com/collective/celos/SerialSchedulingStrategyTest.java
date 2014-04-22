@@ -13,20 +13,14 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
-
 public class SerialSchedulingStrategyTest {
 
     private SerialSchedulingStrategy makeSerialSchedulingStrategy() {
-        ObjectNode node = Util.newObjectNode();
-        node.put(SerialSchedulingStrategy.SLOTS_NUMBER_PROP, 1);
-        return new SerialSchedulingStrategy(node);
+        return new SerialSchedulingStrategy(1);
     }
 
     private SerialSchedulingStrategy makeSerialSchedulingStrategyConcurrent() {
-        ObjectNode node = Util.newObjectNode();
-        node.put(SerialSchedulingStrategy.SLOTS_NUMBER_PROP, 3);
-        return new SerialSchedulingStrategy(node);
+        return new SerialSchedulingStrategy(3);
     }
 
 

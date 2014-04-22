@@ -4,29 +4,16 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 public class CommandTrigger implements Trigger {
 
-    public static final String COMMAND_PROP = "celos.commandTrigger.command";
     private static Logger LOGGER = Logger.getLogger(CommandTrigger.class);
     private final ScheduledTimeFormatter formatter = new ScheduledTimeFormatter();
     private final List<String> rawCommandElements;
 
-    public CommandTrigger(ObjectNode properties) throws Exception {
-        List<String> elements = new LinkedList<>();
-        ArrayNode array = Util.getArrayProperty(properties, COMMAND_PROP);
-        for (JsonNode element : array) {
-            if (!element.isTextual()) {
-                throw new IllegalArgumentException("Command may only contain strings: " + array);
-            } else {
-                elements.add(element.textValue());
-            }
-        }
+    public CommandTrigger(List<String> elements) throws Exception {
         rawCommandElements = Collections.unmodifiableList(elements);
     }
     

@@ -1,8 +1,5 @@
 package com.collective.celos;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.junit.Assert;
@@ -11,53 +8,30 @@ import org.mockito.Mockito;
 
 public class SuccessTriggerTest {
 
-    private final ObjectMapper mapper = new ObjectMapper();
-    
-    @Test(expected=IllegalArgumentException.class)
+    @Test(expected=NullPointerException.class)
     public void testRequiresWorkflow() throws Exception {
-        new SuccessTrigger(mapper.createObjectNode());
+        new SuccessTrigger(null);
     }
 
     @Test
     public void testSucessfullyCreates() throws Exception {
-        ObjectNode node = mapper.createObjectNode();
-        node.put(SuccessTrigger.COMMAND_PROP, "foo");
-        new SuccessTrigger(node);
-    }
-
-    @Test(expected=IllegalArgumentException.class)
-    public void testWrongArgument() throws Exception {
-        ArrayNode array = mapper.createArrayNode();
-        array.add(12);
-        array.add("-h");
-        array.add("now");
-        ObjectNode node = mapper.createObjectNode();
-        node.put(SuccessTrigger.COMMAND_PROP, array);
-        new SuccessTrigger(node);
+        new SuccessTrigger("foo");
     }
     
     @Test
     public void testUsesWorkflowProvided() throws Exception {
-        ObjectNode node = mapper.createObjectNode();
-        node.put(SuccessTrigger.COMMAND_PROP, "foo");
-        Assert.assertEquals(new WorkflowID("foo"), new SuccessTrigger(node).getTriggerWorkflowId());
+        Assert.assertEquals(new WorkflowID("foo"), new SuccessTrigger("foo").getTriggerWorkflowId());
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testFailIsDataAvailableInternalTrigger() throws Exception {
-        ObjectNode node = mapper.createObjectNode();
-        node.put(SuccessTrigger.COMMAND_PROP, "foo");
-
-        SuccessTrigger trigger = new SuccessTrigger(node);
+        SuccessTrigger trigger = new SuccessTrigger("foo");
         trigger.isDataAvailable(new ScheduledTime(DateTime.now()), new ScheduledTime(DateTime.now()));
     }
 
     @Test
     public void testIsDataAvailableSuccess() throws Exception {
-        ObjectNode node = mapper.createObjectNode();
-        node.put(SuccessTrigger.COMMAND_PROP, "foo");
-
-        SuccessTrigger trigger = new SuccessTrigger(node);
+        SuccessTrigger trigger = new SuccessTrigger("foo");
 
         Scheduler s = Mockito.mock(Scheduler.class);
         MemoryStateDatabase msd = new MemoryStateDatabase();
@@ -74,10 +48,7 @@ public class SuccessTriggerTest {
 
     @Test
     public void testIsDataAvailableWait() throws Exception {
-        ObjectNode node = mapper.createObjectNode();
-        node.put(SuccessTrigger.COMMAND_PROP, "foo");
-
-        SuccessTrigger trigger = new SuccessTrigger(node);
+        SuccessTrigger trigger = new SuccessTrigger("foo");
 
         Scheduler s = Mockito.mock(Scheduler.class);
         MemoryStateDatabase msd = new MemoryStateDatabase();
@@ -94,11 +65,7 @@ public class SuccessTriggerTest {
 
     @Test
     public void testIsDataAvailableNoData() throws Exception {
-
-        ObjectNode node = mapper.createObjectNode();
-        node.put(SuccessTrigger.COMMAND_PROP, "foo");
-
-        SuccessTrigger trigger = new SuccessTrigger(node);
+        SuccessTrigger trigger = new SuccessTrigger("foo");
 
         Scheduler s = Mockito.mock(Scheduler.class);
         MemoryStateDatabase msd = new MemoryStateDatabase();
@@ -112,7 +79,5 @@ public class SuccessTriggerTest {
 
         Assert.assertFalse(trigger.isDataAvailable(s, stNow, scheduledTime));
     }
-
-
 
 }

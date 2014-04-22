@@ -3,13 +3,14 @@ package com.collective.celos;
 import static com.collective.celos.SlotState.Status.READY;
 import static com.collective.celos.SlotState.Status.RUNNING;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
-import com.google.common.collect.Lists;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.common.collect.Lists;
 
 /*
  * This SchedulingStrategy implementation will be used for Pythia. It runs jobs
@@ -22,12 +23,10 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  */
 public class SerialSchedulingStrategy implements SchedulingStrategy {
 
-    public static final String SLOTS_NUMBER_PROP = "celos.serial.concurrency";
-
     private int concurrencyLevel;
 
-    public SerialSchedulingStrategy(ObjectNode properties) {
-        this.concurrencyLevel = Util.getIntProperty(properties, SLOTS_NUMBER_PROP);
+    public SerialSchedulingStrategy(int concurrencyLevel) {
+        this.concurrencyLevel = concurrencyLevel;
     }
     
     /*

@@ -10,7 +10,6 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.junit.Assert;
@@ -366,7 +365,7 @@ public class SchedulerTest {
         WorkflowID wfID1 = new WorkflowID("wf1");
         Schedule sch1 = makeHourlySchedule();
         SchedulingStrategy str1 = makeSerialSchedulingStrategy();
-        Trigger tr1 = new NeverTrigger(Util.newObjectNode());
+        Trigger tr1 = new NeverTrigger();
         ExternalService srv1 = new MockExternalService(new MockExternalService.MockExternalStatusRunning());
         int maxRetryCount = 0;
         Workflow wf1 = new Workflow(wfID1, sch1, str1, tr1, srv1, maxRetryCount, Workflow.DEFAULT_START_TIME);
@@ -712,7 +711,7 @@ public class SchedulerTest {
     public void retryTest() throws Exception {
         WorkflowID wfID1 = new WorkflowID("wf1");
         Schedule sch1 = makeHourlySchedule();
-        SchedulingStrategy str1 = new TrivialSchedulingStrategy(Util.newObjectNode());
+        SchedulingStrategy str1 = new TrivialSchedulingStrategy();
         Trigger tr1 = makeAlwaysTrigger();
         ExternalService srv1 = new RepeatedlyFailingExternalService(2);
         int maxRetryCount = 10;
@@ -766,7 +765,7 @@ public class SchedulerTest {
     public void retryTestWithTooSmallMaxRetryCount() throws Exception {
         WorkflowID wfID1 = new WorkflowID("wf1");
         Schedule sch1 = makeHourlySchedule();
-        SchedulingStrategy str1 = new TrivialSchedulingStrategy(Util.newObjectNode());
+        SchedulingStrategy str1 = new TrivialSchedulingStrategy();
         Trigger tr1 = makeAlwaysTrigger();
         ExternalService srv1 = new RepeatedlyFailingExternalService(3);
         int maxRetryCount = 2;
@@ -840,24 +839,20 @@ public class SchedulerTest {
     }
     
 
-    
     private AlwaysTrigger makeAlwaysTrigger() {
-        return new AlwaysTrigger(Util.newObjectNode());
+        return new AlwaysTrigger();
     }
 
     private SerialSchedulingStrategy makeSerialSchedulingStrategy() {
-        ObjectNode node = Util.newObjectNode();
-        node.put(SerialSchedulingStrategy.SLOTS_NUMBER_PROP, 1);
-        return new SerialSchedulingStrategy(node);
+        return new SerialSchedulingStrategy(1);
     }
 
-
     private TrivialSchedulingStrategy makeTrivialSchedulingStrategy() {
-        return new TrivialSchedulingStrategy(Util.newObjectNode());
+        return new TrivialSchedulingStrategy();
     }
     
     private HourlySchedule makeHourlySchedule() {
-        return new HourlySchedule(Util.newObjectNode());
+        return new HourlySchedule();
     }
 
 }

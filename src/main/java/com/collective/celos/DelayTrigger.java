@@ -2,8 +2,6 @@ package com.collective.celos;
 
 import org.joda.time.DateTime;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
-
 /**
  * A trigger that signals data availability for a given scheduled time
  * only if it is a configurable number of seconds past the current time.
@@ -20,12 +18,10 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 */
 public class DelayTrigger implements Trigger {
 
-    public static final String SECONDS_PROP = "celos.delayTrigger.seconds";
-
     private final int seconds;
     
-    public DelayTrigger(ObjectNode properties) throws Exception {
-        this.seconds = Util.getIntProperty(properties, SECONDS_PROP);
+    public DelayTrigger(int seconds) throws Exception {
+        this.seconds = seconds;
     }
     
     public boolean isDataAvailable(ScheduledTime now, ScheduledTime t) throws Exception {

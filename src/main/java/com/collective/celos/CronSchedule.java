@@ -9,16 +9,11 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.quartz.CronExpression;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
-
 public class CronSchedule implements Schedule {
 
-    public final static String CONFIG_PROP = "celos.cron.config";
-    
     private CronExpression cronExpression;
 
-    public CronSchedule(ObjectNode properties) {
-        String cronConfig = Util.getStringProperty(properties, CONFIG_PROP);
+    public CronSchedule(String cronConfig) {
         try {
             CronExpression.validateExpression(cronConfig);
             cronExpression = new CronExpression(cronConfig);
