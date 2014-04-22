@@ -201,15 +201,6 @@ public class WorkflowConfigurationParserTest {
         Assert.assertEquals(1, cfg.getWorkflows().size());
     }
     
-    @Test(expected=IllegalArgumentException.class)
-    public void startTimeMustBeString() throws Exception {
-        ObjectMapper mapper = new ObjectMapper();
-        ObjectNode workflowNode = mapper.createObjectNode();
-        workflowNode.put(WorkflowConfigurationParser.START_TIME_PROP, 12);
-        File defaults = getDefaultsDir();
-        new WorkflowConfigurationParser(defaults).getStartTimeFromJSON(workflowNode);
-    }
-    
     @Test
     public void scopesAreSeparate() throws Exception {
         parseNamedFile("separate-scopes", "workflow-1");

@@ -1,6 +1,11 @@
 package com.collective.celos;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.Collection;
 
 import org.apache.commons.io.FileUtils;
@@ -10,7 +15,6 @@ import org.mozilla.javascript.ScriptableObject;
 import org.mozilla.javascript.WrapFactory;
 import org.mozilla.javascript.tools.shell.Global;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
@@ -118,76 +122,10 @@ public class WorkflowConfigurationParser {
         context.evaluateReader(scope, fileReader, fileName, lineNo, null);
     }
     
-    public void addWorkflowFromJSONString(String json, String celosWorkflowConfigFilePath) throws Exception {
-        JsonNode workflowNode = mapper.readTree(json);
-        WorkflowID id = getWorkflowID(workflowNode);
-        Schedule schedule = getScheduleFromJSON(id, workflowNode);
-        SchedulingStrategy schedulingStrategy = getSchedulingStrategyFromJSON(id, workflowNode);
-        Trigger trigger = getTriggerFromJSON(id, workflowNode);
-        ExternalService externalService = getExternalServiceFromJSON(id, workflowNode);
-        int maxRetryCount = getMaxRetryCountFromJSON(workflowNode);
-        ScheduledTime startTime = getStartTimeFromJSON(workflowNode);
-        Workflow wf = new Workflow(id, schedule, schedulingStrategy, trigger, externalService, maxRetryCount, startTime);
-        addWorkflow(wf, celosWorkflowConfigFilePath);
-    }
-
     public void addWorkflow(Workflow wf, String celosWorkflowConfigFilePath) {
         cfg.addWorkflow(wf, celosWorkflowConfigFilePath);
     }
     
-    private int getMaxRetryCountFromJSON(JsonNode workflowNode) {
-        JsonNode maxRetryCountNode = workflowNode.get(MAX_RETRY_COUNT_PROP);
-        if (maxRetryCountNode == null) {
-            return 0;
-        } else if (!maxRetryCountNode.isNumber()) {
-            throw new IllegalArgumentException("maxRetryCount must be a number: " + workflowNode.toString());
-        }
-        return maxRetryCountNode.intValue();
-    }
-
-    ScheduledTime getStartTimeFromJSON(JsonNode workflowNode) {
-        JsonNode startTimeNode = workflowNode.get(START_TIME_PROP);
-        if (startTimeNode == null) {
-            return Workflow.DEFAULT_START_TIME;
-        } else if (!startTimeNode.isTextual()) {
-            throw new IllegalArgumentException("startTime must be a string: " + workflowNode.toString());
-        } else {
-            return new ScheduledTime(startTimeNode.textValue());
-        }
-    }
-
-    private ExternalService getExternalServiceFromJSON(WorkflowID id, JsonNode workflowNode) throws Exception {
-        LOGGER.info("Creating external service for: " + id);
-        return (ExternalService) createInstance(workflowNode.get(EXTERNAL_SERVICE_PROP));
-    }
-
-    private Trigger getTriggerFromJSON(WorkflowID id, JsonNode workflowNode) throws Exception {
-        LOGGER.info("Creating trigger for: " + id);
-        return (Trigger) createInstance(workflowNode.get(TRIGGER_PROP));
-    }
-
-    private SchedulingStrategy getSchedulingStrategyFromJSON(WorkflowID id, JsonNode workflowNode) throws Exception {
-        LOGGER.info("Creating scheduling strategy for: " + id);
-        return (SchedulingStrategy) createInstance(workflowNode.get(SCHEDULING_STRATEGY_PROP));
-    }
-
-    private Schedule getScheduleFromJSON(WorkflowID id, JsonNode workflowNode) throws Exception {
-        LOGGER.info("Creating schedule for: " + id);
-        return (Schedule) createInstance(workflowNode.get(SCHEDULE_PROP));
-    }
-
-    private Object createInstance(JsonNode jsonNode) throws Exception {
-        return creator.createInstance(jsonNode);
-    }
-
-    private WorkflowID getWorkflowID(JsonNode workflowNode) {
-        JsonNode idNode = workflowNode.get(ID_PROP);
-        if (idNode == null || !idNode.isTextual()) {
-            throw new IllegalArgumentException("ID must be a string: " + workflowNode.toString());
-        }
-        return new WorkflowID(idNode.textValue());
-    }
-
     public Context getContext() {
         return context;
     }
