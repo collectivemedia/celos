@@ -77,7 +77,7 @@ public class MinutelyScheduleTest {
     }
 
     private MinutelySchedule makeMinutelySchedule() {
-        return new MinutelySchedule(Util.newObjectNode());
+        return new MinutelySchedule();
     }
     
 }

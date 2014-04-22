@@ -26,7 +26,7 @@ public class JavaScriptFunctionsTest {
 
     @Test
     public void testMinutelySchedule() throws Exception {
-        MinutelySchedule s = (MinutelySchedule) runJS("minutelySchedule()");
+        MinutelySchedule s = (MinutelySchedule) runJSObject("minutelySchedule()");
     }
 
     @Test

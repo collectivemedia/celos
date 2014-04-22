@@ -33,9 +33,7 @@ function hourlySchedule() {
 }
 
 function minutelySchedule() {
-    return {
-        "type": "com.collective.celos.MinutelySchedule"
-    };
+    return new MinutelySchedule();
 }
 
 function cronSchedule(cronExpression) {
