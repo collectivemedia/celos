@@ -45,9 +45,7 @@ function serialSchedulingStrategy(concurrency) {
 }
 
 function alwaysTrigger() {
-    return {
-        "type": "com.collective.celos.AlwaysTrigger"
-    };
+    return new AlwaysTrigger();
 }
 
 // Pass fs as final parameter so we can later use a default if parameter not supplied
@@ -67,30 +65,19 @@ function hdfsCheckTrigger(path, fs) {
 }
 
 function andTrigger() {
-    return {
-        "type": "com.collective.celos.AndTrigger",
-        "properties": {
-            "celos.andTrigger.triggers": Array.prototype.slice.call(arguments)
-        }
-    };
+    var list = new Packages.java.util.LinkedList();
+    for (var i = 0; i < arguments.length; i++) {
+        list.add(arguments[i]);
+    }
+    return new AndTrigger(list);
 }
 
 function notTrigger(subTrigger) {
-    return {
-        "type": "com.collective.celos.NotTrigger",
-        "properties": {
-            "celos.notTrigger.trigger": subTrigger
-        }
-    };
+    return new NotTrigger(subTrigger);
 }
 
 function delayTrigger(seconds) {
-    return {
-        "type": "com.collective.celos.DelayTrigger",
-        "properties": {
-            "celos.delayTrigger.seconds": seconds
-        }
-    };
+    return new DelayTrigger(seconds);
 }
 
 function commandTrigger() {

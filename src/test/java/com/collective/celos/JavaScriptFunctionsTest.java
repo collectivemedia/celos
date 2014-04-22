@@ -49,7 +49,7 @@ public class JavaScriptFunctionsTest {
 
     @Test
     public void testAlwaysTrigger() throws Exception {
-        AlwaysTrigger t = (AlwaysTrigger) runJS("alwaysTrigger()");
+        AlwaysTrigger t = (AlwaysTrigger) runJSObject("alwaysTrigger()");
     }
 
     @Test
@@ -73,7 +73,7 @@ public class JavaScriptFunctionsTest {
 
     @Test
     public void testAndTrigger() throws Exception {
-        AndTrigger t = (AndTrigger) runJS("andTrigger(delayTrigger(1), alwaysTrigger())");
+        AndTrigger t = (AndTrigger) runJSObject("andTrigger(delayTrigger(1), alwaysTrigger())");
         DelayTrigger dt = (DelayTrigger) t.getTriggers().get(0);
         Assert.assertEquals(1, dt.getSeconds());
         AlwaysTrigger at = (AlwaysTrigger) t.getTriggers().get(1);
@@ -82,13 +82,13 @@ public class JavaScriptFunctionsTest {
     
     @Test
     public void testNotTrigger() throws Exception {
-        NotTrigger t = (NotTrigger) runJS("notTrigger(alwaysTrigger())");
+        NotTrigger t = (NotTrigger) runJSObject("notTrigger(alwaysTrigger())");
         AlwaysTrigger at = (AlwaysTrigger) t.getTrigger();
     }
     
     @Test
     public void testDelayTrigger() throws Exception {
-        DelayTrigger t = (DelayTrigger) runJS("delayTrigger(25)");
+        DelayTrigger t = (DelayTrigger) runJSObject("delayTrigger(25)");
         Assert.assertEquals(25, t.getSeconds());
     }
     
