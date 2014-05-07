@@ -5,7 +5,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.collective.celos.Scheduler;
-import com.collective.celos.SchedulerConfiguration;
 import com.collective.celos.SlotID;
 import com.collective.celos.SlotState;
 import com.collective.celos.WorkflowID;
@@ -22,7 +21,7 @@ public class JSONSlotStateServlet extends AbstractJSONServlet {
             throw new IllegalArgumentException(ID_PARAM + " parameter missing.");
         }
         try {
-            Scheduler scheduler = new SchedulerConfiguration().makeDefaultScheduler();
+            Scheduler scheduler = getOrCreateCachedScheduler();
             SlotID slotID = new SlotID(new WorkflowID(id), getRequestTime(req));
             SlotState slotState = scheduler.getStateDatabase().getSlotState(slotID);
             if (slotState == null) {
