@@ -7,7 +7,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 
 import com.collective.celos.ScheduledTime;
-import com.collective.celos.SchedulerConfiguration;
 import com.collective.celos.SlotID;
 import com.collective.celos.SlotState;
 import com.collective.celos.StateDatabase;
@@ -37,7 +36,7 @@ public class RerunServlet extends AbstractServlet {
                 throw new IllegalArgumentException(ID_PARAM + " parameter missing.");
             }
             SlotID slot = new SlotID(new WorkflowID(id), time);
-            StateDatabase db = new SchedulerConfiguration().makeDefaultStateDatabase();
+            StateDatabase db = getOrCreateCachedScheduler().getStateDatabase();
             updateSlotToRerun(slot, db);
             LOGGER.info("Slot scheduled for rerun: " + slot);
         } catch(Exception e) {

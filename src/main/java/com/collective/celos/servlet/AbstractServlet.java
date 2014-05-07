@@ -8,10 +8,13 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 
-import com.collective.celos.ScheduledTime;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
+
+import com.collective.celos.ScheduledTime;
+import com.collective.celos.Scheduler;
+import com.collective.celos.SchedulerConfiguration;
 
 /**
  * Superclass for all servlets that access the database.
@@ -24,6 +27,8 @@ public abstract class AbstractServlet extends HttpServlet {
     private static final String TIME_PARAM = "time";
     private static Logger LOGGER = Logger.getLogger(AbstractServlet.class);
     
+    private static final String SCHEDULER_ATTR = "celos.scheduler";
+
     /**
      * This lock serves to synchronize all operations.
      */
@@ -50,4 +55,19 @@ public abstract class AbstractServlet extends HttpServlet {
         }
     }
 
+    protected Scheduler createAndCacheScheduler() throws Exception {
+        Scheduler sch = new SchedulerConfiguration().makeDefaultScheduler();
+        getServletContext().setAttribute(SCHEDULER_ATTR, sch);
+        return sch;
+    }
+    
+    protected Scheduler getOrCreateCachedScheduler() throws Exception {
+        Scheduler sch = (Scheduler) getServletContext().getAttribute(SCHEDULER_ATTR);
+        if (sch == null) {
+            return createAndCacheScheduler();
+        } else {
+            return sch;
+        }
+    }
+    
 }
