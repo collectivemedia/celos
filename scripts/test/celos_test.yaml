@@ -40,6 +40,9 @@
     local_action: command rsync -az -e ssh {{local_celos}}/src/test/resources/com/collective/celos/workflow-configuration-test/json-workflow-list-servlet-test/
       celos@{{inventory_hostname}}:{{celos_workflows_dir}}
 
+  - name: Clear scheduler cache
+    local_action: shell curl --fail -X POST {{inventory_hostname}}:8080/celos/clear-cache
+
   - name: Testing servlet /celos/workflow-list with non-empty configuration
     local_action: shell curl {{inventory_hostname}}:8080/celos/workflow-list | diff - test_files/workflow_list.json
 

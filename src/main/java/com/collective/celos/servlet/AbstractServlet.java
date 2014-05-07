@@ -70,4 +70,8 @@ public abstract class AbstractServlet extends HttpServlet {
         }
     }
     
+    protected void clearSchedulerCache() {
+        getServletContext().removeAttribute(SCHEDULER_ATTR);
+    }
+    
 }
