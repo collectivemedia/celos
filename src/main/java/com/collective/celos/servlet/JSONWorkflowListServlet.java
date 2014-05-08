@@ -25,7 +25,8 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 @SuppressWarnings("serial")
 public class JSONWorkflowListServlet extends AbstractJSONServlet {
     
-    protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException {
+    @Override
+    protected void handleGet(HttpServletRequest req, HttpServletResponse res) throws ServletException {
         try {
             Scheduler sch = getOrCreateCachedScheduler();
             WorkflowConfiguration cfg = sch.getWorkflowConfiguration();

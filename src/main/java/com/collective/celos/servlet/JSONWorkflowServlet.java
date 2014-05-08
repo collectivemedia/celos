@@ -33,7 +33,8 @@ public class JSONWorkflowServlet extends AbstractJSONServlet {
 
     private static final String ID_PARAM = "id";
 
-    protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException {
+    @Override
+    protected void handleGet(HttpServletRequest req, HttpServletResponse res) throws ServletException {
         String id = req.getParameter(ID_PARAM);
         if (id == null) {
             throw new IllegalArgumentException(ID_PARAM + " parameter missing.");

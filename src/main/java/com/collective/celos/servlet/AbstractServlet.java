@@ -1,12 +1,14 @@
 package com.collective.celos.servlet;
 
 import java.io.IOException;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
@@ -18,8 +20,6 @@ import com.collective.celos.SchedulerConfiguration;
 
 /**
  * Superclass for all servlets that access the database.
- * 
- * Serializes all database accesses with a lock.
  */
 @SuppressWarnings("serial")
 public abstract class AbstractServlet extends HttpServlet {
@@ -31,18 +31,48 @@ public abstract class AbstractServlet extends HttpServlet {
 
     /**
      * This lock serves to synchronize all operations.
+     * 
+     * Write operations (scheduler step, rerunning) take the write lock, whereas the informative
+     * API servlets take a read lock.
+     * 
+     * This AbstractServlet overrides the doGet and doPost methods to use the lock and delegate
+     * to handleGet and handlePost, which are implemented by subclasses.
      */
-    protected static final Object LOCK = new Object();
+    protected static final ReadWriteLock LOCK = new ReentrantReadWriteLock(true);
+    protected static final Lock READ_LOCK = LOCK.readLock();
+    protected static final Lock WRITE_LOCK = LOCK.writeLock();
 
+    protected void handleGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+        throw new Error("GET not supported by servlet.");
+    }
+    
+    protected void handlePost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+        throw new Error("POST not supported by servlet.");
+    }
+    
     @Override
-    public void service(ServletRequest req, ServletResponse res) throws ServletException, IOException {
-        synchronized(LOCK) {
-            try {
-                super.service(req, res);
-            } catch(ServletException|IOException|RuntimeException e) {
-                LOGGER.error(e.getMessage(), e);
-                throw e;
-            }
+    protected final void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+        READ_LOCK.lock();
+        try {
+            handleGet(req, res);
+        } catch(ServletException|IOException|RuntimeException e) {
+            LOGGER.error(e.getMessage(), e);
+            throw e;
+        } finally {
+            READ_LOCK.unlock();
+        }
+    }
+    
+    @Override
+    protected final void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+        WRITE_LOCK.lock();
+        try {
+            handlePost(req, res);
+        } catch(ServletException|IOException|RuntimeException e) {
+            LOGGER.error(e.getMessage(), e);
+            throw e;
+        } finally {
+            WRITE_LOCK.unlock();
         }
     }
     
