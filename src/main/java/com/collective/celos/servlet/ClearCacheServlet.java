@@ -10,7 +10,8 @@ import javax.servlet.http.HttpServletResponse;
 @SuppressWarnings("serial")
 public class ClearCacheServlet extends AbstractServlet {
         
-    protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException {
+    @Override
+    protected void handlePost(HttpServletRequest req, HttpServletResponse res) throws ServletException {
         clearSchedulerCache();
     }
 
