@@ -206,11 +206,21 @@ public class JavaScriptFunctionsTest {
         Assert.assertEquals("shutdown -h now", s.getRawCommand());
     }
     
+    @Test
+    public void replaceTimeVariablesWorks() throws Exception {
+        String s = (String) runJS("replaceTimeVariables('${year}-${month}-${day}T${hour}:${minute}:${second}Z ${year}', new Packages.com.collective.celos.ScheduledTime('2014-05-12T19:33:01Z'))");
+        Assert.assertEquals("2014-05-12T19:33:01Z 2014", s);
+    }
+    
     private Object runJS(String js) throws Exception {
         WorkflowConfigurationParser parser = new WorkflowConfigurationParser(new File("unused"));
         // Evaluate JS function call
-        NativeJavaObject result = (NativeJavaObject) parser.evaluateReader(new StringReader(js), "string", 1);
-        return result.unwrap();
+        Object jsResult = parser.evaluateReader(new StringReader(js), "string", 1);
+        if (jsResult instanceof NativeJavaObject) {
+            return ((NativeJavaObject) jsResult).unwrap();
+        } else {
+            return jsResult;
+        }
     }
     
     private void expectMessage(String js, String string) throws AssertionError {
