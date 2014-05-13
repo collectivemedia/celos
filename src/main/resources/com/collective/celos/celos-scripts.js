@@ -62,6 +62,15 @@ function hdfsCheckTrigger(path, fs) {
     return new HDFSCheckTrigger(path, fs);
 }
 
+function hdfsCheck(path, scheduledTime, fs) {
+    var trigger = hdfsCheckTrigger(path, fs);
+    if (!scheduledTime) {
+        scheduledTime = ScheduledTime.now();
+    }
+    return trigger.isDataAvailable(scheduledTime, scheduledTime);
+}
+
+
 function andTrigger() {
     var list = new Packages.java.util.LinkedList();
     for (var i = 0; i < arguments.length; i++) {
