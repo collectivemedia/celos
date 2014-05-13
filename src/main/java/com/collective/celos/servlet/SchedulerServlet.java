@@ -15,8 +15,7 @@ import com.collective.celos.Scheduler;
 @SuppressWarnings("serial")
 public class SchedulerServlet extends AbstractServlet {
     
-    @Override
-    protected void handlePost(HttpServletRequest req, HttpServletResponse res) throws ServletException {
+    protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException {
         try {
             Scheduler scheduler = createAndCacheScheduler();
             ScheduledTime current = getRequestTime(req);

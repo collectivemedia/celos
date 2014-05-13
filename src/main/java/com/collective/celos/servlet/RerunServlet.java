@@ -28,8 +28,7 @@ public class RerunServlet extends AbstractServlet {
     
     private static final String ID_PARAM = "id";
     
-    @Override
-    protected void handlePost(HttpServletRequest req, HttpServletResponse res) throws ServletException {
+    protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException {
         try {
             ScheduledTime time = getRequestTime(req);
             String id = req.getParameter(ID_PARAM);
