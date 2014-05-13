@@ -1,6 +1,11 @@
 package com.collective.celos;
 
+import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
@@ -16,12 +21,19 @@ public class HDFSCheckTrigger implements Trigger {
     private final String rawPathString;
     private final String fsString;
 
+    private static final Map<String, FileSystem> cachedFSs = new HashMap<>();
+
     public HDFSCheckTrigger(String rawPathString, String fsString) throws Exception {
         this.rawPathString = Util.requireNonNull(rawPathString);
         this.fsString = Util.requireNonNull(fsString);
-        this.fs = FileSystem.get(new URI(fsString), new Configuration());
+        if (cachedFSs.containsKey(fsString)) {
+            this.fs = cachedFSs.get(fsString);
+        } else {
+            this.fs = FileSystem.get(new URI(fsString), new Configuration());
+            cachedFSs.put(fsString, this.fs);
+        }
     }
-    
+
     @Override
     public boolean isDataAvailable(ScheduledTime now, ScheduledTime t) throws Exception {
         Path path = new Path(formatter.replaceTimeTokens(rawPathString, t));

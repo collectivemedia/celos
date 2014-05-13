@@ -6,13 +6,18 @@ import java.util.Arrays;
 import java.util.Properties;
 
 import org.junit.Assert;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.mozilla.javascript.NativeJavaObject;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public class JavaScriptFunctionsTest {
+
+    @Rule
+    public TemporaryFolder tempFolder = new TemporaryFolder();
 
     private final ObjectMapper mapper = new ObjectMapper();
     
@@ -52,6 +57,67 @@ public class JavaScriptFunctionsTest {
     @Test
     public void testAlwaysTrigger() throws Exception {
         AlwaysTrigger t = (AlwaysTrigger) runJS("alwaysTrigger()");
+    }
+
+    @Test
+    public void testHDFSCheckFunctionDefaultFSWithDate() throws Exception {
+
+        String root = tempFolder.getRoot().getPath();
+        File triggerFile = new File(root, "2013-11-22/1500/_READY");
+        triggerFile.getParentFile().mkdirs();
+        triggerFile.createNewFile();
+
+        Boolean result = (Boolean) runJSNativeResult("var CELOS_DEFAULT_HDFS = 'file:///'; hdfsCheck('" + root + "/${year}-${month}-${day}/${hour}00/_READY', new ScheduledTime(\"2013-11-22T15:00Z\"))");
+        Assert.assertTrue(result);
+    }
+
+
+    @Test
+    public void testHDFSCheckFunctionDefaults() throws Exception {
+
+        String root = tempFolder.getRoot().getPath();
+        File triggerFile = new File(root, "2013-11-22/1500/_READY");
+        triggerFile.getParentFile().mkdirs();
+        triggerFile.createNewFile();
+
+        Boolean result = (Boolean) runJSNativeResult("var CELOS_DEFAULT_HDFS = 'file:///'; hdfsCheck('" + root + "/2013-11-22/1500/_READY" + "')");
+        Assert.assertTrue(result);
+    }
+
+    @Test
+    public void testHDFSCheckFunctionDefaultsFalse() throws Exception {
+
+        String root = tempFolder.getRoot().getPath();
+        File triggerFile = new File(root, "2013-11-22/1501/_READY");
+        triggerFile.getParentFile().mkdirs();
+        triggerFile.createNewFile();
+
+        Boolean result = (Boolean) runJSNativeResult("var CELOS_DEFAULT_HDFS = 'file:///'; hdfsCheck('" + root + "/2013-11-22/1500/_READY" + "')");
+        Assert.assertFalse(result);
+    }
+
+    @Test
+    public void testHDFSCheckFunctionTrue() throws Exception {
+
+        String root = tempFolder.getRoot().getPath();
+        File triggerFile = new File(root, "2013-11-22/1500/_READY");
+        triggerFile.getParentFile().mkdirs();
+        triggerFile.createNewFile();
+
+        Boolean result = (Boolean) runJSNativeResult("hdfsCheck('" + root + "/2013-11-22/1500/_READY" + "', ScheduledTime.now(), 'file:///')");
+        Assert.assertTrue(result);
+    }
+
+    @Test
+    public void testHDFSCheckFunctionFalse() throws Exception {
+
+        String root = tempFolder.getRoot().getPath();
+        File triggerFile = new File(root, "2013-11-22/1501/_READY");
+        triggerFile.getParentFile().mkdirs();
+        triggerFile.createNewFile();
+
+        Boolean result = (Boolean) runJSNativeResult("hdfsCheck('" + root + "/2013-11-22/1500/_READY" + "', ScheduledTime.now(), 'file:///')");
+        Assert.assertFalse(result);
     }
 
     @Test
@@ -212,7 +278,14 @@ public class JavaScriptFunctionsTest {
         NativeJavaObject result = (NativeJavaObject) parser.evaluateReader(new StringReader(js), "string", 1);
         return result.unwrap();
     }
-    
+
+    private Object runJSNativeResult(String js) throws Exception {
+        WorkflowConfigurationParser parser = new WorkflowConfigurationParser(new File("unused"));
+        // Evaluate JS function call
+        return parser.evaluateReader(new StringReader(js), "string", 1);
+    }
+
+
     private void expectMessage(String js, String string) throws AssertionError {
         try {
             runJS(js);
