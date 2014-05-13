@@ -39,8 +39,6 @@ public abstract class AbstractServlet extends HttpServlet {
      * to handleGet and handlePost, which are implemented by subclasses.
      */
     protected static final ReadWriteLock LOCK = new ReentrantReadWriteLock(true);
-    protected static final Lock READ_LOCK = LOCK.readLock();
-    protected static final Lock WRITE_LOCK = LOCK.writeLock();
 
     protected void handleGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         throw new Error("GET not supported by servlet.");
@@ -52,27 +50,29 @@ public abstract class AbstractServlet extends HttpServlet {
     
     @Override
     protected final void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-        READ_LOCK.lock();
+        Lock readLock = LOCK.readLock();
+        readLock.lock();
         try {
             handleGet(req, res);
         } catch(ServletException|IOException|RuntimeException e) {
             LOGGER.error(e.getMessage(), e);
             throw e;
         } finally {
-            READ_LOCK.unlock();
+            readLock.unlock();
         }
     }
     
     @Override
     protected final void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-        WRITE_LOCK.lock();
+        Lock writeLock = LOCK.writeLock();
+        writeLock.lock();
         try {
             handlePost(req, res);
         } catch(ServletException|IOException|RuntimeException e) {
             LOGGER.error(e.getMessage(), e);
             throw e;
         } finally {
-            WRITE_LOCK.unlock();
+            writeLock.unlock();
         }
     }
     
