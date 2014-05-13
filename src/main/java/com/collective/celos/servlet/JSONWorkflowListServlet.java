@@ -8,7 +8,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.collective.celos.Scheduler;
-import com.collective.celos.SchedulerConfiguration;
 import com.collective.celos.Workflow;
 import com.collective.celos.WorkflowConfiguration;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -26,9 +25,10 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 @SuppressWarnings("serial")
 public class JSONWorkflowListServlet extends AbstractJSONServlet {
     
-    protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException {
+    @Override
+    protected void handleGet(HttpServletRequest req, HttpServletResponse res) throws ServletException {
         try {
-            Scheduler sch = new SchedulerConfiguration().makeDefaultScheduler();
+            Scheduler sch = getOrCreateCachedScheduler();
             WorkflowConfiguration cfg = sch.getWorkflowConfiguration();
             ObjectNode object = createJSONObject(cfg);
             writer.writeValue(res.getOutputStream(), object);

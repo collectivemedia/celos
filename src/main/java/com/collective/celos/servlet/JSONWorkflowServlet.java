@@ -7,7 +7,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.collective.celos.Scheduler;
-import com.collective.celos.SchedulerConfiguration;
 import com.collective.celos.SlotState;
 import com.collective.celos.Workflow;
 import com.collective.celos.WorkflowID;
@@ -34,13 +33,14 @@ public class JSONWorkflowServlet extends AbstractJSONServlet {
 
     private static final String ID_PARAM = "id";
 
-    protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException {
+    @Override
+    protected void handleGet(HttpServletRequest req, HttpServletResponse res) throws ServletException {
         String id = req.getParameter(ID_PARAM);
         if (id == null) {
             throw new IllegalArgumentException(ID_PARAM + " parameter missing.");
         }
         try {
-            Scheduler scheduler = new SchedulerConfiguration().makeDefaultScheduler();
+            Scheduler scheduler = getOrCreateCachedScheduler();
             Workflow wf = scheduler.getWorkflowConfiguration().findWorkflow(new WorkflowID(id));
             if (wf == null) {
                 res.sendError(HttpServletResponse.SC_NOT_FOUND, "Workflow not found: " + id);
