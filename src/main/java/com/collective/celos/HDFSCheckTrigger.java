@@ -1,9 +1,6 @@
 package com.collective.celos;
 
-import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,11 +23,14 @@ public class HDFSCheckTrigger implements Trigger {
     public HDFSCheckTrigger(String rawPathString, String fsString) throws Exception {
         this.rawPathString = Util.requireNonNull(rawPathString);
         this.fsString = Util.requireNonNull(fsString);
-        if (cachedFSs.containsKey(fsString)) {
-            this.fs = cachedFSs.get(fsString);
-        } else {
-            this.fs = FileSystem.get(new URI(fsString), new Configuration());
-            cachedFSs.put(fsString, this.fs);
+
+        synchronized (cachedFSs) {
+            if (cachedFSs.containsKey(fsString)) {
+                this.fs = cachedFSs.get(fsString);
+            } else {
+                this.fs = FileSystem.get(new URI(fsString), new Configuration());
+                cachedFSs.put(fsString, this.fs);
+            }
         }
     }
 
