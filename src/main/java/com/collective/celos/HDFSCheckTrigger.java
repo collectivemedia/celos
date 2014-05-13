@@ -24,13 +24,11 @@ public class HDFSCheckTrigger implements Trigger {
         this.rawPathString = Util.requireNonNull(rawPathString);
         this.fsString = Util.requireNonNull(fsString);
 
-        synchronized (cachedFSs) {
-            if (cachedFSs.containsKey(fsString)) {
-                this.fs = cachedFSs.get(fsString);
-            } else {
-                this.fs = FileSystem.get(new URI(fsString), new Configuration());
-                cachedFSs.put(fsString, this.fs);
-            }
+        if (cachedFSs.containsKey(fsString)) {
+            this.fs = cachedFSs.get(fsString);
+        } else {
+            this.fs = FileSystem.get(new URI(fsString), new Configuration());
+            cachedFSs.put(fsString, this.fs);
         }
     }
 
