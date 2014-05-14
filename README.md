@@ -512,6 +512,28 @@ function myOozieProperties(slotID) {
 oozieExternalService(myOozieProperties);
 ```
 
+##### Additional functions that can be used in `oozieExternalService` function decription
+
+You can check if HDFS file exists
+
+```
+hdfsCheck("hdfs://mypath/myfile")
+```
+
+Also Date properties substitution can be done. To do that you should provide corresponding ScheduleTime
+
+
+```
+hdfsCheck("hdfs://mypath/${year}-${month}-${day}-file", slotID.getScheduledTime())
+```
+
+If you need to ask specific FileSystem you can provide it as a third parameter: 
+
+```
+hdfsCheck("/mypath/${year}-${month}-${day}-file", slotID.getScheduledTime(), "hdfs://mypath")
+```
+
+
 ## Workflow properties
 
 ### maxRetryCount
