@@ -2,8 +2,7 @@ package com.collective.celos;
 
 import java.io.File;
 import java.io.StringReader;
-import java.util.Arrays;
-import java.util.Properties;
+import java.util.*;
 
 import org.junit.Assert;
 import org.junit.Rule;
@@ -20,7 +19,7 @@ public class JavaScriptFunctionsTest {
     public TemporaryFolder tempFolder = new TemporaryFolder();
 
     private final ObjectMapper mapper = new ObjectMapper();
-    
+
     @Test
     public void testHourlySchedule() throws Exception {
         HourlySchedule s = (HourlySchedule) runJS("hourlySchedule()");
@@ -36,12 +35,12 @@ public class JavaScriptFunctionsTest {
         CronSchedule s = (CronSchedule) runJS("cronSchedule('* 15 * * * ?')");
         Assert.assertEquals("* 15 * * * ?", s.getCronExpression());
     }
-    
+
     @Test
     public void testCronScheduleRequiresExpr() throws Exception {
         expectMessage("cronSchedule()", "Undefined cron expression");
     }
-    
+
     @Test
     public void testSerialSchedulingStrategyDefault() throws Exception {
         SerialSchedulingStrategy s = (SerialSchedulingStrategy) runJS("serialSchedulingStrategy()");
@@ -126,7 +125,7 @@ public class JavaScriptFunctionsTest {
         Assert.assertEquals("/foo", t.getRawPathString());
         Assert.assertEquals("file:///", t.getFsString());
     }
-    
+
     @Test
     public void testHDFSCheckTriggerRequiresPath() {
         expectMessage("hdfsCheckTrigger()", "Undefined path");
@@ -152,24 +151,24 @@ public class JavaScriptFunctionsTest {
         AlwaysTrigger at = (AlwaysTrigger) t.getTriggers().get(1);
         Assert.assertEquals(2, t.getTriggers().size());
     }
-    
+
     @Test
     public void testNotTrigger() throws Exception {
         NotTrigger t = (NotTrigger) runJS("notTrigger(alwaysTrigger())");
         AlwaysTrigger at = (AlwaysTrigger) t.getTrigger();
     }
-    
+
     @Test
     public void testNotTriggerRequiresSubTrigger() throws Exception {
         expectMessage("notTrigger()", "Undefined sub trigger");
     }
-    
+
     @Test
     public void testDelayTrigger() throws Exception {
         DelayTrigger t = (DelayTrigger) runJS("delayTrigger(25)");
         Assert.assertEquals(25, t.getSeconds());
     }
-    
+
     @Test
     public void testDelayTriggerRequiresSeconds() throws Exception {
         expectMessage("delayTrigger()", "Undefined seconds");
@@ -186,7 +185,7 @@ public class JavaScriptFunctionsTest {
         SuccessTrigger t = (SuccessTrigger) runJS("successTrigger('myworkflow')");
         Assert.assertEquals(new WorkflowID("myworkflow"), t.getTriggerWorkflowId());
     }
-    
+
     @Test
     public void testSuccessTriggerRequiresWorkflowName() throws Exception {
         expectMessage("successTrigger()", "Undefined workflow name");
@@ -200,7 +199,7 @@ public class JavaScriptFunctionsTest {
         props.put("bla", "hello");
         Assert.assertEquals(props, s.getProperties(new SlotID(new WorkflowID("foo"), ScheduledTime.now())));
     }
-    
+
     @Test
     public void testOozieURLRequired() throws Exception {
         expectMessage("oozieExternalService({bla:'hello'})", "Undefined Oozie URL");
@@ -234,7 +233,25 @@ public class JavaScriptFunctionsTest {
         props.put("b", "03");
         props.put("c", "2013");
         ScheduledTime t = new ScheduledTime("2014-03-01T00:00Z");
-        Assert.assertEquals(props, s.setupDefaultProperties(s.getProperties(new SlotID(new WorkflowID("foo"), t)), t));
+        Assert.assertEquals(props, s.createRunProperties(s.getProperties(new SlotID(new WorkflowID("foo"), t)), Collections.<String, String>emptyMap(), t));
+    }
+
+    @Test
+    public void testOoziePropertiesFunctionWithAdditionals() throws Exception {
+        String js = "var CELOS_DEFAULT_OOZIE_PROPERTIES = { a: '${year}' }; oozieExternalService(function(slot){ return { b: '${month}', c: new String(slot.getScheduledTime().minusYears(1).year()) }; }, 'http://oozie')";
+        OozieExternalService s = (OozieExternalService) runJS(js);
+        Properties props = new Properties();
+        props.put("a", "2014");
+        props.put("b", "03");
+        props.put("c", "2013");
+        props.put("a1", "a1");
+        props.put("a2", "a2");
+
+        ScheduledTime t = new ScheduledTime("2014-03-01T00:00Z");
+        Map<String, String> adds = new HashMap<>();
+        adds.put("a1", "a1");
+        adds.put("a2", "a2");
+        Assert.assertEquals(props, s.createRunProperties(s.getProperties(new SlotID(new WorkflowID("foo"), t)), adds, t));
     }
 
     @Test
@@ -256,22 +273,33 @@ public class JavaScriptFunctionsTest {
         props.put("b", "03");
         props.put("c", "2013");
         ScheduledTime t = new ScheduledTime("2014-03-01T00:00Z");
-        Assert.assertEquals(props, s.setupDefaultProperties(s.getProperties(new SlotID(new WorkflowID("foo"), t)), t));
+        Assert.assertEquals(props, s.createRunProperties(s.getProperties(new SlotID(new WorkflowID("foo"), t)), Collections.<String, String>emptyMap(), t));
     }
-    
+
     // CommandExternalService
-    
+
     @Test
     public void testCESCommandRequired() throws Exception {
         expectMessage("commandExternalService()", "Undefined command");
     }
-    
+
     @Test
     public void testCESUsesCommand() throws Exception {
         CommandExternalService s = (CommandExternalService) runJS("commandExternalService('shutdown -h now')");
         Assert.assertEquals("shutdown -h now", s.getRawCommand());
     }
-    
+
+    @Test
+    public void testCESUsesCommand2() throws Exception {
+        String cmd = "sudo -u akonopko hadoop jar /etc/celos/workflows/sibyl/sibyl-google-celos-trigger-0.1.0.jar 2014-05-12T08:00Z America/New_York \"hdfs://nameservice1/user/hive/warehouse/google_999.db/impression/year=yyyy/month=MM/day=dd/hour=HH\"";
+        String str = "commandExternalService('" + cmd + "')";
+
+        CommandExternalService s = (CommandExternalService) runJS(str);
+        Assert.assertEquals(cmd, s.getRawCommand());
+    }
+
+
+
     private Object runJS(String js) throws Exception {
         WorkflowConfigurationParser parser = new WorkflowConfigurationParser(new File("unused"));
         // Evaluate JS function call
@@ -296,5 +324,5 @@ public class JavaScriptFunctionsTest {
         }
         throw new AssertionError();
     }
-    
+
 }

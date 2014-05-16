@@ -1,6 +1,8 @@
 package com.collective.celos;
 
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Properties;
 
 import org.apache.oozie.client.AuthOozieClient;
@@ -12,7 +14,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 // TODO: mock AuthOozieClient and check that its methods are called with the right args
 public class OozieExternalService implements ExternalService {
-    
+
     public static final String YEAR_PROP = "year";
     public static final String MONTH_PROP = "month";
     public static final String DAY_PROP = "day";
@@ -20,7 +22,7 @@ public class OozieExternalService implements ExternalService {
     public static final String MINUTE_PROP = "minute";
     public static final String SECOND_PROP = "second";
     public static final String WORKFLOW_NAME_PROP = "celosWorkflowName";
-    
+
     private final OozieClient client;
     private final String oozieURL;
     private PropertiesGenerator gen;
@@ -30,7 +32,7 @@ public class OozieExternalService implements ExternalService {
         this.gen = Util.requireNonNull(gen);
         this.client = new AuthOozieClient(oozieURL);
     }
-    
+
     @Override
     public String submit(SlotID id) throws ExternalServiceException {
         try {
@@ -44,7 +46,7 @@ public class OozieExternalService implements ExternalService {
     public ObjectNode getProperties(SlotID id) {
         return gen.getProperties(id);
     }
-    
+
     @Override
     public void start(SlotID unused, String externalID) throws ExternalServiceException {
         try {
@@ -54,26 +56,36 @@ public class OozieExternalService implements ExternalService {
         }
     }
 
-    Properties setupRunProperties(ObjectNode defaults, SlotID id) {
+    Properties setupRunProperties(ObjectNode userProperties, SlotID id) {
+        return createRunProperties(userProperties, getAdditionalProps(id), id.getScheduledTime());
+    }
+
+    private Map<String, String> getAdditionalProps(SlotID id) {
+        Map<String, String> additionalProps = new HashMap<>();
         ScheduledTime t = id.getScheduledTime();
-        Properties runProperties = setupDefaultProperties(defaults, t);
         ScheduledTimeFormatter formatter = new ScheduledTimeFormatter();
-        runProperties.setProperty(YEAR_PROP, formatter.formatYear(t));
-        runProperties.setProperty(MONTH_PROP, formatter.formatMonth(t));
-        runProperties.setProperty(DAY_PROP, formatter.formatDay(t));
-        runProperties.setProperty(HOUR_PROP, formatter.formatHour(t));
-        runProperties.setProperty(MINUTE_PROP, formatter.formatMinute(t));
-        runProperties.setProperty(SECOND_PROP, formatter.formatSecond(t));
-        runProperties.setProperty(WORKFLOW_NAME_PROP, getWorkflowName(id, formatter));
-        return runProperties;
+        additionalProps.put(YEAR_PROP, formatter.formatYear(t));
+        additionalProps.put(MONTH_PROP, formatter.formatMonth(t));
+        additionalProps.put(DAY_PROP, formatter.formatDay(t));
+        additionalProps.put(HOUR_PROP, formatter.formatHour(t));
+        additionalProps.put(MINUTE_PROP, formatter.formatMinute(t));
+        additionalProps.put(SECOND_PROP, formatter.formatSecond(t));
+        additionalProps.put(WORKFLOW_NAME_PROP, getWorkflowName(id, formatter));
+        return additionalProps;
     }
 
     String getWorkflowName(SlotID id, ScheduledTimeFormatter formatter) {
         return id.getWorkflowID() + "@" + formatter.formatPretty(id.getScheduledTime());
     }
 
-    Properties setupDefaultProperties(ObjectNode defaults, ScheduledTime t) {
+
+    Properties createRunProperties(ObjectNode defaults, Map<String, String> additionalProps, ScheduledTime t) {
         Properties props = new Properties();
+
+        for (Map.Entry<String, String> entry : additionalProps.entrySet()) {
+            props.setProperty(entry.getKey(), entry.getValue());
+        }
+
         ScheduledTimeFormatter formatter = new ScheduledTimeFormatter();
         for (Iterator<String> names = defaults.fieldNames(); names.hasNext();) {
             String name = names.next();
