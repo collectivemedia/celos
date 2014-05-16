@@ -3,6 +3,7 @@ package com.collective.celos;
 import java.io.File;
 import java.io.StringReader;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Properties;
 
 import org.junit.Assert;
@@ -234,7 +235,7 @@ public class JavaScriptFunctionsTest {
         props.put("b", "03");
         props.put("c", "2013");
         ScheduledTime t = new ScheduledTime("2014-03-01T00:00Z");
-        Assert.assertEquals(props, s.setupDefaultProperties(s.getProperties(new SlotID(new WorkflowID("foo"), t)), t));
+        Assert.assertEquals(props, s.createRunProperties(s.getProperties(new SlotID(new WorkflowID("foo"), t)), Collections.<String, String>emptyMap(), t));
     }
 
     @Test
@@ -256,7 +257,7 @@ public class JavaScriptFunctionsTest {
         props.put("b", "03");
         props.put("c", "2013");
         ScheduledTime t = new ScheduledTime("2014-03-01T00:00Z");
-        Assert.assertEquals(props, s.setupDefaultProperties(s.getProperties(new SlotID(new WorkflowID("foo"), t)), t));
+        Assert.assertEquals(props, s.createRunProperties(s.getProperties(new SlotID(new WorkflowID("foo"), t)), Collections.<String, String>emptyMap(), t));
     }
     
     // CommandExternalService
