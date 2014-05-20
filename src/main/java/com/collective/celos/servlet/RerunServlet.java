@@ -4,13 +4,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.collective.celos.*;
 import org.apache.log4j.Logger;
-
-import com.collective.celos.ScheduledTime;
-import com.collective.celos.SlotID;
-import com.collective.celos.SlotState;
-import com.collective.celos.StateDatabase;
-import com.collective.celos.WorkflowID;
 
 /**
  * Posting to this servlet reruns the specified slot.
@@ -27,6 +22,8 @@ public class RerunServlet extends AbstractServlet {
     private static Logger LOGGER = Logger.getLogger(RerunServlet.class);
     
     private static final String ID_PARAM = "id";
+    private static final String RERUN_PARAM = "rerunDependentWorkflows";
+
     
     protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException {
         try {
@@ -35,13 +32,31 @@ public class RerunServlet extends AbstractServlet {
             if (id == null) {
                 throw new IllegalArgumentException(ID_PARAM + " parameter missing.");
             }
-            SlotID slot = new SlotID(new WorkflowID(id), time);
-            StateDatabase db = getOrCreateCachedScheduler().getStateDatabase();
-            updateSlotToRerun(slot, db);
-            LOGGER.info("Slot scheduled for rerun: " + slot);
+            final Scheduler scheduler = getOrCreateCachedScheduler();
+            final WorkflowID workflowID = new WorkflowID(id);
+
+            if (rerunNeedToBeChained(req.getParameter(RERUN_PARAM))) {
+                Workflow workflow = scheduler.getWorkflowConfiguration().findWorkflow(workflowID);
+                for (WorkflowID dependentWfId : workflow.getTrigger().getDependentWorkflows()) {
+                    rerunWorkflow(time, scheduler, dependentWfId);
+                }
+            } else {
+                rerunWorkflow(time, scheduler, workflowID);
+            }
         } catch(Exception e) {
             throw new ServletException(e);
         }
+    }
+
+    private boolean rerunNeedToBeChained(String a) {
+        return Boolean.TRUE.toString().equalsIgnoreCase(a);
+    }
+
+    private void rerunWorkflow(ScheduledTime time, Scheduler scheduler, WorkflowID dep) throws Exception {
+        SlotID slot = new SlotID(dep, time);
+        StateDatabase db = scheduler.getStateDatabase();
+        updateSlotToRerun(slot, db);
+        LOGGER.info("Slot scheduled for rerun: " + slot);
     }
 
     void updateSlotToRerun(SlotID slot, StateDatabase db) throws Exception {

@@ -1,9 +1,8 @@
 package com.collective.celos;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
-public class AndTrigger implements Trigger {
+public class AndTrigger extends Trigger {
 
     private final List<Trigger> triggers = new LinkedList<>();
     
@@ -24,5 +23,14 @@ public class AndTrigger implements Trigger {
     public List<Trigger> getTriggers() {
         return triggers;
     }
+
+    public Set<WorkflowID> getDependentWorkflows() {
+        Set<WorkflowID> result = new HashSet<>();
+        for (Trigger trigger : triggers) {
+            result.addAll(trigger.getDependentWorkflows());
+        }
+        return result;
+    }
+
 
 }

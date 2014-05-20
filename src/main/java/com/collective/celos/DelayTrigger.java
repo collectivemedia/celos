@@ -16,7 +16,7 @@ import org.joda.time.DateTime;
  * var oneDay = 60 * 60 * 24;
  * andTrigger(delayTrigger(oneDay), hdfsCheckTrigger("/${year}/${month}/${day}/..."))
 */
-public class DelayTrigger implements Trigger {
+public class DelayTrigger extends Trigger {
 
     private final int seconds;
     

@@ -7,7 +7,7 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
-public class CommandTrigger implements Trigger {
+public class CommandTrigger extends Trigger {
 
     private static Logger LOGGER = Logger.getLogger(CommandTrigger.class);
     private final ScheduledTimeFormatter formatter = new ScheduledTimeFormatter();
