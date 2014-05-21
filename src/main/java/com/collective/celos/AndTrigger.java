@@ -24,6 +24,7 @@ public class AndTrigger extends Trigger {
         return triggers;
     }
 
+    @Override
     public Set<WorkflowID> getWorkflowsTriggerDependsOn() {
         Set<WorkflowID> result = new HashSet<>();
         for (Trigger trigger : triggers) {

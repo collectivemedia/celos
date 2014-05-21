@@ -20,6 +20,7 @@ public class NotTrigger extends Trigger {
         return trigger;
     }
 
+    @Override
     public Set<WorkflowID> getWorkflowsTriggerDependsOn() {
         return trigger.getWorkflowsTriggerDependsOn();
     }
