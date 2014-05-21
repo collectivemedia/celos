@@ -27,7 +27,7 @@ public class SuccessTrigger extends AbstractInternalTrigger {
         return triggerWorkflowId;
     }
 
-    public Set<WorkflowID> getDependentWorkflows() {
+    public Set<WorkflowID> getWorkflowsTriggerDependsOn() {
         return Sets.newHashSet(triggerWorkflowId);
     }
 

@@ -24,10 +24,10 @@ public class AndTrigger extends Trigger {
         return triggers;
     }
 
-    public Set<WorkflowID> getDependentWorkflows() {
+    public Set<WorkflowID> getWorkflowsTriggerDependsOn() {
         Set<WorkflowID> result = new HashSet<>();
         for (Trigger trigger : triggers) {
-            result.addAll(trigger.getDependentWorkflows());
+            result.addAll(trigger.getWorkflowsTriggerDependsOn());
         }
         return result;
     }

@@ -13,7 +13,7 @@ public abstract class Trigger {
      */
     public abstract boolean isDataAvailable(ScheduledTime now, ScheduledTime scheduledTime) throws Exception;
 
-    public Set<WorkflowID> getDependentWorkflows() {
+    public Set<WorkflowID> getWorkflowsTriggerDependsOn() {
         return Collections.emptySet();
     }
 

@@ -35,14 +35,7 @@ public class RerunServlet extends AbstractServlet {
             final Scheduler scheduler = getOrCreateCachedScheduler();
             final WorkflowID workflowID = new WorkflowID(id);
 
-            if (rerunNeedToBeChained(req)) {
-                Workflow workflow = scheduler.getWorkflowConfiguration().findWorkflow(workflowID);
-                for (WorkflowID dependentWfId : workflow.getTrigger().getDependentWorkflows()) {
-                    rerunWorkflow(time, scheduler, dependentWfId);
-                }
-            } else {
-                rerunWorkflow(time, scheduler, workflowID);
-            }
+            rerunWorkflow(time, scheduler, workflowID, rerunNeedToBeChained(req));
         } catch(Exception e) {
             throw new ServletException(e);
         }
@@ -52,11 +45,16 @@ public class RerunServlet extends AbstractServlet {
         return Boolean.TRUE.toString().equalsIgnoreCase(req.getParameter(RERUN_PARAM));
     }
 
-    private void rerunWorkflow(ScheduledTime time, Scheduler scheduler, WorkflowID dep) throws Exception {
-        SlotID slot = new SlotID(dep, time);
+    private void rerunWorkflow(ScheduledTime time, Scheduler scheduler, WorkflowID workflowId, boolean rerunDependent) throws Exception {
+        SlotID slot = new SlotID(workflowId, time);
         StateDatabase db = scheduler.getStateDatabase();
         updateSlotToRerun(slot, db);
         LOGGER.info("Slot scheduled for rerun: " + slot);
+        if (rerunDependent) {
+            for (WorkflowID depId : scheduler.getWorkflowConfiguration().getDependentWorkflows(workflowId)) {
+                rerunWorkflow(time, scheduler, depId, rerunDependent);
+            }
+        }
     }
 
     void updateSlotToRerun(SlotID slot, StateDatabase db) throws Exception {

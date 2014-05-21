@@ -3,9 +3,12 @@ package com.collective.celos;
 import java.io.File;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.SortedSet;
 
+import com.google.common.collect.Sets;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -55,6 +58,16 @@ public class WorkflowConfigurationParserTest {
         public boolean isDataAvailable(ScheduledTime now, ScheduledTime t) throws Exception {
             return false;
         }
+    }
+
+    @Test
+    public void workflowDependenciesAreCalculatedCorrectly() throws Exception {
+        WorkflowConfiguration cfg = parseFile("dependent-workflows");
+
+        Assert.assertEquals(Sets.newHashSet(new WorkflowID("workflow-2")), cfg.getDependentWorkflows(new WorkflowID("workflow-1")));
+        Assert.assertEquals(Sets.newHashSet(new WorkflowID("workflow-3"), new WorkflowID("workflow-4")), cfg.getDependentWorkflows(new WorkflowID("workflow-2")));
+        Assert.assertEquals(Sets.newHashSet(new WorkflowID("workflow-5")), cfg.getDependentWorkflows(new WorkflowID("workflow-4")));
+        Assert.assertEquals(Sets.newHashSet(new WorkflowID("workflow-5")), cfg.getDependentWorkflows(new WorkflowID("workflow-3")));
     }
 
     @Test

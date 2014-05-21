@@ -5,7 +5,6 @@ import com.google.common.collect.Sets;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -15,14 +14,14 @@ public class GetDependentWorkflowsTriggerTest {
     @Test
     public void successTriggerReturnsCorrectResult() throws Exception {
         Set<WorkflowID> expected = Sets.newHashSet(new WorkflowID("foo"));
-        Assert.assertEquals(expected, new SuccessTrigger("foo").getDependentWorkflows());
+        Assert.assertEquals(expected, new SuccessTrigger("foo").getWorkflowsTriggerDependsOn());
     }
 
     @Test
     public void andTriggerReturnsCorrectResult() throws Exception {
         Set<WorkflowID> expected = Sets.newHashSet(new WorkflowID("foo"), new WorkflowID("bar"));
         List<Trigger> triggers = (List) Lists.newArrayList(new SuccessTrigger("foo"), new SuccessTrigger("bar"));
-        Assert.assertEquals(expected, new AndTrigger(triggers).getDependentWorkflows());
+        Assert.assertEquals(expected, new AndTrigger(triggers).getWorkflowsTriggerDependsOn());
     }
 
     @Test
@@ -30,7 +29,7 @@ public class GetDependentWorkflowsTriggerTest {
         Set<WorkflowID> expected = Sets.newHashSet(new WorkflowID("foo"), new WorkflowID("bar"));
         List<Trigger> triggers = (List) Lists.newArrayList(new SuccessTrigger("foo"), new SuccessTrigger("bar"));
         NotTrigger notTrigger = new NotTrigger(new AndTrigger(triggers));
-        Assert.assertEquals(expected, notTrigger.getDependentWorkflows());
+        Assert.assertEquals(expected, notTrigger.getWorkflowsTriggerDependsOn());
     }
 
     @Test
@@ -46,7 +45,7 @@ public class GetDependentWorkflowsTriggerTest {
 
         Trigger t1 = new AndTrigger(Lists.newArrayList(and1, dt));
         Trigger t2 = new AndTrigger(Lists.newArrayList(and2, cm, new NeverTrigger()));
-        Assert.assertEquals(expected, new AndTrigger(Lists.newArrayList(t1, t2, dt)).getDependentWorkflows());
+        Assert.assertEquals(expected, new AndTrigger(Lists.newArrayList(t1, t2, dt)).getWorkflowsTriggerDependsOn());
 
     }
 

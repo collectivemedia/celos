@@ -1,7 +1,6 @@
 package com.collective.celos;
 
 
-import java.util.Collections;
 import java.util.Set;
 
 public class NotTrigger extends Trigger {
@@ -21,8 +20,8 @@ public class NotTrigger extends Trigger {
         return trigger;
     }
 
-    public Set<WorkflowID> getDependentWorkflows() {
-        return trigger.getDependentWorkflows();
+    public Set<WorkflowID> getWorkflowsTriggerDependsOn() {
+        return trigger.getWorkflowsTriggerDependsOn();
     }
 
 
