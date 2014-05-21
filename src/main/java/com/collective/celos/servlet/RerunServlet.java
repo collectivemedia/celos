@@ -45,7 +45,7 @@ public class RerunServlet extends AbstractServlet {
         return Boolean.TRUE.toString().equalsIgnoreCase(req.getParameter(RERUN_PARAM));
     }
 
-    private void rerunWorkflow(Scheduler scheduler, SlotID slot, boolean rerunDependent) throws Exception {
+    void rerunWorkflow(Scheduler scheduler, SlotID slot, boolean rerunDependent) throws Exception {
 
         StateDatabase db = scheduler.getStateDatabase();
         updateSlotToRerun(slot, db);

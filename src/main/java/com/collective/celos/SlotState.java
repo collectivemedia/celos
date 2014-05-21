@@ -94,9 +94,8 @@ public class SlotState extends ValueObject {
     }
 
     public SlotState transitionToRerun() {
-        boolean successOrFailure = (status.equals(Status.SUCCESS)) || (status.equals(Status.FAILURE));
-        if (!successOrFailure) {
-            throw new IllegalStateException("Slot must be successful or failed, but is: " + status);
+        if (status.equals(Status.WAITING)) {
+            return this;
         }
         return new SlotState(slotID, Status.WAITING, null, 0); // reset retryCount to 0
     }

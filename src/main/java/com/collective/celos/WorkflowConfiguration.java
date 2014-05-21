@@ -24,7 +24,11 @@ public class WorkflowConfiguration {
     }
 
     public Set<WorkflowID> getDependentWorkflows(WorkflowID workflowID) {
-        return workflowDependencies.get(workflowID);
+        Set<WorkflowID> result = workflowDependencies.get(workflowID);
+        if (result == null) {
+            return Collections.EMPTY_SET;
+        }
+        return result;
     }
 
     public void addWorkflow(Workflow wf, String filePath) {
