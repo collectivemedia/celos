@@ -35,7 +35,7 @@ public class RerunServlet extends AbstractServlet {
             final Scheduler scheduler = getOrCreateCachedScheduler();
             final WorkflowID workflowID = new WorkflowID(id);
 
-            if (rerunNeedToBeChained(req.getParameter(RERUN_PARAM))) {
+            if (rerunNeedToBeChained(req)) {
                 Workflow workflow = scheduler.getWorkflowConfiguration().findWorkflow(workflowID);
                 for (WorkflowID dependentWfId : workflow.getTrigger().getDependentWorkflows()) {
                     rerunWorkflow(time, scheduler, dependentWfId);
@@ -48,8 +48,8 @@ public class RerunServlet extends AbstractServlet {
         }
     }
 
-    private boolean rerunNeedToBeChained(String a) {
-        return Boolean.TRUE.toString().equalsIgnoreCase(a);
+    private boolean rerunNeedToBeChained(HttpServletRequest req) {
+        return Boolean.TRUE.toString().equalsIgnoreCase(req.getParameter(RERUN_PARAM));
     }
 
     private void rerunWorkflow(ScheduledTime time, Scheduler scheduler, WorkflowID dep) throws Exception {

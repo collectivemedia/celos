@@ -1,6 +1,11 @@
 package com.collective.celos;
 
 
+import com.google.common.collect.Sets;
+
+import java.util.Collections;
+import java.util.Set;
+
 public class SuccessTrigger extends AbstractInternalTrigger {
 
     private WorkflowID triggerWorkflowId;
@@ -21,4 +26,9 @@ public class SuccessTrigger extends AbstractInternalTrigger {
     public WorkflowID getTriggerWorkflowId() {
         return triggerWorkflowId;
     }
+
+    public Set<WorkflowID> getDependentWorkflows() {
+        return Sets.newHashSet(triggerWorkflowId);
+    }
+
 }
