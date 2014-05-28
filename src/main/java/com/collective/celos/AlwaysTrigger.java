@@ -1,11 +1,14 @@
 package com.collective.celos;
 
+import java.util.Collections;
+import java.util.Set;
+
 /**
  * Trivial trigger that always signals data availability,
  * for use when a workflow doesn't have any data dependencies
  * and simply needs to run at every scheduled time. 
  */
-public class AlwaysTrigger implements Trigger {
+public class AlwaysTrigger extends Trigger {
 
     public AlwaysTrigger() {    
     }

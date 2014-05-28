@@ -1,6 +1,6 @@
 package com.collective.celos;
 
-public abstract class AbstractInternalTrigger implements InternalTrigger {
+public abstract class AbstractInternalTrigger extends InternalTrigger {
 
     @Override
     public boolean isDataAvailable(ScheduledTime now, ScheduledTime t) throws Exception {

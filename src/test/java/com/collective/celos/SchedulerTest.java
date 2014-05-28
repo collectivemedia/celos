@@ -835,6 +835,7 @@ public class SchedulerTest {
         verify(tr1).isDataAvailable(Mockito.eq(sched), Mockito.eq(currentTime), Mockito.eq(new ScheduledTime("2014-03-25T20:00Z")));
         verify(tr1).isDataAvailable(Mockito.eq(sched), Mockito.eq(currentTime), Mockito.eq(new ScheduledTime("2014-03-25T21:00Z")));
         verify(tr1).isDataAvailable(Mockito.eq(sched), Mockito.eq(currentTime), Mockito.eq(new ScheduledTime("2014-03-25T22:00Z")));
+        verify(tr1).getWorkflowsTriggerDependsOn();
         verifyNoMoreInteractions(tr1);
     }
     

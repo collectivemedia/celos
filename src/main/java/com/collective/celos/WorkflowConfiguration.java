@@ -1,13 +1,12 @@
 package com.collective.celos;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class WorkflowConfiguration {
 
     private final Map<WorkflowID, Workflow> workflows = new HashMap<>();
     private final Map<WorkflowID, String> workflowIdToConfigFilePath = new HashMap<>();
+    private final Map<WorkflowID, Set<WorkflowID>> workflowDependencies = new HashMap<>();
 
     public WorkflowConfiguration() {
     }
@@ -24,6 +23,13 @@ public class WorkflowConfiguration {
         return workflowIdToConfigFilePath.get(Util.requireNonNull(id));
     }
 
+    public Set<WorkflowID> getDependentWorkflows(WorkflowID workflowID) {
+        Set<WorkflowID> result = workflowDependencies.get(workflowID);
+        if (result == null) {
+            return Collections.EMPTY_SET;
+        }
+        return result;
+    }
 
     public void addWorkflow(Workflow wf, String filePath) {
         Util.requireNonNull(wf);
@@ -33,6 +39,20 @@ public class WorkflowConfiguration {
         }
         workflows.put(id, wf);
         workflowIdToConfigFilePath.put(id, filePath);
+        updateWorkflowDependencies(wf);
     }
-    
+
+    private void updateWorkflowDependencies(Workflow wf) {
+        for(WorkflowID depId : wf.getTrigger().getWorkflowsTriggerDependsOn()) {
+            Set<WorkflowID> deps = workflowDependencies.get(depId);
+            if (deps == null) {
+                deps = new HashSet<>();
+                workflowDependencies.put(depId, deps);
+            }
+            deps.add(wf.getID());
+        }
+    }
+
+
+
 }

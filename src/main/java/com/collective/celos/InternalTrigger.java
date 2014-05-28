@@ -9,8 +9,8 @@ package com.collective.celos;
  * Instead the scheduler calls the isDataAvailable(Scheduler s, ScheduledTime now, ScheduledTime t) method
  * and passes itself as first argument.
  */
-public interface InternalTrigger extends Trigger {
+public abstract class InternalTrigger extends Trigger {
 
-    public boolean isDataAvailable(Scheduler s, ScheduledTime now, ScheduledTime scheduledTime) throws Exception;
+    public abstract boolean isDataAvailable(Scheduler s, ScheduledTime now, ScheduledTime scheduledTime) throws Exception;
     
 }

@@ -11,7 +11,7 @@ import org.apache.hadoop.fs.Path;
 /**
  * Check in HDFS for a data dependency.
  */
-public class HDFSCheckTrigger implements Trigger {
+public class HDFSCheckTrigger extends Trigger {
 
     private final ScheduledTimeFormatter formatter = new ScheduledTimeFormatter();
     private final FileSystem fs;
