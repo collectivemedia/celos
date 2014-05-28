@@ -152,3 +152,13 @@ function commandExternalService(command) {
     // FIXME: the wrapper and /var/lib path should probably be specified elsewhere
     return new CommandExternalService(command, "celos-wrapper", "/var/lib/celos/jobs");
 }
+
+function replaceTimeVariables(string, t) {
+    string = string.replace(/\${year}/g, t.year());
+    string = string.replace(/\${month}/g, t.month());
+    string = string.replace(/\${day}/g, t.day());
+    string = string.replace(/\${hour}/g, t.hour());
+    string = string.replace(/\${minute}/g, t.minute());
+    string = string.replace(/\${second}/g, t.second());
+    return string;                            
+}
