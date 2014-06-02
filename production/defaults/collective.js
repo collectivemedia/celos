@@ -17,6 +17,7 @@ var CELOS_DEFAULT_OOZIE_PROPERTIES = {
     "jobTracker" : JOB_TRACKER,
     "nameNode" : CELOS_DEFAULT_HDFS,
     "hiveMetastore": HIVE_METASTORE,
+    "hiveDefaults": NAME_NODE + "/deploy/TheOneWorkflow/hive/hive-site.xml",
     "oozie.use.system.libpath": "true",
     "outputRoot": OUTPUT_ROOT
 };
