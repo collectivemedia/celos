@@ -8,7 +8,7 @@ var NAME_NODE = CELOS_DEFAULT_HDFS;
 
 var JOB_TRACKER = "admin1.ny7.collective-media.net:8032";
 
-var HIVE_METASTORE = "thrift://hive-meta.ny7.collective-media.net:9083";
+var HIVE_METASTORE = "thrift://hive002.ny7.collective-media.net:9083";
 
 var OUTPUT_ROOT = NAME_NODE + "/output";
 
