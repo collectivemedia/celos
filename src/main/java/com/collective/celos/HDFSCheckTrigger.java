@@ -7,6 +7,7 @@ import java.util.Map;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
+import org.apache.log4j.Logger;
 
 /**
  * Check in HDFS for a data dependency.
@@ -19,7 +20,9 @@ public class HDFSCheckTrigger implements Trigger {
     private final String fsString;
 
     private static final Map<String, FileSystem> cachedFSs = new HashMap<>();
-
+    
+    private static final Logger LOGGER = Logger.getLogger(HDFSCheckTrigger.class);
+    
     public HDFSCheckTrigger(String rawPathString, String fsString) throws Exception {
         this.rawPathString = Util.requireNonNull(rawPathString);
         this.fsString = Util.requireNonNull(fsString);
@@ -35,6 +38,7 @@ public class HDFSCheckTrigger implements Trigger {
     @Override
     public boolean isDataAvailable(ScheduledTime now, ScheduledTime t) throws Exception {
         Path path = new Path(formatter.replaceTimeTokens(rawPathString, t));
+        LOGGER.info("Checking HDFS path: " + path);
         return fs.exists(path);
     }
 
