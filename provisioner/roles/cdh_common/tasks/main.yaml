@@ -1,0 +1,10 @@
+---
+# file: roles/cdh_common/tasks/main.yml
+
+- name: download cloudera repo
+  shell: curl -Ss http://archive.cloudera.com/cdh5/one-click-install/precise/amd64/cdh5-repository_1.0_all.deb -o /tmp/cdh5-repository_1.0_all.deb  
+  tags: hadoop
+
+- name: add Cloudera CDH5 repository
+  shell: dpkg -i /tmp/cdh5-repository_1.0_all.deb
+  tags: hadoop
