@@ -1,8 +1,18 @@
 repositories.remote << 'http://repo1.maven.org/maven2/'
 repositories.remote << 'https://repository.cloudera.com/artifactory/cloudera-repos/'
 
-OOZIE_CLIENT = 'org.apache.oozie:oozie-client:jar:3.3.0-cdh4.2.1'
-HADOOP = transitive('org.apache.hadoop:hadoop-client:jar:2.0.0-cdh4.2.1')
+OOZIE_CLIENT = 'org.apache.oozie:oozie-client:jar:4.0.0-cdh5.1.0'
+HADOOP = [
+  'org.apache.hadoop:hadoop-common:jar:2.3.0-cdh5.1.0',
+  'org.apache.hadoop:hadoop-hdfs:jar:2.3.0-cdh5.1.0',
+  'org.apache.hadoop:hadoop-auth:jar:2.3.0-cdh5.1.0',
+  'commons-logging:commons-logging:jar:1.1.3',
+  'commons-configuration:commons-configuration:jar:1.10',
+  'com.google.guava:guava:jar:11.0.2',
+  'org.slf4j:slf4j-api:jar:1.7.5',
+  'org.slf4j:slf4j-log4j12:jar:1.7.5',
+  'commons-cli:commons-cli:jar:1.2'
+]
 COMMONS = [
   'commons-lang:commons-lang:jar:2.6',
   'commons-collections:commons-collections:jar:3.2.1',
@@ -17,13 +27,14 @@ JSON_SIMPLE = 'com.googlecode.json-simple:json-simple:jar:1.1.1'
 QUARTZ_SCHEDULER = 'org.quartz-scheduler:quartz:jar:2.1.1'
 RHINO = 'org.mozilla:rhino:jar:1.7R4'
 MOCKITO = 'org.mockito:mockito-all:jar:1.9.5'
-
+SERVLET = 'javax.servlet:servlet-api:jar:2.3'
 
 LOG4J = ['log4j:log4j:jar:1.2.17', 'log4j:apache-log4j-extras:jar:1.2.17']
 
 GET_OUTTA_MY_JAR = ['log4j-']
 
 DEPENDENCIES = [
+  SERVLET,
   OOZIE_CLIENT,
   HADOOP,
   COMMONS,
@@ -59,5 +70,5 @@ define 'celos' do
   compile.with(DEPENDENCIES)
   test.with(TEST_DEPENDENCIES)
 
-  package(:war).libs -= artifacts('javax.servlet:servlet-api:jar:2.3')
+  package(:war).libs -= artifacts(SERVLET)
 end
