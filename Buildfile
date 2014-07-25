@@ -6,6 +6,7 @@ HADOOP = [
   'org.apache.hadoop:hadoop-common:jar:2.3.0-cdh5.1.0',
   'org.apache.hadoop:hadoop-hdfs:jar:2.3.0-cdh5.1.0',
   'org.apache.hadoop:hadoop-auth:jar:2.3.0-cdh5.1.0',
+  'com.google.protobuf:protobuf-java:jar:2.5.0',
   'commons-logging:commons-logging:jar:1.1.3',
   'commons-configuration:commons-configuration:jar:1.10',
   'com.google.guava:guava:jar:11.0.2',
