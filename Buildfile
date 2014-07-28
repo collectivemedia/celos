@@ -12,7 +12,8 @@ HADOOP = [
   'com.google.guava:guava:jar:11.0.2',
   'org.slf4j:slf4j-api:jar:1.7.5',
   'org.slf4j:slf4j-log4j12:jar:1.7.5',
-  'commons-cli:commons-cli:jar:1.2'
+  'commons-cli:commons-cli:jar:1.2',
+  'commons-codec:commons-codec:jar:1.4'
 ]
 COMMONS = [
   'commons-lang:commons-lang:jar:2.6',
