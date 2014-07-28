@@ -23,6 +23,11 @@
   notify: restart oozie services
   tags: oozie
 
+- name: Oozie tomcat config
+  shell: update-alternatives --set oozie-tomcat-conf /etc/oozie/tomcat-conf.http
+  notify: restart oozie services
+  tags: oozie
+
 - name: Oozie oozie-env.sh config file
   copy: src=roles/oozie/files/oozie-env.sh dest=/etc/oozie/conf/oozie-env.sh
   notify: restart oozie services
