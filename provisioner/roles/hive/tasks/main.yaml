@@ -1,7 +1,7 @@
 ---
 # file: roles/hadoop_master/tasks/main.yml
 - name: Install the hive package
-  apt: name=${item} state=installed update_cache=yes
+  apt: name={{item}} state=installed update_cache=yes
   tags: hive
   with_items: 
    - hive

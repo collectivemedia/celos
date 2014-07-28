@@ -2,7 +2,7 @@
 # Handlers for the hadoop slave services
 
 - name: restart hadoop slave services
-  service: name=${item} state=restarted
+  service: name={{item}} state=restarted
   with_items: 
     - hadoop-hdfs-datanode
     - hadoop-yarn-nodemanager
