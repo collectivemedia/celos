@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+set -x
+set -e
+
+# This is a script that will automatically install the Celos workflow.
+# You can call it manually from your development machine, and also
+# from the Jenkins CI server.
+
+# Change this
+WORKFLOW_NAME="my-workflow"
+
+# Prepare deployment dir
+DEPLOY_DIR=celos_deploy
+rm -rf $DEPLOY_DIR
+HDFS_DIR=$DEPLOY_DIR/hdfs
+mkdir -p $HDFS_DIR/lib
+cp -r src/main/celos/* $DEPLOY_DIR
+cp -r src/main/oozie/* $HDFS_DIR
+
+# Upload and deploy
+rm -rf .celos-cd
+git clone git@github.com:collectivemedia/celos-cd.git .celos-cd
+.celos-cd/deploy-workflow $WORKFLOW_NAME $DEPLOY_DIR
+
+rm -rf .celos-cd
+rm -rf $DEPLOY_DIR

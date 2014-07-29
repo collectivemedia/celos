@@ -1,0 +1,4 @@
+<?xml version="1.0"?>
+<workflow-app xmlns="uri:oozie:workflow:0.4" name="${celosWorkflowName}">
+  <!-- Add your Oozie workflow here -->
+</workflow-app>
