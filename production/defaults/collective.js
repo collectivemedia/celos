@@ -10,6 +10,8 @@ var JOB_TRACKER = "admin1.ny7.collective-media.net:8032";
 
 var HIVE_METASTORE = "thrift://hive002.ny7.collective-media.net:9083";
 
+var ETL002 = "etl002.ny7.collective-media.net";
+
 var OUTPUT_ROOT = NAME_NODE + "/output";
 
 var CELOS_DEFAULT_OOZIE_PROPERTIES = {
@@ -19,5 +21,6 @@ var CELOS_DEFAULT_OOZIE_PROPERTIES = {
     "hiveMetastore": HIVE_METASTORE,
     "hiveDefaults": NAME_NODE + "/deploy/TheOneWorkflow/hive/hive-site.xml",
     "oozie.use.system.libpath": "true",
-    "outputRoot": OUTPUT_ROOT
+    "outputRoot": OUTPUT_ROOT,
+    "etl002": ETL002
 };
