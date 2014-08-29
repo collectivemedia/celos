@@ -17,7 +17,8 @@ JSON_SIMPLE = 'com.googlecode.json-simple:json-simple:jar:1.1.1'
 QUARTZ_SCHEDULER = 'org.quartz-scheduler:quartz:jar:2.1.1'
 RHINO = 'org.mozilla:rhino:jar:1.7R4'
 MOCKITO = 'org.mockito:mockito-all:jar:1.9.5'
-
+JETTY = ['javax.servlet:javax.servlet-api:jar:3.1.0', 'org.eclipse.jetty.aggregate:jetty-all:jar:9.2.2.v20140723']
+CLI = 'commons-cli:commons-cli:jar:1.2'
 
 LOG4J = ['log4j:log4j:jar:1.2.17', 'log4j:apache-log4j-extras:jar:1.2.17']
 
@@ -33,7 +34,9 @@ DEPENDENCIES = [
   JODA,
   JSON_SIMPLE,
   QUARTZ_SCHEDULER,
-  RHINO
+  RHINO,
+  JETTY,
+  CLI
 ].flatten.reject {|tdep|
   GET_OUTTA_MY_JAR.select {|x| tdep.to_s.include?(x)}.any?
 }.push(LOG4J)
