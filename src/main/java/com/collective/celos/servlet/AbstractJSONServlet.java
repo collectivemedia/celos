@@ -12,4 +12,7 @@ public class AbstractJSONServlet extends AbstractServlet {
     protected final ObjectMapper mapper = new ObjectMapper();
     protected final ObjectWriter writer = mapper.writerWithDefaultPrettyPrinter();
 
+    public AbstractJSONServlet(ServerConfig celosServer) {
+        super(celosServer);
+    }
 }

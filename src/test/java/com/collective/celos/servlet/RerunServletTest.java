@@ -11,7 +11,7 @@ public class RerunServletTest {
     @Test(expected = IllegalArgumentException.class)
     public void failsOnUndefinedSlot() throws Exception {
         StateDatabase db = new MemoryStateDatabase();
-        new RerunServlet().updateSlotToRerun(new SlotID(new WorkflowID("foo"), new ScheduledTime("2014-02-08T20:00Z")), db);
+        new RerunServlet(new ServerConfig()).updateSlotToRerun(new SlotID(new WorkflowID("foo"), new ScheduledTime("2014-02-08T20:00Z")), db);
     }
     
     @Test(expected = IllegalStateException.class)
@@ -34,7 +34,7 @@ public class RerunServletTest {
         SlotID id = new SlotID(new WorkflowID("foo"), new ScheduledTime("2014-02-08T20:00Z"));
         SlotState state = new SlotState(id, status);
         db.putSlotState(state);
-        new RerunServlet().updateSlotToRerun(id, db);
+        new RerunServlet(new ServerConfig()).updateSlotToRerun(id, db);
     }
     
     @Test
@@ -52,7 +52,7 @@ public class RerunServletTest {
         SlotID id = new SlotID(new WorkflowID("foo"), new ScheduledTime("2014-02-08T20:00Z"));
         SlotState state = new SlotState(id, status);
         db.putSlotState(state);
-        new RerunServlet().updateSlotToRerun(id, db);
+        new RerunServlet(new ServerConfig()).updateSlotToRerun(id, db);
         SlotState dbState = db.getSlotState(id);
         Assert.assertEquals(state.transitionToRerun(), dbState);
     }
