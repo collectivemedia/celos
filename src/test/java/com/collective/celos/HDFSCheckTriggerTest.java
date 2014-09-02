@@ -2,7 +2,7 @@ package com.collective.celos;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-
+import static org.mockito.Mockito.mock;
 import java.io.File;
 
 import org.junit.Rule;
@@ -31,12 +31,14 @@ public class HDFSCheckTriggerTest {
 
     @Test
     public void testDirectoryExists() throws Exception {
-        assertTrue(new HDFSCheckTrigger("/tmp", "file:///").isDataAvailable(ScheduledTime.now(), new ScheduledTime("2013-11-22T15:00Z")));
+        Scheduler scheduler = mock(Scheduler.class);
+        assertTrue(new HDFSCheckTrigger("/tmp", "file:///").isDataAvailable(scheduler, ScheduledTime.now(), new ScheduledTime("2013-11-22T15:00Z")));
     }
 
     @Test
     public void testDirectoryDoesNotExist() throws Exception {
-        assertFalse(new HDFSCheckTrigger("/tmp-does-not-exist", "file:///").isDataAvailable(ScheduledTime.now(), new ScheduledTime("2013-11-22T15:00Z")));
+        Scheduler scheduler = mock(Scheduler.class);
+        assertFalse(new HDFSCheckTrigger("/tmp-does-not-exist", "file:///").isDataAvailable(scheduler, ScheduledTime.now(), new ScheduledTime("2013-11-22T15:00Z")));
     }
 
     @Test
@@ -46,8 +48,10 @@ public class HDFSCheckTriggerTest {
         File triggerFile = new File(root, "2013-11-22/1500/_READY");
         triggerFile.getParentFile().mkdirs();
         triggerFile.createNewFile();
-       
-        assertTrue(new HDFSCheckTrigger(root + "/${year}-${month}-${day}/${hour}00/_READY",  "file:///").isDataAvailable(ScheduledTime.now(), new ScheduledTime("2013-11-22T15:00Z")));
+
+        Scheduler scheduler = mock(Scheduler.class);
+
+        assertTrue(new HDFSCheckTrigger(root + "/${year}-${month}-${day}/${hour}00/_READY",  "file:///").isDataAvailable(scheduler, ScheduledTime.now(), new ScheduledTime("2013-11-22T15:00Z")));
     }
 
     @Test
@@ -58,8 +62,10 @@ public class HDFSCheckTriggerTest {
         if (triggerFile.exists()) {
             triggerFile.delete(); // Make sure it doesn't exist
         }
+
+        Scheduler scheduler = mock(Scheduler.class);
        
-        assertFalse(new HDFSCheckTrigger(root + "/${year}-${month}-${day}/${hour}00/_READY", "file:///").isDataAvailable(ScheduledTime.now(), new ScheduledTime("2013-11-22T15:00Z")));
+        assertFalse(new HDFSCheckTrigger(root + "/${year}-${month}-${day}/${hour}00/_READY", "file:///").isDataAvailable(scheduler, ScheduledTime.now(), new ScheduledTime("2013-11-22T15:00Z")));
     }
     
     /*
@@ -69,7 +75,8 @@ public class HDFSCheckTriggerTest {
      */
     @Test(expected = IllegalArgumentException.class)
     public void testIOExceptionIsPropagated() throws Exception {
-        new HDFSCheckTrigger("/some/path", "hdfs://no-such-host").isDataAvailable(ScheduledTime.now(), new ScheduledTime("2013-11-22T15:00Z"));
+        Scheduler scheduler = mock(Scheduler.class);
+        new HDFSCheckTrigger("/some/path", "hdfs://no-such-host").isDataAvailable(scheduler, ScheduledTime.now(), new ScheduledTime("2013-11-22T15:00Z"));
     }
 
 }
