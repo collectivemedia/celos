@@ -24,7 +24,7 @@ public class DelayTrigger implements Trigger {
         this.seconds = seconds;
     }
     
-    public boolean isDataAvailable(ScheduledTime now, ScheduledTime t) throws Exception {
+    public boolean isDataAvailable(Scheduler scheduler, ScheduledTime now, ScheduledTime t) throws Exception {
         DateTime nowDT = now.getDateTime();
         DateTime waitUntilDT = t.getDateTime().plusSeconds(getSeconds());
         return nowDT.isAfter(waitUntilDT);

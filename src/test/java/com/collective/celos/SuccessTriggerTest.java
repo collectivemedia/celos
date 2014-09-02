@@ -26,7 +26,9 @@ public class SuccessTriggerTest {
     @Test(expected = IllegalArgumentException.class)
     public void testFailIsDataAvailableInternalTrigger() throws Exception {
         SuccessTrigger trigger = new SuccessTrigger("foo");
-        trigger.isDataAvailable(new ScheduledTime(DateTime.now()), new ScheduledTime(DateTime.now()));
+        Scheduler s = Mockito.mock(Scheduler.class);
+
+        trigger.isDataAvailable(s, new ScheduledTime(DateTime.now()), new ScheduledTime(DateTime.now()));
     }
 
     @Test

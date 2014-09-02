@@ -12,9 +12,9 @@ public class AndTrigger implements Trigger {
     }
     
     @Override
-    public boolean isDataAvailable(ScheduledTime now, ScheduledTime t) throws Exception {
+    public boolean isDataAvailable(Scheduler sched, ScheduledTime now, ScheduledTime t) throws Exception {
         for (Trigger trigger : triggers) {
-            if (!trigger.isDataAvailable(now, t)) {
+            if (!trigger.isDataAvailable(sched, now, t)) {
                 return false;
             }
         }

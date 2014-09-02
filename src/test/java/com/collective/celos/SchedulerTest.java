@@ -184,7 +184,7 @@ public class SchedulerTest {
 
         // The trigger should report the data as available
         ScheduledTime now = ScheduledTime.now();
-        when(trigger.isDataAvailable(now, scheduledTime)).thenReturn(true);
+        when(trigger.isDataAvailable(scheduler, now, scheduledTime)).thenReturn(true);
 
         scheduler.updateSlotState(wf, slotState, now);
 
@@ -199,7 +199,7 @@ public class SchedulerTest {
 
         // The trigger should report the data as not available
         ScheduledTime now = ScheduledTime.now();
-        when(trigger.isDataAvailable(now, scheduledTime)).thenReturn(false);
+        when(trigger.isDataAvailable(scheduler, now, scheduledTime)).thenReturn(false);
 
         scheduler.updateSlotState(wf, slotState, now);
 
@@ -808,37 +808,6 @@ public class SchedulerTest {
         Assert.assertEquals(failure, db.getSlotState(id1));
     }
     
-    @Test
-    public void callsInternalTriggerProperly() throws Exception {
-        WorkflowID wfID1 = new WorkflowID("wf1");
-        Schedule sch1 = makeHourlySchedule();
-        SchedulingStrategy str1 = makeSerialSchedulingStrategy();
-        InternalTrigger tr1 = mock(InternalTrigger.class);
-        ExternalService srv1 = new MockExternalService(new MockExternalService.MockExternalStatusRunning());
-        int maxRetryCount = 0;
-        
-        ScheduledTime defaultStartTime = new ScheduledTime("2014-03-25T19:00Z");
-        ScheduledTime currentTime = new ScheduledTime("2014-03-25T23:00Z");
-        int slidingWindowHours = 4;
-        
-        Workflow wf1 = new Workflow(wfID1, sch1, str1, tr1, srv1, maxRetryCount, defaultStartTime);
-        
-        WorkflowConfiguration cfg = new WorkflowConfiguration();
-        cfg.addWorkflow(wf1, "");
-        
-        MemoryStateDatabase db = new MemoryStateDatabase();
-        
-        Scheduler sched = new Scheduler(cfg, db, slidingWindowHours);
-        sched.step(currentTime);
-        
-        verify(tr1).isDataAvailable(Mockito.eq(sched), Mockito.eq(currentTime), Mockito.eq(new ScheduledTime("2014-03-25T19:00Z")));
-        verify(tr1).isDataAvailable(Mockito.eq(sched), Mockito.eq(currentTime), Mockito.eq(new ScheduledTime("2014-03-25T20:00Z")));
-        verify(tr1).isDataAvailable(Mockito.eq(sched), Mockito.eq(currentTime), Mockito.eq(new ScheduledTime("2014-03-25T21:00Z")));
-        verify(tr1).isDataAvailable(Mockito.eq(sched), Mockito.eq(currentTime), Mockito.eq(new ScheduledTime("2014-03-25T22:00Z")));
-        verifyNoMoreInteractions(tr1);
-    }
-    
-
     private AlwaysTrigger makeAlwaysTrigger() {
         return new AlwaysTrigger();
     }

@@ -1,7 +1,7 @@
 package com.collective.celos;
 
 
-public class SuccessTrigger extends AbstractInternalTrigger {
+public class SuccessTrigger implements Trigger {
 
     private WorkflowID triggerWorkflowId;
 
@@ -10,10 +10,10 @@ public class SuccessTrigger extends AbstractInternalTrigger {
     }
 
     @Override
-    public boolean isDataAvailable(Scheduler s, ScheduledTime now, ScheduledTime scheduledTime) throws Exception {
+    public boolean isDataAvailable(Scheduler scheduler, ScheduledTime now, ScheduledTime scheduledTime) throws Exception {
         SlotID slotId = new SlotID(triggerWorkflowId, scheduledTime);
-        if (s.getStateDatabase().getSlotState(slotId) != null) {
-            return SlotState.Status.SUCCESS == s.getStateDatabase().getSlotState(slotId).getStatus();
+        if (scheduler.getStateDatabase().getSlotState(slotId) != null) {
+            return SlotState.Status.SUCCESS == scheduler.getStateDatabase().getSlotState(slotId).getStatus();
         }
         return false;
     }

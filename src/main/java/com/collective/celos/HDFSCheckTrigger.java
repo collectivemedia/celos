@@ -36,7 +36,7 @@ public class HDFSCheckTrigger implements Trigger {
     }
 
     @Override
-    public boolean isDataAvailable(ScheduledTime now, ScheduledTime t) throws Exception {
+    public boolean isDataAvailable(Scheduler scheduler, ScheduledTime now, ScheduledTime t) throws Exception {
         Path path = new Path(formatter.replaceTimeTokens(rawPathString, t));
         LOGGER.info("Checking HDFS path: " + path);
         return fs.exists(path);

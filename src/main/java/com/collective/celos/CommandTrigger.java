@@ -18,7 +18,7 @@ public class CommandTrigger implements Trigger {
     }
     
     @Override
-    public boolean isDataAvailable(ScheduledTime now, ScheduledTime t) throws Exception {
+    public boolean isDataAvailable(Scheduler scheduler, ScheduledTime now, ScheduledTime t) throws Exception {
         List<String> cookedCommandElements = new LinkedList<>();
         for (String rawElement : rawCommandElements) {
             cookedCommandElements.add(formatter.replaceTimeTokens(rawElement, t));
