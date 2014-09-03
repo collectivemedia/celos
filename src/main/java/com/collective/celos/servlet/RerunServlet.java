@@ -27,7 +27,11 @@ public class RerunServlet extends AbstractServlet {
     private static Logger LOGGER = Logger.getLogger(RerunServlet.class);
     
     private static final String ID_PARAM = "id";
-    
+
+    public RerunServlet(ServerConfig celosServer) {
+        super(celosServer);
+    }
+
     protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException {
         try {
             ScheduledTime time = getRequestTime(req);
@@ -40,7 +44,7 @@ public class RerunServlet extends AbstractServlet {
             updateSlotToRerun(slot, db);
             LOGGER.info("Slot scheduled for rerun: " + slot);
         } catch(Exception e) {
-            throw new ServletException(e);
+            throw new RuntimeException(e);
         }
     }
 

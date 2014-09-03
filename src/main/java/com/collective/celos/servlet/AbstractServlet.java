@@ -34,6 +34,19 @@ public abstract class AbstractServlet extends HttpServlet {
      */
     protected static final Object LOCK = new Object();
 
+    /**
+     * that holds configuration preferences
+     */
+    private ServerConfig serverConfig;
+
+    public AbstractServlet(ServerConfig celosServer) {
+        this.serverConfig = celosServer;
+    }
+
+    public ServerConfig getServerConfig() {
+        return serverConfig;
+    }
+
     @Override
     public void service(ServletRequest req, ServletResponse res) throws ServletException, IOException {
         synchronized(LOCK) {
@@ -56,7 +69,7 @@ public abstract class AbstractServlet extends HttpServlet {
     }
 
     protected Scheduler createAndCacheScheduler() throws Exception {
-        Scheduler sch = new SchedulerConfiguration().makeDefaultScheduler();
+        Scheduler sch = new SchedulerConfiguration(serverConfig).makeDefaultScheduler();
         getServletContext().setAttribute(SCHEDULER_ATTR, sch);
         return sch;
     }

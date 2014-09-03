@@ -8,17 +8,24 @@ import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.log.Slf4jLog;
 import org.eclipse.jetty.util.log.StdErrLog;
 
+import java.io.File;
 import java.util.Collections;
 import java.util.Map;
 
 public class CelosServer {
 
+    public void startServer(int port, Map<String, String> jsVariables,
+                            String workflowConfigurationPath, String defaultsConfigurationPath,
+                            String stateDatabasePath) throws Exception {
 
-    public CelosServer() {
-    }
+        ServerConfig serverConfig = new ServerConfig();
+        serverConfig.setWorkflowConfigurationPath(workflowConfigurationPath);
+        serverConfig.setDefaultsConfigurationPath(defaultsConfigurationPath);
+        serverConfig.setStateDatabasePath(stateDatabasePath);
 
-    public void startServer(int port, Map<String, String> jsVariables) throws Exception {
-        org.eclipse.jetty.util.log.Log.setLog(new StdErrLog());
+        createPath(workflowConfigurationPath);
+        createPath(defaultsConfigurationPath);
+        createPath(stateDatabasePath);
 
         Server server = new Server(port);
 
@@ -26,21 +33,26 @@ public class CelosServer {
         context.setContextPath("/");
         server.setHandler(context);
 
-        context.addServlet(SchedulerServlet.class, "/scheduler");
-        context.addServlet(JSONWorkflowListServlet.class, "/workflow-list");
-        context.addServlet(JSONWorkflowServlet.class, "/workflow");
-        context.addServlet(JSONSlotStateServlet.class, "/slot-state");
-        context.addServlet(RerunServlet.class, "/rerun");
-        context.addServlet(WorkflowJSConfigServlet.class, "/workflow-file");
-        context.addServlet(ClearCacheServlet.class, "/clear-cache");
+        context.addServlet(new ServletHolder(new SchedulerServlet(serverConfig)), "/scheduler");
+        context.addServlet(new ServletHolder(new JSONWorkflowListServlet(serverConfig)), "/workflow-list");
+        context.addServlet(new ServletHolder(new JSONWorkflowServlet(serverConfig)), "/workflow");
+        context.addServlet(new ServletHolder(new JSONSlotStateServlet(serverConfig)), "/slot-state");
+        context.addServlet(new ServletHolder(new RerunServlet(serverConfig)), "/rerun");
+        context.addServlet(new ServletHolder(new WorkflowJSConfigServlet(serverConfig)), "/workflow-file");
+        context.addServlet(new ServletHolder(new ClearCacheServlet(serverConfig)), "/clear-cache");
 
         server.start();
         server.join();
     }
 
+    private void createPath(String paramPath) {
+        File path = new File(paramPath);
+        path.mkdirs();
+    }
+
 
     public static void main(String[] args) throws Exception {
         CelosServer celosServer = new CelosServer();
-        celosServer.startServer(8080, Collections.<String, String>emptyMap());
+        celosServer.startServer(8080, Collections.<String, String>emptyMap(), ServerConfig.WORKFLOW_CONFIGURATION_PATH, ServerConfig.DEFAULTS_CONFIGURATION_PATH, ServerConfig.STATE_DATABASE_PATH);
     }
 }

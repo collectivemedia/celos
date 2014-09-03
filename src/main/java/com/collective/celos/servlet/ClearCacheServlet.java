@@ -9,7 +9,11 @@ import javax.servlet.http.HttpServletResponse;
  */
 @SuppressWarnings("serial")
 public class ClearCacheServlet extends AbstractServlet {
-        
+
+    public ClearCacheServlet(ServerConfig celosServer) {
+        super(celosServer);
+    }
+
     protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException {
         clearSchedulerCache();
     }

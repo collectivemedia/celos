@@ -21,7 +21,7 @@ public class JSONWorkflowListServletTest {
         list.add(new String("workflow-2"));
         ObjectNode obj = mapper.createObjectNode();
         obj.put("ids", list);
-        Assert.assertEquals(obj, new JSONWorkflowListServlet().createJSONObject(cfg));
+        Assert.assertEquals(obj, new JSONWorkflowListServlet(new ServerConfig()).createJSONObject(cfg));
     }
     
 }

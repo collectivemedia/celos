@@ -31,7 +31,7 @@ public class JSONWorkflowServletTest {
         node.put(t1.toString(), s1.toJSONNode());
         node.put(t2.toString(), s2.toJSONNode());
         
-        Assert.assertEquals(node, new JSONWorkflowServlet().createJSONObject(states));
+        Assert.assertEquals(node, new JSONWorkflowServlet(new ServerConfig()).createJSONObject(states));
     }
     
 }

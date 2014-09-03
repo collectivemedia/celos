@@ -14,14 +14,18 @@ import com.collective.celos.Scheduler;
  */
 @SuppressWarnings("serial")
 public class SchedulerServlet extends AbstractServlet {
-    
+
+    public SchedulerServlet(ServerConfig celosServer) {
+        super(celosServer);
+    }
+
     protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException {
         try {
             Scheduler scheduler = createAndCacheScheduler();
             ScheduledTime current = getRequestTime(req);
             scheduler.step(current);
         } catch(Exception e) {
-            throw new ServletException(e);
+            throw new RuntimeException(e);
         }
     }
 
