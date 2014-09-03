@@ -33,8 +33,8 @@
 
   - name: Prepare HDFS dirs
     shell: sudo -u hdfs hadoop fs -rm -r -f /user/celos/samples/{{ workflow }}
-      && hadoop fs -mkdir /user/celos/samples/{{ workflow }}
-      && hadoop fs -mkdir /user/celos/samples/{{ workflow }}/output
+      && hadoop fs -mkdir -p /user/celos/samples/{{ workflow }}
+      && hadoop fs -mkdir -p /user/celos/samples/{{ workflow }}/output
 
   - name: Copy inputs to HDFS
     shell: hadoop fs -put {{sample_input}} hdfs:/user/celos/samples/{{ workflow }}/input
