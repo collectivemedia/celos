@@ -5,6 +5,8 @@ import java.util.HashMap;
 import org.junit.Assert;
 import org.junit.Test;
 
+import static org.mockito.Mockito.mock;
+
 public class MiscTests {
 
     // EQUALS
@@ -97,7 +99,8 @@ public class MiscTests {
     
     @Test
     public void tooTrivialButStill_alwaysTriggerAlwaysTriggers() {
-        Assert.assertTrue(new AlwaysTrigger().isDataAvailable(ScheduledTime.now(), new ScheduledTime("2013-11-21T20:00Z")));
+        Scheduler scheduler = mock(Scheduler.class);
+        Assert.assertTrue(new AlwaysTrigger().isDataAvailable(scheduler, ScheduledTime.now(), new ScheduledTime("2013-11-21T20:00Z")));
     }
         
 }

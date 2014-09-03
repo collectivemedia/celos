@@ -151,12 +151,7 @@ public class Scheduler {
     private boolean callTrigger(Workflow wf, SlotState slotState, ScheduledTime current) throws Exception {
         Trigger trigger = wf.getTrigger();
         ScheduledTime scheduledTime = slotState.getScheduledTime();
-        if (trigger instanceof InternalTrigger) {
-            InternalTrigger internalTrigger = (InternalTrigger) trigger;
-            return internalTrigger.isDataAvailable(this, current, scheduledTime);
-        } else {
-            return trigger.isDataAvailable(current, scheduledTime);
-        }
+        return trigger.isDataAvailable(this, current, scheduledTime);
     }
     
     public int getSlidingWindowHours() {

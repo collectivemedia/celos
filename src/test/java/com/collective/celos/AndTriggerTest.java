@@ -6,30 +6,36 @@ import java.util.Collections;
 import org.junit.Assert;
 import org.junit.Test;
 
+import static org.mockito.Mockito.mock;
+
 public class AndTriggerTest {
     
     @Test
     public void returnsTrueWhenAllSubTriggersReturnTrue() throws Exception {
         AndTrigger trigger = new AndTrigger(Arrays.asList(new Trigger[] { createAlwaysTrigger(), createAlwaysTrigger(), createAlwaysTrigger() }));
-        Assert.assertTrue(trigger.isDataAvailable(ScheduledTime.now(), new ScheduledTime("2014-02-26T16:13:00Z")));
+        Scheduler scheduler = mock(Scheduler.class);
+        Assert.assertTrue(trigger.isDataAvailable(scheduler, ScheduledTime.now(), new ScheduledTime("2014-02-26T16:13:00Z")));
     }
     
     @Test
     public void returnsFalseWhenOnlyOneSubTriggerReturnsTrue() throws Exception {
         AndTrigger trigger = new AndTrigger(Arrays.asList(new Trigger[] { createAlwaysTrigger(), createNeverTrigger(), createAlwaysTrigger() }));
-        Assert.assertFalse(trigger.isDataAvailable(ScheduledTime.now(), new ScheduledTime("2014-02-26T16:13:00Z")));
+        Scheduler scheduler = mock(Scheduler.class);
+        Assert.assertFalse(trigger.isDataAvailable(scheduler, ScheduledTime.now(), new ScheduledTime("2014-02-26T16:13:00Z")));
     }
 
     @Test
     public void returnsFalseWhenNoSubTriggersReturnsTrue() throws Exception {
         AndTrigger trigger = new AndTrigger(Arrays.asList(new Trigger[] { createNeverTrigger(), createNeverTrigger(), createNeverTrigger() }));
-        Assert.assertFalse(trigger.isDataAvailable(ScheduledTime.now(), new ScheduledTime("2014-02-26T16:13:00Z")));
+        Scheduler scheduler = mock(Scheduler.class);
+        Assert.assertFalse(trigger.isDataAvailable(scheduler, ScheduledTime.now(), new ScheduledTime("2014-02-26T16:13:00Z")));
     }
     
     @Test
     public void returnsTrueWhenThereAreNoSubTriggers() throws Exception {
         AndTrigger trigger = new AndTrigger(Collections.<Trigger>emptyList());
-        Assert.assertTrue(trigger.isDataAvailable(ScheduledTime.now(), new ScheduledTime("2014-02-26T16:13:00Z")));
+        Scheduler scheduler = mock(Scheduler.class);
+        Assert.assertTrue(trigger.isDataAvailable(scheduler, ScheduledTime.now(), new ScheduledTime("2014-02-26T16:13:00Z")));
     }
     
     public static Trigger createAlwaysTrigger() {

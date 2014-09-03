@@ -7,6 +7,8 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 
+import static org.mockito.Mockito.mock;
+
 public class CommandTriggerTest {
 
     @Test(expected=NullPointerException.class)
@@ -23,13 +25,15 @@ public class CommandTriggerTest {
     @Test
     public void testCheckSuccessExitValueProperly() throws Exception {
         List<String> elts = makeConfig("true");
-        Assert.assertTrue(new CommandTrigger(elts).isDataAvailable(ScheduledTime.now(), ScheduledTime.now()));
+        Scheduler scheduler = mock(Scheduler.class);
+        Assert.assertTrue(new CommandTrigger(elts).isDataAvailable(scheduler, ScheduledTime.now(), ScheduledTime.now()));
     }
     
     @Test
     public void testChecksFailureExitValueProperly() throws Exception {
         List<String> elts = makeConfig("false");
-        Assert.assertFalse(new CommandTrigger(elts).isDataAvailable(ScheduledTime.now(), ScheduledTime.now()));
+        Scheduler scheduler = mock(Scheduler.class);
+        Assert.assertFalse(new CommandTrigger(elts).isDataAvailable(scheduler, ScheduledTime.now(), ScheduledTime.now()));
     }
 
     @Test
@@ -38,7 +42,8 @@ public class CommandTriggerTest {
         ScheduledTime t = new ScheduledTime(time);
         List<String> elts = makeConfig("src/test/resources/com/collective/celos/shell-command-trigger-test-script.sh", 
                                        "${year}-${month}-${day}T${hour}:${minute}:${second}Z");
-        Assert.assertTrue(new CommandTrigger(elts).isDataAvailable(ScheduledTime.now(), t));
+        Scheduler scheduler = mock(Scheduler.class);
+        Assert.assertTrue(new CommandTrigger(elts).isDataAvailable(scheduler, ScheduledTime.now(), t));
     }
     
     private List<String> makeConfig(String... command) {

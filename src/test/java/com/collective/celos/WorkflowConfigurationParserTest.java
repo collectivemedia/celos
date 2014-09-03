@@ -52,7 +52,7 @@ public class WorkflowConfigurationParserTest {
         
     public static class TestTrigger implements Trigger {
         @Override
-        public boolean isDataAvailable(ScheduledTime now, ScheduledTime t) throws Exception {
+        public boolean isDataAvailable(Scheduler scheduler, ScheduledTime now, ScheduledTime t) throws Exception {
             return false;
         }
     }
