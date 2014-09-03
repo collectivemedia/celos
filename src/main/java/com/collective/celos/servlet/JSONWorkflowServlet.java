@@ -10,6 +10,7 @@ import com.collective.celos.Scheduler;
 import com.collective.celos.SlotState;
 import com.collective.celos.Workflow;
 import com.collective.celos.WorkflowID;
+import com.collective.celos.server.ServerConfig;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**

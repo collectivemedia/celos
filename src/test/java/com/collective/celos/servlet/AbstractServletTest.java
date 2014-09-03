@@ -3,6 +3,7 @@ package com.collective.celos.servlet;
 import javax.servlet.http.HttpServletRequest;
 
 import com.collective.celos.ScheduledTime;
+import com.collective.celos.server.ServerConfig;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.junit.Assert;

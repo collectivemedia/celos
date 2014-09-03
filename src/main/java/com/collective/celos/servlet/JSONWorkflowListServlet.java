@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.collective.celos.Scheduler;
 import com.collective.celos.Workflow;
 import com.collective.celos.WorkflowConfiguration;
+import com.collective.celos.server.ServerConfig;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 

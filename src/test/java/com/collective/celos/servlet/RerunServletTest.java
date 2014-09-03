@@ -3,6 +3,7 @@ package com.collective.celos.servlet;
 import com.collective.celos.*;
 import com.collective.celos.SlotState.Status;
 import com.collective.celos.ScheduledTime;
+import com.collective.celos.server.ServerConfig;
 import org.junit.Assert;
 import org.junit.Test;
 

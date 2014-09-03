@@ -1,12 +1,9 @@
-package com.collective.celos.servlet;
+package com.collective.celos.server;
 
 import com.collective.celos.servlet.*;
-import com.google.common.collect.Maps;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
-import org.eclipse.jetty.util.log.Slf4jLog;
-import org.eclipse.jetty.util.log.StdErrLog;
 
 import java.io.File;
 import java.util.Collections;

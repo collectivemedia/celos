@@ -4,6 +4,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import com.collective.celos.ScheduledTime;
+import com.collective.celos.server.ServerConfig;
 import org.junit.Assert;
 import org.junit.Test;
 

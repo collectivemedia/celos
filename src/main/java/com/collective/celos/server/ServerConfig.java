@@ -1,4 +1,4 @@
-package com.collective.celos.servlet;
+package com.collective.celos.server;
 
 import java.util.Map;
 

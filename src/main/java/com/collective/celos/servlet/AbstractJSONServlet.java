@@ -1,5 +1,6 @@
 package com.collective.celos.servlet;
 
+import com.collective.celos.server.ServerConfig;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 

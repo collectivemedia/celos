@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.collective.celos.ScheduledTime;
 import com.collective.celos.Scheduler;
+import com.collective.celos.server.ServerConfig;
 
 /**
  * Posting to this servlet triggers a scheduler step.

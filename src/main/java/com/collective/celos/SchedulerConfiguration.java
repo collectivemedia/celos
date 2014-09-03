@@ -1,7 +1,6 @@
 package com.collective.celos;
 
-import com.collective.celos.servlet.CelosServer;
-import com.collective.celos.servlet.ServerConfig;
+import com.collective.celos.server.ServerConfig;
 
 import java.io.File;
 import java.io.IOException;
