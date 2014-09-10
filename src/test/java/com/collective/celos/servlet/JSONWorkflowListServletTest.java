@@ -1,6 +1,5 @@
 package com.collective.celos.servlet;
 
-import com.collective.celos.server.ServerConfig;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -22,7 +21,7 @@ public class JSONWorkflowListServletTest {
         list.add(new String("workflow-2"));
         ObjectNode obj = mapper.createObjectNode();
         obj.put("ids", list);
-        Assert.assertEquals(obj, new JSONWorkflowListServlet(new ServerConfig()).createJSONObject(cfg));
+        Assert.assertEquals(obj, new JSONWorkflowListServlet().createJSONObject(cfg));
     }
     
 }

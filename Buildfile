@@ -1,11 +1,11 @@
 repositories.remote << 'http://repo1.maven.org/maven2/'
 repositories.remote << 'https://repository.cloudera.com/artifactory/cloudera-repos/'
 
-OOZIE_CLIENT = 'org.apache.oozie:oozie-client:jar:4.0.0-cdh5.1.0'
+OOZIE_CLIENT = 'org.apache.oozie:oozie-client:jar:4.0.0-cdh5.1.2'
 HADOOP = [
-  'org.apache.hadoop:hadoop-common:jar:2.3.0-cdh5.1.0',
-  'org.apache.hadoop:hadoop-hdfs:jar:2.3.0-cdh5.1.0',
-  'org.apache.hadoop:hadoop-auth:jar:2.3.0-cdh5.1.0',
+  'org.apache.hadoop:hadoop-common:jar:2.3.0-cdh5.1.2',
+  'org.apache.hadoop:hadoop-hdfs:jar:2.3.0-cdh5.1.2',
+  'org.apache.hadoop:hadoop-auth:jar:2.3.0-cdh5.1.2',
   'com.google.protobuf:protobuf-java:jar:2.5.0',
   'commons-logging:commons-logging:jar:1.1.3',
   'commons-configuration:commons-configuration:jar:1.10',
@@ -76,5 +76,6 @@ define 'celos' do
   compile.with(DEPENDENCIES)
   test.with(TEST_DEPENDENCIES)
 
-  package(:war).libs -= artifacts(SERVLET)
+  package(:jar)
+  package(:war).libs -= artifacts('javax.servlet:servlet-api:jar:2.3')
 end

@@ -9,31 +9,8 @@
         </layout>
     </appender>
 
-<!--    <appender name="FILE" class="org.apache.log4j.rolling.RollingFileAppender">
-        <param name="file" value="/var/log/celos/celos.log"/>
-        <param name="append" value="true"/>
-        <rollingPolicy class="org.apache.log4j.rolling.TimeBasedRollingPolicy">
-            <param name="FileNamePattern" value="/var/log/celos/celos-%d{yyyy-MM-dd}.log"/>
-        </rollingPolicy>
-        <layout class="org.apache.log4j.PatternLayout">
-            <param name="ConversionPattern" value="[%d{YYYY-MM-dd HH:mm:ss.SSS}] %-5p: %m%n"/>
-        </layout>
-    </appender>
-
-    <appender name="LOGSTASH" class="org.apache.log4j.net.SyslogAppender">
-        <param name="Threshold" value="INFO"/>
-        <param name="Facility" value="USER"/>
-        <param name="SyslogHost" value="logstash001.ny7.collective-media.net:5544"/>
-        <layout class="org.apache.log4j.PatternLayout">
-            <param name="ConversionPattern" value="celos: [%d{YYYY-MM-dd HH:mm:ss.SSS}] %-5p: %m%n"/>
-        </layout>
-    </appender>
--->
     <root>
         <priority value="info"/>
-<!--        <appender-ref ref="FILE"/>
-        <appender-ref ref="LOGSTASH"/>
-        -->
         <appender-ref ref="consoleAppender"/>
     </root>
 

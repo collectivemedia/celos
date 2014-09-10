@@ -1,7 +1,5 @@
 package com.collective.celos;
 
-import com.collective.celos.server.ServerConfig;
-
 import java.io.File;
 import java.io.IOException;
 
@@ -10,9 +8,14 @@ import java.io.IOException;
  */
 public class SchedulerConfiguration {
 
-    private ServerConfig serverConfig;
+    private String workflowConfigurationPath;
+    private String defaultsConfigurationPath;
+    private String stateDatabasePath;
 
-    public SchedulerConfiguration(ServerConfig serverConfig) {
+    public SchedulerConfiguration(String workflowConfigurationPath, String defaultsConfigurationPath, String stateDatabasePath) {
+        this.workflowConfigurationPath = workflowConfigurationPath;
+        this.defaultsConfigurationPath = defaultsConfigurationPath;
+        this.stateDatabasePath = stateDatabasePath;
     }
     
     public Scheduler makeDefaultScheduler() throws Exception {
@@ -23,13 +26,13 @@ public class SchedulerConfiguration {
     }
 
     private WorkflowConfigurationParser getWorkflowConfigurationParser() throws Exception {
-        File configDir = new File(serverConfig.getWorkflowConfigurationPath());
-        File defaultsDir = new File(serverConfig.getDefaultsConfigurationPath());
+        File configDir = new File(workflowConfigurationPath);
+        File defaultsDir = new File(defaultsConfigurationPath);
         return new WorkflowConfigurationParser(defaultsDir).parseConfiguration(configDir);
     }
 
     private StateDatabase makeDefaultStateDatabase() throws IOException {
-        File dbDir = new File(serverConfig.getStateDatabasePath());
+        File dbDir = new File(stateDatabasePath);
         return new FileSystemStateDatabase(dbDir);
     }
 

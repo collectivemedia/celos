@@ -8,7 +8,6 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 
-import com.collective.celos.server.ServerConfig;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -27,26 +26,17 @@ public abstract class AbstractServlet extends HttpServlet {
 
     private static final String TIME_PARAM = "time";
     private static Logger LOGGER = Logger.getLogger(AbstractServlet.class);
-    
+
+    public static final String WORKFLOW_CONFIGURATION_PATH_ATTR = "workflow.configuration.path";
+    public static final String DEFAULTS_CONFIGURATION_PATH_ATTR = "defaults.configuration.path";
+    public static final String STATE_DATABASE_PATH_ATTR = "state.database.path";
+
     private static final String SCHEDULER_ATTR = "celos.scheduler";
 
     /**
      * This lock serves to synchronize all operations.
      */
     protected static final Object LOCK = new Object();
-
-    /**
-     * that holds configuration preferences
-     */
-    private ServerConfig serverConfig;
-
-    public AbstractServlet(ServerConfig celosServer) {
-        this.serverConfig = celosServer;
-    }
-
-    public ServerConfig getServerConfig() {
-        return serverConfig;
-    }
 
     @Override
     public void service(ServletRequest req, ServletResponse res) throws ServletException, IOException {
@@ -70,7 +60,11 @@ public abstract class AbstractServlet extends HttpServlet {
     }
 
     protected Scheduler createAndCacheScheduler() throws Exception {
-        Scheduler sch = new SchedulerConfiguration(serverConfig).makeDefaultScheduler();
+        String workflowConfigPath = getServletContext().getInitParameter(WORKFLOW_CONFIGURATION_PATH_ATTR);
+        String defaultsConfigPath = getServletContext().getInitParameter(DEFAULTS_CONFIGURATION_PATH_ATTR);
+        String stateDatabasePath = getServletContext().getInitParameter(STATE_DATABASE_PATH_ATTR);
+
+        Scheduler sch = new SchedulerConfiguration(workflowConfigPath, defaultsConfigPath, stateDatabasePath).makeDefaultScheduler();
         getServletContext().setAttribute(SCHEDULER_ATTR, sch);
         return sch;
     }

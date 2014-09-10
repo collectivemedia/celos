@@ -3,7 +3,6 @@ package com.collective.celos.servlet;
 import javax.servlet.http.HttpServletRequest;
 
 import com.collective.celos.ScheduledTime;
-import com.collective.celos.server.ServerConfig;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.junit.Assert;
@@ -15,7 +14,7 @@ public class AbstractServletTest {
     @Test
     public void getRequestTimeParameterWorks() {
         @SuppressWarnings("serial")
-        AbstractServlet srv = new AbstractServlet(new ServerConfig()) {};
+        AbstractServlet srv = new AbstractServlet() {};
         HttpServletRequest req = Mockito.mock(HttpServletRequest.class);
         String timeString = "2013-12-18T20:00Z";
         Mockito.when(req.getParameter("time")).thenReturn(timeString);
@@ -25,7 +24,7 @@ public class AbstractServletTest {
     @Test
     public void getRequestTimeUsesCurrentTimeWhenNotSupplied() {
         @SuppressWarnings("serial")
-        AbstractServlet srv = new AbstractServlet(new ServerConfig()) {};
+        AbstractServlet srv = new AbstractServlet() {};
         HttpServletRequest req = Mockito.mock(HttpServletRequest.class);
         ScheduledTime before = new ScheduledTime(DateTime.now(DateTimeZone.UTC));
         Mockito.when(req.getParameter("time")).thenReturn(null);

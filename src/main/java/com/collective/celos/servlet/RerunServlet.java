@@ -4,7 +4,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.collective.celos.server.ServerConfig;
 import org.apache.log4j.Logger;
 
 import com.collective.celos.ScheduledTime;
@@ -28,10 +27,6 @@ public class RerunServlet extends AbstractServlet {
     private static Logger LOGGER = Logger.getLogger(RerunServlet.class);
     
     private static final String ID_PARAM = "id";
-
-    public RerunServlet(ServerConfig celosServer) {
-        super(celosServer);
-    }
 
     protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException {
         try {

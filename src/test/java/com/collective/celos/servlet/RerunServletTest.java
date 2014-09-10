@@ -3,7 +3,6 @@ package com.collective.celos.servlet;
 import com.collective.celos.*;
 import com.collective.celos.SlotState.Status;
 import com.collective.celos.ScheduledTime;
-import com.collective.celos.server.ServerConfig;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -12,7 +11,7 @@ public class RerunServletTest {
     @Test(expected = IllegalArgumentException.class)
     public void failsOnUndefinedSlot() throws Exception {
         StateDatabase db = new MemoryStateDatabase();
-        new RerunServlet(new ServerConfig()).updateSlotToRerun(new SlotID(new WorkflowID("foo"), new ScheduledTime("2014-02-08T20:00Z")), db);
+        new RerunServlet().updateSlotToRerun(new SlotID(new WorkflowID("foo"), new ScheduledTime("2014-02-08T20:00Z")), db);
     }
     
     @Test(expected = IllegalStateException.class)
@@ -35,7 +34,7 @@ public class RerunServletTest {
         SlotID id = new SlotID(new WorkflowID("foo"), new ScheduledTime("2014-02-08T20:00Z"));
         SlotState state = new SlotState(id, status);
         db.putSlotState(state);
-        new RerunServlet(new ServerConfig()).updateSlotToRerun(id, db);
+        new RerunServlet().updateSlotToRerun(id, db);
     }
     
     @Test
@@ -53,7 +52,7 @@ public class RerunServletTest {
         SlotID id = new SlotID(new WorkflowID("foo"), new ScheduledTime("2014-02-08T20:00Z"));
         SlotState state = new SlotState(id, status);
         db.putSlotState(state);
-        new RerunServlet(new ServerConfig()).updateSlotToRerun(id, db);
+        new RerunServlet().updateSlotToRerun(id, db);
         SlotState dbState = db.getSlotState(id);
         Assert.assertEquals(state.transitionToRerun(), dbState);
     }

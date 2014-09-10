@@ -4,7 +4,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import com.collective.celos.ScheduledTime;
-import com.collective.celos.server.ServerConfig;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -32,7 +31,7 @@ public class JSONWorkflowServletTest {
         node.put(t1.toString(), s1.toJSONNode());
         node.put(t2.toString(), s2.toJSONNode());
         
-        Assert.assertEquals(node, new JSONWorkflowServlet(new ServerConfig()).createJSONObject(states));
+        Assert.assertEquals(node, new JSONWorkflowServlet().createJSONObject(states));
     }
     
 }

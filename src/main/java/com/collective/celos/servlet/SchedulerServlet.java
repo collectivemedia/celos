@@ -6,7 +6,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.collective.celos.ScheduledTime;
 import com.collective.celos.Scheduler;
-import com.collective.celos.server.ServerConfig;
 
 /**
  * Posting to this servlet triggers a scheduler step.
@@ -15,10 +14,6 @@ import com.collective.celos.server.ServerConfig;
  */
 @SuppressWarnings("serial")
 public class SchedulerServlet extends AbstractServlet {
-
-    public SchedulerServlet(ServerConfig celosServer) {
-        super(celosServer);
-    }
 
     protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException {
         try {

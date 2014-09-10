@@ -15,11 +15,6 @@ public class CelosServer {
                             String workflowConfigurationPath, String defaultsConfigurationPath,
                             String stateDatabasePath) throws Exception {
 
-        ServerConfig serverConfig = new ServerConfig();
-        serverConfig.setWorkflowConfigurationPath(workflowConfigurationPath);
-        serverConfig.setDefaultsConfigurationPath(defaultsConfigurationPath);
-        serverConfig.setStateDatabasePath(stateDatabasePath);
-
         createPath(workflowConfigurationPath);
         createPath(defaultsConfigurationPath);
         createPath(stateDatabasePath);
@@ -30,13 +25,17 @@ public class CelosServer {
         context.setContextPath("/");
         server.setHandler(context);
 
-        context.addServlet(new ServletHolder(new SchedulerServlet(serverConfig)), "/scheduler");
-        context.addServlet(new ServletHolder(new JSONWorkflowListServlet(serverConfig)), "/workflow-list");
-        context.addServlet(new ServletHolder(new JSONWorkflowServlet(serverConfig)), "/workflow");
-        context.addServlet(new ServletHolder(new JSONSlotStateServlet(serverConfig)), "/slot-state");
-        context.addServlet(new ServletHolder(new RerunServlet(serverConfig)), "/rerun");
-        context.addServlet(new ServletHolder(new WorkflowJSConfigServlet(serverConfig)), "/workflow-file");
-        context.addServlet(new ServletHolder(new ClearCacheServlet(serverConfig)), "/clear-cache");
+        context.addServlet(new ServletHolder(new SchedulerServlet()), "/scheduler");
+        context.addServlet(new ServletHolder(new JSONWorkflowListServlet()), "/workflow-list");
+        context.addServlet(new ServletHolder(new JSONWorkflowServlet()), "/workflow");
+        context.addServlet(new ServletHolder(new JSONSlotStateServlet()), "/slot-state");
+        context.addServlet(new ServletHolder(new RerunServlet()), "/rerun");
+        context.addServlet(new ServletHolder(new WorkflowJSConfigServlet()), "/workflow-file");
+        context.addServlet(new ServletHolder(new ClearCacheServlet()), "/clear-cache");
+
+        context.setInitParameter(AbstractServlet.WORKFLOW_CONFIGURATION_PATH_ATTR, workflowConfigurationPath);
+        context.setInitParameter(AbstractServlet.DEFAULTS_CONFIGURATION_PATH_ATTR, defaultsConfigurationPath);
+        context.setInitParameter(AbstractServlet.STATE_DATABASE_PATH_ATTR, stateDatabasePath);
 
         server.start();
         server.join();
@@ -50,6 +49,6 @@ public class CelosServer {
 
     public static void main(String[] args) throws Exception {
         CelosServer celosServer = new CelosServer();
-        celosServer.startServer(8080, Collections.<String, String>emptyMap(), ServerConfig.WORKFLOW_CONFIGURATION_PATH, ServerConfig.DEFAULTS_CONFIGURATION_PATH, ServerConfig.STATE_DATABASE_PATH);
+        celosServer.startServer(8080, Collections.<String, String>emptyMap(), "/home/akonopko/work/celos2/delme/1", "/home/akonopko/work/celos2/delme/2", "/home/akonopko/work/celos2/delme/3");
     }
 }

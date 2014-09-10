@@ -6,7 +6,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.collective.celos.server.ServerConfig;
 import org.apache.commons.io.FileUtils;
 
 import com.collective.celos.WorkflowID;
@@ -32,10 +31,6 @@ import com.collective.celos.WorkflowID;
 public class WorkflowJSConfigServlet extends AbstractJSONServlet {
 
     private static final String ID_PARAM = "id";
-
-    public WorkflowJSConfigServlet(ServerConfig celosServer) {
-        super(celosServer);
-    }
 
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException {
         String id = req.getParameter(ID_PARAM);
