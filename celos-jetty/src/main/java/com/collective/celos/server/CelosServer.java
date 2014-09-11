@@ -1,25 +1,45 @@
 package com.collective.celos.server;
 
 import com.collective.celos.servlet.*;
+import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 
 import java.io.File;
-import java.util.Collections;
 import java.util.Map;
 
 public class CelosServer {
 
-    public void startServer(int port, Map<String, String> jsVariables,
-                            String workflowConfigurationPath, String defaultsConfigurationPath,
-                            String stateDatabasePath) throws Exception {
+    private Server server;
 
-        createPath(workflowConfigurationPath);
-        createPath(defaultsConfigurationPath);
-        createPath(stateDatabasePath);
+    public Integer startServer(Map<String, String> jsVariables, String workflowConfigurationPath, String defaultsConfigurationPath, String stateDatabasePath) throws Exception {
+        server = new Server();
 
-        Server server = new Server(port);
+        setupContext(workflowConfigurationPath, defaultsConfigurationPath, stateDatabasePath);
+
+        ServerConnector connector = new ServerConnector(server);
+        server.setConnectors(new Connector[] { connector });
+        server.start();
+
+        return connector.getLocalPort();
+    }
+
+    public void startServer(int port, Map<String, String> jsVariables, String workflowConfigurationPath, String defaultsConfigurationPath, String stateDatabasePath) throws Exception {
+
+        server = new Server(port);
+
+        setupContext(workflowConfigurationPath, defaultsConfigurationPath, stateDatabasePath);
+
+        server.start();
+
+    }
+
+    private void setupContext(String workflowConfigurationPath, String defaultsConfigurationPath, String stateDatabasePath) {
+        assureDirIsCreated(workflowConfigurationPath);
+        assureDirIsCreated(defaultsConfigurationPath);
+        assureDirIsCreated(stateDatabasePath);
 
         ServletContextHandler context = new ServletContextHandler(ServletContextHandler.NO_SESSIONS);
         context.setContextPath("/");
@@ -36,19 +56,16 @@ public class CelosServer {
         context.setInitParameter(AbstractServlet.WORKFLOW_CONFIGURATION_PATH_ATTR, workflowConfigurationPath);
         context.setInitParameter(AbstractServlet.DEFAULTS_CONFIGURATION_PATH_ATTR, defaultsConfigurationPath);
         context.setInitParameter(AbstractServlet.STATE_DATABASE_PATH_ATTR, stateDatabasePath);
-
-        server.start();
-        server.join();
     }
 
-    private void createPath(String paramPath) {
+    public void stopServer() throws Exception {
+        server.stop();
+        //server.join();
+    }
+
+    private void assureDirIsCreated(String paramPath) {
         File path = new File(paramPath);
         path.mkdirs();
     }
 
-
-    public static void main(String[] args) throws Exception {
-        CelosServer celosServer = new CelosServer();
-        celosServer.startServer(8080, Collections.<String, String>emptyMap(), "/home/akonopko/work/celos2/delme/1", "/home/akonopko/work/celos2/delme/2", "/home/akonopko/work/celos2/delme/3");
-    }
 }

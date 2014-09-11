@@ -1,0 +1,37 @@
+apply plugin: 'application'
+apply plugin: 'java'
+apply plugin: 'idea'
+
+mainClassName = 'com.collective.celos.cd.CliParser'
+sourceCompatibility = 1.7
+version = '0.1'
+
+repositories {
+    // Use 'maven central' for resolving your dependencies.
+    // You can declare any Maven/Ivy/file repository here.
+    mavenLocal()
+    mavenCentral()
+    maven { url "http://repo1.maven.org/maven2" }
+    maven { url "https://repository.cloudera.com/artifactory/cloudera-repos" }
+}
+
+dependencies {
+
+    compile project(':celos-jetty')
+    compile project(':celos-cd')
+
+}
+
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '1.11'
+}
+
+jar {
+    // If you let all the META-INF/ stuff from the dependency jars in it clobbers our own manifest, among other things
+    // and generally makes things not work
+    from { (configurations.compile).collect { it.isDirectory() ? it : zipTree(it).matching { exclude 'META-INF/**' } } }
+    manifest {
+        attributes("Main-Class" : mainClassName)
+    }
+}

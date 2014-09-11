@@ -1,3 +1,4 @@
 reports/
 target/
 provisioner/tmp/
+**/build/*
