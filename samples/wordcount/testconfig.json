@@ -1,0 +1,8 @@
+{
+    "sample.time": "2013-12-20T16:00Z",
+    "celos.dir": "/home/akonopko/work/wcelos",
+    "hadoop.hdfs-site.xml": "/home/akonopko/hdfs-site.xml",
+    "hadoop.core-site.xml": "/home/akonopko/core-site.xml",
+    "workflow.name": "wordcount",
+    "workflow.path": "/home/akonopko/work/celos2/samples/wordcount"
+}

@@ -1,14 +1,21 @@
 package com.collective.celos.ci;
 
+import com.collective.celos.cd.CelosCd;
 import com.collective.celos.config.Config;
+import com.collective.celos.config.WorkflowTestConfig;
 import com.collective.celos.server.CelosServer;
+import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.StringWriter;
 import java.util.Collections;
 
 /**
@@ -16,9 +23,15 @@ import java.util.Collections;
  */
 public class CelosCi {
 
+    private static HttpClient client = new DefaultHttpClient();
+
     public static void main(String... args) throws Exception {
 
-        final File celosWorkDir = new File("/home/akonopko/work/wcelos");
+        String pathToTestConfig = "/home/akonopko/work/celos2/samples/wordcount/testconfig.json";
+
+        WorkflowTestConfig testConfig = new WorkflowTestConfig(new FileInputStream(pathToTestConfig));
+
+        File celosWorkDir = new File(testConfig.getCelosPath());
         if (celosWorkDir.exists()) {
             celosWorkDir.delete();
         }
@@ -31,43 +44,48 @@ public class CelosCi {
         dbDir.mkdirs();
 
         CelosServer celosServer = new CelosServer();
-        celosServer.startServer(Collections.<String, String>emptyMap(),
+        final Integer port = celosServer.startServer(Collections.<String, String>emptyMap(),
                 workflowDir.toString(),
                 defaultsDir.toString(),
                 dbDir.toString());
 
 
-        Thread t2 = new Thread(new Runnable() {
+        Config deployConfig = new Config();
+        deployConfig.setCelosWorkflowsDirUri(workflowDir.toString());
+        deployConfig.setCelosDefaultsDirUri(defaultsDir.toString());
+        deployConfig.setCelosDbDirUri(dbDir.toString());
 
-            @Override
-            public void run() {
-                try {
-                    HttpClient client = new DefaultHttpClient();
-                    HttpPost post = new HttpPost("http://localhost/scheduler");
-                    while (true) {
-                        HttpResponse response = client.execute(post);
-                        EntityUtils.consume(response.getEntity());
-                        Thread.sleep(1000);
-                    }
-                } catch (Exception e) {
+        deployConfig.setPathToCoreSite(testConfig.getHadoopCoreSiteXml());
+        deployConfig.setPathToHdfsSite(testConfig.getHadoopHdfsSiteXml());
+        deployConfig.setMode(Config.Mode.DEPLOY);
+        deployConfig.setWorkflowName(testConfig.getWorkflowName());
+        deployConfig.setPathToWorkflow(testConfig.getPathToWorkflow());
 
-                }
-            }
-        });
-        t2.start();
+        System.out.println("Deploying workflow");
+        CelosCd.runFromConfig(deployConfig);
 
+        HttpPost post = new HttpPost("http://localhost:" + port + "/scheduler?time=" + testConfig.getSampleTime());
+        HttpGet get = new HttpGet("http://localhost:" + port + "/workflow?time=" + testConfig.getSampleTime() + "&id=" + testConfig.getWorkflowName());
+        do {
+            System.out.println("Ping...");
+            iterateScheduler(post);
+            Thread.sleep(2000);
+        } while (isWorkflowRunning(get));
+        System.out.println("Job is finished");
+        celosServer.stopServer();
+    }
 
-        Config config = new Config();
-        config.setCelosWorkflowsDirUri(celosWorkDir.toString());
-        config.setPathToCoreSite("/home/akonopko/core-site.xml");
-        config.setPathToHdfsSite("/home/akonopko/hdfs-site.xml");
-        config.setMode(Config.Mode.DEPLOY);
-        config.setWorkflowName("celoscd");
-        config.setPathToWorkflow("/home/akonopko/work/celos-ci/wf");
+    private static void iterateScheduler(HttpPost post) throws IOException {
+        HttpResponse postResponse = client.execute(post);
+        EntityUtils.consume(postResponse.getEntity());
+    }
 
-//        CelosCd.configParsed();
-
-
+    private static boolean isWorkflowRunning(HttpGet get) throws IOException {
+        HttpResponse getResponse = client.execute(get);
+        StringWriter writer = new StringWriter();
+        IOUtils.copy(getResponse.getEntity().getContent(), writer);
+        String resultStr = writer.toString();
+        return resultStr.contains("READY") || resultStr.contains("RUNNING");
     }
 
 }

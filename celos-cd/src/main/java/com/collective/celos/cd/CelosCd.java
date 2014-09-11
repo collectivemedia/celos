@@ -17,7 +17,7 @@ public class CelosCd {
 
         Config config = cliParser.parse(commandLineArguments);
         if (config != null) {
-            configParsed(config);
+            runFromConfig(config);
         } else {
             cliParser.printHelp(80, 5, 3, true, System.out);
         }
@@ -25,7 +25,7 @@ public class CelosCd {
 
     }
 
-    public static void configParsed(Config config) throws Exception {
+    public static void runFromConfig(Config config) throws Exception {
 
         if (config.getTargetFile() != null) {
             TargetParcer parcer = new TargetParcer(config);
