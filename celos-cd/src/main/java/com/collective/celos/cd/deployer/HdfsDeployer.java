@@ -1,6 +1,6 @@
 package com.collective.celos.cd.deployer;
 
-import com.collective.celos.config.Config;
+import com.collective.celos.cd.config.Config;
 import org.apache.commons.vfs2.*;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;

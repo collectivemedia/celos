@@ -1,5 +1,6 @@
 {
-    "sample.time": "2013-12-20T16:00Z",
+    "sample.time.start": "2013-12-20T16:00Z",
+    "sample.time.end": "2013-12-20T18:00Z",
     "celos.dir": "/home/akonopko/work/wcelos",
     "hadoop.hdfs-site.xml": "/home/akonopko/hdfs-site.xml",
     "hadoop.core-site.xml": "/home/akonopko/core-site.xml",

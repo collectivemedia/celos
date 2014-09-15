@@ -1,6 +1,6 @@
 package com.collective.celos.cd.deployer;
 
-import com.collective.celos.config.Config;
+import com.collective.celos.cd.config.Config;
 import org.apache.commons.vfs2.*;
 
 import java.io.File;
@@ -16,7 +16,7 @@ public class WorkflowFileDeployer {
 
     public WorkflowFileDeployer(Config config) throws FileSystemException {
         this.config = config;
-        this.jScpWorker = new JScpWorker(config);
+        this.jScpWorker = new JScpWorker(config.getUserName(), config.getScpSecuritySettings());
     }
 
     public void undeploy() throws FileSystemException, URISyntaxException {

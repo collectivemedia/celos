@@ -1,8 +1,8 @@
 package com.collective.celos.cd;
 
-import com.collective.celos.config.CliParser;
-import com.collective.celos.config.Config;
-import com.collective.celos.config.TargetParcer;
+import com.collective.celos.cd.config.CliParser;
+import com.collective.celos.cd.config.Config;
+import com.collective.celos.cd.config.ConfigBuilder;
 import com.collective.celos.cd.deployer.HdfsDeployer;
 import com.collective.celos.cd.deployer.WorkflowFileDeployer;
 
@@ -26,12 +26,6 @@ public class CelosCd {
     }
 
     public static void runFromConfig(Config config) throws Exception {
-
-        if (config.getTargetFile() != null) {
-            TargetParcer parcer = new TargetParcer(config);
-            parcer.process();
-        }
-        config.validate();
 
         WorkflowFileDeployer wfDeployer = new WorkflowFileDeployer(config);
         HdfsDeployer hdfsDeployer = new HdfsDeployer(config);

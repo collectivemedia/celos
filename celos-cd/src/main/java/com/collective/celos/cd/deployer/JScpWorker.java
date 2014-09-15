@@ -1,8 +1,9 @@
 package com.collective.celos.cd.deployer;
 
-import com.collective.celos.config.Config;
+import com.collective.celos.cd.config.Config;
 import org.apache.commons.vfs2.*;
 import org.apache.commons.vfs2.provider.sftp.SftpFileSystemConfigBuilder;
+import sun.print.resources.serviceui_sv;
 
 import java.io.File;
 import java.io.InputStream;
@@ -12,20 +13,21 @@ import java.net.URISyntaxException;
 
 public class JScpWorker {
 
-    private Config config;
     private FileSystemManager fsManager;
+    private String userName;
+    private String securitySettings;
 
-    public JScpWorker(Config config) throws FileSystemException {
-        this.config = config;
+    public JScpWorker(String userName, String securitySettings) throws FileSystemException {
         this.fsManager = VFS.getManager();
+        this.securitySettings = securitySettings;
+        this.userName = userName;
     }
 
     public FileObject getFileObjectByUri(String file) throws URISyntaxException, FileSystemException {
         URI uri = new URI(file);
 
-        if (config.getUserName() != null) {
-            uri = new URI(uri.getScheme(),
-                    config.getUserName(), uri.getHost(), uri.getPort(),
+        if (userName != null) {
+            uri = new URI(uri.getScheme(), userName, uri.getHost(), uri.getPort(),
                     uri.getPath(), uri.getQuery(),
                     uri.getFragment());
         }
@@ -45,7 +47,7 @@ public class JScpWorker {
 
     public FileSystemOptions getSftpDefaultOptions() throws FileSystemException {
         FileSystemOptions opts = new FileSystemOptions();
-        SftpFileSystemConfigBuilder.getInstance().setPreferredAuthentications(opts, config.getScpSecuritySettings());
+        SftpFileSystemConfigBuilder.getInstance().setPreferredAuthentications(opts, securitySettings);
         SftpFileSystemConfigBuilder.getInstance().setStrictHostKeyChecking(opts, "no");
         SftpFileSystemConfigBuilder.getInstance().setUserDirIsRoot(opts, false);
         return opts;

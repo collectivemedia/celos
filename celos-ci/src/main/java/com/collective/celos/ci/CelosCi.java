@@ -1,16 +1,22 @@
 package com.collective.celos.ci;
 
+import com.collective.celos.ScheduledTime;
+import com.collective.celos.ScheduledTimeFormatter;
 import com.collective.celos.cd.CelosCd;
-import com.collective.celos.config.Config;
-import com.collective.celos.config.WorkflowTestConfig;
+import com.collective.celos.cd.config.Config;
+import com.collective.celos.cd.config.ConfigBuilder;
+import com.collective.celos.cd.deployer.JScpWorker;
+import com.collective.celos.ci.config.WorkflowTestConfig;
 import com.collective.celos.server.CelosServer;
 import org.apache.commons.io.IOUtils;
+import org.apache.hadoop.fs.FileUtil;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
+import org.codehaus.jackson.map.ObjectMapper;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -18,12 +24,15 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.util.Collections;
 
-/**
- * Created by akonopko on 9/9/14.
- */
 public class CelosCi {
 
+    public static final String WORKFLOW_DIR_CELOS_PATH = "workflows";
+    public static final String DEFAULTS_DIR_CELOS_PATH = "defaults";
+    public static final String DB_DIR_CELOS_PATH = "db";
+
     private static HttpClient client = new DefaultHttpClient();
+    private static ScheduledTimeFormatter timeFormatter = new ScheduledTimeFormatter();
+
 
     public static void main(String... args) throws Exception {
 
@@ -32,50 +41,86 @@ public class CelosCi {
         WorkflowTestConfig testConfig = new WorkflowTestConfig(new FileInputStream(pathToTestConfig));
 
         File celosWorkDir = new File(testConfig.getCelosPath());
-        if (celosWorkDir.exists()) {
-            celosWorkDir.delete();
-        }
+        FileUtil.fullyDelete(celosWorkDir);
 
-        final File workflowDir = new File(celosWorkDir, "workflows");
-        workflowDir.mkdirs();
-        final File defaultsDir = new File(celosWorkDir, "defaults");
-        defaultsDir.mkdirs();
-        final File dbDir = new File(celosWorkDir, "db");
-        dbDir.mkdirs();
+        File workflowDir = new File(celosWorkDir, WORKFLOW_DIR_CELOS_PATH);
+        File defaultsDir = new File(celosWorkDir, DEFAULTS_DIR_CELOS_PATH);
+        File dbDir = new File(celosWorkDir, DB_DIR_CELOS_PATH);
+
+        ConfigBuilder configBuilder = new ConfigBuilder(
+                System.getProperty("user.name"),
+                Config.DEFAULT_SECURITY_SETTINGS,
+                testConfig.getTargetFile(),
+                Config.Mode.DEPLOY);
+
+        Config celosCdConfig = configBuilder.build();
+
+        JScpWorker worker = new JScpWorker(celosCdConfig.getUserName(), celosCdConfig.getScpSecuritySettings());
+//        worker.copyFileToRemote();
 
         CelosServer celosServer = new CelosServer();
-        final Integer port = celosServer.startServer(Collections.<String, String>emptyMap(),
-                workflowDir.toString(),
-                defaultsDir.toString(),
-                dbDir.toString());
 
+        try {
+            Integer port = celosServer.startServer(Collections.<String, String>emptyMap(), workflowDir.toString(), defaultsDir.toString(), dbDir.toString());
 
-        Config deployConfig = new Config();
-        deployConfig.setCelosWorkflowsDirUri(workflowDir.toString());
-        deployConfig.setCelosDefaultsDirUri(defaultsDir.toString());
-        deployConfig.setCelosDbDirUri(dbDir.toString());
+            System.out.println("Deploying workflow " + celosCdConfig.getWorkflowName());
+            CelosCd.runFromConfig(celosCdConfig);
 
-        deployConfig.setPathToCoreSite(testConfig.getHadoopCoreSiteXml());
-        deployConfig.setPathToHdfsSite(testConfig.getHadoopHdfsSiteXml());
-        deployConfig.setMode(Config.Mode.DEPLOY);
-        deployConfig.setWorkflowName(testConfig.getWorkflowName());
-        deployConfig.setPathToWorkflow(testConfig.getPathToWorkflow());
+            runCelosScheduler(testConfig, port);
 
-        System.out.println("Deploying workflow");
-        CelosCd.runFromConfig(deployConfig);
+        } finally {
+            System.out.println("Job is finished");
+            celosServer.stopServer();
+        }
 
-        HttpPost post = new HttpPost("http://localhost:" + port + "/scheduler?time=" + testConfig.getSampleTime());
-        HttpGet get = new HttpGet("http://localhost:" + port + "/workflow?time=" + testConfig.getSampleTime() + "&id=" + testConfig.getWorkflowName());
-        do {
-            System.out.println("Ping...");
-            iterateScheduler(post);
-            Thread.sleep(2000);
-        } while (isWorkflowRunning(get));
-        System.out.println("Job is finished");
-        celosServer.stopServer();
     }
 
-    private static void iterateScheduler(HttpPost post) throws IOException {
+    private static void runCelosScheduler(WorkflowTestConfig testConfig, Integer port) throws IOException {
+        WorkflowsList workflowsList = getWorkflowList(port);
+
+        ScheduledTime startTime = new ScheduledTime(testConfig.getSampleTimeStart());
+        ScheduledTime actualTime = startTime;
+        ScheduledTime endTime = new ScheduledTime(testConfig.getSampleTimeEnd());
+
+        while (!actualTime.getDateTime().isAfter(endTime.getDateTime())) {
+            iterateScheduler(port, actualTime);
+            if (!isThereAnyRunningWorkflows(port, workflowsList)) {
+                actualTime = new ScheduledTime(actualTime.getDateTime().plusHours(1));
+            }
+        }
+    }
+
+    private static WorkflowsList getWorkflowList(Integer port) throws IOException {
+        HttpGet workflowListGet = new HttpGet("http://localhost:" + port + "/workflow-list");
+        HttpResponse getResponse = client.execute(workflowListGet);
+        return new ObjectMapper().readValue(getResponse.getEntity().getContent(), WorkflowsList.class);
+    }
+
+    public static class WorkflowsList {
+        private String[] ids;
+
+        public String[] getIds() {
+            return ids;
+        }
+
+    }
+
+    private static boolean isThereAnyRunningWorkflows(Integer port, WorkflowsList workflowsList) throws IOException {
+        for (String workflowID : workflowsList.getIds()) {
+            HttpGet get = new HttpGet("http://localhost:" + port + "/workflow?&id=" + workflowID);
+            if (isWorkflowRunning(get)) {
+                System.out.println("There is workflow running: " + workflowID);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static void iterateScheduler(Integer port, ScheduledTime schedTime) throws IOException {
+        String schedTimeStr = timeFormatter.formatPretty(schedTime);
+        System.out.println("Touching Scheduler on " + schedTimeStr + "...");
+
+        HttpPost post = new HttpPost("http://localhost:" + port + "/scheduler?time=" + schedTimeStr);
         HttpResponse postResponse = client.execute(post);
         EntityUtils.consume(postResponse.getEntity());
     }
