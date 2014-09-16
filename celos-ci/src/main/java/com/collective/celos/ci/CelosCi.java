@@ -109,7 +109,7 @@ public class CelosCi {
 
         while (!actualTime.getDateTime().isAfter(endTime.getDateTime())) {
             iterateScheduler(testContext.getCelosPort(), actualTime);
-            if (!isThereAnyRunningWorkflows(testContext.getCelosPort(), workflowsList)) {
+            if (!isThereAnyRunningWorkflows(testContext.getCelosPort(), workflowsList, actualTime)) {
                 actualTime = new ScheduledTime(actualTime.getDateTime().plusHours(1));
             }
         }
@@ -130,11 +130,12 @@ public class CelosCi {
 
     }
 
-    private static boolean isThereAnyRunningWorkflows(Integer port, WorkflowsList workflowsList) throws IOException {
+    private static boolean isThereAnyRunningWorkflows(Integer port, WorkflowsList workflowsList, ScheduledTime schedTime) throws IOException {
+        String schedTimeStr = timeFormatter.formatPretty(schedTime);
         for (String workflowID : workflowsList.getIds()) {
-            HttpGet get = new HttpGet("http://localhost:" + port + "/workflow?&id=" + workflowID);
+            HttpGet get = new HttpGet("http://localhost:" + port + "/workflow?id=" + workflowID + "&time=" + schedTimeStr);
             if (isWorkflowRunning(get)) {
-                System.out.println("There is workflow running: " + workflowID);
+                System.out.println("There is workflow running: " + workflowID + " at " + schedTimeStr);
                 return true;
             }
         }
@@ -155,7 +156,6 @@ public class CelosCi {
         StringWriter writer = new StringWriter();
         IOUtils.copy(getResponse.getEntity().getContent(), writer);
         String resultStr = writer.toString();
-        System.out.println(resultStr);
 
         return resultStr.contains("READY") || resultStr.contains("RUNNING");
     }
