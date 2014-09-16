@@ -1,6 +1,6 @@
 package com.collective.celos.cd.deployer;
 
-import com.collective.celos.cd.config.Config;
+import com.collective.celos.cd.config.CelosCdContext;
 import org.apache.commons.vfs2.*;
 
 import java.io.File;
@@ -12,11 +12,11 @@ public class WorkflowFileDeployer {
     private static final String CELOS_WORKFLOW_FILENAME = "workflow.js";
 
     private JScpWorker jScpWorker;
-    private Config config;
+    private CelosCdContext config;
 
-    public WorkflowFileDeployer(Config config) throws FileSystemException {
+    public WorkflowFileDeployer(CelosCdContext config) throws FileSystemException {
         this.config = config;
-        this.jScpWorker = new JScpWorker(config.getUserName(), config.getScpSecuritySettings());
+        this.jScpWorker = new JScpWorker(config.getUserName(), config.getTarget().getScpSecuritySettings());
     }
 
     public void undeploy() throws FileSystemException, URISyntaxException {
@@ -37,11 +37,13 @@ public class WorkflowFileDeployer {
         FileObject sftpFile = jScpWorker.getFileObjectByUri(getWorkflowJsUri());
         sftpFile.delete();
 
-        jScpWorker.copyFileToRemote(localFile, sftpFile);
+        FileObject localFileObject = jScpWorker.getFileObjectByUri(localFile.getAbsolutePath());
+        sftpFile.copyFrom(localFileObject, Selectors.SELECT_SELF);
     }
 
     private String getWorkflowJsUri() {
-        return config.getCelosWorkflowsDirUri() + File.separator + config.getWorkflowName() + ".js";
+        String celosWorkflowsDirUri = config.getCelosWorkflowsDirUri() != null ? config.getCelosWorkflowsDirUri() : config.getTarget().getCelosWorkflowsDirUri();
+        return celosWorkflowsDirUri + File.separator + config.getWorkflowName() + ".js";
     }
 
 

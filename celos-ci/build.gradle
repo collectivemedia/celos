@@ -2,7 +2,7 @@ apply plugin: 'application'
 apply plugin: 'java'
 apply plugin: 'idea'
 
-mainClassName = 'com.collective.celos.cd.CliParser'
+mainClassName = 'com.collective.celos.cd.CelosCdContextBuilder'
 sourceCompatibility = 1.7
 version = '0.1'
 

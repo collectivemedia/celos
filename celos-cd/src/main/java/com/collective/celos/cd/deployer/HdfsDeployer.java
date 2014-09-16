@@ -1,6 +1,6 @@
 package com.collective.celos.cd.deployer;
 
-import com.collective.celos.cd.config.Config;
+import com.collective.celos.cd.config.CelosCdContext;
 import org.apache.commons.vfs2.*;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
@@ -14,11 +14,11 @@ public class HdfsDeployer {
     private static final String REMOTE_HDFS_PATTERN = "/user/%s/app/%s";
     private static final String LOCAL_HDFS_PATTERN = "%s/hdfs";
 
-    private Config config;
+    private CelosCdContext config;
     private JScpWorker jscpWorker;
 
-    public HdfsDeployer(Config config) throws FileSystemException {
-        this.jscpWorker = new JScpWorker(config);
+    public HdfsDeployer(CelosCdContext config) throws FileSystemException {
+        this.jscpWorker = new JScpWorker(config.getUserName(), config.getTarget().getScpSecuritySettings());
         this.config = config;
     }
 
@@ -59,8 +59,8 @@ public class HdfsDeployer {
     private Configuration getConfiguration() throws Exception {
         Configuration conf = new Configuration();
 
-        conf.addResource(jscpWorker.getRemoteFileIS(config.getPathToHdfsSite()));
-        conf.addResource(jscpWorker.getRemoteFileIS(config.getPathToCoreSite()));
+        conf.addResource(jscpWorker.getRemoteFileIS(config.getTarget().getPathToHdfsSite()));
+        conf.addResource(jscpWorker.getRemoteFileIS(config.getTarget().getPathToCoreSite()));
 
         UserGroupInformation.setConfiguration(conf);
 

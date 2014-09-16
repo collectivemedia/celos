@@ -1,8 +1,7 @@
 package com.collective.celos.cd;
 
-import com.collective.celos.cd.config.CliParser;
-import com.collective.celos.cd.config.Config;
-import com.collective.celos.cd.config.ConfigBuilder;
+import com.collective.celos.cd.config.CelosCdContext;
+import com.collective.celos.cd.config.CelosCdContextBuilder;
 import com.collective.celos.cd.deployer.HdfsDeployer;
 import com.collective.celos.cd.deployer.WorkflowFileDeployer;
 
@@ -13,26 +12,26 @@ public class CelosCd {
 
     public static void main(String... commandLineArguments) throws Exception {
 
-        CliParser cliParser = new CliParser();
+        CelosCdContextBuilder contextBuilder = new CelosCdContextBuilder();
 
-        Config config = cliParser.parse(commandLineArguments);
+        CelosCdContext config = contextBuilder.parse(commandLineArguments);
         if (config != null) {
-            runFromConfig(config);
+            runForContext(config);
         } else {
-            cliParser.printHelp(80, 5, 3, true, System.out);
+            contextBuilder.printHelp(80, 5, 3, true, System.out);
         }
 
 
     }
 
-    public static void runFromConfig(Config config) throws Exception {
+    public static void runForContext(CelosCdContext config) throws Exception {
 
         WorkflowFileDeployer wfDeployer = new WorkflowFileDeployer(config);
         HdfsDeployer hdfsDeployer = new HdfsDeployer(config);
-        if (config.getMode() == Config.Mode.DEPLOY) {
+        if (config.getMode() == CelosCdContext.Mode.DEPLOY) {
             wfDeployer.deploy();
             hdfsDeployer.deploy();
-        } else if (config.getMode() == Config.Mode.UNDEPLOY) {
+        } else if (config.getMode() == CelosCdContext.Mode.UNDEPLOY) {
             wfDeployer.undeploy();
             hdfsDeployer.undeploy();
         }
