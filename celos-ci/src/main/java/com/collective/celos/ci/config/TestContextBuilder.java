@@ -8,6 +8,7 @@ import org.apache.commons.cli.*;
 import java.io.File;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.UUID;
 
 public class TestContextBuilder {
 
@@ -34,7 +35,9 @@ public class TestContextBuilder {
         TargetParcer targetParcer = new TargetParcer(userName, JScpWorker.DEFAULT_SECURITY_SETTINGS);
         CelosCdTarget target = targetParcer.parse(commandLine.getOptionValue(CLI_TARGET));
 
-        TestContext context = new TestContext(testConfig, target, commandLine.getOptionValue(CLI_WORKFLOW_NAME), deployDir, System.getProperty("user.name"));
+        String workflowName = commandLine.getOptionValue(CLI_WORKFLOW_NAME);
+
+        TestContext context = new TestContext(testConfig, target, workflowName, deployDir, System.getProperty("user.name"));
         return context;
     }
 

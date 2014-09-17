@@ -1,5 +1,7 @@
-package com.collective.celos;
+package com.collective.celos.trigger;
 
+
+import com.collective.celos.*;
 
 public class SuccessTrigger implements Trigger {
 

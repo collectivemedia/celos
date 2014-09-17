@@ -12,13 +12,15 @@ public class CelosCdContext {
     private final String pathToWorkflow;
     private final String workflowName;
     private final String celosWorkflowsDirUri;
+    private final String hdfsPrefix;
 
     public CelosCdContext(CelosCdTarget target,
                           String userName,
                           Mode mode,
                           String pathToWorkflow,
                           String workflowName,
-                          String workflowsCelosDirUri) {
+                          String workflowsCelosDirUri,
+                          String hdfsPrefix) {
         this.target = target;
         if (userName == null) {
             this.userName = System.getProperty("user.name");
@@ -33,6 +35,7 @@ public class CelosCdContext {
         this.pathToWorkflow = pathToWorkflow;
         this.workflowName = workflowName;
         this.celosWorkflowsDirUri = workflowsCelosDirUri;
+        this.hdfsPrefix = hdfsPrefix == null ? "" : hdfsPrefix;
     }
 
     public String getUserName() {
@@ -59,5 +62,7 @@ public class CelosCdContext {
         return celosWorkflowsDirUri;
     }
 
-
+    public String getHdfsPrefix() {
+        return hdfsPrefix;
+    }
 }

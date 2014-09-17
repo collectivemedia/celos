@@ -6,6 +6,8 @@ import java.net.URL;
 import java.util.List;
 import java.util.SortedSet;
 
+import com.collective.celos.trigger.Trigger;
+import com.google.common.collect.ImmutableMap;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -145,7 +147,7 @@ public class WorkflowConfigurationParserTest {
         File dir = getConfigurationDir(label);
         File defaults = getDefaultsDir();
         File workflow = new File(dir, workflowName + "." + WorkflowConfigurationParser.WORKFLOW_FILE_EXTENSION);
-        WorkflowConfigurationParser workflowConfigurationParser = new WorkflowConfigurationParser(defaults);
+        WorkflowConfigurationParser workflowConfigurationParser = new WorkflowConfigurationParser(defaults, ImmutableMap.<String, String>of());
         workflowConfigurationParser.parseFile(workflow);
         return workflowConfigurationParser.getWorkflowConfiguration();
     }
@@ -153,7 +155,7 @@ public class WorkflowConfigurationParserTest {
     public static WorkflowConfiguration parseDir(String label) throws Exception {
         File dir = getConfigurationDir(label);
         File defaults = getDefaultsDir();
-        return new WorkflowConfigurationParser(defaults).parseConfiguration(dir).getWorkflowConfiguration();
+        return new WorkflowConfigurationParser(defaults, ImmutableMap.<String, String>of()).parseConfiguration(dir).getWorkflowConfiguration();
     }
 
     public static File getConfigurationDir(String label) throws URISyntaxException {

@@ -35,7 +35,7 @@ public class CelosCdContextBuilder {
 
         CelosCdContext context = new CelosCdContext(target,
                 userName, mode, commandLine.getOptionValue(CLI_DEPLOY_DIR),
-                commandLine.getOptionValue(CLI_WORKFLOW_NAME), null);
+                commandLine.getOptionValue(CLI_WORKFLOW_NAME), null, null);
 
         return context;
     }

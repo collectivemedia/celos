@@ -1,6 +1,7 @@
 package com.collective.celos.servlet;
 
 import java.io.IOException;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
@@ -8,6 +9,8 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 
+import com.google.common.collect.ImmutableMap;
+import org.apache.http.annotation.Immutable;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -30,6 +33,7 @@ public abstract class AbstractServlet extends HttpServlet {
     public static final String WORKFLOW_CONFIGURATION_PATH_ATTR = "workflow.configuration.path";
     public static final String DEFAULTS_CONFIGURATION_PATH_ATTR = "defaults.configuration.path";
     public static final String STATE_DATABASE_PATH_ATTR = "state.database.path";
+    public static final String ADDITIONAL_JS_VARIABLES = "additional.js.variables";
 
     private static final String SCHEDULER_ATTR = "celos.scheduler";
 
@@ -63,12 +67,16 @@ public abstract class AbstractServlet extends HttpServlet {
         String workflowConfigPath = getServletContext().getInitParameter(WORKFLOW_CONFIGURATION_PATH_ATTR);
         String defaultsConfigPath = getServletContext().getInitParameter(DEFAULTS_CONFIGURATION_PATH_ATTR);
         String stateDatabasePath = getServletContext().getInitParameter(STATE_DATABASE_PATH_ATTR);
+        Map<String, String> additionalVars = (Map<String, String>) getServletContext().getAttribute(ADDITIONAL_JS_VARIABLES);
+        if (additionalVars == null) {
+            additionalVars = ImmutableMap.of();
+        }
 
-        Scheduler sch = new SchedulerConfiguration(workflowConfigPath, defaultsConfigPath, stateDatabasePath).makeDefaultScheduler();
+        Scheduler sch = new SchedulerConfiguration(workflowConfigPath, defaultsConfigPath, stateDatabasePath, additionalVars).makeDefaultScheduler();
         getServletContext().setAttribute(SCHEDULER_ATTR, sch);
         return sch;
     }
-    
+
     protected Scheduler getOrCreateCachedScheduler() throws Exception {
         Scheduler sch = (Scheduler) getServletContext().getAttribute(SCHEDULER_ATTR);
         if (sch == null) {

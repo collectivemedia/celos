@@ -1,6 +1,7 @@
 package com.collective.celos.server;
 
 import com.collective.celos.servlet.*;
+import com.google.common.collect.ImmutableMap;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
@@ -17,7 +18,7 @@ public class CelosServer {
     public Integer startServer(Map<String, String> jsVariables, String workflowConfigurationPath, String defaultsConfigurationPath, String stateDatabasePath) throws Exception {
         server = new Server();
 
-        setupContext(workflowConfigurationPath, defaultsConfigurationPath, stateDatabasePath);
+        setupContext(jsVariables, workflowConfigurationPath, defaultsConfigurationPath, stateDatabasePath);
 
         ServerConnector connector = new ServerConnector(server);
         server.setConnectors(new Connector[] { connector });
@@ -30,13 +31,13 @@ public class CelosServer {
 
         server = new Server(port);
 
-        setupContext(workflowConfigurationPath, defaultsConfigurationPath, stateDatabasePath);
+        setupContext(jsVariables, workflowConfigurationPath, defaultsConfigurationPath, stateDatabasePath);
 
         server.start();
 
     }
 
-    private void setupContext(String workflowConfigurationPath, String defaultsConfigurationPath, String stateDatabasePath) {
+    private void setupContext(Map<String, String> jsVariables, String workflowConfigurationPath, String defaultsConfigurationPath, String stateDatabasePath) {
         assureDirIsCreated(workflowConfigurationPath);
         assureDirIsCreated(defaultsConfigurationPath);
         assureDirIsCreated(stateDatabasePath);
@@ -56,6 +57,7 @@ public class CelosServer {
         context.setInitParameter(AbstractServlet.WORKFLOW_CONFIGURATION_PATH_ATTR, workflowConfigurationPath);
         context.setInitParameter(AbstractServlet.DEFAULTS_CONFIGURATION_PATH_ATTR, defaultsConfigurationPath);
         context.setInitParameter(AbstractServlet.STATE_DATABASE_PATH_ATTR, stateDatabasePath);
+        context.setAttribute(AbstractServlet.ADDITIONAL_JS_VARIABLES, jsVariables);
     }
 
     public void stopServer() throws Exception {

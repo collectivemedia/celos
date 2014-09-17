@@ -1,4 +1,7 @@
-package com.collective.celos;
+package com.collective.celos.trigger;
+
+import com.collective.celos.ScheduledTime;
+import com.collective.celos.Scheduler;
 
 /**
  * A trigger is called to determine data availability for a workflow.

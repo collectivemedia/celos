@@ -1,13 +1,6 @@
 package com.collective.celos;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.util.Collection;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.mozilla.javascript.Context;
@@ -15,7 +8,9 @@ import org.mozilla.javascript.ScriptableObject;
 import org.mozilla.javascript.WrapFactory;
 import org.mozilla.javascript.tools.shell.Global;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.*;
+import java.util.Collection;
+import java.util.Map;
 
 /**
  * Reads a set of JS files from a directory and creates a WorkflowConfiguration.
@@ -40,14 +35,17 @@ public class WorkflowConfigurationParser {
     public static final String START_TIME_PROP = "startTime";
 
     private static final Logger LOGGER = Logger.getLogger(WorkflowConfigurationParser.class);
-    
+
     private final ObjectMapper mapper = new ObjectMapper();
     private final WorkflowConfiguration cfg = new WorkflowConfiguration();
     private final File defaultsDir;
     private final Context context;
-    
-    public WorkflowConfigurationParser(File defaultsDir) throws Exception {
+    private Map<String, String> additionalJsVariables;
+
+    public WorkflowConfigurationParser(File defaultsDir, Map<String, String> additionalJsVariables) throws Exception {
         this.defaultsDir = Util.requireNonNull(defaultsDir);
+        this.additionalJsVariables= additionalJsVariables;
+
         context = Context.enter();
         context.setLanguageVersion(170);
 
@@ -86,10 +84,25 @@ public class WorkflowConfigurationParser {
         Global scope = new Global();
         scope.initStandardObjects(context, true);
         setupBindings(scope, fileName);
+        addAdditionalJsVariables(scope);
         loadBuiltinScripts(scope);
+
         return context.evaluateReader(scope, r, fileName, lineNo, null);
     }
-    
+
+
+    private void addAdditionalJsVariables(Global scope) throws IOException {
+        final String additionalJsVarPattern = "var %s = '%s';";
+        if (additionalJsVariables != null) {
+            StringBuffer stringBuffer = new StringBuffer();
+            for (String key : additionalJsVariables.keySet()) {
+                String val = additionalJsVariables.get(key);
+                stringBuffer.append(String.format(additionalJsVarPattern, key, val));
+            }
+            context.evaluateReader(scope, new StringReader(stringBuffer.toString()), "additional.variables", 1, null);
+        }
+    }
+
     private void setupBindings(Global scope, String celosWorkflowConfigFilePath) {
         Object wrappedThis = Context.javaToJS(this, scope);
         ScriptableObject.putProperty(scope, "celosWorkflowConfigurationParser", wrappedThis);

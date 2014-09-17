@@ -11,7 +11,7 @@ import java.io.File;
 
 public class HdfsDeployer {
 
-    private static final String REMOTE_HDFS_PATTERN = "/user/%s/app/%s";
+    private static final String REMOTE_HDFS_PATTERN = "%s/user/%s/app/%s";
     private static final String LOCAL_HDFS_PATTERN = "%s/hdfs";
 
     private CelosCdContext config;
@@ -43,7 +43,7 @@ public class HdfsDeployer {
 
             final FileSystem fs = FileSystem.get(conf);
 
-            Path dst = new Path(String.format(REMOTE_HDFS_PATTERN, config.getUserName(), config.getWorkflowName()));
+            Path dst = new Path(String.format(REMOTE_HDFS_PATTERN, config.getHdfsPrefix(), config.getUserName(), config.getWorkflowName()));
             if (fs.exists(dst)) {
                 fs.delete(dst, true);
             }

@@ -2,6 +2,7 @@ package com.collective.celos;
 
 import java.util.HashMap;
 
+import com.collective.celos.trigger.AlwaysTrigger;
 import org.junit.Assert;
 import org.junit.Test;
 

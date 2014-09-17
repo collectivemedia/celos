@@ -42,15 +42,11 @@ public class CronSchedule implements Schedule {
         }
 
         DateTime candidate = startDT;
-        while((candidate = getNextDateTime(candidate)) != null && isBeforeOrEqual(endDT, candidate)) {
+        while((candidate = getNextDateTime(candidate)) != null && candidate.isBefore(endDT)) {
             scheduledTimes.add(new ScheduledTime(candidate));
         }
         
         return scheduledTimes;
-    }
-
-    private boolean isBeforeOrEqual(DateTime endDT, DateTime candidate) {
-        return (candidate.isBefore(endDT) || candidate.isEqual(endDT));
     }
 
     private DateTime getNextDateTime(DateTime candidate) {

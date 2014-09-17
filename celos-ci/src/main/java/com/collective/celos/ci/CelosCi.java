@@ -8,6 +8,7 @@ import com.collective.celos.cd.deployer.JScpWorker;
 import com.collective.celos.ci.config.TestContext;
 import com.collective.celos.ci.config.TestContextBuilder;
 import com.collective.celos.server.CelosServer;
+import com.google.common.collect.ImmutableMap;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.vfs2.FileObject;
@@ -25,19 +26,22 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Collections;
 
 public class CelosCi {
 
     public static final String WORKFLOW_DIR_CELOS_PATH = "workflows";
     public static final String DEFAULTS_DIR_CELOS_PATH = "defaults";
     public static final String DB_DIR_CELOS_PATH = "db";
+    public static final String HDFS_PREFIX = "HDFS_PREFIX";
 
     private static HttpClient client = new DefaultHttpClient();
     private static ScheduledTimeFormatter timeFormatter = new ScheduledTimeFormatter();
 
 
     public static void main(String... args) throws Exception {
+
+//        args = "--deployDir /home/akonopko/work/celos2/samples/wordcount2 --target sftp://107.170.177.172/home/akonopko/target.json --workflowName wordcount".split(" ");
+//        args = "--deployDir /home/akonopko/work/celos2/samples/wordcount2 --target sftp://celos001/home/akonopko/target.json --workflowName wordcount".split(" ");
 
         TestContextBuilder contextBuilder = new TestContextBuilder();
         TestContext testContext = contextBuilder.parse(args);
@@ -49,6 +53,7 @@ public class CelosCi {
             FileUtils.forceDeleteOnExit(celosWorkDir);
 
             System.out.println("Celos created at: " + tempDir.toAbsolutePath().toString());
+            System.out.println("HDFS prefix is: " + testContext.getHdfsPrefix());
 
             File workflowDir = new File(celosWorkDir, WORKFLOW_DIR_CELOS_PATH);
             File defaultsDir = new File(celosWorkDir, DEFAULTS_DIR_CELOS_PATH);
@@ -64,13 +69,16 @@ public class CelosCi {
 
             JScpWorker worker = new JScpWorker(testContext.getUserName(), testContext.getTarget().getScpSecuritySettings());
             FileObject remoteDefaultsFile = worker.getFileObjectByUri(testContext.getTarget().getDefaultsFile());
-            FileObject localDefaultsFile = worker.getFileObjectByUri(new File(defaultsDir, remoteDefaultsFile.getName().getBaseName()).toString());
-            localDefaultsFile.copyFrom(remoteDefaultsFile, Selectors.SELECT_SELF);
+            if (remoteDefaultsFile.exists()) {
+                FileObject localDefaultsFile = worker.getFileObjectByUri(new File(defaultsDir, remoteDefaultsFile.getName().getBaseName()).toString());
+                localDefaultsFile.copyFrom(remoteDefaultsFile, Selectors.SELECT_SELF);
+            }
 
             final CelosServer celosServer = new CelosServer();
 
             try {
-                Integer port = celosServer.startServer(Collections.<String, String>emptyMap(), workflowDir.toString(), defaultsDir.toString(), dbDir.toString());
+
+                Integer port = celosServer.startServer(ImmutableMap.of(HDFS_PREFIX, testContext.getHdfsPrefix()), workflowDir.toString(), defaultsDir.toString(), dbDir.toString());
                 testContext.setCelosPort(port);
 
                 CelosCdContext celosCdContext = createCelosCdContext(testContext);
@@ -95,7 +103,8 @@ public class CelosCi {
                 CelosCdContext.Mode.DEPLOY,
                 context.getDeployDir(),
                 context.getWorkflowName(),
-                context.getCelosWorkflowDirUri().toString());
+                context.getCelosWorkflowDirUri().toString(),
+                context.getHdfsPrefix());
     }
 
     private static void runCelosScheduler(TestContext testContext) throws IOException {
@@ -129,7 +138,7 @@ public class CelosCi {
     }
 
     private static boolean isThereAnyRunningWorkflows(Integer port, WorkflowsList workflowsList, ScheduledTime schedTime) throws IOException {
-        String schedTimeStr = timeFormatter.formatPretty(schedTime);
+        String schedTimeStr = getTimeForHttpApi(schedTime);
         for (String workflowID : workflowsList.getIds()) {
             HttpGet get = new HttpGet("http://localhost:" + port + "/workflow?id=" + workflowID + "&time=" + schedTimeStr);
             if (isWorkflowRunning(get)) {
@@ -141,12 +150,17 @@ public class CelosCi {
     }
 
     private static void iterateScheduler(Integer port, ScheduledTime schedTime) throws IOException {
-        String schedTimeStr = timeFormatter.formatPretty(schedTime);
+        String schedTimeStr = getTimeForHttpApi(schedTime);
         System.out.println("Touching Scheduler on " + schedTimeStr + "...");
 
         HttpPost post = new HttpPost("http://localhost:" + port + "/scheduler?time=" + schedTimeStr);
         HttpResponse postResponse = client.execute(post);
         EntityUtils.consume(postResponse.getEntity());
+    }
+
+    private static String getTimeForHttpApi(ScheduledTime schedTime) {
+        //get for 1 second more cause we do not include slot of the time provided
+        return timeFormatter.formatPretty(schedTime.plusSeconds(1));
     }
 
     private static boolean isWorkflowRunning(HttpGet get) throws IOException {

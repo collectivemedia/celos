@@ -1,5 +1,7 @@
 package com.collective.celos;
 
+import com.collective.celos.trigger.Trigger;
+
 /**
  * Utility trigger for testing that never signals data availability.
  */
