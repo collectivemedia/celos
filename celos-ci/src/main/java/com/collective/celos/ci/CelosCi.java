@@ -3,8 +3,10 @@ package com.collective.celos.ci;
 import com.collective.celos.cd.CelosCd;
 import com.collective.celos.cd.config.CelosCdContext;
 import com.collective.celos.cd.deployer.JScpWorker;
+import com.collective.celos.cd.fixtures.FixturesHdfsWorkerManager;
 import com.collective.celos.ci.config.TestContext;
 import com.collective.celos.ci.config.TestContextBuilder;
+import com.collective.celos.ci.fixtures.PlainFixtureComparator;
 import com.collective.celos.server.CelosServer;
 import com.google.common.collect.ImmutableMap;
 import org.apache.commons.io.FileUtils;
@@ -24,10 +26,12 @@ public class CelosCi {
     public static final String DB_DIR_CELOS_PATH = "db";
     public static final String HDFS_PREFIX = "HDFS_PREFIX";
 
+    private static final String LOCAL_OUTPUT_PATTERN = "%s/output";
+
     public static void main(String... args) throws Exception {
 
 //        args = "--deployDir /home/akonopko/work/celos2/samples/wordcount2 --target sftp://107.170.177.172/home/akonopko/target.json --workflowName wordcount".split(" ");
-//        args = "--deployDir /home/akonopko/work/celos2/samples/wordcount --target sftp://celos001/home/akonopko/target.json --workflowName wordcount".split(" ");
+        args = "--deployDir /home/akonopko/work/celos2/samples/wordcount2 --target sftp://celos001/home/akonopko/target.json --workflowName wordcount".split(" ");
 
         TestContextBuilder contextBuilder = new TestContextBuilder();
         TestContext testContext = contextBuilder.parse(args);
@@ -36,7 +40,14 @@ public class CelosCi {
         } else {
             prepareEnvironment(testContext);
             runServer(testContext);
+            compareOutputs(testContext);
         }
+    }
+
+    private static void compareOutputs(TestContext testContext) throws Exception {
+        CelosCdContext celosCdContext = testContext.createCelosCdContext();
+        FixturesHdfsWorkerManager manager = new FixturesHdfsWorkerManager(celosCdContext, ImmutableMap.of("PLAIN", new PlainFixtureComparator(celosCdContext)));
+        manager.processLocalDir(String.format(LOCAL_OUTPUT_PATTERN, testContext.getDeployDir()));
     }
 
     private static void prepareEnvironment(TestContext testContext) throws IOException, URISyntaxException {
@@ -81,7 +92,7 @@ public class CelosCi {
 
             testContext.setCelosPort(port);
 
-            CelosCdContext celosCdContext = createCelosCdContext(testContext);
+            CelosCdContext celosCdContext = testContext.createCelosCdContext();
 
             System.out.println("Deploying workflow " + testContext.getWorkflowName());
             CelosCd.runForContext(celosCdContext);
@@ -91,16 +102,6 @@ public class CelosCi {
             System.out.println("Job is finished");
             celosServer.stopServer();
         }
-    }
-
-    private static CelosCdContext createCelosCdContext(TestContext context) {
-        return new CelosCdContext(context.getTarget(),
-                context.getUserName(),
-                CelosCdContext.Mode.DEPLOY,
-                context.getDeployDir(),
-                context.getWorkflowName(),
-                context.getCelosWorkflowDirUri().toString(),
-                context.getHdfsPrefix());
     }
 
 

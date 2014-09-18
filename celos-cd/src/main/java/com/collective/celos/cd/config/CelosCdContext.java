@@ -1,5 +1,8 @@
 package com.collective.celos.cd.config;
 
+
+import org.apache.hadoop.fs.FileSystem;
+
 public class CelosCdContext {
 
     public static enum Mode {
@@ -9,18 +12,19 @@ public class CelosCdContext {
     private final CelosCdTarget target;
     private final String userName;
     private final Mode mode;
-    private final String pathToWorkflow;
+    private final String deployDir;
     private final String workflowName;
     private final String celosWorkflowsDirUri;
     private final String hdfsPrefix;
+    private final FileSystem fileSystem;
 
     public CelosCdContext(CelosCdTarget target,
                           String userName,
                           Mode mode,
-                          String pathToWorkflow,
+                          String deployDir,
                           String workflowName,
-                          String workflowsCelosDirUri,
-                          String hdfsPrefix) {
+                          String celosWworkflowsDirUri,
+                          String hdfsPrefix) throws Exception {
         this.target = target;
         if (userName == null) {
             this.userName = System.getProperty("user.name");
@@ -32,10 +36,15 @@ public class CelosCdContext {
         } else {
             this.mode = Mode.DEPLOY;
         }
-        this.pathToWorkflow = pathToWorkflow;
+        this.deployDir = deployDir;
         this.workflowName = workflowName;
-        this.celosWorkflowsDirUri = workflowsCelosDirUri;
+        this.celosWorkflowsDirUri = celosWworkflowsDirUri;
         this.hdfsPrefix = hdfsPrefix;
+        this.fileSystem = new HdfsConfig(userName, target).getFileSystem();
+    }
+
+    public FileSystem getFileSystem() {
+        return fileSystem;
     }
 
     public String getUserName() {
@@ -46,8 +55,8 @@ public class CelosCdContext {
         return mode;
     }
 
-    public String getPathToWorkflow() {
-        return pathToWorkflow;
+    public String getDeployDir() {
+        return deployDir;
     }
 
     public String getWorkflowName() {

@@ -28,7 +28,7 @@ public class WorkflowFileDeployer {
 
     public void deploy() throws FileSystemException, URISyntaxException {
 
-        File localFile = new File(config.getPathToWorkflow(), CELOS_WORKFLOW_FILENAME);
+        File localFile = new File(config.getDeployDir(), CELOS_WORKFLOW_FILENAME);
 
         if (!localFile.exists()) {
             throw new RuntimeException("Local file " + localFile.getAbsolutePath() + " was not found");

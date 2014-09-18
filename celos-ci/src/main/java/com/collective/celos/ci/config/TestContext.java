@@ -1,5 +1,6 @@
 package com.collective.celos.ci.config;
 
+import com.collective.celos.cd.config.CelosCdContext;
 import com.collective.celos.cd.config.CelosCdTarget;
 
 import java.io.File;
@@ -87,4 +88,15 @@ public class TestContext {
     public String getHdfsPrefix() {
         return hdfsPrefix;
     }
+
+    public CelosCdContext createCelosCdContext() throws Exception {
+        return new CelosCdContext(getTarget(),
+                getUserName(),
+                CelosCdContext.Mode.DEPLOY,
+                getDeployDir(),
+                getWorkflowName(),
+                getCelosWorkflowDirUri().toString(),
+                getHdfsPrefix());
+    }
+
 }
