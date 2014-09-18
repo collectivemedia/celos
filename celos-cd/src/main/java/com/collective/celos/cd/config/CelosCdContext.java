@@ -35,7 +35,7 @@ public class CelosCdContext {
         this.pathToWorkflow = pathToWorkflow;
         this.workflowName = workflowName;
         this.celosWorkflowsDirUri = workflowsCelosDirUri;
-        this.hdfsPrefix = hdfsPrefix == null ? "" : hdfsPrefix;
+        this.hdfsPrefix = hdfsPrefix;
     }
 
     public String getUserName() {
