@@ -6,13 +6,17 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.security.UserGroupInformation;
+import org.codehaus.plexus.util.IOUtil;
+import sun.misc.IOUtils;
 
 import java.io.File;
+import java.io.IOException;
 
 public class HdfsDeployer {
 
     private static final String REMOTE_HDFS_PATTERN = "%s/user/%s/app/%s";
     private static final String LOCAL_HDFS_PATTERN = "%s/hdfs";
+    private static final String LOCAL_INPUT_PATTERN = "%s/input";
 
     private CelosCdContext config;
     private JScpWorker jscpWorker;
@@ -34,20 +38,37 @@ public class HdfsDeployer {
 
     public void deploy() throws Exception {
 
+        Configuration conf = getConfiguration();
+        FileSystem fs = FileSystem.get(conf);
+
+        placeHdfsFolder(fs);
+        placeInputsFolder(fs);
+    }
+
+    private void placeInputsFolder(FileSystem fs) throws IOException {
+        final String inputDirLocalPath = String.format(LOCAL_INPUT_PATTERN, config.getPathToWorkflow());
+        final File inputDirLocal = new File(inputDirLocalPath);
+        if (inputDirLocal.exists()) {
+            final Path dst = new Path(config.getHdfsPrefix());
+            for (File input : inputDirLocal.listFiles()) {
+                fs.copyFromLocalFile(new Path(input.getAbsolutePath()), dst);
+            }
+        }
+    }
+
+    private void placeHdfsFolder(FileSystem fs) throws IOException {
         final String hdfsDirLocalPath = String.format(LOCAL_HDFS_PATTERN, config.getPathToWorkflow());
 
         final File hdfsDirLocal = new File(hdfsDirLocalPath);
         if (hdfsDirLocal.exists()) {
-
-            Configuration conf = getConfiguration();
-
-            final FileSystem fs = FileSystem.get(conf);
 
             Path dst = new Path(String.format(REMOTE_HDFS_PATTERN, config.getHdfsPrefix(), config.getUserName(), config.getWorkflowName()));
             if (fs.exists(dst)) {
                 fs.delete(dst, true);
             }
             fs.mkdirs(dst);
+            fs.getFileChecksum()
+//            IOUtil.contentEquals()
 
             String[] childFiles = hdfsDirLocal.list();
             for (String child : childFiles) {
