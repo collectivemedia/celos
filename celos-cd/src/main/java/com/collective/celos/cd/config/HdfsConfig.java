@@ -25,6 +25,9 @@ public class HdfsConfig {
         JScpWorker jscpWorker = new JScpWorker(username, target.getScpSecuritySettings());
         Configuration conf = new Configuration();
 
+        conf.set("fs.hdfs.impl", org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
+        conf.set("fs.file.impl", org.apache.hadoop.fs.LocalFileSystem.class.getName());
+
         conf.addResource(jscpWorker.getRemoteFileIS(target.getPathToHdfsSite()));
         conf.addResource(jscpWorker.getRemoteFileIS(target.getPathToCoreSite()));
 
