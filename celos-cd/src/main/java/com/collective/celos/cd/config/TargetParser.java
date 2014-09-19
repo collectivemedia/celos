@@ -7,7 +7,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 import java.io.InputStream;
 import java.util.HashMap;
 
-public class TargetParcer {
+public class TargetParser {
 
     public static final String SEC_SETTINGS = "security.settings";
     public static final String CELOS_WORKFLOW_DIR = "celos.workflow.dir";
@@ -17,7 +17,7 @@ public class TargetParcer {
 
     private JScpWorker worker;
 
-    public TargetParcer(String userName, String securitySettings) throws FileSystemException {
+    public TargetParser(String userName, String securitySettings) throws FileSystemException {
         this.worker = new JScpWorker(userName, securitySettings);
     }
 

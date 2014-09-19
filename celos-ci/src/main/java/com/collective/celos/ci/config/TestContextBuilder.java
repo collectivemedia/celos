@@ -1,14 +1,13 @@
 package com.collective.celos.ci.config;
 
 import com.collective.celos.cd.config.CelosCdTarget;
-import com.collective.celos.cd.config.TargetParcer;
+import com.collective.celos.cd.config.TargetParser;
 import com.collective.celos.cd.deployer.JScpWorker;
 import org.apache.commons.cli.*;
 
 import java.io.File;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.util.UUID;
 
 public class TestContextBuilder {
 
@@ -32,7 +31,7 @@ public class TestContextBuilder {
         TestConfigBuilder testConfigParcer = new TestConfigBuilder(userName, JScpWorker.DEFAULT_SECURITY_SETTINGS);
         TestConfig testConfig = testConfigParcer.build(new File(deployDir, "test-config.json").toString());
 
-        TargetParcer targetParcer = new TargetParcer(userName, JScpWorker.DEFAULT_SECURITY_SETTINGS);
+        TargetParser targetParcer = new TargetParser(userName, JScpWorker.DEFAULT_SECURITY_SETTINGS);
         CelosCdTarget target = targetParcer.parse(commandLine.getOptionValue(CLI_TARGET));
 
         String workflowName = commandLine.getOptionValue(CLI_WORKFLOW_NAME);

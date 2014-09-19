@@ -30,7 +30,7 @@ public class CelosCdContextBuilder {
             CelosCdContext.Mode.valueOf(commandLine.getOptionValue(CLI_MODE));
         }
         String userName = System.getProperty("user.name");
-        TargetParcer parcer = new TargetParcer(userName, JScpWorker.DEFAULT_SECURITY_SETTINGS);
+        TargetParser parcer = new TargetParser(userName, JScpWorker.DEFAULT_SECURITY_SETTINGS);
         CelosCdTarget target = parcer.parse(commandLine.getOptionValue(CLI_TARGET));
 
         CelosCdContext context = new CelosCdContext(target,
