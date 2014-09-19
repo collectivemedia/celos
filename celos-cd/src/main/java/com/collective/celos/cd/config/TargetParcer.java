@@ -1,9 +1,8 @@
 package com.collective.celos.cd.config;
 
 import com.collective.celos.cd.deployer.JScpWorker;
-import org.apache.commons.vfs2.*;
+import org.apache.commons.vfs2.FileSystemException;
 import org.codehaus.jackson.map.ObjectMapper;
-import sun.plugin.javascript.JSClassLoader;
 
 import java.io.InputStream;
 import java.util.HashMap;
