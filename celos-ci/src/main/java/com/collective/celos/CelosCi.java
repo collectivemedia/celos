@@ -1,6 +1,7 @@
 package com.collective.celos;
 
-import com.collective.celos.cd.CelosCd;
+import com.collective.celos.cd.deployer.HdfsDeployer;
+import com.collective.celos.cd.deployer.WorkflowFileDeployer;
 import com.collective.celos.ci.CelosSchedulerRunner;
 import com.collective.celos.config.CelosCiContext;
 import com.collective.celos.cd.deployer.JScpWorker;
@@ -93,12 +94,26 @@ public class CelosCi {
 
 
             System.out.println("Deploying workflow " + ciContext.getWorkflowName());
-            CelosCd.runForContext(ciContext);
+            runForContext(ciContext);
 
             new CelosSchedulerRunner(ciContext).runCelosScheduler();
         } finally {
             System.out.println("Job is finished");
             celosServer.stopServer();
+        }
+    }
+
+
+    private static void runForContext(CelosCiContext config) throws Exception {
+
+        WorkflowFileDeployer wfDeployer = new WorkflowFileDeployer(config);
+        HdfsDeployer hdfsDeployer = new HdfsDeployer(config);
+        if (config.getMode() == CelosCiContext.Mode.DEPLOY || config.getMode() == CelosCiContext.Mode.TEST) {
+            wfDeployer.deploy();
+            hdfsDeployer.deploy();
+        } else if (config.getMode() == CelosCiContext.Mode.UNDEPLOY) {
+            wfDeployer.undeploy();
+            hdfsDeployer.undeploy();
         }
     }
 
