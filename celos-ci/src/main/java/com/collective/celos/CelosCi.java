@@ -32,7 +32,7 @@ public class CelosCi {
     public static void main(String... args) throws Exception {
 
 //        args = "--deployDir /home/akonopko/work/celos2/samples/wordcount2 --target sftp://107.170.177.172/home/akonopko/target.json --workflowName wordcount".split(" ");
-        args = "--deployDir /home/akonopko/work/celos2/samples/wordcount --target sftp://celos001/home/akonopko/target.json --workflowName wordcount --mode TEST".split(" ");
+//        args = "--deployDir /home/akonopko/work/celos2/samples/wordcount --target sftp://celos001/home/akonopko/target.json --workflowName wordcount --mode TEST".split(" ");
 
         CelosCiContextBuilder contextBuilder = new CelosCiContextBuilder();
         CelosCiContext ciContext = contextBuilder.parse(args);
