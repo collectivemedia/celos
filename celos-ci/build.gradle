@@ -19,7 +19,6 @@ dependencies {
 
     compile project(':celos-jetty')
     compile project(':celos-cd')
-
 }
 
 
@@ -27,10 +26,18 @@ task wrapper(type: Wrapper) {
     gradleVersion = '1.11'
 }
 
+
+
 jar {
     // If you let all the META-INF/ stuff from the dependency jars in it clobbers our own manifest, among other things
     // and generally makes things not work
-    from { (configurations.compile).collect { it.isDirectory() ? it : zipTree(it).matching { exclude 'META-INF/**' } } }
+    from {
+        (configurations.compile).collect {
+            it.isDirectory() ? it : zipTree(it).matching {
+                exclude 'META-INF/MANIFEST.MF'
+            }
+        }
+    }
     manifest {
         attributes("Main-Class" : mainClassName)
     }
