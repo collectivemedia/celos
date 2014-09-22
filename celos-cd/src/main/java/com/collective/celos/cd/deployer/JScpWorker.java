@@ -11,7 +11,6 @@ import java.net.URISyntaxException;
 public class JScpWorker {
 
     public static final String DEFAULT_SECURITY_SETTINGS = "gssapi-with-mic,publickey,keyboard-interactive,password";
-    public static final int TIMEOUT_MS = 5000;
 
     private FileSystemManager fsManager;
     private String userName;
@@ -49,7 +48,6 @@ public class JScpWorker {
         SftpFileSystemConfigBuilder.getInstance().setPreferredAuthentications(opts, securitySettings);
         SftpFileSystemConfigBuilder.getInstance().setStrictHostKeyChecking(opts, "no");
         SftpFileSystemConfigBuilder.getInstance().setUserDirIsRoot(opts, false);
-        SftpFileSystemConfigBuilder.getInstance().setTimeout(opts, TIMEOUT_MS);
         return opts;
     }
 

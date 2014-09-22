@@ -1,6 +1,7 @@
 apply plugin: 'application'
 apply plugin: 'java'
 apply plugin: 'idea'
+apply plugin: 'eclipse'
 
 mainClassName = 'com.collective.celos.cd.CelosCd'
 sourceCompatibility = 1.7
