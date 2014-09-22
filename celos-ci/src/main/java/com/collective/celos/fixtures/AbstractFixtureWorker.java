@@ -1,6 +1,6 @@
-package com.collective.celos.cd.fixtures;
+package com.collective.celos.fixtures;
 
-import com.collective.celos.cd.config.CelosCdContext;
+import com.collective.celos.config.CelosCiContext;
 import org.apache.hadoop.fs.Path;
 
 import java.io.File;
@@ -14,15 +14,15 @@ import java.util.Map;
  */
 public abstract class AbstractFixtureWorker {
 
-    private CelosCdContext context;
+    private CelosCiContext context;
 
-    public AbstractFixtureWorker(CelosCdContext context) {
+    public AbstractFixtureWorker(CelosCiContext context) {
         this.context = context;
     }
 
     public abstract void process(File localDir) throws Exception;
 
-    public CelosCdContext getContext() {
+    public CelosCiContext getContext() {
         return context;
     }
 

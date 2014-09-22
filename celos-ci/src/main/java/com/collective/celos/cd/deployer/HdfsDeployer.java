@@ -1,8 +1,8 @@
 package com.collective.celos.cd.deployer;
 
-import com.collective.celos.cd.config.CelosCdContext;
-import com.collective.celos.cd.fixtures.FixturesHdfsWorkerManager;
-import com.collective.celos.cd.fixtures.PlainFixtureDeployWorker;
+import com.collective.celos.config.CelosCiContext;
+import com.collective.celos.fixtures.FixturesHdfsWorkerManager;
+import com.collective.celos.fixtures.PlainFixtureDeployWorker;
 import com.google.common.collect.ImmutableMap;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
@@ -16,10 +16,10 @@ public class HdfsDeployer {
     private static final String LOCAL_HDFS_PATTERN = "%s/hdfs";
     private static final String LOCAL_INPUT_PATTERN = "%s/input";
 
-    private CelosCdContext context;
+    private CelosCiContext context;
     private FixturesHdfsWorkerManager fixturesHdfsHelper;
 
-    public HdfsDeployer(CelosCdContext context) throws Exception {
+    public HdfsDeployer(CelosCiContext context) throws Exception {
         this.context = context;
         this.fixturesHdfsHelper = new FixturesHdfsWorkerManager(context, ImmutableMap.of("PLAIN", new PlainFixtureDeployWorker(context)));
     }

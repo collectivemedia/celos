@@ -1,6 +1,6 @@
 package com.collective.celos.cd.deployer;
 
-import com.collective.celos.cd.config.CelosCdContext;
+import com.collective.celos.config.CelosCiContext;
 import org.apache.commons.vfs2.*;
 
 import java.io.File;
@@ -12,9 +12,9 @@ public class WorkflowFileDeployer {
     private static final String CELOS_WORKFLOW_FILENAME = "workflow.js";
 
     private JScpWorker jScpWorker;
-    private CelosCdContext config;
+    private CelosCiContext config;
 
-    public WorkflowFileDeployer(CelosCdContext config) throws FileSystemException {
+    public WorkflowFileDeployer(CelosCiContext config) throws FileSystemException {
         this.config = config;
         this.jScpWorker = new JScpWorker(config.getUserName(), config.getTarget().getScpSecuritySettings());
     }
@@ -42,7 +42,7 @@ public class WorkflowFileDeployer {
     }
 
     private String getWorkflowJsUri() {
-        String celosWorkflowsDirUri = config.getCelosWorkflowsDirUri() != null ? config.getCelosWorkflowsDirUri() : config.getTarget().getCelosWorkflowsDirUri();
+        String celosWorkflowsDirUri = config.getMode() == CelosCiContext.Mode.TEST ? config.getTestContext().getCelosWorkflowDir().toString() : config.getTarget().getCelosWorkflowsDirUri();
         return celosWorkflowsDirUri + File.separator + config.getWorkflowName() + ".js";
     }
 

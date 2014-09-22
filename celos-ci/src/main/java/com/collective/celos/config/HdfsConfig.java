@@ -1,4 +1,4 @@
-package com.collective.celos.cd.config;
+package com.collective.celos.config;
 
 import com.collective.celos.cd.deployer.JScpWorker;
 import org.apache.hadoop.conf.Configuration;
@@ -12,7 +12,7 @@ public class HdfsConfig {
 
     private FileSystem fileSystem;
 
-    public HdfsConfig(String username, CelosCdTarget target) throws Exception {
+    public HdfsConfig(String username, CelosCiTarget target) throws Exception {
         Configuration conf = getConfiguration(username, target);
         this.fileSystem = FileSystem.get(conf);
     }
@@ -21,7 +21,7 @@ public class HdfsConfig {
         return fileSystem;
     }
 
-    private Configuration getConfiguration(String username, CelosCdTarget target) throws Exception {
+    private Configuration getConfiguration(String username, CelosCiTarget target) throws Exception {
         JScpWorker jscpWorker = new JScpWorker(username, target.getScpSecuritySettings());
         Configuration conf = new Configuration();
 

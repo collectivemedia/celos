@@ -1,7 +1,7 @@
 package com.collective.celos.ci.fixtures;
 
-import com.collective.celos.cd.config.CelosCdContext;
-import com.collective.celos.cd.fixtures.AbstractFixtureWorker;
+import com.collective.celos.config.CelosCiContext;
+import com.collective.celos.fixtures.AbstractFixtureWorker;
 import org.apache.hadoop.fs.FSDataInputStream;
 import org.apache.hadoop.fs.Path;
 import org.codehaus.plexus.util.IOUtil;
@@ -16,7 +16,7 @@ import java.util.Map;
  */
 public class PlainFixtureComparator extends AbstractFixtureWorker {
 
-    public PlainFixtureComparator(CelosCdContext context) {
+    public PlainFixtureComparator(CelosCiContext context) {
         super(context);
     }
 

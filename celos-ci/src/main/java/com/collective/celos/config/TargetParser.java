@@ -1,4 +1,4 @@
-package com.collective.celos.cd.config;
+package com.collective.celos.config;
 
 import com.collective.celos.cd.deployer.JScpWorker;
 import org.apache.commons.vfs2.FileSystemException;
@@ -21,7 +21,7 @@ public class TargetParser {
         this.worker = new JScpWorker(userName, securitySettings);
     }
 
-    public CelosCdTarget parse(String targetFileUri) throws Exception {
+    public CelosCiTarget parse(String targetFileUri) throws Exception {
         InputStream is = worker.getRemoteFileIS(targetFileUri);
         HashMap<String, String> result = new ObjectMapper().readValue(is, HashMap.class);
 
@@ -30,7 +30,7 @@ public class TargetParser {
             secSetts = JScpWorker.DEFAULT_SECURITY_SETTINGS;
         }
 
-        return new CelosCdTarget(secSetts,
+        return new CelosCiTarget(secSetts,
                 result.get(HADOOP_HDFS_SITE_XML),
                 result.get(HADOOP_CORE_SITE_XML),
                 result.get(CELOS_WORKFLOW_DIR),

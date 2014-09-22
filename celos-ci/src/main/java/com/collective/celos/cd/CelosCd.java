@@ -1,7 +1,7 @@
 package com.collective.celos.cd;
 
-import com.collective.celos.cd.config.CelosCdContext;
-import com.collective.celos.cd.config.CelosCdContextBuilder;
+import com.collective.celos.config.CelosCiContext;
+import com.collective.celos.config.CelosCiContextBuilder;
 import com.collective.celos.cd.deployer.HdfsDeployer;
 import com.collective.celos.cd.deployer.WorkflowFileDeployer;
 
@@ -12,9 +12,9 @@ public class CelosCd {
 
     public static void main(String... commandLineArguments) throws Exception {
 
-        CelosCdContextBuilder contextBuilder = new CelosCdContextBuilder();
+        CelosCiContextBuilder contextBuilder = new CelosCiContextBuilder();
 
-        CelosCdContext config = contextBuilder.parse(commandLineArguments);
+        CelosCiContext config = contextBuilder.parse(commandLineArguments);
         if (config != null) {
             runForContext(config);
         } else {
@@ -24,14 +24,14 @@ public class CelosCd {
 
     }
 
-    public static void runForContext(CelosCdContext config) throws Exception {
+    public static void runForContext(CelosCiContext config) throws Exception {
 
         WorkflowFileDeployer wfDeployer = new WorkflowFileDeployer(config);
         HdfsDeployer hdfsDeployer = new HdfsDeployer(config);
-        if (config.getMode() == CelosCdContext.Mode.DEPLOY) {
+        if (config.getMode() == CelosCiContext.Mode.DEPLOY || config.getMode() == CelosCiContext.Mode.TEST) {
             wfDeployer.deploy();
             hdfsDeployer.deploy();
-        } else if (config.getMode() == CelosCdContext.Mode.UNDEPLOY) {
+        } else if (config.getMode() == CelosCiContext.Mode.UNDEPLOY) {
             wfDeployer.undeploy();
             hdfsDeployer.undeploy();
         }

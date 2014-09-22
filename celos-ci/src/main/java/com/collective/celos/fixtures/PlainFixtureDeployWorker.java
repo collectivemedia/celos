@@ -1,6 +1,6 @@
-package com.collective.celos.cd.fixtures;
+package com.collective.celos.fixtures;
 
-import com.collective.celos.cd.config.CelosCdContext;
+import com.collective.celos.config.CelosCiContext;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 
@@ -12,7 +12,7 @@ import java.util.Map;
  */
 public class PlainFixtureDeployWorker extends AbstractFixtureWorker {
 
-    public PlainFixtureDeployWorker(CelosCdContext context) {
+    public PlainFixtureDeployWorker(CelosCiContext context) {
         super(context);
     }
 

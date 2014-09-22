@@ -2,7 +2,7 @@ apply plugin: 'application'
 apply plugin: 'java'
 apply plugin: 'idea'
 
-mainClassName = 'com.collective.celos.ci.CelosCi'
+mainClassName = 'com.collective.celos.CelosCi'
 sourceCompatibility = 1.7
 version = '0.1'
 
@@ -18,15 +18,28 @@ repositories {
 dependencies {
 
     compile project(':celos-jetty')
-    compile project(':celos-cd')
+
+    compile("org.apache.hadoop:hadoop-common:2.3.0-cdh5.1.2")
+    compile("org.apache.hadoop:hadoop-hdfs:2.3.0-cdh5.1.2")
+
+    compile("javax.servlet:javax.servlet-api:3.1.0")
+    compile("org.eclipse.jetty.aggregate:jetty-all:9.2.2.v20140723")
+    compile("com.fasterxml.jackson.core:jackson-core:2.3.0")
+    compile("com.fasterxml.jackson.core:jackson-databind:2.3.0")
+    compile("com.fasterxml.jackson.core:jackson-annotations:2.3.0")
+
+
+    compile("commons-cli:commons-cli:1.2")
+    compile("org.apache.commons:commons-vfs2:2.0")
+    compile("log4j:log4j:1.2.17")
+    compile("log4j:apache-log4j-extras:1.2.17")
+    compile("com.jcraft:jsch:0.1.51")
 }
 
 
 task wrapper(type: Wrapper) {
     gradleVersion = '1.11'
 }
-
-
 
 jar {
     // If you let all the META-INF/ stuff from the dependency jars in it clobbers our own manifest, among other things
@@ -39,6 +52,6 @@ jar {
         }
     }
     manifest {
-        attributes("Main-Class" : mainClassName)
+        attributes("Main-Class": mainClassName)
     }
 }

@@ -2,7 +2,7 @@ package com.collective.celos.ci;
 
 import com.collective.celos.ScheduledTime;
 import com.collective.celos.ScheduledTimeFormatter;
-import com.collective.celos.ci.config.TestContext;
+import com.collective.celos.config.CelosCiContext;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -22,24 +22,24 @@ public class CelosSchedulerRunner {
 
     private HttpClient client;
     private ScheduledTimeFormatter timeFormatter;
-    private TestContext testContext;
+    private CelosCiContext ciContext;
 
-    public CelosSchedulerRunner(TestContext testContext) {
+    public CelosSchedulerRunner(CelosCiContext testContext) {
         this.client = new DefaultHttpClient();
         this.timeFormatter = new ScheduledTimeFormatter();
-        this.testContext = testContext;
+        this.ciContext = testContext;
     }
 
     public void runCelosScheduler() throws IOException {
-        WorkflowsList workflowsList = getWorkflowList(testContext.getCelosPort());
+        WorkflowsList workflowsList = getWorkflowList(ciContext.getTestContext().getCelosPort());
 
-        ScheduledTime startTime = testContext.getTestConfig().getSampleTimeStart();
+        ScheduledTime startTime = ciContext.getTestContext().getTestConfig().getSampleTimeStart();
         ScheduledTime actualTime = startTime;
-        ScheduledTime endTime = testContext.getTestConfig().getSampleTimeEnd();
+        ScheduledTime endTime = ciContext.getTestContext().getTestConfig().getSampleTimeEnd();
 
         while (!actualTime.getDateTime().isAfter(endTime.getDateTime())) {
-            iterateScheduler(testContext.getCelosPort(), actualTime);
-            if (!isThereAnyRunningWorkflows(testContext.getCelosPort(), workflowsList, actualTime)) {
+            iterateScheduler(ciContext.getTestContext().getCelosPort(), actualTime);
+            if (!isThereAnyRunningWorkflows(ciContext.getTestContext().getCelosPort(), workflowsList, actualTime)) {
                 actualTime = new ScheduledTime(actualTime.getDateTime().plusHours(1));
             }
         }

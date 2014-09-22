@@ -1,19 +1,23 @@
-package com.collective.celos.cd.config;
+package com.collective.celos.config;
 
 import com.collective.celos.cd.deployer.JScpWorker;
 import org.apache.commons.cli.*;
 
+import java.io.File;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.UUID;
 
-public class CelosCdContextBuilder {
+public class CelosCiContextBuilder {
+
+    private final String HDFS_PREFIX_PATTERN = "/user/celos/test/%s/%s";
 
     public static final String CLI_TARGET = "t";
     public static final String CLI_MODE = "m";
     public static final String CLI_DEPLOY_DIR = "d";
     public static final String CLI_WORKFLOW_NAME = "w";
 
-    public CelosCdContext parse(final String[] commandLineArguments) throws Exception {
+    public CelosCiContext parse(final String[] commandLineArguments) throws Exception {
 
         final CommandLineParser cmdLineGnuParser = new GnuParser();
         final Options gnuOptions = constructOptions();
@@ -23,21 +27,33 @@ public class CelosCdContextBuilder {
             return null;
         }
 
-        CelosCdContext.Mode mode = null;
-        if (!commandLine.hasOption(CLI_MODE)) {
-            mode = CelosCdContext.Mode.DEPLOY;
-        } else {
-            CelosCdContext.Mode.valueOf(commandLine.getOptionValue(CLI_MODE));
-        }
-        String userName = System.getProperty("user.name");
-        TargetParser parcer = new TargetParser(userName, JScpWorker.DEFAULT_SECURITY_SETTINGS);
-        CelosCdTarget target = parcer.parse(commandLine.getOptionValue(CLI_TARGET));
+        CelosCiContext.Mode mode = CelosCiContext.Mode.valueOf(commandLine.getOptionValue(CLI_MODE));
+        File deployDir = new File(commandLine.getOptionValue(CLI_DEPLOY_DIR));
 
-        CelosCdContext context = new CelosCdContext(target,
-                userName, mode, commandLine.getOptionValue(CLI_DEPLOY_DIR),
-                commandLine.getOptionValue(CLI_WORKFLOW_NAME), null, null);
+        String userName = System.getProperty("user.name");
+
+        String workflowName = commandLine.getOptionValue(CLI_WORKFLOW_NAME);
+
+        TargetParser parcer = new TargetParser(userName, JScpWorker.DEFAULT_SECURITY_SETTINGS);
+        CelosCiTarget target = parcer.parse(commandLine.getOptionValue(CLI_TARGET));
+
+        TestContext testContext = createTestContext(mode, deployDir, workflowName);
+
+        CelosCiContext context = new CelosCiContext(target, userName, mode, deployDir, workflowName, testContext);
 
         return context;
+    }
+
+    private TestContext createTestContext(CelosCiContext.Mode mode, File deployDir, String workflowName) throws Exception {
+
+        if (mode == CelosCiContext.Mode.TEST) {
+            TestContext testContext = new TestContext();
+            TestConfigBuilder testConfigBuilder = new TestConfigBuilder();
+            testContext.setTestConfig(testConfigBuilder.build(deployDir));
+            testContext.setHdfsPrefix(String.format(HDFS_PREFIX_PATTERN, workflowName, UUID.randomUUID().toString()));
+            return testContext;
+        }
+        return null;
     }
 
     public Options constructOptions() {

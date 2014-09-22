@@ -1,4 +1,4 @@
-package com.collective.celos.ci.config;
+package com.collective.celos.config;
 
 import com.collective.celos.ScheduledTime;
 

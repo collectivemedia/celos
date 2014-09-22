@@ -1,6 +1,6 @@
-package com.collective.celos.cd.config;
+package com.collective.celos.config;
 
-public class CelosCdTarget {
+public class CelosCiTarget {
 
     private final String scpSecuritySettings;
     private final String pathToHdfsSite;
@@ -8,7 +8,7 @@ public class CelosCdTarget {
     private final String celosWorkflowsDirUri;
     private final String defaultsFile;
 
-    public CelosCdTarget(String scpSecuritySettings, String pathToHdfsSite, String pathToCoreSite, String celosWorkflowsDirUri, String defaultsFile) {
+    public CelosCiTarget(String scpSecuritySettings, String pathToHdfsSite, String pathToCoreSite, String celosWorkflowsDirUri, String defaultsFile) {
         this.scpSecuritySettings = scpSecuritySettings;
         this.pathToHdfsSite = pathToHdfsSite;
         this.pathToCoreSite = pathToCoreSite;
