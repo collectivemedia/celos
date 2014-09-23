@@ -1,13 +1,13 @@
 package com.collective.celos;
 
 import com.collective.celos.cd.deployer.HdfsDeployer;
+import com.collective.celos.cd.deployer.JScpWorker;
 import com.collective.celos.cd.deployer.WorkflowFileDeployer;
 import com.collective.celos.ci.CelosSchedulerRunner;
+import com.collective.celos.ci.fixtures.PlainFixtureComparator;
 import com.collective.celos.config.CelosCiContext;
-import com.collective.celos.cd.deployer.JScpWorker;
 import com.collective.celos.config.CelosCiContextBuilder;
 import com.collective.celos.fixtures.FixturesHdfsWorkerManager;
-import com.collective.celos.ci.fixtures.PlainFixtureComparator;
 import com.collective.celos.server.CelosServer;
 import com.google.common.collect.ImmutableMap;
 import org.apache.commons.io.FileUtils;
@@ -94,7 +94,7 @@ public class CelosCi {
 
 
             System.out.println("Deploying workflow " + ciContext.getWorkflowName());
-            runForContext(ciContext);
+            deploy(ciContext);
 
             new CelosSchedulerRunner(ciContext).runCelosScheduler();
         } finally {
@@ -104,7 +104,7 @@ public class CelosCi {
     }
 
 
-    private static void runForContext(CelosCiContext config) throws Exception {
+    private static void deploy(CelosCiContext config) throws Exception {
 
         WorkflowFileDeployer wfDeployer = new WorkflowFileDeployer(config);
         HdfsDeployer hdfsDeployer = new HdfsDeployer(config);

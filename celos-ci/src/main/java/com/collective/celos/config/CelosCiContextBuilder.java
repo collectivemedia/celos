@@ -10,7 +10,7 @@ import java.util.UUID;
 
 public class CelosCiContextBuilder {
 
-    private final String HDFS_PREFIX_PATTERN = "/user/celos/test/%s/%s";
+    private final String HDFS_PREFIX_PATTERN = "/user/%s/test/%s/%s";
 
     public static final String CLI_TARGET = "t";
     public static final String CLI_MODE = "m";
@@ -37,20 +37,20 @@ public class CelosCiContextBuilder {
         TargetParser parcer = new TargetParser(userName, JScpWorker.DEFAULT_SECURITY_SETTINGS);
         CelosCiTarget target = parcer.parse(commandLine.getOptionValue(CLI_TARGET));
 
-        TestContext testContext = createTestContext(mode, deployDir, workflowName);
+        TestContext testContext = createTestContext(mode, userName, deployDir, workflowName);
 
         CelosCiContext context = new CelosCiContext(target, userName, mode, deployDir, workflowName, testContext);
 
         return context;
     }
 
-    private TestContext createTestContext(CelosCiContext.Mode mode, File deployDir, String workflowName) throws Exception {
+    private TestContext createTestContext(CelosCiContext.Mode mode, String userName, File deployDir, String workflowName) throws Exception {
 
         if (mode == CelosCiContext.Mode.TEST) {
             TestContext testContext = new TestContext();
             TestConfigBuilder testConfigBuilder = new TestConfigBuilder();
             testContext.setTestConfig(testConfigBuilder.build(deployDir));
-            testContext.setHdfsPrefix(String.format(HDFS_PREFIX_PATTERN, workflowName, UUID.randomUUID().toString()));
+            testContext.setHdfsPrefix(String.format(HDFS_PREFIX_PATTERN, userName, workflowName, UUID.randomUUID().toString()));
             return testContext;
         }
         return null;

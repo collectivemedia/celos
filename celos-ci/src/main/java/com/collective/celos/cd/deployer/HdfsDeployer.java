@@ -12,7 +12,7 @@ import java.io.IOException;
 
 public class HdfsDeployer {
 
-    private static final String REMOTE_HDFS_PATTERN = "%s/user/%s/app/%s";
+    private static final String REMOTE_HDFS_PATTERN = "%s/user/celos/app/%s";
     private static final String LOCAL_HDFS_PATTERN = "%s/hdfs";
     private static final String LOCAL_INPUT_PATTERN = "%s/input";
 
@@ -44,7 +44,7 @@ public class HdfsDeployer {
         final File hdfsDirLocal = new File(hdfsDirLocalPath);
         if (hdfsDirLocal.exists()) {
 
-            Path dst = new Path(String.format(REMOTE_HDFS_PATTERN, context.getHdfsPrefix(), context.getUserName(), context.getWorkflowName()));
+            Path dst = new Path(String.format(REMOTE_HDFS_PATTERN, context.getHdfsPrefix(), context.getWorkflowName()));
             if (fs.exists(dst)) {
                 fs.delete(dst, true);
             }
