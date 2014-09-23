@@ -1,4 +1,4 @@
-package com.collective.celos.config;
+package com.collective.celos.config.ci;
 
 public class CelosCiTarget {
 

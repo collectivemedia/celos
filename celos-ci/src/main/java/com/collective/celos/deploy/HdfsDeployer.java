@@ -1,27 +1,20 @@
-package com.collective.celos.cd.deployer;
+package com.collective.celos.deploy;
 
-import com.collective.celos.config.CelosCiContext;
-import com.collective.celos.fixtures.FixturesHdfsWorkerManager;
-import com.collective.celos.fixtures.PlainFixtureDeployWorker;
-import com.google.common.collect.ImmutableMap;
+import com.collective.celos.config.ci.CelosCiContext;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 
 import java.io.File;
-import java.io.IOException;
 
 public class HdfsDeployer {
 
     private static final String REMOTE_HDFS_PATTERN = "%s/user/celos/app/%s";
     private static final String LOCAL_HDFS_PATTERN = "%s/hdfs";
-    private static final String LOCAL_INPUT_PATTERN = "%s/input";
 
     private CelosCiContext context;
-    private FixturesHdfsWorkerManager fixturesHdfsHelper;
 
     public HdfsDeployer(CelosCiContext context) throws Exception {
         this.context = context;
-        this.fixturesHdfsHelper = new FixturesHdfsWorkerManager(context, ImmutableMap.of("PLAIN", new PlainFixtureDeployWorker(context)));
     }
 
     public void undeploy() throws Exception {
@@ -33,11 +26,6 @@ public class HdfsDeployer {
 
     public void deploy() throws Exception {
 
-        placeHdfsFolder();
-        fixturesHdfsHelper.processLocalDir(String.format(LOCAL_INPUT_PATTERN, context.getDeployDir()));
-    }
-
-    private void placeHdfsFolder() throws IOException {
         FileSystem fs = context.getFileSystem();
         final String hdfsDirLocalPath = String.format(LOCAL_HDFS_PATTERN, context.getDeployDir());
 
@@ -54,6 +42,7 @@ public class HdfsDeployer {
                 fs.copyFromLocalFile(new Path(hdfsDirLocalPath, child), dst);
             }
         }
+        //        fixturesHdfsHelper.processLocalDir(String.format(LOCAL_INPUT_PATTERN, context.getDeployDir()));
     }
 
 }

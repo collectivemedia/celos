@@ -1,13 +1,13 @@
-package com.collective.celos.config;
+package com.collective.celos.config.ci;
 
-import com.collective.celos.cd.deployer.JScpWorker;
+import com.collective.celos.deploy.deployer.JScpWorker;
 import org.apache.commons.vfs2.FileSystemException;
 import org.codehaus.jackson.map.ObjectMapper;
 
 import java.io.InputStream;
 import java.util.HashMap;
 
-public class TargetParser {
+public class CelosCiTargetParser {
 
     public static final String SEC_SETTINGS = "security.settings";
     public static final String CELOS_WORKFLOW_DIR = "celos.workflow.dir";
@@ -17,7 +17,7 @@ public class TargetParser {
 
     private JScpWorker worker;
 
-    public TargetParser(String userName, String securitySettings) throws FileSystemException {
+    public CelosCiTargetParser(String userName, String securitySettings) throws FileSystemException {
         this.worker = new JScpWorker(userName, securitySettings);
     }
 

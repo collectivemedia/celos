@@ -1,6 +1,6 @@
 package com.collective.celos.fixtures;
 
-import com.collective.celos.config.CelosCiContext;
+import com.collective.celos.config.ci.CelosCiContext;
 import org.apache.commons.lang.StringUtils;
 
 import java.io.File;
@@ -28,7 +28,7 @@ public class FixturesHdfsWorkerManager {
                 if (worker == null) {
                     throw new RuntimeException("Cant find fixture worker for " + typeDir.getName());
                 }
-                worker.process(typeDir);
+                worker.process(context, typeDir);
             }
         }
     }

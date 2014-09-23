@@ -16,29 +16,33 @@ repositories {
 }
 
 configurations {
-    celos_cd
+    celos_ci
 }
 
 dependencies {
-    celos_cd "com.collective:celos-cd:0.0.1"
+    celos_ci "com.collective:celos-ci:0.1"
     compile("org.apache.hadoop:hadoop-client:2.0.0-cdh4.2.1")
 }
 
-task celosDeploy(type: JavaExec) {
-     classpath configurations.celos_cd
-     main = "com.collective.celos.cd.CelosCd"
-}
 
-task prepareDeployDir() {
+task runCelosCiTests() {
+
+    task celosDeploy(type: JavaExec) {
+       classpath configurations.celos_ci
+       main = "com.collective.celos.CelosCi"
+       args '--deployDir', 'build/celos_deploy', '--target', 'sftp://celos001/home/akonopko/target.json', '--workflowName', 'celosTestWorkflow' , '--mode', 'TEST', '--testDir', 'src/test'
+    }
+
+
     def libFolder = new File('build/celos_deploy/hdfs/lib')
     libFolder.mkdirs()
     copy {
-       from 'src/main/oozie'
-       into 'build/celos_deploy/hdfs'
-    }
-    copy {
        from 'src/main/celos'
        into 'build/celos_deploy'
+    }
+    copy {
+       from 'src/main/oozie'
+       into 'build/celos_deploy/hdfs'
     }
     copy {
        from 'build/libs'

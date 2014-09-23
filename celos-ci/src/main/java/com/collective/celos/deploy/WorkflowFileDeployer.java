@@ -1,6 +1,6 @@
-package com.collective.celos.cd.deployer;
+package com.collective.celos.deploy;
 
-import com.collective.celos.config.CelosCiContext;
+import com.collective.celos.config.ci.CelosCiContext;
 import org.apache.commons.vfs2.*;
 
 import java.io.File;
@@ -42,7 +42,7 @@ public class WorkflowFileDeployer {
     }
 
     private String getWorkflowJsUri() {
-        String celosWorkflowsDirUri = config.getMode() == CelosCiContext.Mode.TEST ? config.getTestContext().getCelosWorkflowDir().toString() : config.getTarget().getCelosWorkflowsDirUri();
+        String celosWorkflowsDirUri = "";//config.getMode() == CelosCiContext.Mode.TEST ? config.getTestContext().getCelosWorkflowDir().toString() : config.getTarget().getCelosWorkflowsDirUri();
         return celosWorkflowsDirUri + File.separator + config.getWorkflowName() + ".js";
     }
 

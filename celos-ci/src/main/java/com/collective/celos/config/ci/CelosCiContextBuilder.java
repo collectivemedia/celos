@@ -1,6 +1,6 @@
-package com.collective.celos.config;
+package com.collective.celos.config.ci;
 
-import com.collective.celos.cd.deployer.JScpWorker;
+import com.collective.celos.deploy.deployer.JScpWorker;
 import org.apache.commons.cli.*;
 
 import java.io.File;
@@ -34,26 +34,19 @@ public class CelosCiContextBuilder {
 
         String workflowName = commandLine.getOptionValue(CLI_WORKFLOW_NAME);
 
-        TargetParser parcer = new TargetParser(userName, JScpWorker.DEFAULT_SECURITY_SETTINGS);
+        CelosCiTargetParser parcer = new CelosCiTargetParser(userName, JScpWorker.DEFAULT_SECURITY_SETTINGS);
         CelosCiTarget target = parcer.parse(commandLine.getOptionValue(CLI_TARGET));
 
-        TestContext testContext = createTestContext(mode, userName, deployDir, workflowName);
+        String hdfsPrefix;
+        if (mode == CelosCiContext.Mode.TEST) {
+            hdfsPrefix = String.format(HDFS_PREFIX_PATTERN, userName, workflowName, UUID.randomUUID().toString());
+        } else {
+            hdfsPrefix = "";
+        }
 
-        CelosCiContext context = new CelosCiContext(target, userName, mode, deployDir, workflowName, testContext);
+        CelosCiContext context = new CelosCiContext(target, userName, mode, deployDir, workflowName, hdfsPrefix);
 
         return context;
-    }
-
-    private TestContext createTestContext(CelosCiContext.Mode mode, String userName, File deployDir, String workflowName) throws Exception {
-
-        if (mode == CelosCiContext.Mode.TEST) {
-            TestContext testContext = new TestContext();
-            TestConfigBuilder testConfigBuilder = new TestConfigBuilder();
-            testContext.setTestConfig(testConfigBuilder.build(deployDir));
-            testContext.setHdfsPrefix(String.format(HDFS_PREFIX_PATTERN, userName, workflowName, UUID.randomUUID().toString()));
-            return testContext;
-        }
-        return null;
     }
 
     public Options constructOptions() {

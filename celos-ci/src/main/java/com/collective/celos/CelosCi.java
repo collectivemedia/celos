@@ -1,14 +1,15 @@
 package com.collective.celos;
 
-import com.collective.celos.cd.deployer.HdfsDeployer;
-import com.collective.celos.cd.deployer.JScpWorker;
-import com.collective.celos.cd.deployer.WorkflowFileDeployer;
-import com.collective.celos.ci.CelosSchedulerRunner;
-import com.collective.celos.ci.fixtures.PlainFixtureComparator;
-import com.collective.celos.config.CelosCiContext;
-import com.collective.celos.config.CelosCiContextBuilder;
+import com.collective.celos.config.ci.CelosCiContext;
+import com.collective.celos.config.ci.CelosCiContextBuilder;
+import com.collective.celos.deploy.HdfsDeployer;
+import com.collective.celos.deploy.JScpWorker;
+import com.collective.celos.deploy.WorkflowFileDeployer;
 import com.collective.celos.fixtures.FixturesHdfsWorkerManager;
+import com.collective.celos.fixtures.compare.PlainFixtureComparatorWorker;
+import com.collective.celos.fixtures.deploy.PlainFixtureDeployWorker;
 import com.collective.celos.server.CelosServer;
+import com.collective.celos.testmode.CelosSchedulerRunner;
 import com.google.common.collect.ImmutableMap;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.vfs2.FileObject;
@@ -28,6 +29,7 @@ public class CelosCi {
     public static final String HDFS_PREFIX = "HDFS_PREFIX";
 
     private static final String LOCAL_OUTPUT_PATTERN = "%s/output";
+    private static final String LOCAL_INPUT_PATTERN = "%s/input";
 
     private WorkflowFileDeployer wfDeployer;
     private HdfsDeployer hdfsDeployer;
@@ -55,11 +57,17 @@ public class CelosCi {
                 doUndeploy();
             } else if (ciContext.getMode() == CelosCiContext.Mode.TEST) {
                 prepareCelosServerEnv(ciContext);
-                runCelosServer(ciContext);
-                compareOutputs(ciContext);
+                for (File testCase : new File("src/test").listFiles()) {
+                    System.out.println("Running test case " + testCase.getName());
+                    loadHdfsInputs(String.format(LOCAL_INPUT_PATTERN, testCase.getAbsolutePath()), ciContext);
+                    runCelosServer(ciContext);
+                    compareHdfsOutputs(String.format(LOCAL_OUTPUT_PATTERN, testCase.getAbsolutePath()), ciContext);
+                }
             }
         }
     }
+
+
 
     private void doUndeploy() throws Exception {
         wfDeployer.undeploy();
@@ -71,9 +79,16 @@ public class CelosCi {
         hdfsDeployer.deploy();
     }
 
-    private void compareOutputs(CelosCiContext celosCiContext) throws Exception {
-        FixturesHdfsWorkerManager manager = new FixturesHdfsWorkerManager(celosCiContext, ImmutableMap.of("PLAIN", new PlainFixtureComparator(celosCiContext)));
-        manager.processLocalDir(String.format(LOCAL_OUTPUT_PATTERN, celosCiContext.getDeployDir()));
+    private void loadHdfsInputs(String localPath, CelosCiContext celosCiContext) throws Exception {
+
+        FixturesHdfsWorkerManager manager = new FixturesHdfsWorkerManager(celosCiContext, ImmutableMap.of("PLAIN", new PlainFixtureDeployWorker()));
+        manager.processLocalDir(localPath);
+    }
+
+
+    private void compareHdfsOutputs(String localPath, CelosCiContext celosCiContext) throws Exception {
+        FixturesHdfsWorkerManager manager = new FixturesHdfsWorkerManager(celosCiContext, ImmutableMap.of("PLAIN", new PlainFixtureComparatorWorker()));
+        manager.processLocalDir(localPath);
         System.out.println("Output data fits fixtures");
     }
 
@@ -83,7 +98,7 @@ public class CelosCi {
         FileUtils.forceDeleteOnExit(celosWorkDir);
 
         System.out.println("Celos created at: " + tempDir.toAbsolutePath().toString());
-        System.out.println("HDFS prefix is: " + ciContext.getTestContext().getHdfsPrefix());
+        System.out.println("HDFS prefix is: " + ciContext.getHdfsPrefix());
 
         File workflowDir = new File(celosWorkDir, WORKFLOW_DIR_CELOS_PATH);
         File defaultsDir = new File(celosWorkDir, DEFAULTS_DIR_CELOS_PATH);
@@ -92,10 +107,6 @@ public class CelosCi {
         workflowDir.mkdirs();
         defaultsDir.mkdirs();
         dbDir.mkdirs();
-
-        ciContext.getTestContext().setCelosWorkflowDir(workflowDir);
-        ciContext.getTestContext().setCelosDefaultsDir(defaultsDir);
-        ciContext.getTestContext().setCelosDbDir(dbDir);
 
         JScpWorker worker = new JScpWorker(ciContext.getUserName(), ciContext.getTarget().getScpSecuritySettings());
         FileObject remoteDefaultsFile = worker.getFileObjectByUri(ciContext.getTarget().getDefaultsFile());
@@ -111,19 +122,17 @@ public class CelosCi {
         try {
 
             Integer port = celosServer.startServer(
-                    ImmutableMap.of(HDFS_PREFIX, ciContext.getTestContext().getHdfsPrefix()),
+                    ImmutableMap.of(HDFS_PREFIX, ciContext.getHdfsPrefix()),
                     ciContext.getTestContext().getCelosWorkflowDir().toString(),
                     ciContext.getTestContext().getCelosDefaultsDir().toString(),
                     ciContext.getTestContext().getCelosDbDir().toString()
             );
 
-            ciContext.getTestContext().setCelosPort(port);
-
 
             System.out.println("Deploying workflow " + ciContext.getWorkflowName());
             doDeploy();
 
-            new CelosSchedulerRunner(ciContext).runCelosScheduler();
+            new CelosSchedulerRunner(port).runCelosScheduler();
         } finally {
             System.out.println("Stopping Celos");
             celosServer.stopServer();

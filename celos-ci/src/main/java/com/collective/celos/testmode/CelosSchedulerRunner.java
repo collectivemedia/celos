@@ -1,8 +1,8 @@
-package com.collective.celos.ci;
+package com.collective.celos.testmode;
 
 import com.collective.celos.ScheduledTime;
 import com.collective.celos.ScheduledTimeFormatter;
-import com.collective.celos.config.CelosCiContext;
+import com.collective.celos.config.test.TestConfig;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -20,32 +20,32 @@ import java.io.StringWriter;
  */
 public class CelosSchedulerRunner {
 
-    private HttpClient client;
-    private ScheduledTimeFormatter timeFormatter;
-    private CelosCiContext ciContext;
+    private final HttpClient client;
+    private final ScheduledTimeFormatter timeFormatter;
+    private final int port;
 
-    public CelosSchedulerRunner(CelosCiContext testContext) {
+    public CelosSchedulerRunner(int port) {
+        this.port = port;
         this.client = new DefaultHttpClient();
         this.timeFormatter = new ScheduledTimeFormatter();
-        this.ciContext = testContext;
     }
 
-    public void runCelosScheduler() throws IOException {
-        WorkflowsList workflowsList = getWorkflowList(ciContext.getTestContext().getCelosPort());
+    public void runCelosScheduler(TestConfig testConfig) throws IOException {
+        WorkflowsList workflowsList = getWorkflowList();
 
-        ScheduledTime startTime = ciContext.getTestContext().getTestConfig().getSampleTimeStart();
+        ScheduledTime startTime = testConfig.getSampleTimeStart();
         ScheduledTime actualTime = startTime;
-        ScheduledTime endTime = ciContext.getTestContext().getTestConfig().getSampleTimeEnd();
+        ScheduledTime endTime = testConfig.getSampleTimeEnd();
 
         while (!actualTime.getDateTime().isAfter(endTime.getDateTime())) {
-            iterateScheduler(ciContext.getTestContext().getCelosPort(), actualTime);
-            if (!isThereAnyRunningWorkflows(ciContext.getTestContext().getCelosPort(), workflowsList, actualTime)) {
+            iterateScheduler(port, actualTime);
+            if (!isThereAnyRunningWorkflows(port, workflowsList, actualTime)) {
                 actualTime = new ScheduledTime(actualTime.getDateTime().plusHours(1));
             }
         }
     }
 
-    private WorkflowsList getWorkflowList(Integer port) throws IOException {
+    private WorkflowsList getWorkflowList() throws IOException {
         HttpGet workflowListGet = new HttpGet("http://localhost:" + port + "/workflow-list");
         HttpResponse getResponse = client.execute(workflowListGet);
         return new ObjectMapper().readValue(getResponse.getEntity().getContent(), WorkflowsList.class);

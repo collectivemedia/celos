@@ -1,4 +1,4 @@
-package com.collective.celos.cd.deployer;
+package com.collective.celos.deploy;
 
 import org.apache.commons.vfs2.*;
 import org.apache.commons.vfs2.provider.sftp.SftpFileSystemConfigBuilder;
