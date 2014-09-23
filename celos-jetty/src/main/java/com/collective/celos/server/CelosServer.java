@@ -61,7 +61,8 @@ public class CelosServer {
 
     public void stopServer() throws Exception {
         server.stop();
-        //server.join();
+        server.destroy();
+        server.join();
     }
 
     private void assureDirIsCreated(String paramPath) {
