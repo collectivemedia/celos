@@ -1,0 +1,52 @@
+apply plugin: 'application'
+apply plugin: 'java'
+apply plugin: 'idea'
+
+sourceCompatibility = 1.7
+version = '0.1'
+
+repositories {
+    // Use 'maven central' for resolving your dependencies.
+    // You can declare any Maven/Ivy/file repository here.
+    mavenLocal()
+    mavenCentral()
+    maven { url "http://repo1.maven.org/maven2" }
+    maven { url "https://repository.cloudera.com/artifactory/cloudera-repos" }
+    maven { url "http://nexus.collective-media.net/content/repositories/releases" }
+}
+
+configurations {
+    celos_cd
+}
+
+dependencies {
+    celos_cd "com.collective:celos-cd:0.0.1"
+    compile("org.apache.hadoop:hadoop-client:2.0.0-cdh4.2.1")
+}
+
+task celosDeploy(type: JavaExec) {
+     classpath configurations.celos_cd
+     main = "com.collective.celos.cd.CelosCd"
+}
+
+task prepareDeployDir() {
+    def libFolder = new File('build/celos_deploy/hdfs/lib')
+    libFolder.mkdirs()
+    copy {
+       from 'src/main/oozie'
+       into 'build/celos_deploy/hdfs'
+    }
+    copy {
+       from 'src/main/celos'
+       into 'build/celos_deploy'
+    }
+    copy {
+       from 'build/libs'
+       into 'build/celos_deploy/hdfs/lib'
+    }
+    celosDeploy.execute()
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '1.11'
+}
