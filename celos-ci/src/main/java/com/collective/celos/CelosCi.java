@@ -29,28 +29,55 @@ public class CelosCi {
 
     private static final String LOCAL_OUTPUT_PATTERN = "%s/output";
 
+    private WorkflowFileDeployer wfDeployer;
+    private HdfsDeployer hdfsDeployer;
+
+
     public static void main(String... args) throws Exception {
 
 //        args = "--deployDir /home/akonopko/work/celos2/samples/wordcount2 --target sftp://107.170.177.172/home/akonopko/target.json --workflowName wordcount".split(" ");
 //        args = "--deployDir /home/akonopko/work/celos2/samples/wordcount --target sftp://celos001/home/akonopko/target.json --workflowName wordcount --mode TEST".split(" ");
 
+        new CelosCi().runCelosCi(args);
+    }
+
+    private void runCelosCi(String[] args) throws Exception {
         CelosCiContextBuilder contextBuilder = new CelosCiContextBuilder();
         CelosCiContext ciContext = contextBuilder.parse(args);
         if (ciContext == null) {
             contextBuilder.printHelp(80, 5, 3, true, System.out);
         } else {
-            prepareEnvironment(ciContext);
-            runServer(ciContext);
-            compareOutputs(ciContext);
+            wfDeployer = new WorkflowFileDeployer(ciContext);
+            hdfsDeployer = new HdfsDeployer(ciContext);
+            if (ciContext.getMode() == CelosCiContext.Mode.DEPLOY) {
+                doDeploy();
+            } else if (ciContext.getMode() == CelosCiContext.Mode.UNDEPLOY) {
+                doUndeploy();
+            } else if (ciContext.getMode() == CelosCiContext.Mode.TEST) {
+                prepareCelosServerEnv(ciContext);
+                runCelosServer(ciContext);
+                compareOutputs(ciContext);
+            }
         }
     }
 
-    private static void compareOutputs(CelosCiContext celosCiContext) throws Exception {
-        FixturesHdfsWorkerManager manager = new FixturesHdfsWorkerManager(celosCiContext, ImmutableMap.of("PLAIN", new PlainFixtureComparator(celosCiContext)));
-        manager.processLocalDir(String.format(LOCAL_OUTPUT_PATTERN, celosCiContext.getDeployDir()));
+    private void doUndeploy() throws Exception {
+        wfDeployer.undeploy();
+        hdfsDeployer.undeploy();
     }
 
-    private static void prepareEnvironment(CelosCiContext ciContext) throws IOException, URISyntaxException {
+    private void doDeploy() throws Exception {
+        wfDeployer.deploy();
+        hdfsDeployer.deploy();
+    }
+
+    private void compareOutputs(CelosCiContext celosCiContext) throws Exception {
+        FixturesHdfsWorkerManager manager = new FixturesHdfsWorkerManager(celosCiContext, ImmutableMap.of("PLAIN", new PlainFixtureComparator(celosCiContext)));
+        manager.processLocalDir(String.format(LOCAL_OUTPUT_PATTERN, celosCiContext.getDeployDir()));
+        System.out.println("Output data fits fixtures");
+    }
+
+    private void prepareCelosServerEnv(CelosCiContext ciContext) throws IOException, URISyntaxException {
         Path tempDir = Files.createTempDirectory("celos");
         File celosWorkDir = tempDir.toFile();
         FileUtils.forceDeleteOnExit(celosWorkDir);
@@ -78,7 +105,7 @@ public class CelosCi {
         }
     }
 
-    private static void runServer(CelosCiContext ciContext) throws Exception {
+    private void runCelosServer(CelosCiContext ciContext) throws Exception {
         final CelosServer celosServer = new CelosServer();
 
         try {
@@ -94,28 +121,15 @@ public class CelosCi {
 
 
             System.out.println("Deploying workflow " + ciContext.getWorkflowName());
-            deploy(ciContext);
+            doDeploy();
 
             new CelosSchedulerRunner(ciContext).runCelosScheduler();
         } finally {
-            System.out.println("Job is finished");
+            System.out.println("Stopping Celos");
             celosServer.stopServer();
         }
     }
 
-
-    private static void deploy(CelosCiContext config) throws Exception {
-
-        WorkflowFileDeployer wfDeployer = new WorkflowFileDeployer(config);
-        HdfsDeployer hdfsDeployer = new HdfsDeployer(config);
-        if (config.getMode() == CelosCiContext.Mode.DEPLOY || config.getMode() == CelosCiContext.Mode.TEST) {
-            wfDeployer.deploy();
-            hdfsDeployer.deploy();
-        } else if (config.getMode() == CelosCiContext.Mode.UNDEPLOY) {
-            wfDeployer.undeploy();
-            hdfsDeployer.undeploy();
-        }
-    }
 
 
 }

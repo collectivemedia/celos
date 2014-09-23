@@ -12,15 +12,24 @@ import java.util.Map;
 /**
  * Created by akonopko on 9/18/14.
  */
-public abstract class AbstractFixtureWorker {
+public abstract class AbstractFixturePairWorker {
 
     private CelosCiContext context;
 
-    public AbstractFixtureWorker(CelosCiContext context) {
+    public AbstractFixturePairWorker(CelosCiContext context) {
         this.context = context;
     }
 
-    public abstract void process(File localDir) throws Exception;
+    public void process(File localDir) throws Exception {
+
+        Map<File, Path> filePathMap = getLocalFilesToHdfsMap(localDir);
+        for (Map.Entry<File, Path> localToDst : filePathMap.entrySet()) {
+            processPair(localToDst.getKey(), localToDst.getValue());
+        }
+
+    }
+
+    public abstract void processPair(File localFile, Path hdfsFile) throws Exception;
 
     public CelosCiContext getContext() {
         return context;
