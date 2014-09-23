@@ -18,14 +18,14 @@
 
   - name: Prepare configuration dir
     shell: sudo rm -rf {{celos_workflows_dir}}/* && sudo mkdir -p {{celos_workflows_dir}}
-      && sudo chown celos:celos {{celos_workflows_dir}}
+      && sudo chown celos {{celos_workflows_dir}}
 
   - name: Prepare database dir
     shell: sudo rm -rf {{celos_db_dir}}/* && sudo mkdir -p {{celos_db_dir}}
-      && sudo chown celos:celos {{celos_db_dir}}
+      && sudo chown celos {{celos_db_dir}}
 
   - name: Clean logs dir
-    shell: sudo rm -rf /var/log/celos/*
+    shell: sudo rm -r -f /var/log/celos && sudo mkdir /var/log/celos && sudo chmod -R 0777 /var/log/celos
 
   - name: Check servlet /celos/scheduler responds to POST
     local_action: shell curl --fail -X POST {{inventory_hostname}}:8080/celos/scheduler
