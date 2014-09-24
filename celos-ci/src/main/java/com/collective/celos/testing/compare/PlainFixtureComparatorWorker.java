@@ -1,4 +1,4 @@
-package com.collective.celos.fixtures.compare;
+package com.collective.celos.testing.compare;
 
 import com.collective.celos.config.ci.CelosCiContext;
 import com.collective.celos.fixtures.AbstractFixturePairWorker;

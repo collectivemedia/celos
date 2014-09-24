@@ -1,6 +1,6 @@
 package com.collective.celos.config.ci;
 
-import com.collective.celos.deploy.deployer.JScpWorker;
+import com.collective.celos.deploy.JScpWorker;
 import org.apache.commons.vfs2.FileSystemException;
 import org.codehaus.jackson.map.ObjectMapper;
 

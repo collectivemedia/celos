@@ -8,15 +8,15 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.HashMap;
 
-public class TestConfigBuilder {
+public class TestConfigParser {
 
     private final static String SAMPLE_TIME_START_PROP = "sample.time.start";
     private final static String SAMPLE_TIME_END_PROP = "sample.time.end";
 
     private final static String TEST_CONFIG_PATH_PATTERN = "%s/test-config.json";
 
-    public TestConfig build(File workflowPath) throws Exception {
-        File configPath = new File(String.format(TEST_CONFIG_PATH_PATTERN, workflowPath.getAbsolutePath()));
+    public TestConfig parse(File testCasePath) throws Exception {
+        File configPath = new File(String.format(TEST_CONFIG_PATH_PATTERN, testCasePath.getAbsolutePath()));
         InputStream is = new FileInputStream(configPath);
         HashMap<String, String> result = new ObjectMapper().readValue(is, HashMap.class);
 

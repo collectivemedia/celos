@@ -42,8 +42,7 @@ public class WorkflowFileDeployer {
     }
 
     private String getWorkflowJsUri() {
-        String celosWorkflowsDirUri = "";//config.getMode() == CelosCiContext.Mode.TEST ? config.getTestContext().getCelosWorkflowDir().toString() : config.getTarget().getCelosWorkflowsDirUri();
-        return celosWorkflowsDirUri + File.separator + config.getWorkflowName() + ".js";
+        return config.getCelosWorkflowDir() + File.separator + config.getWorkflowName() + ".js";
     }
 
 

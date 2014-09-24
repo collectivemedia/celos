@@ -1,4 +1,4 @@
-package com.collective.celos.testmode;
+package com.collective.celos.testing;
 
 import com.collective.celos.ScheduledTime;
 import com.collective.celos.ScheduledTimeFormatter;
@@ -18,13 +18,13 @@ import java.io.StringWriter;
 /**
  * Created by akonopko on 9/18/14.
  */
-public class CelosSchedulerRunner {
+public class CelosSchedulerWorker {
 
     private final HttpClient client;
     private final ScheduledTimeFormatter timeFormatter;
     private final int port;
 
-    public CelosSchedulerRunner(int port) {
+    public CelosSchedulerWorker(int port) {
         this.port = port;
         this.client = new DefaultHttpClient();
         this.timeFormatter = new ScheduledTimeFormatter();

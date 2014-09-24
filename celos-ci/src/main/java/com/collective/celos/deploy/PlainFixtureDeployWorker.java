@@ -1,4 +1,4 @@
-package com.collective.celos.fixtures.deploy;
+package com.collective.celos.deploy;
 
 import com.collective.celos.config.ci.CelosCiContext;
 import com.collective.celos.fixtures.AbstractFixturePairWorker;

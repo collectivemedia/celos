@@ -1,14 +1,21 @@
-package com.collective.celos.config.ci;
+package com.collective.celos.config;
 
-import com.collective.celos.deploy.deployer.JScpWorker;
+import com.collective.celos.CelosCi;
+import com.collective.celos.config.ci.CelosCiContext;
+import com.collective.celos.config.ci.CelosCiTarget;
+import com.collective.celos.config.ci.CelosCiTargetParser;
+import com.collective.celos.config.test.TestContext;
+import com.collective.celos.deploy.JScpWorker;
 import org.apache.commons.cli.*;
 
 import java.io.File;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.UUID;
 
-public class CelosCiContextBuilder {
+public class ContextParser {
 
     private final String HDFS_PREFIX_PATTERN = "/user/%s/test/%s/%s";
 
@@ -16,15 +23,17 @@ public class CelosCiContextBuilder {
     public static final String CLI_MODE = "m";
     public static final String CLI_DEPLOY_DIR = "d";
     public static final String CLI_WORKFLOW_NAME = "w";
+    public static final String CLI_TEST_CASES_DIR = "tc";
 
-    public CelosCiContext parse(final String[] commandLineArguments) throws Exception {
+    public void parse(final String[] commandLineArguments, CelosCi callMeBack) throws Exception {
 
         final CommandLineParser cmdLineGnuParser = new GnuParser();
         final Options gnuOptions = constructOptions();
         CommandLine commandLine = cmdLineGnuParser.parse(gnuOptions, commandLineArguments);
 
         if (!commandLine.hasOption(CLI_TARGET) || !commandLine.hasOption(CLI_DEPLOY_DIR) || !commandLine.hasOption(CLI_WORKFLOW_NAME)) {
-            return null;
+            printHelp(80, 5, 3, true, System.out);
+            return;
         }
 
         CelosCiContext.Mode mode = CelosCiContext.Mode.valueOf(commandLine.getOptionValue(CLI_MODE));
@@ -37,14 +46,41 @@ public class CelosCiContextBuilder {
         CelosCiTargetParser parcer = new CelosCiTargetParser(userName, JScpWorker.DEFAULT_SECURITY_SETTINGS);
         CelosCiTarget target = parcer.parse(commandLine.getOptionValue(CLI_TARGET));
 
-        String hdfsPrefix;
+
         if (mode == CelosCiContext.Mode.TEST) {
-            hdfsPrefix = String.format(HDFS_PREFIX_PATTERN, userName, workflowName, UUID.randomUUID().toString());
-        } else {
-            hdfsPrefix = "";
+
+            String testCasesDir = commandLine.getOptionValue(CLI_TEST_CASES_DIR);
+
+            TestContext testContext = prepareTestContext(userName, workflowName, testCasesDir);
+            String substitutedCelosWorkflowDir = testContext.getCelosWorkflowDir().getAbsolutePath();
+            CelosCiContext ciContext = new CelosCiContext(target, userName, mode, deployDir, workflowName, testContext.getHdfsPrefix(), substitutedCelosWorkflowDir);
+            callMeBack.onTestMode(ciContext, testContext);
+
+        } else if (mode == CelosCiContext.Mode.DEPLOY) {
+
+            CelosCiContext ciContext = new CelosCiContext(target, userName, mode, deployDir, workflowName);
+            callMeBack.onDeployMode(ciContext);
+
+        } else if (mode == CelosCiContext.Mode.UNDEPLOY) {
+
+            CelosCiContext ciContext = new CelosCiContext(target, userName, mode, deployDir, workflowName);
+            callMeBack.onUndeployMode(ciContext);
+
         }
 
-        CelosCiContext context = new CelosCiContext(target, userName, mode, deployDir, workflowName, hdfsPrefix);
+
+    }
+
+    public TestContext prepareTestContext(String userName, String workflowName, String testCasesDir) throws Exception {
+
+        Path tempDir = Files.createTempDirectory("celos");
+        File celosWorkDir = tempDir.toFile();
+        System.out.println("Temp dir for Celos is " + tempDir.toAbsolutePath().toString());
+
+        String hdfsPrefix = String.format(HDFS_PREFIX_PATTERN, userName, workflowName, UUID.randomUUID().toString());
+        System.out.println("HDFS prefix is: " + hdfsPrefix);
+
+        TestContext context = new TestContext(celosWorkDir, hdfsPrefix, testCasesDir);
 
         return context;
     }
@@ -54,7 +90,8 @@ public class CelosCiContextBuilder {
         options.addOption(CLI_TARGET, "target", true, "Path to target JSON (alternative to command line)")
                .addOption(CLI_MODE, "mode", true, "Mode. Defaults to DEPLOY")
                .addOption(CLI_DEPLOY_DIR, "deployDir", true, "Deploy directory. Path to workflow you want to deploy")
-               .addOption(CLI_WORKFLOW_NAME, "workflowName", true, "Workflow JS file name");
+               .addOption(CLI_WORKFLOW_NAME, "workflowName", true, "Workflow JS file name")
+               .addOption(CLI_TEST_CASES_DIR, "testDir", true, "Test cases dir");
         return options;
     }
 

@@ -42,7 +42,6 @@ public class HdfsDeployer {
                 fs.copyFromLocalFile(new Path(hdfsDirLocalPath, child), dst);
             }
         }
-        //        fixturesHdfsHelper.processLocalDir(String.format(LOCAL_INPUT_PATTERN, context.getDeployDir()));
     }
 
 }
