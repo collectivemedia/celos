@@ -20,7 +20,7 @@ configurations {
 }
 
 dependencies {
-    celos_ci "com.collective:celos-ci:0.1"
+    celos_ci "com.collective:celos-ci:latest.integration"
     compile("org.apache.hadoop:hadoop-client:2.0.0-cdh4.2.1")
 }
 
