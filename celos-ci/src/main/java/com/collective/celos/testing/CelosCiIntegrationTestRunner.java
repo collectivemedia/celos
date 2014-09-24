@@ -86,7 +86,7 @@ public class CelosCiIntegrationTestRunner {
         testContext.getCelosWorkflowDir().mkdirs();
         testContext.getCelosDefaultsDir().mkdirs();
         testContext.getCelosDbDir().mkdirs();
-//        FileUtils.forceDeleteOnExit(testContext.getCelosWorkDir());
+        FileUtils.forceDeleteOnExit(testContext.getCelosWorkDir());
 
         JScpWorker worker = new JScpWorker(ciContext.getUserName(), ciContext.getTarget().getScpSecuritySettings());
         FileObject remoteDefaultsFile = worker.getFileObjectByUri(ciContext.getTarget().getDefaultsFile());

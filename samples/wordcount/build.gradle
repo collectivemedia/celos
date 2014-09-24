@@ -27,15 +27,14 @@ dependencies {
 
 task runCelosCiTests() {
 
-    task celosDeploy(type: JavaExec) {
+    task celosCiTest(type: JavaExec) {
        classpath configurations.celos_ci
        main = "com.collective.celos.CelosCi"
-       args '--deployDir', 'build/celos_deploy', '--target', 'sftp://celos001/home/akonopko/target.json', '--workflowName', 'celosTestWorkflow' , '--mode', 'TEST', '--testDir', 'src/test'
+       args '--deployDir', 'build/celos_deploy', '--target', 'sftp://celos001/home/akonopko/target.json', '--workflowName', 'wordcount' , '--mode', 'TEST', '--testDir', 'src/test'
     }
 
-
-    def libFolder = new File('build/celos_deploy/hdfs/lib')
-    libFolder.mkdirs()
+    new File('build/celos_deploy').deleteDir()
+    new File('build/celos_deploy/hdfs/lib').mkdirs()
     copy {
        from 'src/main/celos'
        into 'build/celos_deploy'
@@ -48,7 +47,7 @@ task runCelosCiTests() {
        from 'build/libs'
        into 'build/celos_deploy/hdfs/lib'
     }
-    celosDeploy.execute()
+    celosCiTest.execute()
 }
 
 task wrapper(type: Wrapper) {
