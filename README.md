@@ -327,6 +327,32 @@ The `delayTrigger()` should always be placed as the first argument of
 an `andTrigger()` so that the relatively more expensive
 `hdfsCheckTrigger()` won't even be executed.
 
+### offsetTrigger
+
+Syntax: `offsetTrigger(seconds, otherTrigger)`
+
+A trigger that invokes another trigger with the scheduled time offset
+by a number of seconds.
+
+This can be used to trigger on data in the future or the past,
+relative to the workflow slot's scheduled time.
+
+#### Parameters
+
+* `seconds` -- the number of seconds to offset the other trigger
+
+* `otherTrigger` -- the trigger whose scheduled time should be offset
+
+#### Example
+
+```javascript
+var oneDay = 60 * 60 * 24;
+offsetTrigger(oneDay, hdfsCheckTrigger("/${year}/${month}/${day}/..."))
+```
+
+If this trigger is called for the scheduled time 2014-01-10T00:00Z it
+will check for data availability at 2014-01-11T00:00Z.
+
 ### successTrigger
 
 Syntax: `successTrigger(workflowName)`
