@@ -1,20 +1,18 @@
 package com.collective.celos.servlet;
 
-import java.io.IOException;
+import com.collective.celos.ScheduledTime;
+import com.collective.celos.Scheduler;
+import com.collective.celos.SchedulerConfiguration;
+import org.apache.log4j.Logger;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
-
-import org.apache.log4j.Logger;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
-
-import com.collective.celos.ScheduledTime;
-import com.collective.celos.Scheduler;
-import com.collective.celos.SchedulerConfiguration;
+import java.io.IOException;
 
 /**
  * Superclass for all servlets that access the database.
@@ -45,14 +43,18 @@ public abstract class AbstractServlet extends HttpServlet {
             }
         }
     }
-    
-    protected ScheduledTime getRequestTime(HttpServletRequest req) {
-        String t = req.getParameter(TIME_PARAM);
+
+    protected ScheduledTime getRequestTime(HttpServletRequest req, String paramName) {
+        String t = req.getParameter(paramName);
         if (t == null) {
             return new ScheduledTime(DateTime.now(DateTimeZone.UTC));
         } else {
             return new ScheduledTime(t);
         }
+    }
+
+    protected ScheduledTime getRequestTime(HttpServletRequest req) {
+        return getRequestTime(req, TIME_PARAM);
     }
 
     protected Scheduler createAndCacheScheduler() throws Exception {
