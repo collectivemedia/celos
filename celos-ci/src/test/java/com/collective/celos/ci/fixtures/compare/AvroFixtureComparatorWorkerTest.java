@@ -23,15 +23,15 @@ public class AvroFixtureComparatorWorkerTest {
     public void testReadInputAvroToJSON() throws IOException, URISyntaxException {
         AvroFixtureComparatorWorker worker = new AvroFixtureComparatorWorker();
 
-        Schema schema = new Schema.Parser().parse(Thread.currentThread().getContextClassLoader().getResourceAsStream("com/collective/celos/ci/testing/compare/avro.schema"));
+        Schema schema = new Schema.Parser().parse(Thread.currentThread().getContextClassLoader().getResourceAsStream("com/collective/celos/ci/testing/compare/avro/avro.schema"));
 
-        InputStream inputJson = Thread.currentThread().getContextClassLoader().getResourceAsStream("com/collective/celos/ci/testing/compare/avro.json");
+        InputStream inputJson = Thread.currentThread().getContextClassLoader().getResourceAsStream("com/collective/celos/ci/testing/compare/avro/avro.json");
 
         ByteArrayOutputStream outputJson = new ByteArrayOutputStream();
 
         AvroFixtureDeployWorker.writeJsonISToAvroOS(inputJson, outputJson, schema);
 
-        InputStream jsonData = Thread.currentThread().getContextClassLoader().getResourceAsStream("com/collective/celos/ci/testing/compare/avro.json");
+        InputStream jsonData = Thread.currentThread().getContextClassLoader().getResourceAsStream("com/collective/celos/ci/testing/compare/avro/avro.json");
         InputStream jsonIsBack = worker.readInputAvroToJson(new SeekableByteArrayInput(outputJson.toByteArray()));
 
         Assert.assertTrue(IOUtils.contentEquals(jsonData, jsonIsBack));
