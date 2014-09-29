@@ -22,6 +22,7 @@ public class CelosCiContext {
     private final FileSystem fileSystem;
     private final String hdfsPrefix;
     private final String substitutedCelosWorkflowDir;
+    private final Configuration configuration;
 
     public CelosCiContext(CelosCiTarget target,
                           String userName,
@@ -46,10 +47,11 @@ public class CelosCiContext {
         this.workflowName = workflowName;
         this.hdfsPrefix = hdfsPrefix;
         this.substitutedCelosWorkflowDir = substitutedCelosWorkflowDir;
-        this.fileSystem = getFileSystem(userName, target);
+        this.configuration = setupConfiguration(userName, target);
+        this.fileSystem = FileSystem.get(this.configuration);
     }
 
-    private FileSystem getFileSystem(String username, CelosCiTarget target) throws Exception {
+    private Configuration setupConfiguration(String username, CelosCiTarget target) throws Exception {
         JScpWorker jscpWorker = new JScpWorker(username, target.getScpSecuritySettings());
         Configuration conf = new Configuration();
 
@@ -61,7 +63,7 @@ public class CelosCiContext {
 
         UserGroupInformation.setConfiguration(conf);
 
-        return FileSystem.get(conf);
+        return conf;
     }
 
 
@@ -95,5 +97,9 @@ public class CelosCiContext {
 
     public String getCelosWorkflowDir() {
         return mode == Mode.TEST ? substitutedCelosWorkflowDir : getTarget().getCelosWorkflowsDirUri();
+    }
+
+    public Configuration getConfiguration() {
+        return configuration;
     }
 }
