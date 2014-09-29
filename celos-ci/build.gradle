@@ -37,6 +37,8 @@ dependencies {
     compile("log4j:log4j:1.2.17")
     compile("log4j:apache-log4j-extras:1.2.17")
     compile("com.jcraft:jsch:0.1.51")
+
+    testCompile("org.mockito:mockito-all:1.9.5")
 }
 
 
