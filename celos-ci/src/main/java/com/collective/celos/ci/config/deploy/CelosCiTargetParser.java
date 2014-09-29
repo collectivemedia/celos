@@ -1,6 +1,8 @@
 package com.collective.celos.ci.config.deploy;
 
 import com.collective.celos.ci.deploy.JScpWorker;
+import org.apache.commons.vfs2.FileContent;
+import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemException;
 import org.codehaus.jackson.map.ObjectMapper;
 
@@ -22,7 +24,8 @@ public class CelosCiTargetParser {
     }
 
     public CelosCiTarget parse(String targetFileUri) throws Exception {
-        InputStream is = worker.getRemoteFileIS(targetFileUri);
+        FileObject file = worker.getFileObjectByUri(targetFileUri);
+        InputStream is = file.getContent().getInputStream();
         HashMap<String, String> result = new ObjectMapper().readValue(is, HashMap.class);
 
         String secSetts = result.get(SEC_SETTINGS);

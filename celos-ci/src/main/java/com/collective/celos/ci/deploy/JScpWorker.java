@@ -27,6 +27,11 @@ public class JScpWorker {
     }
 
     public FileObject getFileObjectByUri(String file) throws URISyntaxException, FileSystemException {
+        URI uri = getURIRespectingUsername(file);
+        return fsManager.resolveFile(uri.toString(), getSftpDefaultOptions());
+    }
+
+    URI getURIRespectingUsername(String file) throws URISyntaxException {
         URI uri = new URI(file);
 
         if (userName != null && uri.getUserInfo() == null) {
@@ -34,13 +39,7 @@ public class JScpWorker {
                     uri.getPath(), uri.getQuery(),
                     uri.getFragment());
         }
-        return fsManager.resolveFile(uri.toString(), getSftpDefaultOptions());
-    }
-
-    public InputStream getRemoteFileIS(String uri) throws FileSystemException, URISyntaxException {
-        FileObject file = getFileObjectByUri(uri);
-        FileContent content = file.getContent();
-        return content.getInputStream();
+        return uri;
     }
 
     public FileSystemOptions getSftpDefaultOptions() throws FileSystemException {

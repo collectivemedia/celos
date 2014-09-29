@@ -2,6 +2,8 @@ package com.collective.celos.ci.config.deploy;
 
 
 import com.collective.celos.ci.deploy.JScpWorker;
+import org.apache.commons.vfs2.FileContent;
+import org.apache.commons.vfs2.FileObject;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.security.UserGroupInformation;
@@ -58,8 +60,8 @@ public class CelosCiContext {
         conf.set("fs.hdfs.impl", org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
         conf.set("fs.file.impl", org.apache.hadoop.fs.LocalFileSystem.class.getName());
 
-        conf.addResource(jscpWorker.getRemoteFileIS(target.getPathToHdfsSite()));
-        conf.addResource(jscpWorker.getRemoteFileIS(target.getPathToCoreSite()));
+        conf.addResource(jscpWorker.getFileObjectByUri(target.getPathToHdfsSite()).getContent().getInputStream());
+        conf.addResource(jscpWorker.getFileObjectByUri(target.getPathToCoreSite()).getContent().getInputStream());
 
         UserGroupInformation.setConfiguration(conf);
 
