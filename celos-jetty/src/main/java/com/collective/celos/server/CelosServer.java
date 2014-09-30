@@ -1,6 +1,6 @@
 package com.collective.celos.server;
 
-import com.collective.celos.*;
+import com.collective.celos.servlet.*;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
@@ -13,21 +13,6 @@ import java.util.Map;
 public class CelosServer {
 
     private Server server;
-
-    public static void main(String... athss) throws Exception {
-        new Thread(new Runnable() {
-
-            @Override
-            public void run() {
-                try {
-                    new CelosServer().startServer(5555, null, "/home/akonopko/work/c/wf", "/home/akonopko/work/c/df", "/home/akonopko/work/c/db");
-                } catch (Exception e) {
-                    System.out.println(e);
-                }
-
-            }
-        }).start();
-    }
 
     public Integer startServer(Map<String, String> jsVariables, String workflowConfigurationPath, String defaultsConfigurationPath, String stateDatabasePath) throws Exception {
         server = new Server();
