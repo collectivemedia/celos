@@ -19,7 +19,7 @@
 
   <servlet>
     <servlet-name>SchedulerServlet</servlet-name>
-    <servlet-class>com.collective.celos.SchedulerServlet</servlet-class>
+    <servlet-class>com.collective.celos.servlet.SchedulerServlet</servlet-class>
   </servlet>
   <servlet-mapping>
     <servlet-name>SchedulerServlet</servlet-name>
@@ -28,7 +28,7 @@
 
   <servlet>
     <servlet-name>JSONWorkflowListServlet</servlet-name>
-    <servlet-class>com.collective.celos.JSONWorkflowListServlet</servlet-class>
+    <servlet-class>com.collective.celos.servlet.JSONWorkflowListServlet</servlet-class>
   </servlet>
   <servlet-mapping>
     <servlet-name>JSONWorkflowListServlet</servlet-name>
@@ -37,7 +37,7 @@
 
   <servlet>
     <servlet-name>JSONWorkflowServlet</servlet-name>
-    <servlet-class>com.collective.celos.JSONWorkflowServlet</servlet-class>
+    <servlet-class>com.collective.celos.servlet.JSONWorkflowServlet</servlet-class>
   </servlet>
   <servlet-mapping>
     <servlet-name>JSONWorkflowServlet</servlet-name>
@@ -46,7 +46,7 @@
 
   <servlet>
     <servlet-name>JSONSlotStateServlet</servlet-name>
-    <servlet-class>com.collective.celos.JSONSlotStateServlet</servlet-class>
+    <servlet-class>com.collective.celos.servlet.JSONSlotStateServlet</servlet-class>
   </servlet>
   <servlet-mapping>
     <servlet-name>JSONSlotStateServlet</servlet-name>
@@ -55,7 +55,7 @@
 
   <servlet>
     <servlet-name>RerunServlet</servlet-name>
-    <servlet-class>com.collective.celos.RerunServlet</servlet-class>
+    <servlet-class>com.collective.celos.servlet.RerunServlet</servlet-class>
   </servlet>
   <servlet-mapping>
     <servlet-name>RerunServlet</servlet-name>
@@ -64,7 +64,7 @@
 
   <servlet>
     <servlet-name>WorkflowJSConfigServlet</servlet-name>
-    <servlet-class>com.collective.celos.WorkflowJSConfigServlet</servlet-class>
+    <servlet-class>com.collective.celos.servlet.WorkflowJSConfigServlet</servlet-class>
   </servlet>
   <servlet-mapping>
     <servlet-name>WorkflowJSConfigServlet</servlet-name>
@@ -73,7 +73,7 @@
 
   <servlet>
     <servlet-name>ClearCacheServlet</servlet-name>
-    <servlet-class>com.collective.celos.ClearCacheServlet</servlet-class>
+    <servlet-class>com.collective.celos.servlet.ClearCacheServlet</servlet-class>
   </servlet>
   <servlet-mapping>
     <servlet-name>ClearCacheServlet</servlet-name>

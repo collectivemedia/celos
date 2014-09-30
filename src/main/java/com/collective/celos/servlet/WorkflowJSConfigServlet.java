@@ -1,4 +1,4 @@
-package com.collective.celos;
+package com.collective.celos.servlet;
 
 import java.io.File;
 
@@ -7,6 +7,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.FileUtils;
+
+import com.collective.celos.WorkflowID;
 
 /**
  * Returns JS-config file contents for particular workflow-id

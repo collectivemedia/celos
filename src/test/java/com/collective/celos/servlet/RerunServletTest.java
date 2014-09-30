@@ -1,4 +1,4 @@
-package com.collective.celos;
+package com.collective.celos.servlet;
 
 import com.collective.celos.*;
 import com.collective.celos.SlotState.Status;

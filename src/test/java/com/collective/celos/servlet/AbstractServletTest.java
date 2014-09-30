@@ -1,8 +1,7 @@
-package com.collective.celos;
+package com.collective.celos.servlet;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.collective.celos.AbstractServlet;
 import com.collective.celos.ScheduledTime;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;

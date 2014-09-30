@@ -1,8 +1,11 @@
-package com.collective.celos;
+package com.collective.celos.servlet;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import com.collective.celos.ScheduledTime;
+import com.collective.celos.Scheduler;
 
 /**
  * Posting to this servlet triggers a scheduler step.

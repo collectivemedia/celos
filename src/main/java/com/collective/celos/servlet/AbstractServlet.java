@@ -1,5 +1,8 @@
-package com.collective.celos;
+package com.collective.celos.servlet;
 
+import com.collective.celos.ScheduledTime;
+import com.collective.celos.Scheduler;
+import com.collective.celos.SchedulerConfiguration;
 import com.google.common.collect.ImmutableMap;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
