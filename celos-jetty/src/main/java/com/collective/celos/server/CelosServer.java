@@ -14,8 +14,12 @@ public class CelosServer {
 
     private Server server;
 
-    public Integer startServer(Map<String, String> jsVariables, String workflowConfigurationPath, String defaultsConfigurationPath, String stateDatabasePath) throws Exception {
-        server = new Server();
+    public Integer startServer(Integer port, Map<String, String> jsVariables, String workflowConfigurationPath, String defaultsConfigurationPath, String stateDatabasePath) throws Exception {
+        if (port != null) {
+            server = new Server(port);
+        } else {
+            server = new Server();
+        }
 
         setupContext(jsVariables, workflowConfigurationPath, defaultsConfigurationPath, stateDatabasePath);
 
@@ -26,15 +30,10 @@ public class CelosServer {
         return connector.getLocalPort();
     }
 
-    public void startServer(int port, Map<String, String> jsVariables, String workflowConfigurationPath, String defaultsConfigurationPath, String stateDatabasePath) throws Exception {
-
-        server = new Server(port);
-
-        setupContext(jsVariables, workflowConfigurationPath, defaultsConfigurationPath, stateDatabasePath);
-
-        server.start();
-
+    public Integer startServer(Map<String, String> jsVariables, String workflowConfigurationPath, String defaultsConfigurationPath, String stateDatabasePath) throws Exception {
+        return startServer(null, jsVariables, workflowConfigurationPath, defaultsConfigurationPath, stateDatabasePath);
     }
+
 
     private void setupContext(Map<String, String> jsVariables, String workflowConfigurationPath, String defaultsConfigurationPath, String stateDatabasePath) {
         assureDirIsCreated(workflowConfigurationPath);
