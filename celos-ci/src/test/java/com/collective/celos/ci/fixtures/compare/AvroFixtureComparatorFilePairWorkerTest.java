@@ -1,41 +1,13 @@
 package com.collective.celos.ci.fixtures.compare;
 
-import com.collective.celos.ci.fixtures.deploy.AvroFixtureDeployWorker;
-import org.apache.avro.Schema;
-import org.apache.avro.file.SeekableByteArrayInput;
-import org.apache.commons.io.IOUtils;
-import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URISyntaxException;
 
 /**
  * Created by akonopko on 9/18/14.
  */
-public class AvroFixtureComparatorWorkerTest {
-
-
-    @Test
-    public void testReadInputAvroToJSON() throws IOException, URISyntaxException {
-        AvroFixtureComparatorWorker worker = new AvroFixtureComparatorWorker();
-
-        Schema schema = new Schema.Parser().parse(Thread.currentThread().getContextClassLoader().getResourceAsStream("com/collective/celos/ci/testing/compare/avro/avro.schema"));
-
-        InputStream inputJson = Thread.currentThread().getContextClassLoader().getResourceAsStream("com/collective/celos/ci/testing/compare/avro/avro.json");
-
-        ByteArrayOutputStream outputJson = new ByteArrayOutputStream();
-
-        AvroFixtureDeployWorker.writeJsonISToAvroOS(inputJson, outputJson, schema);
-
-        InputStream jsonData = Thread.currentThread().getContextClassLoader().getResourceAsStream("com/collective/celos/ci/testing/compare/avro/avro.json");
-        InputStream jsonIsBack = worker.readInputAvroToJson(new SeekableByteArrayInput(outputJson.toByteArray()));
-
-        Assert.assertTrue(IOUtils.contentEquals(jsonData, jsonIsBack));
-    }
+public class AvroFixtureComparatorFilePairWorkerTest {
 
     @Test
     public void compareStreamsWithJsonSucceeds() throws Exception {

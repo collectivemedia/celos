@@ -1,7 +1,6 @@
 package com.collective.celos.ci.config.deploy;
 
 import com.collective.celos.ci.deploy.JScpWorker;
-import org.apache.commons.vfs2.FileContent;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemException;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -18,6 +17,10 @@ public class CelosCiTargetParser {
     public static final String DEFAULTS_FILE_URI = "defaults.file.uri";
 
     private JScpWorker worker;
+
+    public CelosCiTargetParser() throws FileSystemException {
+        this.worker = new JScpWorker(System.getProperty("user.name"), JScpWorker.DEFAULT_SECURITY_SETTINGS);
+    }
 
     public CelosCiTargetParser(String userName, String securitySettings) throws FileSystemException {
         this.worker = new JScpWorker(userName, securitySettings);

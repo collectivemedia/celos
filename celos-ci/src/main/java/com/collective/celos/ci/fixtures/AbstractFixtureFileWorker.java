@@ -10,10 +10,9 @@ import java.util.List;
 /**
  * Created by akonopko on 9/18/14.
  */
-public abstract class AbstractFixturePairWorker {
+public abstract class AbstractFixtureFileWorker {
 
     public abstract void processPair(CelosCiContext context, File localFile, Path hdfsFile) throws Exception;
-
 
     public void process(CelosCiContext context, File localDir) throws Exception {
 
@@ -27,7 +26,7 @@ public abstract class AbstractFixturePairWorker {
         }
     }
 
-    private List<File> findFiles(File file) {
+    protected List<File> findFiles(File file) {
         List<File> result = new ArrayList<>();
         for (File child : file.listFiles()) {
             if (child.isDirectory()) {

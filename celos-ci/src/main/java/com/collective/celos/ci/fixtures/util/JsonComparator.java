@@ -1,4 +1,4 @@
-package com.collective.celos.ci.fixtures.compare;
+package com.collective.celos.ci.fixtures.util;
 
 import com.google.gson.*;
 
@@ -10,14 +10,14 @@ import java.util.Set;
 /**
  * Created by akonopko on 9/29/14.
  */
-public class JsonIgnorePathsComparator {
+public class JsonComparator {
 
     private Set<String> ignorePaths = new HashSet<>();
 
-    public JsonIgnorePathsComparator() {
+    public JsonComparator() {
     }
 
-    public JsonIgnorePathsComparator(Set<String> ignorePaths) {
+    public JsonComparator(Set<String> ignorePaths) {
         this.ignorePaths = ignorePaths;
     }
 

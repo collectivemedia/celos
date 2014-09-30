@@ -25,6 +25,12 @@ public class ContextParser {
     public static final String CLI_WORKFLOW_NAME = "w";
     public static final String CLI_TEST_CASES_DIR = "tc";
 
+    private CelosCiTargetParser targetParser;
+
+    public ContextParser(CelosCiTargetParser targetParser) {
+        this.targetParser = targetParser;
+    }
+
     public void parse(final String[] commandLineArguments, CelosCi callMeBack) throws Exception {
 
         final CommandLineParser cmdLineGnuParser = new GnuParser();
@@ -43,8 +49,7 @@ public class ContextParser {
 
         String workflowName = commandLine.getOptionValue(CLI_WORKFLOW_NAME);
 
-        CelosCiTargetParser parcer = new CelosCiTargetParser(userName, JScpWorker.DEFAULT_SECURITY_SETTINGS);
-        CelosCiTarget target = parcer.parse(commandLine.getOptionValue(CLI_TARGET));
+        CelosCiTarget target = targetParser.parse(commandLine.getOptionValue(CLI_TARGET));
 
 
         if (mode == CelosCiContext.Mode.TEST) {

@@ -2,23 +2,18 @@ package com.collective.celos.ci.fixtures.compare;
 
 import com.collective.celos.ci.config.deploy.CelosCiContext;
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.FSDataInputStream;
 import org.apache.hadoop.fs.LocalFileSystem;
 import org.apache.hadoop.fs.Path;
-import org.codehaus.plexus.util.IOUtil;
 import org.junit.Test;
 import org.mockito.Mockito;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
 import java.net.URI;
-import java.net.URISyntaxException;
 
 /**
  * Created by akonopko on 9/18/14.
  */
-public class PlainFixtureComparatorWorkerTest {
+public class PlainFixtureComparatorFilePairWorkerTest {
 
     @Test
     public void testFixturesAreEqual() throws Exception {
