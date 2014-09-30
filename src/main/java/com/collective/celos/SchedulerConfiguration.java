@@ -2,17 +2,23 @@ package com.collective.celos;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Map;
 
 /**
  * Reads configuration and database from filesystem at well-known paths.
  */
 public class SchedulerConfiguration {
 
-    private static final String WORKFLOW_CONFIGURATION_PATH = "/etc/celos/workflows";
-    private static final String DEFAULTS_CONFIGURATION_PATH = "/etc/celos/defaults";
-    private static final String STATE_DATABASE_PATH = "/var/lib/celos/db";
+    private final String workflowConfigurationPath;
+    private final String defaultsConfigurationPath;
+    private final String stateDatabasePath;
+    private final Map<String, String> additionalVars;
 
-    public SchedulerConfiguration() {        
+    public SchedulerConfiguration(String workflowConfigurationPath, String defaultsConfigurationPath, String stateDatabasePath, Map<String, String> additionalVars) {
+        this.workflowConfigurationPath = workflowConfigurationPath;
+        this.defaultsConfigurationPath = defaultsConfigurationPath;
+        this.stateDatabasePath = stateDatabasePath;
+        this.additionalVars = additionalVars;
     }
     
     public Scheduler makeDefaultScheduler() throws Exception {
@@ -23,13 +29,13 @@ public class SchedulerConfiguration {
     }
 
     private WorkflowConfigurationParser getWorkflowConfigurationParser() throws Exception {
-        File configDir = new File(WORKFLOW_CONFIGURATION_PATH);
-        File defaultsDir = new File(DEFAULTS_CONFIGURATION_PATH);
-        return new WorkflowConfigurationParser(defaultsDir).parseConfiguration(configDir);
+        File configDir = new File(workflowConfigurationPath);
+        File defaultsDir = new File(defaultsConfigurationPath);
+        return new WorkflowConfigurationParser(defaultsDir, additionalVars).parseConfiguration(configDir);
     }
 
     private StateDatabase makeDefaultStateDatabase() throws IOException {
-        File dbDir = new File(STATE_DATABASE_PATH);
+        File dbDir = new File(stateDatabasePath);
         return new FileSystemStateDatabase(dbDir);
     }
 

@@ -1,4 +1,5 @@
 importPackage(Packages.com.collective.celos);
+importPackage(Packages.com.collective.celos.trigger);
 
 // FIXME: temporary solution: until all utility functions return real Java objects,
 // allow JSON also and create instances from it using the JSONInstanceCreator.
@@ -124,6 +125,17 @@ function mergeProperties(source, target) {
     }
 }
 
+function hdfsPath(path) {
+    if (!path) {
+        throw "Undefined path in hdfsPath";
+    }
+    if (typeof HDFS_PREFIX !== "undefined") {
+        return HDFS_PREFIX + path;
+    } else {
+        return path;
+    }
+}
+
 function oozieExternalService(userPropertiesOrFun, oozieURL) {
     if (oozieURL === undefined) {
         if (typeof CELOS_DEFAULT_OOZIE !== "undefined") {
@@ -150,6 +162,10 @@ function makePropertiesGen(userPropertiesOrFun) {
             mergeProperties(CELOS_DEFAULT_OOZIE_PROPERTIES, theProperties);
         }
         mergeProperties(userProperties, theProperties);
+        if (typeof USERNAME !== "undefined") {
+            theProperties["user.name"] = USERNAME;
+        }
+
         return celosMapper.readTree(JSON.stringify(theProperties));
     }
     return new PropertiesGenerator({ getProperties: getPropertiesFun });

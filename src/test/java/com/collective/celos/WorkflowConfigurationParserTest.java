@@ -1,13 +1,16 @@
 package com.collective.celos;
 
 import java.io.File;
+import java.io.StringReader;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
 import java.util.SortedSet;
 
+import com.google.common.collect.ImmutableMap;
 import org.junit.Assert;
 import org.junit.Test;
+import org.mozilla.javascript.NativeJavaObject;
 
 public class WorkflowConfigurationParserTest {
 
@@ -135,7 +138,73 @@ public class WorkflowConfigurationParserTest {
     public void defaultsWork() throws Exception {
         parseNamedFile("uses-defaults", "workflow-1");
     }
-    
+
+    @Test
+    public void evaluatesAdditionalVar() throws Exception {
+        WorkflowConfigurationParser parser = new WorkflowConfigurationParser(new File("unused"), ImmutableMap.of("var1", "val1"));
+        // Evaluate JS function call
+        Object jsResult = parser.evaluateReader(new StringReader("var1"), "string", 1);
+        Assert.assertEquals(jsResult, "val1");
+    }
+
+    @Test
+    public void testTakesDefaultUsername() throws Exception {
+
+        URL resource = Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/defaults-oozie-props");
+        File defaults = new File(resource.toURI());
+
+        WorkflowConfigurationParser parser = new WorkflowConfigurationParser(defaults, ImmutableMap.of("var1", "val1"));
+
+        String func = "function (slotId) {" +
+                "        return {" +
+                "            \"oozie.wf.application.path\": \"/workflow.xml\"," +
+                "            \"inputDir\": \"/input\"," +
+                "            \"outputDir\": \"/output\"" +
+                "        }" +
+                "    }";
+
+        String str = "importDefaults(\"test\"); makePropertiesGen(" + func + "); ";
+        NativeJavaObject jsResult = (NativeJavaObject) parser.evaluateReader(new StringReader(str), "string", 1);
+        PropertiesGenerator generator = (PropertiesGenerator) jsResult.unwrap();
+        Assert.assertEquals(generator.getProperties(null).get("user.name").asText(), "default");
+    }
+
+    @Test
+    public void testTakesChangesUsername() throws Exception {
+
+        URL resource = Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/defaults-oozie-props");
+        File defaults = new File(resource.toURI());
+
+        WorkflowConfigurationParser parser = new WorkflowConfigurationParser(defaults, ImmutableMap.of("USERNAME", "nameIsChanged"));
+
+        String func = "function (slotId) {" +
+                "        return {" +
+                "            \"oozie.wf.application.path\": \"/workflow.xml\"," +
+                "            \"inputDir\": \"/input\"," +
+                "            \"outputDir\": \"/output\"" +
+                "        }" +
+                "    }";
+
+        String str = "importDefaults(\"test\"); makePropertiesGen(" + func + "); ";
+        NativeJavaObject jsResult = (NativeJavaObject) parser.evaluateReader(new StringReader(str), "string", 1);
+        PropertiesGenerator generator = (PropertiesGenerator) jsResult.unwrap();
+        Assert.assertEquals(generator.getProperties(null).get("user.name").asText(), "nameIsChanged");
+    }
+
+
+    @Test
+    public void doesntEvaluateAdditionalVar() throws Exception {
+        WorkflowConfigurationParser parser = new WorkflowConfigurationParser(new File("unused"), ImmutableMap.<String, String>of());
+        try {
+            parser.evaluateReader(new StringReader("var1"), "string", 1);
+        } catch (Exception e) {
+            if (e.getMessage().contains("\"var1\" is not defined")) {
+                return;
+            }
+        }
+        Assert.fail();
+    }
+
     public static WorkflowConfiguration parseFile(String label) throws Exception {
         return parseNamedFile(label, "workflow-1");
     }
@@ -145,7 +214,7 @@ public class WorkflowConfigurationParserTest {
         File dir = getConfigurationDir(label);
         File defaults = getDefaultsDir();
         File workflow = new File(dir, workflowName + "." + WorkflowConfigurationParser.WORKFLOW_FILE_EXTENSION);
-        WorkflowConfigurationParser workflowConfigurationParser = new WorkflowConfigurationParser(defaults);
+        WorkflowConfigurationParser workflowConfigurationParser = new WorkflowConfigurationParser(defaults, ImmutableMap.<String, String>of());
         workflowConfigurationParser.parseFile(workflow);
         return workflowConfigurationParser.getWorkflowConfiguration();
     }
@@ -153,7 +222,7 @@ public class WorkflowConfigurationParserTest {
     public static WorkflowConfiguration parseDir(String label) throws Exception {
         File dir = getConfigurationDir(label);
         File defaults = getDefaultsDir();
-        return new WorkflowConfigurationParser(defaults).parseConfiguration(dir).getWorkflowConfiguration();
+        return new WorkflowConfigurationParser(defaults, ImmutableMap.<String, String>of()).parseConfiguration(dir).getWorkflowConfiguration();
     }
 
     public static File getConfigurationDir(String label) throws URISyntaxException {
@@ -167,7 +236,7 @@ public class WorkflowConfigurationParserTest {
         URL resource = Thread.currentThread().getContextClassLoader().getResource(path);
         return new File(resource.toURI());
     }
-    
+
     private void expectMessage(String label, String message) throws AssertionError {
         try {
             parseFile(label);

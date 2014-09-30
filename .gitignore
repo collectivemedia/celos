@@ -1,3 +1,6 @@
 reports/
 target/
 provisioner/tmp/
+**/build/*
+**/bin/*
+.gradle
