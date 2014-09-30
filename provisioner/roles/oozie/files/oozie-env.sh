@@ -23,4 +23,4 @@ export OOZIE_LOG=/var/log/oozie
 export OOZIE_CATALINA_HOME=/usr/lib/bigtop-tomcat
 export CATALINA_TMPDIR=/var/tmp/oozie
 export CATALINA_PID=/var/run/oozie/oozie.pid
-export CATALINA_BASE=/usr/lib/oozie/oozie-server
+export CATALINA_BASE=/var/lib/oozie/tomcat-deployment

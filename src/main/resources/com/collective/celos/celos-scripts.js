@@ -94,6 +94,16 @@ function delayTrigger(seconds) {
     return new DelayTrigger(seconds);
 }
 
+function offsetTrigger(seconds, trigger) {
+    if (!seconds) {
+        throw "Undefined seconds";
+    }
+    if (!trigger) {
+        throw "Undefined trigger";
+    }
+    return new OffsetTrigger(seconds, trigger);
+}
+
 function commandTrigger() {
     var list = new Packages.java.util.LinkedList();
     for (var i = 0; i < arguments.length; i++) {

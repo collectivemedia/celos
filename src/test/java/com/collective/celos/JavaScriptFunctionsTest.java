@@ -163,7 +163,25 @@ public class JavaScriptFunctionsTest {
     public void testNotTriggerRequiresSubTrigger() throws Exception {
         expectMessage("notTrigger()", "Undefined sub trigger");
     }
-    
+
+    @Test
+    public void testOffsetTrigger() throws Exception {
+        OffsetTrigger t = (OffsetTrigger) runJS("offsetTrigger(25, alwaysTrigger())");
+        Assert.assertEquals(25, t.getSeconds());
+        Assert.assertEquals(AlwaysTrigger.class, t.getTrigger().getClass());
+    }
+
+    @Test
+    public void testOffsetTriggerRequiresSeconds() throws Exception {
+        expectMessage("offsetTrigger()", "Undefined seconds");
+    }
+
+    @Test
+    public void testOffsetTriggerRequiresSecondsAndTrigger() throws Exception {
+        expectMessage("offsetTrigger(25)", "Undefined trigger");
+    }
+
+
     @Test
     public void testDelayTrigger() throws Exception {
         DelayTrigger t = (DelayTrigger) runJS("delayTrigger(25)");

@@ -2,6 +2,6 @@
 # Handlers for the hadoop master services
 
 - name: restart hadoop master services
-  service: name=${item} state=restarted
+  service: name={{item}} state=restarted
   with_items:
     - hadoop-hdfs-namenode
