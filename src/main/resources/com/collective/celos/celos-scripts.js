@@ -119,11 +119,11 @@ function hdfsPath(path) {
     if (!path) {
         throw "Undefined path in hdfsPath";
     }
-    var prefix = HDFS_PREFIX;
-    if (!prefix) {
-        prefix = "";
+    if (typeof HDFS_PREFIX !== "undefined") {
+        return HDFS_PREFIX + path;
+    } else {
+        return path;
     }
-    return prefix + path;
 }
 
 function oozieExternalService(userPropertiesOrFun, oozieURL) {
@@ -152,6 +152,10 @@ function makePropertiesGen(userPropertiesOrFun) {
             mergeProperties(CELOS_DEFAULT_OOZIE_PROPERTIES, theProperties);
         }
         mergeProperties(userProperties, theProperties);
+        if (typeof CELOS_CI_USERNAME !== "undefined") {
+            theProperties["user.name"] = CELOS_CI_USERNAME;
+        }
+
         return celosMapper.readTree(JSON.stringify(theProperties));
     }
     return new PropertiesGenerator({ getProperties: getPropertiesFun });

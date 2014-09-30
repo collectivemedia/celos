@@ -9,10 +9,10 @@ import java.util.Map;
  */
 public class SchedulerConfiguration {
 
-    private String workflowConfigurationPath;
-    private String defaultsConfigurationPath;
-    private String stateDatabasePath;
-    private Map<String, String> additionalVars;
+    private final String workflowConfigurationPath;
+    private final String defaultsConfigurationPath;
+    private final String stateDatabasePath;
+    private final Map<String, String> additionalVars;
 
     public SchedulerConfiguration(String workflowConfigurationPath, String defaultsConfigurationPath, String stateDatabasePath, Map<String, String> additionalVars) {
         this.workflowConfigurationPath = workflowConfigurationPath;

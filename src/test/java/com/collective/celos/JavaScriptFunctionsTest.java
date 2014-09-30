@@ -287,6 +287,13 @@ public class JavaScriptFunctionsTest {
         Assert.assertEquals(s, "/user/celos/test/path");
     }
 
+    @Test
+    public void testHdfsPathFunctionNoPrefix() throws Exception {
+        String js = "hdfsPath('/path')";
+        String s = (String) runJS(js);
+        Assert.assertEquals(s, "/path");
+    }
+
     private Object runJS(String js) throws Exception {
         WorkflowConfigurationParser parser = new WorkflowConfigurationParser(new File("unused"), ImmutableMap.<String, String>of());
         // Evaluate JS function call

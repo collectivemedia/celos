@@ -92,14 +92,10 @@ public class WorkflowConfigurationParser {
 
 
     private void addAdditionalJsVariables(Global scope) throws IOException {
-        final String additionalJsVarPattern = "var %s = '%s';";
         if (additionalJsVariables != null) {
-            StringBuffer stringBuffer = new StringBuffer();
             for (String key : additionalJsVariables.keySet()) {
-                String val = additionalJsVariables.get(key);
-                stringBuffer.append(String.format(additionalJsVarPattern, key, val));
+                ScriptableObject.putProperty(scope, key, additionalJsVariables.get(key));
             }
-            context.evaluateReader(scope, new StringReader(stringBuffer.toString()), "additional.variables", 1, null);
         }
     }
 

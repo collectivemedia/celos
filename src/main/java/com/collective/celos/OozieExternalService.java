@@ -65,7 +65,6 @@ public class OozieExternalService implements ExternalService {
         runProperties.setProperty(MINUTE_PROP, formatter.formatMinute(t));
         runProperties.setProperty(SECOND_PROP, formatter.formatSecond(t));
         runProperties.setProperty(WORKFLOW_NAME_PROP, getWorkflowName(id, formatter));
-        runProperties.setProperty(OozieClient.USER_NAME, System.getProperty("user.name"));
         return runProperties;
     }
 
