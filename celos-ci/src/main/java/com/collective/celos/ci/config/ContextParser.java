@@ -27,22 +27,14 @@ public class ContextParser {
     public static final String CLI_TEST_CASES_DIR = "tc";
 
     private CelosCiTargetParser targetParser;
+    private String userName;
 
-    public ContextParser(CelosCiTargetParser targetParser) {
+    public ContextParser(CelosCiTargetParser targetParser, String userName) {
         this.targetParser = targetParser;
+        this.userName = userName;
     }
 
-    public static class Context {
-        public final CelosCiContext celosCiContext;
-        public final TestContext testContext;
-
-        public Context(CelosCiContext celosCiContext, TestContext testContext) {
-            this.celosCiContext = celosCiContext;
-            this.testContext = testContext;
-        }
-    }
-
-    public Context parse(final String[] commandLineArguments, String userName) throws Exception {
+    public CelosCi parse(final String[] commandLineArguments) throws Exception {
 
         final CommandLineParser cmdLineGnuParser = new GnuParser();
         final Options gnuOptions = constructOptions();
@@ -70,11 +62,11 @@ public class ContextParser {
             CelosCiTarget testTarget = new CelosCiTarget(target.getScpSecuritySettings(), target.getPathToHdfsSite(), target.getPathToCoreSite(), substitutedCelosWorkflowDir, target.getDefaultsFile());
 
             CelosCiContext ciContext = new CelosCiContext(testTarget, userName, mode, deployDir, workflowName, testContext.getHdfsPrefix());
-            return new Context(ciContext, testContext);
+            return new CelosCi(ciContext, testContext);
 
         } else {
             CelosCiContext ciContext = new CelosCiContext(target, userName, mode, deployDir, workflowName, "");
-            return new Context(ciContext, null);
+            return new CelosCi(ciContext, null);
         }
 
 

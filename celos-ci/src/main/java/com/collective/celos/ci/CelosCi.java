@@ -14,17 +14,29 @@ public class CelosCi {
 
         String userName = System.getenv("username") == null ? System.getProperty("user.name") : System.getenv("username");
 
-        ContextParser contextParser = new ContextParser(new CelosCiTargetParser(userName));
-        ContextParser.Context context = contextParser.parse(args, userName);
+        ContextParser contextParser = new ContextParser(new CelosCiTargetParser(userName), userName);
+        CelosCi celosCi = contextParser.parse(args);
 
-        CelosCi celosCi = new CelosCi();
-        if (context.celosCiContext.getMode() == CelosCiContext.Mode.TEST) {
-            celosCi.onTestMode(context.celosCiContext, context.testContext);
-        } else if (context.celosCiContext.getMode() == CelosCiContext.Mode.DEPLOY) {
-            celosCi.onDeployMode(context.celosCiContext);
-        } else if (context.celosCiContext.getMode() == CelosCiContext.Mode.UNDEPLOY) {
-            celosCi.onUndeployMode(context.celosCiContext);
+        celosCi.start();
+    }
+
+    public final CelosCiContext celosCiContext;
+    public final TestContext testContext;
+
+    public CelosCi(CelosCiContext celosCiContext, TestContext testContext) {
+        this.celosCiContext = celosCiContext;
+        this.testContext = testContext;
+    }
+
+    public void start() throws Exception {
+        if (celosCiContext.getMode() == CelosCiContext.Mode.TEST) {
+            onTestMode(celosCiContext, testContext);
+        } else if (celosCiContext.getMode() == CelosCiContext.Mode.DEPLOY) {
+            onDeployMode(celosCiContext);
+        } else if (celosCiContext.getMode() == CelosCiContext.Mode.UNDEPLOY) {
+            onUndeployMode(celosCiContext);
         }
+
     }
 
     public void onDeployMode(CelosCiContext ciContext) throws Exception {
