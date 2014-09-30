@@ -1,12 +1,9 @@
-package com.collective.celos.trigger;
+package com.collective.celos;
 
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.collective.celos.ScheduledTime;
-import com.collective.celos.ScheduledTimeFormatter;
-import com.collective.celos.Scheduler;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 

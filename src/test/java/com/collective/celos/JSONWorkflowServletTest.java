@@ -1,15 +1,12 @@
-package com.collective.celos.servlet;
+package com.collective.celos;
 
 import java.util.LinkedList;
 import java.util.List;
 
-import com.collective.celos.ScheduledTime;
+import com.collective.celos.*;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.collective.celos.SlotID;
-import com.collective.celos.SlotState;
-import com.collective.celos.WorkflowID;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 

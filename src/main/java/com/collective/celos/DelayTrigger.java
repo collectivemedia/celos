@@ -1,7 +1,5 @@
-package com.collective.celos.trigger;
+package com.collective.celos;
 
-import com.collective.celos.ScheduledTime;
-import com.collective.celos.Scheduler;
 import org.joda.time.DateTime;
 
 /**

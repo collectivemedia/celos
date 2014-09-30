@@ -1,6 +1,6 @@
 package com.collective.celos.server;
 
-import com.collective.celos.servlet.*;
+import com.collective.celos.*;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;

@@ -1,5 +1,6 @@
-package com.collective.celos.servlet;
+package com.collective.celos;
 
+import com.collective.celos.JSONWorkflowListServlet;
 import org.junit.Assert;
 import org.junit.Test;
 

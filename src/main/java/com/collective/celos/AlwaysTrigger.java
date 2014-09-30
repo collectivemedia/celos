@@ -1,7 +1,4 @@
-package com.collective.celos.trigger;
-
-import com.collective.celos.ScheduledTime;
-import com.collective.celos.Scheduler;
+package com.collective.celos;
 
 /**
  * Trivial trigger that always signals data availability,

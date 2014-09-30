@@ -1,4 +1,4 @@
-package com.collective.celos.servlet;
+package com.collective.celos;
 
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -7,9 +7,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.collective.celos.Scheduler;
-import com.collective.celos.Workflow;
-import com.collective.celos.WorkflowConfiguration;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 

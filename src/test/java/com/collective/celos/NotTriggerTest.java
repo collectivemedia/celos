@@ -1,6 +1,5 @@
 package com.collective.celos;
 
-import com.collective.celos.trigger.NotTrigger;
 import junit.framework.Assert;
 
 import org.junit.Test;

@@ -1,4 +1,4 @@
-package com.collective.celos.servlet;
+package com.collective.celos;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;

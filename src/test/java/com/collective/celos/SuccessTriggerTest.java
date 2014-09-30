@@ -1,6 +1,5 @@
 package com.collective.celos;
 
-import com.collective.celos.trigger.SuccessTrigger;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.junit.Assert;

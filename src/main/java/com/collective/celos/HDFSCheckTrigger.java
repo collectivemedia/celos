@@ -1,6 +1,5 @@
-package com.collective.celos.trigger;
+package com.collective.celos;
 
-import com.collective.celos.*;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;

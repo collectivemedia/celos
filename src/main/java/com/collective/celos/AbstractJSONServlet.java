@@ -1,4 +1,4 @@
-package com.collective.celos.servlet;
+package com.collective.celos;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;

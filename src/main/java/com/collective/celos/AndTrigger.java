@@ -1,7 +1,4 @@
-package com.collective.celos.trigger;
-
-import com.collective.celos.ScheduledTime;
-import com.collective.celos.Scheduler;
+package com.collective.celos;
 
 import java.util.LinkedList;
 import java.util.List;

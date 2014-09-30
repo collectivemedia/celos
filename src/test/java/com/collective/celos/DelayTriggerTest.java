@@ -1,7 +1,5 @@
 package com.collective.celos;
 
-import com.collective.celos.trigger.DelayTrigger;
-import com.collective.celos.trigger.Trigger;
 import org.junit.Assert;
 import org.junit.Test;
 
