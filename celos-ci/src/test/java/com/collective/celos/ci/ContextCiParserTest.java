@@ -29,19 +29,13 @@ public class ContextCiParserTest {
 
         ContextParser contextParser = new ContextParser(targetParser);
 
-        CelosCi celosCi = Mockito.spy(new CelosCi());
-
-        Mockito.doNothing().when(celosCi).onTestMode(any(CelosCiContext.class), any(TestContext.class));
-
         String coreSite = Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/ci/testing/config/core-site.xml").toURI().toString();
         String hdfsSite = Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/ci/testing/config/hdfs-site.xml").toURI().toString();
 
         Mockito.doReturn(coreSite).when(target).getPathToCoreSite();
         Mockito.doReturn(hdfsSite).when(target).getPathToHdfsSite();
 
-        contextParser.parse(args, "", celosCi);
-
-        verify(celosCi, times(1)).onTestMode(any(CelosCiContext.class), any(TestContext.class));
+        contextParser.parse(args, "");
 
     }
 }

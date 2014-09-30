@@ -13,6 +13,7 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Map;
 import java.util.UUID;
 
 public class ContextParser {
@@ -31,7 +32,17 @@ public class ContextParser {
         this.targetParser = targetParser;
     }
 
-    public void parse(final String[] commandLineArguments, String userName, CelosCi callMeBack) throws Exception {
+    public static class Context {
+        public final CelosCiContext celosCiContext;
+        public final TestContext testContext;
+
+        public Context(CelosCiContext celosCiContext, TestContext testContext) {
+            this.celosCiContext = celosCiContext;
+            this.testContext = testContext;
+        }
+    }
+
+    public Context parse(final String[] commandLineArguments, String userName) throws Exception {
 
         final CommandLineParser cmdLineGnuParser = new GnuParser();
         final Options gnuOptions = constructOptions();
@@ -39,7 +50,7 @@ public class ContextParser {
 
         if (!commandLine.hasOption(CLI_TARGET) || !commandLine.hasOption(CLI_DEPLOY_DIR) || !commandLine.hasOption(CLI_WORKFLOW_NAME)) {
             printHelp(80, 5, 3, true, System.out);
-            return;
+            return null;
         }
 
         CelosCiContext.Mode mode = CelosCiContext.Mode.valueOf(commandLine.getOptionValue(CLI_MODE));
@@ -59,18 +70,11 @@ public class ContextParser {
             CelosCiTarget testTarget = new CelosCiTarget(target.getScpSecuritySettings(), target.getPathToHdfsSite(), target.getPathToCoreSite(), substitutedCelosWorkflowDir, target.getDefaultsFile());
 
             CelosCiContext ciContext = new CelosCiContext(testTarget, userName, mode, deployDir, workflowName, testContext.getHdfsPrefix());
-            callMeBack.onTestMode(ciContext, testContext);
+            return new Context(ciContext, testContext);
 
-        } else if (mode == CelosCiContext.Mode.DEPLOY) {
-
+        } else {
             CelosCiContext ciContext = new CelosCiContext(target, userName, mode, deployDir, workflowName, "");
-            callMeBack.onDeployMode(ciContext);
-
-        } else if (mode == CelosCiContext.Mode.UNDEPLOY) {
-
-            CelosCiContext ciContext = new CelosCiContext(target, userName, mode, deployDir, workflowName, "");
-            callMeBack.onUndeployMode(ciContext);
-
+            return new Context(ciContext, null);
         }
 
 
