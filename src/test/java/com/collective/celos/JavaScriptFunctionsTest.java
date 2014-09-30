@@ -1,18 +1,19 @@
 package com.collective.celos;
 
-import java.io.File;
-import java.io.StringReader;
-import java.util.Arrays;
-import java.util.Properties;
-
+import com.collective.celos.trigger.*;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.common.collect.ImmutableMap;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.mozilla.javascript.NativeJavaObject;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import java.io.File;
+import java.io.StringReader;
+import java.util.Arrays;
+import java.util.Properties;
 
 public class JavaScriptFunctionsTest {
 
@@ -295,9 +296,18 @@ public class JavaScriptFunctionsTest {
         String s = (String) runJS("replaceTimeVariables('${year}-${month}-${day}T${hour}:${minute}:${second}Z ${year}', new Packages.com.collective.celos.ScheduledTime('2014-05-12T19:33:01Z'))");
         Assert.assertEquals("2014-05-12T19:33:01Z 2014", s);
     }
-    
+
+
+    @Test
+    public void testHdfsPathFunction() throws Exception {
+        String js = "var HDFS_PREFIX = '/user/celos/test'; \n" +
+                "hdfsPath('/path')";
+        String s = (String) runJS(js);
+        Assert.assertEquals(s, "/user/celos/test/path");
+    }
+
     private Object runJS(String js) throws Exception {
-        WorkflowConfigurationParser parser = new WorkflowConfigurationParser(new File("unused"));
+        WorkflowConfigurationParser parser = new WorkflowConfigurationParser(new File("unused"), ImmutableMap.<String, String>of());
         // Evaluate JS function call
         Object jsResult = parser.evaluateReader(new StringReader(js), "string", 1);
         if (jsResult instanceof NativeJavaObject) {
@@ -308,7 +318,7 @@ public class JavaScriptFunctionsTest {
     }
 
     private Object runJSNativeResult(String js) throws Exception {
-        WorkflowConfigurationParser parser = new WorkflowConfigurationParser(new File("unused"));
+        WorkflowConfigurationParser parser = new WorkflowConfigurationParser(new File("unused"), ImmutableMap.<String, String>of());
         // Evaluate JS function call
         return parser.evaluateReader(new StringReader(js), "string", 1);
     }

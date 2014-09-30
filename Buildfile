@@ -1,11 +1,11 @@
 repositories.remote << 'http://repo1.maven.org/maven2/'
 repositories.remote << 'https://repository.cloudera.com/artifactory/cloudera-repos/'
 
-OOZIE_CLIENT = 'org.apache.oozie:oozie-client:jar:4.0.0-cdh5.1.0'
+OOZIE_CLIENT = 'org.apache.oozie:oozie-client:jar:4.0.0-cdh5.1.2'
 HADOOP = [
-  'org.apache.hadoop:hadoop-common:jar:2.3.0-cdh5.1.0',
-  'org.apache.hadoop:hadoop-hdfs:jar:2.3.0-cdh5.1.0',
-  'org.apache.hadoop:hadoop-auth:jar:2.3.0-cdh5.1.0',
+  'org.apache.hadoop:hadoop-common:jar:2.3.0-cdh5.1.2',
+  'org.apache.hadoop:hadoop-hdfs:jar:2.3.0-cdh5.1.2',
+  'org.apache.hadoop:hadoop-auth:jar:2.3.0-cdh5.1.2',
   'com.google.protobuf:protobuf-java:jar:2.5.0',
   'commons-logging:commons-logging:jar:1.1.3',
   'commons-configuration:commons-configuration:jar:1.10',
@@ -29,6 +29,8 @@ JSON_SIMPLE = 'com.googlecode.json-simple:json-simple:jar:1.1.1'
 QUARTZ_SCHEDULER = 'org.quartz-scheduler:quartz:jar:2.1.1'
 RHINO = 'org.mozilla:rhino:jar:1.7R4'
 MOCKITO = 'org.mockito:mockito-all:jar:1.9.5'
+JETTY = ['javax.servlet:javax.servlet-api:jar:3.1.0', 'org.eclipse.jetty.aggregate:jetty-all:jar:9.2.2.v20140723']
+CLI = 'commons-cli:commons-cli:jar:1.2'
 SERVLET = 'javax.servlet:servlet-api:jar:2.3'
 
 LOG4J = ['log4j:log4j:jar:1.2.17', 'log4j:apache-log4j-extras:jar:1.2.17']
@@ -46,7 +48,9 @@ DEPENDENCIES = [
   JODA,
   JSON_SIMPLE,
   QUARTZ_SCHEDULER,
-  RHINO
+  RHINO,
+  JETTY,
+  CLI
 ].flatten.reject {|tdep|
   GET_OUTTA_MY_JAR.select {|x| tdep.to_s.include?(x)}.any?
 }.push(LOG4J)
@@ -72,5 +76,6 @@ define 'celos' do
   compile.with(DEPENDENCIES)
   test.with(TEST_DEPENDENCIES)
 
-  package(:war).libs -= artifacts(SERVLET)
+  package(:jar)
+  package(:war).libs -= artifacts('javax.servlet:servlet-api:jar:2.3')
 end

@@ -14,7 +14,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 public class JSONSlotStateServlet extends AbstractJSONServlet {
     
     private static final String ID_PARAM = "id";
-    
+
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException {
         String id = req.getParameter(ID_PARAM);
         if (id == null) {
@@ -31,7 +31,7 @@ public class JSONSlotStateServlet extends AbstractJSONServlet {
                 writer.writeValue(res.getOutputStream(), object);
             }
         } catch (Exception e) {
-            throw new ServletException(e);
+            throw new RuntimeException(e);
         }
     }
     
