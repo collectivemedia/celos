@@ -1,6 +1,5 @@
 package com.collective.celos.ci.fixtures.util;
 
-import com.sun.xml.internal.messaging.saaj.util.ByteOutputStream;
 import org.apache.avro.Schema;
 import org.apache.avro.file.DataFileReader;
 import org.apache.avro.file.DataFileWriter;
@@ -19,7 +18,7 @@ public class AvroJsonConverter {
 
     public InputStream readAvroISToJsonIS(SeekableInput input) throws IOException {
 
-        ByteOutputStream stream1 = new ByteOutputStream();
+        ByteArrayOutputStream stream1 = new ByteArrayOutputStream();
 
         GenericDatumReader<Object> reader = new GenericDatumReader<>();
         FileReader<Object> fileReader =  DataFileReader.openReader(input, reader);
@@ -35,7 +34,7 @@ public class AvroJsonConverter {
         } finally {
             fileReader.close();
         }
-        return new ByteArrayInputStream(stream1.getBytes());
+        return new ByteArrayInputStream(stream1.toByteArray());
     }
 
     public void writeJsonISToAvroOS(InputStream input, OutputStream output, Schema schema) throws IOException {

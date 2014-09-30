@@ -42,7 +42,7 @@ public class WorkflowFileDeployer {
     }
 
     private String getWorkflowJsUri() {
-        return config.getCelosWorkflowDir() + File.separator + config.getWorkflowName() + ".js";
+        return config.getTarget().getCelosWorkflowsDirUri() + File.separator + config.getWorkflowName() + ".js";
     }
 
 

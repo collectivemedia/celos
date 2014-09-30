@@ -23,32 +23,20 @@ public class CelosCiContext {
     private final String workflowName;
     private final FileSystem fileSystem;
     private final String hdfsPrefix;
-    private final String substitutedCelosWorkflowDir;
     private final Configuration configuration;
 
     public CelosCiContext(CelosCiTarget target,
                           String userName,
                           Mode mode,
                           File deployDir,
-                          String workflowName) throws Exception {
-        this(target, userName, mode, deployDir, workflowName, "", null);
-    }
-
-
-    public CelosCiContext(CelosCiTarget target,
-                          String userName,
-                          Mode mode,
-                          File deployDir,
                           String workflowName,
-                          String hdfsPrefix,
-                          String substitutedCelosWorkflowDir) throws Exception {
+                          String hdfsPrefix) throws Exception {
         this.target = target;
         this.userName = userName;
         this.mode = mode;
         this.deployDir = deployDir;
         this.workflowName = workflowName;
         this.hdfsPrefix = hdfsPrefix;
-        this.substitutedCelosWorkflowDir = substitutedCelosWorkflowDir;
         this.configuration = setupConfiguration(userName, target);
         this.fileSystem = FileSystem.get(this.configuration);
     }
@@ -95,10 +83,6 @@ public class CelosCiContext {
 
     public String getHdfsPrefix() {
         return hdfsPrefix;
-    }
-
-    public String getCelosWorkflowDir() {
-        return mode == Mode.TEST ? substitutedCelosWorkflowDir : getTarget().getCelosWorkflowsDirUri();
     }
 
     public Configuration getConfiguration() {

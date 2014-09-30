@@ -18,12 +18,8 @@ public class CelosCiTargetParser {
 
     private JScpWorker worker;
 
-    public CelosCiTargetParser() throws FileSystemException {
-        this.worker = new JScpWorker(System.getProperty("user.name"), JScpWorker.DEFAULT_SECURITY_SETTINGS);
-    }
-
-    public CelosCiTargetParser(String userName, String securitySettings) throws FileSystemException {
-        this.worker = new JScpWorker(userName, securitySettings);
+    public CelosCiTargetParser(String userName) throws FileSystemException {
+        this.worker = new JScpWorker(userName, JScpWorker.DEFAULT_SECURITY_SETTINGS);
     }
 
     public CelosCiTarget parse(String targetFileUri) throws Exception {
