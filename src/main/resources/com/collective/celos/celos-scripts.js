@@ -152,8 +152,8 @@ function makePropertiesGen(userPropertiesOrFun) {
             mergeProperties(CELOS_DEFAULT_OOZIE_PROPERTIES, theProperties);
         }
         mergeProperties(userProperties, theProperties);
-        if (typeof CELOS_CI_USERNAME !== "undefined") {
-            theProperties["user.name"] = CELOS_CI_USERNAME;
+        if (typeof USERNAME !== "undefined") {
+            theProperties["user.name"] = USERNAME;
         }
 
         return celosMapper.readTree(JSON.stringify(theProperties));
