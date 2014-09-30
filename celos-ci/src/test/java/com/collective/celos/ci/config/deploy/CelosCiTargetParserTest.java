@@ -13,7 +13,7 @@ public class CelosCiTargetParserTest {
 
     @Test
     public void testParseTargetFile() throws Exception {
-        CelosCiTargetParser parser = new CelosCiTargetParser("uname", JScpWorker.DEFAULT_SECURITY_SETTINGS);
+        CelosCiTargetParser parser = new CelosCiTargetParser("uname");
         File targetFile = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/ci/testing/config/target.json").toURI());
 
         CelosCiTarget target = parser.parse(targetFile.getAbsolutePath());
@@ -27,7 +27,7 @@ public class CelosCiTargetParserTest {
 
     @Test
     public void testParseTargetFileDefaultSecuritySettings() throws Exception {
-        CelosCiTargetParser parser = new CelosCiTargetParser("uname", JScpWorker.DEFAULT_SECURITY_SETTINGS);
+        CelosCiTargetParser parser = new CelosCiTargetParser("uname");
         File targetFile = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/ci/testing/config/target-no-sec.json").toURI());
 
         CelosCiTarget target = parser.parse(targetFile.getAbsolutePath());

@@ -39,7 +39,7 @@ public class ContextCiParserTest {
         Mockito.doReturn(coreSite).when(target).getPathToCoreSite();
         Mockito.doReturn(hdfsSite).when(target).getPathToHdfsSite();
 
-        contextParser.parse(args, celosCi);
+        contextParser.parse(args, "", celosCi);
 
         verify(celosCi, times(1)).onTestMode(any(CelosCiContext.class), any(TestContext.class));
 
