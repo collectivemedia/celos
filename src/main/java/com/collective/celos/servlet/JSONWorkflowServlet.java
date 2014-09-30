@@ -49,7 +49,7 @@ public class JSONWorkflowServlet extends AbstractJSONServlet {
                 writer.writeValue(res.getOutputStream(), object);
             }
         } catch (Exception e) {
-            throw new ServletException(e);
+            throw new RuntimeException(e);
         }
     }
 

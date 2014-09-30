@@ -10,13 +10,14 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.collective.celos.trigger.AlwaysTrigger;
+import com.collective.celos.trigger.Trigger;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InOrder;
-import org.mockito.Mockito;
 
 /**
  * TODO: test exception handling and logging

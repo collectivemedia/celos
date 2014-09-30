@@ -1,4 +1,5 @@
 importPackage(Packages.com.collective.celos);
+importPackage(Packages.com.collective.celos.trigger);
 
 // FIXME: temporary solution: until all utility functions return real Java objects,
 // allow JSON also and create instances from it using the JSONInstanceCreator.
@@ -112,6 +113,17 @@ function mergeProperties(source, target) {
     for (var name in source) {
         target[name] = source[name];
     }
+}
+
+function hdfsPath(path) {
+    if (!path) {
+        throw "Undefined path in hdfsPath";
+    }
+    var prefix = HDFS_PREFIX;
+    if (!prefix) {
+        prefix = "";
+    }
+    return prefix + path;
 }
 
 function oozieExternalService(userPropertiesOrFun, oozieURL) {
