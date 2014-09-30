@@ -7,7 +7,7 @@
   roles:
    - prepare
    - openjdk_jdk
-   - cdh4_common
+   - cdh_common
 
 - hosts: hadoop_masters
   sudo: yes

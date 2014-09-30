@@ -2,7 +2,7 @@
 # Playbook for  Hadoop slave servers
 
 - name: Install the datanode and tasktracker packages
-  apt: name=${item} state=installed update_cache=yes
+  apt: name={{item}} state=installed update_cache=yes
   with_items: 
    - hadoop-yarn-nodemanager
    - hadoop-mapreduce

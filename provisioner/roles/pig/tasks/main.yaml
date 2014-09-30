@@ -1,7 +1,7 @@
 ---
 # file: roles/hadoop_master/tasks/main.yml
 - name: Install the pig package
-  apt: name=${item} state=installed update_cache=yes
+  apt: name={{ item }} state=installed update_cache=yes
   tags: pig
   with_items: 
    - pig
@@ -15,5 +15,5 @@
 - name: set PIG_CLASSPATH
   lineinfile: dest=/etc/environment state=present
     regexp="^PIG_CLASSPATH="
-    line="PIG_CLASSPATH=/usr/lib/hbase/hbase-0.94.6-cdh4.5.0-security.jar:/usr/lib/zookeeper/zookeeper-3.4.5-cdh4.5.0.jar"
+    line="PIG_CLASSPATH=/usr/lib/hbase/hbase-0.98.1-cdh5.1.0-security.jar:/usr/lib/zookeeper/zookeeper-3.4.5-cdh5.1.0.jar"
   tags: pig

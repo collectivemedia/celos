@@ -23,6 +23,11 @@
   notify: restart oozie services
   tags: oozie
 
+- name: Oozie tomcat config
+  shell: update-alternatives --set oozie-tomcat-conf /etc/oozie/tomcat-conf.http
+  notify: restart oozie services
+  tags: oozie
+
 - name: Oozie oozie-env.sh config file
   copy: src=roles/oozie/files/oozie-env.sh dest=/etc/oozie/conf/oozie-env.sh
   notify: restart oozie services
@@ -40,12 +45,8 @@
   shell: creates=/usr/lib/oozie/oozie.homedired su - hdfs -c " hadoop fs -mkdir /user &&  hadoop fs -mkdir  /user/oozie && hadoop fs -chown oozie:oozie /user/oozie" && touch /usr/lib/oozie/oozie.homedired
   tags: oozie
 
-- name: untar oozie sharelib
-  shell: creates=/tmp/ooziesharelib/untarred mkdir -p /tmp/ooziesharelib/share && /bin/tar -C /tmp/ooziesharelib/share --strip-components 1 -zxf /usr/lib/oozie/oozie-sharelib-yarn.tar.gz && touch /tmp/ooziesharelib/untarred 
-  tags: oozie
-
 - name: Upload sharelib to hdfs
-  shell: creates=/usr/lib/oozie/sharelibs.uploaded sudo  -u oozie hadoop fs -put /tmp/ooziesharelib/share /user/oozie/share  && touch /usr/lib/oozie/sharelibs.uploaded
+  shell: creates=/usr/lib/oozie/sharelibs.uploaded /usr/bin/oozie-setup sharelib create -fs hdfs://nn -locallib /usr/lib/oozie/oozie-sharelib-yarn.tar.gz  && touch /usr/lib/oozie/sharelibs.uploaded
   tags: oozie
 
 - name: Start oozie service
