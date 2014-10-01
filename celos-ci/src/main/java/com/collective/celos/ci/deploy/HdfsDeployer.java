@@ -39,10 +39,9 @@ public class HdfsDeployer {
             throw new IllegalStateException(hdfsDirLocalPath + " not found local FS");
         }
 
+        undeploy();
+
         Path dst = getDestinationHdfsPath();
-        if (fs.exists(dst)) {
-            fs.delete(dst, true);
-        }
         fs.mkdirs(dst);
         String[] childFiles = hdfsDirLocal.list();
         for (String child : childFiles) {
