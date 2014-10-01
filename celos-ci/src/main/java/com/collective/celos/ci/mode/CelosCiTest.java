@@ -28,13 +28,12 @@ public class CelosCiTest extends CelosCi {
         CelosCiTargetParser parser = new CelosCiTargetParser(commandLine.getUserName());
         CelosCiTarget target = parser.parse(commandLine.getTargetUri());
 
-        Path tempDir = Files.createTempDirectory("celos");
-        File celosWorkDir = tempDir.toFile();
-        System.out.println("Temp dir for Celos is " + tempDir.toAbsolutePath().toString());
+        File celosTempDir = Files.createTempDirectory("celos").toFile();
+        System.out.println("Temp dir for Celos is " + celosTempDir.getAbsolutePath().toString());
         String hdfsPrefix = String.format(HDFS_PREFIX_PATTERN, commandLine.getUserName(), commandLine.getWorkflowName(), UUID.randomUUID().toString());
         System.out.println("HDFS prefix is: " + hdfsPrefix);
 
-        this.testContext = new TestContext(celosWorkDir, hdfsPrefix, commandLine.getTestCasesDir());
+        this.testContext = new TestContext(celosTempDir, hdfsPrefix, commandLine.getTestCasesDir());
         URI substitutedCelosWorkflowDir = testContext.getCelosWorkflowDir().toURI();
         CelosCiTarget testTarget = new CelosCiTarget(target.getScpSecuritySettings(), target.getPathToHdfsSite(), target.getPathToCoreSite(), substitutedCelosWorkflowDir, target.getDefaultsFile());
         this.ciContext = new CelosCiContext(testTarget, commandLine.getUserName(), commandLine.getMode(), commandLine.getDeployDir(), commandLine.getWorkflowName(), hdfsPrefix);
@@ -47,6 +46,10 @@ public class CelosCiTest extends CelosCi {
 
     public CelosCiContext getCiContext() {
         return ciContext;
+    }
+
+    public TestContext getTestContext() {
+        return testContext;
     }
 
 }
