@@ -86,8 +86,8 @@ public class HdfsDeployerTest {
         targetDir.mkdirs();
         new File(targetDir, "file3").createNewFile();
         new File(targetDir, "file4").createNewFile();
-        
-        Assert.assertEquals(Sets.newHashSet("file2", "file1"), getFilesWithoutCrc(targetDir));
+
+        Assert.assertEquals(Sets.newHashSet("file3", "file4"), getFilesWithoutCrc(targetDir));
 
         deployer.deploy();
 
