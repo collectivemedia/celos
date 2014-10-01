@@ -7,11 +7,11 @@ import java.io.PrintWriter;
 
 public class ContextParser {
 
-    public static final String CLI_TARGET = "t";
-    public static final String CLI_MODE = "m";
-    public static final String CLI_DEPLOY_DIR = "d";
-    public static final String CLI_WORKFLOW_NAME = "w";
-    public static final String CLI_TEST_CASES_DIR = "tc";
+    public static final String CLI_TARGET = "target";
+    public static final String CLI_MODE = "mode";
+    public static final String CLI_DEPLOY_DIR = "deployDir";
+    public static final String CLI_WORKFLOW_NAME = "workflowName";
+    public static final String CLI_TEST_CASES_DIR = "testDir";
 
     public CelosCiCommandLine parse(final String[] commandLineArguments) throws Exception {
 
@@ -19,7 +19,7 @@ public class ContextParser {
         final Options gnuOptions = constructOptions();
         CommandLine commandLine = cmdLineGnuParser.parse(gnuOptions, commandLineArguments);
 
-        if (!commandLine.hasOption(CLI_TARGET) || !commandLine.hasOption(CLI_DEPLOY_DIR) || !commandLine.hasOption(CLI_WORKFLOW_NAME)) {
+        if (!commandLine.hasOption(CLI_TARGET) || !commandLine.hasOption(CLI_MODE) || !commandLine.hasOption(CLI_WORKFLOW_NAME)) {
             printHelp(80, 5, 3, true, System.out);
             return null;
         }
@@ -36,11 +36,11 @@ public class ContextParser {
 
     public Options constructOptions() {
         final Options options = new Options();
-        options.addOption(CLI_TARGET, "target", true, "Path to target JSON (alternative to command line)")
-               .addOption(CLI_MODE, "mode", true, "Mode. Defaults to DEPLOY")
-               .addOption(CLI_DEPLOY_DIR, "deployDir", true, "Deploy directory. Path to workflow you want to deploy")
-               .addOption(CLI_WORKFLOW_NAME, "workflowName", true, "Workflow JS file name")
-               .addOption(CLI_TEST_CASES_DIR, "testDir", true, "Test cases dir");
+        options.addOption(CLI_TARGET, CLI_MODE, true, "Path to target JSON (alternative to command line)")
+                .addOption(CLI_MODE, CLI_MODE, true, "Mode. Defaults to DEPLOY")
+                .addOption(CLI_DEPLOY_DIR, CLI_DEPLOY_DIR, true, "Deploy directory. Path to workflow you want to deploy")
+                .addOption(CLI_WORKFLOW_NAME, CLI_WORKFLOW_NAME, true, "Workflow JS file name")
+                .addOption(CLI_TEST_CASES_DIR, CLI_TEST_CASES_DIR, true, "Test cases dir");
         return options;
     }
 
