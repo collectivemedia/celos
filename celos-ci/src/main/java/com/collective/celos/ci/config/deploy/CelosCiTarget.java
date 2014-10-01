@@ -1,14 +1,16 @@
 package com.collective.celos.ci.config.deploy;
 
+import java.net.URI;
+
 public class CelosCiTarget {
 
     private final String scpSecuritySettings;
-    private final String pathToHdfsSite;
-    private final String pathToCoreSite;
-    private final String celosWorkflowsDirUri;
-    private final String defaultsFile;
+    private final URI pathToHdfsSite;
+    private final URI pathToCoreSite;
+    private final URI celosWorkflowsDirUri;
+    private final URI defaultsFile;
 
-    public CelosCiTarget(String scpSecuritySettings, String pathToHdfsSite, String pathToCoreSite, String celosWorkflowsDirUri, String defaultsFile) {
+    public CelosCiTarget(String scpSecuritySettings, URI pathToHdfsSite, URI pathToCoreSite, URI celosWorkflowsDirUri, URI defaultsFile) {
         this.scpSecuritySettings = scpSecuritySettings;
         this.pathToHdfsSite = pathToHdfsSite;
         this.pathToCoreSite = pathToCoreSite;
@@ -20,19 +22,19 @@ public class CelosCiTarget {
         return scpSecuritySettings;
     }
 
-    public String getPathToHdfsSite() {
+    public URI getPathToHdfsSite() {
         return pathToHdfsSite;
     }
 
-    public String getPathToCoreSite() {
+    public URI getPathToCoreSite() {
         return pathToCoreSite;
     }
 
-    public String getCelosWorkflowsDirUri() {
+    public URI getCelosWorkflowsDirUri() {
         return celosWorkflowsDirUri;
     }
 
-    public String getDefaultsFile() {
+    public URI getDefaultsFile() {
         return defaultsFile;
     }
 }

@@ -27,12 +27,15 @@ public class JScpWorker {
     }
 
     public FileObject getFileObjectByUri(String file) throws URISyntaxException, FileSystemException {
+        return getFileObjectByUri(URI.create(file));
+    }
+
+    public FileObject getFileObjectByUri(URI file) throws URISyntaxException, FileSystemException {
         URI uri = getURIRespectingUsername(file);
         return fsManager.resolveFile(uri.toString(), getSftpDefaultOptions());
     }
 
-    URI getURIRespectingUsername(String file) throws URISyntaxException {
-        URI uri = new URI(file);
+    URI getURIRespectingUsername(URI uri) throws URISyntaxException {
 
         if (userName != null && uri.getUserInfo() == null) {
             uri = new URI(uri.getScheme(), userName, uri.getHost(), uri.getPort(),

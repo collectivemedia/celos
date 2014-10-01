@@ -16,24 +16,24 @@ public class JScpWorkerTest {
     public void getURIRespectingUsernameChanges() throws FileSystemException, URISyntaxException {
         JScpWorker worker = new JScpWorker("uname", JScpWorker.DEFAULT_SECURITY_SETTINGS);
 
-        URI uri = worker.getURIRespectingUsername("sftp://server/path1/path2");
-        Assert.assertEquals(uri.toString(), "sftp://uname@server/path1/path2");
+        URI uri = worker.getURIRespectingUsername(URI.create("sftp://server/path1/path2"));
+        Assert.assertEquals(uri, URI.create("sftp://uname@server/path1/path2"));
     }
 
     @Test
     public void getURIRespectingUsernameDoesntChange1() throws FileSystemException, URISyntaxException {
         JScpWorker worker = new JScpWorker("uname", JScpWorker.DEFAULT_SECURITY_SETTINGS);
 
-        URI uri = worker.getURIRespectingUsername("sftp://user@server/path1/path2");
-        Assert.assertEquals(uri.toString(), "sftp://user@server/path1/path2");
+        URI uri = worker.getURIRespectingUsername(URI.create("sftp://user@server/path1/path2"));
+        Assert.assertEquals(uri, URI.create("sftp://user@server/path1/path2"));
     }
 
     @Test
     public void getURIRespectingUsernameDoesntChange2() throws FileSystemException, URISyntaxException {
         JScpWorker worker = new JScpWorker("uname", JScpWorker.DEFAULT_SECURITY_SETTINGS);
 
-        URI uri = worker.getURIRespectingUsername("sftp://user@server/path1/path2");
-        Assert.assertEquals(uri.toString(), "sftp://user@server/path1/path2");
+        URI uri = worker.getURIRespectingUsername(URI.create("sftp://user@server/path1/path2"));
+        Assert.assertEquals(uri, URI.create("sftp://user@server/path1/path2"));
     }
 
 }

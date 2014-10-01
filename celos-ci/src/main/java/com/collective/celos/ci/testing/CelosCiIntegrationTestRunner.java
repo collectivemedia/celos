@@ -91,7 +91,7 @@ public class CelosCiIntegrationTestRunner {
         JScpWorker worker = new JScpWorker(ciContext.getUserName(), ciContext.getTarget().getScpSecuritySettings());
         FileObject remoteDefaultsFile = worker.getFileObjectByUri(ciContext.getTarget().getDefaultsFile());
         if (remoteDefaultsFile.exists()) {
-            FileObject localDefaultsFile = worker.getFileObjectByUri(new File(testContext.getCelosDefaultsDir(), remoteDefaultsFile.getName().getBaseName()).toString());
+            FileObject localDefaultsFile = worker.getFileObjectByUri(new File(testContext.getCelosDefaultsDir(), remoteDefaultsFile.getName().getBaseName()).toURI());
             localDefaultsFile.copyFrom(remoteDefaultsFile, Selectors.SELECT_SELF);
         }
     }

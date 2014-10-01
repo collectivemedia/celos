@@ -16,9 +16,9 @@ public class TestContext {
     private final File celosDbDir;
     private final File celosWorkDir;
     private final String hdfsPrefix;
-    private final String testCasesDir;
+    private final File testCasesDir;
 
-    public TestContext(File celosWorkDir, String hdfsPrefix, String testCasesDir) {
+    public TestContext(File celosWorkDir, String hdfsPrefix, File testCasesDir) {
         this.celosWorkDir = celosWorkDir;
         this.hdfsPrefix = hdfsPrefix;
         this.testCasesDir = testCasesDir;
@@ -44,7 +44,7 @@ public class TestContext {
         return hdfsPrefix;
     }
 
-    public String getTestCasesDir() {
+    public File getTestCasesDir() {
         return testCasesDir;
     }
 

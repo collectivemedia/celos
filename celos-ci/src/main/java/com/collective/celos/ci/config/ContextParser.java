@@ -1,24 +1,11 @@
 package com.collective.celos.ci.config;
 
-import com.collective.celos.ci.CelosCi;
-import com.collective.celos.ci.config.deploy.CelosCiContext;
-import com.collective.celos.ci.config.deploy.CelosCiTarget;
-import com.collective.celos.ci.config.deploy.CelosCiTargetParser;
-import com.collective.celos.ci.config.testing.TestContext;
-import com.collective.celos.ci.deploy.JScpWorker;
 import org.apache.commons.cli.*;
 
-import java.io.File;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Map;
-import java.util.UUID;
 
 public class ContextParser {
-
-    private final String HDFS_PREFIX_PATTERN = "/user/%s/test/%s/%s";
 
     public static final String CLI_TARGET = "t";
     public static final String CLI_MODE = "m";
@@ -26,15 +13,7 @@ public class ContextParser {
     public static final String CLI_WORKFLOW_NAME = "w";
     public static final String CLI_TEST_CASES_DIR = "tc";
 
-    private CelosCiTargetParser targetParser;
-    private String userName;
-
-    public ContextParser(CelosCiTargetParser targetParser, String userName) {
-        this.targetParser = targetParser;
-        this.userName = userName;
-    }
-
-    public CelosCi parse(final String[] commandLineArguments) throws Exception {
+    public CelosCiCommandLine parse(final String[] commandLineArguments) throws Exception {
 
         final CommandLineParser cmdLineGnuParser = new GnuParser();
         final Options gnuOptions = constructOptions();
@@ -45,45 +24,14 @@ public class ContextParser {
             return null;
         }
 
-        CelosCiContext.Mode mode = CelosCiContext.Mode.valueOf(commandLine.getOptionValue(CLI_MODE));
-        File deployDir = new File(commandLine.getOptionValue(CLI_DEPLOY_DIR));
-
+        String deployDir = commandLine.getOptionValue(CLI_DEPLOY_DIR);
+        String mode = commandLine.getOptionValue(CLI_MODE);
         String workflowName = commandLine.getOptionValue(CLI_WORKFLOW_NAME);
+        String targetUri = commandLine.getOptionValue(CLI_TARGET);
+        String testCasesDir = commandLine.getOptionValue(CLI_TEST_CASES_DIR);
+        String userName = System.getenv("username") == null ? System.getProperty("user.name") : System.getenv("username");
 
-        CelosCiTarget target = targetParser.parse(commandLine.getOptionValue(CLI_TARGET));
-
-
-        if (mode == CelosCiContext.Mode.TEST) {
-
-            String testCasesDir = commandLine.getOptionValue(CLI_TEST_CASES_DIR);
-
-            TestContext testContext = prepareTestContext(userName, workflowName, testCasesDir);
-            String substitutedCelosWorkflowDir = testContext.getCelosWorkflowDir().getAbsolutePath();
-            CelosCiTarget testTarget = new CelosCiTarget(target.getScpSecuritySettings(), target.getPathToHdfsSite(), target.getPathToCoreSite(), substitutedCelosWorkflowDir, target.getDefaultsFile());
-
-            CelosCiContext ciContext = new CelosCiContext(testTarget, userName, mode, deployDir, workflowName, testContext.getHdfsPrefix());
-            return new CelosCi(ciContext, testContext);
-
-        } else {
-            CelosCiContext ciContext = new CelosCiContext(target, userName, mode, deployDir, workflowName, "");
-            return new CelosCi(ciContext, null);
-        }
-
-
-    }
-
-    public TestContext prepareTestContext(String userName, String workflowName, String testCasesDir) throws Exception {
-
-        Path tempDir = Files.createTempDirectory("celos");
-        File celosWorkDir = tempDir.toFile();
-        System.out.println("Temp dir for Celos is " + tempDir.toAbsolutePath().toString());
-
-        String hdfsPrefix = String.format(HDFS_PREFIX_PATTERN, userName, workflowName, UUID.randomUUID().toString());
-        System.out.println("HDFS prefix is: " + hdfsPrefix);
-
-        TestContext context = new TestContext(celosWorkDir, hdfsPrefix, testCasesDir);
-
-        return context;
+        return new CelosCiCommandLine(targetUri, mode, deployDir, workflowName, testCasesDir, userName);
     }
 
     public Options constructOptions() {
