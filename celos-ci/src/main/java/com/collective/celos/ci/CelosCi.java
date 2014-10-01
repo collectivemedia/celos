@@ -14,8 +14,10 @@ public abstract class CelosCi {
         ContextParser contextParser = new ContextParser();
         CelosCiCommandLine commandLine = contextParser.parse(args);
 
-        CelosCi celosCi = createCelosCi(commandLine);
-        celosCi.start();
+        if (commandLine != null) {
+            CelosCi celosCi = createCelosCi(commandLine);
+            celosCi.start();
+        }
     }
 
     public static CelosCi createCelosCi(CelosCiCommandLine commandLine) throws Exception {
