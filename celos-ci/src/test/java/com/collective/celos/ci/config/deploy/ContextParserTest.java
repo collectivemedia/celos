@@ -14,7 +14,7 @@ import java.net.URI;
 public class ContextParserTest {
 
     @Test
-    public void testContextParser() throws Exception {
+    public void testContextParserTest() throws Exception {
         ContextParser contextParser = new ContextParser();
         String[] clParams = "--target target --mode TEST --deployDir deploydir --workflowName workflow --testDir testDir".split(" ");
 
@@ -27,4 +27,35 @@ public class ContextParserTest {
         Assert.assertEquals(commandLine.getUserName(), System.getProperty("user.name"));
         Assert.assertEquals(commandLine.getWorkflowName(), "workflow");
     }
+
+    @Test
+    public void testContextParserDeploy() throws Exception {
+        ContextParser contextParser = new ContextParser();
+        String[] clParams = "--target target --mode DEPLOY --deployDir deploydir --workflowName workflow --testDir testDir".split(" ");
+
+        CelosCiCommandLine commandLine = contextParser.parse(clParams);
+
+        Assert.assertEquals(commandLine.getDeployDir(), new File("deploydir"));
+        Assert.assertEquals(commandLine.getTestCasesDir(), new File("testDir"));
+        Assert.assertEquals(commandLine.getMode(), CelosCiContext.Mode.DEPLOY);
+        Assert.assertEquals(commandLine.getTargetUri(), URI.create("target"));
+        Assert.assertEquals(commandLine.getUserName(), System.getProperty("user.name"));
+        Assert.assertEquals(commandLine.getWorkflowName(), "workflow");
+    }
+
+    @Test
+    public void testContextParserUndeploy() throws Exception {
+        ContextParser contextParser = new ContextParser();
+        String[] clParams = "--target target --mode UNDEPLOY --deployDir deploydir --workflowName workflow --testDir testDir".split(" ");
+
+        CelosCiCommandLine commandLine = contextParser.parse(clParams);
+
+        Assert.assertEquals(commandLine.getDeployDir(), new File("deploydir"));
+        Assert.assertEquals(commandLine.getTestCasesDir(), new File("testDir"));
+        Assert.assertEquals(commandLine.getMode(), CelosCiContext.Mode.UNDEPLOY);
+        Assert.assertEquals(commandLine.getTargetUri(), URI.create("target"));
+        Assert.assertEquals(commandLine.getUserName(), System.getProperty("user.name"));
+        Assert.assertEquals(commandLine.getWorkflowName(), "workflow");
+    }
+
 }
