@@ -1,6 +1,7 @@
 package com.collective.celos.ci.deploy;
 
 import com.collective.celos.ci.config.deploy.CelosCiContext;
+import com.google.common.collect.Sets;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.LocalFileSystem;
 import org.apache.hadoop.fs.Path;
@@ -59,7 +60,7 @@ public class HdfsDeployerTest {
         deployer.deploy();
 
         // LocalFileSystem is extends the CRCFileSysstem. so , we will get crc files at local.
-        Assert.assertArrayEquals(new String[]{".file1.crc", "file2", ".file2.crc", "file1"}, targetDir.list());
+        Assert.assertEquals(Sets.newHashSet(".file1.crc", "file2", ".file2.crc", "file1"), Sets.newHashSet(targetDir.list()));
     }
 
     @Test
@@ -89,7 +90,7 @@ public class HdfsDeployerTest {
         deployer.deploy();
 
         // LocalFileSystem is extends the CRCFileSysstem. so , we will get crc files at local.
-        Assert.assertArrayEquals(new String[]{".file1.crc", "file2", ".file2.crc", "file1"}, targetDir.list());
+        Assert.assertEquals(Sets.newHashSet(".file1.crc", "file2", ".file2.crc", "file1"), Sets.newHashSet(targetDir.list()));
     }
 
     @Test
