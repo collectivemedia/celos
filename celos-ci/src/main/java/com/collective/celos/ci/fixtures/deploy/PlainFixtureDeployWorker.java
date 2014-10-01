@@ -16,6 +16,13 @@ public class PlainFixtureDeployWorker extends AbstractFixtureFileWorker {
     public void processPair(CelosCiContext context, File localFile, Path hdfsFile) throws Exception {
         FileSystem fileSystem = context.getFileSystem();
 
+        if (!localFile.exists()) {
+            throw new IllegalStateException("File " + localFile + " is absent on local FS");
+        }
+        if (fileSystem.exists(hdfsFile)) {
+            throw new IllegalStateException("File " + hdfsFile.toUri() + " already exists on HDFS");
+        }
+
         fileSystem.mkdirs(hdfsFile.getParent());
         fileSystem.copyFromLocalFile(new Path(localFile.getAbsolutePath()), hdfsFile);
     }

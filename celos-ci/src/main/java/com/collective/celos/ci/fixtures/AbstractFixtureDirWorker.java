@@ -14,7 +14,7 @@ public abstract class AbstractFixtureDirWorker extends AbstractFixtureFileWorker
         List<File> result = new ArrayList<>();
         for (File child : file.listFiles()) {
             if (child.isDirectory()) {
-                if (isNotEmptyDir(child)) {
+                if (hasLeafDirs(child)) {
                     result.addAll(findFiles(child));
                 } else {
                     result.add(child);
@@ -24,9 +24,14 @@ public abstract class AbstractFixtureDirWorker extends AbstractFixtureFileWorker
         return result;
     }
 
-    private boolean isNotEmptyDir(File file) {
-        String[] list = file.list();
-        return list != null && list.length > 0;
+    private boolean hasLeafDirs(File file) {
+        File[] list = file.listFiles();
+        for (File f : list) {
+            if (f.isDirectory()) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }

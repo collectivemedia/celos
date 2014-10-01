@@ -18,7 +18,14 @@ public class PlainFixtureComparatorWorker extends AbstractFixtureFileWorker {
     @Override
     public void processPair(CelosCiContext context, File localFile, Path hdfsFile) throws Exception {
 
-        System.out.println("Comparing " + localFile.toURI() + " " + hdfsFile.toUri());
+        System.out.println("Comparing " + localFile.toURI() + ", " + hdfsFile.toUri());
+
+        if (!localFile.exists()) {
+            throw new IllegalStateException("File " + localFile + " is absent on local FS");
+        }
+        if (!context.getFileSystem().exists(hdfsFile)) {
+            throw new IllegalStateException("File " + hdfsFile.toUri() + " is absent on HDFS");
+        }
 
         InputStream localIS = new FileInputStream(localFile);
         FSDataInputStream resultIS = context.getFileSystem().open(hdfsFile);
