@@ -12,8 +12,8 @@ public class JScpWorker {
 
     private static final String DEFAULT_SECURITY_SETTINGS = "gssapi-with-mic,publickey,keyboard-interactive,password";
 
-    private FileSystemManager fsManager;
-    private String userName;
+    private final FileSystemManager fsManager;
+    private final String userName;
 
     public JScpWorker(String userName) throws FileSystemException {
         this.fsManager = VFS.getManager();
