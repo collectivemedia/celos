@@ -14,8 +14,8 @@ public class CelosCiTarget {
     public CelosCiTarget(URI pathToHdfsSite, URI pathToCoreSite, URI celosWorkflowsDirUri, URI defaultsFile) {
         this.pathToHdfsSite = Util.requireNonNull(pathToHdfsSite);
         this.pathToCoreSite = Util.requireNonNull(pathToCoreSite);
-        this.celosWorkflowsDirUri = Util.requireNonNull(celosWorkflowsDirUri);
-        this.defaultsFile = Util.requireNonNull(defaultsFile);
+        this.celosWorkflowsDirUri = celosWorkflowsDirUri;
+        this.defaultsFile = defaultsFile;
     }
 
     public URI getPathToHdfsSite() {
