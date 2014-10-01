@@ -36,7 +36,7 @@ public class ContextParser {
 
     public Options constructOptions() {
         final Options options = new Options();
-        options.addOption(CLI_TARGET, CLI_MODE, true, "Path to target JSON (alternative to command line)")
+        options.addOption(CLI_TARGET, CLI_TARGET, true, "Path to target JSON (alternative to command line)")
                 .addOption(CLI_MODE, CLI_MODE, true, "Mode. Defaults to DEPLOY")
                 .addOption(CLI_DEPLOY_DIR, CLI_DEPLOY_DIR, true, "Deploy directory. Path to workflow you want to deploy")
                 .addOption(CLI_WORKFLOW_NAME, CLI_WORKFLOW_NAME, true, "Workflow JS file name")

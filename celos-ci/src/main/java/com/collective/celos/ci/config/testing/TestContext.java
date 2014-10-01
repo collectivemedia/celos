@@ -1,5 +1,7 @@
 package com.collective.celos.ci.config.testing;
 
+import com.collective.celos.Util;
+
 import java.io.File;
 
 /**
@@ -19,9 +21,9 @@ public class TestContext {
     private final File testCasesDir;
 
     public TestContext(File celosWorkDir, String hdfsPrefix, File testCasesDir) {
-        this.celosWorkDir = celosWorkDir;
-        this.hdfsPrefix = hdfsPrefix;
-        this.testCasesDir = testCasesDir;
+        this.celosWorkDir = Util.requireNonNull(celosWorkDir);
+        this.hdfsPrefix = Util.requireNonNull(hdfsPrefix);
+        this.testCasesDir = Util.requireNonNull(testCasesDir);
 
         this.celosWorkflowDir = new File(celosWorkDir, WORKFLOW_DIR_CELOS_PATH);
         this.celosDefaultsDir = new File(celosWorkDir, DEFAULTS_DIR_CELOS_PATH);

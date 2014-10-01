@@ -3,25 +3,20 @@ package com.collective.celos.ci.deploy;
 import org.apache.commons.vfs2.*;
 import org.apache.commons.vfs2.provider.sftp.SftpFileSystemConfigBuilder;
 
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 
 
 public class JScpWorker {
 
-    public static final String DEFAULT_SECURITY_SETTINGS = "gssapi-with-mic,publickey,keyboard-interactive,password";
+    private static final String DEFAULT_SECURITY_SETTINGS = "gssapi-with-mic,publickey,keyboard-interactive,password";
 
     private FileSystemManager fsManager;
     private String userName;
-    private String securitySettings;
 
-    public JScpWorker(String userName, String securitySettings) throws FileSystemException {
+    public JScpWorker(String userName) throws FileSystemException {
         this.fsManager = VFS.getManager();
-        if (securitySettings == null) {
-            this.securitySettings = DEFAULT_SECURITY_SETTINGS;
-        } else {
-            this.securitySettings = securitySettings;
-        }
         this.userName = userName;
     }
 
@@ -46,7 +41,7 @@ public class JScpWorker {
 
     public FileSystemOptions getSftpDefaultOptions() throws FileSystemException {
         FileSystemOptions opts = new FileSystemOptions();
-        SftpFileSystemConfigBuilder.getInstance().setPreferredAuthentications(opts, securitySettings);
+        SftpFileSystemConfigBuilder.getInstance().setPreferredAuthentications(opts, DEFAULT_SECURITY_SETTINGS);
         SftpFileSystemConfigBuilder.getInstance().setStrictHostKeyChecking(opts, "no");
         SftpFileSystemConfigBuilder.getInstance().setUserDirIsRoot(opts, false);
         return opts;

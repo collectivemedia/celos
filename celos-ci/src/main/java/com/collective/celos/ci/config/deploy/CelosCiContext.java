@@ -1,6 +1,7 @@
 package com.collective.celos.ci.config.deploy;
 
 
+import com.collective.celos.Util;
 import com.collective.celos.ci.deploy.JScpWorker;
 import org.apache.commons.vfs2.FileContent;
 import org.apache.commons.vfs2.FileObject;
@@ -31,18 +32,18 @@ public class CelosCiContext {
                           File deployDir,
                           String workflowName,
                           String hdfsPrefix) throws Exception {
-        this.target = target;
-        this.userName = userName;
-        this.mode = mode;
-        this.deployDir = deployDir;
-        this.workflowName = workflowName;
-        this.hdfsPrefix = hdfsPrefix;
+        this.target = Util.requireNonNull(target);
+        this.userName = Util.requireNonNull(userName);
+        this.mode = Util.requireNonNull(mode);
+        this.deployDir = Util.requireNonNull(deployDir);
+        this.workflowName = Util.requireNonNull(workflowName);
+        this.hdfsPrefix = Util.requireNonNull(hdfsPrefix);
         this.configuration = setupConfiguration(userName, target);
         this.fileSystem = FileSystem.get(this.configuration);
     }
 
     private Configuration setupConfiguration(String username, CelosCiTarget target) throws Exception {
-        JScpWorker jscpWorker = new JScpWorker(username, target.getScpSecuritySettings());
+        JScpWorker jscpWorker = new JScpWorker(username);
         Configuration conf = new Configuration();
 
         conf.set("fs.hdfs.impl", org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());

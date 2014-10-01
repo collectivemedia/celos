@@ -14,12 +14,8 @@ public abstract class CelosCi {
         ContextParser contextParser = new ContextParser();
         CelosCiCommandLine commandLine = contextParser.parse(args);
 
-        if (commandLine != null) {
-            CelosCi celosCi = createCelosCi(commandLine);
-            celosCi.start();
-        } else {
-            throw new RuntimeException("Wrong CelosCi configuration provided");
-        }
+        CelosCi celosCi = createCelosCi(commandLine);
+        celosCi.start();
     }
 
     public static CelosCi createCelosCi(CelosCiCommandLine commandLine) throws Exception {

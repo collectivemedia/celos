@@ -17,7 +17,7 @@ public class JScpWorkerTest {
 
     @Test
     public void getURIRespectingUsernameChanges() throws FileSystemException, URISyntaxException {
-        JScpWorker worker = new JScpWorker("uname", JScpWorker.DEFAULT_SECURITY_SETTINGS);
+        JScpWorker worker = new JScpWorker("uname");
 
         URI uri = worker.getURIRespectingUsername(URI.create("sftp://server/path1/path2"));
         Assert.assertEquals(uri, URI.create("sftp://uname@server/path1/path2"));
@@ -25,7 +25,7 @@ public class JScpWorkerTest {
 
     @Test
     public void getURIRespectingUsernameDoesntChange1() throws FileSystemException, URISyntaxException {
-        JScpWorker worker = new JScpWorker("uname", JScpWorker.DEFAULT_SECURITY_SETTINGS);
+        JScpWorker worker = new JScpWorker("uname");
 
         URI uri = worker.getURIRespectingUsername(URI.create("sftp://user@server/path1/path2"));
         Assert.assertEquals(uri, URI.create("sftp://user@server/path1/path2"));
@@ -33,7 +33,7 @@ public class JScpWorkerTest {
 
     @Test
     public void getURIRespectingUsernameDoesntChange2() throws FileSystemException, URISyntaxException {
-        JScpWorker worker = new JScpWorker("uname", JScpWorker.DEFAULT_SECURITY_SETTINGS);
+        JScpWorker worker = new JScpWorker("uname");
 
         URI uri = worker.getURIRespectingUsername(URI.create("sftp://user@server/path1/path2"));
         Assert.assertEquals(uri, URI.create("sftp://user@server/path1/path2"));
@@ -41,7 +41,7 @@ public class JScpWorkerTest {
 
     @Test
     public void testGetFileObjectByUri() throws Exception {
-        JScpWorker worker = new JScpWorker("uname", JScpWorker.DEFAULT_SECURITY_SETTINGS);
+        JScpWorker worker = new JScpWorker("uname");
         URL res = Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/ci/testing/config/target.json");
         FileObject object = worker.getFileObjectByUri(res.toURI());
         IOUtils.contentEquals(object.getContent().getInputStream(), new FileInputStream(res.getFile()));
@@ -49,7 +49,7 @@ public class JScpWorkerTest {
 
     @Test
     public void testGetFileObjectByUriStringParam() throws Exception {
-        JScpWorker worker = new JScpWorker("uname", JScpWorker.DEFAULT_SECURITY_SETTINGS);
+        JScpWorker worker = new JScpWorker("uname");
         URL res = Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/ci/testing/config/target.json");
         FileObject object = worker.getFileObjectByUri(res.toURI().toString());
         IOUtils.contentEquals(object.getContent().getInputStream(), new FileInputStream(res.getFile()));

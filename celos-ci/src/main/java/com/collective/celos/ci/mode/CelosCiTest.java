@@ -35,7 +35,7 @@ public class CelosCiTest extends CelosCi {
 
         this.testContext = new TestContext(celosTempDir, hdfsPrefix, commandLine.getTestCasesDir());
         URI substitutedCelosWorkflowDir = testContext.getCelosWorkflowDir().toURI();
-        CelosCiTarget testTarget = new CelosCiTarget(target.getScpSecuritySettings(), target.getPathToHdfsSite(), target.getPathToCoreSite(), substitutedCelosWorkflowDir, target.getDefaultsFile());
+        CelosCiTarget testTarget = new CelosCiTarget(target.getPathToHdfsSite(), target.getPathToCoreSite(), substitutedCelosWorkflowDir, target.getDefaultsFile());
         this.ciContext = new CelosCiContext(testTarget, commandLine.getUserName(), commandLine.getMode(), commandLine.getDeployDir(), commandLine.getWorkflowName(), hdfsPrefix);
     }
 

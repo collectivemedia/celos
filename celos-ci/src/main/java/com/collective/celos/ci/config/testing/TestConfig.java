@@ -1,6 +1,7 @@
 package com.collective.celos.ci.config.testing;
 
 import com.collective.celos.ScheduledTime;
+import com.collective.celos.Util;
 
 public class TestConfig {
 
@@ -8,8 +9,8 @@ public class TestConfig {
     private final ScheduledTime sampleTimeEnd;
 
     public TestConfig(ScheduledTime sampleTimeStart, ScheduledTime sampleTimeEnd) {
-        this.sampleTimeStart = sampleTimeStart;
-        this.sampleTimeEnd = sampleTimeEnd;
+        this.sampleTimeStart = Util.requireNonNull(sampleTimeStart);
+        this.sampleTimeEnd = Util.requireNonNull(sampleTimeEnd);
     }
 
     public ScheduledTime getSampleTimeStart() {

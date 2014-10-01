@@ -22,22 +22,8 @@ public class CelosCiTargetParserTest {
         Assert.assertEquals(target.getDefaultsFile(), URI.create("deffile"));
         Assert.assertEquals(target.getPathToCoreSite(), URI.create("hadoopcoreurl"));
         Assert.assertEquals(target.getPathToHdfsSite(), URI.create("hadoophdfsurl"));
-        Assert.assertEquals(target.getScpSecuritySettings(), "secsettings");
 
     }
 
-    @Test
-    public void testParseTargetFileDefaultSecuritySettings() throws Exception {
-        CelosCiTargetParser parser = new CelosCiTargetParser("uname");
-        File targetFile = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/ci/testing/config/target-no-sec.json").toURI());
-
-        CelosCiTarget target = parser.parse(targetFile.toURI());
-        Assert.assertEquals(target.getCelosWorkflowsDirUri(), URI.create("celoswfdir"));
-        Assert.assertEquals(target.getDefaultsFile(), URI.create("deffile"));
-        Assert.assertEquals(target.getPathToCoreSite(), URI.create("hadoopcoreurl"));
-        Assert.assertEquals(target.getPathToHdfsSite(), URI.create("hadoophdfsurl"));
-        Assert.assertEquals(target.getScpSecuritySettings(), JScpWorker.DEFAULT_SECURITY_SETTINGS);
-
-    }
 
 }

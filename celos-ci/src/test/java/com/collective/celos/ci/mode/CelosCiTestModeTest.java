@@ -52,7 +52,6 @@ public class CelosCiTestModeTest {
         Assert.assertEquals(context.getTarget().getDefaultsFile(), URI.create("deffile"));
         Assert.assertEquals(context.getTarget().getPathToCoreSite(), URI.create(hadoopCoreUrl));
         Assert.assertEquals(context.getTarget().getPathToHdfsSite(), URI.create(hadoopHdfsUrl));
-        Assert.assertEquals(context.getTarget().getScpSecuritySettings(), "secsettings");
         Assert.assertEquals(context.getUserName(), commandLine.getUserName());
         Assert.assertEquals(context.getWorkflowName(), commandLine.getWorkflowName());
 
