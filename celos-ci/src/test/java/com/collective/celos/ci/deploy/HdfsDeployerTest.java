@@ -11,6 +11,7 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import java.io.File;
+import java.util.Set;
 import java.util.UUID;
 
 import static org.mockito.Mockito.doReturn;
@@ -59,8 +60,8 @@ public class HdfsDeployerTest {
 
         deployer.deploy();
 
-        // LocalFileSystem is extends the CRCFileSysstem. so , we will get crc files at local.
-        Assert.assertEquals(Sets.newHashSet(".file1.crc", "file2", ".file2.crc", "file1"), Sets.newHashSet(targetDir.list()));
+        Set<String> resultSet = getFilesWithoutCrc(targetDir);
+        Assert.assertEquals(Sets.newHashSet("file2", "file1"), resultSet);
     }
 
     @Test
@@ -89,8 +90,19 @@ public class HdfsDeployerTest {
 
         deployer.deploy();
 
+        Set<String> resultSet = getFilesWithoutCrc(targetDir);
+        Assert.assertEquals(Sets.newHashSet("file2", "file1"), resultSet);
+    }
+
+    private Set<String> getFilesWithoutCrc(File targetDir) {
         // LocalFileSystem is extends the CRCFileSysstem. so , we will get crc files at local.
-        Assert.assertEquals(Sets.newHashSet(".file1.crc", "file2", ".file2.crc", "file1"), Sets.newHashSet(targetDir.list()));
+        Set<String> resultSet = Sets.newHashSet();
+        for (String str : targetDir.list()) {
+            if (!str.endsWith(".crc")) {
+                resultSet.add(str);
+            }
+        }
+        return resultSet;
     }
 
     @Test
