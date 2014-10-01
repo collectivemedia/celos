@@ -86,12 +86,12 @@ public class HdfsDeployerTest {
         targetDir.mkdirs();
         new File(targetDir, "file3").createNewFile();
         new File(targetDir, "file4").createNewFile();
-        Assert.assertArrayEquals(new String[]{"file3", "file4"}, targetDir.list());
+        
+        Assert.assertEquals(Sets.newHashSet("file2", "file1"), getFilesWithoutCrc(targetDir));
 
         deployer.deploy();
 
-        Set<String> resultSet = getFilesWithoutCrc(targetDir);
-        Assert.assertEquals(Sets.newHashSet("file2", "file1"), resultSet);
+        Assert.assertEquals(Sets.newHashSet("file2", "file1"), getFilesWithoutCrc(targetDir));
     }
 
     private Set<String> getFilesWithoutCrc(File targetDir) {
