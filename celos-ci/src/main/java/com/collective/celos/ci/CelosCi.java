@@ -17,6 +17,8 @@ public abstract class CelosCi {
         if (commandLine != null) {
             CelosCi celosCi = createCelosCi(commandLine);
             celosCi.start();
+        } else {
+            throw new RuntimeException("Wrong CelosCi configuration provided");
         }
     }
 
