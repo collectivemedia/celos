@@ -27,7 +27,7 @@ public abstract class CelosCi {
         } else if (commandLine.getMode() == CelosCiContext.Mode.UNDEPLOY) {
             return new CelosCiUndeploy(commandLine);
         }
-        return null;
+        throw new IllegalStateException("Unknown mode " + commandLine.getMode());
     }
 
     public abstract void start() throws Exception;
