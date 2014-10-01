@@ -41,21 +41,7 @@ dependencies {
     testCompile("org.mockito:mockito-all:1.9.5")
 }
 
-
-task wrapper(type: Wrapper) {
-    gradleVersion = '1.11'
-}
-
 jar {
-    // If you let all the META-INF/ stuff from the dependency jars in it clobbers our own manifest, among other things
-    // and generally makes things not work
-    from {
-        (configurations.compile).collect {
-            it.isDirectory() ? it : zipTree(it).matching {
-                exclude 'META-INF/MANIFEST.MF'
-            }
-        }
-    }
     manifest {
         attributes("Main-Class": mainClassName)
     }
