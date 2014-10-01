@@ -16,14 +16,14 @@ import java.util.UUID;
 /**
  * Created by akonopko on 10/1/14.
  */
-public class CelosCiTest extends CelosCi {
+public class TestTask extends CelosCi {
 
     private static final String HDFS_PREFIX_PATTERN = "/user/%s/test/%s/%s";
 
     private final CelosCiContext ciContext;
     private final TestContext testContext;
 
-    public CelosCiTest(CelosCiCommandLine commandLine) throws Exception {
+    public TestTask(CelosCiCommandLine commandLine) throws Exception {
 
         CelosCiTargetParser parser = new CelosCiTargetParser(commandLine.getUserName());
         CelosCiTarget target = parser.parse(commandLine.getTargetUri());

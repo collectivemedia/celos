@@ -3,9 +3,9 @@ package com.collective.celos.ci;
 import com.collective.celos.ci.config.CelosCiCommandLine;
 import com.collective.celos.ci.config.ContextParser;
 import com.collective.celos.ci.config.deploy.CelosCiContext;
-import com.collective.celos.ci.mode.CelosCiDeploy;
-import com.collective.celos.ci.mode.CelosCiTest;
-import com.collective.celos.ci.mode.CelosCiUndeploy;
+import com.collective.celos.ci.mode.DeployTask;
+import com.collective.celos.ci.mode.TestTask;
+import com.collective.celos.ci.mode.UndeployTask;
 
 public abstract class CelosCi {
 
@@ -21,11 +21,11 @@ public abstract class CelosCi {
     public static CelosCi createCelosCi(CelosCiCommandLine commandLine) throws Exception {
 
         if (commandLine.getMode() == CelosCiContext.Mode.TEST) {
-            return new CelosCiTest(commandLine);
+            return new TestTask(commandLine);
         } else if (commandLine.getMode() == CelosCiContext.Mode.DEPLOY) {
-            return new CelosCiDeploy(commandLine);
+            return new DeployTask(commandLine);
         } else if (commandLine.getMode() == CelosCiContext.Mode.UNDEPLOY) {
-            return new CelosCiUndeploy(commandLine);
+            return new UndeployTask(commandLine);
         }
         throw new IllegalStateException("Unknown mode " + commandLine.getMode());
     }

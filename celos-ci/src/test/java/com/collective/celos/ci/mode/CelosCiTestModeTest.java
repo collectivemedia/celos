@@ -41,7 +41,7 @@ public class CelosCiTestModeTest {
         stream.flush();
 
         CelosCiCommandLine commandLine = new CelosCiCommandLine(targetFile.toURI().toString(), "TEST", "deploydir", "workflow", "testDir", "uname");
-        CelosCiTest celosCiTest = new CelosCiTest(commandLine);
+        TestTask celosCiTest = new TestTask(commandLine);
 
         CelosCiContext context = celosCiTest.getCiContext();
 

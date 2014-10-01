@@ -40,7 +40,7 @@ public class CelosCiUndeployModeTest {
         stream.flush();
 
         CelosCiCommandLine commandLine = new CelosCiCommandLine(targetFile.toURI().toString(), "UNDEPLOY", "deploydir", "workflow", "testDir", "uname");
-        CelosCiUndeploy celosCiDeploy = new CelosCiUndeploy(commandLine);
+        UndeployTask celosCiDeploy = new UndeployTask(commandLine);
 
         CelosCiContext context = celosCiDeploy.getCiContext();
 

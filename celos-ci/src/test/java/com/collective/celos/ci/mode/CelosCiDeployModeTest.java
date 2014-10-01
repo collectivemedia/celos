@@ -2,7 +2,6 @@ package com.collective.celos.ci.mode;
 
 import com.collective.celos.ci.config.CelosCiCommandLine;
 import com.collective.celos.ci.config.deploy.CelosCiContext;
-import com.collective.celos.ci.config.deploy.CelosCiTarget;
 import junit.framework.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -41,7 +40,7 @@ public class CelosCiDeployModeTest {
         stream.flush();
 
         CelosCiCommandLine commandLine = new CelosCiCommandLine(targetFile.toURI().toString(), "DEPLOY", "deploydir", "workflow", "testDir", "uname");
-        CelosCiDeploy celosCiDeploy = new CelosCiDeploy(commandLine);
+        DeployTask celosCiDeploy = new DeployTask(commandLine);
 
         CelosCiContext context = celosCiDeploy.getCiContext();
 

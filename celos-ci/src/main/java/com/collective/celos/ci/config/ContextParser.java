@@ -21,7 +21,7 @@ public class ContextParser {
 
         if (!commandLine.hasOption(CLI_TARGET) || !commandLine.hasOption(CLI_MODE) || !commandLine.hasOption(CLI_WORKFLOW_NAME)) {
             printHelp(80, 5, 3, true, System.out);
-            return null;
+            throw new RuntimeException("Wrong CelosCi configuration provided");
         }
 
         String deployDir = commandLine.getOptionValue(CLI_DEPLOY_DIR);
