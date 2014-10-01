@@ -1,0 +1,6 @@
+{
+    "celos.workflow.dir": "celoswfdir",
+    "hadoop.hdfs-site.xml": "hadoophdfsurl",
+    "hadoop.core-site.xml": "hadoopcoreurl",
+    "defaults.file.uri": "deffile"
+}
