@@ -18,18 +18,12 @@ repositories {
     maven { url "https://repository.cloudera.com/artifactory/cloudera-repos" }
 }
 
-configurations {
-    include
-    compile.extendsFrom include
-}
-
 dependencies {
-    include rootProject
+    compile rootProject
 
     compile("org.apache.hadoop:hadoop-common:2.3.0-cdh5.1.2")
     compile("org.apache.hadoop:hadoop-hdfs:2.3.0-cdh5.1.2")
     compile("com.google.code.gson:gson:2.2.4")
-    compile("com.jcraft:jsch:0.1.51")
 
     compile("javax.servlet:javax.servlet-api:3.1.0")
     compile("org.eclipse.jetty.aggregate:jetty-all:9.2.2.v20140723")
@@ -42,6 +36,7 @@ dependencies {
     compile("org.apache.commons:commons-vfs2:2.0")
     compile("log4j:log4j:1.2.17")
     compile("log4j:apache-log4j-extras:1.2.17")
+    compile("com.jcraft:jsch:0.1.51")
 
     testCompile("junit:junit:4.8.2")
     testCompile("org.powermock:powermock-module-junit4:1.5.5") {
@@ -55,9 +50,6 @@ dependencies {
 }
 
 jar {
-    // If you let all the META-INF/ stuff from the dependency jars in it clobbers our own manifest, among other things
-    // and generally makes things not work
-    from { configurations.include - configurations.compile }
     manifest {
         attributes("Main-Class": mainClassName)
     }
