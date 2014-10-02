@@ -10,9 +10,9 @@ import java.util.List;
 public abstract class AbstractFixtureDirWorker extends AbstractFixtureFileWorker {
 
     @Override
-    protected List<File> findFiles(File file) {
+    protected List<File> findFiles(File dir) {
         List<File> result = new ArrayList<>();
-        for (File child : file.listFiles()) {
+        for (File child : dir.listFiles()) {
             if (child.isDirectory()) {
                 if (hasLeafDirs(child)) {
                     result.addAll(findFiles(child));
@@ -24,8 +24,8 @@ public abstract class AbstractFixtureDirWorker extends AbstractFixtureFileWorker
         return result;
     }
 
-    private boolean hasLeafDirs(File file) {
-        File[] list = file.listFiles();
+    private boolean hasLeafDirs(File dir) {
+        File[] list = dir.listFiles();
         for (File f : list) {
             if (f.isDirectory()) {
                 return true;
