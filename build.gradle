@@ -1,8 +1,9 @@
 apply plugin: 'application'
+apply plugin: 'maven'
 apply plugin: 'java'
 apply plugin: 'idea'
-apply plugin: 'war'
 
+group = 'com.collective'
 sourceCompatibility = 1.7
 version = '0.1'
 
@@ -57,4 +58,25 @@ task wrapper(type: Wrapper) {
     gradleVersion = '1.11'
 }
 
+def repoUser = 'dummy';
+if (hasProperty('nexusUser')) {
+    repoUser = nexusUser
+}
+def repoPw = 'dummy';
+if (hasProperty('nexusPassword')) {
+    repoPw = nexusPassword
+}
+
+uploadArchives.doFirst {
+    repositories {
+        mavenDeployer {
+            repository(url: "http://nexus.collective-media.net/content/repositories/releases") {
+                authentication(userName: repoUser, password: repoPw)
+            }
+            if (!System.getenv("BUILD_NUMBER")) throw new GradleException("BUILD_NUMBER env variable should be present")
+            pom.version = "0.1." + System.getenv("BUILD_NUMBER")
+            pom.groupId = "com.collective"
+        }
+    }
+}
 
