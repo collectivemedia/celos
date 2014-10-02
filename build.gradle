@@ -74,7 +74,7 @@ uploadArchives.doFirst {
                 authentication(userName: repoUser, password: repoPw)
             }
             if (!System.getenv("BUILD_NUMBER")) throw new GradleException("BUILD_NUMBER env variable should be present")
-            pom.version = "0.1." + System.getenv("BUILD_NUMBER")
+            pom.version = "2.0." + System.getenv("BUILD_NUMBER")
             pom.groupId = "com.collective"
         }
     }
