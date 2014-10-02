@@ -2,18 +2,13 @@ package com.collective.celos.ci.mode;
 
 import com.collective.celos.ci.CelosCi;
 import com.collective.celos.ci.config.CelosCiCommandLine;
-import com.collective.celos.ci.config.deploy.CelosCiContext;
 import com.collective.celos.ci.config.deploy.CelosCiTarget;
 import com.collective.celos.ci.config.deploy.CelosCiTargetParser;
-import com.collective.celos.ci.config.testing.TestContext;
+import com.collective.celos.ci.mode.test.TestRun;
 import com.google.common.collect.Lists;
 
 import java.io.File;
-import java.net.URI;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * Created by akonopko on 10/1/14.
