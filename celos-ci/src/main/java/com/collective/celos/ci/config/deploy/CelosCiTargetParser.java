@@ -26,11 +26,11 @@ public class CelosCiTargetParser {
         FileObject file = worker.getFileObjectByUri(targetFileUri);
         InputStream is = file.getContent().getInputStream();
         HashMap<String, String> result = new ObjectMapper().readValue(is, HashMap.class);
-
+        URI workflowDir = result.get(CELOS_WORKFLOW_DIR) != null ? URI.create(result.get(CELOS_WORKFLOW_DIR)) : null;
+        URI defaultsFile = result.get(DEFAULTS_FILE_URI) != null ? URI.create(result.get(DEFAULTS_FILE_URI)) : null;
         return new CelosCiTarget(URI.create(result.get(HADOOP_HDFS_SITE_XML)),
                 URI.create(result.get(HADOOP_CORE_SITE_XML)),
-                URI.create(result.get(CELOS_WORKFLOW_DIR)),
-                URI.create(result.get(DEFAULTS_FILE_URI)));
+                workflowDir, defaultsFile);
     }
 
 }

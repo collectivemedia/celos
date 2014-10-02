@@ -2,25 +2,29 @@ package com.collective.celos.ci.mode;
 
 import com.collective.celos.ci.config.CelosCiCommandLine;
 import com.collective.celos.ci.config.deploy.CelosCiContext;
-import junit.framework.Assert;
+import com.google.common.collect.Sets;
+import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import org.powermock.api.mockito.PowerMockito;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.lang.reflect.Field;
 import java.net.URI;
+import java.util.Set;
 
 /**
  * Created by akonopko on 10/1/14.
  */
-public class CelosCiDeployModeTest {
+public class UndeployTaskTest {
 
     @Rule
     public TemporaryFolder tempDir = new TemporaryFolder();
 
     @Test
-    public void testCelosCiDeployContext() throws Exception {
+    public void testCelosCiUndeployContext() throws Exception {
 
 
         String hadoopCoreUrl = Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/ci/testing/config/core-site.xml").getFile();
@@ -39,8 +43,8 @@ public class CelosCiDeployModeTest {
         stream.write(targetFileStr.getBytes());
         stream.flush();
 
-        CelosCiCommandLine commandLine = new CelosCiCommandLine(targetFile.toURI().toString(), "DEPLOY", "deploydir", "workflow", "testDir", "uname");
-        DeployTask celosCiDeploy = new DeployTask(commandLine);
+        CelosCiCommandLine commandLine = new CelosCiCommandLine(targetFile.toURI().toString(), "UNDEPLOY", "deploydir", "workflow", "testDir", "uname");
+        UndeployTask celosCiDeploy = new UndeployTask(commandLine);
 
         CelosCiContext context = celosCiDeploy.getCiContext();
 
@@ -54,4 +58,5 @@ public class CelosCiDeployModeTest {
         Assert.assertEquals(context.getUserName(), commandLine.getUserName());
         Assert.assertEquals(context.getWorkflowName(), commandLine.getWorkflowName());
     }
+
 }
