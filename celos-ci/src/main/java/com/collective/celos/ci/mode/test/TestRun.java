@@ -83,13 +83,15 @@ public class TestRun {
         return testContext;
     }
 
+    public File getTestCaseDir() {
+        return testCaseDir;
+    }
+
     public void start() throws Exception {
         prepareCelosServerEnv(testContext, ciContext);
 
         wfDeployer.deploy();
         hdfsDeployer.deploy();
-
-        ciContext.getFileSystem().deleteOnExit(new org.apache.hadoop.fs.Path(ciContext.getHdfsPrefix()));
 
         final CelosServer celosServer = new CelosServer();
         try {
@@ -121,6 +123,8 @@ public class TestRun {
         testContext.getCelosDefaultsDir().mkdirs();
         testContext.getCelosDbDir().mkdirs();
         FileUtils.forceDeleteOnExit(testContext.getCelosWorkDir());
+
+        ciContext.getFileSystem().deleteOnExit(new org.apache.hadoop.fs.Path(ciContext.getHdfsPrefix()));
 
         JScpWorker worker = new JScpWorker(ciContext.getUserName());
         FileObject remoteDefaultsFile = worker.getFileObjectByUri(ciContext.getTarget().getDefaultsFile());

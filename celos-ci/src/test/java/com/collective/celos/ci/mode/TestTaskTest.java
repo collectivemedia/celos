@@ -52,7 +52,7 @@ public class TestTaskTest {
 
         Set<String> names = Sets.newHashSet();
         for (TestRun tr : testTask.testRuns) {
-            names.add(tr.getName());
+            names.add(tr.getTestCaseDir().getName());
         }
         Assert.assertEquals(names, Sets.newHashSet("testcase-1", "testcase-2"));
 
