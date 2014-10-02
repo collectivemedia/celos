@@ -1,21 +1,22 @@
 package com.collective.celos.ci.fixture;
 
+import static org.mockito.Mockito.mock;
+
+import java.io.File;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.apache.hadoop.fs.Path;
+import org.junit.Assert;
+import org.junit.Test;
+
 import com.collective.celos.ci.config.deploy.CelosCiContext;
 import com.collective.celos.ci.fixtures.AbstractFixtureFileWorker;
 import com.collective.celos.ci.fixtures.FixturesHdfsWorkerManager;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import org.apache.commons.lang.StringUtils;
-import org.apache.hadoop.fs.Path;
-import org.junit.Assert;
-import org.junit.Test;
-
-import java.io.File;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static org.mockito.Mockito.mock;
+import com.google.common.collect.Sets;
 
 /**
  * Created by akonopko on 9/18/14.
@@ -34,11 +35,11 @@ public class FixturesHdfsWorkerManagerTest {
         File inputFolder = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/ci/fixtures/input").toURI());
         manager.processLocalDir(inputFolder);
 
-        List<String> relativeVisitedDirs = Lists.newArrayList();
+        Set<String> relativeVisitedDirs = Sets.newHashSet();
         for (File f : worker.visited) {
             relativeVisitedDirs.add(getRelativePath(f, inputFolder));
         }
-        Assert.assertEquals(relativeVisitedDirs, Lists.newArrayList("plain", "PLAIN", "Avro"));
+        Assert.assertEquals(relativeVisitedDirs, Sets.newHashSet("plain", "PLAIN", "Avro"));
     }
 
     @Test(expected = RuntimeException.class)
@@ -52,11 +53,11 @@ public class FixturesHdfsWorkerManagerTest {
         File inputFolder = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/ci/fixtures/input").toURI());
         manager.processLocalDir(inputFolder);
 
-        List<String> relativeVisitedDirs = Lists.newArrayList();
+        Set<String> relativeVisitedDirs = Sets.newHashSet();
         for (File f : worker.visited) {
             relativeVisitedDirs.add(getRelativePath(f, inputFolder));
         }
-        Assert.assertEquals(relativeVisitedDirs, Lists.newArrayList("plain", "PLAIN", "Avro"));
+        Assert.assertEquals(relativeVisitedDirs, Sets.newHashSet("plain", "PLAIN", "Avro"));
     }
 
 
