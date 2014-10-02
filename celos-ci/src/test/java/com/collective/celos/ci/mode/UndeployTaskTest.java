@@ -59,4 +59,50 @@ public class UndeployTaskTest {
         Assert.assertEquals(context.getWorkflowName(), commandLine.getWorkflowName());
     }
 
+    @Test
+    public void testCelosCiUndeployStart() throws Exception {
+
+
+        String hadoopCoreUrl = Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/ci/testing/config/core-site.xml").getFile();
+        String hadoopHdfsUrl = Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/ci/testing/config/hdfs-site.xml").getFile();
+
+        File celosWfDir = tempDir.newFolder();
+        File hdfsDir = tempDir.newFolder();
+        File deployDir = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/ci/testing/deploy").getFile());
+
+        String targetFileStr = "{\n" +
+                "    \"celos.workflow.dir\": \"" + celosWfDir.getAbsolutePath() +"\",\n" +
+                "    \"hadoop.hdfs-site.xml\": \"" + hadoopHdfsUrl +"\",\n" +
+                "    \"hadoop.core-site.xml\": \"" + hadoopCoreUrl +"\"\n" +
+                "}\n";
+
+        File targetFile = tempDir.newFile();
+        FileOutputStream stream = new FileOutputStream(targetFile);
+        stream.write(targetFileStr.getBytes());
+        stream.flush();
+
+        CelosCiCommandLine commandLine = new CelosCiCommandLine(targetFile.toURI().toString(), "UNDEPLOY", deployDir.getAbsolutePath(), "workflow", "testDir", "uname");
+
+        UndeployTask undeployTask = new UndeployTask(commandLine);
+
+        Field f = PowerMockito.field(CelosCiContext.class, "hdfsPrefix");
+        f.set(undeployTask.getCiContext(), hdfsDir.getAbsolutePath());
+
+        File workflowFile = new File(celosWfDir, "workflow.js");
+        workflowFile.createNewFile();
+
+        File hdfsDirFullPath = new File(hdfsDir, "user/celos/app/workflow");
+        hdfsDirFullPath.mkdirs();
+        new File(hdfsDirFullPath, "file1").createNewFile();
+        new File(hdfsDirFullPath, "file2").createNewFile();
+
+        Assert.assertTrue(workflowFile.exists());
+        Assert.assertEquals(Sets.newHashSet("file1", "file2"), Sets.newHashSet(hdfsDirFullPath.list()));
+
+        undeployTask.start();
+
+        Assert.assertFalse(workflowFile.exists());
+        Assert.assertFalse(hdfsDirFullPath.exists());
+    }
+
 }
