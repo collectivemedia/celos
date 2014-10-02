@@ -2,6 +2,7 @@ package com.collective.celos.ci.mode;
 
 import com.collective.celos.ci.config.CelosCiCommandLine;
 import com.collective.celos.ci.config.deploy.CelosCiContext;
+import com.collective.celos.ci.config.deploy.CelosCiTarget;
 import junit.framework.Assert;
 import org.apache.commons.lang.StringUtils;
 import org.junit.Rule;
@@ -15,33 +16,18 @@ import java.net.URI;
 /**
  * Created by akonopko on 10/1/14.
  */
-public class CelosCiTestModeTest {
-
-    @Rule
-    public TemporaryFolder tempDir = new TemporaryFolder();
+public class TestRunTest {
 
     @Test
     public void testCelosCiDeployContext() throws Exception {
 
 
-        String hadoopCoreUrl = Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/ci/testing/config/core-site.xml").getFile();
-        String hadoopHdfsUrl = Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/ci/testing/config/hdfs-site.xml").getFile();
+        URI hadoopCoreUrl = Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/ci/testing/config/core-site.xml").toURI();
+        URI hadoopHdfsUrl = Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/ci/testing/config/hdfs-site.xml").toURI();
 
-        String targetFileStr = "{\n" +
-                "    \"security.settings\": \"secsettings\",\n" +
-                "    \"celos.workflow.dir\": \"celoswfdir\",\n" +
-                "    \"hadoop.hdfs-site.xml\": \"" + hadoopHdfsUrl +"\",\n" +
-                "    \"hadoop.core-site.xml\": \"" + hadoopCoreUrl +"\",\n" +
-                "    \"defaults.file.uri\": \"deffile\"\n" +
-                "}\n";
-
-        File targetFile = tempDir.newFile();
-        FileOutputStream stream = new FileOutputStream(targetFile);
-        stream.write(targetFileStr.getBytes());
-        stream.flush();
-
-        CelosCiCommandLine commandLine = new CelosCiCommandLine(targetFile.toURI().toString(), "TEST", "deploydir", "workflow", "testDir", "uname");
-        TestTask celosCiTest = new TestTask(commandLine);
+        CelosCiCommandLine commandLine = new CelosCiCommandLine("", "TEST", "deploydir", "workflow", "testDir", "uname");
+        CelosCiTarget target = new CelosCiTarget(hadoopHdfsUrl, hadoopCoreUrl, URI.create("celoswfdir"), URI.create("deffile"));
+        TestRun celosCiTest = new TestRun(target, commandLine.getUserName(), commandLine.getWorkflowName(), commandLine.getDeployDir(), commandLine.getTestCasesDir());
 
         CelosCiContext context = celosCiTest.getCiContext();
 
@@ -50,8 +36,8 @@ public class CelosCiTestModeTest {
         Assert.assertEquals(context.getMode(), commandLine.getMode());
         Assert.assertEquals(context.getTarget().getCelosWorkflowsDirUri(), new File(celosCiTest.getTestContext().getCelosWorkDir(), "workflows").toURI());
         Assert.assertEquals(context.getTarget().getDefaultsFile(), URI.create("deffile"));
-        Assert.assertEquals(context.getTarget().getPathToCoreSite(), URI.create(hadoopCoreUrl));
-        Assert.assertEquals(context.getTarget().getPathToHdfsSite(), URI.create(hadoopHdfsUrl));
+        Assert.assertEquals(context.getTarget().getPathToCoreSite(), hadoopCoreUrl);
+        Assert.assertEquals(context.getTarget().getPathToHdfsSite(), hadoopHdfsUrl);
         Assert.assertEquals(context.getUserName(), commandLine.getUserName());
         Assert.assertEquals(context.getWorkflowName(), commandLine.getWorkflowName());
 
