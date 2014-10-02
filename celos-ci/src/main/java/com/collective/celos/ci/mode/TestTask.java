@@ -6,11 +6,13 @@ import com.collective.celos.ci.config.deploy.CelosCiContext;
 import com.collective.celos.ci.config.deploy.CelosCiTarget;
 import com.collective.celos.ci.config.deploy.CelosCiTargetParser;
 import com.collective.celos.ci.config.testing.TestContext;
+import com.google.common.collect.Lists;
 
 import java.io.File;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -18,38 +20,23 @@ import java.util.UUID;
  */
 public class TestTask extends CelosCi {
 
-    private static final String HDFS_PREFIX_PATTERN = "/user/%s/test/%s/%s";
-
-    private final CelosCiContext ciContext;
-    private final TestContext testContext;
+    List<TestRun> testRuns = Lists.newArrayList();
 
     public TestTask(CelosCiCommandLine commandLine) throws Exception {
 
         CelosCiTargetParser parser = new CelosCiTargetParser(commandLine.getUserName());
         CelosCiTarget target = parser.parse(commandLine.getTargetUri());
 
-        File celosTempDir = Files.createTempDirectory("celos").toFile();
-        System.out.println("Temp dir for Celos is " + celosTempDir.getAbsolutePath().toString());
-        String hdfsPrefix = String.format(HDFS_PREFIX_PATTERN, commandLine.getUserName(), commandLine.getWorkflowName(), UUID.randomUUID().toString());
-        System.out.println("HDFS prefix is: " + hdfsPrefix);
-
-        this.testContext = new TestContext(celosTempDir, hdfsPrefix, commandLine.getTestCasesDir());
-        URI substitutedCelosWorkflowDir = testContext.getCelosWorkflowDir().toURI();
-        CelosCiTarget testTarget = new CelosCiTarget(target.getPathToHdfsSite(), target.getPathToCoreSite(), substitutedCelosWorkflowDir, target.getDefaultsFile());
-        this.ciContext = new CelosCiContext(testTarget, commandLine.getUserName(), commandLine.getMode(), commandLine.getDeployDir(), commandLine.getWorkflowName(), hdfsPrefix);
+        for (File tcDir : commandLine.getTestCasesDir().listFiles()) {
+            testRuns.add(new TestRun(target, commandLine.getUserName(), commandLine.getWorkflowName(), commandLine.getDeployDir(), tcDir));
+        }
     }
 
     @Override
     public void start() throws Exception {
-        //TODO:
-    }
-
-    public CelosCiContext getCiContext() {
-        return ciContext;
-    }
-
-    public TestContext getTestContext() {
-        return testContext;
+        for (TestRun testRun : testRuns) {
+            testRun.start();
+        }
     }
 
 }
