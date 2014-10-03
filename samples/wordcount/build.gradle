@@ -22,7 +22,7 @@ dependencies {
     compile("org.apache.hadoop:hadoop-client:2.0.0-cdh4.2.1")
 }
 
-task celos_ci() {
+task celos_ci << {
     task run_ci(type: JavaExec) {
        main = "com.collective.celos.ci.CelosCi"
        classpath configurations.celos_ci
