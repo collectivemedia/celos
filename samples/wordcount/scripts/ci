@@ -1,1 +1,1 @@
-gradle --refresh-dependencies clean build test celos_ci
+./gradlew --refresh-dependencies clean build test celos_ci
