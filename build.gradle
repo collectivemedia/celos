@@ -6,7 +6,7 @@ apply plugin: 'maven'
 
 mainClassName = 'com.collective.celos.ci.CelosCi'
 group = 'com.collective'
-version = '0.1'
+version = '2.0'
 sourceCompatibility = 1.7
 
 sourceSets {
@@ -106,4 +106,21 @@ uploadArchives.doFirst {
             pom.groupId = "com.collective"
         }
     }
+}
+
+
+task build_wordcount(type: Exec) {
+    workingDir 'samples/wordcount'
+    commandLine './gradlew', 'build', 'deploy_dir'
+}
+
+task test_wordcount(type: JavaExec) {
+    main = "com.collective.celos.ci.CelosCi"
+    classpath configurations.compile
+    args '--deployDir', 'build/celos_deploy', '--target', 'sftp://celos001.ny7.collective-media.net/etc/celos/targets/testing.json', '--workflowName', 'wordcount' , '--mode', 'TEST', '--testDir', 'src/test/celos-ci'
+}
+
+task integration_test << {
+     build_wordcount.execute()
+     test_wordcount.execute()
 }
