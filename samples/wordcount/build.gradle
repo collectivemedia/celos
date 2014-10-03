@@ -26,7 +26,7 @@ task celos_ci << {
     task run_ci(type: JavaExec) {
        main = "com.collective.celos.ci.CelosCi"
        classpath configurations.celos_ci
-       args '--deployDir', 'build/celos_deploy', '--target', 'sftp://celos001.ny7.collective-media.net/home/akonopko/target.json', '--workflowName', 'wordcount' , '--mode', 'TEST', '--testDir', 'src/test/celos-ci'
+       args '--deployDir', 'build/celos_deploy', '--target', 'sftp://celos001.ny7.collective-media.net/etc/celos/targets/testing.json', '--workflowName', 'wordcount' , '--mode', 'TEST', '--testDir', 'src/test/celos-ci'
     }
 
     new File('build/celos_deploy').deleteDir()
