@@ -28,9 +28,9 @@ Let's look at the steps:
 
 ### Use the `hdfsPath()` utility function
 
-Here's the [src/main/celos/workflow.js](src/main/celos/workflow.js) for the word count workflow.
+Here's the [`workflow.js`](src/main/celos/workflow.js) for the word count workflow.
 
-Note that all references to HDFS paths use the `hdfsPath` utility function.
+Note that all references to HDFS paths use the `hdfsPath()` function.
 
 ````javascript
 importDefaults("collective");
@@ -87,7 +87,7 @@ The build file should put together a deployment directory, containing the Celos,
 
 After that, the `celos-ci.jar`'s main class is invoked.  The JAR comes from the local Maven repo.
 
-[build.gradle](build.gradle) shows the needed Gradle tasks for that (around 15 lines of code).
+[`build.gradle`](build.gradle) shows the needed Gradle tasks for that (around 15 lines of code).
 
 ## Status
 
