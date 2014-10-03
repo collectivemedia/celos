@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 set -x
 set -e
-gradle --info clean upload
+gradle --stacktrace --info clean test upload
