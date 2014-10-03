@@ -8,7 +8,7 @@ Our example is a MapReduce word count workflow.
 
 Make sure you are `kinit`-ed.
 
-`./scripts/ci` (in this `samples/wordcount`) directory will test the workflow.
+`./scripts/ci` (in this `samples/wordcount` directory) will test the workflow.
 
 If your local username is different from your Kerberos one you need to specifiy your Kerberos username like this:
 
