@@ -1,30 +1,131 @@
-# Celos as a MapReduce testing framework example
+# Celos-CI demo
 
-This workflow shows how to use Celos as a fixture-based workflow
-testing framework.
+Celos-CI makes it quick and easy to add fixture-based tests to Celos workflows.
 
-The workflow is the classic MapReduce word count, implemented as the
-Java class [WordCount.java](src/main/java/com/collective/celos/examples/wordcount/WordCount.java),
-and called as a Oozie Java action from the [workflow.xml](workflow/workflow.xml).
+Celos-CI isn't production-ready yet, but we'll show what it can do.
 
-The [input/](input) and [output/](output) directories contain the
-test inputs and the expected outputs, respectively.
+Our example is a MapReduce word count workflow.
 
-The [Buildfile](Buildfile)'s `cluster_test` task:
+## Testing a workflow with Celos-CI
 
-* automatically builds and uploads the workflow to the [virtual test cluster](../../provisioner),
+To test a workflow with Celos-CI, you need to do the following steps:
 
-* runs the workflow using Celos for all inputs,
+### Use the `hdfsPath` utility function
 
-* and finally compares the workflow's outputs produced in HDFS against
-  the expected output fixtures, reporting any discrepancies.
+Here's the [src/main/celos/workflow.js](src/main/celos/workflow.js) for the word count workflow.
 
-## Trying it out
+Note that all references to HDFS paths use the `hdfsPath` utility function.
 
-* Set the `CELOS_HOME` environment variable to point to your Celos repository, e.g. `/home/you/celos`.
+````javascript
+importDefaults("collective");
 
-* Make sure you have the [virtual test cluster](../../provisioner) running.
+addWorkflow({
+    "id": "wordcount",
+    "schedule": hourlySchedule(),
+    "schedulingStrategy": serialSchedulingStrategy(),
+    "trigger": hdfsCheckTrigger(hdfsPath("/input/wordcount/${year}-${month}-${day}T${hour}00.txt")),
+    "externalService": oozieExternalService({
+        "oozie.wf.application.path": hdfsPath("/user/celos/app/wordcount/workflow.xml"),
+        "inputDir": hdfsPath("/input/wordcount"),
+        "outputDir": hdfsPath("/output/wordcount")
+    })
+});
+````
 
-* Use `./scripts/cluster-deploy.sh` to deploy Celos to the cluster.
+### Add test cases
 
-* Run `buildr cluster_test` to run the test.
+A Celos-CI test case describes a set of inputs and the outputs that the workflow is expected to produce for those inputs.
+
+In the word count case, the inputs are text files, and the outputs are their word counts.
+
+For example, there's an [input file containing "Hello World!"](src/test/celos-ci/test-1/input/plain/input/wordcount/2013-12-20T1700.txt) and the [corresponding output file](src/test/celos-ci/test-1/output/plain/output/wordcount/2013-12-20T1700/part-00000), that contains the word counts:
+
+````
+Hello	1
+World!	1
+````
+
+In general, the test cases directory layout looks like this:
+
+````
+src/
+  test/
+    celos-ci/
+      test-1/                   # there can be any number of test cases
+        input/                  # contains test inputs
+          plain/                # "plain" means the files are copied to HDFS as-is
+            foo/
+              test-input.txt
+        output/                 # contains expected outputs
+          plain/
+            bar/
+              test-output.txt
+````
+
+### Add Celos-CI to the build process
+
+Like with the earlier Celos-CD, the build file should put together a deployment directory, containing the Celos, Oozie, and Java artifacts.
+
+After that, Celos-CI is invoked as a Java main class, with the needed code coming from our local Maven repo.
+
+[build.gradle](build.gradle) shows the needed Gradle tasks for that (around 15 lines of code).
+
+# Running Celos-CI example
+
+
+This will:
+
+* Upload the input fixtures to HDFS
+
+* Run a local Celos instance that talks to Oozie and HDFS and runs the word count workflow
+
+* Compare the output fixtures against the results produced by the workflow
+
+````
+./gradlew runCelosCiTests
+Temp dir for Celos is /tmp/celos2075014395725024584
+HDFS prefix is: /user/akonopko/test/wordcount/c9d4be7e-25d5-4e5c-9cd7-662373555d51
+Running test case test-1
+Touching Scheduler on 2013-12-20T16:00:01Z...
+There is workflow running: wordcount at 2013-12-20T16:00:01Z
+Touching Scheduler on 2013-12-20T16:00:01Z...
+There is workflow running: wordcount at 2013-12-20T16:00:01Z
+Touching Scheduler on 2013-12-20T16:00:01Z...
+There is workflow running: wordcount at 2013-12-20T16:00:01Z
+Touching Scheduler on 2013-12-20T16:00:01Z...
+Touching Scheduler on 2013-12-20T17:00:01Z...
+There is workflow running: wordcount at 2013-12-20T17:00:01Z
+Touching Scheduler on 2013-12-20T17:00:01Z...
+There is workflow running: wordcount at 2013-12-20T17:00:01Z
+Touching Scheduler on 2013-12-20T17:00:01Z...
+There is workflow running: wordcount at 2013-12-20T17:00:01Z
+Touching Scheduler on 2013-12-20T17:00:01Z...
+Touching Scheduler on 2013-12-20T18:00:01Z...
+There is workflow running: wordcount at 2013-12-20T18:00:01Z
+Touching Scheduler on 2013-12-20T18:00:01Z...
+There is workflow running: wordcount at 2013-12-20T18:00:01Z
+Touching Scheduler on 2013-12-20T18:00:01Z...
+There is workflow running: wordcount at 2013-12-20T18:00:01Z
+Touching Scheduler on 2013-12-20T18:00:01Z...
+There is workflow running: wordcount at 2013-12-20T18:00:01Z
+Touching Scheduler on 2013-12-20T18:00:01Z...
+Comparing file:/home/akonopko/work/celos2/samples/wordcount/src/test/celos-ci/test-1/output/plain/output/wordcount/2013-12-20T1700/part-00000 /user/akonopko/test/wordcount/c9d4be7e-25d5-4e5c-9cd7-662373555d51/output/wordcount/2013-12-20T1700/part-00000
+Comparing file:/home/akonopko/work/celos2/samples/wordcount/src/test/celos-ci/test-1/output/plain/output/wordcount/2013-12-20T1700/_SUCCESS /user/akonopko/test/wordcount/c9d4be7e-25d5-4e5c-9cd7-662373555d51/output/wordcount/2013-12-20T1700/_SUCCESS
+Comparing file:/home/akonopko/work/celos2/samples/wordcount/src/test/celos-ci/test-1/output/plain/output/wordcount/2013-12-20T1600/part-00000 /user/akonopko/test/wordcount/c9d4be7e-25d5-4e5c-9cd7-662373555d51/output/wordcount/2013-12-20T1600/part-00000
+Comparing file:/home/akonopko/work/celos2/samples/wordcount/src/test/celos-ci/test-1/output/plain/output/wordcount/2013-12-20T1600/_SUCCESS /user/akonopko/test/wordcount/c9d4be7e-25d5-4e5c-9cd7-662373555d51/output/wordcount/2013-12-20T1600/_SUCCESS
+Comparing file:/home/akonopko/work/celos2/samples/wordcount/src/test/celos-ci/test-1/output/plain/output/wordcount/2013-12-20T1800/part-00000 /user/akonopko/test/wordcount/c9d4be7e-25d5-4e5c-9cd7-662373555d51/output/wordcount/2013-12-20T1800/part-00000
+Comparing file:/home/akonopko/work/celos2/samples/wordcount/src/test/celos-ci/test-1/output/plain/output/wordcount/2013-12-20T1800/_SUCCESS /user/akonopko/test/wordcount/c9d4be7e-25d5-4e5c-9cd7-662373555d51/output/wordcount/2013-12-20T1800/_SUCCESS
+Output data fits fixtures
+Stopping Celos
+:runCelosCiTests UP-TO-DATE
+ 
+BUILD SUCCESSFUL
+ 
+Total time: 5 mins 22.322 secs
+````
+
+# Status
+
+The current version of Celos-CI can be used to test workflows, but we're still working on making it production-ready.
+
+Right now it can test workflows that use HDFS inputs and outputs, but we're planning to support Hive, SFTP, and more fixtures in the future.
