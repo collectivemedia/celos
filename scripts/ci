@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 set -x
 set -e
-buildr clean test && (cd celos-ci && gradle clean test)
+buildr clean test && gradle clean tests
