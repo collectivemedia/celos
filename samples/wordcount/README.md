@@ -22,7 +22,7 @@ To test a workflow you need to do the following steps:
 
 * Add test cases to `src/test/celos-ci`
 
-* Call Celos-CI from your build process
+* Call `celos-ci.jar` from your build process
 
 Let's look at the steps:
 
@@ -68,7 +68,7 @@ src/
   test/
     celos-ci/
       test-1/                   # there can be any number of test cases
-        test-config.json        # time information for the test scheduler
+        test-config.json
         input/                  # contains test inputs
           plain/                # "plain" means the files are copied to HDFS as-is
             foo/
@@ -79,11 +79,13 @@ src/
               test-output.txt
 ````
 
-### Call Celos-CI from the build process
+The per-test [`test-config.json`](src/test/celos-ci/test-1/test-config.json) file contains the start and end time of the fixtures, so that the test scheduler knows which hourly jobs to run.
+
+### Call `celos-ci.jar` from the build process
 
 The build file should put together a deployment directory, containing the Celos, Oozie, and Java artifacts.
 
-After that, Celos-CI is invoked as a Java main class with the celos-ci.jar coming from Maven.
+After that, the `celos-ci.jar`'s main class is invoked.  The JAR comes from the local Maven repo.
 
 [build.gradle](build.gradle) shows the needed Gradle tasks for that (around 15 lines of code).
 
