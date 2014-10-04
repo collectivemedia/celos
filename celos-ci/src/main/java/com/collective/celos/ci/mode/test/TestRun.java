@@ -9,6 +9,7 @@ import com.collective.celos.ci.deploy.JScpWorker;
 import com.collective.celos.ci.deploy.WorkflowFileDeployer;
 import com.collective.celos.ci.fixtures.AbstractFixtureWorkerFactory;
 import com.collective.celos.ci.fixtures.FixturesHdfsWorkerManager;
+import com.collective.celos.ci.fixtures.avro.AvroFixtureWorkerFactory;
 import com.collective.celos.ci.fixtures.plain.PlainFixtureWorkerFactory;
 import com.collective.celos.server.CelosServer;
 import com.google.common.collect.ImmutableMap;
@@ -18,9 +19,11 @@ import org.apache.commons.vfs2.Selectors;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Constructor;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -41,7 +44,9 @@ public class TestRun {
     private final TestContext testContext;
     private final File testCaseDir;
 
-    public TestRun(CelosCiTarget target, String username, String workflowName, File deployDir, File testCaseDir) throws Exception {
+    public TestRun(CelosCiTarget target, String username, String workflowName,
+                   File deployDir, File testCaseDir, File testMetaDir,
+                   List<Class<? extends AbstractFixtureWorkerFactory>> workerFactories) throws Exception {
 
         File celosTempDir = Files.createTempDirectory("celos").toFile();
         this.testCaseDir = testCaseDir;
@@ -50,7 +55,7 @@ public class TestRun {
         String hdfsPrefix = String.format(HDFS_PREFIX_PATTERN, username, workflowName, UUID.randomUUID().toString());
         System.out.println("Test case " + testCaseDir.getName() + ": HDFS prefix is: " + hdfsPrefix);
 
-        this.testContext = new TestContext(celosTempDir, hdfsPrefix, testCaseDir);
+        this.testContext = new TestContext(celosTempDir, hdfsPrefix, testCaseDir, testMetaDir);
         URI substitutedCelosWorkflowDir = testContext.getCelosWorkflowDir().toURI();
         CelosCiTarget testTarget = new CelosCiTarget(target.getPathToHdfsSite(), target.getPathToCoreSite(), substitutedCelosWorkflowDir, target.getDefaultsFile());
         this.ciContext = new CelosCiContext(testTarget, username, CelosCiContext.Mode.TEST, deployDir, workflowName, hdfsPrefix);
@@ -61,7 +66,10 @@ public class TestRun {
         this.compareWorkerManager = new FixturesHdfsWorkerManager(ciContext);
         this.deployWorkerManager = new FixturesHdfsWorkerManager(ciContext);
 
-        setupWorkerManagers(new PlainFixtureWorkerFactory(ciContext, testContext));
+        for (Class<? extends AbstractFixtureWorkerFactory> clazz : workerFactories) {
+            Constructor<? extends AbstractFixtureWorkerFactory> constructor = clazz.getConstructor(CelosCiContext.class, TestContext.class);
+            setupWorkerManagers(constructor.newInstance(ciContext, testContext));
+        }
 
     }
 

@@ -19,11 +19,13 @@ public class TestContext {
     private final File celosWorkDir;
     private final String hdfsPrefix;
     private final File testCaseDir;
+    private final File testMetaDir;
 
-    public TestContext(File celosWorkDir, String hdfsPrefix, File testCaseDir) {
+    public TestContext(File celosWorkDir, String hdfsPrefix, File testCaseDir, File testMetaDir) {
         this.celosWorkDir = Util.requireNonNull(celosWorkDir);
         this.hdfsPrefix = Util.requireNonNull(hdfsPrefix);
         this.testCaseDir = Util.requireNonNull(testCaseDir);
+        this.testMetaDir = Util.requireNonNull(testMetaDir);
 
         this.celosWorkflowDir = new File(celosWorkDir, WORKFLOW_DIR_CELOS_PATH);
         this.celosDefaultsDir = new File(celosWorkDir, DEFAULTS_DIR_CELOS_PATH);
@@ -52,5 +54,9 @@ public class TestContext {
 
     public File getCelosWorkDir() {
         return celosWorkDir;
+    }
+
+    public File getTestMetaDir() {
+        return testMetaDir;
     }
 }
