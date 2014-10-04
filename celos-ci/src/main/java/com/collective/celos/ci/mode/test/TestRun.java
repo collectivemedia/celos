@@ -9,8 +9,6 @@ import com.collective.celos.ci.deploy.JScpWorker;
 import com.collective.celos.ci.deploy.WorkflowFileDeployer;
 import com.collective.celos.ci.fixtures.AbstractFixtureWorkerFactory;
 import com.collective.celos.ci.fixtures.FixturesHdfsWorkerManager;
-import com.collective.celos.ci.fixtures.avro.AvroFixtureWorkerFactory;
-import com.collective.celos.ci.fixtures.plain.PlainFixtureWorkerFactory;
 import com.collective.celos.server.CelosServer;
 import com.google.common.collect.ImmutableMap;
 import org.apache.commons.io.FileUtils;

@@ -5,7 +5,6 @@ import com.collective.celos.ci.config.CelosCiCommandLine;
 import com.collective.celos.ci.config.deploy.CelosCiTarget;
 import com.collective.celos.ci.config.deploy.CelosCiTargetParser;
 import com.collective.celos.ci.fixtures.AbstractFixtureWorkerFactory;
-import com.collective.celos.ci.fixtures.avro.AvroFixtureWorkerFactory;
 import com.collective.celos.ci.fixtures.plain.PlainFixtureWorkerFactory;
 import com.collective.celos.ci.mode.test.TestRun;
 import com.google.common.collect.Lists;
