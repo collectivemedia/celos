@@ -1,7 +1,8 @@
-package com.collective.celos.ci.fixtures.deploy;
+package com.collective.celos.ci.fixtures.plain;
 
 import com.collective.celos.ci.config.deploy.CelosCiContext;
 import com.collective.celos.ci.fixtures.AbstractFixtureFileWorker;
+import com.collective.celos.ci.fixtures.DeployFixtureWorker;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 
@@ -10,9 +11,7 @@ import java.io.File;
 /**
  * Created by akonopko on 9/18/14.
  */
-public class PlainFixtureDeployWorker extends AbstractFixtureFileWorker {
-
-    public final static String WORKER_TYPE = "PLAIN";
+public class PlainFixtureDeployWorker extends AbstractFixtureFileWorker implements DeployFixtureWorker {
 
     @Override
     public void processPair(CelosCiContext context, File localFile, Path hdfsFile) throws Exception {

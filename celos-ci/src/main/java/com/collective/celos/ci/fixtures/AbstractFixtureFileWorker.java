@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * Created by akonopko on 9/18/14.
  */
-public abstract class AbstractFixtureFileWorker {
+public abstract class AbstractFixtureFileWorker implements FixtureWorker {
 
     public abstract void processPair(CelosCiContext context, File localFile, Path hdfsFile) throws Exception;
 

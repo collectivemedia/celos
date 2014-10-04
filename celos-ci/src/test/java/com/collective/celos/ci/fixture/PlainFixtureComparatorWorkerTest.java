@@ -1,8 +1,8 @@
 package com.collective.celos.ci.fixture;
 
 import com.collective.celos.ci.config.deploy.CelosCiContext;
-import com.collective.celos.ci.fixtures.compare.CelosResultsCompareException;
-import com.collective.celos.ci.fixtures.compare.PlainFixtureComparatorWorker;
+import com.collective.celos.ci.fixtures.CelosResultsCompareException;
+import com.collective.celos.ci.fixtures.plain.PlainFixtureComparatorWorker;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.LocalFileSystem;
 import org.apache.hadoop.fs.Path;

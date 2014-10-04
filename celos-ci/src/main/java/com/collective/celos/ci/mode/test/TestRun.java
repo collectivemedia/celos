@@ -1,22 +1,17 @@
 package com.collective.celos.ci.mode.test;
 
-import com.collective.celos.ci.CelosCi;
-import com.collective.celos.ci.config.CelosCiCommandLine;
 import com.collective.celos.ci.config.deploy.CelosCiContext;
 import com.collective.celos.ci.config.deploy.CelosCiTarget;
-import com.collective.celos.ci.config.deploy.CelosCiTargetParser;
 import com.collective.celos.ci.config.testing.TestConfigParser;
 import com.collective.celos.ci.config.testing.TestContext;
 import com.collective.celos.ci.deploy.HdfsDeployer;
 import com.collective.celos.ci.deploy.JScpWorker;
 import com.collective.celos.ci.deploy.WorkflowFileDeployer;
-import com.collective.celos.ci.fixtures.AbstractFixtureFileWorker;
+import com.collective.celos.ci.fixtures.AbstractFixtureWorkerFactory;
 import com.collective.celos.ci.fixtures.FixturesHdfsWorkerManager;
-import com.collective.celos.ci.fixtures.compare.PlainFixtureComparatorWorker;
-import com.collective.celos.ci.fixtures.deploy.PlainFixtureDeployWorker;
+import com.collective.celos.ci.fixtures.plain.PlainFixtureWorkerFactory;
 import com.collective.celos.server.CelosServer;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Maps;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.Selectors;
@@ -26,8 +21,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -65,14 +58,16 @@ public class TestRun {
         this.wfDeployer = new WorkflowFileDeployer(ciContext);
         this.hdfsDeployer = new HdfsDeployer(ciContext);
 
-        Map<String, AbstractFixtureFileWorker> comparatorWorkers = Maps.newHashMap();
-        comparatorWorkers.put(PlainFixtureComparatorWorker.WORKER_TYPE, new PlainFixtureComparatorWorker());
-        this.compareWorkerManager = new FixturesHdfsWorkerManager(ciContext, comparatorWorkers);
+        this.compareWorkerManager = new FixturesHdfsWorkerManager(ciContext);
+        this.deployWorkerManager = new FixturesHdfsWorkerManager(ciContext);
 
-        Map<String, AbstractFixtureFileWorker> deployWorkers = Maps.newHashMap();
-        deployWorkers.put(PlainFixtureDeployWorker.WORKER_TYPE, new PlainFixtureDeployWorker());
-        this.deployWorkerManager = new FixturesHdfsWorkerManager(ciContext, deployWorkers);
+        setupWorkerManagers(new PlainFixtureWorkerFactory(ciContext, testContext));
 
+    }
+
+    private void setupWorkerManagers(AbstractFixtureWorkerFactory factory) {
+        this.compareWorkerManager.addFixtureWorker(factory.getWorkerType(), factory.createCompareWorker());
+        this.deployWorkerManager.addFixtureWorker(factory.getWorkerType(), factory.createDeployWorker());
     }
 
     public CelosCiContext getCiContext() {
@@ -126,7 +121,7 @@ public class TestRun {
 
         ciContext.getFileSystem().deleteOnExit(new org.apache.hadoop.fs.Path(ciContext.getHdfsPrefix()));
 
-        JScpWorker worker = new JScpWorker(ciContext.getUserName());
+        JScpWorker worker = ciContext.getJscpWorker();
         FileObject remoteDefaultsFile = worker.getFileObjectByUri(ciContext.getTarget().getDefaultsFile());
         if (remoteDefaultsFile.exists()) {
             FileObject localDefaultsFile = worker.getFileObjectByUri(new File(testContext.getCelosDefaultsDir(), remoteDefaultsFile.getName().getBaseName()).toURI());

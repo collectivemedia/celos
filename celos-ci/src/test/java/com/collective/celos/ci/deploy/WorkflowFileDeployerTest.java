@@ -92,7 +92,7 @@ public class WorkflowFileDeployerTest {
         doReturn(localFolder).when(context).getDeployDir();
         doReturn(target).when(context).getTarget();
         doReturn("workflow").when(context).getWorkflowName();
-
+        doReturn(new JScpWorker("uname")).when(context).getJscpWorker();
         deployer.deploy();
 
         Assert.assertArrayEquals(remoteFolder.list(), new String[] {"workflow.js"});
@@ -108,6 +108,7 @@ public class WorkflowFileDeployerTest {
         wfFile.createNewFile();
 
         CelosCiTarget target = new CelosCiTarget(URI.create(""), URI.create(""), remoteFolder.toURI(), URI.create(""));
+        doReturn(new JScpWorker("uname")).when(context).getJscpWorker();
         doReturn(remoteFolder).when(context).getDeployDir();
         doReturn(target).when(context).getTarget();
         doReturn("workflow").when(context).getWorkflowName();
@@ -145,7 +146,7 @@ public class WorkflowFileDeployerTest {
         writeTextToFile(destFile, "oldfile");
 
         Assert.assertEquals("oldfile", readFileContent(destFile));
-
+        doReturn(new JScpWorker("uname")).when(context).getJscpWorker();
         deployer.deploy();
 
         Assert.assertArrayEquals(remoteFolder.list(), new String[] {"workflow.js"});

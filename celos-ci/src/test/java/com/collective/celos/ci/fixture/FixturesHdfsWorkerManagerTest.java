@@ -29,9 +29,9 @@ public class FixturesHdfsWorkerManagerTest {
         CelosCiContext context = mock(CelosCiContext.class);
         Map<String, AbstractFixtureFileWorker> fixtureWorkers = Maps.newHashMap();
         TraverseFixtureFileWorker worker = new TraverseFixtureFileWorker();
-        fixtureWorkers.put("plain", worker);
-        fixtureWorkers.put("avro", worker);
-        FixturesHdfsWorkerManager manager = new FixturesHdfsWorkerManager(context, fixtureWorkers);
+        FixturesHdfsWorkerManager manager = new FixturesHdfsWorkerManager(context);
+        manager.addFixtureWorker("plain", worker);
+        manager.addFixtureWorker("avro", worker);
         File inputFolder = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/ci/fixtures/input").toURI());
         manager.processLocalDir(inputFolder);
 
@@ -48,8 +48,8 @@ public class FixturesHdfsWorkerManagerTest {
         CelosCiContext context = mock(CelosCiContext.class);
         Map<String, AbstractFixtureFileWorker> fixtureWorkers = Maps.newHashMap();
         TraverseFixtureFileWorker worker = new TraverseFixtureFileWorker();
-        fixtureWorkers.put("plain", worker);
-        FixturesHdfsWorkerManager manager = new FixturesHdfsWorkerManager(context, fixtureWorkers);
+        FixturesHdfsWorkerManager manager = new FixturesHdfsWorkerManager(context);
+        manager.addFixtureWorker("plain", worker);
         File inputFolder = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/ci/fixtures/input").toURI());
         manager.processLocalDir(inputFolder);
 

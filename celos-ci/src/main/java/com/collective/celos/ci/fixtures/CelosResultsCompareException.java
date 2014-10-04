@@ -1,4 +1,4 @@
-package com.collective.celos.ci.fixtures.compare;
+package com.collective.celos.ci.fixtures;
 
 /**
  * Created by akonopko on 9/18/14.

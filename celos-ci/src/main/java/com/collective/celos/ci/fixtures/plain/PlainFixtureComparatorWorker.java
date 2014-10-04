@@ -1,7 +1,9 @@
-package com.collective.celos.ci.fixtures.compare;
+package com.collective.celos.ci.fixtures.plain;
 
 import com.collective.celos.ci.config.deploy.CelosCiContext;
 import com.collective.celos.ci.fixtures.AbstractFixtureFileWorker;
+import com.collective.celos.ci.fixtures.CelosResultsCompareException;
+import com.collective.celos.ci.fixtures.ComparatorFixtureWorker;
 import org.apache.hadoop.fs.FSDataInputStream;
 import org.apache.hadoop.fs.Path;
 import org.codehaus.plexus.util.IOUtil;
@@ -13,9 +15,7 @@ import java.io.InputStream;
 /**
  * Created by akonopko on 9/18/14.
  */
-public class PlainFixtureComparatorWorker extends AbstractFixtureFileWorker {
-
-    public final static String WORKER_TYPE = "PLAIN";
+public class PlainFixtureComparatorWorker extends AbstractFixtureFileWorker implements ComparatorFixtureWorker {
 
     @Override
     public void processPair(CelosCiContext context, File localFile, Path hdfsFile) throws Exception {

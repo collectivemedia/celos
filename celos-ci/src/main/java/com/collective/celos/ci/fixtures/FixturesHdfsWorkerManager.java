@@ -13,20 +13,20 @@ import java.util.Map;
 public class FixturesHdfsWorkerManager {
 
     private CelosCiContext context;
-    private Map<String, AbstractFixtureFileWorker> fixtureWorkers;
+    private Map<String, FixtureWorker> fixtureWorkers;
 
-    public FixturesHdfsWorkerManager(CelosCiContext context, Map<String, AbstractFixtureFileWorker> fixtureWorkers) {
+    public FixturesHdfsWorkerManager(CelosCiContext context) {
         this.context = context;
         this.fixtureWorkers = new HashMap<>();
-        for (Map.Entry<String, AbstractFixtureFileWorker> entry : fixtureWorkers.entrySet()) {
-            this.fixtureWorkers.put(entry.getKey().toUpperCase(), entry.getValue());
-        }
     }
 
+    public void addFixtureWorker(String type, FixtureWorker worker) {
+        this.fixtureWorkers.put(type.toUpperCase(), worker);
+    }
 
     public void processLocalDir(File inputDirLocal) throws Exception {
         for (File typeDir : inputDirLocal.listFiles()) {
-            AbstractFixtureFileWorker worker = fixtureWorkers.get(typeDir.getName().toUpperCase());
+            FixtureWorker worker = fixtureWorkers.get(typeDir.getName().toUpperCase());
             if (worker == null) {
                 throw new RuntimeException("Cant find fixture worker for " + typeDir.getName());
             }

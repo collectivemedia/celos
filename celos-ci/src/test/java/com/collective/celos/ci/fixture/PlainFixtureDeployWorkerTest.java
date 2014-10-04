@@ -1,12 +1,9 @@
 package com.collective.celos.ci.fixture;
 
 import com.collective.celos.ci.config.deploy.CelosCiContext;
-import com.collective.celos.ci.fixtures.AbstractFixtureFileWorker;
-import com.collective.celos.ci.fixtures.compare.PlainFixtureComparatorWorker;
-import com.collective.celos.ci.fixtures.deploy.PlainFixtureDeployWorker;
+import com.collective.celos.ci.fixtures.plain.PlainFixtureDeployWorker;
 import com.google.common.collect.Sets;
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.LocalFileSystem;
 import org.apache.hadoop.fs.Path;
 import org.junit.Assert;
@@ -15,7 +12,6 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Set;
 
 import static org.mockito.Mockito.doReturn;

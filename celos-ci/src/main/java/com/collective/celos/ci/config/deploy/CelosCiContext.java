@@ -25,6 +25,7 @@ public class CelosCiContext {
     private final FileSystem fileSystem;
     private final String hdfsPrefix;
     private final Configuration configuration;
+    private final JScpWorker jscpWorker;
 
     public CelosCiContext(CelosCiTarget target,
                           String userName,
@@ -38,12 +39,12 @@ public class CelosCiContext {
         this.deployDir = Util.requireNonNull(deployDir);
         this.workflowName = Util.requireNonNull(workflowName);
         this.hdfsPrefix = Util.requireNonNull(hdfsPrefix);
+        this.jscpWorker = new JScpWorker(userName);
         this.configuration = setupConfiguration(userName, target);
         this.fileSystem = FileSystem.get(this.configuration);
     }
 
     private Configuration setupConfiguration(String username, CelosCiTarget target) throws Exception {
-        JScpWorker jscpWorker = new JScpWorker(username);
         Configuration conf = new Configuration();
 
         conf.set("fs.hdfs.impl", org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
@@ -88,5 +89,9 @@ public class CelosCiContext {
 
     public Configuration getConfiguration() {
         return configuration;
+    }
+
+    public JScpWorker getJscpWorker() {
+        return jscpWorker;
     }
 }
