@@ -4,8 +4,6 @@ import com.collective.celos.ci.CelosCi;
 import com.collective.celos.ci.config.CelosCiCommandLine;
 import com.collective.celos.ci.config.deploy.CelosCiTarget;
 import com.collective.celos.ci.config.deploy.CelosCiTargetParser;
-import com.collective.celos.ci.fixtures.AbstractFixtureWorkerFactory;
-import com.collective.celos.ci.fixtures.plain.PlainFixtureWorkerFactory;
 import com.collective.celos.ci.mode.test.TestRun;
 import com.google.common.collect.Lists;
 
@@ -25,14 +23,9 @@ public class TestTask extends CelosCi {
         CelosCiTargetParser parser = new CelosCiTargetParser(commandLine.getUserName());
         CelosCiTarget target = parser.parse(commandLine.getTargetUri());
 
-        File metaDir = new File(commandLine.getTestCasesDir(), META_DIR_NAME);
-
-        List<Class<? extends AbstractFixtureWorkerFactory>> workers = Lists.newArrayList();
-        workers.add(PlainFixtureWorkerFactory.class);
-
         for (File tcDir : commandLine.getTestCasesDir().listFiles()) {
             if (tcDir.getName() != META_DIR_NAME) {
-                testRuns.add(new TestRun(target, commandLine.getUserName(), commandLine.getWorkflowName(), commandLine.getDeployDir(), tcDir, metaDir, workers));
+                testRuns.add(new TestRun(target, commandLine.getUserName(), commandLine.getWorkflowName(), commandLine.getDeployDir(), tcDir));
             }
         }
     }

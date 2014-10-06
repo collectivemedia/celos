@@ -7,8 +7,9 @@ import com.collective.celos.ci.config.testing.TestContext;
 import com.collective.celos.ci.deploy.HdfsDeployer;
 import com.collective.celos.ci.deploy.JScpWorker;
 import com.collective.celos.ci.deploy.WorkflowFileDeployer;
-import com.collective.celos.ci.fixtures.AbstractFixtureWorkerFactory;
 import com.collective.celos.ci.fixtures.FixturesHdfsWorkerManager;
+import com.collective.celos.ci.fixtures.plain.PlainFixtureComparatorWorker;
+import com.collective.celos.ci.fixtures.plain.PlainFixtureDeployWorker;
 import com.collective.celos.server.CelosServer;
 import com.google.common.collect.ImmutableMap;
 import org.apache.commons.io.FileUtils;
@@ -43,8 +44,7 @@ public class TestRun {
     private final File testCaseDir;
 
     public TestRun(CelosCiTarget target, String username, String workflowName,
-                   File deployDir, File testCaseDir, File testMetaDir,
-                   List<Class<? extends AbstractFixtureWorkerFactory>> workerFactories) throws Exception {
+                   File deployDir, File testCaseDir) throws Exception {
 
         File celosTempDir = Files.createTempDirectory("celos").toFile();
         this.testCaseDir = testCaseDir;
@@ -53,7 +53,7 @@ public class TestRun {
         String hdfsPrefix = String.format(HDFS_PREFIX_PATTERN, username, workflowName, UUID.randomUUID().toString());
         System.out.println("Test case " + testCaseDir.getName() + ": HDFS prefix is: " + hdfsPrefix);
 
-        this.testContext = new TestContext(celosTempDir, hdfsPrefix, testCaseDir, testMetaDir);
+        this.testContext = new TestContext(celosTempDir, hdfsPrefix, testCaseDir);
         URI substitutedCelosWorkflowDir = testContext.getCelosWorkflowDir().toURI();
         CelosCiTarget testTarget = new CelosCiTarget(target.getPathToHdfsSite(), target.getPathToCoreSite(), substitutedCelosWorkflowDir, target.getDefaultsFile());
         this.ciContext = new CelosCiContext(testTarget, username, CelosCiContext.Mode.TEST, deployDir, workflowName, hdfsPrefix);
@@ -62,19 +62,11 @@ public class TestRun {
         this.hdfsDeployer = new HdfsDeployer(ciContext);
 
         this.compareWorkerManager = new FixturesHdfsWorkerManager(ciContext);
+        this.compareWorkerManager.addFixtureWorker(PlainFixtureComparatorWorker.WORKER_TYPE, new PlainFixtureComparatorWorker());
         this.deployWorkerManager = new FixturesHdfsWorkerManager(ciContext);
-
-        for (Class<? extends AbstractFixtureWorkerFactory> clazz : workerFactories) {
-            Constructor<? extends AbstractFixtureWorkerFactory> constructor = clazz.getConstructor(CelosCiContext.class, TestContext.class);
-            setupWorkerManagers(constructor.newInstance(ciContext, testContext));
-        }
-
+        this.deployWorkerManager.addFixtureWorker(PlainFixtureDeployWorker.WORKER_TYPE, new PlainFixtureDeployWorker());
     }
 
-    private void setupWorkerManagers(AbstractFixtureWorkerFactory factory) {
-        this.compareWorkerManager.addFixtureWorker(factory.getWorkerType(), factory.createCompareWorker());
-        this.deployWorkerManager.addFixtureWorker(factory.getWorkerType(), factory.createDeployWorker());
-    }
 
     public CelosCiContext getCiContext() {
         return ciContext;

@@ -13,6 +13,8 @@ import java.io.File;
  */
 public class PlainFixtureDeployWorker extends AbstractFixtureFileWorker implements DeployFixtureWorker {
 
+    public final static String WORKER_TYPE = "PLAIN";
+
     @Override
     public void processPair(CelosCiContext context, File localFile, Path hdfsFile) throws Exception {
         FileSystem fileSystem = context.getFileSystem();

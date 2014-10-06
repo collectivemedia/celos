@@ -17,6 +17,8 @@ import java.io.InputStream;
  */
 public class PlainFixtureComparatorWorker extends AbstractFixtureFileWorker implements ComparatorFixtureWorker {
 
+    public final static String WORKER_TYPE = "PLAIN";
+
     @Override
     public void processPair(CelosCiContext context, File localFile, Path hdfsFile) throws Exception {
 
