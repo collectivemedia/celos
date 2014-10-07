@@ -2,13 +2,12 @@ package com.collective.celos.ci.mode.test;
 
 import com.collective.celos.ci.config.deploy.CelosCiContext;
 import com.collective.celos.ci.config.deploy.CelosCiTarget;
-import com.collective.celos.ci.config.testing.TestConfigParser;
 import com.collective.celos.ci.config.testing.TestContext;
 import com.collective.celos.ci.deploy.HdfsDeployer;
 import com.collective.celos.ci.deploy.JScpWorker;
 import com.collective.celos.ci.deploy.WorkflowFileDeployer;
-import com.collective.celos.ci.fixtures.AbstractFileComparer;
-import com.collective.celos.ci.fixtures.AbstractFileDeployer;
+import com.collective.celos.ci.fixtures.compare.FixDirComparer;
+import com.collective.celos.ci.fixtures.deploy.FixDirDeployer;
 import com.collective.celos.server.CelosServer;
 import com.google.common.collect.ImmutableMap;
 import org.apache.commons.io.FileUtils;
@@ -37,12 +36,12 @@ public class TestRun {
     private final HdfsDeployer hdfsDeployer;
     private final CelosCiContext ciContext;
     private final TestContext testContext;
-    private final List<AbstractFileDeployer> deployers;
-    private final List<AbstractFileComparer> fileComparers;
+    private final List<FixDirDeployer> deployers;
+    private final List<FixDirComparer> fileComparers;
     private final String testCaseName;
 
     public TestRun(CelosCiTarget target, String username, String workflowName,
-                   File deployDir, String testCase, List<AbstractFileDeployer> deployers, List<AbstractFileComparer> fileComparers) throws Exception {
+                   File deployDir, String testCase, List<FixDirDeployer> deployers, List<FixDirComparer> fileComparers) throws Exception {
 
         File celosTempDir = Files.createTempDirectory("celos").toFile();
 

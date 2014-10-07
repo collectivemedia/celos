@@ -50,12 +50,6 @@ public class TestTaskTest {
         CelosCiCommandLine commandLine = new CelosCiCommandLine(targetFile.toURI().toString(), "DEPLOY", "deploydir", "workflow", testCasesDir, "uname");
         TestTask testTask = new TestTask(commandLine);
 
-        Set<String> names = Sets.newHashSet();
-        for (TestRun tr : testTask.testRuns) {
-            names.add(tr.getTestCaseDir().getName());
-        }
-        Assert.assertEquals(names, Sets.newHashSet("testcase-1", "testcase-2"));
-
         Assert.assertEquals(testTask.testRuns.get(0).getCiContext().getTarget().getDefaultsFile(), target.getDefaultsFile());
         Assert.assertEquals(testTask.testRuns.get(0).getCiContext().getTarget().getPathToCoreSite(), target.getPathToCoreSite());
         Assert.assertEquals(testTask.testRuns.get(0).getCiContext().getTarget().getPathToHdfsSite(), target.getPathToHdfsSite());

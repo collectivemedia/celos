@@ -1,4 +1,4 @@
-package com.collective.celos.ci;
+package com.collective.celos.ci.mode.test;
 
 import com.collective.celos.Workflow;
 import com.collective.celos.WorkflowConfiguration;
@@ -20,7 +20,7 @@ public class TestConfigurationParser {
     private final WorkflowConfiguration cfg = new WorkflowConfiguration();
     private final Context context;
 
-    public TestConfigurationParser(File defaultsDir, Map<String, String> additionalJsVariables) throws Exception {
+    public TestConfigurationParser() throws Exception {
         context = Context.enter();
         context.setLanguageVersion(170);
 
@@ -60,14 +60,10 @@ public class TestConfigurationParser {
     }
 
     private void loadBuiltinScripts(Global scope) throws Exception {
-        InputStream scripts = TestConfigurationParser.class.getResourceAsStream("celos-scripts.js");
-        context.evaluateReader(scope, new InputStreamReader(scripts), "celos-scripts.js", 1, null);
+        InputStream scripts = TestConfigurationParser.class.getResourceAsStream("test-scripts.js");
+        context.evaluateReader(scope, new InputStreamReader(scripts), "test-scripts.js", 1, null);
     }
 
-    public void addWorkflow(Workflow wf, String celosWorkflowConfigFilePath) {
-        cfg.addWorkflow(wf, celosWorkflowConfigFilePath);
-    }
-    
     public Context getContext() {
         return context;
     }
