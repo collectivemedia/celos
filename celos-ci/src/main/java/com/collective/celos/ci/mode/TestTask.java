@@ -15,7 +15,6 @@ import java.util.List;
  */
 public class TestTask extends CelosCi {
 
-    public static final String META_DIR_NAME = "meta";
     List<TestRun> testRuns = Lists.newArrayList();
 
     public TestTask(CelosCiCommandLine commandLine) throws Exception {
@@ -24,9 +23,7 @@ public class TestTask extends CelosCi {
         CelosCiTarget target = parser.parse(commandLine.getTargetUri());
 
         for (File tcDir : commandLine.getTestCasesDir().listFiles()) {
-            if (tcDir.getName() != META_DIR_NAME) {
-                testRuns.add(new TestRun(target, commandLine.getUserName(), commandLine.getWorkflowName(), commandLine.getDeployDir(), tcDir));
-            }
+//            testRuns.add(new TestRun(target, commandLine.getUserName(), commandLine.getWorkflowName(), commandLine.getDeployDir(), tcDir));
         }
     }
 
