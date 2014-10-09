@@ -111,7 +111,7 @@ uploadArchives.doFirst {
 
 task build_wordcount(type: Exec) {
     workingDir 'samples/wordcount'
-    commandLine './gradlew', 'build', 'deploy_dir'
+    commandLine './gradlew', 'clean', 'build', 'deploy_dir'
 }
 
 task test_wordcount(type: JavaExec) {
