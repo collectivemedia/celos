@@ -116,8 +116,8 @@ task build_wordcount(type: Exec) {
 
 task test_wordcount(type: JavaExec) {
     main = "com.collective.celos.ci.CelosCi"
-    classpath configurations.compile
-    args '--deployDir', 'build/celos_deploy', '--target', 'sftp://celos001.ny7.collective-media.net/etc/celos/targets/testing.json', '--workflowName', 'wordcount' , '--mode', 'TEST', '--testDir', 'src/test/celos-ci'
+    classpath=sourceSets.main.runtimeClasspath
+    args '--deployDir', 'samples/wordcount/build/celos_deploy', '--target', 'sftp://celos001.ny7.collective-media.net/etc/celos/targets/testing.json', '--workflowName', 'wordcount' , '--mode', 'TEST', '--testDir', 'samples/wordcount/src/test/celos-ci'
 }
 
 task integration_test << {
