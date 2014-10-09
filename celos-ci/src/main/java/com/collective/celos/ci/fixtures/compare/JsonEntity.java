@@ -1,30 +1,31 @@
-package com.collective.celos.ci.fixtures.avro;
+package com.collective.celos.ci.fixtures.compare;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by akonopko on 9/29/14.
  */
 public class JsonEntity {
 
-    private Set<String> ignorePaths = new HashSet<>();
-    private JsonElement jsonElement;
+    private final Set<String> ignorePaths;
+    private final JsonElement jsonElement;
+    private final String jsonText;
 
     public JsonEntity(String json) {
+        this.ignorePaths = Collections.emptySet();
         this.jsonElement = deepCopy("root", new JsonParser().parse(json));
+        this.jsonText = json;
     }
 
     public JsonEntity(String json, Set<String> ignorePaths) {
         this.ignorePaths = ignorePaths;
         this.jsonElement = deepCopy("root", new JsonParser().parse(json));
+        this.jsonText = json;
     }
 
     @Override
@@ -78,4 +79,8 @@ public class JsonEntity {
         return result;
     }
 
+    @Override
+    public String toString() {
+        return jsonText;
+    }
 }

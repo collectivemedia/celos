@@ -1,6 +1,7 @@
 package com.collective.celos.ci.fixtures.read;
 
 import com.collective.celos.ci.config.deploy.CelosCiContext;
+import com.collective.celos.ci.fixtures.compare.FixObjectComparer;
 import com.collective.celos.ci.fixtures.structure.FixDir;
 import com.collective.celos.ci.fixtures.structure.FixFile;
 import com.collective.celos.ci.fixtures.structure.FixObject;
@@ -15,18 +16,26 @@ import java.util.Map;
 /**
  * Created by akonopko on 10/7/14.
  */
-public class HdfsDataReader implements FileDataReader {
+public class HdfsTreeFixObjectCreator implements FixObjectCreator {
 
     private final CelosCiContext context;
     private final String path;
+    private final FixObjectComparer<FixDir> dirComparer;
+    private final FixObjectComparer<FixFile> fileComparer;
 
-    public HdfsDataReader(CelosCiContext context, String path, boolean sandboxed) {
+    public HdfsTreeFixObjectCreator(CelosCiContext context, String path) {
+        this(context, path, null, null);
+    }
+
+    public HdfsTreeFixObjectCreator(CelosCiContext context, String path, FixObjectComparer<FixDir> dirComparer, FixObjectComparer<FixFile> fileComparer) {
         this.context = context;
         this.path = path;
+        this.dirComparer = dirComparer == null ? DEFAULT_DIR_COMPARER : dirComparer;
+        this.fileComparer = fileComparer == null ? DEFAULT_FILE_COMPARER : fileComparer;
     }
 
     @Override
-    public FixObject read() throws Exception {
+    public FixObject create() throws Exception {
         return read(context.getFileSystem().getFileStatus(new Path(path)));
     }
 
@@ -38,9 +47,9 @@ public class HdfsDataReader implements FileDataReader {
                 LocatedFileStatus childStatus = iterator.next();
                 content.put(childStatus.getPath().getName(), read(childStatus));
             }
-            return new FixDir(content);
+            return new FixDir(content, dirComparer);
         } else {
-            return new FixFile(context.getFileSystem().open(fileStatus.getPath()));
+            return new FixFile(context.getFileSystem().open(fileStatus.getPath()), fileComparer);
         }
     }
 

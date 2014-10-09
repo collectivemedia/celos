@@ -1,5 +1,7 @@
 package com.collective.celos.ci.fixtures.avro;
 
+import com.collective.celos.ci.fixtures.compare.FixObjectComparer;
+import com.collective.celos.ci.fixtures.compare.PlainFileComparer;
 import com.collective.celos.ci.fixtures.processor.AbstractFixFileConverter;
 import com.collective.celos.ci.fixtures.structure.FixFile;
 import org.apache.avro.Schema;
@@ -13,11 +15,17 @@ import java.io.*;
 /**
  * Created by akonopko on 9/29/14.
  */
-public class JsonToAvroConverter implements AbstractFixFileConverter {
+public class JsonToAvroConverter extends AbstractFixFileConverter {
 
     private final Schema schema;
 
+    public JsonToAvroConverter(FixObjectComparer<FixFile> newComparer, Schema schema) {
+        super(newComparer);
+        this.schema = schema;
+    }
+
     public JsonToAvroConverter(Schema schema) {
+        super(new PlainFileComparer());
         this.schema = schema;
     }
 
@@ -45,7 +53,7 @@ public class JsonToAvroConverter implements AbstractFixFileConverter {
         } finally {
             input.close();
         }
-        return new FixFile(new ByteArrayInputStream(baos.toByteArray()));
+        return new FixFile(new ByteArrayInputStream(baos.toByteArray()), getNewComparer());
     }
 
 

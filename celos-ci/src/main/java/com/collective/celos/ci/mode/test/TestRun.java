@@ -6,7 +6,7 @@ import com.collective.celos.ci.config.testing.TestContext;
 import com.collective.celos.ci.deploy.HdfsDeployer;
 import com.collective.celos.ci.deploy.JScpWorker;
 import com.collective.celos.ci.deploy.WorkflowFileDeployer;
-import com.collective.celos.ci.fixtures.compare.FixDirComparer;
+import com.collective.celos.ci.fixtures.compare.FixObjectComparer;
 import com.collective.celos.ci.fixtures.deploy.FixDirDeployer;
 import com.collective.celos.server.CelosServer;
 import com.google.common.collect.ImmutableMap;
@@ -37,11 +37,11 @@ public class TestRun {
     private final CelosCiContext ciContext;
     private final TestContext testContext;
     private final List<FixDirDeployer> deployers;
-    private final List<FixDirComparer> fileComparers;
+    private final List<FixObjectComparer> fileComparers;
     private final String testCaseName;
 
     public TestRun(CelosCiTarget target, String username, String workflowName,
-                   File deployDir, String testCase, List<FixDirDeployer> deployers, List<FixDirComparer> fileComparers) throws Exception {
+                   File deployDir, String testCase, List<FixDirDeployer> deployers, List<FixObjectComparer> fileComparers) throws Exception {
 
         File celosTempDir = Files.createTempDirectory("celos").toFile();
 

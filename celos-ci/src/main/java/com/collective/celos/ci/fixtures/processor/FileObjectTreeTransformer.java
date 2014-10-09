@@ -25,7 +25,7 @@ public class FileObjectTreeTransformer {
             for(Map.Entry<String, FixObject> entry : fd.getChildren().entrySet()) {
                 result.put(entry.getKey(), transformInternal(entry.getValue(), converter));
             }
-            return new FixDir(result);
+            return new FixDir(result, fd.getComparer());
         } else {
             FixFile ff = (FixFile) object;
             return converter.convert(ff);
