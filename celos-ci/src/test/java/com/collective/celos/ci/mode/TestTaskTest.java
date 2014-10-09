@@ -3,8 +3,6 @@ package com.collective.celos.ci.mode;
 import com.collective.celos.ci.config.CelosCiCommandLine;
 import com.collective.celos.ci.config.deploy.CelosCiTarget;
 import com.collective.celos.ci.config.deploy.CelosCiTargetParser;
-import com.collective.celos.ci.mode.test.TestRun;
-import com.google.common.collect.Sets;
 import junit.framework.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -12,7 +10,6 @@ import org.junit.rules.TemporaryFolder;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.util.Set;
 
 /**
  * Created by akonopko on 10/2/14.

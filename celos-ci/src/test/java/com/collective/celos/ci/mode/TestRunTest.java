@@ -3,7 +3,7 @@ package com.collective.celos.ci.mode;
 import com.collective.celos.ci.config.CelosCiCommandLine;
 import com.collective.celos.ci.config.deploy.CelosCiContext;
 import com.collective.celos.ci.config.deploy.CelosCiTarget;
-import com.collective.celos.ci.mode.test.TestRun;
+import com.collective.celos.ci.testing.TestRun;
 import junit.framework.Assert;
 import org.apache.commons.lang.StringUtils;
 import org.junit.Test;

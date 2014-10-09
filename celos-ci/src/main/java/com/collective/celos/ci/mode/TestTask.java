@@ -4,8 +4,8 @@ import com.collective.celos.ci.CelosCi;
 import com.collective.celos.ci.config.CelosCiCommandLine;
 import com.collective.celos.ci.config.deploy.CelosCiTarget;
 import com.collective.celos.ci.config.deploy.CelosCiTargetParser;
-import com.collective.celos.ci.mode.test.TestConfigurationParser;
-import com.collective.celos.ci.mode.test.TestRun;
+import com.collective.celos.ci.testing.TestConfigurationParser;
+import com.collective.celos.ci.testing.TestRun;
 import com.google.common.collect.Lists;
 
 import java.io.File;
