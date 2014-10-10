@@ -1,14 +1,12 @@
 package com.collective.celos.ci.testing.structure.fixobject;
 
-import com.collective.celos.ci.testing.fixtures.compare.FixObjectComparer;
-
 import java.util.Collections;
 import java.util.Map;
 
 /**
  * Created by akonopko on 10/7/14.
  */
-public class FixDir<T extends FixObject> implements FixObject<T> {
+public class FixDir<T extends FixObject> extends FixObject<T> {
 
     private final Map<String, T> content;
 

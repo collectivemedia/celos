@@ -1,13 +1,14 @@
 package com.collective.celos.ci.testing.fixtures.avro;
 
-import com.collective.celos.ci.testing.fixtures.compare.FixObjectComparer;
 import com.collective.celos.ci.testing.structure.fixobject.AbstractFixFileConverter;
 import com.collective.celos.ci.testing.structure.fixobject.FixFile;
 import org.apache.avro.Schema;
 import org.apache.avro.file.DataFileWriter;
 import org.apache.avro.generic.GenericDatumReader;
 import org.apache.avro.generic.GenericDatumWriter;
-import org.apache.avro.io.*;
+import org.apache.avro.io.DatumReader;
+import org.apache.avro.io.Decoder;
+import org.apache.avro.io.DecoderFactory;
 
 import java.io.*;
 

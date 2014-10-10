@@ -1,16 +1,23 @@
 package com.collective.celos.ci.testing.fixtures.compare;
 
 import com.collective.celos.ci.testing.structure.fixobject.FixFile;
-import com.collective.celos.ci.testing.structure.outfixture.OutFixFile;
 import org.apache.commons.io.IOUtils;
+
+import java.io.InputStream;
 
 /**
  * Created by akonopko on 10/7/14.
  */
-public class PlainFileComparer implements FixObjectComparer<OutFixFile, FixFile> {
+public class PlainFileComparer implements Comparer<FixFile> {
 
-    public FixObjectCompareResult compare(OutFixFile expectedDirTree, FixFile actualDirTree) throws Exception {
-        if (!IOUtils.contentEquals(expectedDirTree.getContent(), actualDirTree.getContent())) {
+    private final InputStream content;
+
+    public PlainFileComparer(InputStream content) {
+        this.content = content;
+    }
+
+    public FixObjectCompareResult check(FixFile file) throws Exception {
+        if (!IOUtils.contentEquals(content, file.getContent())) {
             return FixObjectCompareResult.failed("File contents differed");
         }
         return FixObjectCompareResult.success();

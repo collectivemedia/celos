@@ -5,8 +5,16 @@ import com.collective.celos.ci.testing.structure.tree.TreeObject;
 /**
  * Created by akonopko on 10/7/14.
  */
-public interface FixObject<T extends FixObject> extends TreeObject<T> {
+public abstract class FixObject<T extends FixObject> implements TreeObject<T> {
 
-    boolean isFile();
+    public abstract boolean isFile();
+
+    public FixFile asFile() {
+        return (FixFile) this;
+    }
+
+    public FixDir asDir() {
+        return (FixDir) this;
+    }
 
 }

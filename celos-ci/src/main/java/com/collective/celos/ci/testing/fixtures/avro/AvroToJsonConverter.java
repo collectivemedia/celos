@@ -1,6 +1,5 @@
 package com.collective.celos.ci.testing.fixtures.avro;
 
-import com.collective.celos.ci.testing.fixtures.compare.FixObjectComparer;
 import com.collective.celos.ci.testing.structure.fixobject.AbstractFixFileConverter;
 import com.collective.celos.ci.testing.structure.fixobject.FixFile;
 import org.apache.avro.Schema;
