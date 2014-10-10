@@ -1,21 +1,18 @@
 package com.collective.celos.ci.testing.read;
 
 import com.collective.celos.ci.config.deploy.CelosCiContext;
-import com.collective.celos.ci.testing.fixtures.read.HdfsTreeFixObjectCreator;
 import com.collective.celos.ci.testing.fixtures.compare.FixObjectCompareResult;
 import com.collective.celos.ci.testing.fixtures.compare.PlainFileComparer;
 import com.collective.celos.ci.testing.fixtures.compare.RecursiveDirComparer;
+import com.collective.celos.ci.testing.fixtures.read.HdfsTreeFixObjectCreator;
 import com.collective.celos.ci.testing.structure.fixobject.FixDir;
 import com.collective.celos.ci.testing.structure.fixobject.FixFile;
 import com.collective.celos.ci.testing.structure.fixobject.FixObject;
-import com.collective.celos.ci.testing.structure.outfixture.OutFixDir;
-import com.collective.celos.ci.testing.structure.outfixture.OutFixFile;
-import com.collective.celos.ci.testing.structure.outfixture.OutFixObject;
 import com.google.common.collect.Maps;
-import junit.framework.Assert;
 import org.apache.commons.io.IOUtils;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.LocalFileSystem;
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.Map;
@@ -36,28 +33,28 @@ public class HdfsTreeFixObjectCreatorTest {
         doReturn(LocalFileSystem.get(new Configuration())).when(context).getFileSystem();
         HdfsTreeFixObjectCreator creator = new HdfsTreeFixObjectCreator(context, path);
 
-        Map<String, OutFixObject> contentir2 = Maps.newHashMap();
+        Map<String, FixObject> contentir2 = Maps.newHashMap();
         contentir2.put("file2", createFile());
         contentir2.put("file3", createFile());
-        OutFixDir dir2 = new OutFixDir(contentir2, new RecursiveDirComparer());
+        FixDir dir2 = new FixDir(contentir2);
 
-        Map<String, OutFixObject> contentir1 = Maps.newHashMap();
+        Map<String, FixObject> contentir1 = Maps.newHashMap();
         contentir1.put("dir2", dir2);
         contentir1.put("file1", createFile());
-        OutFixDir dir1 = new OutFixDir(contentir1, new RecursiveDirComparer());
+        FixDir dir1 = new FixDir(contentir1);
 
 
-        Map<String, OutFixObject> contentRead = Maps.newHashMap();
+        Map<String, FixObject> contentRead = Maps.newHashMap();
         contentRead.put("dir1", dir1);
-        OutFixDir readDir = new OutFixDir(contentRead, new RecursiveDirComparer());
+        FixDir readDir = new FixDir(contentRead);
 
-        FixObject fixObject = creator.createInFixture();
-        FixObjectCompareResult compareResult = readDir.compare(fixObject);
+        FixObject fixObject = creator.create();
+        FixObjectCompareResult compareResult = new RecursiveDirComparer(readDir).check(fixObject.asDir());
 
         Assert.assertEquals(compareResult.getStatus(), FixObjectCompareResult.Status.SUCCESS);
     }
 
-    private OutFixFile createFile() {
-        return new OutFixFile(IOUtils.toInputStream("1"), new PlainFileComparer());
+    private FixFile createFile() {
+        return new FixFile(IOUtils.toInputStream("1"));
     }
 }

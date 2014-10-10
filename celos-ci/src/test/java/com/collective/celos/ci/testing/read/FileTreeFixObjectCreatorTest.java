@@ -1,14 +1,11 @@
 package com.collective.celos.ci.testing.read;
 
-import com.collective.celos.ci.testing.fixtures.read.FixFileTreeObjectCreator;
 import com.collective.celos.ci.testing.fixtures.compare.FixObjectCompareResult;
-import com.collective.celos.ci.testing.fixtures.compare.PlainFileComparer;
 import com.collective.celos.ci.testing.fixtures.compare.RecursiveDirComparer;
+import com.collective.celos.ci.testing.fixtures.read.FixFileTreeObjectCreator;
 import com.collective.celos.ci.testing.structure.fixobject.FixDir;
 import com.collective.celos.ci.testing.structure.fixobject.FixFile;
 import com.collective.celos.ci.testing.structure.fixobject.FixObject;
-import com.collective.celos.ci.testing.structure.outfixture.OutFixFile;
-import com.collective.celos.ci.testing.structure.outfixture.OutFixObject;
 import com.google.common.collect.Maps;
 import junit.framework.Assert;
 import org.apache.commons.io.IOUtils;
@@ -16,8 +13,6 @@ import org.junit.Test;
 
 import java.io.File;
 import java.util.Map;
-
-import static org.mockito.Mockito.mock;
 
 /**
  * Created by akonopko on 10/9/14.
@@ -44,8 +39,8 @@ public class FileTreeFixObjectCreatorTest {
         FixDir readDir = new FixDir(contentRead);
 
         FixFileTreeObjectCreator creator = new FixFileTreeObjectCreator(path);
-        OutFixObject fixObject = creator.createOutFixture();
-        FixObjectCompareResult compareResult = fixObject.compare(readDir);
+        FixObject fixObject = creator.create();
+        FixObjectCompareResult compareResult = new RecursiveDirComparer(readDir).check(fixObject.asDir());
 
         Assert.assertEquals(compareResult.getStatus(), FixObjectCompareResult.Status.SUCCESS);
     }

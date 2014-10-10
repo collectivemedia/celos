@@ -27,7 +27,7 @@ public class TestRunTest {
         CelosCiCommandLine commandLine = new CelosCiCommandLine("", "TEST", "deploydir", "workflow", "testDir", "uname");
         CelosCiTarget target = new CelosCiTarget(hadoopHdfsUrl, hadoopCoreUrl, URI.create("celoswfdir"), URI.create("deffile"));
 
-        TestRun celosCiTest = new TestRun(target, commandLine.getUserName(), commandLine.getWorkflowName(), commandLine.getDeployDir(), commandLine.getTestCasesDir().toString(), Collections.EMPTY_LIST, Collections.EMPTY_LIST);
+        TestRun celosCiTest = new TestRun(target, commandLine.getUserName(), commandLine.getWorkflowName(), commandLine.getDeployDir(), commandLine.getTestCasesDir().toString(), Collections.EMPTY_LIST);
 
         CelosCiContext context = celosCiTest.getCiContext();
 
