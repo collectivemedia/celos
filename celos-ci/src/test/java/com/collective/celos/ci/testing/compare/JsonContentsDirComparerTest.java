@@ -8,11 +8,13 @@ import com.collective.celos.ci.testing.structure.fixobject.FixObject;
 import com.collective.celos.ci.testing.structure.outfixture.OutFixDir;
 import com.collective.celos.ci.testing.structure.outfixture.OutFixFile;
 import com.collective.celos.ci.testing.structure.outfixture.OutFixObject;
+import com.google.common.collect.Sets;
 import junit.framework.Assert;
 import org.junit.Test;
 
 import java.io.File;
 import java.util.Collections;
+import java.util.Set;
 
 /**
  * Created by akonopko on 10/9/14.
@@ -34,6 +36,49 @@ public class JsonContentsDirComparerTest {
 
         FixObjectCompareResult compareResult = dirComparer.compare(fixDir1, fixDir2);
         Assert.assertEquals(compareResult.getStatus(), FixObjectCompareResult.Status.SUCCESS);
+    }
+
+    @Test
+    public void testJsonContentsDirComparerOKIgnorePaths() throws Exception {
+
+        Set<String> ignorePaths = Sets.newHashSet("root/events/tstamp");
+        JsonContentsDirComparer dirComparer = new JsonContentsDirComparer(ignorePaths);
+
+        File dir1= new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/ci/fixtures/jsoncompare/1").toURI());
+        File dir2= new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/ci/fixtures/jsoncompare/5").toURI());
+
+        FixFileTreeObjectCreator creator = new FixFileTreeObjectCreator(dir1.getAbsolutePath());
+        OutFixDir fixDir1 = (OutFixDir) creator.createOutFixture();
+
+        FixFileTreeObjectCreator creator2 = new FixFileTreeObjectCreator(dir2.getAbsolutePath());
+        FixDir fixDir2 = (FixDir) creator2.createInFixture();
+
+        FixObjectCompareResult compareResult = dirComparer.compare(fixDir1, fixDir2);
+        Assert.assertEquals(compareResult.getStatus(), FixObjectCompareResult.Status.SUCCESS);
+    }
+
+    @Test
+    public void testJsonContentsDirComparerOKIgnorePathsFails() throws Exception {
+
+        JsonContentsDirComparer dirComparer = new JsonContentsDirComparer(Collections.EMPTY_SET);
+
+        File dir1= new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/ci/fixtures/jsoncompare/1").toURI());
+        File dir2= new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/ci/fixtures/jsoncompare/5").toURI());
+
+        FixFileTreeObjectCreator creator = new FixFileTreeObjectCreator(dir1.getAbsolutePath());
+        OutFixDir fixDir1 = (OutFixDir) creator.createOutFixture();
+
+        FixFileTreeObjectCreator creator2 = new FixFileTreeObjectCreator(dir2.getAbsolutePath());
+        FixDir fixDir2 = (FixDir) creator2.createInFixture();
+
+        FixObjectCompareResult compareResult = dirComparer.compare(fixDir1, fixDir2);
+        Assert.assertEquals(compareResult.getStatus(), FixObjectCompareResult.Status.FAIL);
+        Assert.assertEquals(compareResult.generateDescription(), "Diff:\n" +
+                "Actual differs:\n" +
+                "{\"visitor\":{\"com.collective.pythia.avro.Visitor\":{\"cookie_id\":\"13114ef2b401000\",\"segments\":[],\"edges\":{},\"behaviors\":{},\"birthdate\":0,\"association_ids\":{}}},\"events\":[{\"cookie_id\":\"13114ef2b401000\",\"tstamp\":1403721315994,\"edge\":\"batchimport\",\"changes\":{\"com.collective.pythia.avro.Command\":{\"operation\":\"ADD\",\"association_id\":null,\"network\":\"et\",\"segments\":[49117]}}}]} [1 times]\n" +
+                "Expected differs:\n" +
+                "{\"visitor\":{\"com.collective.pythia.avro.Visitor\":{\"cookie_id\":\"13114ef2b401000\",\"segments\":[],\"edges\":{},\"behaviors\":{},\"birthdate\":0,\"association_ids\":{}}},\"events\":[{\"cookie_id\":\"13114ef2b401000\",\"tstamp\":1403721375994,\"edge\":\"batchimport\",\"changes\":{\"com.collective.pythia.avro.Command\":{\"operation\":\"ADD\",\"association_id\":null,\"network\":\"et\",\"segments\":[49117]}}}]} [1 times]\n");
+
     }
 
     @Test
