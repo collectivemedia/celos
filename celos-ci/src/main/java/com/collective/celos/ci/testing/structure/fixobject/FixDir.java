@@ -8,16 +8,15 @@ import java.util.Map;
 /**
  * Created by akonopko on 10/7/14.
  */
-public class FixDir extends FixObject {
+public class FixDir<T extends FixObject> implements FixObject<T> {
 
-    private final Map<String, FixObject> content;
+    private final Map<String, T> content;
 
-    public FixDir(Map<String, FixObject> content, FixObjectComparer<FixDir> comparer) {
-        super(comparer);
+    public FixDir(Map<String, T> content) {
         this.content = content;
     }
 
-    public Map<String, FixObject> getChildren() {
+    public Map<String, T> getChildren() {
         return Collections.unmodifiableMap(content);
     }
 

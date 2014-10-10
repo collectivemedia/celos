@@ -2,6 +2,8 @@ package com.collective.celos.ci.testing.fixtures.compare;
 
 import com.collective.celos.ci.testing.structure.fixobject.FixDir;
 import com.collective.celos.ci.testing.structure.fixobject.FixObject;
+import com.collective.celos.ci.testing.structure.outfixture.OutFixDir;
+import com.collective.celos.ci.testing.structure.outfixture.OutFixObject;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import org.apache.commons.lang.StringUtils;
@@ -13,17 +15,17 @@ import java.util.Set;
 /**
  * Created by akonopko on 10/7/14.
  */
-public class RecursiveDirComparer implements FixObjectComparer<FixDir> {
+public class RecursiveDirComparer implements FixObjectComparer<OutFixDir, FixDir> {
 
-    public FixObjectCompareResult compare(FixDir expectedDirTree, FixDir actualDirTree) throws Exception {
+    public FixObjectCompareResult compare(OutFixDir expectedDirTree, FixDir actualDirTree) throws Exception {
 
         Map<String, FixObjectCompareResult> fails = Maps.newHashMap();
-        Map<String, FixObject> expectedChldrn = expectedDirTree.getChildren();
+        Map<String, OutFixObject> expectedChldrn = expectedDirTree.getChildren();
         Map<String, FixObject> actualChldrn = actualDirTree.getChildren();
 
         String message = getThisDirError(expectedChldrn, actualChldrn);
 
-        for (Map.Entry<String, FixObject> entry : expectedChldrn.entrySet()) {
+        for (Map.Entry<String, OutFixObject> entry : expectedChldrn.entrySet()) {
             FixObject other = actualChldrn.get(entry.getKey());
             FixObjectCompareResult compareResult = entry.getValue().compare(other);
             if (compareResult.getStatus() == FixObjectCompareResult.Status.FAIL) {
@@ -36,7 +38,7 @@ public class RecursiveDirComparer implements FixObjectComparer<FixDir> {
         return FixObjectCompareResult.success();
     }
 
-    private String getThisDirError(Map<String, FixObject> expectedChldrn, Map<String, FixObject> actualChldrn) {
+    private String getThisDirError(Map<String, OutFixObject> expectedChldrn, Map<String, FixObject> actualChldrn) {
         Set<String> expectedDiff = Sets.difference(expectedChldrn.keySet(), actualChldrn.keySet());
         Set<String> actualDiff = Sets.difference(actualChldrn.keySet(), expectedChldrn.keySet());
         StrBuilder strBuilder = new StrBuilder();

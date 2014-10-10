@@ -2,14 +2,16 @@ package com.collective.celos.ci.testing.compare;
 
 import com.collective.celos.ci.testing.fixtures.compare.FixObjectCompareResult;
 import com.collective.celos.ci.testing.fixtures.compare.JsonContentsDirComparer;
-import com.collective.celos.ci.testing.fixtures.read.FileTreeFixObjectCreator;
+import com.collective.celos.ci.testing.fixtures.read.FixFileTreeObjectCreator;
 import com.collective.celos.ci.testing.structure.fixobject.FixDir;
 import com.collective.celos.ci.testing.structure.fixobject.FixObject;
+import com.collective.celos.ci.testing.structure.outfixture.OutFixDir;
+import com.collective.celos.ci.testing.structure.outfixture.OutFixFile;
+import com.collective.celos.ci.testing.structure.outfixture.OutFixObject;
 import junit.framework.Assert;
 import org.junit.Test;
 
 import java.io.File;
-import java.net.URISyntaxException;
 import java.util.Collections;
 
 /**
@@ -24,11 +26,11 @@ public class JsonContentsDirComparerTest {
         File dir1= new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/ci/fixtures/jsoncompare/1").toURI());
         File dir2= new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/ci/fixtures/jsoncompare/2").toURI());
 
-        FileTreeFixObjectCreator creator = new FileTreeFixObjectCreator(dir1.getAbsolutePath());
-        FixDir fixDir1 = creator.create().asFixDir();
+        FixFileTreeObjectCreator creator = new FixFileTreeObjectCreator(dir1.getAbsolutePath());
+        OutFixObject fixDir1 = creator.createOutFixture();
 
-        FileTreeFixObjectCreator creator2 = new FileTreeFixObjectCreator(dir2.getAbsolutePath());
-        FixDir fixDir2 = creator2.create().asFixDir();
+        FixFileTreeObjectCreator creator2 = new FixFileTreeObjectCreator(dir2.getAbsolutePath());
+        FixObject fixDir2 = creator2.createInFixture();
 
         FixObjectCompareResult compareResult = dirComparer.compare(fixDir1, fixDir2);
         Assert.assertEquals(compareResult.getStatus(), FixObjectCompareResult.Status.SUCCESS);
@@ -41,11 +43,11 @@ public class JsonContentsDirComparerTest {
         File dir1= new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/ci/fixtures/jsoncompare/1").toURI());
         File dir2= new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/ci/fixtures/jsoncompare/4").toURI());
 
-        FileTreeFixObjectCreator creator = new FileTreeFixObjectCreator(dir1.getAbsolutePath());
-        FixDir fixDir1 = creator.create().asFixDir();
+        FixFileTreeObjectCreator creator = new FixFileTreeObjectCreator(dir1.getAbsolutePath());
+        OutFixObject fixDir1 = creator.createOutFixture();
 
-        FileTreeFixObjectCreator creator2 = new FileTreeFixObjectCreator(dir2.getAbsolutePath());
-        FixDir fixDir2 = creator2.create().asFixDir();
+        FixFileTreeObjectCreator creator2 = new FixFileTreeObjectCreator(dir2.getAbsolutePath());
+        FixObject fixDir2 = creator2.createInFixture();
 
         FixObjectCompareResult compareResult = dirComparer.compare(fixDir1, fixDir2);
         Assert.assertEquals(compareResult.getStatus(), FixObjectCompareResult.Status.FAIL);
@@ -64,11 +66,11 @@ public class JsonContentsDirComparerTest {
         File dir1= new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/ci/fixtures/jsoncompare/1").toURI());
         File dir2= new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/ci/fixtures/jsoncompare/3").toURI());
 
-        FileTreeFixObjectCreator creator = new FileTreeFixObjectCreator(dir1.getAbsolutePath());
-        FixDir fixDir1 = creator.create().asFixDir();
+        FixFileTreeObjectCreator creator = new FixFileTreeObjectCreator(dir1.getAbsolutePath());
+        OutFixObject fixDir1 = creator.createOutFixture();
 
-        FileTreeFixObjectCreator creator2 = new FileTreeFixObjectCreator(dir2.getAbsolutePath());
-        FixDir fixDir2 = creator2.create().asFixDir();
+        FixFileTreeObjectCreator creator2 = new FixFileTreeObjectCreator(dir2.getAbsolutePath());
+        FixObject fixDir2 = creator2.createInFixture();
 
         FixObjectCompareResult compareResult = dirComparer.compare(fixDir1, fixDir2);
         Assert.assertEquals(compareResult.getStatus(), FixObjectCompareResult.Status.FAIL);

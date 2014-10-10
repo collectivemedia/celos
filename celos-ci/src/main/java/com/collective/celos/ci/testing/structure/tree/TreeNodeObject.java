@@ -5,7 +5,7 @@ import java.util.Map;
 /**
  * Created by akonopko on 10/9/14.
  */
-public interface TreeNodeObject<T extends TreeObject> extends TreeObject {
+public interface TreeNodeObject<T extends TreeObject> extends TreeObject<T> {
 
     public Map<String, T> getChildren();
 

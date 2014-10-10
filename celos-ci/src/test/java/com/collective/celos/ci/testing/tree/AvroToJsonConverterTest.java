@@ -5,6 +5,7 @@ import com.collective.celos.ci.testing.fixtures.avro.JsonToAvroConverter;
 import com.collective.celos.ci.testing.fixtures.compare.FixObjectCompareResult;
 import com.collective.celos.ci.testing.fixtures.compare.PlainFileComparer;
 import com.collective.celos.ci.testing.structure.fixobject.FixFile;
+import com.collective.celos.ci.testing.structure.outfixture.OutFixFile;
 import org.apache.avro.Schema;
 import org.junit.Assert;
 import org.junit.Test;
@@ -26,12 +27,13 @@ public class AvroToJsonConverterTest {
 
         AvroToJsonConverter avroToJsonConverter = new AvroToJsonConverter();
         FixFile jsonFixFile = avroToJsonConverter.convert(fixFile);
-        FixObjectCompareResult result = jsonFixFile.compare(getJsonFixFile());
+        OutFixFile outFixFile = new OutFixFile(jsonFixFile.getContent(), new PlainFileComparer());
+        FixObjectCompareResult result = outFixFile.compare(getJsonFixFile());
         Assert.assertEquals(result.getStatus(), FixObjectCompareResult.Status.SUCCESS);
     }
 
     private FixFile getJsonFixFile() {
         InputStream jsonData = Thread.currentThread().getContextClassLoader().getResourceAsStream("com/collective/celos/ci/fixtures/avro/avro.json");
-        return new FixFile(jsonData, new PlainFileComparer());
+        return new FixFile(jsonData);
     }
 }

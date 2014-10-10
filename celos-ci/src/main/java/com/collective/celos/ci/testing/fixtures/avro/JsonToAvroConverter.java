@@ -17,15 +17,8 @@ import java.io.*;
 public class JsonToAvroConverter extends AbstractFixFileConverter {
 
     private final Schema schema;
-    private final FixObjectComparer<FixFile> newComparer;
-
-    public JsonToAvroConverter(FixObjectComparer<FixFile> newComparer, Schema schema) {
-        this.newComparer = newComparer;
-        this.schema = schema;
-    }
 
     public JsonToAvroConverter(Schema schema) {
-        this.newComparer = null;
         this.schema = schema;
     }
 
@@ -53,8 +46,7 @@ public class JsonToAvroConverter extends AbstractFixFileConverter {
         } finally {
             input.close();
         }
-        FixObjectComparer<FixFile> comparer = newComparer == null ? ff.getComparer() : newComparer;
-        return new FixFile(new ByteArrayInputStream(baos.toByteArray()), comparer);
+        return new FixFile(new ByteArrayInputStream(baos.toByteArray()));
     }
 
 

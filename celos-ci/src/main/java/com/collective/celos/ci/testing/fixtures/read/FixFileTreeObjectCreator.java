@@ -1,6 +1,5 @@
 package com.collective.celos.ci.testing.fixtures.read;
 
-import com.collective.celos.ci.config.deploy.CelosCiContext;
 import com.collective.celos.ci.testing.fixtures.compare.FixObjectComparer;
 import com.collective.celos.ci.testing.structure.fixobject.FixDir;
 import com.collective.celos.ci.testing.structure.fixobject.FixFile;
@@ -9,27 +8,25 @@ import com.collective.celos.ci.testing.structure.outfixture.OutFixDir;
 import com.collective.celos.ci.testing.structure.outfixture.OutFixFile;
 import com.collective.celos.ci.testing.structure.outfixture.OutFixObject;
 import com.google.common.collect.Maps;
-import org.apache.hadoop.fs.FileStatus;
-import org.apache.hadoop.fs.Path;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.util.Map;
 
 /**
  * Created by akonopko on 10/7/14.
  */
-public class HdfsTreeFixObjectCreator extends AbstractFixObjectCreator {
+public class FixFileTreeObjectCreator extends AbstractFixObjectCreator {
 
-    private final CelosCiContext context;
     private final String path;
     private final FixObjectComparer<OutFixDir, FixDir> dirComparer;
     private final FixObjectComparer<OutFixFile, FixFile> fileComparer;
 
-    public HdfsTreeFixObjectCreator(CelosCiContext context, String path) {
-        this(context, path, null, null);
+    public FixFileTreeObjectCreator(String path) {
+        this(path, null, null);
     }
 
-    public HdfsTreeFixObjectCreator(CelosCiContext context, String path, FixObjectComparer<OutFixDir, FixDir> dirComparer, FixObjectComparer<OutFixFile, FixFile> fileComparer) {
-        this.context = context;
+    public FixFileTreeObjectCreator(String path, FixObjectComparer<OutFixDir, FixDir> dirComparer, FixObjectComparer<OutFixFile, FixFile> fileComparer) {
         this.path = path;
         this.dirComparer = dirComparer == null ? DEFAULT_DIR_COMPARER : dirComparer;
         this.fileComparer = fileComparer == null ? DEFAULT_FILE_COMPARER : fileComparer;
@@ -47,27 +44,23 @@ public class HdfsTreeFixObjectCreator extends AbstractFixObjectCreator {
 
     @Override
     public OutFixObject createOutFixture() throws Exception {
-        return read(new Path(path), getOutFixObjectCreator());
+        return read(new File(path), getOutFixObjectCreator());
     }
 
     @Override
     public FixObject createInFixture() throws Exception {
-        return read(new Path(path), getFixObjectCreator());
+        return read(new File(path), getFixObjectCreator());
     }
 
-    private <T extends FixObject> T read(Path path, FixObjectsCreator<T> ctor) throws Exception {
-        FileStatus fileStatus = context.getFileSystem().getFileStatus(path);
-        if (fileStatus.isDirectory()) {
+    private <T extends FixObject> T read(File file, FixObjectsCreator<T> ctor) throws Exception {
+        if (file.isDirectory()) {
             Map<String, T> content = Maps.newHashMap();
-            FileStatus[] statuses = context.getFileSystem().listStatus(fileStatus.getPath());
-            for (int i=0; i < statuses.length; i++) {
-                FileStatus childStatus = statuses[i];
-                T fixObject = read(childStatus.getPath(), ctor);
-                content.put(childStatus.getPath().getName(), fixObject);
+            for (File f : file.listFiles()) {
+                content.put(f.getName(), read(f, ctor));
             }
             return ctor.createFixDir(content);
         } else {
-            return ctor.createFixFile(context.getFileSystem().open(fileStatus.getPath()));
+            return ctor.createFixFile(new FileInputStream(file));
         }
     }
 

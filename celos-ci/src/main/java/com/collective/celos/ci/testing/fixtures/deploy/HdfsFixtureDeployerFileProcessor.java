@@ -28,7 +28,7 @@ public class HdfsFixtureDeployerFileProcessor extends AbstractTreeObjectProcesso
         if (!fo.isFile()) {
             return;
         }
-        FixFile file = fo.asFixFile();
+        FixFile file = (FixFile) fo;
         FileSystem fileSystem = context.getFileSystem();
 
         org.apache.hadoop.fs.Path writeTo = new org.apache.hadoop.fs.Path(context.getHdfsPrefix() + path.toString());

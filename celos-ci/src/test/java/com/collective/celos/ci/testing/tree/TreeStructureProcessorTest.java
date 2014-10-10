@@ -29,12 +29,12 @@ public class TreeStructureProcessorTest {
         TreeStructureProcessor processor = new TreeStructureProcessor();
         FixDir dir1 = createDirWithSubdirsAndFile();
         InputStream inputStream2 = IOUtils.toInputStream("stream3");
-        FixFile file = new FixFile(inputStream2, new PlainFileComparer());
+        FixFile file = new FixFile(inputStream2);
 
         Map<String, FixObject> content = Maps.newHashMap();
         content.put("dir1", dir1);
         content.put("file", file);
-        FixDir dir = new FixDir(content, new RecursiveDirComparer());
+        FixDir dir = new FixDir(content);
 
         AbstractTreeObjectProcessorImpl holder = new AbstractTreeObjectProcessorImpl();
         processor.process(dir, holder);
@@ -70,26 +70,26 @@ public class TreeStructureProcessorTest {
         FixDir dir1 = getFixDirWithTwoFiles1();
         FixDir dir2 = getFixDirWithTwoFiles1();
         InputStream inputStream2 = IOUtils.toInputStream("stream");
-        FixFile file = new FixFile(inputStream2, new PlainFileComparer());
+        FixFile file = new FixFile(inputStream2);
 
         Map<String, FixObject> content = Maps.newHashMap();
         content.put("dir1", dir1);
         content.put("dir2", dir2);
         content.put("file", file);
-        return new FixDir(content, new RecursiveDirComparer());
+        return new FixDir(content);
     }
 
     private FixDir getFixDirWithTwoFiles1() {
         InputStream inputStream1 = IOUtils.toInputStream("stream");
-        FixFile file1 = new FixFile(inputStream1, new PlainFileComparer());
+        FixFile file1 = new FixFile(inputStream1);
 
         InputStream inputStream2 = IOUtils.toInputStream("stream2");
-        FixFile file2 = new FixFile(inputStream2, new PlainFileComparer());
+        FixFile file2 = new FixFile(inputStream2);
 
         Map<String, FixObject> content1 = Maps.newHashMap();
         content1.put("file1", file1);
         content1.put("file2", file2);
-        return new FixDir(content1, new RecursiveDirComparer());
+        return new FixDir(content1);
     }
 
 

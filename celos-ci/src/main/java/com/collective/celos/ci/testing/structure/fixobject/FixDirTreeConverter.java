@@ -19,10 +19,11 @@ public class FixDirTreeConverter {
         if (!object.isFile()) {
             FixDir fd = (FixDir) object;
             Map<String, FixObject> result = Maps.newHashMap();
-            for(Map.Entry<String, FixObject> entry : fd.getChildren().entrySet()) {
+            Map<String, FixObject> map = fd.getChildren();
+            for(Map.Entry<String, FixObject> entry : map.entrySet()) {
                 result.put(entry.getKey(), transformInternal(entry.getValue(), converter));
             }
-            return new FixDir(result, fd.getComparer());
+            return new FixDir(result);
         } else {
             FixFile ff = (FixFile) object;
             return converter.convert(ff);

@@ -18,16 +18,6 @@ import java.io.*;
  */
 public class AvroToJsonConverter extends AbstractFixFileConverter {
 
-    private final FixObjectComparer<FixFile> newComparer;
-
-    public AvroToJsonConverter() {
-        this.newComparer = null;
-    }
-
-    public AvroToJsonConverter(FixObjectComparer<FixFile> newComparer) {
-        this.newComparer = newComparer;
-    }
-
     @Override
     public FixFile convert(FixFile ff) throws IOException {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
@@ -47,7 +37,6 @@ public class AvroToJsonConverter extends AbstractFixFileConverter {
         } finally {
             fileReader.close();
         }
-        FixObjectComparer<FixFile> comparer = newComparer == null ? ff.getComparer() : newComparer;
-        return new FixFile(new ByteArrayInputStream(os.toByteArray()), comparer);
+        return new FixFile(new ByteArrayInputStream(os.toByteArray()));
     }
 }
