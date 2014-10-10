@@ -17,7 +17,7 @@ import java.util.Map;
 /**
  * Created by akonopko on 10/7/14.
  */
-public class HdfsTreeFixObjectCreator extends AbstractFixObjectCreator {
+public class HdfsTreeFixObjectCreator extends AbstractFixObjectCreator<OutFixObject, FixObject> {
 
     private final CelosCiContext context;
     private final String path;

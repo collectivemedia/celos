@@ -18,7 +18,7 @@ import java.util.Map;
 /**
  * Created by akonopko on 10/7/14.
  */
-public abstract class AbstractFixObjectCreator {
+public abstract class AbstractFixObjectCreator<L extends OutFixObject, M extends FixObject> {
 
     static final FixObjectComparer<OutFixDir, FixDir> DEFAULT_DIR_COMPARER = new RecursiveDirComparer();
     static final FixObjectComparer<OutFixFile, FixFile> DEFAULT_FILE_COMPARER = new PlainFileComparer();
@@ -65,8 +65,8 @@ public abstract class AbstractFixObjectCreator {
 
     public abstract FixObjectComparer<OutFixDir, FixDir> getDirComparer();
 
-    public abstract OutFixObject createOutFixture() throws Exception;
+    public abstract L createOutFixture() throws Exception;
 
-    public abstract FixObject createInFixture() throws Exception;
+    public abstract M createInFixture() throws Exception;
 
 }

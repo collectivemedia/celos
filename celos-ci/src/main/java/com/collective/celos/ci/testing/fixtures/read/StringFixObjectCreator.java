@@ -12,7 +12,7 @@ import org.apache.commons.io.IOUtils;
 /**
  * Created by akonopko on 10/7/14.
  */
-public class StringFixObjectCreator extends AbstractFixObjectCreator {
+public class StringFixObjectCreator extends AbstractFixObjectCreator<OutFixFile, FixFile> {
 
     private final String content;
 
@@ -32,12 +32,12 @@ public class StringFixObjectCreator extends AbstractFixObjectCreator {
     }
 
     @Override
-    public OutFixObject createOutFixture() throws Exception {
+    public OutFixFile createOutFixture() throws Exception {
         return new OutFixFile(IOUtils.toInputStream(content), DEFAULT_FILE_COMPARER);
     }
 
     @Override
-    public FixObject createInFixture() throws Exception {
+    public FixFile createInFixture() throws Exception {
         return new FixFile(IOUtils.toInputStream(content));
     }
 }

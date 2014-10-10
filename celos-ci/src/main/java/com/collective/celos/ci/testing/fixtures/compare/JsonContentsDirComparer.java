@@ -1,7 +1,9 @@
 package com.collective.celos.ci.testing.fixtures.compare;
 
+import com.collective.celos.ci.testing.structure.fixobject.FixDir;
 import com.collective.celos.ci.testing.structure.fixobject.FixFile;
 import com.collective.celos.ci.testing.structure.fixobject.FixObject;
+import com.collective.celos.ci.testing.structure.outfixture.OutFixDir;
 import com.collective.celos.ci.testing.structure.outfixture.OutFixObject;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -19,7 +21,7 @@ import java.util.Set;
 /**
  * Created by akonopko on 10/7/14.
  */
-public class JsonContentsDirComparer implements FixObjectComparer<OutFixObject, FixObject> {
+public class JsonContentsDirComparer implements FixObjectComparer<OutFixDir, FixDir> {
 
     private final Set<String> ignorePaths;
 
@@ -27,7 +29,7 @@ public class JsonContentsDirComparer implements FixObjectComparer<OutFixObject, 
         this.ignorePaths = ignorePaths;
     }
 
-    public FixObjectCompareResult compare(OutFixObject expectedDirTree, FixObject actualDirTree) throws Exception {
+    public FixObjectCompareResult compare(OutFixDir expectedDirTree, FixDir actualDirTree) throws Exception {
 
         Map<JsonEntity, Integer> actualRes = getJsonEntityCountMap(actualDirTree.getChildren());
         Map<JsonEntity, Integer> expectedRes = getJsonEntityCountMap(expectedDirTree.getChildren());

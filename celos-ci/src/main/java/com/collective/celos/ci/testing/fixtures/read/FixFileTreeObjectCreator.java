@@ -16,7 +16,7 @@ import java.util.Map;
 /**
  * Created by akonopko on 10/7/14.
  */
-public class FixFileTreeObjectCreator extends AbstractFixObjectCreator {
+public class FixFileTreeObjectCreator extends AbstractFixObjectCreator<OutFixObject, FixObject> {
 
     private final String path;
     private final FixObjectComparer<OutFixDir, FixDir> dirComparer;
