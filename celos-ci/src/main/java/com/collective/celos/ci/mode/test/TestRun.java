@@ -1,19 +1,11 @@
 package com.collective.celos.ci.mode.test;
 
-import com.collective.celos.ci.CelosCi;
-import com.collective.celos.ci.config.CelosCiCommandLine;
 import com.collective.celos.ci.config.deploy.CelosCiContext;
 import com.collective.celos.ci.config.deploy.CelosCiTarget;
-import com.collective.celos.ci.config.deploy.CelosCiTargetParser;
-import com.collective.celos.ci.config.testing.TestConfigParser;
 import com.collective.celos.ci.config.testing.TestContext;
 import com.collective.celos.ci.deploy.HdfsDeployer;
 import com.collective.celos.ci.deploy.JScpWorker;
 import com.collective.celos.ci.deploy.WorkflowFileDeployer;
-import com.collective.celos.ci.fixtures.AbstractFixtureFileWorker;
-import com.collective.celos.ci.fixtures.FixturesHdfsWorkerManager;
-import com.collective.celos.ci.fixtures.compare.PlainFixtureComparatorWorker;
-import com.collective.celos.ci.fixtures.deploy.PlainFixtureDeployWorker;
 import com.collective.celos.server.CelosServer;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
@@ -26,7 +18,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Map;
 import java.util.UUID;
 
@@ -42,8 +33,8 @@ public class TestRun {
 
     private final WorkflowFileDeployer wfDeployer;
     private final HdfsDeployer hdfsDeployer;
-    private final FixturesHdfsWorkerManager compareWorkerManager;
-    private final FixturesHdfsWorkerManager deployWorkerManager;
+//    private final FixturesHdfsWorkerManager compareWorkerManager;
+//    private final FixturesHdfsWorkerManager deployWorkerManager;
     private final CelosCiContext ciContext;
     private final TestContext testContext;
     private final File testCaseDir;
@@ -65,13 +56,13 @@ public class TestRun {
         this.wfDeployer = new WorkflowFileDeployer(ciContext);
         this.hdfsDeployer = new HdfsDeployer(ciContext);
 
-        Map<String, AbstractFixtureFileWorker> comparatorWorkers = Maps.newHashMap();
-        comparatorWorkers.put(PlainFixtureComparatorWorker.WORKER_TYPE, new PlainFixtureComparatorWorker());
-        this.compareWorkerManager = new FixturesHdfsWorkerManager(ciContext, comparatorWorkers);
-
-        Map<String, AbstractFixtureFileWorker> deployWorkers = Maps.newHashMap();
-        deployWorkers.put(PlainFixtureDeployWorker.WORKER_TYPE, new PlainFixtureDeployWorker());
-        this.deployWorkerManager = new FixturesHdfsWorkerManager(ciContext, deployWorkers);
+//        Map<String, AbstractFixtureFileWorker> comparatorWorkers = Maps.newHashMap();
+//        comparatorWorkers.put(PlainFixtureComparatorWorker.WORKER_TYPE, new PlainFixtureComparatorWorker());
+//        this.compareWorkerManager = new FixturesHdfsWorkerManager(ciContext, comparatorWorkers);
+//
+//        Map<String, AbstractFixtureFileWorker> deployWorkers = Maps.newHashMap();
+//        deployWorkers.put(PlainFixtureDeployWorker.WORKER_TYPE, new PlainFixtureDeployWorker());
+//        this.deployWorkerManager = new FixturesHdfsWorkerManager(ciContext, deployWorkers);
 
     }
 
@@ -104,12 +95,12 @@ public class TestRun {
 
             System.out.println("Running test case " + testCaseDir.getName());
             File inputsDir = new File(String.format(LOCAL_INPUT_PATTERN, testCaseDir.getAbsolutePath()));
-            deployWorkerManager.processLocalDir(inputsDir);
-
-            new CelosSchedulerWorker(port).runCelosScheduler(new TestConfigParser().parse(testCaseDir));
-
-            File outputsDir = new File(String.format(LOCAL_OUTPUT_PATTERN, testCaseDir.getAbsolutePath()));
-            compareWorkerManager.processLocalDir(outputsDir);
+//            deployWorkerManager.processLocalDir(inputsDir);
+//
+//            new CelosSchedulerWorker(port).runCelosScheduler(new TestConfigParser().parse(testCaseDir));
+//
+//            File outputsDir = new File(String.format(LOCAL_OUTPUT_PATTERN, testCaseDir.getAbsolutePath()));
+//            compareWorkerManager.processLocalDir(outputsDir);
         } finally {
             System.out.println("Stopping Celos");
             celosServer.stopServer();
