@@ -1,5 +1,6 @@
 package com.collective.celos;
 
+import org.joda.time.DateTime;
 
 /**
  * var oneDay = 60 * 60 * 24;
