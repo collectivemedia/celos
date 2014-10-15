@@ -15,8 +15,7 @@ function addWorkflow(json) {
             json.trigger,
             json.externalService,
             json.maxRetryCount ? json.maxRetryCount : 0,
-            new ScheduledTime(json.startTime ? json.startTime : "1970-01-01T00:00:00.000Z"),
-            json.triggerTimeout ? json.triggerTimeout : -1
+            new ScheduledTime(json.startTime ? json.startTime : "1970-01-01T00:00:00.000Z")
         ),
         celosWorkflowConfigFilePath
     );
