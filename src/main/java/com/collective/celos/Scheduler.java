@@ -121,10 +121,13 @@ public class Scheduler {
         SlotState.Status status = slotState.getStatus();
         if (status.equals(SlotState.Status.WAITING)) {
             if (callTrigger(wf, slotState, current)) {
-                LOGGER.info("Slot is ready: " + slotID);
+                LOGGER.info("Slot ready: " + slotID);
                 database.putSlotState(slotState.transitionToReady());
+            } else if (isSlotTimedOut(slotState, wf.getTriggerTimeoutSeconds(), current)) {
+                LOGGER.error("Slot timeout: " + slotID);
+                database.putSlotState(slotState.transitionToTimeout());
             } else {
-                LOGGER.info("Waiting for slot: " + slotID);
+                LOGGER.info("Slot waiting: " + slotID);
             }
         } else if (status.equals(SlotState.Status.RUNNING)) {
             String externalID = slotState.getExternalID();
@@ -138,7 +141,7 @@ public class Scheduler {
                         LOGGER.info("Slot failed, preparing for retry: " + slotID + " external ID: " + externalID);
                         database.putSlotState(slotState.transitionToRetry());
                     } else {
-                        LOGGER.info("Slot failed permanently: " + slotID + " external ID: " + externalID);
+                        LOGGER.error("Slot failed permanently: " + slotID + " external ID: " + externalID);
                         database.putSlotState(slotState.transitionToFailure());
                     }
                 }
@@ -152,6 +155,12 @@ public class Scheduler {
         Trigger trigger = wf.getTrigger();
         ScheduledTime scheduledTime = slotState.getScheduledTime();
         return trigger.isDataAvailable(this, current, scheduledTime);
+    }
+    
+    private boolean isSlotTimedOut(SlotState slotState, int timeoutSeconds, ScheduledTime current) {
+        if (timeoutSeconds <= -1) return false;
+        ScheduledTime timeoutTime = slotState.getScheduledTime().plusSeconds(timeoutSeconds);
+        return current.getDateTime().isAfter(timeoutTime.getDateTime());
     }
     
     public int getSlidingWindowHours() {

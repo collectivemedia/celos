@@ -3,6 +3,7 @@ package com.collective.celos;
 public class Workflow {
 
     public static final ScheduledTime DEFAULT_START_TIME = new ScheduledTime("1970-01-01T00:00:00.000Z");
+    public static final int DEFAULT_TRIGGER_TIMEOUT = -1;
     
     private final WorkflowID id;
     private final Schedule schedule;
@@ -11,6 +12,7 @@ public class Workflow {
     private final ExternalService externalService;
     private final int maxRetryCount;
     private final ScheduledTime startTime;
+    private final int triggerTimeoutSeconds;
     
     public Workflow(WorkflowID id,
             Schedule schedule,
@@ -18,7 +20,8 @@ public class Workflow {
             Trigger trigger,
             ExternalService service,
             int maxRetryCount,
-            ScheduledTime startTime) {
+            ScheduledTime startTime,
+            int triggerTimeoutSeconds) {
         
         this.id = Util.requireNonNull(id);
         this.schedule = Util.requireNonNull(schedule);
@@ -27,6 +30,7 @@ public class Workflow {
         this.externalService = Util.requireNonNull(service);
         this.maxRetryCount = maxRetryCount;
         this.startTime = Util.requireNonNull(startTime);
+        this.triggerTimeoutSeconds = triggerTimeoutSeconds;
     }
 
     public WorkflowID getID() {
@@ -55,6 +59,10 @@ public class Workflow {
 
     public ScheduledTime getStartTime() {
         return startTime;
+    }
+
+    public int getTriggerTimeoutSeconds() {
+        return triggerTimeoutSeconds;
     }
 
 }

@@ -24,8 +24,10 @@ public class SlotState extends ValueObject {
     private static final String RETRY_COUNT_PROP = "retryCount";
     
     public enum Status {
-        /** No data availability yet. */
+        /** No data availability yet, but keep on trying. */
         WAITING,
+        /** No data availability for too long, consider as unsuccessful. */
+        TIMEOUT,
         /** Data is available and the workflow will be run shortly. 
             Workflow will also enter this state when it is retried. */
         READY,
@@ -68,6 +70,11 @@ public class SlotState extends ValueObject {
         return retryCount;
     }
     
+    public SlotState transitionToTimeout() {
+        assertStatus(Status.WAITING);
+        return new SlotState(slotID, Status.TIMEOUT, null, retryCount);
+    }
+
     public SlotState transitionToReady() {
         assertStatus(Status.WAITING);
         return new SlotState(slotID, Status.READY, null, retryCount);
@@ -94,11 +101,19 @@ public class SlotState extends ValueObject {
     }
 
     public SlotState transitionToRerun() {
-        boolean successOrFailure = (status.equals(Status.SUCCESS)) || (status.equals(Status.FAILURE));
+        boolean successOrFailure = isSuccessful() || isUnsuccessful();
         if (!successOrFailure) {
-            throw new IllegalStateException("Slot must be successful or failed, but is: " + status);
+            throw new IllegalStateException("Slot must be successful, timed out, or failed, but is: " + status);
         }
         return new SlotState(slotID, Status.WAITING, null, 0); // reset retryCount to 0
+    }
+
+    private boolean isSuccessful() {
+        return status.equals(Status.SUCCESS);
+    }
+
+    private boolean isUnsuccessful() {
+        return status.equals(Status.FAILURE) || status.equals(Status.TIMEOUT);
     }
     
     private void assertStatus(Status st) {
