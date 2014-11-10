@@ -19,14 +19,18 @@ configurations {
 
 dependencies {
     celos_ci "com.collective:celos-ci:2.+"
-    compile("org.apache.hadoop:hadoop-client:2.0.0-cdh4.2.1")
+    compile("org.apache.hadoop:hadoop-client:2.5.0")
 }
 
+
+
 task celos_ci << {
+    
     task run_ci(type: JavaExec) {
        main = "com.collective.celos.ci.CelosCi"
        classpath configurations.celos_ci
-       args '--deployDir', 'build/celos_deploy', '--target', 'sftp://celos001.ny7.collective-media.net/etc/celos/targets/testing.json', '--workflowName', 'wordcount' , '--mode', 'TEST', '--testDir', 'src/test/celos-ci'
+       ip_address
+       args '--deployDir', 'build/celos_deploy', '--target', 'sftp://celos@' + ip_address + '/etc/celos/targets/testing.json', '--workflowName', 'wordcount' , '--mode', 'TEST', '--testDir', 'src/test/celos-ci'
     }
 
     new File('build/celos_deploy').deleteDir()
@@ -43,6 +47,5 @@ task celos_ci << {
        from 'build/libs'
        into 'build/celos_deploy/hdfs/lib'
     }
-
     run_ci.execute()
 }

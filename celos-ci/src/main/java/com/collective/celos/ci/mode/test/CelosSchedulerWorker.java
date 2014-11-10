@@ -30,7 +30,7 @@ public class CelosSchedulerWorker {
         this.timeFormatter = new ScheduledTimeFormatter();
     }
 
-    public void runCelosScheduler(TestConfig testConfig) throws IOException {
+    public void runCelosScheduler(TestConfig testConfig) throws IOException, InterruptedException {
         WorkflowsList workflowsList = getWorkflowList();
 
         ScheduledTime startTime = testConfig.getSampleTimeStart();
@@ -39,9 +39,19 @@ public class CelosSchedulerWorker {
 
         while (!actualTime.getDateTime().isAfter(endTime.getDateTime())) {
             iterateScheduler(port, actualTime);
+            long timeMills = System.currentTimeMillis();
             if (!isThereAnyRunningWorkflows(port, workflowsList, actualTime)) {
                 actualTime = new ScheduledTime(actualTime.getDateTime().plusHours(1));
+            } else {
+                makePause30Seconds(timeMills);
             }
+        }
+    }
+
+    private void makePause30Seconds(long timeMills) throws InterruptedException {
+        long sleepTime = 30000 - (System.currentTimeMillis() - timeMills);
+        if (sleepTime > 0) {
+            Thread.sleep(sleepTime);
         }
     }
 

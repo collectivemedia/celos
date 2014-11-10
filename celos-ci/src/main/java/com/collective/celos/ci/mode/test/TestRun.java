@@ -39,6 +39,7 @@ public class TestRun {
     private static final String HDFS_PREFIX = "HDFS_PREFIX";
     private static final String LOCAL_OUTPUT_PATTERN = "%s/output";
     private static final String LOCAL_INPUT_PATTERN = "%s/input";
+    public static final String CELOS_USER = "CELOS_USER";
 
     private final WorkflowFileDeployer wfDeployer;
     private final HdfsDeployer hdfsDeployer;
@@ -93,10 +94,14 @@ public class TestRun {
         wfDeployer.deploy();
         hdfsDeployer.deploy();
 
+        Map<String, String> additionalJSParams = ImmutableMap.of(
+                HDFS_PREFIX, testContext.getHdfsPrefix(),
+                CELOS_USER, ciContext.getUserName());
+
         final CelosServer celosServer = new CelosServer();
         try {
             Integer port = celosServer.startServer(
-                    ImmutableMap.of(HDFS_PREFIX, testContext.getHdfsPrefix()),
+                    additionalJSParams,
                     testContext.getCelosWorkflowDir().toString(),
                     testContext.getCelosDefaultsDir().toString(),
                     testContext.getCelosDbDir().toString()
@@ -112,6 +117,8 @@ public class TestRun {
             compareWorkerManager.processLocalDir(outputsDir);
         } finally {
             System.out.println("Stopping Celos");
+            FileUtils.forceDelete(testContext.getCelosWorkDir());
+            ciContext.getFileSystem().delete(new org.apache.hadoop.fs.Path(ciContext.getHdfsPrefix()), true);
             celosServer.stopServer();
         }
 
@@ -122,9 +129,6 @@ public class TestRun {
         testContext.getCelosWorkflowDir().mkdirs();
         testContext.getCelosDefaultsDir().mkdirs();
         testContext.getCelosDbDir().mkdirs();
-        FileUtils.forceDeleteOnExit(testContext.getCelosWorkDir());
-
-        ciContext.getFileSystem().deleteOnExit(new org.apache.hadoop.fs.Path(ciContext.getHdfsPrefix()));
 
         JScpWorker worker = new JScpWorker(ciContext.getUserName());
         FileObject remoteDefaultsFile = worker.getFileObjectByUri(ciContext.getTarget().getDefaultsFile());
