@@ -315,7 +315,7 @@ public class JavaScriptFunctionsTest {
     private Object runJS(String js) throws Exception {
         WorkflowConfigurationParser parser = new WorkflowConfigurationParser(new File("unused"), ImmutableMap.<String, String>of());
         // Evaluate JS function call
-        Object jsResult = parser.evaluateReader(new StringReader(js), "string", 1);
+        Object jsResult = parser.evaluateReader(new StringReader(js), "string");
         if (jsResult instanceof NativeJavaObject) {
             return ((NativeJavaObject) jsResult).unwrap();
         } else {
@@ -326,7 +326,7 @@ public class JavaScriptFunctionsTest {
     private Object runJSNativeResult(String js) throws Exception {
         WorkflowConfigurationParser parser = new WorkflowConfigurationParser(new File("unused"), ImmutableMap.<String, String>of());
         // Evaluate JS function call
-        return parser.evaluateReader(new StringReader(js), "string", 1);
+        return parser.evaluateReader(new StringReader(js), "string");
     }
 
 

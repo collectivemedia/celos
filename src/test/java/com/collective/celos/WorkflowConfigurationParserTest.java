@@ -143,7 +143,7 @@ public class WorkflowConfigurationParserTest {
     public void evaluatesAdditionalVar() throws Exception {
         WorkflowConfigurationParser parser = new WorkflowConfigurationParser(new File("unused"), ImmutableMap.of("var1", "val1"));
         // Evaluate JS function call
-        Object jsResult = parser.evaluateReader(new StringReader("var1"), "string", 1);
+        Object jsResult = parser.evaluateReader(new StringReader("var1"), "string");
         Assert.assertEquals(jsResult, "val1");
     }
 
@@ -164,7 +164,7 @@ public class WorkflowConfigurationParserTest {
                 "    }";
 
         String str = "importDefaults(\"test\"); makePropertiesGen(" + func + "); ";
-        NativeJavaObject jsResult = (NativeJavaObject) parser.evaluateReader(new StringReader(str), "string", 1);
+        NativeJavaObject jsResult = (NativeJavaObject) parser.evaluateReader(new StringReader(str), "string");
         PropertiesGenerator generator = (PropertiesGenerator) jsResult.unwrap();
         Assert.assertEquals(generator.getProperties(null).get("user.name").asText(), "default");
     }
@@ -186,7 +186,7 @@ public class WorkflowConfigurationParserTest {
                 "    }";
 
         String str = "importDefaults(\"test\"); makePropertiesGen(" + func + "); ";
-        NativeJavaObject jsResult = (NativeJavaObject) parser.evaluateReader(new StringReader(str), "string", 1);
+        NativeJavaObject jsResult = (NativeJavaObject) parser.evaluateReader(new StringReader(str), "string");
         PropertiesGenerator generator = (PropertiesGenerator) jsResult.unwrap();
         Assert.assertEquals(generator.getProperties(null).get("user.name").asText(), "nameIsChanged");
     }
@@ -196,7 +196,7 @@ public class WorkflowConfigurationParserTest {
     public void doesntEvaluateAdditionalVar() throws Exception {
         WorkflowConfigurationParser parser = new WorkflowConfigurationParser(new File("unused"), ImmutableMap.<String, String>of());
         try {
-            parser.evaluateReader(new StringReader("var1"), "string", 1);
+            parser.evaluateReader(new StringReader("var1"), "string");
         } catch (Exception e) {
             if (e.getMessage().contains("\"var1\" is not defined")) {
                 return;
