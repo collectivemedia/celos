@@ -16,12 +16,7 @@ import java.util.Map;
 public class TestConfigurationParser {
 
     private final List<TestCase> testCases = Lists.newArrayList();
-//    private final CelosCiContext context;
     private final JSConfigParser jsConfigParser = new JSConfigParser();
-//
-//    public TestConfigurationParser(CelosCiContext context) {
-//        this.context = context;
-//    }
 
     public void evaluateTestConfig(File testCaseFile) throws IOException {
         Global scope = jsConfigParser.createGlobalScope();
@@ -31,7 +26,7 @@ public class TestConfigurationParser {
         jsProperties.put("testConfigurationParser", wrappedContext);
         jsConfigParser.putPropertiesInScope(jsProperties, scope);
 
-        InputStream scripts = TestConfigurationParser.class.getResourceAsStream("celos-ci-scripts.js");
+        InputStream scripts = getClass().getClassLoader().getResourceAsStream("com/collective/celos/ci/testing/config/celos-ci-scripts.js");
         jsConfigParser.evaluateReader(scope, new InputStreamReader(scripts), "celos-ci-scripts.js");
         jsConfigParser.evaluateReader(scope, new FileReader(testCaseFile), testCaseFile.getName());
     }
@@ -43,12 +38,5 @@ public class TestConfigurationParser {
     public List<TestCase> getTestCases() {
         return testCases;
     }
-
-    public static void main(String... args) throws IOException {
-        File f = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/ci/testing/config/test.js").getFile());
-        TestConfigurationParser parser = new TestConfigurationParser();
-        parser.evaluateTestConfig(f);
-    }
-
 
 }

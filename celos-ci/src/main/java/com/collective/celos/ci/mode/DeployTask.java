@@ -18,7 +18,7 @@ public class DeployTask extends CelosCi {
     public DeployTask(CelosCiCommandLine commandLine) throws Exception {
         CelosCiTargetParser parser = new CelosCiTargetParser(commandLine.getUserName());
         CelosCiTarget target = parser.parse(commandLine.getTargetUri());
-        this.ciContext = new CelosCiContext(target, commandLine.getUserName(), commandLine.getMode(), commandLine.getDeployDir(), commandLine.getWorkflowName(), "", testUUID);
+        this.ciContext = new CelosCiContext(target, commandLine.getUserName(), commandLine.getMode(), commandLine.getDeployDir(), commandLine.getWorkflowName(), "");
     }
 
     public CelosCiContext getCiContext() {

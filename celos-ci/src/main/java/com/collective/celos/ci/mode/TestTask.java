@@ -30,7 +30,7 @@ public class TestTask extends CelosCi {
         configurationParser.evaluateTestConfig(configJSFile);
 
         for (TestCase testCase : configurationParser.getTestCases()) {
-            testRuns.add(new TestRun(target, commandLine.getUserName(), commandLine.getWorkflowName(), commandLine.getDeployDir(), commandLine.getTestCasesDir(), testCase));
+            testRuns.add(new TestRun(target, commandLine.getUserName(), commandLine.getWorkflowName(), commandLine.getDeployDir(), testCase));
         }
     }
 
@@ -41,4 +41,7 @@ public class TestTask extends CelosCi {
         }
     }
 
+    List<TestRun> getTestRuns() {
+        return testRuns;
+    }
 }

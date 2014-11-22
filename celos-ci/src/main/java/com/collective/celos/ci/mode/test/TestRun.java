@@ -38,7 +38,7 @@ public class TestRun {
     private final TestContext testContext;
     private final File celosTempDir;
 
-    public TestRun(CelosCiTarget target, String username, String workflowName, File deployDir, File testCasesDir, TestCase testCase) throws Exception {
+    public TestRun(CelosCiTarget target, String username, String workflowName, File deployDir, TestCase testCase) throws Exception {
 
         this.celosTempDir = Files.createTempDirectory("celos").toFile();
         String testUUID = UUID.randomUUID().toString();

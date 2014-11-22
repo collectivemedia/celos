@@ -50,23 +50,17 @@ public class TestTaskTest {
         CelosCiCommandLine commandLine = new CelosCiCommandLine(targetFile.toURI().toString(), "DEPLOY", "deploydir", "workflow", testCasesDir, "uname");
         TestTask testTask = new TestTask(commandLine);
 
-        Set<String> names = Sets.newHashSet();
-        for (TestRun tr : testTask.testRuns) {
-            names.add(tr.getTestCasesDir().getName());
-        }
-        Assert.assertEquals(names, Sets.newHashSet("testcase-1", "testcase-2"));
+        Assert.assertEquals(testTask.getTestRuns().get(0).getCiContext().getTarget().getDefaultsFile(), target.getDefaultsFile());
+        Assert.assertEquals(testTask.getTestRuns().get(0).getCiContext().getTarget().getPathToCoreSite(), target.getPathToCoreSite());
+        Assert.assertEquals(testTask.getTestRuns().get(0).getCiContext().getTarget().getPathToHdfsSite(), target.getPathToHdfsSite());
+        Assert.assertTrue(testTask.getTestRuns().get(0).getCiContext().getTarget().getCelosWorkflowsDirUri().toString().startsWith("file:/tmp/celos"));
+        Assert.assertTrue(testTask.getTestRuns().get(0).getCiContext().getTarget().getCelosWorkflowsDirUri().toString().length() > "file:/tmp/celos".length());
 
-        Assert.assertEquals(testTask.testRuns.get(0).getCiContext().getTarget().getDefaultsFile(), target.getDefaultsFile());
-        Assert.assertEquals(testTask.testRuns.get(0).getCiContext().getTarget().getPathToCoreSite(), target.getPathToCoreSite());
-        Assert.assertEquals(testTask.testRuns.get(0).getCiContext().getTarget().getPathToHdfsSite(), target.getPathToHdfsSite());
-        Assert.assertTrue(testTask.testRuns.get(0).getCiContext().getTarget().getCelosWorkflowsDirUri().toString().startsWith("file:/tmp/celos"));
-        Assert.assertTrue(testTask.testRuns.get(0).getCiContext().getTarget().getCelosWorkflowsDirUri().toString().length() > "file:/tmp/celos".length());
-
-        Assert.assertEquals(testTask.testRuns.get(1).getCiContext().getTarget().getDefaultsFile(), target.getDefaultsFile());
-        Assert.assertEquals(testTask.testRuns.get(1).getCiContext().getTarget().getPathToCoreSite(), target.getPathToCoreSite());
-        Assert.assertEquals(testTask.testRuns.get(1).getCiContext().getTarget().getPathToHdfsSite(), target.getPathToHdfsSite());
-        Assert.assertTrue(testTask.testRuns.get(1).getCiContext().getTarget().getCelosWorkflowsDirUri().toString().startsWith("file:/tmp/celos"));
-        Assert.assertTrue(testTask.testRuns.get(1).getCiContext().getTarget().getCelosWorkflowsDirUri().toString().length() > "file:/tmp/celos".length());
+        Assert.assertEquals(testTask.getTestRuns().get(1).getCiContext().getTarget().getDefaultsFile(), target.getDefaultsFile());
+        Assert.assertEquals(testTask.getTestRuns().get(1).getCiContext().getTarget().getPathToCoreSite(), target.getPathToCoreSite());
+        Assert.assertEquals(testTask.getTestRuns().get(1).getCiContext().getTarget().getPathToHdfsSite(), target.getPathToHdfsSite());
+        Assert.assertTrue(testTask.getTestRuns().get(1).getCiContext().getTarget().getCelosWorkflowsDirUri().toString().startsWith("file:/tmp/celos"));
+        Assert.assertTrue(testTask.getTestRuns().get(1).getCiContext().getTarget().getCelosWorkflowsDirUri().toString().length() > "file:/tmp/celos".length());
 
     }
 
