@@ -1,4 +1,4 @@
-package com.collective.celos.ci.testing.fixtures.read;
+package com.collective.celos.ci.testing.fixtures.create;
 
 import com.collective.celos.ci.testing.structure.fixobject.FixDir;
 import com.collective.celos.ci.testing.structure.fixobject.FixFile;
@@ -12,16 +12,20 @@ import java.util.Map;
 /**
  * Created by akonopko on 10/7/14.
  */
-public class FixFileTreeObjectCreator extends AbstractFixObjectCreator<FixObject> {
+public class FixDirFromResourceCreator implements FixObjectCreator<FixDir> {
 
     private final String path;
 
-    public FixFileTreeObjectCreator(String path) {
+    public FixDirFromResourceCreator(String path) {
         this.path = path;
     }
 
-    public FixObject create() throws Exception {
-        return read(new File(path));
+    public FixDir create() throws Exception {
+        File dirFile = new File(Thread.currentThread().getContextClassLoader().getResource(path).getFile());
+        if (!dirFile.isDirectory()) {
+            throw new IllegalStateException("Cannot find directory: " + path);
+        }
+        return read(dirFile).asDir();
     }
 
     private FixObject read(File file) throws Exception {

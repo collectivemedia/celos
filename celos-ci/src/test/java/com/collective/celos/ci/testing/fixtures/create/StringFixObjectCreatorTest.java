@@ -1,4 +1,4 @@
-package com.collective.celos.ci.testing.fixtures.read;
+package com.collective.celos.ci.testing.fixtures.create;
 
 import com.collective.celos.ci.testing.structure.fixobject.FixFile;
 import junit.framework.Assert;
@@ -14,7 +14,7 @@ public class StringFixObjectCreatorTest {
 
     @Test
     public void testStringFixObjectCreator() throws Exception {
-        StringFixObjectCreator creator = new StringFixObjectCreator(SOME_TEXT);
+        FixFileFromStringCreator creator = new FixFileFromStringCreator(SOME_TEXT);
         FixFile fixFile = creator.create();
         Assert.assertEquals(SOME_TEXT, IOUtils.toString(fixFile.getContent()));
     }

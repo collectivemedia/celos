@@ -5,8 +5,8 @@ import com.collective.celos.ci.testing.structure.fixobject.FixObject;
 /**
  * Created by akonopko on 10/10/14.
  */
-public interface Comparer<T extends FixObject> {
+public interface FixtureComparer<T extends FixObject> {
 
-    public FixObjectCompareResult check(T fo) throws Exception;
+    public FixObjectCompareResult check() throws Exception;
 
 }

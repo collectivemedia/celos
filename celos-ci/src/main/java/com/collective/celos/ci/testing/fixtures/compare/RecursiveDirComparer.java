@@ -1,5 +1,6 @@
 package com.collective.celos.ci.testing.fixtures.compare;
 
+import com.collective.celos.ci.testing.fixtures.create.FixObjectCreator;
 import com.collective.celos.ci.testing.structure.fixobject.FixDir;
 import com.collective.celos.ci.testing.structure.fixobject.FixFile;
 import com.collective.celos.ci.testing.structure.fixobject.FixObject;
@@ -14,16 +15,18 @@ import java.util.*;
 /**
  * Created by akonopko on 10/7/14.
  */
-public class RecursiveDirComparer implements Comparer<FixDir> {
+public class RecursiveDirComparer implements FixtureComparer<FixDir> {
 
-    private final FixDir expectedDirTree;
+    private final FixObjectCreator<FixDir> expectedDirTree;
+    private final FixObjectCreator<FixDir> actualDataCreator;
 
-    public RecursiveDirComparer(FixDir compareWith) {
-        this.expectedDirTree = compareWith;
+    public RecursiveDirComparer(FixObjectCreator<FixDir> expectedDirTree, FixObjectCreator<FixDir> actualDataCreator) {
+        this.expectedDirTree = expectedDirTree;
+        this.actualDataCreator = actualDataCreator;
     }
 
-    public FixObjectCompareResult check(FixDir actualDirTree) throws Exception {
-        return checkInternal(expectedDirTree, actualDirTree);
+    public FixObjectCompareResult check() throws Exception {
+        return checkInternal(expectedDirTree.create(), actualDataCreator.create());
     }
 
     public FixObjectCompareResult checkInternal(FixDir expectedDirTree, FixDir actualDirTree) throws Exception {
@@ -40,9 +43,9 @@ public class RecursiveDirComparer implements Comparer<FixDir> {
                 if (entry.getValue().isFile()) {
 
                     FixFile expFile = entry.getValue().asFile();
-                    PlainFileComparer fileComparer = new PlainFileComparer(expFile.getContent());
+                    PlainFileComparer fileComparer = new PlainFileComparer(expFile.getContent(), other.asFile());
 
-                    FixObjectCompareResult compareResult = fileComparer.check(other.asFile());
+                    FixObjectCompareResult compareResult = fileComparer.check();
                     if (compareResult.getStatus() == FixObjectCompareResult.Status.FAIL) {
                         fails.put(entry.getKey(), compareResult);
                     }

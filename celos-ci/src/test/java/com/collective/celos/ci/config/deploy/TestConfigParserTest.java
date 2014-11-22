@@ -1,14 +1,10 @@
 package com.collective.celos.ci.config.deploy;
 
 import com.collective.celos.ScheduledTime;
-import com.collective.celos.ci.config.testing.TestConfig;
-import com.collective.celos.ci.config.testing.TestConfigParser;
-import com.collective.celos.ci.deploy.JScpWorker;
 import junit.framework.Assert;
 import org.junit.Test;
 
 import java.io.File;
-import java.net.URI;
 
 /**
  * Created by akonopko on 9/29/14.

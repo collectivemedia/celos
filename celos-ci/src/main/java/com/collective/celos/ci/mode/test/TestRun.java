@@ -6,9 +6,11 @@ import com.collective.celos.ci.config.testing.TestContext;
 import com.collective.celos.ci.deploy.HdfsDeployer;
 import com.collective.celos.ci.deploy.JScpWorker;
 import com.collective.celos.ci.deploy.WorkflowFileDeployer;
+import com.collective.celos.ci.testing.fixtures.compare.FixObjectCompareResult;
+import com.collective.celos.ci.testing.fixtures.compare.FixtureComparer;
+import com.collective.celos.ci.testing.fixtures.deploy.FixtureDeployer;
 import com.collective.celos.server.CelosServer;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Maps;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.Selectors;
@@ -18,7 +20,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
-import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -28,42 +29,26 @@ public class TestRun {
 
     private static final String HDFS_PREFIX_PATTERN = "/user/%s/test/%s/%s";
     private static final String HDFS_PREFIX = "HDFS_PREFIX";
-    private static final String LOCAL_OUTPUT_PATTERN = "%s/output";
-    private static final String LOCAL_INPUT_PATTERN = "%s/input";
 
     private final WorkflowFileDeployer wfDeployer;
     private final HdfsDeployer hdfsDeployer;
-//    private final FixturesHdfsWorkerManager compareWorkerManager;
-//    private final FixturesHdfsWorkerManager deployWorkerManager;
     private final CelosCiContext ciContext;
     private final TestContext testContext;
-    private final File testCaseDir;
+    private final File celosTempDir;
 
-    public TestRun(CelosCiTarget target, String username, String workflowName, File deployDir, File testCaseDir) throws Exception {
+    public TestRun(CelosCiTarget target, String username, String workflowName, File deployDir, File testCasesDir, TestCase testCase) throws Exception {
 
-        File celosTempDir = Files.createTempDirectory("celos").toFile();
-        this.testCaseDir = testCaseDir;
+        this.celosTempDir = Files.createTempDirectory("celos").toFile();
+        String testUUID = UUID.randomUUID().toString();
+        String hdfsPrefix = String.format(HDFS_PREFIX_PATTERN, username, workflowName, testUUID);
+        this.testContext = new TestContext(celosTempDir, hdfsPrefix, testUUID, testCase);
 
-        System.out.println("Test case " + testCaseDir.getName() + ": temp dir for Celos is " + celosTempDir.getAbsolutePath().toString());
-        String hdfsPrefix = String.format(HDFS_PREFIX_PATTERN, username, workflowName, UUID.randomUUID().toString());
-        System.out.println("Test case " + testCaseDir.getName() + ": HDFS prefix is: " + hdfsPrefix);
-
-        this.testContext = new TestContext(celosTempDir, hdfsPrefix, testCaseDir);
         URI substitutedCelosWorkflowDir = testContext.getCelosWorkflowDir().toURI();
         CelosCiTarget testTarget = new CelosCiTarget(target.getPathToHdfsSite(), target.getPathToCoreSite(), substitutedCelosWorkflowDir, target.getDefaultsFile());
         this.ciContext = new CelosCiContext(testTarget, username, CelosCiContext.Mode.TEST, deployDir, workflowName, hdfsPrefix);
 
         this.wfDeployer = new WorkflowFileDeployer(ciContext);
         this.hdfsDeployer = new HdfsDeployer(ciContext);
-
-//        Map<String, AbstractFixtureFileWorker> comparatorWorkers = Maps.newHashMap();
-//        comparatorWorkers.put(PlainFixtureComparatorWorker.WORKER_TYPE, new PlainFixtureComparatorWorker());
-//        this.compareWorkerManager = new FixturesHdfsWorkerManager(ciContext, comparatorWorkers);
-//
-//        Map<String, AbstractFixtureFileWorker> deployWorkers = Maps.newHashMap();
-//        deployWorkers.put(PlainFixtureDeployWorker.WORKER_TYPE, new PlainFixtureDeployWorker());
-//        this.deployWorkerManager = new FixturesHdfsWorkerManager(ciContext, deployWorkers);
-
     }
 
     public CelosCiContext getCiContext() {
@@ -74,12 +59,11 @@ public class TestRun {
         return testContext;
     }
 
-    public File getTestCaseDir() {
-        return testCaseDir;
-    }
-
     public void start() throws Exception {
         prepareCelosServerEnv(testContext, ciContext);
+
+        System.out.println("Test case " + testContext.getTestCase().getName() + ": temp dir for Celos is " + celosTempDir.getAbsolutePath().toString());
+        System.out.println("Test case " + testContext.getTestCase().getName() + ": HDFS prefix is: " + testContext.getHdfsPrefix());
 
         wfDeployer.deploy();
         hdfsDeployer.deploy();
@@ -93,14 +77,17 @@ public class TestRun {
                     testContext.getCelosDbDir().toString()
             );
 
-            System.out.println("Running test case " + testCaseDir.getName());
-            File inputsDir = new File(String.format(LOCAL_INPUT_PATTERN, testCaseDir.getAbsolutePath()));
-//            deployWorkerManager.processLocalDir(inputsDir);
-//
-//            new CelosSchedulerWorker(port).runCelosScheduler(new TestConfigParser().parse(testCaseDir));
-//
-//            File outputsDir = new File(String.format(LOCAL_OUTPUT_PATTERN, testCaseDir.getAbsolutePath()));
-//            compareWorkerManager.processLocalDir(outputsDir);
+            System.out.println("Running test case " + testContext.getTestCase().getName());
+            for (FixtureDeployer fixtureDeployer : testContext.getTestCase().getInputs()) {
+                fixtureDeployer.deploy(testContext);
+            }
+            new CelosSchedulerWorker(port).runCelosScheduler(testContext.getTestCase());
+            for (FixtureComparer fixtureComparer : testContext.getTestCase().getOutputs()) {
+                FixObjectCompareResult result = fixtureComparer.check();
+                if (result.getStatus() == FixObjectCompareResult.Status.FAIL) {
+                    System.err.println(result.generateDescription());
+                }
+            }
         } finally {
             System.out.println("Stopping Celos");
             celosServer.stopServer();

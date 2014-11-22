@@ -1,4 +1,4 @@
-package com.collective.celos.ci.testing.fixtures.read;
+package com.collective.celos.ci.testing.fixtures.create;
 
 import com.collective.celos.ci.config.deploy.CelosCiContext;
 import com.collective.celos.ci.testing.structure.fixobject.FixDir;
@@ -8,25 +8,23 @@ import com.google.common.collect.Maps;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.Path;
 
-import java.io.File;
 import java.util.Map;
 
 /**
  * Created by akonopko on 10/7/14.
  */
-public class HdfsTreeFixObjectCreator extends AbstractFixObjectCreator<FixObject> {
+public class FixDirFromHdfsCreator implements FixObjectCreator<FixDir> {
 
     private final CelosCiContext context;
     private final String path;
 
-    public HdfsTreeFixObjectCreator(CelosCiContext context, String path) {
+    public FixDirFromHdfsCreator(CelosCiContext context, String path) {
         this.context = context;
         this.path = path;
     }
 
-
-    public FixObject create() throws Exception {
-        return read(new Path(path));
+    public FixDir create() throws Exception {
+        return read(new Path(path)).asDir();
     }
 
     private FixObject read(Path path) throws Exception {

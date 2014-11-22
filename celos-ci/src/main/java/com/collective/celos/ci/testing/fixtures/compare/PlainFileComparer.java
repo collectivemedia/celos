@@ -8,15 +8,17 @@ import java.io.InputStream;
 /**
  * Created by akonopko on 10/7/14.
  */
-public class PlainFileComparer implements Comparer<FixFile> {
+public class PlainFileComparer implements FixtureComparer<FixFile> {
 
     private final InputStream content;
+    private final FixFile file;
 
-    public PlainFileComparer(InputStream content) {
+    public PlainFileComparer(InputStream content, FixFile file) {
         this.content = content;
+        this.file = file;
     }
 
-    public FixObjectCompareResult check(FixFile file) throws Exception {
+    public FixObjectCompareResult check() throws Exception {
         if (!IOUtils.contentEquals(content, file.getContent())) {
             return FixObjectCompareResult.failed("File contents differed");
         }

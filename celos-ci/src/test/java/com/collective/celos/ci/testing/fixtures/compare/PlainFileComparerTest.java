@@ -1,7 +1,5 @@
 package com.collective.celos.ci.testing.fixtures.compare;
 
-import com.collective.celos.ci.testing.fixtures.compare.FixObjectCompareResult;
-import com.collective.celos.ci.testing.fixtures.compare.PlainFileComparer;
 import com.collective.celos.ci.testing.structure.fixobject.FixFile;
 import junit.framework.Assert;
 import org.apache.commons.io.IOUtils;
@@ -24,11 +22,11 @@ public class PlainFileComparerTest {
         InputStream inputStream1 = IOUtils.toInputStream("stream");
         InputStream inputStream2 = IOUtils.toInputStream("stream");
 
-        PlainFileComparer comparer = new PlainFileComparer(inputStream2);
         FixFile fixFile1 = mock(FixFile.class);
+        PlainFileComparer comparer = new PlainFileComparer(inputStream2, fixFile1);
 
         doReturn(inputStream1).when(fixFile1).getContent();
-        FixObjectCompareResult compareResult = comparer.check(fixFile1);
+        FixObjectCompareResult compareResult = comparer.check();
         Assert.assertEquals(compareResult, FixObjectCompareResult.success());
     }
 
@@ -38,11 +36,11 @@ public class PlainFileComparerTest {
         InputStream inputStream1 = IOUtils.toInputStream("stream");
         InputStream inputStream2 = IOUtils.toInputStream("stream2");
 
-        PlainFileComparer comparer = new PlainFileComparer(inputStream2);
         FixFile fixFile1 = mock(FixFile.class);
+        PlainFileComparer comparer = new PlainFileComparer(inputStream2, fixFile1);
 
         doReturn(inputStream1).when(fixFile1).getContent();
-        FixObjectCompareResult compareResult = comparer.check(fixFile1);
+        FixObjectCompareResult compareResult = comparer.check();
 
         Assert.assertEquals(compareResult.getStatus(), FixObjectCompareResult.Status.FAIL);
     }
