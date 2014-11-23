@@ -15,7 +15,7 @@ public class StringFixObjectCreatorTest {
     @Test
     public void testStringFixObjectCreator() throws Exception {
         FixFileFromStringCreator creator = new FixFileFromStringCreator(SOME_TEXT);
-        FixFile fixFile = creator.create();
+        FixFile fixFile = creator.create(null);
         Assert.assertEquals(SOME_TEXT, IOUtils.toString(fixFile.getContent()));
     }
 

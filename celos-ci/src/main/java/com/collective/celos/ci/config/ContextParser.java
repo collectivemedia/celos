@@ -11,7 +11,6 @@ public class ContextParser {
     public static final String CLI_MODE = "mode";
     public static final String CLI_DEPLOY_DIR = "deployDir";
     public static final String CLI_WORKFLOW_NAME = "workflowName";
-    public static final String CLI_TEST_CASES_DIR = "testDir";
 
     public CelosCiCommandLine parse(final String[] commandLineArguments) throws Exception {
 
@@ -28,10 +27,9 @@ public class ContextParser {
         String mode = commandLine.getOptionValue(CLI_MODE);
         String workflowName = commandLine.getOptionValue(CLI_WORKFLOW_NAME);
         String targetUri = commandLine.getOptionValue(CLI_TARGET);
-        String testCasesDir = commandLine.getOptionValue(CLI_TEST_CASES_DIR);
         String userName = System.getenv("username") == null ? System.getProperty("user.name") : System.getenv("username");
 
-        return new CelosCiCommandLine(targetUri, mode, deployDir, workflowName, testCasesDir, userName);
+        return new CelosCiCommandLine(targetUri, mode, deployDir, workflowName, userName);
     }
 
     public Options constructOptions() {
@@ -39,8 +37,7 @@ public class ContextParser {
         options.addOption(CLI_TARGET, CLI_TARGET, true, "Path to target JSON (alternative to command line)")
                 .addOption(CLI_MODE, CLI_MODE, true, "Mode. Defaults to DEPLOY")
                 .addOption(CLI_DEPLOY_DIR, CLI_DEPLOY_DIR, true, "Deploy directory. Path to workflow you want to deploy")
-                .addOption(CLI_WORKFLOW_NAME, CLI_WORKFLOW_NAME, true, "Workflow JS file name")
-                .addOption(CLI_TEST_CASES_DIR, CLI_TEST_CASES_DIR, true, "Test cases dir");
+                .addOption(CLI_WORKFLOW_NAME, CLI_WORKFLOW_NAME, true, "Workflow JS file name");
         return options;
     }
 

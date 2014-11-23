@@ -15,26 +15,28 @@ import java.util.Map;
  */
 public class FixDirFromHdfsCreator implements FixObjectCreator<FixDir> {
 
-    private final CelosCiContext context;
     private final String path;
 
-    public FixDirFromHdfsCreator(CelosCiContext context, String path) {
-        this.context = context;
+    public FixDirFromHdfsCreator(String path) {
         this.path = path;
     }
 
-    public FixDir create() throws Exception {
-        return read(new Path(path)).asDir();
+    public String getPath() {
+        return path;
     }
 
-    private FixObject read(Path path) throws Exception {
+    public FixDir create(CelosCiContext celosCiContext) throws Exception {
+        return read(new Path(path), celosCiContext).asDir();
+    }
+
+    private FixObject read(Path path, CelosCiContext context) throws Exception {
         FileStatus fileStatus = context.getFileSystem().getFileStatus(path);
         if (fileStatus.isDirectory()) {
             Map<String, FixObject> content = Maps.newHashMap();
             FileStatus[] statuses = context.getFileSystem().listStatus(fileStatus.getPath());
             for (int i=0; i < statuses.length; i++) {
                 FileStatus childStatus = statuses[i];
-                FixObject fixObject = read(childStatus.getPath());
+                FixObject fixObject = read(childStatus.getPath(), context);
                 content.put(childStatus.getPath().getName(), fixObject);
             }
             return new FixDir(content);

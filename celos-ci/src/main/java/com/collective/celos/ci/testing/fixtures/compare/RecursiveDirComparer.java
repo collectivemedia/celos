@@ -1,5 +1,6 @@
 package com.collective.celos.ci.testing.fixtures.compare;
 
+import com.collective.celos.ci.config.deploy.CelosCiContext;
 import com.collective.celos.ci.testing.fixtures.create.FixObjectCreator;
 import com.collective.celos.ci.testing.structure.fixobject.FixDir;
 import com.collective.celos.ci.testing.structure.fixobject.FixFile;
@@ -17,19 +18,27 @@ import java.util.*;
  */
 public class RecursiveDirComparer implements FixtureComparer<FixDir> {
 
-    private final FixObjectCreator<FixDir> expectedDirTree;
+    private final FixObjectCreator<FixDir> expectedDataCreator;
     private final FixObjectCreator<FixDir> actualDataCreator;
 
-    public RecursiveDirComparer(FixObjectCreator<FixDir> expectedDirTree, FixObjectCreator<FixDir> actualDataCreator) {
-        this.expectedDirTree = expectedDirTree;
+    public RecursiveDirComparer(FixObjectCreator<FixDir> expectedDataCreator, FixObjectCreator<FixDir> actualDataCreator) {
+        this.expectedDataCreator = expectedDataCreator;
         this.actualDataCreator = actualDataCreator;
     }
 
-    public FixObjectCompareResult check() throws Exception {
-        return checkInternal(expectedDirTree.create(), actualDataCreator.create());
+    public FixObjectCompareResult check(CelosCiContext context) throws Exception {
+        return checkInternal(expectedDataCreator.create(context), actualDataCreator.create(context), context);
     }
 
-    public FixObjectCompareResult checkInternal(FixDir expectedDirTree, FixDir actualDirTree) throws Exception {
+    public FixObjectCreator<FixDir> getExpectedDataCreator() {
+        return expectedDataCreator;
+    }
+
+    public FixObjectCreator<FixDir> getActualDataCreator() {
+        return actualDataCreator;
+    }
+
+    private FixObjectCompareResult checkInternal(FixDir expectedDirTree, FixDir actualDirTree, CelosCiContext context) throws Exception {
 
         Map<String, FixObjectCompareResult> fails = Maps.newHashMap();
         Map<String, FixObject> expectedChldrn = expectedDirTree.getChildren();
@@ -45,12 +54,12 @@ public class RecursiveDirComparer implements FixtureComparer<FixDir> {
                     FixFile expFile = entry.getValue().asFile();
                     PlainFileComparer fileComparer = new PlainFileComparer(expFile.getContent(), other.asFile());
 
-                    FixObjectCompareResult compareResult = fileComparer.check();
+                    FixObjectCompareResult compareResult = fileComparer.check(context);
                     if (compareResult.getStatus() == FixObjectCompareResult.Status.FAIL) {
                         fails.put(entry.getKey(), compareResult);
                     }
                 } else {
-                    FixObjectCompareResult compareResult = checkInternal(entry.getValue().asDir(), other.asDir());
+                    FixObjectCompareResult compareResult = checkInternal(entry.getValue().asDir(), other.asDir(), context);
                     if (compareResult.getStatus() == FixObjectCompareResult.Status.FAIL) {
                         fails.put(entry.getKey(), compareResult);
                     }

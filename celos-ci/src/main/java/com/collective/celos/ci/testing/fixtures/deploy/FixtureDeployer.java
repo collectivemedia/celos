@@ -1,5 +1,6 @@
 package com.collective.celos.ci.testing.fixtures.deploy;
 
+import com.collective.celos.ci.config.deploy.CelosCiContext;
 import com.collective.celos.ci.config.testing.TestContext;
 
 /**
@@ -7,6 +8,6 @@ import com.collective.celos.ci.config.testing.TestContext;
  */
 public interface FixtureDeployer {
 
-    void deploy(TestContext testContext) throws Exception;
+    void deploy(TestContext testContext, CelosCiContext celosCiContext) throws Exception;
 
 }

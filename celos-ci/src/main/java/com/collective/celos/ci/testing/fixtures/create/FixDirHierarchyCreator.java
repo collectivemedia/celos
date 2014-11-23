@@ -21,7 +21,7 @@ public class FixDirHierarchyCreator implements FixObjectCreator<FixDir> {
         this.hierarchy = hierarchy;
     }
 
-    public FixDir create() {
+    public FixDir create(CelosCiContext context) {
         return new FixDir(hierarchy);
     }
 

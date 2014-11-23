@@ -1,5 +1,6 @@
 package com.collective.celos.ci.testing.fixtures.deploy;
 
+import com.collective.celos.ci.CelosCi;
 import com.collective.celos.ci.config.deploy.CelosCiContext;
 import com.collective.celos.ci.config.testing.TestContext;
 import com.collective.celos.ci.mode.test.TestCase;
@@ -24,19 +25,17 @@ public class HdfsInputDeployer implements FixtureDeployer {
 
     private final FixObjectCreator<FixObject> fixObjectCreator;
     private final String path;
-    private final CelosCiContext context;
 
-    public HdfsInputDeployer(FixObjectCreator<FixObject> fixObjectCreator, String path, CelosCiContext context) {
+    public HdfsInputDeployer(FixObjectCreator<FixObject> fixObjectCreator, String path) {
         this.fixObjectCreator = fixObjectCreator;
         this.path = path;
-        this.context = context;
     }
 
-    public void deploy(TestContext testContext) throws Exception {
-        FileSystem fileSystem = context.getFileSystem();
+    public void deploy(TestContext testContext, CelosCiContext celosCiContext) throws Exception {
+        FileSystem fileSystem = celosCiContext.getFileSystem();
 
         PathToFixFileProcessor pathToFile = new PathToFixFileProcessor();
-        TreeStructureProcessorRunner.process(fixObjectCreator.create(), pathToFile);
+        TreeStructureProcessorRunner.process(fixObjectCreator.create(celosCiContext), pathToFile);
 
         Path pathPrefixed = new Path(testContext.getHdfsPrefix(), path);
         for (java.nio.file.Path childPath: pathToFile.pathToFiles.keySet()) {
@@ -46,6 +45,14 @@ public class HdfsInputDeployer implements FixtureDeployer {
             FSDataOutputStream outputStream = fileSystem.create(pathTo);
             IOUtils.copy(pathToFile.pathToFiles.get(childPath).getContent(), outputStream);
         }
+    }
+
+    public FixObjectCreator<FixObject> getFixObjectCreator() {
+        return fixObjectCreator;
+    }
+
+    public String getPath() {
+        return path;
     }
 
     private static class PathToFixFileProcessor extends AbstractTreeObjectProcessor<FixObject> {

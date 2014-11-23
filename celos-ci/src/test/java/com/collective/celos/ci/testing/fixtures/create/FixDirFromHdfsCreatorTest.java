@@ -29,7 +29,7 @@ public class FixDirFromHdfsCreatorTest {
         String path = Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/ci/testing/create").toString();
 
         doReturn(LocalFileSystem.get(new Configuration())).when(context).getFileSystem();
-        FixDirFromHdfsCreator creator = new FixDirFromHdfsCreator(context, path);
+        FixDirFromHdfsCreator creator = new FixDirFromHdfsCreator(path);
 
         Map<String, FixObject> contentir2 = Maps.newHashMap();
         contentir2.put("file2", createFile());
@@ -41,12 +41,11 @@ public class FixDirFromHdfsCreatorTest {
         contentir1.put("file1", createFile());
         FixDir dir1 = new FixDir(contentir1);
 
-
         Map<String, FixObject> contentRead = Maps.newHashMap();
         contentRead.put("dir1", dir1);
         FixDir readDir = new FixDir(contentRead);
 
-        FixObjectCompareResult compareResult = new RecursiveDirComparer(wrapInCreator(readDir), creator).check();
+        FixObjectCompareResult compareResult = new RecursiveDirComparer(wrapInCreator(readDir), creator).check(context);
 
         Assert.assertEquals(compareResult.getStatus(), FixObjectCompareResult.Status.SUCCESS);
     }
@@ -58,7 +57,7 @@ public class FixDirFromHdfsCreatorTest {
     private FixObjectCreator wrapInCreator(final FixDir dir) {
         return new FixObjectCreator<FixDir>() {
             @Override
-            public FixDir create() throws Exception {
+            public FixDir create(CelosCiContext cc) throws Exception {
                 return dir;
             }
         };

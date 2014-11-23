@@ -26,7 +26,7 @@ public class PlainFileComparerTest {
         PlainFileComparer comparer = new PlainFileComparer(inputStream2, fixFile1);
 
         doReturn(inputStream1).when(fixFile1).getContent();
-        FixObjectCompareResult compareResult = comparer.check();
+        FixObjectCompareResult compareResult = comparer.check(null);
         Assert.assertEquals(compareResult, FixObjectCompareResult.success());
     }
 
@@ -40,7 +40,7 @@ public class PlainFileComparerTest {
         PlainFileComparer comparer = new PlainFileComparer(inputStream2, fixFile1);
 
         doReturn(inputStream1).when(fixFile1).getContent();
-        FixObjectCompareResult compareResult = comparer.check();
+        FixObjectCompareResult compareResult = comparer.check(null);
 
         Assert.assertEquals(compareResult.getStatus(), FixObjectCompareResult.Status.FAIL);
     }

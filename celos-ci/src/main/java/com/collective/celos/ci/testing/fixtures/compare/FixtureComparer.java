@@ -1,5 +1,6 @@
 package com.collective.celos.ci.testing.fixtures.compare;
 
+import com.collective.celos.ci.config.deploy.CelosCiContext;
 import com.collective.celos.ci.testing.structure.fixobject.FixObject;
 
 /**
@@ -7,6 +8,6 @@ import com.collective.celos.ci.testing.structure.fixobject.FixObject;
  */
 public interface FixtureComparer<T extends FixObject> {
 
-    public FixObjectCompareResult check() throws Exception;
+    public FixObjectCompareResult check(CelosCiContext context) throws Exception;
 
 }

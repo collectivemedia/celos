@@ -1,5 +1,7 @@
 package com.collective.celos.ci.testing.fixtures.create;
 
+import com.collective.celos.ci.CelosCi;
+import com.collective.celos.ci.config.deploy.CelosCiContext;
 import com.collective.celos.ci.testing.fixtures.compare.FixObjectCompareResult;
 import com.collective.celos.ci.testing.fixtures.compare.RecursiveDirComparer;
 import com.collective.celos.ci.testing.structure.fixobject.FixDir;
@@ -39,7 +41,7 @@ public class FileTreeFixObjectCreatorTest {
         FixDir readDir = new FixDir(contentRead);
 
         FixDirFromResourceCreator creator = new FixDirFromResourceCreator(path);
-        FixObjectCompareResult compareResult = new RecursiveDirComparer(wrapInCreator(readDir), creator).check();
+        FixObjectCompareResult compareResult = new RecursiveDirComparer(wrapInCreator(readDir), creator).check(null);
 
         Assert.assertEquals(compareResult.getStatus(), FixObjectCompareResult.Status.SUCCESS);
     }
@@ -47,7 +49,7 @@ public class FileTreeFixObjectCreatorTest {
     private FixObjectCreator wrapInCreator(final FixDir dir) {
         return new FixObjectCreator<FixDir>() {
             @Override
-            public FixDir create() throws Exception {
+            public FixDir create(CelosCiContext c) throws Exception {
                 return dir;
             }
         };
