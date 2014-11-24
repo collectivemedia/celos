@@ -85,7 +85,9 @@ public class TestRun {
                     testContext.getCelosDbDir().toString()
             );
 
+            System.out.println("Test case " + testContext.getTestCase().getName() + ": CELOS port " + port);
             System.out.println("Running test case " + testContext.getTestCase().getName());
+            
             for (FixtureDeployer fixtureDeployer : testContext.getTestCase().getInputs()) {
                 fixtureDeployer.deploy(testContext, ciContext);
             }

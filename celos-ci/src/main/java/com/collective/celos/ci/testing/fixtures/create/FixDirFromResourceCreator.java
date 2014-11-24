@@ -26,7 +26,7 @@ public class FixDirFromResourceCreator implements FixObjectCreator<FixDir> {
     }
 
     public FixDir create(CelosCiContext context) throws Exception {
-        File dirFile = new File(Thread.currentThread().getContextClassLoader().getResource(path).getFile());
+        File dirFile = new File(path);
         if (!dirFile.isDirectory()) {
             throw new IllegalStateException("Cannot find directory: " + path);
         }

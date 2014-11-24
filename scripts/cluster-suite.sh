@@ -2,30 +2,9 @@
 # set -e
 # set -x
 
-if [ -z "$(sudo docker ps | grep 'celosnn ')" ]; then
-    ./scripts/docker-stop.sh
-    ./scripts/docker-run.sh
+./docker-run.sh
 
-    IP_ADDRESS="$(sudo docker ps | grep 'celosnn ' | awk '{print $1}' | xargs sudo docker inspect | grep IPAddress | awk '{print $2}' | tr -d \" | tr -d ,)"
-    ssh-keygen -R $IP_ADDRESS
-
-    ssh-add scripts/test_rsa
-    sleep 1
-    ssh -o StrictHostKeyChecking=no celos@$IP_ADDRESS "ls"
-
-    ssh-copy-id celos@$IP_ADDRESS
-    $(curl $IP_ADDRESS:8080 &> /dev/null)
-    stat=$?
-    while [ "$stat" -ne "0" ]
-    do
-       echo "Waiting for main node on $IP_ADDRESS to start"
-       sleep 5
-       $(curl $IP_ADDRESS:8080 &> /dev/null) 
-       stat=$?
-    done
-else
-    IP_ADDRESS="$(sudo docker ps | grep 'celosnn ' | awk '{print $1}' | xargs sudo docker inspect | grep IPAddress | awk '{print $2}' | tr -d \" | tr -d ,)"
-fi
+IP_ADDRESS="$(sudo docker ps | grep 'celosnn ' | awk '{print $1}' | xargs sudo docker inspect | grep IPAddress | awk '{print $2}' | tr -d \" | tr -d ,)"
 
 echo 'Starting tests'
 

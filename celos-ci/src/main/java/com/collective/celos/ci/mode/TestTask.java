@@ -29,7 +29,7 @@ public class TestTask extends CelosCi {
         CelosCiTarget target = parser.parse(commandLine.getTargetUri());
 
         File configJSFile = new File(testConfigJsFilePath);
-        System.out.println(configJSFile.getAbsolutePath());
+
         TestConfigurationParser configurationParser = new TestConfigurationParser();
         configurationParser.evaluateTestConfig(configJSFile);
 

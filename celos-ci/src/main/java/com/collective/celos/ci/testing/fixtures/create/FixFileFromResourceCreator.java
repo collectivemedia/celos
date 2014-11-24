@@ -18,7 +18,7 @@ public class FixFileFromResourceCreator implements FixObjectCreator<FixFile> {
     }
 
     public FixFile create(CelosCiContext celosCiContext) throws Exception {
-        File file = new File(Thread.currentThread().getContextClassLoader().getResource(path).getFile());
+        File file = new File(path);
         if (!file.isFile()) {
             throw new IllegalStateException("Cannot find file: " + path);
         }
