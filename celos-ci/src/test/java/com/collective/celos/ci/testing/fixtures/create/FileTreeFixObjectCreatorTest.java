@@ -1,6 +1,6 @@
 package com.collective.celos.ci.testing.fixtures.create;
 
-import com.collective.celos.ci.CelosCi;
+import com.collective.celos.ci.config.CelosCiCommandLine;
 import com.collective.celos.ci.config.deploy.CelosCiContext;
 import com.collective.celos.ci.testing.fixtures.compare.FixObjectCompareResult;
 import com.collective.celos.ci.testing.fixtures.compare.RecursiveDirComparer;
@@ -22,8 +22,7 @@ public class FileTreeFixObjectCreatorTest {
 
     @Test
     public void testFileTreeFixObjectCreator() throws Exception {
-        String path = "com/collective/celos/ci/testing/create";
-//        String path = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/ci/testing/create").toURI()).getAbsolutePath();
+        String path = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/ci/testing/create").toURI()).getAbsolutePath();
 
         Map<String, FixObject> contentir2 = Maps.newHashMap();
         contentir2.put("file2", createFile());
@@ -40,7 +39,7 @@ public class FileTreeFixObjectCreatorTest {
         contentRead.put("dir1", dir1);
         FixDir readDir = new FixDir(contentRead);
 
-        FixDirFromResourceCreator creator = new FixDirFromResourceCreator(path);
+        FixDirFromResourceCreator creator = new FixDirFromResourceCreator(new File(""), path);
         FixObjectCompareResult compareResult = new RecursiveDirComparer(wrapInCreator(readDir), creator).check(null);
 
         Assert.assertEquals(compareResult.getStatus(), FixObjectCompareResult.Status.SUCCESS);

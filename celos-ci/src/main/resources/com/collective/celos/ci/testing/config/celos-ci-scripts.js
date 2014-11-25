@@ -4,11 +4,11 @@ importPackage(Packages.com.collective.celos.ci.testing.fixtures.compare);
 importPackage(Packages.com.collective.celos.ci.mode.test);
 
 function fixDirFromResource(resource) {
-    return new FixDirFromResourceCreator(resource);
+    return new FixDirFromResourceCreator(commandLine.getTestCasesDir(), resource);
 }
 
 function fixFileFromResource(resource) {
-    return new FixFileFromResourceCreator(resource);
+    return new FixFileFromResourceCreator(commandLine.getTestCasesDir(), resource);
 }
 
 function fixFile(content) {

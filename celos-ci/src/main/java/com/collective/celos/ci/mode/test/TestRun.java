@@ -43,8 +43,10 @@ public class TestRun {
 
         this.testCase = testCase;
         this.celosTempDir = Files.createTempDirectory("celos").toFile();
+
         String testUUID = UUID.randomUUID().toString();
         String hdfsPrefix = String.format(HDFS_PREFIX_PATTERN, username, workflowName, testUUID);
+
         this.testContext = new TestContext(celosTempDir, hdfsPrefix, testUUID, testCase);
 
         URI substitutedCelosWorkflowDir = testContext.getCelosWorkflowDir().toURI();
@@ -85,9 +87,7 @@ public class TestRun {
                     testContext.getCelosDbDir().toString()
             );
 
-            System.out.println("Test case " + testContext.getTestCase().getName() + ": CELOS port " + port);
             System.out.println("Running test case " + testContext.getTestCase().getName());
-            
             for (FixtureDeployer fixtureDeployer : testContext.getTestCase().getInputs()) {
                 fixtureDeployer.deploy(testContext, ciContext);
             }

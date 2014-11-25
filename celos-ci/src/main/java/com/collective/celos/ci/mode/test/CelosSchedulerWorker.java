@@ -19,8 +19,8 @@ import java.io.StringWriter;
  */
 public class CelosSchedulerWorker {
 
-    public static final int MIN_PAUSE = 5000;
     private final HttpClient client;
+    public static final int MIN_PAUSE = 5000;
     private final ScheduledTimeFormatter timeFormatter;
     private final int port;
 
@@ -37,6 +37,7 @@ public class CelosSchedulerWorker {
         ScheduledTime actualTime = startTime;
         ScheduledTime endTime = testConfig.getSampleTimeEnd();
 
+        //one more iteration so celos goes to the ready and running state
         while (!actualTime.getDateTime().isAfter(endTime.getDateTime())) {
             iterateScheduler(port, actualTime);
             long timeMills = System.currentTimeMillis();

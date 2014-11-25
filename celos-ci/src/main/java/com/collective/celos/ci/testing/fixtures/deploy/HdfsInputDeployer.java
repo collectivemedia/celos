@@ -43,7 +43,13 @@ public class HdfsInputDeployer implements FixtureDeployer {
             fileSystem.mkdirs(pathTo.getParent());
 
             FSDataOutputStream outputStream = fileSystem.create(pathTo);
-            IOUtils.copy(pathToFile.pathToFiles.get(childPath).getContent(), outputStream);
+            try {
+                IOUtils.copy(pathToFile.pathToFiles.get(childPath).getContent(), outputStream);
+            } finally {
+                outputStream.flush();
+                outputStream.close();
+            }
+
         }
     }
 

@@ -14,14 +14,16 @@ public class CelosCiCommandLine {
     private final CelosCiContext.Mode mode;
     private final File deployDir;
     private final String workflowName;
+    private final File testCasesDir;
     private final String userName;
 
-    public CelosCiCommandLine(String targetUri, String mode, String deployDir, String workflowName, String userName) {
+    public CelosCiCommandLine(String targetUri, String mode, String deployDir, String workflowName, String testCasesDir, String userName) {
         this.userName = userName;
         this.targetUri = URI.create(targetUri);
         this.mode = CelosCiContext.Mode.valueOf(mode);
         this.deployDir = new File(deployDir);
         this.workflowName = workflowName;
+        this.testCasesDir = new File(testCasesDir);
     }
 
     public URI getTargetUri() {
@@ -38,6 +40,10 @@ public class CelosCiCommandLine {
 
     public String getWorkflowName() {
         return workflowName;
+    }
+
+    public File getTestCasesDir() {
+        return testCasesDir;
     }
 
     public String getUserName() {

@@ -26,7 +26,7 @@ public class FixDirFromHdfsCreator implements FixObjectCreator<FixDir> {
     }
 
     public FixDir create(CelosCiContext celosCiContext) throws Exception {
-        return read(new Path(path), celosCiContext).asDir();
+        return read(new Path(celosCiContext.getHdfsPrefix(), path), celosCiContext).asDir();
     }
 
     private FixObject read(Path path, CelosCiContext context) throws Exception {

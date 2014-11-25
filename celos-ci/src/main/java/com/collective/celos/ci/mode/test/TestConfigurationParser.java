@@ -2,6 +2,7 @@ package com.collective.celos.ci.mode.test;
 
 import com.collective.celos.JSConfigParser;
 import com.collective.celos.ci.CelosCi;
+import com.collective.celos.ci.config.CelosCiCommandLine;
 import com.collective.celos.ci.config.deploy.CelosCiContext;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -20,12 +21,14 @@ public class TestConfigurationParser {
     private final List<TestCase> testCases = Lists.newArrayList();
     private final JSConfigParser jsConfigParser = new JSConfigParser();
 
-    public void evaluateTestConfig(File testCaseFile) throws IOException {
+    public void evaluateTestConfig(CelosCiCommandLine commandLine, File testCaseFile) throws IOException {
         Global scope = jsConfigParser.createGlobalScope();
 
         Object wrappedContext = Context.javaToJS(this, scope);
+        Object wrappedCommandLine = Context.javaToJS(commandLine, scope);
         Map jsProperties = Maps.newHashMap();
         jsProperties.put("testConfigurationParser", wrappedContext);
+        jsProperties.put("commandLine", wrappedCommandLine);
         jsConfigParser.putPropertiesInScope(jsProperties, scope);
 
         InputStream scripts = getClass().getClassLoader().getResourceAsStream("com/collective/celos/ci/testing/config/celos-ci-scripts.js");

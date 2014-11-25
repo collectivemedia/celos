@@ -2,6 +2,7 @@ package com.collective.celos.ci.config;
 
 import org.apache.commons.cli.*;
 
+import java.io.File;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 
@@ -11,6 +12,8 @@ public class ContextParser {
     public static final String CLI_MODE = "mode";
     public static final String CLI_DEPLOY_DIR = "deployDir";
     public static final String CLI_WORKFLOW_NAME = "workflowName";
+    public static final String CLI_TEST_CASES_DIR = "testDir";
+    public static final String DEFAULT_TEST_CASES_DIR = "src/test/celos-ci";
 
     public CelosCiCommandLine parse(final String[] commandLineArguments) throws Exception {
 
@@ -27,9 +30,22 @@ public class ContextParser {
         String mode = commandLine.getOptionValue(CLI_MODE);
         String workflowName = commandLine.getOptionValue(CLI_WORKFLOW_NAME);
         String targetUri = commandLine.getOptionValue(CLI_TARGET);
+        String testCasesDir = getTestCasesDir(commandLine);
         String userName = System.getenv("username") == null ? System.getProperty("user.name") : System.getenv("username");
 
-        return new CelosCiCommandLine(targetUri, mode, deployDir, workflowName, userName);
+        return new CelosCiCommandLine(targetUri, mode, deployDir, workflowName, testCasesDir, userName);
+    }
+
+    private String getTestCasesDir(CommandLine commandLine) {
+        String testCasesDir = commandLine.getOptionValue(CLI_TEST_CASES_DIR);
+        if (testCasesDir == null) {
+            testCasesDir = DEFAULT_TEST_CASES_DIR;
+            File defTCDir = new File(testCasesDir);
+            if (!defTCDir.isDirectory()) {
+                throw new RuntimeException("Directory with Celos-CI test cases was not found on default path " + defTCDir.getAbsolutePath() + ", please specify --testDir parameter");
+            }
+        }
+        return testCasesDir;
     }
 
     public Options constructOptions() {
@@ -37,7 +53,8 @@ public class ContextParser {
         options.addOption(CLI_TARGET, CLI_TARGET, true, "Path to target JSON (alternative to command line)")
                 .addOption(CLI_MODE, CLI_MODE, true, "Mode. Defaults to DEPLOY")
                 .addOption(CLI_DEPLOY_DIR, CLI_DEPLOY_DIR, true, "Deploy directory. Path to workflow you want to deploy")
-                .addOption(CLI_WORKFLOW_NAME, CLI_WORKFLOW_NAME, true, "Workflow JS file name");
+                .addOption(CLI_WORKFLOW_NAME, CLI_WORKFLOW_NAME, true, "Workflow JS file name")
+                .addOption(CLI_TEST_CASES_DIR, CLI_TEST_CASES_DIR, true, "Test cases dir");
         return options;
     }
 

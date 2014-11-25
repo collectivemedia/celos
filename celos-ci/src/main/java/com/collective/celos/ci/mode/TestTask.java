@@ -18,20 +18,18 @@ import java.util.List;
 public class TestTask extends CelosCi {
 
     private final List<TestRun> testRuns = Lists.newArrayList();
-    private static final String TEST_CONFIG_JS_FILE_PATH = "src/test/celos-ci/test-config.js";
+    private static final String TEST_CONFIG_JS_FILE = "test-config.js";
 
     public TestTask(CelosCiCommandLine commandLine) throws Exception {
-        this(commandLine, TEST_CONFIG_JS_FILE_PATH);
+        this(commandLine, new File(commandLine.getTestCasesDir(), TEST_CONFIG_JS_FILE));
     }
 
-    TestTask(CelosCiCommandLine commandLine, String testConfigJsFilePath) throws Exception {
+    TestTask(CelosCiCommandLine commandLine, File configJSFile) throws Exception {
         CelosCiTargetParser parser = new CelosCiTargetParser(commandLine.getUserName());
         CelosCiTarget target = parser.parse(commandLine.getTargetUri());
 
-        File configJSFile = new File(testConfigJsFilePath);
-
         TestConfigurationParser configurationParser = new TestConfigurationParser();
-        configurationParser.evaluateTestConfig(configJSFile);
+        configurationParser.evaluateTestConfig(commandLine, configJSFile);
 
         for (TestCase testCase : configurationParser.getTestCases()) {
             testRuns.add(new TestRun(target, commandLine.getUserName(), commandLine.getWorkflowName(), commandLine.getDeployDir(), testCase));

@@ -20,12 +20,10 @@ public class TestContext {
     private final File celosDbDir;
     private final File celosWorkDir;
     private final String hdfsPrefix;
-    private final String testUUID;
     private final TestCase testCase;
 
     public TestContext(File celosWorkDir, String hdfsPrefix, String testUUID, TestCase testCase) {
         this.testCase = testCase;
-        this.testUUID = Util.requireNonNull(testUUID);
         this.celosWorkDir = Util.requireNonNull(celosWorkDir);
         this.hdfsPrefix = Util.requireNonNull(hdfsPrefix);
 

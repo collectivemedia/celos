@@ -1,5 +1,6 @@
 package com.collective.celos.ci.testing.fixtures.create;
 
+import com.collective.celos.ci.config.CelosCiCommandLine;
 import com.collective.celos.ci.config.deploy.CelosCiContext;
 import com.collective.celos.ci.testing.structure.fixobject.FixDir;
 import com.collective.celos.ci.testing.structure.fixobject.FixFile;
@@ -15,22 +16,21 @@ import java.util.Map;
  */
 public class FixDirFromResourceCreator implements FixObjectCreator<FixDir> {
 
-    private final String path;
+    private final File path;
 
-    public FixDirFromResourceCreator(String path) {
-        this.path = path;
+    public FixDirFromResourceCreator(File testCasesDir, String path) {
+        this.path = new File(testCasesDir, path);
     }
 
-    public String getPath() {
+    public File getPath() {
         return path;
     }
 
     public FixDir create(CelosCiContext context) throws Exception {
-        File dirFile = new File(path);
-        if (!dirFile.isDirectory()) {
+        if (!path.isDirectory()) {
             throw new IllegalStateException("Cannot find directory: " + path);
         }
-        return read(dirFile).asDir();
+        return read(path).asDir();
     }
 
     private FixObject read(File file) throws Exception {

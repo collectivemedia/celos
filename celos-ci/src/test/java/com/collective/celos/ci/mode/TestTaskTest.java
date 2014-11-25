@@ -50,10 +50,10 @@ public class TestTaskTest {
         CelosCiTargetParser parser = new CelosCiTargetParser("");
         CelosCiTarget target = parser.parse(targetFile.toURI());
 
-        String testCasesDir = Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/ci/testing/config/test-config.js").getFile();
+        String configJS = Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/ci/testing/config/test-config.js").getFile();
 
-        CelosCiCommandLine commandLine = new CelosCiCommandLine(targetFile.toURI().toString(), "DEPLOY", "deploydir", "workflow", "uname");
-        TestTask testTask = new TestTask(commandLine, testCasesDir);
+        CelosCiCommandLine commandLine = new CelosCiCommandLine(targetFile.toURI().toString(), "DEPLOY", "deploydir", "workflow", "testDir", "uname");
+        TestTask testTask = new TestTask(commandLine, new File(configJS));
 
         Assert.assertEquals(testTask.getTestRuns().get(0).getCiContext().getTarget().getDefaultsFile(), target.getDefaultsFile());
         Assert.assertEquals(testTask.getTestRuns().get(0).getCiContext().getTarget().getPathToCoreSite(), target.getPathToCoreSite());
@@ -71,7 +71,7 @@ public class TestTaskTest {
         FixDirFromHdfsCreator hdfsCreator = (FixDirFromHdfsCreator) comparer.getActualDataCreator();
         Assert.assertEquals(hdfsCreator.getPath(), "output/wordcount1");
         FixDirFromResourceCreator resourceDataCreator = (FixDirFromResourceCreator) comparer.getExpectedDataCreator();
-        Assert.assertEquals(resourceDataCreator.getPath(), "src/test/celos-ci/test-1/output/plain/output/wordcount1");
+        Assert.assertEquals(resourceDataCreator.getPath(), new File("testDir/src/test/celos-ci/test-1/output/plain/output/wordcount1"));
 
         Assert.assertEquals(testTask.getTestRuns().get(1).getCiContext().getTarget().getDefaultsFile(), target.getDefaultsFile());
         Assert.assertEquals(testTask.getTestRuns().get(1).getCiContext().getTarget().getPathToCoreSite(), target.getPathToCoreSite());
@@ -87,7 +87,7 @@ public class TestTaskTest {
         FixDirFromHdfsCreator hdfsCreator2 = (FixDirFromHdfsCreator) comparer2.getActualDataCreator();
         Assert.assertEquals(hdfsCreator2.getPath(), "output/wordcount2");
         FixDirFromResourceCreator resourceDataCreator2 = (FixDirFromResourceCreator) comparer2.getExpectedDataCreator();
-        Assert.assertEquals(resourceDataCreator2.getPath(), "src/test/celos-ci/test-1/output/plain/output/wordcount2");
+        Assert.assertEquals(resourceDataCreator2.getPath(), new File("testDir/src/test/celos-ci/test-1/output/plain/output/wordcount2"));
 
     }
 

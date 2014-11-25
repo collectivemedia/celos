@@ -30,7 +30,7 @@ task celos_ci << {
        main = "com.collective.celos.ci.CelosCi"
        classpath configurations.celos_ci
        ip_address
-       args '--deployDir', 'build/celos_deploy', '--target', 'sftp://celos@' + ip_address + '/etc/celos/targets/testing.json', '--workflowName', 'wordcount' , '--mode', 'TEST', '--testDir', 'src/test/celos-ci'
+       args '--deployDir', 'build/celos_deploy', '--target', 'sftp://celos@' + ip_address + '/etc/celos/targets/testing.json', '--workflowName', 'wordcount' , '--mode', 'TEST'
     }
 
     new File('build/celos_deploy').deleteDir()
