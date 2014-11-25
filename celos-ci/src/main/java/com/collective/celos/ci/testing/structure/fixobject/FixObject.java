@@ -5,7 +5,7 @@ import com.collective.celos.ci.testing.structure.tree.TreeObject;
 /**
  * Created by akonopko on 10/7/14.
  */
-public abstract class FixObject<T extends FixObject> implements TreeObject<T> {
+public abstract class FixObject implements TreeObject<FixObject> {
 
     public abstract boolean isFile();
 

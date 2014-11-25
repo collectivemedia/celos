@@ -4,7 +4,7 @@ import com.collective.celos.ci.testing.structure.fixobject.FixDir;
 import com.collective.celos.ci.testing.structure.fixobject.FixFile;
 import com.collective.celos.ci.testing.structure.fixobject.FixObject;
 import com.collective.celos.ci.testing.structure.tree.AbstractTreeObjectProcessor;
-import com.collective.celos.ci.testing.structure.tree.TreeStructureProcessor;
+import com.collective.celos.ci.testing.structure.tree.TreeStructureProcessorRunner;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import junit.framework.Assert;
@@ -26,7 +26,7 @@ public class TreeStructureProcessorTest {
 
     @Test
     public void testTreeStructureProcessor() throws IOException {
-        TreeStructureProcessor processor = new TreeStructureProcessor();
+        TreeStructureProcessorRunner processor = new TreeStructureProcessorRunner();
         FixDir dir1 = createDirWithSubdirsAndFile();
         InputStream inputStream2 = IOUtils.toInputStream("stream3");
         FixFile file = new FixFile(inputStream2);

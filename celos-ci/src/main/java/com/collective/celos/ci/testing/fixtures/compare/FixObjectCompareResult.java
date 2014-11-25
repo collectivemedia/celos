@@ -2,7 +2,7 @@ package com.collective.celos.ci.testing.fixtures.compare;
 
 import com.collective.celos.ci.testing.structure.tree.AbstractTreeObjectProcessor;
 import com.collective.celos.ci.testing.structure.tree.TreeObject;
-import com.collective.celos.ci.testing.structure.tree.TreeStructureProcessor;
+import com.collective.celos.ci.testing.structure.tree.TreeStructureProcessorRunner;
 import com.google.common.collect.Maps;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrBuilder;
@@ -54,7 +54,7 @@ public class FixObjectCompareResult implements TreeObject<FixObjectCompareResult
 
     public String generateDescription() throws IOException {
         StrBuilder strBuilder = new StrBuilder();
-        TreeStructureProcessor structureProcessor = new TreeStructureProcessor();
+        TreeStructureProcessorRunner structureProcessor = new TreeStructureProcessorRunner();
         PathToMessageProcessor pathToMessage = new PathToMessageProcessor();
         structureProcessor.process(this, pathToMessage);
         for (Map.Entry<Path, String> pathMessage : pathToMessage.messages.entrySet()) {

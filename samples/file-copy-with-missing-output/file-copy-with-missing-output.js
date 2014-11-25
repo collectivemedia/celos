@@ -10,7 +10,7 @@ addWorkflow({
 
     "trigger": hdfsCheckTrigger(
         "/user/celos/samples/file-copy-with-missing-output/input/${year}-${month}-${day}T${hour}00.txt",
-        "hdfs://nn"
+        "hdfs://master:54310"
     ),
 
     "externalService": oozieExternalService(
@@ -20,7 +20,7 @@ addWorkflow({
             "inputDir": "hdfs:/user/celos/samples/file-copy-with-missing-output/input",
             "outputDir": "hdfs:/user/celos/samples/file-copy-with-missing-output/output"
         },
-        "http://nn:11000/oozie"
+        "http://master:11000/oozie"
     )
 
 });

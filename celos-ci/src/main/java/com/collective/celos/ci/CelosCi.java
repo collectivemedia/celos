@@ -11,6 +11,9 @@ public abstract class CelosCi {
 
     public static void main(String... args) throws Exception {
 
+        //left here for convenience while debugging
+//        args = "--testDir /home/akonopko/work/celos/samples/wordcount/src/test/celos-ci --deployDir /home/akonopko/work/celos/samples/wordcount/build/celos_deploy --target sftp://celos@172.17.1.47/etc/celos/targets/testing.json --workflowName wordcount --mode TEST".split(" ");
+
         ContextParser contextParser = new ContextParser();
         CelosCiCommandLine commandLine = contextParser.parse(args);
 
