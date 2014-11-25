@@ -1,11 +1,9 @@
 package com.collective.celos;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.Maps;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.mozilla.javascript.Context;
-import org.mozilla.javascript.ScriptableObject;
-import org.mozilla.javascript.WrapFactory;
 import org.mozilla.javascript.tools.shell.Global;
 
 import java.io.*;
@@ -25,37 +23,17 @@ import java.util.Map;
 public class WorkflowConfigurationParser {
 
     public static final String WORKFLOW_FILE_EXTENSION = "js";
-    
-    public static final String EXTERNAL_SERVICE_PROP = "externalService";
-    public static final String TRIGGER_PROP = "trigger";
-    public static final String SCHEDULING_STRATEGY_PROP = "schedulingStrategy";
-    public static final String SCHEDULE_PROP = "schedule";
-    public static final String ID_PROP = "id";
-    public static final String MAX_RETRY_COUNT_PROP = "maxRetryCount";
-    public static final String START_TIME_PROP = "startTime";
 
     private static final Logger LOGGER = Logger.getLogger(WorkflowConfigurationParser.class);
 
-    private final ObjectMapper mapper = new ObjectMapper();
     private final WorkflowConfiguration cfg = new WorkflowConfiguration();
+    private final JSConfigParser jsConfigParser = new JSConfigParser();
     private final File defaultsDir;
-    private final Context context;
-    private Map<String, String> additionalJsVariables;
+    private final Map<String, String> additionalJsVariables;
 
     public WorkflowConfigurationParser(File defaultsDir, Map<String, String> additionalJsVariables) throws Exception {
         this.defaultsDir = Util.requireNonNull(defaultsDir);
-        this.additionalJsVariables= additionalJsVariables;
-
-        context = Context.enter();
-        context.setLanguageVersion(170);
-
-        /**
-         * Treat primitives like strings returned from Java methods
-         * as native JS objects.
-         */
-        WrapFactory wf = new WrapFactory();
-        wf.setJavaPrimitiveWrap(false);
-        context.setWrapFactory(wf);
+        this.additionalJsVariables = additionalJsVariables;
     }
 
     public WorkflowConfigurationParser parseConfiguration(File workflowsDir) {
@@ -76,64 +54,40 @@ public class WorkflowConfigurationParser {
         LOGGER.info("Loading file: " + f);
         FileReader fileReader = new FileReader(f);
         String fileName = f.toString();
-        int lineNo = 1;
-        evaluateReader(fileReader, fileName, lineNo);
+        evaluateReader(fileReader, fileName);
     }
 
-    Object evaluateReader(Reader r, String fileName, int lineNo) throws Exception, IOException {
-        Global scope = new Global();
-        scope.initStandardObjects(context, true);
-        setupBindings(scope, fileName);
-        addAdditionalJsVariables(scope);
-        loadBuiltinScripts(scope);
+    Object evaluateReader(Reader r, String fileName) throws Exception {
 
-        return context.evaluateReader(scope, r, fileName, lineNo, null);
-    }
+        Global scope = jsConfigParser.createGlobalScope();
 
-
-    private void addAdditionalJsVariables(Global scope) throws IOException {
-        if (additionalJsVariables != null) {
-            for (String key : additionalJsVariables.keySet()) {
-                ScriptableObject.putProperty(scope, key, additionalJsVariables.get(key));
-            }
-        }
-    }
-
-    private void setupBindings(Global scope, String celosWorkflowConfigFilePath) {
         Object wrappedThis = Context.javaToJS(this, scope);
-        ScriptableObject.putProperty(scope, "celosWorkflowConfigurationParser", wrappedThis);
-        Object wrappedMapper = Context.javaToJS(mapper, scope);
-        ScriptableObject.putProperty(scope, "celosMapper", wrappedMapper);
-        // Need to put scope into JS so it can call importDefaultsIntoScope
-        Object wrappedScope = Context.javaToJS(scope, scope);
-        ScriptableObject.putProperty(scope, "celosScope", wrappedScope);
-        ScriptableObject.putProperty(scope, "celosWorkflowConfigFilePath", celosWorkflowConfigFilePath);
+        Map jsProperties = Maps.newHashMap(additionalJsVariables);
+        jsProperties.put("celosWorkflowConfigFilePath", fileName);
+        jsProperties.put("celosWorkflowConfigurationParser", wrappedThis);
+
+        jsConfigParser.putPropertiesInScope(jsProperties, scope);
+
+        InputStream scripts = WorkflowConfigurationParser.class.getResourceAsStream("celos-scripts.js");
+        jsConfigParser.evaluateReader(scope, new InputStreamReader(scripts), "celos-scripts.js");
+
+        return jsConfigParser.evaluateReader(scope, r, fileName);
     }
 
-    private void loadBuiltinScripts(Global scope) throws Exception {
-        InputStream scripts = WorkflowConfigurationParser.class.getResourceAsStream("celos-scripts.js");
-        context.evaluateReader(scope, new InputStreamReader(scripts), "celos-scripts.js", 1, null);
-    }
-    
     public WorkflowConfiguration getWorkflowConfiguration() {
         return cfg;
     }
-    
+
     public void importDefaultsIntoScope(String label, Global scope) throws IOException {
         File defaultsFile = new File(defaultsDir, label + "." + WORKFLOW_FILE_EXTENSION);
         LOGGER.info("Loading defaults: " + defaultsFile);
         FileReader fileReader = new FileReader(defaultsFile);
         String fileName = defaultsFile.toString();
-        int lineNo = 1;
-        context.evaluateReader(scope, fileReader, fileName, lineNo, null);
+        jsConfigParser.evaluateReader(scope, fileReader, fileName);
     }
-    
+
     public void addWorkflow(Workflow wf, String celosWorkflowConfigFilePath) {
         cfg.addWorkflow(wf, celosWorkflowConfigFilePath);
-    }
-    
-    public Context getContext() {
-        return context;
     }
 
 }
