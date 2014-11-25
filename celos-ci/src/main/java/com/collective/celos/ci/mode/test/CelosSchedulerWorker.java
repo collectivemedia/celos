@@ -2,7 +2,6 @@ package com.collective.celos.ci.mode.test;
 
 import com.collective.celos.ScheduledTime;
 import com.collective.celos.ScheduledTimeFormatter;
-import com.collective.celos.ci.config.testing.TestConfig;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -21,6 +20,7 @@ import java.io.StringWriter;
 public class CelosSchedulerWorker {
 
     private final HttpClient client;
+    public static final int MIN_PAUSE = 5000;
     private final ScheduledTimeFormatter timeFormatter;
     private final int port;
 
@@ -30,18 +30,29 @@ public class CelosSchedulerWorker {
         this.timeFormatter = new ScheduledTimeFormatter();
     }
 
-    public void runCelosScheduler(TestConfig testConfig) throws IOException {
+    public void runCelosScheduler(TestCase testConfig) throws Exception {
         WorkflowsList workflowsList = getWorkflowList();
 
         ScheduledTime startTime = testConfig.getSampleTimeStart();
         ScheduledTime actualTime = startTime;
         ScheduledTime endTime = testConfig.getSampleTimeEnd();
 
+        //one more iteration so celos goes to the ready and running state
         while (!actualTime.getDateTime().isAfter(endTime.getDateTime())) {
             iterateScheduler(port, actualTime);
+            long timeMills = System.currentTimeMillis();
             if (!isThereAnyRunningWorkflows(port, workflowsList, actualTime)) {
                 actualTime = new ScheduledTime(actualTime.getDateTime().plusHours(1));
+            } else {
+                makePause(timeMills);
             }
+        }
+    }
+
+    private void makePause(long timeMills) throws InterruptedException {
+        long sleepTime = MIN_PAUSE - (System.currentTimeMillis() - timeMills);
+        if (sleepTime > 0) {
+            Thread.sleep(sleepTime);
         }
     }
 

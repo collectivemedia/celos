@@ -1,11 +1,14 @@
 package com.collective.celos.ci.mode;
 
+import com.collective.celos.ScheduledTime;
 import com.collective.celos.ci.config.CelosCiCommandLine;
 import com.collective.celos.ci.config.deploy.CelosCiContext;
 import com.collective.celos.ci.config.deploy.CelosCiTarget;
+import com.collective.celos.ci.mode.test.TestCase;
 import com.collective.celos.ci.mode.test.TestRun;
 import junit.framework.Assert;
 import org.apache.commons.lang.StringUtils;
+import org.joda.time.DateTime;
 import org.junit.Test;
 
 import java.io.File;
@@ -25,7 +28,8 @@ public class TestRunTest {
 
         CelosCiCommandLine commandLine = new CelosCiCommandLine("", "TEST", "deploydir", "workflow", "testDir", "uname");
         CelosCiTarget target = new CelosCiTarget(hadoopHdfsUrl, hadoopCoreUrl, URI.create("celoswfdir"), URI.create("deffile"));
-        TestRun celosCiTest = new TestRun(target, commandLine.getUserName(), commandLine.getWorkflowName(), commandLine.getDeployDir(), commandLine.getTestCasesDir());
+        TestCase testCase = new TestCase("tc1", "2013-12-20T16:00Z", "2013-12-20T16:00Z");
+        TestRun celosCiTest = new TestRun(target, commandLine.getUserName(), commandLine.getWorkflowName(), commandLine.getDeployDir(), testCase);
 
         CelosCiContext context = celosCiTest.getCiContext();
 
