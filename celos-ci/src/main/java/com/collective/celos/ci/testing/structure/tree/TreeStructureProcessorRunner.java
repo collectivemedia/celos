@@ -8,13 +8,13 @@ import java.util.Map;
 /**
  * Created by akonopko on 10/7/14.
  */
-public class TreeStructureProcessor {
+public class TreeStructureProcessorRunner {
 
-    public void process(TreeObject object, AbstractTreeObjectProcessor processor) throws IOException {
+    public static void process(TreeObject object, AbstractTreeObjectProcessor processor) throws IOException {
         process(Paths.get(""), object, processor);
     }
 
-    private void process(Path path, TreeObject object, AbstractTreeObjectProcessor processor) throws IOException {
+    private static void process(Path path, TreeObject object, AbstractTreeObjectProcessor processor) throws IOException {
         processor.process(path, object);
         Map<String, TreeObject> map = object.getChildren();
         for(Map.Entry<String, TreeObject> entry : map.entrySet()) {

@@ -1,37 +1,28 @@
-package com.collective.celos.ci.testing.fixtures.read;
+package com.collective.celos.ci.testing.fixtures.create;
 
+import com.collective.celos.ci.config.CelosCiCommandLine;
 import com.collective.celos.ci.config.deploy.CelosCiContext;
 import com.collective.celos.ci.testing.fixtures.compare.FixObjectCompareResult;
-import com.collective.celos.ci.testing.fixtures.compare.PlainFileComparer;
 import com.collective.celos.ci.testing.fixtures.compare.RecursiveDirComparer;
-import com.collective.celos.ci.testing.fixtures.read.HdfsTreeFixObjectCreator;
 import com.collective.celos.ci.testing.structure.fixobject.FixDir;
 import com.collective.celos.ci.testing.structure.fixobject.FixFile;
 import com.collective.celos.ci.testing.structure.fixobject.FixObject;
 import com.google.common.collect.Maps;
+import junit.framework.Assert;
 import org.apache.commons.io.IOUtils;
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.LocalFileSystem;
-import org.junit.Assert;
 import org.junit.Test;
 
+import java.io.File;
 import java.util.Map;
-
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
 
 /**
  * Created by akonopko on 10/9/14.
  */
-public class HdfsTreeFixObjectCreatorTest {
+public class FileTreeFixObjectCreatorTest {
 
     @Test
-    public void testHdfsTreeFixObjectCreator() throws Exception {
-        CelosCiContext context = mock(CelosCiContext.class);
-        String path = Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/ci/testing/create").toString();
-
-        doReturn(LocalFileSystem.get(new Configuration())).when(context).getFileSystem();
-        HdfsTreeFixObjectCreator creator = new HdfsTreeFixObjectCreator(context, path);
+    public void testFileTreeFixObjectCreator() throws Exception {
+        String path = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/ci/testing/create").toURI()).getAbsolutePath();
 
         Map<String, FixObject> contentir2 = Maps.newHashMap();
         contentir2.put("file2", createFile());
@@ -48,13 +39,24 @@ public class HdfsTreeFixObjectCreatorTest {
         contentRead.put("dir1", dir1);
         FixDir readDir = new FixDir(contentRead);
 
-        FixObject fixObject = creator.create();
-        FixObjectCompareResult compareResult = new RecursiveDirComparer(readDir).check(fixObject.asDir());
+        FixDirFromResourceCreator creator = new FixDirFromResourceCreator(new File(""), path);
+        FixObjectCompareResult compareResult = new RecursiveDirComparer(wrapInCreator(readDir), creator).check(null);
 
         Assert.assertEquals(compareResult.getStatus(), FixObjectCompareResult.Status.SUCCESS);
     }
 
+    private FixObjectCreator wrapInCreator(final FixDir dir) {
+        return new FixObjectCreator<FixDir>() {
+            @Override
+            public FixDir create(CelosCiContext c) throws Exception {
+                return dir;
+            }
+        };
+    }
+
+
     private FixFile createFile() {
         return new FixFile(IOUtils.toInputStream("1"));
     }
+
 }

@@ -1,6 +1,8 @@
 package com.collective.celos.ci.config.testing;
 
 import com.collective.celos.Util;
+import com.collective.celos.ci.config.deploy.CelosCiContext;
+import com.collective.celos.ci.mode.test.TestCase;
 
 import java.io.File;
 
@@ -18,12 +20,12 @@ public class TestContext {
     private final File celosDbDir;
     private final File celosWorkDir;
     private final String hdfsPrefix;
-    private final File testCaseDir;
+    private final TestCase testCase;
 
-    public TestContext(File celosWorkDir, String hdfsPrefix, File testCaseDir) {
+    public TestContext(File celosWorkDir, String hdfsPrefix, String testUUID, TestCase testCase) {
+        this.testCase = testCase;
         this.celosWorkDir = Util.requireNonNull(celosWorkDir);
         this.hdfsPrefix = Util.requireNonNull(hdfsPrefix);
-        this.testCaseDir = Util.requireNonNull(testCaseDir);
 
         this.celosWorkflowDir = new File(celosWorkDir, WORKFLOW_DIR_CELOS_PATH);
         this.celosDefaultsDir = new File(celosWorkDir, DEFAULTS_DIR_CELOS_PATH);
@@ -46,11 +48,11 @@ public class TestContext {
         return hdfsPrefix;
     }
 
-    public File getTestCaseDir() {
-        return testCaseDir;
-    }
-
     public File getCelosWorkDir() {
         return celosWorkDir;
+    }
+
+    public TestCase getTestCase() {
+        return testCase;
     }
 }

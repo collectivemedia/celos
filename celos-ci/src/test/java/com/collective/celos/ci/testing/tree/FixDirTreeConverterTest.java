@@ -2,7 +2,7 @@ package com.collective.celos.ci.testing.tree;
 
 import com.collective.celos.ci.testing.structure.fixobject.*;
 import com.collective.celos.ci.testing.structure.tree.AbstractTreeObjectProcessor;
-import com.collective.celos.ci.testing.structure.tree.TreeStructureProcessor;
+import com.collective.celos.ci.testing.structure.tree.TreeStructureProcessorRunner;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import org.apache.commons.io.IOUtils;
@@ -33,7 +33,7 @@ public class FixDirTreeConverterTest {
         FixDir transformed = converter.transform(dir, new UpperCaseStringFixFileConverter());
 
         AbstractTreeObjectProcessorImpl holder = new AbstractTreeObjectProcessorImpl();
-        TreeStructureProcessor processor = new TreeStructureProcessor();
+        TreeStructureProcessorRunner processor = new TreeStructureProcessorRunner();
         processor.process(transformed, holder);
         Set<Path> visited = Sets.newHashSet(Paths.get("dir1/dir1/file1"),
                                             Paths.get("dir1/dir1/file2"),
