@@ -28,6 +28,8 @@ public class FixDirFromHdfsCreatorTest {
         CelosCiContext context = mock(CelosCiContext.class);
         String path = Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/ci/testing/create").toString();
 
+        doReturn("/").when(context).getHdfsPrefix();
+
         doReturn(LocalFileSystem.get(new Configuration())).when(context).getFileSystem();
         FixDirFromHdfsCreator creator = new FixDirFromHdfsCreator(path);
 
