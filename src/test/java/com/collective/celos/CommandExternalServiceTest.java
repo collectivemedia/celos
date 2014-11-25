@@ -64,7 +64,12 @@ public class CommandExternalServiceTest {
     }
 
     private String getTestDatabaseDir() {
-        return databaseDir.newFolder("db").toString();
+        try {
+            return databaseDir.newFolder("db").toString();
+        } catch (Exception e) {
+            return null;
+        }
+
     }
     
 }

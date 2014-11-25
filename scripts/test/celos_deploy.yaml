@@ -9,7 +9,7 @@
   gather_facts: no
   remote_user: celos
   vars:
-    local_celos: ..
+    local_celos: ../..
     remote_celos: ~/deploy
 
   tasks:
@@ -18,11 +18,8 @@
     shell: rm -rf {{remote_celos}}/*
 
   - name: Copy files
-    local_action: command rsync -az -e ssh {{local_celos}}/Buildfile {{local_celos}}/src {{local_celos}}/scripts {{local_celos}}/samples
+    local_action: command rsync -az -e ssh {{local_celos}}/target/celos-1.0.0.war {{local_celos}}/scripts {{local_celos}}/samples
       celos@{{inventory_hostname}}:{{remote_celos}}
-
-  - name: Build
-    shell: cd {{remote_celos}} && buildr TEST=no package
 
   - name: Deploy WAR
     shell: cd {{remote_celos}} && ./scripts/war-deploy.sh

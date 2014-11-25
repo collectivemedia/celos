@@ -5,7 +5,7 @@
 #
 # User must provide 'workflow' and 'workflow_dir' variables like this:
 #
-# ansible-playbook -i provisioner/tmp/inventory -u celos provisioner/celos_deploy_workflow.yaml --extra-vars "workflow=workflow_name workflow_dir=/home/user/workflow_name'
+# ansible-playbook -i inventory -u celos celos_deploy_workflow.yaml --extra-vars "workflow=workflow_name workflow_dir=/home/user/workflow_name'
 
 - hosts: hadoop_masters
   gather_facts: no
