@@ -1,13 +1,10 @@
 package com.collective.celos.ci.testing.fixtures.deploy;
 
-import com.collective.celos.ci.CelosCi;
-import com.collective.celos.ci.config.deploy.CelosCiContext;
 import com.collective.celos.ci.mode.test.TestRun;
 import com.collective.celos.ci.testing.fixtures.create.FixObjectCreator;
 import com.collective.celos.ci.testing.structure.fixobject.FixFile;
 import com.collective.celos.ci.testing.structure.fixobject.FixObject;
-import com.collective.celos.ci.testing.structure.tree.AbstractTreeObjectProcessor;
-import com.collective.celos.ci.testing.structure.tree.TreeStructureProcessorRunner;
+import com.collective.celos.ci.testing.structure.tree.TreeObjectProcessor;
 import com.google.common.collect.Maps;
 import org.apache.commons.io.IOUtils;
 import org.apache.hadoop.fs.FSDataOutputStream;
@@ -33,8 +30,8 @@ public class HdfsInputDeployer implements FixtureDeployer {
     public void deploy(TestRun testRun) throws Exception {
         FileSystem fileSystem = testRun.getCiContext().getFileSystem();
 
-        PathToFixFileProcessor pathToFile = new PathToFixFileProcessor();
-        TreeStructureProcessorRunner.process(fixObjectCreator.create(testRun), pathToFile);
+        CollectFilesAndPathsProcessor pathToFile = new CollectFilesAndPathsProcessor();
+        TreeObjectProcessor.process(fixObjectCreator.create(testRun), pathToFile);
 
         Path pathPrefixed = new Path(testRun.getHdfsPrefix(), path);
         for (java.nio.file.Path childPath: pathToFile.pathToFiles.keySet()) {
@@ -60,7 +57,7 @@ public class HdfsInputDeployer implements FixtureDeployer {
         return path;
     }
 
-    private static class PathToFixFileProcessor extends AbstractTreeObjectProcessor<FixObject> {
+    private static class CollectFilesAndPathsProcessor extends TreeObjectProcessor<FixObject> {
 
         private final Map<java.nio.file.Path, FixFile> pathToFiles = Maps.newHashMap();
 

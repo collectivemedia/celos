@@ -1,6 +1,7 @@
 package com.collective.celos.ci.mode.test;
 
 import com.collective.celos.ScheduledTime;
+import com.collective.celos.Util;
 import com.collective.celos.ci.testing.fixtures.compare.FixtureComparer;
 import com.collective.celos.ci.testing.fixtures.deploy.FixtureDeployer;
 import com.google.common.collect.Lists;
@@ -19,7 +20,7 @@ public class TestCase {
     private final List<FixtureComparer> outputs = Lists.newArrayList();
 
     public TestCase(String name, String sampleTimeStart, String sampleTimeEnd) {
-        this(name, new ScheduledTime(sampleTimeStart), new ScheduledTime(sampleTimeEnd));
+        this(name, new ScheduledTime(Util.requireNonNull(sampleTimeStart)), new ScheduledTime(Util.requireNonNull(sampleTimeEnd)));
     }
 
     public TestCase(String name, ScheduledTime sampleTimeStart, ScheduledTime sampleTimeEnd) {
