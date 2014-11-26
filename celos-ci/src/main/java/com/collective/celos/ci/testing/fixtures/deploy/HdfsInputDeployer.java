@@ -2,8 +2,7 @@ package com.collective.celos.ci.testing.fixtures.deploy;
 
 import com.collective.celos.ci.CelosCi;
 import com.collective.celos.ci.config.deploy.CelosCiContext;
-import com.collective.celos.ci.config.testing.TestContext;
-import com.collective.celos.ci.mode.test.TestCase;
+import com.collective.celos.ci.mode.test.TestRun;
 import com.collective.celos.ci.testing.fixtures.create.FixObjectCreator;
 import com.collective.celos.ci.testing.structure.fixobject.FixFile;
 import com.collective.celos.ci.testing.structure.fixobject.FixObject;
@@ -31,13 +30,13 @@ public class HdfsInputDeployer implements FixtureDeployer {
         this.path = path;
     }
 
-    public void deploy(TestContext testContext, CelosCiContext celosCiContext) throws Exception {
-        FileSystem fileSystem = celosCiContext.getFileSystem();
+    public void deploy(TestRun testRun) throws Exception {
+        FileSystem fileSystem = testRun.getCiContext().getFileSystem();
 
         PathToFixFileProcessor pathToFile = new PathToFixFileProcessor();
-        TreeStructureProcessorRunner.process(fixObjectCreator.create(celosCiContext), pathToFile);
+        TreeStructureProcessorRunner.process(fixObjectCreator.create(testRun), pathToFile);
 
-        Path pathPrefixed = new Path(testContext.getHdfsPrefix(), path);
+        Path pathPrefixed = new Path(testRun.getHdfsPrefix(), path);
         for (java.nio.file.Path childPath: pathToFile.pathToFiles.keySet()) {
             Path pathTo = new Path(pathPrefixed, childPath.toString());
             fileSystem.mkdirs(pathTo.getParent());

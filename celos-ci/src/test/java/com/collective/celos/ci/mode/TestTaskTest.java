@@ -4,12 +4,10 @@ import com.collective.celos.ScheduledTime;
 import com.collective.celos.ci.config.CelosCiCommandLine;
 import com.collective.celos.ci.config.deploy.CelosCiTarget;
 import com.collective.celos.ci.config.deploy.CelosCiTargetParser;
-import com.collective.celos.ci.mode.test.TestRun;
 import com.collective.celos.ci.testing.fixtures.compare.RecursiveDirComparer;
 import com.collective.celos.ci.testing.fixtures.create.FixDirFromHdfsCreator;
 import com.collective.celos.ci.testing.fixtures.create.FixDirFromResourceCreator;
 import com.collective.celos.ci.testing.fixtures.deploy.HdfsInputDeployer;
-import com.google.common.collect.Sets;
 import junit.framework.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -17,7 +15,6 @@ import org.junit.rules.TemporaryFolder;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.util.Set;
 
 /**
  * Created by akonopko on 10/2/14.
@@ -50,7 +47,7 @@ public class TestTaskTest {
         CelosCiTargetParser parser = new CelosCiTargetParser("");
         CelosCiTarget target = parser.parse(targetFile.toURI());
 
-        String configJS = Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/ci/testing/config/test-config.js").getFile();
+        String configJS = Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/ci/testing/config/test.js").getFile();
 
         CelosCiCommandLine commandLine = new CelosCiCommandLine(targetFile.toURI().toString(), "DEPLOY", "deploydir", "workflow", "testDir", "uname");
         TestTask testTask = new TestTask(commandLine, new File(configJS));

@@ -20,7 +20,6 @@ import java.io.StringWriter;
 public class CelosSchedulerWorker {
 
     private final HttpClient client;
-    public static final int MIN_PAUSE = 5000;
     private final ScheduledTimeFormatter timeFormatter;
     private final int port;
 
@@ -37,22 +36,13 @@ public class CelosSchedulerWorker {
         ScheduledTime actualTime = startTime;
         ScheduledTime endTime = testConfig.getSampleTimeEnd();
 
-        //one more iteration so celos goes to the ready and running state
         while (!actualTime.getDateTime().isAfter(endTime.getDateTime())) {
             iterateScheduler(port, actualTime);
-            long timeMills = System.currentTimeMillis();
             if (!isThereAnyRunningWorkflows(port, workflowsList, actualTime)) {
                 actualTime = new ScheduledTime(actualTime.getDateTime().plusHours(1));
             } else {
-                makePause(timeMills);
+                Thread.sleep(2000);
             }
-        }
-    }
-
-    private void makePause(long timeMills) throws InterruptedException {
-        long sleepTime = MIN_PAUSE - (System.currentTimeMillis() - timeMills);
-        if (sleepTime > 0) {
-            Thread.sleep(sleepTime);
         }
     }
 

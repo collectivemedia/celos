@@ -1,13 +1,12 @@
 package com.collective.celos.ci.testing.fixtures.deploy;
 
-import com.collective.celos.ci.config.deploy.CelosCiContext;
-import com.collective.celos.ci.config.testing.TestContext;
+import com.collective.celos.ci.mode.test.TestRun;
 
 /**
  * Created by akonopko on 22.11.14.
  */
 public interface FixtureDeployer {
 
-    void deploy(TestContext testContext, CelosCiContext celosCiContext) throws Exception;
+    void deploy(TestRun testRun) throws Exception;
 
 }

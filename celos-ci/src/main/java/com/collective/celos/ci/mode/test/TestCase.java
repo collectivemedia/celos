@@ -19,9 +19,13 @@ public class TestCase {
     private final List<FixtureComparer> outputs = Lists.newArrayList();
 
     public TestCase(String name, String sampleTimeStart, String sampleTimeEnd) {
+        this(name, new ScheduledTime(sampleTimeStart), new ScheduledTime(sampleTimeEnd));
+    }
+
+    public TestCase(String name, ScheduledTime sampleTimeStart, ScheduledTime sampleTimeEnd) {
         this.name = name;
-        this.sampleTimeStart = new ScheduledTime(sampleTimeStart);
-        this.sampleTimeEnd = new ScheduledTime(sampleTimeEnd);
+        this.sampleTimeStart = sampleTimeStart;
+        this.sampleTimeEnd = sampleTimeEnd;
     }
 
     public void addInput(FixtureDeployer fixtureDeployer) {

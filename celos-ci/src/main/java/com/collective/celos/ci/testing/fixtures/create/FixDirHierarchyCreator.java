@@ -1,6 +1,7 @@
 package com.collective.celos.ci.testing.fixtures.create;
 
 import com.collective.celos.ci.config.deploy.CelosCiContext;
+import com.collective.celos.ci.mode.test.TestRun;
 import com.collective.celos.ci.testing.structure.fixobject.FixDir;
 import com.collective.celos.ci.testing.structure.fixobject.FixFile;
 import com.collective.celos.ci.testing.structure.fixobject.FixObject;
@@ -21,7 +22,7 @@ public class FixDirHierarchyCreator implements FixObjectCreator<FixDir> {
         this.hierarchy = hierarchy;
     }
 
-    public FixDir create(CelosCiContext context) {
+    public FixDir create(TestRun testRun) {
         return new FixDir(hierarchy);
     }
 

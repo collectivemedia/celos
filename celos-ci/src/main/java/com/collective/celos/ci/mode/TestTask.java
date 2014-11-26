@@ -18,7 +18,7 @@ import java.util.List;
 public class TestTask extends CelosCi {
 
     private final List<TestRun> testRuns = Lists.newArrayList();
-    private static final String TEST_CONFIG_JS_FILE = "test-config.js";
+    private static final String TEST_CONFIG_JS_FILE = "test.js";
 
     public TestTask(CelosCiCommandLine commandLine) throws Exception {
         this(commandLine, new File(commandLine.getTestCasesDir(), TEST_CONFIG_JS_FILE));

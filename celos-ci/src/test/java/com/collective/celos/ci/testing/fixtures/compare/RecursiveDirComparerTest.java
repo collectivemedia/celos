@@ -1,6 +1,7 @@
 package com.collective.celos.ci.testing.fixtures.compare;
 
 import com.collective.celos.ci.config.deploy.CelosCiContext;
+import com.collective.celos.ci.mode.test.TestRun;
 import com.collective.celos.ci.testing.fixtures.create.FixObjectCreator;
 import com.collective.celos.ci.testing.structure.fixobject.FixDir;
 import com.collective.celos.ci.testing.structure.fixobject.FixFile;
@@ -22,7 +23,7 @@ public class RecursiveDirComparerTest {
     private FixObjectCreator wrapInCreator(final FixDir dir) {
         return new FixObjectCreator<FixDir>() {
             @Override
-            public FixDir create(CelosCiContext c) throws Exception {
+            public FixDir create(TestRun c) throws Exception {
                 return dir;
             }
         };

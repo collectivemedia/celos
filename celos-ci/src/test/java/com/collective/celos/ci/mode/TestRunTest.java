@@ -36,17 +36,17 @@ public class TestRunTest {
         Assert.assertEquals(context.getDeployDir(), commandLine.getDeployDir());
         Assert.assertTrue(StringUtils.isNotEmpty(context.getHdfsPrefix()));
         Assert.assertEquals(context.getMode(), commandLine.getMode());
-        Assert.assertEquals(context.getTarget().getCelosWorkflowsDirUri(), new File(celosCiTest.getTestContext().getCelosWorkDir(), "workflows").toURI());
+        Assert.assertEquals(context.getTarget().getCelosWorkflowsDirUri(), new File(celosCiTest.getCelosTempDir(), "workflows").toURI());
         Assert.assertEquals(context.getTarget().getDefaultsFile(), URI.create("deffile"));
         Assert.assertEquals(context.getTarget().getPathToCoreSite(), hadoopCoreUrl);
         Assert.assertEquals(context.getTarget().getPathToHdfsSite(), hadoopHdfsUrl);
         Assert.assertEquals(context.getUserName(), commandLine.getUserName());
         Assert.assertEquals(context.getWorkflowName(), commandLine.getWorkflowName());
 
-        Assert.assertTrue(celosCiTest.getTestContext().getCelosWorkDir().toString().startsWith("/tmp/celos"));
-        Assert.assertTrue(celosCiTest.getTestContext().getCelosWorkDir().toString().length() > "/tmp/celos".length());
-        Assert.assertEquals(celosCiTest.getTestContext().getCelosDbDir(), new File(celosCiTest.getTestContext().getCelosWorkDir(), "db"));
-        Assert.assertEquals(celosCiTest.getTestContext().getCelosWorkflowDir().toURI(), context.getTarget().getCelosWorkflowsDirUri());
+        Assert.assertTrue(celosCiTest.getCelosTempDir().toString().startsWith("/tmp/celos"));
+        Assert.assertTrue(celosCiTest.getCelosTempDir().toString().length() > "/tmp/celos".length());
+        Assert.assertEquals(celosCiTest.getCelosDbDir(), new File(celosCiTest.getCelosTempDir(), "db"));
+        Assert.assertEquals(celosCiTest.getCelosWorkflowDir().toURI(), context.getTarget().getCelosWorkflowsDirUri());
     }
 
 }

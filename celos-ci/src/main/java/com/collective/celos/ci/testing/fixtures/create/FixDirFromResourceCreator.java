@@ -2,6 +2,7 @@ package com.collective.celos.ci.testing.fixtures.create;
 
 import com.collective.celos.ci.config.CelosCiCommandLine;
 import com.collective.celos.ci.config.deploy.CelosCiContext;
+import com.collective.celos.ci.mode.test.TestRun;
 import com.collective.celos.ci.testing.structure.fixobject.FixDir;
 import com.collective.celos.ci.testing.structure.fixobject.FixFile;
 import com.collective.celos.ci.testing.structure.fixobject.FixObject;
@@ -26,7 +27,7 @@ public class FixDirFromResourceCreator implements FixObjectCreator<FixDir> {
         return path;
     }
 
-    public FixDir create(CelosCiContext context) throws Exception {
+    public FixDir create(TestRun testRun) throws Exception {
         if (!path.isDirectory()) {
             throw new IllegalStateException("Cannot find directory: " + path);
         }
