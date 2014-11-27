@@ -48,6 +48,8 @@ public class TestTaskTest {
         CelosCiTargetParser parser = new CelosCiTargetParser("");
         CelosCiTarget target = parser.parse(targetFile.toURI());
 
+        String tmpDir = new File(System.getProperty("java.io.tmpdir")).toURI().toString() + "celos";
+        
         String configJS = Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/ci/testing/config/test.js").getFile();
 
         CelosCiCommandLine commandLine = new CelosCiCommandLine(targetFile.toURI().toString(), "DEPLOY", "deploydir", "workflow", "testDir", "uname");
@@ -56,8 +58,8 @@ public class TestTaskTest {
         Assert.assertEquals(testTask.getTestRuns().get(0).getCiContext().getTarget().getDefaultsFile(), target.getDefaultsFile());
         Assert.assertEquals(testTask.getTestRuns().get(0).getCiContext().getTarget().getPathToCoreSite(), target.getPathToCoreSite());
         Assert.assertEquals(testTask.getTestRuns().get(0).getCiContext().getTarget().getPathToHdfsSite(), target.getPathToHdfsSite());
-        Assert.assertTrue(testTask.getTestRuns().get(0).getCiContext().getTarget().getCelosWorkflowsDirUri().toString().startsWith("file:/tmp/celos"));
-        Assert.assertTrue(testTask.getTestRuns().get(0).getCiContext().getTarget().getCelosWorkflowsDirUri().toString().length() > "file:/tmp/celos".length());
+        Assert.assertTrue(testTask.getTestRuns().get(0).getCiContext().getTarget().getCelosWorkflowsDirUri().toString().startsWith(tmpDir));
+        Assert.assertTrue(testTask.getTestRuns().get(0).getCiContext().getTarget().getCelosWorkflowsDirUri().toString().length() > tmpDir.length());
         Assert.assertEquals(testTask.getTestRuns().get(0).getTestCase().getName(), "wordcount test case 1");
         Assert.assertEquals(testTask.getTestRuns().get(0).getTestCase().getSampleTimeStart(), new ScheduledTime("2013-11-20T11:00Z"));
         Assert.assertEquals(testTask.getTestRuns().get(0).getTestCase().getSampleTimeEnd(), new ScheduledTime("2013-11-20T18:00Z"));
@@ -74,8 +76,8 @@ public class TestTaskTest {
         Assert.assertEquals(testTask.getTestRuns().get(1).getCiContext().getTarget().getDefaultsFile(), target.getDefaultsFile());
         Assert.assertEquals(testTask.getTestRuns().get(1).getCiContext().getTarget().getPathToCoreSite(), target.getPathToCoreSite());
         Assert.assertEquals(testTask.getTestRuns().get(1).getCiContext().getTarget().getPathToHdfsSite(), target.getPathToHdfsSite());
-        Assert.assertTrue(testTask.getTestRuns().get(1).getCiContext().getTarget().getCelosWorkflowsDirUri().toString().startsWith("file:/tmp/celos"));
-        Assert.assertTrue(testTask.getTestRuns().get(1).getCiContext().getTarget().getCelosWorkflowsDirUri().toString().length() > "file:/tmp/celos".length());
+        Assert.assertTrue(testTask.getTestRuns().get(1).getCiContext().getTarget().getCelosWorkflowsDirUri().toString().startsWith(tmpDir));
+        Assert.assertTrue(testTask.getTestRuns().get(1).getCiContext().getTarget().getCelosWorkflowsDirUri().toString().length() > tmpDir.length());
         Assert.assertEquals(testTask.getTestRuns().get(1).getTestCase().getName(), "wordcount test case 2");
         Assert.assertEquals(testTask.getTestRuns().get(1).getTestCase().getSampleTimeStart(), new ScheduledTime("2013-12-20T16:00Z"));
         Assert.assertEquals(testTask.getTestRuns().get(1).getTestCase().getSampleTimeEnd(), new ScheduledTime("2013-12-20T18:00Z"));
