@@ -16,13 +16,18 @@ import java.util.Map;
  */
 public class FixDirFromHdfsCreator implements FixObjectCreator<FixDir> {
 
-    private final String path;
+    private final Path path;
 
     public FixDirFromHdfsCreator(String path) {
+        this(new Path(path));
+    }
+
+
+    public FixDirFromHdfsCreator(Path path) {
         this.path = path;
     }
 
-    public String getPath() {
+    public Path getPath() {
         return path;
     }
 

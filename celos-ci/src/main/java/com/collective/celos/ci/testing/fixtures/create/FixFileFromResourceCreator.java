@@ -26,4 +26,7 @@ public class FixFileFromResourceCreator implements FixObjectCreator<FixFile> {
         return new FixFile(new FileInputStream(path));
     }
 
+    public File getPath() {
+        return path;
+    }
 }

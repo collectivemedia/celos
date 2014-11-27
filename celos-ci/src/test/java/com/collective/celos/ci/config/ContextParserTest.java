@@ -1,8 +1,8 @@
-package com.collective.celos.ci.config.deploy;
+package com.collective.celos.ci.config;
 
-import com.collective.celos.ci.config.CelosCiCommandLine;
-import com.collective.celos.ci.config.ContextParser;
+import com.collective.celos.ci.config.deploy.CelosCiContext;
 import junit.framework.Assert;
+import org.apache.commons.cli.CommandLine;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -11,6 +11,9 @@ import org.junit.rules.TemporaryFolder;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 
 /**
  * Created by akonopko on 10/1/14.
@@ -84,6 +87,33 @@ public class ContextParserTest {
         Assert.assertEquals(commandLine.getTargetUri(), URI.create("target"));
         Assert.assertEquals(commandLine.getUserName(), System.getProperty("user.name"));
         Assert.assertEquals(commandLine.getWorkflowName(), "workflow");
+    }
+
+    @Test
+    public void testDirComesFromCLI() throws Exception {
+        ContextParser contextParser = new ContextParser();
+
+        CommandLine commandLine = mock(CommandLine.class);
+        doReturn("testCasesDir").when(commandLine).getOptionValue(ContextParser.CLI_TEST_CASES_DIR);
+        String result = contextParser.getTestCasesDir(commandLine, null);
+        Assert.assertEquals(result, "testCasesDir");
+    }
+
+    @Test
+    public void testDirDefault() throws Exception {
+        ContextParser contextParser = new ContextParser();
+
+        CommandLine commandLine = mock(CommandLine.class);
+        String result = contextParser.getTestCasesDir(commandLine, tmpDir.getAbsolutePath());
+        Assert.assertEquals(result, tmpDir.getAbsolutePath());
+    }
+
+    @Test (expected = RuntimeException.class)
+    public void testNoDirComes() throws Exception {
+        ContextParser contextParser = new ContextParser();
+
+        CommandLine commandLine = mock(CommandLine.class);
+        contextParser.getTestCasesDir(commandLine, "");
     }
 
 }

@@ -20,11 +20,11 @@ import java.util.Map;
 public class HdfsInputDeployer implements FixtureDeployer {
 
     private final FixObjectCreator<FixObject> fixObjectCreator;
-    private final String path;
+    private final Path path;
 
     public HdfsInputDeployer(FixObjectCreator<FixObject> fixObjectCreator, String path) {
         this.fixObjectCreator = fixObjectCreator;
-        this.path = path;
+        this.path = new Path(path);
     }
 
     public void deploy(TestRun testRun) throws Exception {
@@ -53,7 +53,7 @@ public class HdfsInputDeployer implements FixtureDeployer {
         return fixObjectCreator;
     }
 
-    public String getPath() {
+    public Path getPath() {
         return path;
     }
 
