@@ -1,17 +1,10 @@
 package com.collective.celos.ci.testing.fixtures.compare;
 
-import com.collective.celos.ci.testing.structure.tree.AbstractTreeObjectProcessor;
-import com.collective.celos.ci.testing.structure.tree.TreeObject;
-import com.collective.celos.ci.testing.structure.tree.TreeStructureProcessor;
 import com.google.common.collect.Maps;
 import junit.framework.Assert;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.text.StrBuilder;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.nio.file.Path;
-import java.util.Collections;
 import java.util.Map;
 
 /**

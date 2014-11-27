@@ -2,7 +2,6 @@ package com.collective.celos.ci.mode.test;
 
 import com.collective.celos.ScheduledTime;
 import com.collective.celos.ScheduledTimeFormatter;
-import com.collective.celos.ci.config.testing.TestConfig;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -30,7 +29,7 @@ public class CelosSchedulerWorker {
         this.timeFormatter = new ScheduledTimeFormatter();
     }
 
-    public void runCelosScheduler(TestConfig testConfig) throws IOException {
+    public void runCelosScheduler(TestCase testConfig) throws Exception {
         WorkflowsList workflowsList = getWorkflowList();
 
         ScheduledTime startTime = testConfig.getSampleTimeStart();
@@ -41,6 +40,8 @@ public class CelosSchedulerWorker {
             iterateScheduler(port, actualTime);
             if (!isThereAnyRunningWorkflows(port, workflowsList, actualTime)) {
                 actualTime = new ScheduledTime(actualTime.getDateTime().plusHours(1));
+            } else {
+                Thread.sleep(2000);
             }
         }
     }

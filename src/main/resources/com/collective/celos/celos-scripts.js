@@ -129,8 +129,8 @@ function hdfsPath(path) {
     if (!path) {
         throw "Undefined path in hdfsPath";
     }
-    if (typeof HDFS_PREFIX !== "undefined") {
-        return HDFS_PREFIX + path;
+    if (typeof HDFS_PREFIX_JS_VAR !== "undefined") {
+        return HDFS_PREFIX_JS_VAR + path;
     } else {
         return path;
     }

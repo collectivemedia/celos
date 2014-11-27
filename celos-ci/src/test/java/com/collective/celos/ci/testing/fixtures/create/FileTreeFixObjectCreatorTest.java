@@ -1,8 +1,10 @@
-package com.collective.celos.ci.testing.fixtures.read;
+package com.collective.celos.ci.testing.fixtures.create;
 
+import com.collective.celos.ci.config.CelosCiCommandLine;
+import com.collective.celos.ci.config.deploy.CelosCiContext;
+import com.collective.celos.ci.mode.test.TestRun;
 import com.collective.celos.ci.testing.fixtures.compare.FixObjectCompareResult;
 import com.collective.celos.ci.testing.fixtures.compare.RecursiveDirComparer;
-import com.collective.celos.ci.testing.fixtures.read.FixFileTreeObjectCreator;
 import com.collective.celos.ci.testing.structure.fixobject.FixDir;
 import com.collective.celos.ci.testing.structure.fixobject.FixFile;
 import com.collective.celos.ci.testing.structure.fixobject.FixObject;
@@ -38,12 +40,21 @@ public class FileTreeFixObjectCreatorTest {
         contentRead.put("dir1", dir1);
         FixDir readDir = new FixDir(contentRead);
 
-        FixFileTreeObjectCreator creator = new FixFileTreeObjectCreator(path);
-        FixObject fixObject = creator.create();
-        FixObjectCompareResult compareResult = new RecursiveDirComparer(readDir).check(fixObject.asDir());
+        FixDirFromResourceCreator creator = new FixDirFromResourceCreator(new File(""), path);
+        FixObjectCompareResult compareResult = new RecursiveDirComparer(wrapInCreator(readDir), creator).check(null);
 
         Assert.assertEquals(compareResult.getStatus(), FixObjectCompareResult.Status.SUCCESS);
     }
+
+    private FixObjectCreator wrapInCreator(final FixDir dir) {
+        return new FixObjectCreator<FixDir>() {
+            @Override
+            public FixDir create(TestRun c) throws Exception {
+                return dir;
+            }
+        };
+    }
+
 
     private FixFile createFile() {
         return new FixFile(IOUtils.toInputStream("1"));

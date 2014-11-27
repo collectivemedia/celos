@@ -1,7 +1,8 @@
 package com.collective.celos.ci.testing.fixtures.compare;
 
-import com.collective.celos.ci.testing.fixtures.compare.FixObjectCompareResult;
-import com.collective.celos.ci.testing.fixtures.compare.RecursiveDirComparer;
+import com.collective.celos.ci.config.deploy.CelosCiContext;
+import com.collective.celos.ci.mode.test.TestRun;
+import com.collective.celos.ci.testing.fixtures.create.FixObjectCreator;
 import com.collective.celos.ci.testing.structure.fixobject.FixDir;
 import com.collective.celos.ci.testing.structure.fixobject.FixFile;
 import com.collective.celos.ci.testing.structure.fixobject.FixObject;
@@ -19,12 +20,21 @@ import java.util.Map;
 public class RecursiveDirComparerTest {
 
 
+    private FixObjectCreator wrapInCreator(final FixDir dir) {
+        return new FixObjectCreator<FixDir>() {
+            @Override
+            public FixDir create(TestRun c) throws Exception {
+                return dir;
+            }
+        };
+    }
+
     @Test
     public void testSubDirs() throws Exception {
         FixDir dir1 = createParentDir1();
         FixDir dir2 = createParentDir1();
 
-        FixObjectCompareResult compareResult = new RecursiveDirComparer(dir2).check(dir1);
+        FixObjectCompareResult compareResult = new RecursiveDirComparer(wrapInCreator(dir2), wrapInCreator(dir1)).check(null);
         Assert.assertEquals(compareResult.getStatus(), FixObjectCompareResult.Status.SUCCESS);
     }
 
@@ -34,7 +44,7 @@ public class RecursiveDirComparerTest {
         FixDir dir1 = createParentDir1();
         FixDir dir2 = createParentDir2();
 
-        FixObjectCompareResult compareResult = new RecursiveDirComparer(dir2).check(dir1);
+        FixObjectCompareResult compareResult = new RecursiveDirComparer(wrapInCreator(dir2), wrapInCreator(dir1)).check(null);
         Assert.assertEquals(compareResult.getStatus(), FixObjectCompareResult.Status.FAIL);
         String message = "dir2/file2 : File contents differed\n";
         Assert.assertEquals(compareResult.generateDescription(), message);
@@ -46,7 +56,7 @@ public class RecursiveDirComparerTest {
         FixDir dir1 = createParentDir1();
         FixDir dir2 = createParentDir3();
 
-        FixObjectCompareResult compareResult = new RecursiveDirComparer(dir2).check(dir1);
+        FixObjectCompareResult compareResult = new RecursiveDirComparer(wrapInCreator(dir2), wrapInCreator(dir1)).check(null);
         Assert.assertEquals(compareResult.getStatus(), FixObjectCompareResult.Status.FAIL);
         String message = "dir2 : Files found only in expected set: file3\n" +
                 "dir2/file2 : File contents differed\n";
@@ -59,9 +69,7 @@ public class RecursiveDirComparerTest {
         FixDir dir1 = getFixDirWithTwoFiles1();
         FixDir dir2 = getFixDirWithTwoFiles1();
 
-        RecursiveDirComparer comparer = new RecursiveDirComparer(dir2);
-
-        FixObjectCompareResult compareResult = comparer.check(dir1);
+        FixObjectCompareResult compareResult = new RecursiveDirComparer(wrapInCreator(dir2), wrapInCreator(dir1)).check(null);
         Assert.assertEquals(compareResult.getStatus(), FixObjectCompareResult.Status.SUCCESS);
     }
 
@@ -70,9 +78,7 @@ public class RecursiveDirComparerTest {
         FixDir dir1 = getFixDirWithTwoFiles1();
         FixDir dir2 = getFixDirWithTwoFilesWrongTypes();
 
-        RecursiveDirComparer comparer = new RecursiveDirComparer(dir2);
-
-        FixObjectCompareResult compareResult = comparer.check(dir1);
+        FixObjectCompareResult compareResult = new RecursiveDirComparer(wrapInCreator(dir2), wrapInCreator(dir1)).check(null);
         Assert.assertEquals(compareResult.getStatus(), FixObjectCompareResult.Status.FAIL);
         Assert.assertEquals(compareResult.generateDescription(), "Files have different types: file2: expected is [Dir] and actual is [File]\n");
     }
@@ -83,9 +89,7 @@ public class RecursiveDirComparerTest {
         FixDir dir1 = getFixDirWithTwoFiles1();
         FixDir dir2 = getFixDirWithTwoFiles2();
 
-        RecursiveDirComparer comparer = new RecursiveDirComparer(dir2);
-
-        FixObjectCompareResult compareResult = comparer.check(dir1);
+        FixObjectCompareResult compareResult = new RecursiveDirComparer(wrapInCreator(dir2), wrapInCreator(dir1)).check(null);
         Assert.assertEquals(compareResult.getStatus(), FixObjectCompareResult.Status.FAIL);
         String message = "file2 : File contents differed\n";
         Assert.assertEquals(compareResult.generateDescription(), message);
@@ -96,9 +100,7 @@ public class RecursiveDirComparerTest {
         FixDir dir1 = getFixDirWithTwoFiles1();
         FixDir dir2 = getFixDirWithTwoFiles3();
 
-        RecursiveDirComparer comparer = new RecursiveDirComparer(dir2);
-
-        FixObjectCompareResult compareResult = comparer.check(dir1);
+        FixObjectCompareResult compareResult = new RecursiveDirComparer(wrapInCreator(dir2), wrapInCreator(dir1)).check(null);
         Assert.assertEquals(compareResult.getStatus(), FixObjectCompareResult.Status.FAIL);
         String message = "Files found only in expected set: file3\n" +
                 "file2 : File contents differed\n";
@@ -150,7 +152,7 @@ public class RecursiveDirComparerTest {
         InputStream inputStream1 = IOUtils.toInputStream("stream");
         FixFile file1 = new FixFile(inputStream1);
 
-        FixDir file2 = new FixDir(Maps.newHashMap());
+        FixDir file2 = new FixDir(Maps.<String, FixObject>newHashMap());
 
         Map<String, FixObject> content1 = Maps.newHashMap();
         content1.put("file1", file1);

@@ -1,5 +1,7 @@
-package com.collective.celos.ci.config.deploy;
+package com.collective.celos.ci.config;
 
+import com.collective.celos.ci.config.deploy.CelosCiTarget;
+import com.collective.celos.ci.config.deploy.CelosCiTargetParser;
 import com.collective.celos.ci.deploy.JScpWorker;
 import junit.framework.Assert;
 import org.junit.Test;
