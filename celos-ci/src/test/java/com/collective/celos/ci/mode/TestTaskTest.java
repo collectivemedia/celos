@@ -12,6 +12,7 @@ import org.junit.rules.TemporaryFolder;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.nio.file.Files;
 import java.util.Set;
 
 /**
@@ -59,14 +60,16 @@ public class TestTaskTest {
         Assert.assertEquals(testTask.testRuns.get(0).getCiContext().getTarget().getDefaultsFile(), target.getDefaultsFile());
         Assert.assertEquals(testTask.testRuns.get(0).getCiContext().getTarget().getPathToCoreSite(), target.getPathToCoreSite());
         Assert.assertEquals(testTask.testRuns.get(0).getCiContext().getTarget().getPathToHdfsSite(), target.getPathToHdfsSite());
-        Assert.assertTrue(testTask.testRuns.get(0).getCiContext().getTarget().getCelosWorkflowsDirUri().toString().startsWith("file:/tmp/celos"));
-        Assert.assertTrue(testTask.testRuns.get(0).getCiContext().getTarget().getCelosWorkflowsDirUri().toString().length() > "file:/tmp/celos".length());
+
+        String tmpDir = new File(System.getProperty("java.io.tmpdir")).toURI().toString() + "celos";
+        Assert.assertTrue(testTask.testRuns.get(0).getCiContext().getTarget().getCelosWorkflowsDirUri().toString().startsWith(tmpDir));
+        Assert.assertTrue(testTask.testRuns.get(0).getCiContext().getTarget().getCelosWorkflowsDirUri().toString().length() > tmpDir.length());
 
         Assert.assertEquals(testTask.testRuns.get(1).getCiContext().getTarget().getDefaultsFile(), target.getDefaultsFile());
         Assert.assertEquals(testTask.testRuns.get(1).getCiContext().getTarget().getPathToCoreSite(), target.getPathToCoreSite());
         Assert.assertEquals(testTask.testRuns.get(1).getCiContext().getTarget().getPathToHdfsSite(), target.getPathToHdfsSite());
-        Assert.assertTrue(testTask.testRuns.get(1).getCiContext().getTarget().getCelosWorkflowsDirUri().toString().startsWith("file:/tmp/celos"));
-        Assert.assertTrue(testTask.testRuns.get(1).getCiContext().getTarget().getCelosWorkflowsDirUri().toString().length() > "file:/tmp/celos".length());
+        Assert.assertTrue(testTask.testRuns.get(1).getCiContext().getTarget().getCelosWorkflowsDirUri().toString().startsWith(tmpDir));
+        Assert.assertTrue(testTask.testRuns.get(1).getCiContext().getTarget().getCelosWorkflowsDirUri().toString().length() > tmpDir.length());
 
     }
 

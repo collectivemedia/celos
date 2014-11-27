@@ -39,8 +39,9 @@ public class TestRunTest {
         Assert.assertEquals(context.getUserName(), commandLine.getUserName());
         Assert.assertEquals(context.getWorkflowName(), commandLine.getWorkflowName());
 
-        Assert.assertTrue(celosCiTest.getTestContext().getCelosWorkDir().toString().startsWith("/tmp/celos"));
-        Assert.assertTrue(celosCiTest.getTestContext().getCelosWorkDir().toString().length() > "/tmp/celos".length());
+        String tmpDir = new File(System.getProperty("java.io.tmpdir"), "celos").getAbsolutePath();
+        Assert.assertTrue(celosCiTest.getTestContext().getCelosWorkDir().toString().startsWith(tmpDir));
+        Assert.assertTrue(celosCiTest.getTestContext().getCelosWorkDir().toString().length() > tmpDir.length());
         Assert.assertEquals(celosCiTest.getTestContext().getCelosDbDir(), new File(celosCiTest.getTestContext().getCelosWorkDir(), "db"));
         Assert.assertEquals(celosCiTest.getTestContext().getCelosWorkflowDir().toURI(), context.getTarget().getCelosWorkflowsDirUri());
     }
