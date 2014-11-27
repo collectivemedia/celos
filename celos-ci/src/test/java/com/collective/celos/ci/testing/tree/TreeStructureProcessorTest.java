@@ -3,8 +3,7 @@ package com.collective.celos.ci.testing.tree;
 import com.collective.celos.ci.testing.structure.fixobject.FixDir;
 import com.collective.celos.ci.testing.structure.fixobject.FixFile;
 import com.collective.celos.ci.testing.structure.fixobject.FixObject;
-import com.collective.celos.ci.testing.structure.tree.AbstractTreeObjectProcessor;
-import com.collective.celos.ci.testing.structure.tree.TreeStructureProcessor;
+import com.collective.celos.ci.testing.structure.tree.TreeObjectProcessor;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import junit.framework.Assert;
@@ -26,7 +25,6 @@ public class TreeStructureProcessorTest {
 
     @Test
     public void testTreeStructureProcessor() throws IOException {
-        TreeStructureProcessor processor = new TreeStructureProcessor();
         FixDir dir1 = createDirWithSubdirsAndFile();
         InputStream inputStream2 = IOUtils.toInputStream("stream3");
         FixFile file = new FixFile(inputStream2);
@@ -36,8 +34,8 @@ public class TreeStructureProcessorTest {
         content.put("file", file);
         FixDir dir = new FixDir(content);
 
-        AbstractTreeObjectProcessorImpl holder = new AbstractTreeObjectProcessorImpl();
-        processor.process(dir, holder);
+        TreeObjectProcessorImpl holder = new TreeObjectProcessorImpl();
+        TreeObjectProcessor.process(dir, holder);
 
         List<Path> expectedStructure = Lists.newArrayList(
                 Paths.get(""),
@@ -56,7 +54,7 @@ public class TreeStructureProcessorTest {
         Assert.assertEquals(holder.content, expectedStructure);
     }
 
-    private static class AbstractTreeObjectProcessorImpl extends AbstractTreeObjectProcessor<FixObject> {
+    private static class TreeObjectProcessorImpl extends TreeObjectProcessor<FixObject> {
 
         List<Path> content = Lists.newArrayList();
 

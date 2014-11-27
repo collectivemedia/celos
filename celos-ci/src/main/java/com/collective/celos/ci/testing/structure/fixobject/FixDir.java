@@ -6,15 +6,15 @@ import java.util.Map;
 /**
  * Created by akonopko on 10/7/14.
  */
-public class FixDir<T extends FixObject> extends FixObject<T> {
+public class FixDir extends FixObject {
 
-    private final Map<String, T> content;
+    private final Map<String, FixObject> content;
 
-    public FixDir(Map<String, T> content) {
+    public FixDir(Map<String, FixObject> content) {
         this.content = content;
     }
 
-    public Map<String, T> getChildren() {
+    public Map<String, FixObject> getChildren() {
         return Collections.unmodifiableMap(content);
     }
 

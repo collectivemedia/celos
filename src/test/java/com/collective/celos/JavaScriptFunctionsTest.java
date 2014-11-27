@@ -299,7 +299,7 @@ public class JavaScriptFunctionsTest {
 
     @Test
     public void testHdfsPathFunction() throws Exception {
-        String js = "var HDFS_PREFIX = '/user/celos/test'; \n" +
+        String js = "var HDFS_PREFIX_JS_VAR = '/user/celos/test'; \n" +
                 "hdfsPath('/path')";
         String s = (String) runJS(js);
         Assert.assertEquals(s, "/user/celos/test/path");

@@ -2,16 +2,18 @@ package com.collective.celos.ci.config;
 
 import org.apache.commons.cli.*;
 
+import java.io.File;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 
 public class ContextParser {
 
-    public static final String CLI_TARGET = "target";
-    public static final String CLI_MODE = "mode";
-    public static final String CLI_DEPLOY_DIR = "deployDir";
-    public static final String CLI_WORKFLOW_NAME = "workflowName";
-    public static final String CLI_TEST_CASES_DIR = "testDir";
+    static final String CLI_TARGET = "target";
+    static final String CLI_MODE = "mode";
+    static final String CLI_DEPLOY_DIR = "deployDir";
+    static final String CLI_WORKFLOW_NAME = "workflowName";
+    static final String CLI_TEST_CASES_DIR = "testDir";
+    static final String DEFAULT_TEST_CASES_DIR = "src/test/celos-ci";
 
     public CelosCiCommandLine parse(final String[] commandLineArguments) throws Exception {
 
@@ -28,10 +30,22 @@ public class ContextParser {
         String mode = commandLine.getOptionValue(CLI_MODE);
         String workflowName = commandLine.getOptionValue(CLI_WORKFLOW_NAME);
         String targetUri = commandLine.getOptionValue(CLI_TARGET);
-        String testCasesDir = commandLine.getOptionValue(CLI_TEST_CASES_DIR);
+        String testCasesDir = getTestCasesDir(commandLine, DEFAULT_TEST_CASES_DIR);
         String userName = System.getenv("username") == null ? System.getProperty("user.name") : System.getenv("username");
 
         return new CelosCiCommandLine(targetUri, mode, deployDir, workflowName, testCasesDir, userName);
+    }
+
+    String getTestCasesDir(CommandLine commandLine, String defaultTestCasesDir) {
+        String testCasesDir = commandLine.getOptionValue(CLI_TEST_CASES_DIR);
+        if (testCasesDir == null) {
+            testCasesDir = defaultTestCasesDir;
+            File defTCDir = new File(testCasesDir);
+            if (!defTCDir.isDirectory()) {
+                throw new RuntimeException("Directory with Celos-CI test cases was not found on default path " + defTCDir.getAbsolutePath() + ", please specify --testDir parameter");
+            }
+        }
+        return testCasesDir;
     }
 
     public Options constructOptions() {
