@@ -9,6 +9,7 @@ import com.collective.celos.ci.testing.fixtures.create.FixDirFromHdfsCreator;
 import com.collective.celos.ci.testing.fixtures.create.FixDirFromResourceCreator;
 import com.collective.celos.ci.testing.fixtures.deploy.HdfsInputDeployer;
 import junit.framework.Assert;
+import org.apache.hadoop.fs.Path;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -62,11 +63,11 @@ public class TestTaskTest {
         Assert.assertEquals(testTask.getTestRuns().get(0).getTestCase().getSampleTimeEnd(), new ScheduledTime("2013-11-20T18:00Z"));
         HdfsInputDeployer deployer1 = (HdfsInputDeployer) testTask.getTestRuns().get(0).getTestCase().getInputs().get(0);
         HdfsInputDeployer deployer2 = (HdfsInputDeployer) testTask.getTestRuns().get(0).getTestCase().getInputs().get(1);
-        Assert.assertEquals(deployer1.getPath(), "input/wordcount1");
-        Assert.assertEquals(deployer2.getPath(), "input/wordcount11");
+        Assert.assertEquals(deployer1.getPath(), new Path("input/wordcount1"));
+        Assert.assertEquals(deployer2.getPath(), new Path("input/wordcount11"));
         RecursiveDirComparer comparer = (RecursiveDirComparer) testTask.getTestRuns().get(0).getTestCase().getOutputs().get(0);
         FixDirFromHdfsCreator hdfsCreator = (FixDirFromHdfsCreator) comparer.getActualDataCreator();
-        Assert.assertEquals(hdfsCreator.getPath(), "output/wordcount1");
+        Assert.assertEquals(hdfsCreator.getPath(), new Path("output/wordcount1"));
         FixDirFromResourceCreator resourceDataCreator = (FixDirFromResourceCreator) comparer.getExpectedDataCreator();
         Assert.assertEquals(resourceDataCreator.getPath(), new File("testDir/src/test/celos-ci/test-1/output/plain/output/wordcount1"));
 
@@ -79,10 +80,10 @@ public class TestTaskTest {
         Assert.assertEquals(testTask.getTestRuns().get(1).getTestCase().getSampleTimeStart(), new ScheduledTime("2013-12-20T16:00Z"));
         Assert.assertEquals(testTask.getTestRuns().get(1).getTestCase().getSampleTimeEnd(), new ScheduledTime("2013-12-20T18:00Z"));
         HdfsInputDeployer deployer21 = (HdfsInputDeployer) testTask.getTestRuns().get(1).getTestCase().getInputs().get(0);
-        Assert.assertEquals(deployer21.getPath(), "input/wordcount2");
+        Assert.assertEquals(deployer21.getPath(), new Path("input/wordcount2"));
         RecursiveDirComparer comparer2 = (RecursiveDirComparer) testTask.getTestRuns().get(1).getTestCase().getOutputs().get(0);
         FixDirFromHdfsCreator hdfsCreator2 = (FixDirFromHdfsCreator) comparer2.getActualDataCreator();
-        Assert.assertEquals(hdfsCreator2.getPath(), "output/wordcount2");
+        Assert.assertEquals(hdfsCreator2.getPath(), new Path("output/wordcount2"));
         FixDirFromResourceCreator resourceDataCreator2 = (FixDirFromResourceCreator) comparer2.getExpectedDataCreator();
         Assert.assertEquals(resourceDataCreator2.getPath(), new File("testDir/src/test/celos-ci/test-1/output/plain/output/wordcount2"));
 
