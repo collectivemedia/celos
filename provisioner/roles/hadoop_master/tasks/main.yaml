@@ -22,6 +22,14 @@
   notify: restart hadoop master services
   tags: hadoop_master
 
+- name: make celos defaults dir
+  file: path=/etc/celos/defaults state=directory
+  tags: hadoop_master
+
+- name: copy celos defaults
+  copy: src=roles/hadoop_master/files/collective.js dest=/etc/celos/defaults/collective.js
+  tags: hadoop_master
+
 - name: make name node dirs
   file: path={{ item }} owner=hdfs group=hdfs state=directory
   tags: hadoop_master

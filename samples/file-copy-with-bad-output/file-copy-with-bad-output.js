@@ -1,3 +1,5 @@
+importDefaults("collective");
+
 addWorkflow({
 
     "id": "file-copy-with-bad-output",
@@ -9,8 +11,7 @@ addWorkflow({
     "schedulingStrategy": serialSchedulingStrategy(),
 
     "trigger": hdfsCheckTrigger(
-        "/user/celos/samples/file-copy-with-bad-output/input/${year}-${month}-${day}T${hour}00.txt",
-        "hdfs://nn"
+        "/user/celos/samples/file-copy-with-bad-output/input/${year}-${month}-${day}T${hour}00.txt"
     ),
 
     "externalService": oozieExternalService(
@@ -19,8 +20,7 @@ addWorkflow({
             "oozie.wf.application.path": "/user/celos/samples/file-copy-with-bad-output/workflow/workflow.xml",
             "inputDir": "hdfs:/user/celos/samples/file-copy-with-bad-output/input",
             "outputDir": "hdfs:/user/celos/samples/file-copy-with-bad-output/output"
-        },
-        "http://nn:11000/oozie"
+        }
     )
 
 });
