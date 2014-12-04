@@ -63,7 +63,7 @@ public class CommandExternalServiceTest {
         Assert.assertEquals(status, srv.getStatus(slotID, extID));
     }
 
-    private String getTestDatabaseDir() {
+    private String getTestDatabaseDir() throws Exception {
         return databaseDir.newFolder("db").toString();
     }
     

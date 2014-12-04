@@ -9,7 +9,6 @@ ansible-playbook -i provisioner/tmp/inventory -u celos  scripts/test/test-workfl
 ansible-playbook -i provisioner/tmp/inventory -u celos  scripts/test/test-workflow.yaml --extra-vars "workflow=file-copy-with-bad-output sample_time=2013-12-20T20:00Z" && false
 ansible-playbook -i provisioner/tmp/inventory -u celos  scripts/test/test-workflow.yaml --extra-vars "workflow=file-copy-with-missing-output sample_time=2013-12-20T20:00Z" && false
 
-cd samples/wordcount
-buildr cluster_test
+(cd samples/wordcount && ./gradlew build --project-prop target_uri=sftp://celos001/etc/celos/targets/testing.json celos_ci )
 
 echo You win! All tests OK.

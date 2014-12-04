@@ -32,7 +32,7 @@
     shell: cp {{sample_workflow}} {{celos_workflows_dir}}
 
   - name: Prepare HDFS dirs
-    shell: sudo -u hdfs hadoop fs -rm -r -f /user/celos/samples/{{ workflow }}
+    shell: hadoop fs -rm -r -f /user/celos/samples/{{ workflow }}
       && hadoop fs -mkdir -p /user/celos/samples/{{ workflow }}
       && hadoop fs -mkdir -p /user/celos/samples/{{ workflow }}/output
 

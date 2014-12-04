@@ -29,8 +29,8 @@ task celos_ci << {
     task run_ci(type: JavaExec) {
        main = "com.collective.celos.ci.CelosCi"
        classpath configurations.celos_ci
-       ip_address
-       args '--deployDir', 'build/celos_deploy', '--target', 'sftp://celos@' + ip_address + '/etc/celos/targets/testing.json', '--workflowName', 'wordcount' , '--mode', 'TEST'
+       target_uri
+       args '--deployDir', 'build/celos_deploy', '--target', target_uri, '--workflowName', 'wordcount' , '--mode', 'TEST'
     }
 
     new File('build/celos_deploy').deleteDir()
