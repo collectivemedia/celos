@@ -2,6 +2,10 @@ importPackage(Packages.com.collective.celos.ci.testing.fixtures.create);
 importPackage(Packages.com.collective.celos.ci.testing.fixtures.deploy);
 importPackage(Packages.com.collective.celos.ci.testing.fixtures.compare);
 importPackage(Packages.com.collective.celos.ci.mode.test);
+importPackage(Packages.com.collective.celos.ci.testing.fixtures.convert.avro);
+importPackage(Packages.com.collective.celos.ci.testing.structure.fixobject);
+importPackage(Packages.java.util);
+importPackage(Packages.com.collective.celos.ci.testing.fixtures.compare.json);
 
 function fixDirFromResource(resource) {
     if (!resource) {
@@ -41,15 +45,45 @@ function hdfsInput(fixObject, whereToPlace) {
     return new HdfsInputDeployer(fixObject, whereToPlace);
 }
 
-function hdfsOutput(fixObject, result) {
-    if (!fixObject) {
+function avroToJson(avroFixDirCreator) {
+    if (!avroFixDirCreator) {
+        throw "Undefined expected avroFixDirCreator";
+    }
+    return new FixDirTreeConverter(avroFixDirCreator, new AvroToJsonConverter());
+}
+
+function jsonCompare(expectedCreator, actualCreator, ignorePathsRaw) {
+    if (!expectedCreator) {
+        throw "Undefined expectedCreator";
+    }
+    if (!actualCreator) {
+        throw "Undefined actualCreator";
+    }
+    ignorePaths = new HashSet();
+
+    if (ignorePathsRaw) {
+        for (var i=0; i < ignorePathsRaw.length; i++) {
+            ignorePaths.add(ignorePathsRaw[i]);
+        }
+    }
+    return new JsonContentsDirComparer(ignorePaths, expectedCreator, actualCreator);
+}
+
+function hdfsOutput(path, ignoreSuccessFiles) {
+    if (!ignoreSuccessFiles) {
+        ignoreSuccessFiles = true;
+    }
+    return new OutputFixDirFromHdfsCreator(path, ignoreSuccessFiles);
+}
+
+function plainCompare(fixObjectCreator, actualCreator) {
+    if (!fixObjectCreator) {
         throw "Undefined expected fixObject";
     }
-    if (!result) {
-        throw "Undefined actual data path";
+    if (!resultCreator) {
+        throw "Undefined actualCreator";
     }
-    var actualCreator = new FixDirFromHdfsCreator(result);
-    return new RecursiveDirComparer(fixObject, actualCreator);
+    return new RecursiveDirComparer(fixObjectCreator, actualCreator);
 }
 
 function addTestCase(testCase) {

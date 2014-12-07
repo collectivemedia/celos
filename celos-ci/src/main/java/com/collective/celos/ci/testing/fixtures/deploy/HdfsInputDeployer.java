@@ -7,6 +7,7 @@ import com.collective.celos.ci.testing.structure.fixobject.FixObject;
 import com.collective.celos.ci.testing.structure.tree.TreeObjectProcessor;
 import com.google.common.collect.Maps;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.hadoop.fs.FSDataOutputStream;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
@@ -24,7 +25,7 @@ public class HdfsInputDeployer implements FixtureDeployer {
 
     public HdfsInputDeployer(FixObjectCreator<FixObject> fixObjectCreator, String path) {
         this.fixObjectCreator = fixObjectCreator;
-        this.path = new Path(path);
+        this.path = new Path(StringUtils.removeStart(path, "/"));
     }
 
     public void deploy(TestRun testRun) throws Exception {

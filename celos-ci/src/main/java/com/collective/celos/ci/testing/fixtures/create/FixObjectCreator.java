@@ -1,7 +1,5 @@
 package com.collective.celos.ci.testing.fixtures.create;
 
-import com.collective.celos.ci.CelosCi;
-import com.collective.celos.ci.config.deploy.CelosCiContext;
 import com.collective.celos.ci.mode.test.TestRun;
 import com.collective.celos.ci.testing.structure.fixobject.FixObject;
 
@@ -12,4 +10,5 @@ public interface FixObjectCreator<T extends FixObject> {
 
     T create(TestRun testRun) throws Exception;
 
+    String getDescription(TestRun testRun);
 }

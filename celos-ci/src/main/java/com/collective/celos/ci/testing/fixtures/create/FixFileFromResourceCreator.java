@@ -1,7 +1,5 @@
 package com.collective.celos.ci.testing.fixtures.create;
 
-import com.collective.celos.ci.config.CelosCiCommandLine;
-import com.collective.celos.ci.config.deploy.CelosCiContext;
 import com.collective.celos.ci.mode.test.TestRun;
 import com.collective.celos.ci.testing.structure.fixobject.FixFile;
 
@@ -24,6 +22,11 @@ public class FixFileFromResourceCreator implements FixObjectCreator<FixFile> {
             throw new IllegalStateException("Cannot find file: " + path);
         }
         return new FixFile(new FileInputStream(path));
+    }
+
+    @Override
+    public String getDescription(TestRun testRun) {
+        return path.getAbsolutePath();
     }
 
     public File getPath() {

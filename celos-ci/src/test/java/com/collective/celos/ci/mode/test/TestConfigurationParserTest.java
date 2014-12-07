@@ -2,7 +2,7 @@ package com.collective.celos.ci.mode.test;
 
 import com.collective.celos.ci.config.CelosCiCommandLine;
 import com.collective.celos.ci.testing.fixtures.compare.RecursiveDirComparer;
-import com.collective.celos.ci.testing.fixtures.create.FixDirFromHdfsCreator;
+import com.collective.celos.ci.testing.fixtures.create.OutputFixDirFromHdfsCreator;
 import com.collective.celos.ci.testing.fixtures.create.FixDirFromResourceCreator;
 import com.collective.celos.ci.testing.fixtures.create.FixFileFromResourceCreator;
 import com.collective.celos.ci.testing.fixtures.deploy.HdfsInputDeployer;
@@ -103,7 +103,7 @@ public class TestConfigurationParserTest {
 
         RecursiveDirComparer comparer = (RecursiveDirComparer) creatorObj.unwrap();
 
-        FixDirFromHdfsCreator actualCreator = (FixDirFromHdfsCreator) comparer.getActualDataCreator();
+        OutputFixDirFromHdfsCreator actualCreator = (OutputFixDirFromHdfsCreator) comparer.getActualDataCreator();
         FixDirFromResourceCreator expectedDataCreator = (FixDirFromResourceCreator) comparer.getExpectedDataCreator();
         Assert.assertEquals(new Path("here"), actualCreator.getPath());
         Assert.assertEquals(new File("stuff"), expectedDataCreator.getPath());

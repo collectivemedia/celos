@@ -6,6 +6,7 @@ import com.collective.celos.ci.testing.structure.fixobject.FixDir;
 import com.collective.celos.ci.testing.structure.fixobject.FixFile;
 import com.collective.celos.ci.testing.structure.fixobject.FixObject;
 import com.google.common.collect.Maps;
+import org.apache.commons.lang.StringUtils;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.Path;
 
@@ -14,17 +15,18 @@ import java.util.Map;
 /**
  * Created by akonopko on 10/7/14.
  */
-public class FixDirFromHdfsCreator implements FixObjectCreator<FixDir> {
+public class OutputFixDirFromHdfsCreator implements FixObjectCreator<FixDir> {
 
     private final Path path;
+    private final boolean ignoreSuccessFiles;
 
-    public FixDirFromHdfsCreator(String path) {
-        this(new Path(path));
+    public OutputFixDirFromHdfsCreator(String path, boolean ignoreSuccessFiles) {
+        this(new Path(StringUtils.removeStart(path, "/")), ignoreSuccessFiles);
     }
 
-
-    public FixDirFromHdfsCreator(Path path) {
+    public OutputFixDirFromHdfsCreator(Path path, boolean ignoreSuccessFiles) {
         this.path = path;
+        this.ignoreSuccessFiles = ignoreSuccessFiles;
     }
 
     public Path getPath() {
@@ -36,6 +38,11 @@ public class FixDirFromHdfsCreator implements FixObjectCreator<FixDir> {
         return read(fullPath, testRun.getCiContext()).asDir();
     }
 
+    @Override
+    public String getDescription(TestRun testRun) {
+        return new Path(testRun.getCiContext().getHdfsPrefix(), path).toString();
+    }
+
     private FixObject read(Path path, CelosCiContext context) throws Exception {
         FileStatus fileStatus = context.getFileSystem().getFileStatus(path);
         if (fileStatus.isDirectory()) {
@@ -43,8 +50,10 @@ public class FixDirFromHdfsCreator implements FixObjectCreator<FixDir> {
             FileStatus[] statuses = context.getFileSystem().listStatus(fileStatus.getPath());
             for (int i=0; i < statuses.length; i++) {
                 FileStatus childStatus = statuses[i];
-                FixObject fixObject = read(childStatus.getPath(), context);
-                content.put(childStatus.getPath().getName(), fixObject);
+                if (!(ignoreSuccessFiles && childStatus.getPath().getName().equals("_SUCCESS"))) {
+                    FixObject fixObject = read(childStatus.getPath(), context);
+                    content.put(childStatus.getPath().getName(), fixObject);
+                }
             }
             return new FixDir(content);
         } else {

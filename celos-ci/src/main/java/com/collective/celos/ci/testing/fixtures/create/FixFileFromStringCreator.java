@@ -1,6 +1,5 @@
 package com.collective.celos.ci.testing.fixtures.create;
 
-import com.collective.celos.ci.config.deploy.CelosCiContext;
 import com.collective.celos.ci.mode.test.TestRun;
 import com.collective.celos.ci.testing.structure.fixobject.FixFile;
 import org.apache.commons.io.IOUtils;
@@ -18,5 +17,10 @@ public class FixFileFromStringCreator implements FixObjectCreator<FixFile> {
 
     public FixFile create(TestRun testRun) throws Exception {
         return new FixFile(IOUtils.toInputStream(content));
+    }
+
+    @Override
+    public String getDescription(TestRun testRun) {
+        return "String fixture";
     }
 }
