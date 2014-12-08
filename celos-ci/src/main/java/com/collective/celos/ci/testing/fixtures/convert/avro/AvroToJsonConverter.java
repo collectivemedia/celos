@@ -24,10 +24,12 @@ public class AvroToJsonConverter extends AbstractFixFileConverter {
 
     @Override
     public FixFile convert(FixFile ff) throws IOException {
-        ByteArrayOutputStream os = new ByteArrayOutputStream();
-
-        GenericDatumReader<Object> reader = new GenericDatumReader<>();
         byte[] bytes = IOUtils.toByteArray(ff.getContent());
+        if (bytes.length == 0) {
+            return ff;
+        }
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        GenericDatumReader<Object> reader = new GenericDatumReader<>();
         FileReader<Object> fileReader =  DataFileReader.openReader(new SeekableByteArrayInput(bytes), reader);
         try {
             Schema schema = fileReader.getSchema();

@@ -224,39 +224,6 @@ public class TestConfigurationParserTest {
         parser.evaluateTestConfig(commandLine, new StringReader(configJS), "string");
     }
 
-    @Test
-    public void testHdfsOutput1() throws IOException {
-        TestConfigurationParser parser = new TestConfigurationParser();
-        CelosCiCommandLine commandLine = mock(CelosCiCommandLine.class);
-        NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(commandLine, new StringReader("hdfsOutput(\"here\")"), "string");
-
-        OutputFixDirFromHdfsCreator creator = (OutputFixDirFromHdfsCreator) creatorObj.unwrap();
-        Assert.assertEquals(creator.getPath(), new Path("here"));
-        Assert.assertEquals(creator.isIgnoreSuccessFiles(), false);
-    }
-
-    @Test
-    public void testHdfsOutput2() throws IOException {
-        TestConfigurationParser parser = new TestConfigurationParser();
-        CelosCiCommandLine commandLine = mock(CelosCiCommandLine.class);
-        NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(commandLine, new StringReader("hdfsOutput(\"here\", false)"), "string");
-
-        OutputFixDirFromHdfsCreator creator = (OutputFixDirFromHdfsCreator) creatorObj.unwrap();
-        Assert.assertEquals(creator.getPath(), new Path("here"));
-        Assert.assertEquals(creator.isIgnoreSuccessFiles(), false);
-    }
-
-    @Test
-    public void testHdfsOutput3() throws IOException {
-        TestConfigurationParser parser = new TestConfigurationParser();
-        CelosCiCommandLine commandLine = mock(CelosCiCommandLine.class);
-        NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(commandLine, new StringReader("hdfsOutput(\"here\", true)"), "string");
-
-        OutputFixDirFromHdfsCreator creator = (OutputFixDirFromHdfsCreator) creatorObj.unwrap();
-        Assert.assertEquals(creator.getPath(), new Path("here"));
-        Assert.assertEquals(creator.isIgnoreSuccessFiles(), true);
-    }
-
     @Test(expected = JavaScriptException.class)
     public void testAvroToJsonFails() throws IOException {
         TestConfigurationParser parser = new TestConfigurationParser();
@@ -268,7 +235,7 @@ public class TestConfigurationParserTest {
     public void testAvroToJson() throws IOException {
         TestConfigurationParser parser = new TestConfigurationParser();
         CelosCiCommandLine commandLine = mock(CelosCiCommandLine.class);
-        NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(commandLine, new StringReader("avroToJson(hdfsOutput(\"1\"))"), "string");
+        NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(commandLine, new StringReader("avroToJson(\"1\")"), "string");
 
         FixDirTreeConverter converter = (FixDirTreeConverter) creatorObj.unwrap();
         Assert.assertTrue(converter.getFixFileFonverter() instanceof AvroToJsonConverter);

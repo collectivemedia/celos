@@ -18,23 +18,17 @@ import java.util.Map;
 public class OutputFixDirFromHdfsCreator implements FixObjectCreator<FixDir> {
 
     private final Path path;
-    private final boolean ignoreSuccessFiles;
 
-    public OutputFixDirFromHdfsCreator(String path, boolean ignoreSuccessFiles) {
-        this(new Path(StringUtils.removeStart(path, "/")), ignoreSuccessFiles);
+    public OutputFixDirFromHdfsCreator(String path) {
+        this(new Path(StringUtils.removeStart(path, "/")));
     }
 
-    public OutputFixDirFromHdfsCreator(Path path, boolean ignoreSuccessFiles) {
+    public OutputFixDirFromHdfsCreator(Path path) {
         this.path = path;
-        this.ignoreSuccessFiles = ignoreSuccessFiles;
     }
 
     public Path getPath() {
         return path;
-    }
-
-    public boolean isIgnoreSuccessFiles() {
-        return ignoreSuccessFiles;
     }
 
     public FixDir create(TestRun testRun) throws Exception {
@@ -54,10 +48,8 @@ public class OutputFixDirFromHdfsCreator implements FixObjectCreator<FixDir> {
             FileStatus[] statuses = context.getFileSystem().listStatus(fileStatus.getPath());
             for (int i=0; i < statuses.length; i++) {
                 FileStatus childStatus = statuses[i];
-                if (!(ignoreSuccessFiles && childStatus.getPath().getName().equals("_SUCCESS"))) {
-                    FixObject fixObject = read(childStatus.getPath(), context);
-                    content.put(childStatus.getPath().getName(), fixObject);
-                }
+                FixObject fixObject = read(childStatus.getPath(), context);
+                content.put(childStatus.getPath().getName(), fixObject);
             }
             return new FixDir(content);
         } else {

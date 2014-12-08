@@ -45,11 +45,14 @@ function hdfsInput(fixObject, whereToPlace) {
     return new HdfsInputDeployer(fixObject, whereToPlace);
 }
 
-function avroToJson(avroFixDirCreator) {
-    if (!avroFixDirCreator) {
-        throw "Undefined expected avroFixDirCreator";
+function avroToJson(avroOrPath) {
+    if (!avroOrPath) {
+        throw "Undefined expected avroOrPath";
     }
-    return new FixDirTreeConverter(avroFixDirCreator, new AvroToJsonConverter());
+    if (typeof avroOrPath == 'string') {
+        avroOrPath = new OutputFixDirFromHdfsCreator(avroOrPath)
+    }
+    return new FixDirTreeConverter(avroOrPath, new AvroToJsonConverter());
 }
 
 function jsonCompare(expectedCreator, actualCreator, ignorePathsRaw) {
@@ -69,24 +72,14 @@ function jsonCompare(expectedCreator, actualCreator, ignorePathsRaw) {
     return new JsonContentsDirComparer(ignorePaths, expectedCreator, actualCreator);
 }
 
-function hdfsOutput(path, ignoreSuccessFiles) {
-    if (ignoreSuccessFiles === undefined) {
-        ignoreSuccessFiles = false;
-    }
-    return new OutputFixDirFromHdfsCreator(path, ignoreSuccessFiles);
-}
-
-function plainCompare(fixObjectCreator, actualCreator) {
+function plainCompare(fixObjectCreator, path) {
     if (!fixObjectCreator) {
         throw "Undefined expected fixObject";
     }
-    if (!actualCreator) {
-        throw "Undefined actualCreator";
+    if (!path) {
+        throw "Undefined path";
     }
-    if (typeof actualCreator == 'string') {
-        actualCreator = hdfsOutput(actualCreator);
-    }
-    return new RecursiveDirComparer(fixObjectCreator, actualCreator);
+    return new RecursiveDirComparer(fixObjectCreator, new OutputFixDirFromHdfsCreator(path));
 }
 
 function addTestCase(testCase) {

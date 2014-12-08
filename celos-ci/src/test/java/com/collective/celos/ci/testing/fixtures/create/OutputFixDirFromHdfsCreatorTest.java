@@ -33,7 +33,7 @@ public class OutputFixDirFromHdfsCreatorTest {
         doReturn("/").when(context).getHdfsPrefix();
 
         doReturn(LocalFileSystem.get(new Configuration())).when(context).getFileSystem();
-        OutputFixDirFromHdfsCreator creator = new OutputFixDirFromHdfsCreator(path, false);
+        OutputFixDirFromHdfsCreator creator = new OutputFixDirFromHdfsCreator(path);
 
         Map<String, FixObject> contentir2 = Maps.newHashMap();
         contentir2.put("file2", createFile());
