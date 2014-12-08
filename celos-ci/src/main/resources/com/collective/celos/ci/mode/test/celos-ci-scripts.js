@@ -47,7 +47,7 @@ function hdfsInput(fixObject, whereToPlace) {
 
 function avroToJson(creatorOrPath) {
     if (!creatorOrPath) {
-        throw "Undefined expected avroOrPath";
+        throw "Undefined expected creatorOrPath";
     }
     if (typeof creatorOrPath == 'string') {
         creatorOrPath = new OutputFixDirFromHdfsCreator(creatorOrPath)

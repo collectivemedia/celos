@@ -49,12 +49,12 @@ public class JsonContentsDirComparer implements FixtureComparer {
         Set<Map.Entry<JsonElement,Integer>> expectedDiffers = Sets.difference(expectedRes.entrySet(), actualRes.entrySet());
 
         if (actualDiffers.size() + expectedDiffers.size() > 0) {
-            String actualDirr = getDifference(actualDiffers);
+            String actualDir = getDifference(actualDiffers);
             String expectedDiff = getDifference(expectedDiffers);
             return FixObjectCompareResult.failed(
                     "Diff:\n" +
                             "Actual [" + actualDataCreator.getDescription(testRun) + "]:\n" +
-                            actualDirr + "\n" +
+                            actualDir + "\n" +
                             "Expected [" + expectedDataCreator.getDescription(testRun) + "]:\n" +
                             expectedDiff);
 
