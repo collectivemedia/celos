@@ -48,7 +48,7 @@ public class JSConfigParser {
     public void putPropertiesInScope(Map<String, Object> jsParameters, Global scope) {
         if (jsParameters != null) {
             for (String key : jsParameters.keySet()) {
-                ScriptableObject.putProperty(scope, key, jsParameters.get(key));
+                ScriptableObject.putProperty(scope, key, Context.javaToJS(jsParameters.get(key), scope));
             }
         }
     }

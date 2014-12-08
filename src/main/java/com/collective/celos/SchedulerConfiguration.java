@@ -12,9 +12,9 @@ public class SchedulerConfiguration {
     private final String workflowConfigurationPath;
     private final String defaultsConfigurationPath;
     private final String stateDatabasePath;
-    private final Map<String, String> additionalVars;
+    private final Map<String, Object> additionalVars;
 
-    public SchedulerConfiguration(String workflowConfigurationPath, String defaultsConfigurationPath, String stateDatabasePath, Map<String, String> additionalVars) {
+    public SchedulerConfiguration(String workflowConfigurationPath, String defaultsConfigurationPath, String stateDatabasePath, Map<String, Object> additionalVars) {
         this.workflowConfigurationPath = workflowConfigurationPath;
         this.defaultsConfigurationPath = defaultsConfigurationPath;
         this.stateDatabasePath = stateDatabasePath;

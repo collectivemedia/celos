@@ -18,6 +18,7 @@ public class TestCase {
     private final ScheduledTime sampleTimeEnd;
     private final List<FixtureDeployer> inputs = Lists.newArrayList();
     private final List<FixtureComparer> outputs = Lists.newArrayList();
+    private final List<String> successWorkflows = Lists.newArrayList();
 
     public TestCase(String name, String sampleTimeStart, String sampleTimeEnd) {
         this(name, new ScheduledTime(sampleTimeStart), new ScheduledTime(sampleTimeEnd));
@@ -35,6 +36,10 @@ public class TestCase {
 
     public void addOutput(FixtureComparer fixtureComparer) {
         outputs.add(fixtureComparer);
+    }
+
+    public void addSuccessWorkflow(String wfName) {
+        successWorkflows.add(wfName);
     }
 
     public String getName() {
@@ -55,5 +60,9 @@ public class TestCase {
 
     public List<FixtureComparer> getOutputs() {
         return outputs;
+    }
+
+    public List<String> getSuccessWorkflows() {
+        return successWorkflows;
     }
 }

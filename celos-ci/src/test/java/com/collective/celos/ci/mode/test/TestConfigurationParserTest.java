@@ -10,6 +10,7 @@ import com.collective.celos.ci.testing.fixtures.create.FixFileFromResourceCreato
 import com.collective.celos.ci.testing.fixtures.deploy.HdfsInputDeployer;
 import com.collective.celos.ci.testing.structure.fixobject.FixDirTreeConverter;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import org.apache.hadoop.fs.Path;
 import org.junit.Assert;
 import org.junit.Test;
@@ -272,6 +273,33 @@ public class TestConfigurationParserTest {
         JsonContentsDirComparer comparer = (JsonContentsDirComparer) creatorObj.unwrap();
         Assert.assertEquals(comparer.getIgnorePaths(), new HashSet(Lists.newArrayList("path1", "path2")));
     }
+
+
+    @Test
+    public void testAddTestCaseSuccessWorkflows() throws IOException {
+
+        String configJS = "addTestCase({\n" +
+                "    name: \"wordcount test case 1\",\n" +
+                "    sampleTimeStart: \"2013-11-20T11:00Z\",\n" +
+                "    sampleTimeEnd: \"2013-11-20T18:00Z\",\n" +
+                "    successWorkflows: [\"wf1\", \"wf2\"],\n" +
+                "    inputs: [\n" +
+                "        hdfsInput(fixDirFromResource(\"src/test/celos-ci/test-1/input/plain/input/wordcount1\"), \"input/wordcount1\"),\n" +
+                "        hdfsInput(fixDirFromResource(\"src/test/celos-ci/test-1/input/plain/input/wordcount11\"), \"input/wordcount11\")\n" +
+                "    ],\n" +
+                "    outputs: [\n" +
+                "        plainCompare(fixDirFromResource(\"src/test/celos-ci/test-1/output/plain/output/wordcount1\"), \"output/wordcount1\")\n" +
+                "    ]\n" +
+                "})\n";
+
+        TestConfigurationParser parser = new TestConfigurationParser();
+        CelosCiCommandLine commandLine = mock(CelosCiCommandLine.class);
+        parser.evaluateTestConfig(commandLine, new StringReader(configJS), "string");
+        Assert.assertEquals(parser.getTestCases().size(), 1);
+        TestCase testCase = parser.getTestCases().get(0);
+        Assert.assertEquals(new HashSet<>(testCase.getSuccessWorkflows()), Sets.newHashSet("wf1", "wf2"));
+    }
+
 
 
 }

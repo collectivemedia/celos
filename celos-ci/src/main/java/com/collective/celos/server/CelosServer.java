@@ -9,12 +9,13 @@ import org.eclipse.jetty.servlet.ServletHolder;
 
 import java.io.File;
 import java.util.Map;
+import java.util.Objects;
 
 public class CelosServer {
 
     private Server server;
 
-    public Integer startServer(int port, Map<String, String> jsVariables, String workflowConfigurationPath, String defaultsConfigurationPath, String stateDatabasePath) throws Exception {
+    public Integer startServer(int port, Map<String, Object> jsVariables, String workflowConfigurationPath, String defaultsConfigurationPath, String stateDatabasePath) throws Exception {
         if (port > 0) {
             server = new Server(port);
         } else {
@@ -30,12 +31,12 @@ public class CelosServer {
         return connector.getLocalPort();
     }
 
-    public Integer startServer(Map<String, String> jsVariables, String workflowConfigurationPath, String defaultsConfigurationPath, String stateDatabasePath) throws Exception {
+    public Integer startServer(Map<String, Object> jsVariables, String workflowConfigurationPath, String defaultsConfigurationPath, String stateDatabasePath) throws Exception {
         return startServer(-1, jsVariables, workflowConfigurationPath, defaultsConfigurationPath, stateDatabasePath);
     }
 
 
-    private void setupContext(Map<String, String> jsVariables, String workflowConfigurationPath, String defaultsConfigurationPath, String stateDatabasePath) {
+    private void setupContext(Map<String, Object> jsVariables, String workflowConfigurationPath, String defaultsConfigurationPath, String stateDatabasePath) {
         assureDirIsCreated(workflowConfigurationPath);
         assureDirIsCreated(defaultsConfigurationPath);
         assureDirIsCreated(stateDatabasePath);

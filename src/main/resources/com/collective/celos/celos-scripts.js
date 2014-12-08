@@ -116,7 +116,15 @@ function successTrigger(workflowName) {
     if (!workflowName) {
         throw "Undefined workflow name in success trigger";
     }
-    return new SuccessTrigger(workflowName);
+    if (typeof HDFS_PREFIX_JS_VAR !== "undefined") {
+        if (SUCCESS_TRIGGERS_JS_VAR.contains(workflowName)) {
+            return new AlwaysTrigger();
+        } else {
+            return new NeverTrigger();
+        }
+    } else {
+        return new SuccessTrigger(workflowName);
+    }
 }
 
 function mergeProperties(source, target) {

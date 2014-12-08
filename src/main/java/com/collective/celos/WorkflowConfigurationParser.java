@@ -29,9 +29,9 @@ public class WorkflowConfigurationParser {
     private final WorkflowConfiguration cfg = new WorkflowConfiguration();
     private final JSConfigParser jsConfigParser = new JSConfigParser();
     private final File defaultsDir;
-    private final Map<String, String> additionalJsVariables;
+    private final Map<String, Object> additionalJsVariables;
 
-    public WorkflowConfigurationParser(File defaultsDir, Map<String, String> additionalJsVariables) throws Exception {
+    public WorkflowConfigurationParser(File defaultsDir, Map<String, Object> additionalJsVariables) throws Exception {
         this.defaultsDir = Util.requireNonNull(defaultsDir);
         this.additionalJsVariables = additionalJsVariables;
     }
