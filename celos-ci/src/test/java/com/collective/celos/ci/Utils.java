@@ -9,11 +9,11 @@ import com.collective.celos.ci.testing.structure.fixobject.FixObject;
  */
 public class Utils {
 
-    public static <T extends FixObject> FixObjectCreator<T> wrap(final FixObject fixObj) {
+    public static <T extends FixObject> FixObjectCreator<T> wrap(final T fixObj) {
         return wrap(fixObj, "");
     }
 
-    public static <T extends FixObject> FixObjectCreator<T> wrap(final FixObject fixObj, final String desc) {
+    public static <T extends FixObject> FixObjectCreator<T> wrap(final T fixObj, final String desc) {
         return new FixObjectCreator() {
             @Override
             public FixObject create(TestRun testRun) throws Exception {

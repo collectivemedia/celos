@@ -52,7 +52,7 @@ public class OutputFixDirFromHdfsCreatorTest {
         TestRun testRun = mock(TestRun.class);
         doReturn(context).when(testRun).getCiContext();
 
-        FixObjectCompareResult compareResult = new RecursiveDirComparer(Utils.<FixDir>wrap(readDir), creator).check(testRun);
+        FixObjectCompareResult compareResult = new RecursiveDirComparer(Utils.wrap(readDir), creator).check(testRun);
 
         Assert.assertEquals(compareResult.getStatus(), FixObjectCompareResult.Status.SUCCESS);
     }
