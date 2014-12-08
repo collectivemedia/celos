@@ -5,7 +5,7 @@ import com.collective.celos.ci.config.CelosCiCommandLine;
 import com.collective.celos.ci.config.deploy.CelosCiTarget;
 import com.collective.celos.ci.config.deploy.CelosCiTargetParser;
 import com.collective.celos.ci.testing.fixtures.compare.RecursiveDirComparer;
-import com.collective.celos.ci.testing.fixtures.create.FixDirFromHdfsCreator;
+import com.collective.celos.ci.testing.fixtures.create.OutputFixDirFromHdfsCreator;
 import com.collective.celos.ci.testing.fixtures.create.FixDirFromResourceCreator;
 import com.collective.celos.ci.testing.fixtures.deploy.HdfsInputDeployer;
 import junit.framework.Assert;
@@ -68,7 +68,7 @@ public class TestTaskTest {
         Assert.assertEquals(deployer1.getPath(), new Path("input/wordcount1"));
         Assert.assertEquals(deployer2.getPath(), new Path("input/wordcount11"));
         RecursiveDirComparer comparer = (RecursiveDirComparer) testTask.getTestRuns().get(0).getTestCase().getOutputs().get(0);
-        FixDirFromHdfsCreator hdfsCreator = (FixDirFromHdfsCreator) comparer.getActualDataCreator();
+        OutputFixDirFromHdfsCreator hdfsCreator = (OutputFixDirFromHdfsCreator) comparer.getActualDataCreator();
         Assert.assertEquals(hdfsCreator.getPath(), new Path("output/wordcount1"));
         FixDirFromResourceCreator resourceDataCreator = (FixDirFromResourceCreator) comparer.getExpectedDataCreator();
         Assert.assertEquals(resourceDataCreator.getPath(), new File("testDir/src/test/celos-ci/test-1/output/plain/output/wordcount1"));
@@ -84,7 +84,7 @@ public class TestTaskTest {
         HdfsInputDeployer deployer21 = (HdfsInputDeployer) testTask.getTestRuns().get(1).getTestCase().getInputs().get(0);
         Assert.assertEquals(deployer21.getPath(), new Path("input/wordcount2"));
         RecursiveDirComparer comparer2 = (RecursiveDirComparer) testTask.getTestRuns().get(1).getTestCase().getOutputs().get(0);
-        FixDirFromHdfsCreator hdfsCreator2 = (FixDirFromHdfsCreator) comparer2.getActualDataCreator();
+        OutputFixDirFromHdfsCreator hdfsCreator2 = (OutputFixDirFromHdfsCreator) comparer2.getActualDataCreator();
         Assert.assertEquals(hdfsCreator2.getPath(), new Path("output/wordcount2"));
         FixDirFromResourceCreator resourceDataCreator2 = (FixDirFromResourceCreator) comparer2.getExpectedDataCreator();
         Assert.assertEquals(resourceDataCreator2.getPath(), new File("testDir/src/test/celos-ci/test-1/output/plain/output/wordcount2"));

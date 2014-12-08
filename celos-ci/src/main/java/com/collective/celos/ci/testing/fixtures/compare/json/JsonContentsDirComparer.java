@@ -3,7 +3,9 @@ package com.collective.celos.ci.testing.fixtures.compare.json;
 import com.collective.celos.ci.mode.test.TestRun;
 import com.collective.celos.ci.testing.fixtures.compare.FixObjectCompareResult;
 import com.collective.celos.ci.testing.fixtures.compare.FixtureComparer;
+import com.collective.celos.ci.testing.fixtures.create.FixObjectCreator;
 import com.collective.celos.ci.testing.structure.fixobject.FixDir;
+import com.collective.celos.ci.testing.structure.fixobject.FixFile;
 import com.collective.celos.ci.testing.structure.fixobject.FixObject;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -27,34 +29,34 @@ public class JsonContentsDirComparer implements FixtureComparer {
 
     private final JsonElementConstructor constructor;
     private final Set<String> ignorePaths;
-    private final InputStream content;
-    private final FixDir fixDir;
+    private final FixObjectCreator<FixFile> expectedDataCreator;
+    private final FixObjectCreator<FixDir> actualDataCreator;
 
-    public JsonContentsDirComparer(Set<String> ignorePaths, InputStream content, FixDir fixDir) {
+    public JsonContentsDirComparer(Set<String> ignorePaths, FixObjectCreator<FixFile> expectedDataCreator, FixObjectCreator<FixDir> actualDataCreator) {
         this.ignorePaths = ignorePaths;
-        this.content = content;
-        this.fixDir = fixDir;
+        this.expectedDataCreator = expectedDataCreator;
+        this.actualDataCreator = actualDataCreator;
         this.constructor = new JsonElementConstructor();
     }
 
     public FixObjectCompareResult check(TestRun testRun) throws Exception {
 
-        Map<JsonElement, Integer> actualRes = getJsonEntityCountMap(fixDir.getChildren());
+        Map<JsonElement, Integer> actualRes = getJsonEntityCountMap(actualDataCreator.create(testRun).asDir().getChildren());
         Map<JsonElement, Integer> expectedRes = Maps.newHashMap();
-        fillMapWithJsonFromIS(expectedRes, content);
+        fillMapWithJsonFromIS(expectedRes, expectedDataCreator.create(testRun).getContent());
 
         Set<Map.Entry<JsonElement,Integer>> actualDiffers = Sets.difference(actualRes.entrySet(), expectedRes.entrySet());
         Set<Map.Entry<JsonElement,Integer>> expectedDiffers = Sets.difference(expectedRes.entrySet(), actualRes.entrySet());
 
         if (actualDiffers.size() + expectedDiffers.size() > 0) {
-            String actualDescr = getDifferenceDescr(actualDiffers);
-            String expectedDescr = getDifferenceDescr(expectedDiffers);
+            String actualDir = getDifference(actualDiffers);
+            String expectedDiff = getDifference(expectedDiffers);
             return FixObjectCompareResult.failed(
                     "Diff:\n" +
-                            "Actual differs:\n" +
-                            actualDescr + "\n" +
-                            "Expected differs:\n" +
-                            expectedDescr);
+                            "Actual [" + actualDataCreator.getDescription(testRun) + "]:\n" +
+                            actualDir + "\n" +
+                            "Expected [" + expectedDataCreator.getDescription(testRun) + "]:\n" +
+                            expectedDiff);
 
         }
 
@@ -84,7 +86,7 @@ public class JsonContentsDirComparer implements FixtureComparer {
         }
     }
 
-    private String getDifferenceDescr(Set<Map.Entry<JsonElement,Integer>> entrySet) {
+    private String getDifference(Set<Map.Entry<JsonElement, Integer>> entrySet) {
         List<String> strs = Lists.newArrayList();
         for (Map.Entry<JsonElement, Integer> entry : entrySet) {
             strs.add(entry.getKey().toString() + " [" + entry.getValue() + " times]");
@@ -93,4 +95,7 @@ public class JsonContentsDirComparer implements FixtureComparer {
         return StringUtils.join(strs, "\n");
     }
 
+    public Set<String> getIgnorePaths() {
+        return ignorePaths;
+    }
 }

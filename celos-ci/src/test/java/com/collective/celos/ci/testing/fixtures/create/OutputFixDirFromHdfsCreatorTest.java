@@ -1,5 +1,6 @@
 package com.collective.celos.ci.testing.fixtures.create;
 
+import com.collective.celos.ci.Utils;
 import com.collective.celos.ci.config.deploy.CelosCiContext;
 import com.collective.celos.ci.mode.test.TestRun;
 import com.collective.celos.ci.testing.fixtures.compare.FixObjectCompareResult;
@@ -22,7 +23,7 @@ import static org.mockito.Mockito.mock;
 /**
  * Created by akonopko on 10/9/14.
  */
-public class FixDirFromHdfsCreatorTest {
+public class OutputFixDirFromHdfsCreatorTest {
 
     @Test
     public void testHdfsTreeFixObjectCreator() throws Exception {
@@ -32,7 +33,7 @@ public class FixDirFromHdfsCreatorTest {
         doReturn("/").when(context).getHdfsPrefix();
 
         doReturn(LocalFileSystem.get(new Configuration())).when(context).getFileSystem();
-        FixDirFromHdfsCreator creator = new FixDirFromHdfsCreator(path);
+        OutputFixDirFromHdfsCreator creator = new OutputFixDirFromHdfsCreator(path);
 
         Map<String, FixObject> contentir2 = Maps.newHashMap();
         contentir2.put("file2", createFile());
@@ -51,7 +52,7 @@ public class FixDirFromHdfsCreatorTest {
         TestRun testRun = mock(TestRun.class);
         doReturn(context).when(testRun).getCiContext();
 
-        FixObjectCompareResult compareResult = new RecursiveDirComparer(wrapInCreator(readDir), creator).check(testRun);
+        FixObjectCompareResult compareResult = new RecursiveDirComparer(Utils.wrap(readDir), creator).check(testRun);
 
         Assert.assertEquals(compareResult.getStatus(), FixObjectCompareResult.Status.SUCCESS);
     }
@@ -60,13 +61,5 @@ public class FixDirFromHdfsCreatorTest {
         return new FixFile(IOUtils.toInputStream("1"));
     }
 
-    private FixObjectCreator wrapInCreator(final FixDir dir) {
-        return new FixObjectCreator<FixDir>() {
-            @Override
-            public FixDir create(TestRun cc) throws Exception {
-                return dir;
-            }
-        };
-    }
 
 }

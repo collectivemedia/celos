@@ -6,6 +6,7 @@ import com.collective.celos.ci.testing.structure.fixobject.FixDir;
 import com.collective.celos.ci.testing.structure.fixobject.FixFile;
 import com.collective.celos.ci.testing.structure.fixobject.FixObject;
 import com.google.common.collect.Maps;
+import org.apache.commons.lang.StringUtils;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.Path;
 
@@ -14,16 +15,15 @@ import java.util.Map;
 /**
  * Created by akonopko on 10/7/14.
  */
-public class FixDirFromHdfsCreator implements FixObjectCreator<FixDir> {
+public class OutputFixDirFromHdfsCreator implements FixObjectCreator<FixDir> {
 
     private final Path path;
 
-    public FixDirFromHdfsCreator(String path) {
-        this(new Path(path));
+    public OutputFixDirFromHdfsCreator(String path) {
+        this(new Path(StringUtils.removeStart(path, "/")));
     }
 
-
-    public FixDirFromHdfsCreator(Path path) {
+    public OutputFixDirFromHdfsCreator(Path path) {
         this.path = path;
     }
 
@@ -34,6 +34,11 @@ public class FixDirFromHdfsCreator implements FixObjectCreator<FixDir> {
     public FixDir create(TestRun testRun) throws Exception {
         Path fullPath = new Path(testRun.getCiContext().getHdfsPrefix(), path);
         return read(fullPath, testRun.getCiContext()).asDir();
+    }
+
+    @Override
+    public String getDescription(TestRun testRun) {
+        return new Path(testRun.getCiContext().getHdfsPrefix(), path).toString();
     }
 
     private FixObject read(Path path, CelosCiContext context) throws Exception {

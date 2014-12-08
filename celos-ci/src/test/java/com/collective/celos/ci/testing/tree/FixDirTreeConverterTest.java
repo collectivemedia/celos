@@ -1,5 +1,6 @@
 package com.collective.celos.ci.testing.tree;
 
+import com.collective.celos.ci.Utils;
 import com.collective.celos.ci.testing.structure.fixobject.*;
 import com.collective.celos.ci.testing.structure.tree.TreeObjectProcessor;
 import com.google.common.collect.Maps;
@@ -25,11 +26,10 @@ public class FixDirTreeConverterTest {
 
     @Test
     public void testFixDirTreeConverter() throws Exception {
-        FixDirTreeConverter converter = new FixDirTreeConverter();
-
         FixDir dir = createDirWithFileContent("lowercase");
+        FixDirTreeConverter converter = new FixDirTreeConverter(Utils.wrap(dir), new UpperCaseStringFixFileConverter());
 
-        FixDir transformed = converter.transform(dir, new UpperCaseStringFixFileConverter());
+        FixDir transformed = converter.create(null);
 
         TreeObjectProcessorImpl holder = new TreeObjectProcessorImpl();
         TreeObjectProcessor.process(transformed, holder);

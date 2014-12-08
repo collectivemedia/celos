@@ -9,12 +9,20 @@ import org.apache.avro.Schema;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 
 /**
  * Created by akonopko on 9/29/14.
  */
 public class AvroToJsonConverterTest {
+
+    @Test
+    public void testEmptyFileConvert() throws IOException {
+        AvroToJsonConverter avroToJsonConverter = new AvroToJsonConverter();
+        avroToJsonConverter.convert(new FixFile(new ByteArrayInputStream(new byte[0])));
+    }
 
     @Test
     public void testAvroToJsonAndBackConverter() throws Exception {
