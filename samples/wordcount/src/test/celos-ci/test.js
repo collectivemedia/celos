@@ -6,6 +6,6 @@ addTestCase({
         hdfsInput(fixDirFromResource("test-1/input/plain/input/wordcount"), "input/wordcount")
     ],
     outputs: [
-        hdfsOutput(fixDirFromResource("test-1/output/plain/output/wordcount"), "output/wordcount")
+        plainCompare(fixDirFromResource("test-1/output/plain/output/wordcount"), "output/wordcount")
     ]
 });

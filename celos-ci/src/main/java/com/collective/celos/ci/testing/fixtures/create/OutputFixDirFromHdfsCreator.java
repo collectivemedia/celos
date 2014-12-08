@@ -33,6 +33,10 @@ public class OutputFixDirFromHdfsCreator implements FixObjectCreator<FixDir> {
         return path;
     }
 
+    public boolean isIgnoreSuccessFiles() {
+        return ignoreSuccessFiles;
+    }
+
     public FixDir create(TestRun testRun) throws Exception {
         Path fullPath = new Path(testRun.getCiContext().getHdfsPrefix(), path);
         return read(fullPath, testRun.getCiContext()).asDir();

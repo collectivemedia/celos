@@ -70,8 +70,8 @@ function jsonCompare(expectedCreator, actualCreator, ignorePathsRaw) {
 }
 
 function hdfsOutput(path, ignoreSuccessFiles) {
-    if (!ignoreSuccessFiles) {
-        ignoreSuccessFiles = true;
+    if (ignoreSuccessFiles === undefined) {
+        ignoreSuccessFiles = false;
     }
     return new OutputFixDirFromHdfsCreator(path, ignoreSuccessFiles);
 }
@@ -80,8 +80,11 @@ function plainCompare(fixObjectCreator, actualCreator) {
     if (!fixObjectCreator) {
         throw "Undefined expected fixObject";
     }
-    if (!resultCreator) {
+    if (!actualCreator) {
         throw "Undefined actualCreator";
+    }
+    if (typeof actualCreator == 'string') {
+        actualCreator = hdfsOutput(actualCreator);
     }
     return new RecursiveDirComparer(fixObjectCreator, actualCreator);
 }

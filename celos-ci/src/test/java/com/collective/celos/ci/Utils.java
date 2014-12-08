@@ -12,6 +12,14 @@ import com.collective.celos.ci.testing.structure.fixobject.FixObject;
 public class Utils {
 
     public static FixObjectCreator<FixFile> wrap(final FixFile fixObj) {
+        return wrap(fixObj, "");
+    }
+
+    public static FixObjectCreator<FixDir> wrap(final FixDir fixObj) {
+        return wrap(fixObj, "");
+    }
+
+    public static FixObjectCreator<FixFile> wrap(final FixFile fixObj, final String desc) {
         return new FixObjectCreator() {
             @Override
             public FixObject create(TestRun testRun) throws Exception {
@@ -20,12 +28,12 @@ public class Utils {
 
             @Override
             public String getDescription(TestRun testRun) {
-                return "";
+                return desc;
             }
         };
     }
 
-    public static FixObjectCreator<FixDir> wrap(final FixDir fixObj) {
+    public static FixObjectCreator<FixDir> wrap(final FixDir fixObj, final String desc) {
         return new FixObjectCreator() {
             @Override
             public FixObject create(TestRun testRun) throws Exception {
@@ -34,7 +42,7 @@ public class Utils {
 
             @Override
             public String getDescription(TestRun testRun) {
-                return "";
+                return desc;
             }
         };
     }

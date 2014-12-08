@@ -53,9 +53,9 @@ public class JsonContentsDirComparer implements FixtureComparer {
             String expectedDiff = getDifference(expectedDiffers);
             return FixObjectCompareResult.failed(
                     "Diff:\n" +
-                            "Actual [" + actualDataCreator.getDescription(testRun) + "] :\n" +
+                            "Actual [" + actualDataCreator.getDescription(testRun) + "]:\n" +
                             actualDirr + "\n" +
-                            "Expected [" + expectedDataCreator.getDescription(testRun) + "] :\n" +
+                            "Expected [" + expectedDataCreator.getDescription(testRun) + "]:\n" +
                             expectedDiff);
 
         }
@@ -95,4 +95,7 @@ public class JsonContentsDirComparer implements FixtureComparer {
         return StringUtils.join(strs, "\n");
     }
 
+    public Set<String> getIgnorePaths() {
+        return ignorePaths;
+    }
 }

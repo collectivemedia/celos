@@ -7,7 +7,7 @@ addTestCase({
         hdfsInput(fixDirFromResource("src/test/celos-ci/test-1/input/plain/input/wordcount11"), "input/wordcount11")
     ],
     outputs: [
-        hdfsOutput(fixDirFromResource("src/test/celos-ci/test-1/output/plain/output/wordcount1"), "output/wordcount1")
+        plainCompare(fixDirFromResource("src/test/celos-ci/test-1/output/plain/output/wordcount1"), "output/wordcount1")
     ]
 })
 
@@ -19,6 +19,6 @@ addTestCase({
         hdfsInput(fixDirFromResource("src/test/celos-ci/test-1/input/plain/input/wordcount2"), "input/wordcount2")
     ],
     outputs: [
-        hdfsOutput(fixDirFromResource("src/test/celos-ci/test-1/output/plain/output/wordcount2"), "output/wordcount2")
+        plainCompare(fixDirFromResource("src/test/celos-ci/test-1/output/plain/output/wordcount2"), "output/wordcount2")
     ]
 });
