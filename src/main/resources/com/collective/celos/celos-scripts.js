@@ -116,7 +116,7 @@ function successTrigger(workflowName) {
     if (!workflowName) {
         throw "Undefined workflow name in success trigger";
     }
-    if (typeof HDFS_PREFIX_JS_VAR !== "undefined") {
+    if (typeof HDFS_PREFIX_JS_VAR !== "undefined" && typeof SUCCESS_TRIGGERS_JS_VAR !== "undefined") {
         if (SUCCESS_TRIGGERS_JS_VAR.contains(workflowName)) {
             return new AlwaysTrigger();
         } else {
