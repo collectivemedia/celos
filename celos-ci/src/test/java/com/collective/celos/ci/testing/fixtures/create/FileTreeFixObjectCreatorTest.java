@@ -42,7 +42,7 @@ public class FileTreeFixObjectCreatorTest {
         FixDir readDir = new FixDir(contentRead);
 
         FixDirFromResourceCreator creator = new FixDirFromResourceCreator(new File(""), path);
-        FixObjectCompareResult compareResult = new RecursiveDirComparer(Utils.wrap(readDir), creator).check(null);
+        FixObjectCompareResult compareResult = new RecursiveDirComparer(Utils.<FixDir>wrap(readDir), creator).check(null);
 
         Assert.assertEquals(compareResult.getStatus(), FixObjectCompareResult.Status.SUCCESS);
     }

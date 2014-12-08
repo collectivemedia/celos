@@ -25,7 +25,7 @@ public class RecursiveDirComparerTest {
         FixDir dir1 = createParentDir1();
         FixDir dir2 = createParentDir1();
 
-        FixObjectCompareResult compareResult = new RecursiveDirComparer(Utils.wrap(dir2), Utils.wrap(dir1)).check(null);
+        FixObjectCompareResult compareResult = new RecursiveDirComparer(Utils.<FixDir>wrap(dir2), Utils.<FixDir>wrap(dir1)).check(null);
         Assert.assertEquals(compareResult.getStatus(), FixObjectCompareResult.Status.SUCCESS);
     }
 
@@ -35,7 +35,7 @@ public class RecursiveDirComparerTest {
         FixDir dir1 = createParentDir1();
         FixDir dir2 = createParentDir2();
 
-        FixObjectCompareResult compareResult = new RecursiveDirComparer(Utils.wrap(dir2), Utils.wrap(dir1)).check(null);
+        FixObjectCompareResult compareResult = new RecursiveDirComparer(Utils.<FixDir>wrap(dir2), Utils.<FixDir>wrap(dir1)).check(null);
         Assert.assertEquals(compareResult.getStatus(), FixObjectCompareResult.Status.FAIL);
         String message = "dir2/file2 : File contents differed\n";
         Assert.assertEquals(compareResult.generateDescription(), message);
@@ -47,7 +47,7 @@ public class RecursiveDirComparerTest {
         FixDir dir1 = createParentDir1();
         FixDir dir2 = createParentDir3();
 
-        FixObjectCompareResult compareResult = new RecursiveDirComparer(Utils.wrap(dir2), Utils.wrap(dir1)).check(null);
+        FixObjectCompareResult compareResult = new RecursiveDirComparer(Utils.<FixDir>wrap(dir2), Utils.<FixDir>wrap(dir1)).check(null);
         Assert.assertEquals(compareResult.getStatus(), FixObjectCompareResult.Status.FAIL);
         String message = "dir2 : Files found only in expected set: file3\n" +
                 "dir2/file2 : File contents differed\n";
@@ -60,7 +60,7 @@ public class RecursiveDirComparerTest {
         FixDir dir1 = getFixDirWithTwoFiles1();
         FixDir dir2 = getFixDirWithTwoFiles1();
 
-        FixObjectCompareResult compareResult = new RecursiveDirComparer(Utils.wrap(dir2), Utils.wrap(dir1)).check(null);
+        FixObjectCompareResult compareResult = new RecursiveDirComparer(Utils.<FixDir>wrap(dir2), Utils.<FixDir>wrap(dir1)).check(null);
         Assert.assertEquals(compareResult.getStatus(), FixObjectCompareResult.Status.SUCCESS);
     }
 
@@ -69,7 +69,7 @@ public class RecursiveDirComparerTest {
         FixDir dir1 = getFixDirWithTwoFiles1();
         FixDir dir2 = getFixDirWithTwoFilesWrongTypes();
 
-        FixObjectCompareResult compareResult = new RecursiveDirComparer(Utils.wrap(dir2), Utils.wrap(dir1)).check(null);
+        FixObjectCompareResult compareResult = new RecursiveDirComparer(Utils.<FixDir>wrap(dir2), Utils.<FixDir>wrap(dir1)).check(null);
         Assert.assertEquals(compareResult.getStatus(), FixObjectCompareResult.Status.FAIL);
         Assert.assertEquals(compareResult.generateDescription(), "Files have different types: file2: expected is [Dir] and actual is [File]\n");
     }
@@ -80,7 +80,7 @@ public class RecursiveDirComparerTest {
         FixDir dir1 = getFixDirWithTwoFiles1();
         FixDir dir2 = getFixDirWithTwoFiles2();
 
-        FixObjectCompareResult compareResult = new RecursiveDirComparer(Utils.wrap(dir2), Utils.wrap(dir1)).check(null);
+        FixObjectCompareResult compareResult = new RecursiveDirComparer(Utils.<FixDir>wrap(dir2), Utils.<FixDir>wrap(dir1)).check(null);
         Assert.assertEquals(compareResult.getStatus(), FixObjectCompareResult.Status.FAIL);
         String message = "file2 : File contents differed\n";
         Assert.assertEquals(compareResult.generateDescription(), message);
@@ -91,7 +91,7 @@ public class RecursiveDirComparerTest {
         FixDir dir1 = getFixDirWithTwoFiles1();
         FixDir dir2 = getFixDirWithTwoFiles3();
 
-        FixObjectCompareResult compareResult = new RecursiveDirComparer(Utils.wrap(dir2), Utils.wrap(dir1)).check(null);
+        FixObjectCompareResult compareResult = new RecursiveDirComparer(Utils.<FixDir>wrap(dir2), Utils.<FixDir>wrap(dir1)).check(null);
         Assert.assertEquals(compareResult.getStatus(), FixObjectCompareResult.Status.FAIL);
         String message = "Files found only in expected set: file3\n" +
                 "file2 : File contents differed\n";
