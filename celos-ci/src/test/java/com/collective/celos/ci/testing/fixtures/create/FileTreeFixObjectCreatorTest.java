@@ -12,15 +12,27 @@ import com.collective.celos.ci.testing.structure.fixobject.FixObject;
 import com.google.common.collect.Maps;
 import junit.framework.Assert;
 import org.apache.commons.io.IOUtils;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
 import java.util.Map;
 
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+
 /**
  * Created by akonopko on 10/9/14.
  */
 public class FileTreeFixObjectCreatorTest {
+
+    private TestRun testRun;
+
+    @Before
+    public void setUp() {
+        testRun = mock(TestRun.class);
+        doReturn(new File("/")).when(testRun).getTestCasesDir();
+    }
 
     @Test
     public void testFileTreeFixObjectCreator() throws Exception {
@@ -41,8 +53,8 @@ public class FileTreeFixObjectCreatorTest {
         contentRead.put("dir1", dir1);
         FixDir readDir = new FixDir(contentRead);
 
-        FixDirFromResourceCreator creator = new FixDirFromResourceCreator(new File(""), path);
-        FixObjectCompareResult compareResult = new RecursiveDirComparer(Utils.wrap(readDir), creator).check(null);
+        FixDirFromResourceCreator creator = new FixDirFromResourceCreator(path);
+        FixObjectCompareResult compareResult = new RecursiveDirComparer(Utils.wrap(readDir), creator).check(testRun);
 
         Assert.assertEquals(compareResult.getStatus(), FixObjectCompareResult.Status.SUCCESS);
     }

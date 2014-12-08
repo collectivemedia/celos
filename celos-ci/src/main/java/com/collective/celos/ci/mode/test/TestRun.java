@@ -1,6 +1,7 @@
 package com.collective.celos.ci.mode.test;
 
 import com.collective.celos.Util;
+import com.collective.celos.ci.config.CelosCiCommandLine;
 import com.collective.celos.ci.config.deploy.CelosCiContext;
 import com.collective.celos.ci.config.deploy.CelosCiTarget;
 import com.collective.celos.ci.deploy.HdfsDeployer;
@@ -43,14 +44,16 @@ public class TestRun {
     private final File celosTempDir;
     private final String hdfsPrefix;
     private final TestCase testCase;
+    private final File testCasesDir;
 
-    public TestRun(CelosCiTarget target, String username, String workflowName, File deployDir, TestCase testCase) throws Exception {
+    public TestRun(CelosCiTarget target, CelosCiCommandLine commandLine, TestCase testCase) throws Exception {
 
         this.testCase = testCase;
         this.celosTempDir = Files.createTempDirectory("celos").toFile();
+        this.testCasesDir = commandLine.getTestCasesDir();
 
         String testUUID = UUID.randomUUID().toString();
-        String hdfsPrefix = String.format(HDFS_PREFIX_PATTERN, username, workflowName, testUUID);
+        String hdfsPrefix = String.format(HDFS_PREFIX_PATTERN, commandLine.getUserName(), commandLine.getWorkflowName(), testUUID);
 
         this.hdfsPrefix = Util.requireNonNull(hdfsPrefix);
         this.celosWorkflowDir = new File(celosTempDir, WORKFLOW_DIR_CELOS_PATH);
@@ -58,7 +61,7 @@ public class TestRun {
         this.celosDbDir = new File(celosTempDir, DB_DIR_CELOS_PATH);
 
         CelosCiTarget testTarget = new CelosCiTarget(target.getPathToHdfsSite(), target.getPathToCoreSite(), celosWorkflowDir.toURI(), target.getDefaultsFile());
-        this.ciContext = new CelosCiContext(testTarget, username, CelosCiContext.Mode.TEST, deployDir, workflowName, hdfsPrefix);
+        this.ciContext = new CelosCiContext(testTarget, commandLine.getUserName(), CelosCiContext.Mode.TEST, commandLine.getDeployDir(), commandLine.getWorkflowName(), hdfsPrefix);
 
         this.wfDeployer = new WorkflowFileDeployer(ciContext);
         this.hdfsDeployer = new HdfsDeployer(ciContext);
@@ -78,6 +81,10 @@ public class TestRun {
 
     public File getCelosTempDir() {
         return celosTempDir;
+    }
+
+    public File getTestCasesDir() {
+        return testCasesDir;
     }
 
     public String getHdfsPrefix() {

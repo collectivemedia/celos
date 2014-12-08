@@ -29,10 +29,10 @@ public class TestTask extends CelosCi {
         CelosCiTarget target = parser.parse(commandLine.getTargetUri());
 
         TestConfigurationParser configurationParser = new TestConfigurationParser();
-        configurationParser.evaluateTestConfig(commandLine, configJSFile);
+        configurationParser.evaluateTestConfig(configJSFile);
 
         for (TestCase testCase : configurationParser.getTestCases()) {
-            testRuns.add(new TestRun(target, commandLine.getUserName(), commandLine.getWorkflowName(), commandLine.getDeployDir(), testCase));
+            testRuns.add(new TestRun(target, commandLine, testCase));
         }
     }
 

@@ -22,18 +22,16 @@ public class TestConfigurationParser {
     private final List<TestCase> testCases = Lists.newArrayList();
     private final JSConfigParser jsConfigParser = new JSConfigParser();
 
-    public void evaluateTestConfig(CelosCiCommandLine commandLine, File testCaseFile) throws IOException {
-        evaluateTestConfig(commandLine, new FileReader(testCaseFile), testCaseFile.getName());
+    public void evaluateTestConfig(File testCaseFile) throws IOException {
+        evaluateTestConfig(new FileReader(testCaseFile), testCaseFile.getName());
     }
 
-    Object evaluateTestConfig(CelosCiCommandLine commandLine, Reader reader, String desc) throws IOException {
+    Object evaluateTestConfig(Reader reader, String desc) throws IOException {
         Global scope = jsConfigParser.createGlobalScope();
 
         Object wrappedContext = Context.javaToJS(this, scope);
-        Object wrappedCommandLine = Context.javaToJS(commandLine, scope);
         Map jsProperties = Maps.newHashMap();
         jsProperties.put("testConfigurationParser", wrappedContext);
-        jsProperties.put("commandLine", wrappedCommandLine);
         jsConfigParser.putPropertiesInScope(jsProperties, scope);
 
         InputStream scripts = getClass().getResourceAsStream("celos-ci-scripts.js");

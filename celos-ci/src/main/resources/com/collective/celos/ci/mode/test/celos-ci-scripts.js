@@ -1,24 +1,24 @@
 importPackage(Packages.com.collective.celos.ci.testing.fixtures.create);
 importPackage(Packages.com.collective.celos.ci.testing.fixtures.deploy);
 importPackage(Packages.com.collective.celos.ci.testing.fixtures.compare);
-importPackage(Packages.com.collective.celos.ci.mode.test);
 importPackage(Packages.com.collective.celos.ci.testing.fixtures.convert.avro);
 importPackage(Packages.com.collective.celos.ci.testing.structure.fixobject);
-importPackage(Packages.java.util);
 importPackage(Packages.com.collective.celos.ci.testing.fixtures.compare.json);
+importPackage(Packages.com.collective.celos.ci.mode.test);
+importPackage(Packages.java.util);
 
 function fixDirFromResource(resource) {
     if (!resource) {
         throw "Undefined resource";
     }
-    return new FixDirFromResourceCreator(commandLine.getTestCasesDir(), resource);
+    return new FixDirFromResourceCreator(resource);
 }
 
 function fixFileFromResource(resource) {
     if (!resource) {
         throw "Undefined resource";
     }
-    return new FixFileFromResourceCreator(commandLine.getTestCasesDir(), resource);
+    return new FixFileFromResourceCreator(resource);
 }
 
 function fixFile(content) {

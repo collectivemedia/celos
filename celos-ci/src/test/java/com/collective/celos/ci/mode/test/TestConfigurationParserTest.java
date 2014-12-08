@@ -1,17 +1,17 @@
 package com.collective.celos.ci.mode.test;
 
-import com.collective.celos.ci.config.CelosCiCommandLine;
 import com.collective.celos.ci.testing.fixtures.compare.RecursiveDirComparer;
 import com.collective.celos.ci.testing.fixtures.compare.json.JsonContentsDirComparer;
 import com.collective.celos.ci.testing.fixtures.convert.avro.AvroToJsonConverter;
-import com.collective.celos.ci.testing.fixtures.create.OutputFixDirFromHdfsCreator;
 import com.collective.celos.ci.testing.fixtures.create.FixDirFromResourceCreator;
 import com.collective.celos.ci.testing.fixtures.create.FixFileFromResourceCreator;
+import com.collective.celos.ci.testing.fixtures.create.OutputFixDirFromHdfsCreator;
 import com.collective.celos.ci.testing.fixtures.deploy.HdfsInputDeployer;
 import com.collective.celos.ci.testing.structure.fixobject.FixDirTreeConverter;
 import com.google.common.collect.Lists;
 import org.apache.hadoop.fs.Path;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.mozilla.javascript.JavaScriptException;
 import org.mozilla.javascript.NativeJavaObject;
@@ -21,64 +21,72 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.util.HashSet;
 
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * Created by akonopko on 27.11.14.
  */
 public class TestConfigurationParserTest {
 
+    private TestRun testRun;
+
+    @Before
+    public void setUp() {
+        testRun = mock(TestRun.class);
+        doReturn(new File("/")).when(testRun).getTestCasesDir();
+    }
+
     @Test
     public void testConfigurationParserWorks() throws IOException {
         TestConfigurationParser parser = new TestConfigurationParser();
-        CelosCiCommandLine commandLine = mock(CelosCiCommandLine.class);
-
         String filePath = Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/defaults/test.js").getFile();
-        parser.evaluateTestConfig(commandLine, new File(filePath));
+        parser.evaluateTestConfig(new File(filePath));
     }
 
     @Test
     public void fixDirFromResource() throws IOException {
         TestConfigurationParser parser = new TestConfigurationParser();
-        CelosCiCommandLine commandLine = mock(CelosCiCommandLine.class);
-        NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(commandLine, new StringReader("fixDirFromResource(\"stuff\")"), "string");
+
+        NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(new StringReader("fixDirFromResource(\"stuff\")"), "string");
         FixDirFromResourceCreator creator = (FixDirFromResourceCreator) creatorObj.unwrap();
-        Assert.assertEquals(new File("stuff"), creator.getPath());
+        Assert.assertEquals(new File("/stuff"), creator.getPath(testRun));
     }
 
     @Test(expected = JavaScriptException.class)
     public void fixDirFromResourceFails() throws IOException {
         TestConfigurationParser parser = new TestConfigurationParser();
-        CelosCiCommandLine commandLine = mock(CelosCiCommandLine.class);
-        NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(commandLine, new StringReader("fixDirFromResource()"), "string");
+
+        NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(new StringReader("fixDirFromResource()"), "string");
         FixDirFromResourceCreator creator = (FixDirFromResourceCreator) creatorObj.unwrap();
-        Assert.assertEquals(new File("stuff"), creator.getPath());
+        Assert.assertEquals(new File("/stuff"), creator.getPath(testRun));
     }
 
 
     @Test
     public void fixFileFromResource() throws IOException {
         TestConfigurationParser parser = new TestConfigurationParser();
-        CelosCiCommandLine commandLine = mock(CelosCiCommandLine.class);
-        NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(commandLine, new StringReader("fixFileFromResource(\"stuff\")"), "string");
+
+        NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(new StringReader("fixFileFromResource(\"stuff\")"), "string");
         FixFileFromResourceCreator creator = (FixFileFromResourceCreator) creatorObj.unwrap();
-        Assert.assertEquals(new File("stuff"), creator.getPath());
+        Assert.assertEquals(new File("/stuff"), creator.getPath(testRun));
     }
 
     @Test(expected = JavaScriptException.class)
     public void fixFileFromResourceFails() throws IOException {
         TestConfigurationParser parser = new TestConfigurationParser();
-        CelosCiCommandLine commandLine = mock(CelosCiCommandLine.class);
-        NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(commandLine, new StringReader("fixFileFromResource()"), "string");
+
+        NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(new StringReader("fixFileFromResource()"), "string");
         FixFileFromResourceCreator creator = (FixFileFromResourceCreator) creatorObj.unwrap();
-        Assert.assertEquals(new File("stuff"), creator.getPath());
+        Assert.assertEquals(new File("stuff"), creator.getPath(testRun));
     }
 
     @Test(expected = JavaScriptException.class)
     public void testHdfsInputDeployerCall1() throws IOException {
         TestConfigurationParser parser = new TestConfigurationParser();
-        CelosCiCommandLine commandLine = mock(CelosCiCommandLine.class);
-        NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(commandLine, new StringReader("hdfsInput()"), "string");
+
+        NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(new StringReader("hdfsInput()"), "string");
         HdfsInputDeployer creator = (HdfsInputDeployer) creatorObj.unwrap();
         Assert.assertEquals(new File("stuff"), creator.getPath());
     }
@@ -86,8 +94,8 @@ public class TestConfigurationParserTest {
     @Test
     public void testHdfsInputDeployerCall2() throws IOException {
         TestConfigurationParser parser = new TestConfigurationParser();
-        CelosCiCommandLine commandLine = mock(CelosCiCommandLine.class);
-        NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(commandLine, new StringReader("hdfsInput(fixFileFromResource(\"stuff\"), \"here\")"), "string");
+
+        NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(new StringReader("hdfsInput(fixFileFromResource(\"stuff\"), \"here\")"), "string");
         HdfsInputDeployer creator = (HdfsInputDeployer) creatorObj.unwrap();
         Assert.assertEquals(new Path("here"), creator.getPath());
     }
@@ -95,30 +103,30 @@ public class TestConfigurationParserTest {
     @Test(expected = JavaScriptException.class)
     public void testRecursiveDirComparer1() throws IOException {
         TestConfigurationParser parser = new TestConfigurationParser();
-        CelosCiCommandLine commandLine = mock(CelosCiCommandLine.class);
-        NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(commandLine, new StringReader("plainCompare()"), "string");
+
+        NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(new StringReader("plainCompare()"), "string");
         RecursiveDirComparer creator = (RecursiveDirComparer) creatorObj.unwrap();
     }
 
     @Test
     public void testRecursiveDirComparer2() throws IOException {
         TestConfigurationParser parser = new TestConfigurationParser();
-        CelosCiCommandLine commandLine = mock(CelosCiCommandLine.class);
-        NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(commandLine, new StringReader("plainCompare(fixDirFromResource(\"stuff\"), \"here\")"), "string");
+
+        NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(new StringReader("plainCompare(fixDirFromResource(\"stuff\"), \"here\")"), "string");
 
         RecursiveDirComparer comparer = (RecursiveDirComparer) creatorObj.unwrap();
 
         OutputFixDirFromHdfsCreator actualCreator = (OutputFixDirFromHdfsCreator) comparer.getActualDataCreator();
         FixDirFromResourceCreator expectedDataCreator = (FixDirFromResourceCreator) comparer.getExpectedDataCreator();
         Assert.assertEquals(new Path("here"), actualCreator.getPath());
-        Assert.assertEquals(new File("stuff"), expectedDataCreator.getPath());
+        Assert.assertEquals(new File("/stuff"), expectedDataCreator.getPath(testRun));
     }
 
     @Test(expected = JavaScriptException.class)
     public void testRecursiveDirComparer3() throws IOException {
         TestConfigurationParser parser = new TestConfigurationParser();
-        CelosCiCommandLine commandLine = mock(CelosCiCommandLine.class);
-        NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(commandLine, new StringReader("plainCompare(fixFileFromResource(\"stuff\"))"), "string");
+
+        NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(new StringReader("plainCompare(fixFileFromResource(\"stuff\"))"), "string");
         RecursiveDirComparer creator = (RecursiveDirComparer) creatorObj.unwrap();
     }
 
@@ -140,8 +148,8 @@ public class TestConfigurationParserTest {
                 "})\n";
 
         TestConfigurationParser parser = new TestConfigurationParser();
-        CelosCiCommandLine commandLine = mock(CelosCiCommandLine.class);
-        parser.evaluateTestConfig(commandLine, new StringReader(configJS), "string");
+
+        parser.evaluateTestConfig(new StringReader(configJS), "string");
 
     }
 
@@ -159,8 +167,8 @@ public class TestConfigurationParserTest {
                 "})\n";
 
         TestConfigurationParser parser = new TestConfigurationParser();
-        CelosCiCommandLine commandLine = mock(CelosCiCommandLine.class);
-        parser.evaluateTestConfig(commandLine, new StringReader(configJS), "string");
+
+        parser.evaluateTestConfig(new StringReader(configJS), "string");
 
     }
 
@@ -178,8 +186,8 @@ public class TestConfigurationParserTest {
                 "})\n";
 
         TestConfigurationParser parser = new TestConfigurationParser();
-        CelosCiCommandLine commandLine = mock(CelosCiCommandLine.class);
-        parser.evaluateTestConfig(commandLine, new StringReader(configJS), "string");
+
+        parser.evaluateTestConfig(new StringReader(configJS), "string");
 
     }
 
@@ -200,8 +208,8 @@ public class TestConfigurationParserTest {
                 "})\n";
 
         TestConfigurationParser parser = new TestConfigurationParser();
-        CelosCiCommandLine commandLine = mock(CelosCiCommandLine.class);
-        parser.evaluateTestConfig(commandLine, new StringReader(configJS), "string");
+
+        parser.evaluateTestConfig(new StringReader(configJS), "string");
     }
 
     @Test(expected = JavaScriptException.class)
@@ -220,22 +228,22 @@ public class TestConfigurationParserTest {
                 "})\n";
 
         TestConfigurationParser parser = new TestConfigurationParser();
-        CelosCiCommandLine commandLine = mock(CelosCiCommandLine.class);
-        parser.evaluateTestConfig(commandLine, new StringReader(configJS), "string");
+
+        parser.evaluateTestConfig(new StringReader(configJS), "string");
     }
 
     @Test(expected = JavaScriptException.class)
     public void testAvroToJsonFails() throws IOException {
         TestConfigurationParser parser = new TestConfigurationParser();
-        CelosCiCommandLine commandLine = mock(CelosCiCommandLine.class);
-        parser.evaluateTestConfig(commandLine, new StringReader("avroToJson()"), "string");
+
+        parser.evaluateTestConfig(new StringReader("avroToJson()"), "string");
     }
 
     @Test
     public void testAvroToJson() throws IOException {
         TestConfigurationParser parser = new TestConfigurationParser();
-        CelosCiCommandLine commandLine = mock(CelosCiCommandLine.class);
-        NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(commandLine, new StringReader("avroToJson(\"1\")"), "string");
+
+        NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(new StringReader("avroToJson(\"1\")"), "string");
 
         FixDirTreeConverter converter = (FixDirTreeConverter) creatorObj.unwrap();
         Assert.assertTrue(converter.getFixFileFonverter() instanceof AvroToJsonConverter);
@@ -245,8 +253,8 @@ public class TestConfigurationParserTest {
     @Test
     public void testJsonCompare() throws IOException {
         TestConfigurationParser parser = new TestConfigurationParser();
-        CelosCiCommandLine commandLine = mock(CelosCiCommandLine.class);
-        NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(commandLine, new StringReader("jsonCompare(fixDirFromResource(\"stuff\"), fixDirFromResource(\"stuff\"))"), "string");
+
+        NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(new StringReader("jsonCompare(fixDirFromResource(\"stuff\"), fixDirFromResource(\"stuff\"))"), "string");
 
         JsonContentsDirComparer comparer = (JsonContentsDirComparer) creatorObj.unwrap();
         Assert.assertEquals(comparer.getIgnorePaths(), new HashSet<String>());
@@ -255,8 +263,8 @@ public class TestConfigurationParserTest {
     @Test
     public void testJsonCompare2() throws IOException {
         TestConfigurationParser parser = new TestConfigurationParser();
-        CelosCiCommandLine commandLine = mock(CelosCiCommandLine.class);
-        NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(commandLine, new StringReader("jsonCompare(fixDirFromResource(\"stuff\"), fixDirFromResource(\"stuff\"), [\"path1\", \"path2\"])"), "string");
+
+        NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(new StringReader("jsonCompare(fixDirFromResource(\"stuff\"), fixDirFromResource(\"stuff\"), [\"path1\", \"path2\"])"), "string");
 
         JsonContentsDirComparer comparer = (JsonContentsDirComparer) creatorObj.unwrap();
         Assert.assertEquals(comparer.getIgnorePaths(), new HashSet(Lists.newArrayList("path1", "path2")));
@@ -266,8 +274,8 @@ public class TestConfigurationParserTest {
     @Test(expected = JavaScriptException.class)
     public void testJsonCompareFails() throws IOException {
         TestConfigurationParser parser = new TestConfigurationParser();
-        CelosCiCommandLine commandLine = mock(CelosCiCommandLine.class);
-        NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(commandLine, new StringReader("jsonCompare(fixDirFromResource(\"stuff\"))"), "string");
+
+        NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(new StringReader("jsonCompare(fixDirFromResource(\"stuff\"))"), "string");
 
         JsonContentsDirComparer comparer = (JsonContentsDirComparer) creatorObj.unwrap();
         Assert.assertEquals(comparer.getIgnorePaths(), new HashSet(Lists.newArrayList("path1", "path2")));

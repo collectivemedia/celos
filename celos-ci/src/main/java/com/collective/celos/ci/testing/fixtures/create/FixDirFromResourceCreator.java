@@ -15,26 +15,27 @@ import java.util.Map;
  */
 public class FixDirFromResourceCreator implements FixObjectCreator<FixDir> {
 
-    private final File path;
+    private final String relativePath;
 
-    public FixDirFromResourceCreator(File testCasesDir, String path) {
-        this.path = new File(testCasesDir, path);
-    }
-
-    public File getPath() {
-        return path;
+    public FixDirFromResourceCreator(String path) {
+        this.relativePath = path;
     }
 
     public FixDir create(TestRun testRun) throws Exception {
+        File path = getPath(testRun);
         if (!path.isDirectory()) {
             throw new IllegalStateException("Cannot find directory: " + path);
         }
         return read(path).asDir();
     }
 
+    public File getPath(TestRun testRun) {
+        return new File(testRun.getTestCasesDir(), relativePath);
+    }
+
     @Override
     public String getDescription(TestRun testRun) {
-        return path.getAbsolutePath();
+        return getPath(testRun).getAbsolutePath();
     }
 
     private FixObject read(File file) throws Exception {
