@@ -45,14 +45,14 @@ function hdfsInput(fixObject, whereToPlace) {
     return new HdfsInputDeployer(fixObject, whereToPlace);
 }
 
-function avroToJson(avroOrPath) {
-    if (!avroOrPath) {
+function avroToJson(creatorOrPath) {
+    if (!creatorOrPath) {
         throw "Undefined expected avroOrPath";
     }
-    if (typeof avroOrPath == 'string') {
-        avroOrPath = new OutputFixDirFromHdfsCreator(avroOrPath)
+    if (typeof creatorOrPath == 'string') {
+        creatorOrPath = new OutputFixDirFromHdfsCreator(creatorOrPath)
     }
-    return new FixDirTreeConverter(avroOrPath, new AvroToJsonConverter());
+    return new FixDirTreeConverter(creatorOrPath, new AvroToJsonConverter());
 }
 
 function jsonCompare(expectedCreator, actualCreator, ignorePathsRaw) {
