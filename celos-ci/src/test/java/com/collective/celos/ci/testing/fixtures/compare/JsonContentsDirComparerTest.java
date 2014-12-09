@@ -1,12 +1,14 @@
 package com.collective.celos.ci.testing.fixtures.compare;
 
 import com.collective.celos.ci.Utils;
+import com.collective.celos.ci.mode.test.TestRun;
 import com.collective.celos.ci.testing.fixtures.compare.json.JsonContentsDirComparer;
 import com.collective.celos.ci.testing.fixtures.create.FixDirFromResourceCreator;
 import com.collective.celos.ci.testing.structure.fixobject.FixDir;
 import com.collective.celos.ci.testing.structure.fixobject.FixFile;
 import com.google.common.collect.Sets;
 import junit.framework.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
@@ -14,18 +16,28 @@ import java.io.InputStream;
 import java.util.Collections;
 import java.util.Set;
 
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+
 /**
  * Created by akonopko on 10/9/14.
  */
 public class JsonContentsDirComparerTest {
 
+    private TestRun testRun;
+
+    @Before
+    public void setUp() {
+        testRun = mock(TestRun.class);
+        doReturn(new File("/")).when(testRun).getTestCasesDir();
+    }
 
     @Test
     public void testJsonContentsDirComparerOK() throws Exception {
 
         File dir1= new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/ci/fixtures/jsoncompare/1").toURI());
-        FixDirFromResourceCreator creator = new FixDirFromResourceCreator(new File("/"), dir1.getAbsolutePath());
-        FixDir fixDir1 = creator.create(null).asDir();
+        FixDirFromResourceCreator creator = new FixDirFromResourceCreator(dir1.getAbsolutePath());
+        FixDir fixDir1 = creator.create(testRun).asDir();
 
         InputStream content = Thread.currentThread().getContextClassLoader().getResourceAsStream("com/collective/celos/ci/fixtures/jsoncompare/2/content");
         JsonContentsDirComparer dirComparer = new JsonContentsDirComparer(Collections.EMPTY_SET, Utils.wrap(new FixFile(content)), Utils.wrap(fixDir1));
@@ -42,8 +54,8 @@ public class JsonContentsDirComparerTest {
 
         File dir1= new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/ci/fixtures/jsoncompare/1").toURI());
 
-        FixDirFromResourceCreator creator = new FixDirFromResourceCreator(new File("/"), dir1.getAbsolutePath());
-        FixDir fixDir1 = creator.create(null).asDir();
+        FixDirFromResourceCreator creator = new FixDirFromResourceCreator(dir1.getAbsolutePath());
+        FixDir fixDir1 = creator.create(testRun).asDir();
         JsonContentsDirComparer dirComparer = new JsonContentsDirComparer(ignorePaths, Utils.wrap(new FixFile(content)), Utils.wrap(fixDir1));
 
         FixObjectCompareResult compareResult = dirComparer.check(null);
@@ -57,8 +69,8 @@ public class JsonContentsDirComparerTest {
 
         File dir1= new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/ci/fixtures/jsoncompare/1").toURI());
 
-        FixDirFromResourceCreator creator = new FixDirFromResourceCreator(new File("/"), dir1.getAbsolutePath());
-        FixDir fixDir1 = creator.create(null).asDir();
+        FixDirFromResourceCreator creator = new FixDirFromResourceCreator(dir1.getAbsolutePath());
+        FixDir fixDir1 = creator.create(testRun).asDir();
         JsonContentsDirComparer dirComparer = new JsonContentsDirComparer(Collections.EMPTY_SET, Utils.wrap(new FixFile(content), "desc1"), Utils.wrap(fixDir1, "desc2"));
 
         FixObjectCompareResult compareResult = dirComparer.check(null);
@@ -76,8 +88,8 @@ public class JsonContentsDirComparerTest {
 
         File dir1= new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/ci/fixtures/jsoncompare/1").toURI());
 
-        FixDirFromResourceCreator creator = new FixDirFromResourceCreator(new File("/"), dir1.getAbsolutePath());
-        FixDir fixDir1 = creator.create(null).asDir();
+        FixDirFromResourceCreator creator = new FixDirFromResourceCreator(dir1.getAbsolutePath());
+        FixDir fixDir1 = creator.create(testRun).asDir();
         JsonContentsDirComparer dirComparer = new JsonContentsDirComparer(Collections.EMPTY_SET, Utils.wrap(new FixFile(is)), Utils.wrap(fixDir1));
 
         FixObjectCompareResult compareResult = dirComparer.check(null);
@@ -97,8 +109,8 @@ public class JsonContentsDirComparerTest {
 
         File dir1= new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/ci/fixtures/jsoncompare/1").toURI());
 
-        FixDirFromResourceCreator creator = new FixDirFromResourceCreator(new File("/"), dir1.getAbsolutePath());
-        FixDir fixDir1 = creator.create(null).asDir();
+        FixDirFromResourceCreator creator = new FixDirFromResourceCreator(dir1.getAbsolutePath());
+        FixDir fixDir1 = creator.create(testRun).asDir();
         JsonContentsDirComparer dirComparer = new JsonContentsDirComparer(Collections.EMPTY_SET, Utils.wrap(new FixFile(is), "desc1"), Utils.wrap(fixDir1, "desc2"));
 
         FixObjectCompareResult compareResult = dirComparer.check(null);

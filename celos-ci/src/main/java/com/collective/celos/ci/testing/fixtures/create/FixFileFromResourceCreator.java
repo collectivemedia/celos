@@ -1,35 +1,40 @@
 package com.collective.celos.ci.testing.fixtures.create;
 
 import com.collective.celos.ci.mode.test.TestRun;
+import com.collective.celos.ci.testing.structure.fixobject.FixDir;
 import com.collective.celos.ci.testing.structure.fixobject.FixFile;
+import com.collective.celos.ci.testing.structure.fixobject.FixObject;
+import com.google.common.collect.Maps;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.util.Map;
 
 /**
  * Created by akonopko on 10/7/14.
  */
 public class FixFileFromResourceCreator implements FixObjectCreator<FixFile> {
+    private final String relativePath;
 
-    private final File path;
-
-    public FixFileFromResourceCreator(File testCasesDir, String path) {
-        this.path = new File(testCasesDir, path);
+    public FixFileFromResourceCreator(String path) {
+        this.relativePath = path;
     }
 
     public FixFile create(TestRun testRun) throws Exception {
-        if (!path.isFile()) {
-            throw new IllegalStateException("Cannot find file: " + path);
+        File path = getPath(testRun);
+        if (!path.isDirectory()) {
+            throw new IllegalStateException("Cannot find directory: " + path);
         }
         return new FixFile(new FileInputStream(path));
     }
 
-    @Override
-    public String getDescription(TestRun testRun) {
-        return path.getAbsolutePath();
+    public File getPath(TestRun testRun) {
+        return new File(testRun.getTestCasesDir(), relativePath);
     }
 
-    public File getPath() {
-        return path;
+    @Override
+    public String getDescription(TestRun testRun) {
+        return getPath(testRun).getAbsolutePath();
     }
+
 }
