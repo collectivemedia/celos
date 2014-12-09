@@ -1,4 +1,4 @@
-package com.collective.celos.ci.testing;
+package com.collective.celos;
 
 import java.net.URI;
 

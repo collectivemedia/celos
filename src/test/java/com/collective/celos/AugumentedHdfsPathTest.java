@@ -1,11 +1,7 @@
-package com.collective.celos.ci;
+package com.collective.celos;
 
-import com.collective.celos.ci.testing.AugumentedHdfsPath;
 import junit.framework.Assert;
 import org.junit.Test;
-
-import java.net.URI;
-import java.net.URISyntaxException;
 
 /**
  * Created by akonopko on 09.12.14.
