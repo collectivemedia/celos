@@ -15,20 +15,6 @@ import java.util.Map;
 
 public class Util {
 
-    private static final Map<String, String> hdfsPathUriSymbolsConversions = ImmutableMap.of(
-            "$", Character.toString((char) 0xE000),
-            "{", Character.toString((char) 0xE001),
-            "}", Character.toString((char) 0xE002));
-
-    private static final Map<String, String> backHdfsPathUriSymbolsConversions;
-
-    static {
-        backHdfsPathUriSymbolsConversions = Maps.newHashMap();
-        for (Map.Entry<String, String> entry : hdfsPathUriSymbolsConversions.entrySet()) {
-            backHdfsPathUriSymbolsConversions.put(entry.getValue(), entry.getKey());
-        }
-    }
-
     public static <T> T requireNonNull(T object) {
         if (object == null) throw new NullPointerException();
         else return object;
@@ -128,10 +114,27 @@ public class Util {
         }
     }
 
+    /**
+     * we need those conversions to be able to parse hdfs URI strings which contain '$', '{' and '}' symbols
+     */
+    private static final Map<String, String> conversions = ImmutableMap.of(
+            "$", Character.toString((char) 0xE000),
+            "{", Character.toString((char) 0xE001),
+            "}", Character.toString((char) 0xE002));
+
+    private static final Map<String, String> backConversions;
+
+    static {
+        backConversions = Maps.newHashMap();
+        for (Map.Entry<String, String> entry : conversions.entrySet()) {
+            backConversions.put(entry.getValue(), entry.getKey());
+        }
+    }
+
     public static String augumentHdfsPath(String hdfsPrefix, String path) throws URISyntaxException {
 
-        for (String ch : hdfsPathUriSymbolsConversions.keySet()) {
-            path = path.replace(ch.toString(), hdfsPathUriSymbolsConversions.get(ch).toString());
+        for (String ch : conversions.keySet()) {
+            path = path.replace(ch.toString(), conversions.get(ch).toString());
         }
         URI oldUri = URI.create(path);
 
@@ -142,8 +145,8 @@ public class Util {
 
         URI newUri = new URI(oldUri.getScheme(), oldUri.getUserInfo(), host, oldUri.getPort(), hdfsPrefix + oldUri.getPath(), oldUri.getQuery(), oldUri.getFragment());
         path = newUri.toString();
-        for (String ch : backHdfsPathUriSymbolsConversions.keySet()) {
-            path = path.replace(ch.toString(), backHdfsPathUriSymbolsConversions.get(ch).toString());
+        for (String ch : backConversions.keySet()) {
+            path = path.replace(ch.toString(), backConversions.get(ch).toString());
         }
         return path;
     }
