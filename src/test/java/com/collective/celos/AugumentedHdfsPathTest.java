@@ -1,6 +1,5 @@
 package com.collective.celos;
 
-import com.collective.celos.ci.Utils;
 import junit.framework.Assert;
 import org.junit.Test;
 
