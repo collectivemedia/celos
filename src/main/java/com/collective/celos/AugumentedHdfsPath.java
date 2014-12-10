@@ -43,7 +43,7 @@ public class AugumentedHdfsPath {
         URI newUri = new URI(oldUri.getScheme(), oldUri.getUserInfo(), host, oldUri.getPort(), hdfsPrefix + oldUri.getPath(), oldUri.getQuery(), oldUri.getFragment());
         path = newUri.toString();
         for (String ch : backConversions.keySet()) {
-            path = path.replace(ch.toString(), conversions.get(ch).toString());
+            path = path.replace(ch.toString(), backConversions.get(ch).toString());
         }
         augumentedPath = path;
     }
