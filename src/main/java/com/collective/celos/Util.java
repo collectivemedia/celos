@@ -15,6 +15,20 @@ import java.util.Map;
 
 public class Util {
 
+    private static final Map<String, String> conversions = ImmutableMap.of(
+            "$", Character.toString((char) 0xE000),
+            "{", Character.toString((char) 0xE001),
+            "}", Character.toString((char) 0xE002));
+
+    private static final Map<String, String> backConversions;
+
+    static {
+        backConversions = Maps.newHashMap();
+        for (Map.Entry<String, String> entry : conversions.entrySet()) {
+            backConversions.put(entry.getValue(), entry.getKey());
+        }
+    }
+
     public static <T> T requireNonNull(T object) {
         if (object == null) throw new NullPointerException();
         else return object;
@@ -111,20 +125,6 @@ public class Util {
             return b;
         } else {
             return a;
-        }
-    }
-
-    private static final Map<String, String> conversions = ImmutableMap.of(
-            "$", Character.toString((char) 0xE000),
-            "{", Character.toString((char) 0xE001),
-            "}", Character.toString((char) 0xE002));
-
-    private static final Map<String, String> backConversions;
-
-    static {
-        backConversions = Maps.newHashMap();
-        for (Map.Entry<String, String> entry : conversions.entrySet()) {
-            backConversions.put(entry.getValue(), entry.getKey());
         }
     }
 
