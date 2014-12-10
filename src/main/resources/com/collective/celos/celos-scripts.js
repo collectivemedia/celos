@@ -131,7 +131,7 @@ function hdfsPath(path) {
         throw "Undefined path in hdfsPath";
     }
     if (typeof HDFS_PREFIX_JS_VAR !== "undefined") {
-        return new AugumentedHdfsPath(HDFS_PREFIX_JS_VAR, path).getPath();
+        return Packages.com.collective.celos.Util.augumentHdfsPath(HDFS_PREFIX_JS_VAR, path);
     } else {
         return path;
     }
