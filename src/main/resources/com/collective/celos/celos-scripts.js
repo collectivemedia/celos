@@ -1,5 +1,6 @@
 importPackage(Packages.com.collective.celos);
 importPackage(Packages.com.collective.celos.trigger);
+importPackage(Packages.com.collective.celos.ci.testing);
 
 // FIXME: temporary solution: until all utility functions return real Java objects,
 // allow JSON also and create instances from it using the JSONInstanceCreator.
@@ -130,7 +131,7 @@ function hdfsPath(path) {
         throw "Undefined path in hdfsPath";
     }
     if (typeof HDFS_PREFIX_JS_VAR !== "undefined") {
-        return HDFS_PREFIX_JS_VAR + path;
+        return Packages.com.collective.celos.Util.augumentHdfsPath(HDFS_PREFIX_JS_VAR, path);
     } else {
         return path;
     }
