@@ -2,6 +2,7 @@ package com.collective.celos.ci.mode.test;
 
 import com.collective.celos.ScheduledTime;
 import com.collective.celos.Util;
+import com.collective.celos.WorkflowID;
 import com.collective.celos.ci.testing.fixtures.compare.FixtureComparer;
 import com.collective.celos.ci.testing.fixtures.deploy.FixtureDeployer;
 import com.google.common.collect.Lists;
@@ -18,10 +19,7 @@ public class TestCase {
     private final ScheduledTime sampleTimeEnd;
     private final List<FixtureDeployer> inputs = Lists.newArrayList();
     private final List<FixtureComparer> outputs = Lists.newArrayList();
-
-    public TestCase(String name, String sampleTimeStart, String sampleTimeEnd) {
-        this(name, new ScheduledTime(sampleTimeStart), new ScheduledTime(sampleTimeEnd));
-    }
+    private final List<WorkflowID> workflows = Lists.newArrayList();
 
     public TestCase(String name, ScheduledTime sampleTimeStart, ScheduledTime sampleTimeEnd) {
         this.name = name;
@@ -35,6 +33,10 @@ public class TestCase {
 
     public void addOutput(FixtureComparer fixtureComparer) {
         outputs.add(fixtureComparer);
+    }
+
+    public void addWorkflow(WorkflowID workflowID) {
+        workflows.add(workflowID);
     }
 
     public String getName() {
@@ -55,5 +57,9 @@ public class TestCase {
 
     public List<FixtureComparer> getOutputs() {
         return outputs;
+    }
+
+    public List<WorkflowID> getWorkflows() {
+        return workflows;
     }
 }

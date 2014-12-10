@@ -28,7 +28,7 @@ public class TestRunTest {
 
         CelosCiCommandLine commandLine = new CelosCiCommandLine("", "TEST", "deploydir", "workflow", "testDir", "uname");
         CelosCiTarget target = new CelosCiTarget(hadoopHdfsUrl, hadoopCoreUrl, URI.create("celoswfdir"), URI.create("deffile"));
-        TestCase testCase = new TestCase("tc1", "2013-12-20T16:00Z", "2013-12-20T16:00Z");
+        TestCase testCase = new TestCase("tc1", new ScheduledTime("2013-12-20T16:00Z"), new ScheduledTime("2013-12-20T16:00Z"));
         TestRun celosCiTest = new TestRun(target, commandLine, testCase);
 
         CelosCiContext context = celosCiTest.getCiContext();
