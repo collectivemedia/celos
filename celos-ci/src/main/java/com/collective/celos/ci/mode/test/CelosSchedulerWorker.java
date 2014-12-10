@@ -2,17 +2,11 @@ package com.collective.celos.ci.mode.test;
 
 import com.collective.celos.ScheduledTime;
 import com.collective.celos.SlotState;
-import com.collective.celos.Workflow;
 import com.collective.celos.WorkflowID;
 import com.collective.celos.ci.mode.test.client.CelosClient;
 import com.collective.celos.ci.mode.test.client.ExternalWorkflowStatus;
-import com.collective.celos.ci.mode.test.client.WorkflowList;
-import org.apache.commons.io.IOUtils;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpGet;
 
 import java.io.IOException;
-import java.io.StringWriter;
 import java.util.List;
 import java.util.Map;
 
