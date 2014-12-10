@@ -1,6 +1,7 @@
 package com.collective.celos;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -11,23 +12,26 @@ import java.util.Map;
  */
 public class AugumentedHdfsPath {
 
-    private static Map<String, String> converstionBeforeParse = ImmutableMap.of(
+    private static final Map<String, String> conversions = ImmutableMap.of(
             "$", Character.toString((char) 0xE000),
             "{", Character.toString((char) 0xE001),
             "}", Character.toString((char) 0xE002));
 
+    private static final Map<String, String> backConversions;
 
-    private static Map<String, String> converstionAfterParse = ImmutableMap.of(
-            Character.toString((char) 0xE000), "$",
-            Character.toString((char) 0xE001), "{",
-            Character.toString((char) 0xE002), "}");
+    static {
+        backConversions = Maps.newHashMap();
+        for (Map.Entry<String, String> entry : conversions.entrySet()) {
+            backConversions.put(entry.getValue(), entry.getKey());
+        }
+    }
 
     private final String augumentedPath;
 
     public AugumentedHdfsPath(String hdfsPrefix, String path) throws URISyntaxException {
 
-        for (String ch : converstionBeforeParse.keySet()) {
-            path = path.replace(ch.toString(), converstionBeforeParse.get(ch).toString());
+        for (String ch : conversions.keySet()) {
+            path = path.replace(ch.toString(), conversions.get(ch).toString());
         }
         URI oldUri = URI.create(path);
 
@@ -38,8 +42,8 @@ public class AugumentedHdfsPath {
 
         URI newUri = new URI(oldUri.getScheme(), oldUri.getUserInfo(), host, oldUri.getPort(), hdfsPrefix + oldUri.getPath(), oldUri.getQuery(), oldUri.getFragment());
         path = newUri.toString();
-        for (String ch : converstionAfterParse.keySet()) {
-            path = path.replace(ch.toString(), converstionAfterParse.get(ch).toString());
+        for (String ch : conversions.keySet()) {
+            path = path.replace(ch.toString(), conversions.get(ch).toString());
         }
         augumentedPath = path;
     }
