@@ -49,7 +49,7 @@ public class CelosClient {
     public List<SlotState> getWorkflowStatus(WorkflowID workflowID, ScheduledTime scheduledTime) throws IOException {
         String timeQuery = "";
         if (scheduledTime != null) {
-            timeQuery = "&time=" + getTimePrecise(scheduledTime);
+            timeQuery = "&time=" + getTimeInclusiveRange(scheduledTime);
         }
         HttpGet workflowListGet = new HttpGet(address + "/workflow?id=" + workflowID + timeQuery);
         HttpResponse getResponse = client.execute(workflowListGet);
@@ -114,10 +114,6 @@ public class CelosClient {
     private String getTimeInclusiveRange(ScheduledTime schedTime) {
         //add one second to include last slot in the time period
         return timeFormatter.formatPretty(schedTime.plusSeconds(1));
-    }
-
-    private String getTimePrecise(ScheduledTime schedTime) {
-        return timeFormatter.formatPretty(schedTime);
     }
 
 }

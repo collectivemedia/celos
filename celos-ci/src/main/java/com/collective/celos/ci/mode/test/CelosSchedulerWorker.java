@@ -57,8 +57,8 @@ public class CelosSchedulerWorker {
 
 
     public boolean isWorkflowRunning(WorkflowID workflowID, ScheduledTime scheduledTime) throws IOException {
-        List<SlotState> workflowStatusMap = client.getWorkflowStatus(workflowID, scheduledTime);
-        for (SlotState status : workflowStatusMap) {
+        List<SlotState> workflowStatuses = client.getWorkflowStatus(workflowID, scheduledTime);
+        for (SlotState status : workflowStatuses) {
             if (status.getStatus() == SlotState.Status.RUNNING || status.getStatus() == status.getStatus().READY) {
                 return true;
             }
