@@ -4,7 +4,6 @@ import com.collective.celos.ScheduledTime;
 import com.collective.celos.SlotState;
 import com.collective.celos.WorkflowID;
 import com.collective.celos.ci.mode.test.client.CelosClient;
-import com.collective.celos.ci.mode.test.client.ExternalWorkflowStatus;
 
 import java.io.IOException;
 import java.util.List;
@@ -58,8 +57,8 @@ public class CelosSchedulerWorker {
 
 
     public boolean isWorkflowRunning(WorkflowID workflowID, ScheduledTime scheduledTime) throws IOException {
-        Map<ScheduledTime, ExternalWorkflowStatus> workflowStatusMap = client.getWorkflowStatus(workflowID, scheduledTime);
-        for (ExternalWorkflowStatus status : workflowStatusMap.values()) {
+        List<SlotState> workflowStatusMap = client.getWorkflowStatus(workflowID, scheduledTime);
+        for (SlotState status : workflowStatusMap) {
             if (status.getStatus() == SlotState.Status.RUNNING || status.getStatus() == status.getStatus().READY) {
                 return true;
             }

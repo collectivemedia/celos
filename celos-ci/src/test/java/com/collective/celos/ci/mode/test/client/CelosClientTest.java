@@ -1,10 +1,9 @@
 package com.collective.celos.ci.mode.test.client;
 
 import com.collective.celos.ScheduledTime;
+import com.collective.celos.SlotID;
 import com.collective.celos.SlotState;
 import com.collective.celos.WorkflowID;
-import com.collective.celos.ci.mode.test.client.CelosClient;
-import com.collective.celos.ci.mode.test.client.ExternalWorkflowStatus;
 import com.google.common.collect.Sets;
 import junit.framework.Assert;
 import org.junit.Test;
@@ -50,17 +49,16 @@ public class CelosClientTest {
                 "  }" +
                 "}";
 
-        Map<ScheduledTime, ExternalWorkflowStatus> result = client.parseWorkflowStatusesMap(new ByteArrayInputStream(str.getBytes()));
+        WorkflowID workflowID = new WorkflowID("123");
+        List<SlotState> result = client.parseWorkflowStatusesMap(workflowID, new ByteArrayInputStream(str.getBytes()));
         Assert.assertEquals(result.size(), 2);
 
-        ScheduledTime key1 = new ScheduledTime("2014-10-27T14:00:00.000Z");
-        ScheduledTime key2 = new ScheduledTime("2014-10-27T15:00:00.000Z");
-        Assert.assertEquals(result.keySet(), Sets.newHashSet(key1, key2));
+        ScheduledTime time1 = new ScheduledTime("2014-10-27T14:00:00.000Z");
+        ScheduledTime time2 = new ScheduledTime("2014-10-27T15:00:00.000Z");
 
-        ExternalWorkflowStatus val1 = new ExternalWorkflowStatus(SlotState.Status.SUCCESS, "0029532-141007123109603-oozie-oozi-W", 0);
-        ExternalWorkflowStatus val2 = new ExternalWorkflowStatus(SlotState.Status.FAILURE, "0029595-141007123109603-oozie-oozi-W", 2);
+        SlotState val1 = new SlotState(new SlotID(workflowID, time1), SlotState.Status.SUCCESS, "0029532-141007123109603-oozie-oozi-W", 0);
+        SlotState val2 = new SlotState(new SlotID(workflowID, time2), SlotState.Status.FAILURE, "0029595-141007123109603-oozie-oozi-W", 2);
 
-        Assert.assertEquals(result.get(key1), val1);
-        Assert.assertEquals(result.get(key2), val2);
+        Assert.assertEquals(Sets.newHashSet(result), Sets.newHashSet(val1, val2));
     }
 }
