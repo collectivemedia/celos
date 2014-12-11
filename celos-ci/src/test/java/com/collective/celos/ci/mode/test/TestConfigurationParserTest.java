@@ -1,5 +1,7 @@
 package com.collective.celos.ci.mode.test;
 
+import com.collective.celos.ScheduledTime;
+import com.collective.celos.WorkflowID;
 import com.collective.celos.ci.testing.fixtures.compare.RecursiveDirComparer;
 import com.collective.celos.ci.testing.fixtures.compare.json.JsonContentsDirComparer;
 import com.collective.celos.ci.testing.fixtures.convert.avro.AvroToJsonConverter;
@@ -150,8 +152,47 @@ public class TestConfigurationParserTest {
         TestConfigurationParser parser = new TestConfigurationParser();
 
         parser.evaluateTestConfig(new StringReader(configJS), "string");
+        Assert.assertEquals(parser.getTestCases().size(), 1);
+
+        TestCase testCase = parser.getTestCases().get(0);
+
+        Assert.assertEquals(testCase.getName(), "wordcount test case 1");
+        Assert.assertEquals(testCase.getSampleTimeEnd(), new ScheduledTime("2013-11-20T18:00Z"));
+        Assert.assertEquals(testCase.getSampleTimeStart(), new ScheduledTime("2013-11-20T11:00Z"));
+        Assert.assertEquals(testCase.getWorkflows().size(), 0);
 
     }
+
+    @Test
+    public void testAddTestCaseTargetWorkflows() throws IOException {
+
+        String configJS = "addTestCase({\n" +
+                "    name: \"wordcount test case 1\",\n" +
+                "    sampleTimeStart: \"2013-11-20T11:00Z\",\n" +
+                "    sampleTimeEnd: \"2013-11-20T18:00Z\",\n" +
+                "    workflows: [ \"id1\", \"id2\"],\n" +
+                "    inputs: [\n" +
+                "        hdfsInput(fixDirFromResource(\"src/test/celos-ci/test-1/input/plain/input/wordcount1\"), \"input/wordcount1\"),\n" +
+                "        hdfsInput(fixDirFromResource(\"src/test/celos-ci/test-1/input/plain/input/wordcount11\"), \"input/wordcount11\")\n" +
+                "    ],\n" +
+                "    outputs: [\n" +
+                "        plainCompare(fixDirFromResource(\"src/test/celos-ci/test-1/output/plain/output/wordcount1\"), \"output/wordcount1\")\n" +
+                "    ]\n" +
+                "})\n";
+
+        TestConfigurationParser parser = new TestConfigurationParser();
+
+        parser.evaluateTestConfig(new StringReader(configJS), "string");
+        Assert.assertEquals(parser.getTestCases().size(), 1);
+
+        TestCase testCase = parser.getTestCases().get(0);
+
+        Assert.assertEquals(testCase.getName(), "wordcount test case 1");
+        Assert.assertEquals(testCase.getSampleTimeEnd(), new ScheduledTime("2013-11-20T18:00Z"));
+        Assert.assertEquals(testCase.getSampleTimeStart(), new ScheduledTime("2013-11-20T11:00Z"));
+        Assert.assertEquals(testCase.getWorkflows(), Lists.newArrayList(new WorkflowID("id1"), new WorkflowID("id2")));
+    }
+
 
     @Test(expected = JavaScriptException.class)
     public void testAddTestCaseNoOutput() throws IOException {
