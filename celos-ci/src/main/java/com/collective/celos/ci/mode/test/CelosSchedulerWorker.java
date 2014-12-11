@@ -36,6 +36,7 @@ public class CelosSchedulerWorker {
         ScheduledTime endTime = testConfig.getSampleTimeEnd();
 
         while (!actualTime.getDateTime().isAfter(endTime.getDateTime())) {
+            System.out.println("Scheduler iteration [" + actualTime + "]");
             client.iterateScheduler(actualTime);
             if (!isThereAnyRunningWorkflows(workflowList, actualTime)) {
                 actualTime = new ScheduledTime(actualTime.getDateTime().plusHours(1));

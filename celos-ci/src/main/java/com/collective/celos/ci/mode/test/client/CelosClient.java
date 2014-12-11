@@ -60,8 +60,6 @@ public class CelosClient {
 
     public void iterateScheduler(ScheduledTime schedTime) throws IOException {
         String schedTimeStr = getTimeInclusiveRange(schedTime);
-        System.out.println("Scheduler iteration [" + schedTimeStr + "]");
-
         HttpPost post = new HttpPost(address + "/scheduler?time=" + schedTimeStr);
         HttpResponse postResponse = client.execute(post);
         EntityUtils.consume(postResponse.getEntity());
