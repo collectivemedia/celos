@@ -35,7 +35,7 @@ public class FileTreeFixObjectCreatorTest {
     }
 
     @Test
-    public void testFileTreeFixObjectCreator() throws Exception {
+    public void testFixDirCreator() throws Exception {
         String path = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/ci/testing/create").toURI()).getAbsolutePath();
 
         Map<String, FixObject> contentir2 = Maps.newHashMap();
@@ -59,6 +59,44 @@ public class FileTreeFixObjectCreatorTest {
         Assert.assertEquals(compareResult.getStatus(), FixObjectCompareResult.Status.SUCCESS);
     }
 
+    @Test (expected = IllegalStateException.class)
+    public void testFixDirCreatorFails() throws Exception {
+        String path = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/ci/testing/create/dir1/file1").toURI()).getAbsolutePath();
+
+        Map<String, FixObject> contentir2 = Maps.newHashMap();
+        contentir2.put("file2", createFile());
+        contentir2.put("file3", createFile());
+        FixDir dir2 = new FixDir(contentir2);
+
+        Map<String, FixObject> contentir1 = Maps.newHashMap();
+        contentir1.put("dir2", dir2);
+        contentir1.put("file1", createFile());
+        FixDir dir1 = new FixDir(contentir1);
+
+
+        Map<String, FixObject> contentRead = Maps.newHashMap();
+        contentRead.put("dir1", dir1);
+        FixDir readDir = new FixDir(contentRead);
+
+        FixDirFromResourceCreator creator = new FixDirFromResourceCreator(path);
+        FixObjectCompareResult compareResult = new RecursiveDirComparer(Utils.wrap(readDir), creator).check(testRun);
+
+        Assert.assertEquals(compareResult.getStatus(), FixObjectCompareResult.Status.SUCCESS);
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void testFixFileCreatorFails() throws Exception {
+        String path = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/ci/testing/create").toURI()).getAbsolutePath();
+        FixFileFromResourceCreator creator = new FixFileFromResourceCreator(path);
+        creator.create(testRun);
+    }
+
+    @Test
+    public void testFixFileCreator() throws Exception {
+        String path = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/ci/testing/create/dir1/file1").toURI()).getAbsolutePath();
+        FixFileFromResourceCreator creator = new FixFileFromResourceCreator(path);
+        creator.create(testRun);
+    }
 
     private FixFile createFile() {
         return new FixFile(IOUtils.toInputStream("1"));
