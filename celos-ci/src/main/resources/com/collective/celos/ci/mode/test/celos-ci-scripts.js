@@ -89,6 +89,7 @@ function addTestCase(testCase) {
     var outputs = testCase["outputs"];
     var sampleTimeStart = testCase["sampleTimeStart"];
     var sampleTimeEnd = testCase["sampleTimeEnd"];
+    var successWorkflows = testCase["successWorkflows"];
 
     if (!inputs) {
         throw "Undefined inputs";
@@ -111,5 +112,11 @@ function addTestCase(testCase) {
     for (var i=0; i < outputs.length; i++) {
         result.addOutput(outputs[i]);
     }
+    if (typeof successWorkflows !== "undefined") {
+        for (var i=0; i < successWorkflows.length; i++) {
+            result.addSuccessWorkflow(successWorkflows[i]);
+        }
+    }
+
     testConfigurationParser.addTestCase(result);
 }

@@ -3,6 +3,7 @@ package com.collective.celos;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -13,6 +14,7 @@ import org.mozilla.javascript.NativeJavaObject;
 import java.io.File;
 import java.io.StringReader;
 import java.util.Arrays;
+import java.util.Map;
 import java.util.Properties;
 
 public class JavaScriptFunctionsTest {
@@ -144,7 +146,37 @@ public class JavaScriptFunctionsTest {
         SuccessTrigger t = (SuccessTrigger) runJS("successTrigger('myworkflow')");
         Assert.assertEquals(new WorkflowID("myworkflow"), t.getTriggerWorkflowId());
     }
-    
+
+    @Test
+    public void testSuccessTriggerAlwaysNoPrefix() throws Exception {
+        Map<String, Object> addParams = ImmutableMap.<String, Object>of("SUCCESS_TRIGGERS_JS_VAR", Lists.newArrayList("myworkflow"));
+        SuccessTrigger t = (SuccessTrigger) runJS("successTrigger('myworkflow')", addParams);
+        Assert.assertEquals(new WorkflowID("myworkflow"), t.getTriggerWorkflowId());
+    }
+
+    @Test
+    public void testSuccessTriggerNeverNoPrefix() throws Exception {
+        Map<String, Object> addParams = ImmutableMap.<String, Object>of("SUCCESS_TRIGGERS_JS_VAR", Lists.newArrayList("otherWorkflow"));
+        SuccessTrigger t = (SuccessTrigger) runJS("successTrigger('myworkflow')", addParams);
+        Assert.assertEquals(new WorkflowID("myworkflow"), t.getTriggerWorkflowId());
+    }
+
+    @Test
+    public void testSuccessTriggerAlways() throws Exception {
+        Map<String, Object> addParams = ImmutableMap.<String, Object>of(
+                "SUCCESS_TRIGGERS_JS_VAR", Lists.newArrayList("myworkflow"),
+                "HDFS_PREFIX_JS_VAR", "prefix");
+        AlwaysTrigger t = (AlwaysTrigger) runJS("successTrigger('myworkflow')", addParams);
+    }
+
+    @Test
+    public void testSuccessTriggerNever() throws Exception {
+        Map<String, Object> addParams = ImmutableMap.<String, Object>of(
+                "SUCCESS_TRIGGERS_JS_VAR", Lists.newArrayList("otherWorkflow"),
+                "HDFS_PREFIX_JS_VAR", "prefix");
+        NeverTrigger t = (NeverTrigger) runJS("successTrigger('myworkflow')", addParams);
+    }
+
     @Test
     public void testSuccessTriggerRequiresWorkflowName() throws Exception {
         expectMessage("successTrigger()", "Undefined workflow name");
@@ -239,9 +271,8 @@ public class JavaScriptFunctionsTest {
 
     @Test
     public void testHdfsPathFunction() throws Exception {
-        String js = "var HDFS_PREFIX_JS_VAR = '/user/celos/test'; \n" +
-                "hdfsPath('/path')";
-        String s = (String) runJS(js);
+        String js = "hdfsPath('/path')";
+        String s = (String) runJS(js, ImmutableMap.<String, Object>of("HDFS_PREFIX_JS_VAR", "/user/celos/test"));
         Assert.assertEquals(s, "/user/celos/test/path");
     }
 
@@ -305,7 +336,11 @@ public class JavaScriptFunctionsTest {
     }
 
     private Object runJS(String js) throws Exception {
-        WorkflowConfigurationParser parser = new WorkflowConfigurationParser(new File("unused"), ImmutableMap.<String, String>of());
+        return runJS(js, ImmutableMap.<String, Object>of());
+    }
+
+    private Object runJS(String js, Map<String, Object> additionalJsVariables) throws Exception {
+        WorkflowConfigurationParser parser = new WorkflowConfigurationParser(new File("unused"), additionalJsVariables);
         // Evaluate JS function call
         Object jsResult = parser.evaluateReader(new StringReader(js), "string");
         if (jsResult instanceof NativeJavaObject) {
@@ -316,7 +351,7 @@ public class JavaScriptFunctionsTest {
     }
 
     private Object runJSNativeResult(String js) throws Exception {
-        WorkflowConfigurationParser parser = new WorkflowConfigurationParser(new File("unused"), ImmutableMap.<String, String>of());
+        WorkflowConfigurationParser parser = new WorkflowConfigurationParser(new File("unused"), ImmutableMap.<String, Object>of());
         // Evaluate JS function call
         return parser.evaluateReader(new StringReader(js), "string");
     }

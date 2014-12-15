@@ -141,7 +141,7 @@ public class WorkflowConfigurationParserTest {
 
     @Test
     public void evaluatesAdditionalVar() throws Exception {
-        WorkflowConfigurationParser parser = new WorkflowConfigurationParser(new File("unused"), ImmutableMap.of("var1", "val1"));
+        WorkflowConfigurationParser parser = new WorkflowConfigurationParser(new File("unused"), ImmutableMap.<String, Object>of("var1", "val1"));
         // Evaluate JS function call
         Object jsResult = parser.evaluateReader(new StringReader("var1"), "string");
         Assert.assertEquals(jsResult, "val1");
@@ -153,7 +153,7 @@ public class WorkflowConfigurationParserTest {
         URL resource = Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/defaults-oozie-props");
         File defaults = new File(resource.toURI());
 
-        WorkflowConfigurationParser parser = new WorkflowConfigurationParser(defaults, ImmutableMap.of("var1", "val1"));
+        WorkflowConfigurationParser parser = new WorkflowConfigurationParser(defaults, ImmutableMap.<String, Object>of("var1", "val1"));
 
         String func = "function (slotId) {" +
                 "        return {" +
@@ -175,7 +175,7 @@ public class WorkflowConfigurationParserTest {
         URL resource = Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/defaults-oozie-props");
         File defaults = new File(resource.toURI());
 
-        WorkflowConfigurationParser parser = new WorkflowConfigurationParser(defaults, ImmutableMap.of("USERNAME", "nameIsChanged"));
+        WorkflowConfigurationParser parser = new WorkflowConfigurationParser(defaults, ImmutableMap.<String, Object>of("USERNAME", "nameIsChanged"));
 
         String func = "function (slotId) {" +
                 "        return {" +
@@ -194,7 +194,7 @@ public class WorkflowConfigurationParserTest {
 
     @Test
     public void doesntEvaluateAdditionalVar() throws Exception {
-        WorkflowConfigurationParser parser = new WorkflowConfigurationParser(new File("unused"), ImmutableMap.<String, String>of());
+        WorkflowConfigurationParser parser = new WorkflowConfigurationParser(new File("unused"), ImmutableMap.<String, Object>of());
         try {
             parser.evaluateReader(new StringReader("var1"), "string");
         } catch (Exception e) {
@@ -214,7 +214,7 @@ public class WorkflowConfigurationParserTest {
         File dir = getConfigurationDir(label);
         File defaults = getDefaultsDir();
         File workflow = new File(dir, workflowName + "." + WorkflowConfigurationParser.WORKFLOW_FILE_EXTENSION);
-        WorkflowConfigurationParser workflowConfigurationParser = new WorkflowConfigurationParser(defaults, ImmutableMap.<String, String>of());
+        WorkflowConfigurationParser workflowConfigurationParser = new WorkflowConfigurationParser(defaults, ImmutableMap.<String, Object>of());
         workflowConfigurationParser.parseFile(workflow);
         return workflowConfigurationParser.getWorkflowConfiguration();
     }
@@ -222,7 +222,7 @@ public class WorkflowConfigurationParserTest {
     public static WorkflowConfiguration parseDir(String label) throws Exception {
         File dir = getConfigurationDir(label);
         File defaults = getDefaultsDir();
-        return new WorkflowConfigurationParser(defaults, ImmutableMap.<String, String>of()).parseConfiguration(dir).getWorkflowConfiguration();
+        return new WorkflowConfigurationParser(defaults, ImmutableMap.<String, Object>of()).parseConfiguration(dir).getWorkflowConfiguration();
     }
 
     public static File getConfigurationDir(String label) throws URISyntaxException {

@@ -32,6 +32,7 @@ public class TestRun {
 
     private static final String HDFS_PREFIX_PATTERN = "/user/%s/test/%s/%s";
     private static final String HDFS_PREFIX_JS_VAR = "HDFS_PREFIX_JS_VAR";
+    private static final String SUCCESS_TRIGGERS_JS_VAR = "SUCCESS_TRIGGERS_JS_VAR";
     private static final String CELOS_USER_JS_VAR = "CELOS_USER_JS_VAR";
     private static final String WORKFLOW_DIR_CELOS_PATH = "workflows";
     private static final String DEFAULTS_DIR_CELOS_PATH = "defaults";
@@ -106,9 +107,10 @@ public class TestRun {
         wfDeployer.deploy();
         hdfsDeployer.deploy();
 
-        Map<String, String> additionalJSParams = ImmutableMap.of(
+        Map<String, Object> additionalJSParams = ImmutableMap.of(
                 HDFS_PREFIX_JS_VAR, hdfsPrefix,
-                CELOS_USER_JS_VAR, ciContext.getUserName());
+                CELOS_USER_JS_VAR, ciContext.getUserName(),
+                SUCCESS_TRIGGERS_JS_VAR, testCase.getSuccessWorkflows());
 
         final CelosServer celosServer = new CelosServer();
         try {
