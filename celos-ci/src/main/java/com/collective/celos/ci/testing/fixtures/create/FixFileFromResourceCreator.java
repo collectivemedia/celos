@@ -22,8 +22,8 @@ public class FixFileFromResourceCreator implements FixObjectCreator<FixFile> {
 
     public FixFile create(TestRun testRun) throws Exception {
         File path = getPath(testRun);
-        if (!path.isDirectory()) {
-            throw new IllegalStateException("Cannot find directory: " + path);
+        if (!path.isFile()) {
+            throw new IllegalStateException("Cannot find file: " + path);
         }
         return new FixFile(new FileInputStream(path));
     }
