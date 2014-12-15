@@ -7,6 +7,7 @@ import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import org.mozilla.javascript.JavaScriptException;
 import org.mozilla.javascript.NativeJavaObject;
 
 import java.io.File;
@@ -57,67 +58,6 @@ public class JavaScriptFunctionsTest {
     @Test
     public void testAlwaysTrigger() throws Exception {
         AlwaysTrigger t = (AlwaysTrigger) runJS("alwaysTrigger()");
-    }
-
-    @Test
-    public void testHDFSCheckFunctionDefaultFSWithDate() throws Exception {
-
-        String root = tempFolder.getRoot().getPath();
-        File triggerFile = new File(root, "2013-11-22/1500/_READY");
-        triggerFile.getParentFile().mkdirs();
-        triggerFile.createNewFile();
-
-        Boolean result = (Boolean) runJSNativeResult("var CELOS_DEFAULT_HDFS = 'file:///'; hdfsCheck('" + root + "/${year}-${month}-${day}/${hour}00/_READY', new ScheduledTime(\"2013-11-22T15:00Z\"))");
-        Assert.assertTrue(result);
-    }
-
-
-    @Test
-    public void testHDFSCheckFunctionDefaults() throws Exception {
-
-        String root = tempFolder.getRoot().getPath();
-        File triggerFile = new File(root, "2013-11-22/1500/_READY");
-        triggerFile.getParentFile().mkdirs();
-        triggerFile.createNewFile();
-
-        Boolean result = (Boolean) runJSNativeResult("var CELOS_DEFAULT_HDFS = 'file:///'; hdfsCheck('" + root + "/2013-11-22/1500/_READY" + "')");
-        Assert.assertTrue(result);
-    }
-
-    @Test
-    public void testHDFSCheckFunctionDefaultsFalse() throws Exception {
-
-        String root = tempFolder.getRoot().getPath();
-        File triggerFile = new File(root, "2013-11-22/1501/_READY");
-        triggerFile.getParentFile().mkdirs();
-        triggerFile.createNewFile();
-
-        Boolean result = (Boolean) runJSNativeResult("var CELOS_DEFAULT_HDFS = 'file:///'; hdfsCheck('" + root + "/2013-11-22/1500/_READY" + "')");
-        Assert.assertFalse(result);
-    }
-
-    @Test
-    public void testHDFSCheckFunctionTrue() throws Exception {
-
-        String root = tempFolder.getRoot().getPath();
-        File triggerFile = new File(root, "2013-11-22/1500/_READY");
-        triggerFile.getParentFile().mkdirs();
-        triggerFile.createNewFile();
-
-        Boolean result = (Boolean) runJSNativeResult("hdfsCheck('" + root + "/2013-11-22/1500/_READY" + "', ScheduledTime.now(), 'file:///')");
-        Assert.assertTrue(result);
-    }
-
-    @Test
-    public void testHDFSCheckFunctionFalse() throws Exception {
-
-        String root = tempFolder.getRoot().getPath();
-        File triggerFile = new File(root, "2013-11-22/1501/_READY");
-        triggerFile.getParentFile().mkdirs();
-        triggerFile.createNewFile();
-
-        Boolean result = (Boolean) runJSNativeResult("hdfsCheck('" + root + "/2013-11-22/1500/_READY" + "', ScheduledTime.now(), 'file:///')");
-        Assert.assertFalse(result);
     }
 
     @Test
@@ -310,6 +250,58 @@ public class JavaScriptFunctionsTest {
         String js = "hdfsPath('/path')";
         String s = (String) runJS(js);
         Assert.assertEquals(s, "/path");
+    }
+
+    @Test
+    public void testHdfsCheckNotExists() throws Exception {
+        String js = "var CELOS_DEFAULT_HDFS = ''; " +
+                "var schTime = new Packages.com.collective.celos.ScheduledTime('2014-05-12T19:33:01Z');" +
+                "var workflowId = new Packages.com.collective.celos.WorkflowID('id');" +
+                "var slotId = new Packages.com.collective.celos.SlotID(workflowId, schTime);" +
+                "hdfsCheck('/path', slotId)";
+
+        Boolean s = (Boolean) runJS(js);
+        Assert.assertEquals(s, false);
+
+    }
+
+    @Test
+    public void testHdfsCheckExists() throws Exception {
+        String js = "var CELOS_DEFAULT_HDFS = ''; " +
+                "var schTime = new Packages.com.collective.celos.ScheduledTime('2014-05-12T19:33:01Z');" +
+                "var workflowId = new Packages.com.collective.celos.WorkflowID('id');" +
+                "var slotId = new Packages.com.collective.celos.SlotID(workflowId, schTime);" +
+                "hdfsCheck('file:///tmp', slotId)";
+
+        Boolean s = (Boolean) runJS(js);
+        Assert.assertEquals(s, true);
+
+    }
+
+    @Test
+    public void testHdfsCheckExists2() throws Exception {
+        String js = "var CELOS_DEFAULT_HDFS = ''; " +
+                "var schTime = new Packages.com.collective.celos.ScheduledTime('2014-05-12T19:33:01Z');" +
+                "var workflowId = new Packages.com.collective.celos.WorkflowID('id');" +
+                "var slotId = new Packages.com.collective.celos.SlotID(workflowId, schTime);" +
+                "hdfsCheck('/tmp', slotId, 'file:///')";
+
+        Boolean s = (Boolean) runJS(js);
+        Assert.assertEquals(s, true);
+
+    }
+
+    @Test(expected = JavaScriptException.class)
+    public void testHdfsCheckWrongType() throws Exception {
+        String js = "var CELOS_DEFAULT_HDFS = ''; " +
+                "var schTime = new Packages.com.collective.celos.ScheduledTime('2014-05-12T19:33:01Z');" +
+                "var workflowId = new Packages.com.collective.celos.WorkflowID('id');" +
+                "var slotId = 'slot';" +
+                "hdfsCheck('file:///tmp', slotId)";
+
+        Boolean s = (Boolean) runJS(js);
+        Assert.assertEquals(s, true);
+
     }
 
     private Object runJS(String js) throws Exception {

@@ -49,7 +49,22 @@ function alwaysTrigger() {
     return new AlwaysTrigger();
 }
 
-// Pass fs as final parameter so we can later use a default if parameter not supplied
+function hdfsCheck(path, slotID, fs) {
+    var trigger = hdfsCheckTrigger(path, fs);
+    var scheduledTime;
+
+    if (!slotID) {
+        scheduledTime = ScheduledTime.now();
+    } else {
+        if (typeof slotID != "object" || slotID.getClass().getName() !== "com.collective.celos.SlotID") {
+            throw "slotID should be instance of com.collective.celos.SlotID";
+        }
+        scheduledTime = slotID.getScheduledTime();
+    }
+    return trigger.isDataAvailable(null, ScheduledTime.now(), scheduledTime);
+}
+
+// Pass fs as last parameter so we can later use a default if parameter not supplied
 function hdfsCheckTrigger(path, fs) {
     if (!path) {
         throw "Undefined path in hdfsCheckTrigger";
@@ -63,15 +78,6 @@ function hdfsCheckTrigger(path, fs) {
     }
     return new HDFSCheckTrigger(path, fs);
 }
-
-function hdfsCheck(path, scheduledTime, fs) {
-    var trigger = hdfsCheckTrigger(path, fs);
-    if (!scheduledTime) {
-        scheduledTime = ScheduledTime.now();
-    }
-    return trigger.isDataAvailable(null, scheduledTime, scheduledTime);
-}
-
 
 function andTrigger() {
     var list = new Packages.java.util.LinkedList();
