@@ -8,7 +8,9 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -806,6 +808,55 @@ public class SchedulerTest {
         sch.step(new ScheduledTime("2013-11-27T20:01Z"));
         Assert.assertEquals(failure, db.getSlotState(id1));
     }
+    
+    /**
+     * Set up two identical workflows but tell scheduler to only schedule the first one.
+     * 
+     * Check that second workflow's slot is not touched and stays in WAITING.
+     */
+    @Test
+    public void schedulingOnlySubsetOfWorkflowsWorks() throws Exception {
+        WorkflowID wfID1 = new WorkflowID("wf1");
+        WorkflowID wfID2 = new WorkflowID("wf2");
+        Schedule sch1 = makeHourlySchedule();
+        SchedulingStrategy str1 = makeSerialSchedulingStrategy();
+        Trigger tr1 = makeAlwaysTrigger();
+        MockExternalService srv1 = new MockExternalService(new MockExternalService.MockExternalStatusRunning());
+        int maxRetryCount = 0;
+        Workflow wf1 = new Workflow(wfID1, sch1, str1, tr1, srv1, maxRetryCount, Workflow.DEFAULT_START_TIME);
+        Workflow wf2 = new Workflow(wfID2, sch1, str1, tr1, srv1, maxRetryCount, Workflow.DEFAULT_START_TIME);
+        
+        WorkflowConfiguration cfg = new WorkflowConfiguration();
+        cfg.addWorkflow(wf1, "");
+        cfg.addWorkflow(wf2, "");
+        
+        MemoryStateDatabase db = new MemoryStateDatabase();
+
+        SlotID id1 = new SlotID(wfID1, new ScheduledTime("2013-11-27T20:00Z"));
+        SlotID id2 = new SlotID(wfID2, new ScheduledTime("2013-11-27T20:00Z"));
+        
+        SlotState slot1 = new SlotState(id1, SlotState.Status.WAITING);
+        SlotState slot2 = new SlotState(id2, SlotState.Status.WAITING);
+        
+        db.putSlotState(slot1);
+        db.putSlotState(slot2);
+        
+        Set<WorkflowID> subset = new HashSet<>();
+        subset.add(wfID1);
+        
+        int slidingWindowHours = 3;
+        DateTime current = DateTime.parse("2013-11-27T22:01Z");
+
+        Scheduler sched = new Scheduler(cfg, db, slidingWindowHours);
+        sched.step(new ScheduledTime(current), subset);
+        
+        SlotState slot1After = db.getSlotState(id1);
+        Assert.assertEquals(SlotState.Status.READY, slot1After.getStatus());
+        
+        SlotState slot2After = db.getSlotState(id2);
+        Assert.assertEquals(SlotState.Status.WAITING, slot2After.getStatus());
+    }
+
     
     private AlwaysTrigger makeAlwaysTrigger() {
         return new AlwaysTrigger();
