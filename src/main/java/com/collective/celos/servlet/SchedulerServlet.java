@@ -20,7 +20,7 @@ import com.collective.celos.WorkflowID;
 @SuppressWarnings("serial")
 public class SchedulerServlet extends AbstractServlet {
 
-    public static final String IDS_PARAM = "ids";
+    static final String IDS_PARAM = "ids";
 
     protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException {
         try {
