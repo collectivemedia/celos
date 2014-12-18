@@ -55,6 +55,17 @@ function avroToJson(creatorOrPath) {
     return new FixDirTreeConverter(creatorOrPath, new AvroToJsonConverter());
 }
 
+function jsonToAvro(dirCreator, schemaFileCreator) {
+    if (!dirCreator) {
+        throw "Undefined expected dirCreator";
+    }
+    if (!schemaFileCreator) {
+        throw "Undefined expected schemaFileCreator";
+    }
+    return new FixDirTreeConverter(dirCreator, new JsonToAvroConverter(schemaFileCreator));
+}
+
+
 function jsonCompare(expectedCreator, actualCreator, ignorePathsRaw) {
     if (!expectedCreator) {
         throw "Undefined expectedCreator";

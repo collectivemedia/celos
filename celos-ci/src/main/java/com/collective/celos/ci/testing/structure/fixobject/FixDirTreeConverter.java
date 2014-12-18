@@ -20,24 +20,24 @@ public class FixDirTreeConverter implements FixObjectCreator<FixDir> {
         this.fixFileConverter = fixFileConverter;
     }
 
-    private FixObject transform(FixObject object, AbstractFixFileConverter converter) throws IOException {
+    private FixObject transform(TestRun tr, FixObject object, AbstractFixFileConverter converter) throws Exception {
         if (!object.isFile()) {
             FixDir fd = (FixDir) object;
             Map<String, FixObject> result = Maps.newHashMap();
             Map<String, FixObject> map = fd.getChildren();
             for(Map.Entry<String, FixObject> entry : map.entrySet()) {
-                result.put(entry.getKey(), transform(entry.getValue(), converter));
+                result.put(entry.getKey(), transform(tr, entry.getValue(), converter));
             }
             return new FixDir(result);
         } else {
             FixFile ff = (FixFile) object;
-            return converter.convert(ff);
+            return converter.convert(tr, ff);
         }
     }
 
     @Override
     public FixDir create(TestRun testRun) throws Exception {
-        return transform(creator.create(testRun), fixFileConverter).asDir();
+        return transform(testRun, creator.create(testRun), fixFileConverter).asDir();
     }
 
     @Override
