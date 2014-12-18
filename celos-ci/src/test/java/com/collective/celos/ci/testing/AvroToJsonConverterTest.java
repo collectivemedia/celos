@@ -41,6 +41,28 @@ public class AvroToJsonConverterTest {
         avroToJsonConverter.convert(testRun, new FixFile(new ByteArrayInputStream(new byte[0])));
     }
 
+
+    @Test
+    public void testJsonToAvroEmpty() throws Exception {
+
+        FixFile ff = new FixFile(new ByteArrayInputStream(new byte[0]));
+
+        FixObjectCreator<FixFile> schemaCreator = Utils.wrap(new FixFile(Thread.currentThread().getContextClassLoader().getResourceAsStream("com/collective/celos/ci/fixtures/avro/avro.schema")));
+
+        JsonToAvroConverter jsonToAvroConverter = new JsonToAvroConverter(schemaCreator);
+        FixFile fixFile = jsonToAvroConverter.convert(testRun, ff);
+    }
+
+
+    @Test
+    public void testAvroToJsonEmpty() throws Exception {
+
+        FixFile ff = new FixFile(new ByteArrayInputStream(new byte[0]));
+
+        AvroToJsonConverter jsonToAvroConverter = new AvroToJsonConverter();
+        FixFile fixFile = jsonToAvroConverter.convert(testRun, ff);
+    }
+
     @Test
     public void testAvroToJsonAndBackConverter() throws Exception {
 
