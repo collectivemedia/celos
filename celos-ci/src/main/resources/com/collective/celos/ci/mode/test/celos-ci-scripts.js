@@ -28,11 +28,11 @@ function fixFile(content) {
     return new FixFileFromStringCreator(content);
 }
 
-function fixDir(hier) {
+function fixDir(content) {
     if (!content) {
         throw "Undefined content";
     }
-    return new FixDirHierarchyCreator(hier);
+    return new FixDirHierarchyCreator(content);
 }
 
 function hdfsInput(fixObject, whereToPlace) {
