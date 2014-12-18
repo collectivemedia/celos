@@ -3,6 +3,7 @@ package com.collective.celos;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.SortedSet;
 
 import org.apache.log4j.Logger;
@@ -37,12 +38,27 @@ public class Scheduler {
      * Steps through all workflows.
      */
     public void step(ScheduledTime current) {
+    	// by default, schedule all workflows
+    	step(current, Collections.<WorkflowID>emptySet());
+    }
+    
+    /**
+     * If workflowIDs is empty, schedule all workflows.
+     * 
+     * Otherwise, schedule only workflows in the set.
+     */
+    public void step(ScheduledTime current, Set<WorkflowID> workflowIDs) {
         LOGGER.info("Starting scheduler step: " + current + " -- " + getSlidingWindowStartTime(current));
         for (Workflow wf : configuration.getWorkflows()) {
-            try {
-                stepWorkflow(wf, current);
-            } catch(Exception e) {
-                LOGGER.error("Exception in workflow: " + wf.getID() + ": " + e.getMessage(), e);
+            WorkflowID id = wf.getID();
+            if (workflowIDs.isEmpty() || workflowIDs.contains(id)) {
+                try {
+                    stepWorkflow(wf, current);
+                } catch (Exception e) {
+                    LOGGER.error("Exception in workflow: " + id + ": " + e.getMessage(), e);
+                }
+            } else {
+                LOGGER.info("Ignoring workflow: " + id);
             }
         }
         LOGGER.info("Ending scheduler step: " + current + " -- " + getSlidingWindowStartTime(current));

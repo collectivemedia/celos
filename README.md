@@ -620,6 +620,16 @@ Logs are stored under `/var/log/celos`.
 
 ## HTTP API
 
+### Step scheduler -- `POST /celos/scheduler`
+
+Performs a step of the scheduler, typically called from `cron` once a minute.
+
+Optional parameters:
+
+* `time` -- if supplied, process slots in the sliding window before that time (as opposed to current time).  Used for manually processing slots in the past outside the current sliding window.
+
+* `ids` (comma separated list of workflow IDs) -- if supplied, process only the workflows in the list.
+
 ### List installed workflows -- `GET /celos/workflow-list`
 
 Returns the IDs of all active workflows.
