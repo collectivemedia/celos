@@ -4,11 +4,14 @@ import com.collective.celos.ci.testing.fixtures.compare.RecursiveDirComparer;
 import com.collective.celos.ci.testing.fixtures.compare.json.JsonContentsDirComparer;
 import com.collective.celos.ci.testing.fixtures.convert.avro.AvroToJsonConverter;
 import com.collective.celos.ci.testing.fixtures.create.FixDirFromResourceCreator;
+import com.collective.celos.ci.testing.fixtures.create.FixDirHierarchyCreator;
 import com.collective.celos.ci.testing.fixtures.create.FixFileFromResourceCreator;
 import com.collective.celos.ci.testing.fixtures.create.OutputFixDirFromHdfsCreator;
 import com.collective.celos.ci.testing.fixtures.deploy.HdfsInputDeployer;
+import com.collective.celos.ci.testing.structure.fixobject.FixDir;
 import com.collective.celos.ci.testing.structure.fixobject.FixDirTreeConverter;
 import com.google.common.collect.Lists;
+import org.apache.commons.io.IOUtils;
 import org.apache.hadoop.fs.Path;
 import org.junit.Assert;
 import org.junit.Before;
@@ -16,6 +19,7 @@ import org.junit.Test;
 import org.mozilla.javascript.JavaScriptException;
 import org.mozilla.javascript.NativeJavaObject;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
@@ -23,7 +27,6 @@ import java.util.HashSet;
 
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 /**
  * Created by akonopko on 27.11.14.
@@ -246,7 +249,7 @@ public class TestConfigurationParserTest {
         NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(new StringReader("avroToJson(\"1\")"), "string");
 
         FixDirTreeConverter converter = (FixDirTreeConverter) creatorObj.unwrap();
-        Assert.assertTrue(converter.getFixFileFonverter() instanceof AvroToJsonConverter);
+        Assert.assertTrue(converter.getFixFileConverter() instanceof AvroToJsonConverter);
         Assert.assertTrue(converter.getCreator() instanceof OutputFixDirFromHdfsCreator);
     }
 
@@ -279,6 +282,24 @@ public class TestConfigurationParserTest {
 
         JsonContentsDirComparer comparer = (JsonContentsDirComparer) creatorObj.unwrap();
         Assert.assertEquals(comparer.getIgnorePaths(), new HashSet(Lists.newArrayList("path1", "path2")));
+    }
+
+    @Test
+    public void testFixDir() throws Exception {
+        String js = "" +
+                "fixDir({" +
+                "   file1: fixFile('123')," +
+                "   file2: fixFile('234')" +
+                "})";
+
+        TestConfigurationParser parser = new TestConfigurationParser();
+        NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(new StringReader(js), "string");
+        FixDirHierarchyCreator creator = (FixDirHierarchyCreator) creatorObj.unwrap();
+        FixDir fixDir = creator.create(null);
+
+        Assert.assertEquals(fixDir.getChildren().size(), 2);
+        Assert.assertTrue(IOUtils.contentEquals(fixDir.getChildren().get("file1").asFile().getContent(), new ByteArrayInputStream("123".getBytes())));
+        Assert.assertTrue(IOUtils.contentEquals(fixDir.getChildren().get("file2").asFile().getContent(), new ByteArrayInputStream("234".getBytes())));
     }
 
 

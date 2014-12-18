@@ -13,11 +13,11 @@ import java.util.Map;
 public class FixDirTreeConverter implements FixObjectCreator<FixDir> {
 
     private final FixObjectCreator creator;
-    private final AbstractFixFileConverter fixFileFonverter;
+    private final AbstractFixFileConverter fixFileConverter;
 
-    public FixDirTreeConverter(FixObjectCreator creator, AbstractFixFileConverter fixFileFonverter) {
+    public FixDirTreeConverter(FixObjectCreator creator, AbstractFixFileConverter fixFileConverter) {
         this.creator = creator;
-        this.fixFileFonverter = fixFileFonverter;
+        this.fixFileConverter = fixFileConverter;
     }
 
     private FixObject transform(FixObject object, AbstractFixFileConverter converter) throws IOException {
@@ -37,7 +37,7 @@ public class FixDirTreeConverter implements FixObjectCreator<FixDir> {
 
     @Override
     public FixDir create(TestRun testRun) throws Exception {
-        return transform(creator.create(testRun), fixFileFonverter).asDir();
+        return transform(creator.create(testRun), fixFileConverter).asDir();
     }
 
     @Override
@@ -49,7 +49,7 @@ public class FixDirTreeConverter implements FixObjectCreator<FixDir> {
         return creator;
     }
 
-    public AbstractFixFileConverter getFixFileFonverter() {
-        return fixFileFonverter;
+    public AbstractFixFileConverter getFixFileConverter() {
+        return fixFileConverter;
     }
 }
