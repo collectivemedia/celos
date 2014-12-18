@@ -303,4 +303,31 @@ public class TestConfigurationParserTest {
     }
 
 
+    @Test
+    public void testFixDirWithFixDir() throws Exception {
+        String js = "" +
+                "fixDir({" +
+                "    file0: fixFile('012')," +
+                "    dir1: fixDir({" +
+                "        file1: fixFile('123')," +
+                "        file2: fixFile('234')" +
+                "    })" +
+                "})";
+
+        TestConfigurationParser parser = new TestConfigurationParser();
+        NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(new StringReader(js), "string");
+        FixDirHierarchyCreator creator = (FixDirHierarchyCreator) creatorObj.unwrap();
+        FixDir fixDir = creator.create(null);
+
+        Assert.assertEquals(fixDir.getChildren().size(), 2);
+        Assert.assertTrue(IOUtils.contentEquals(fixDir.getChildren().get("file0").asFile().getContent(), new ByteArrayInputStream("012".getBytes())));
+
+        FixDir fixDir2 = (FixDir) fixDir.getChildren().get("dir1");
+        Assert.assertEquals(fixDir2.getChildren().size(), 2);
+        Assert.assertTrue(IOUtils.contentEquals(fixDir2.getChildren().get("file1").asFile().getContent(), new ByteArrayInputStream("123".getBytes())));
+        Assert.assertTrue(IOUtils.contentEquals(fixDir2.getChildren().get("file2").asFile().getContent(), new ByteArrayInputStream("234".getBytes())));
+
+    }
+
+
 }
