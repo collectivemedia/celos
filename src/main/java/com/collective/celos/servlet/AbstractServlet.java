@@ -60,6 +60,19 @@ public abstract class AbstractServlet extends HttpServlet {
         }
     }
 
+    /*
+     * Scheduler cache
+     * 
+     * Reading and evaluating the .js files takes a bit of time, so it is cached
+     * between servlet calls.
+     * 
+     * The scheduler servlet uses createAndCacheScheduler(), which refreshes
+     * the cache once a minute, whereas all other servlets use, for performance,
+     * getOrCreateCachedScheduler() which usually retrieves the cached
+     * scheduler. The clear-cache servlet can be used during e.g. integration testing
+     * to reset the cache and force a reload of the configuration.
+     */
+    
     protected Scheduler createAndCacheScheduler() throws Exception {
         String workflowConfigPath = getServletContext().getInitParameter(WORKFLOW_CONFIGURATION_PATH_ATTR);
         String defaultsConfigPath = getServletContext().getInitParameter(DEFAULTS_CONFIGURATION_PATH_ATTR);
