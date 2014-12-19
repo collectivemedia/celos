@@ -6,56 +6,37 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
+import org.eclipse.jetty.webapp.WebAppContext;
 
 import java.io.File;
 import java.util.Map;
 
 public class CelosServer {
 
-    private Server server;
-
-    public Integer startServer(int port, Map<String, String> jsVariables, String workflowConfigurationPath, String defaultsConfigurationPath, String stateDatabasePath) throws Exception {
-        if (port > 0) {
-            server = new Server(port);
-        } else {
-            server = new Server();
-        }
-
-        setupContext(jsVariables, workflowConfigurationPath, defaultsConfigurationPath, stateDatabasePath);
-
-        ServerConnector connector = new ServerConnector(server);
-        server.setConnectors(new Connector[] { connector });
-        server.start();
-
-        return connector.getLocalPort();
-    }
+    private Server server = new Server();
 
     public Integer startServer(Map<String, String> jsVariables, String workflowConfigurationPath, String defaultsConfigurationPath, String stateDatabasePath) throws Exception {
-        return startServer(-1, jsVariables, workflowConfigurationPath, defaultsConfigurationPath, stateDatabasePath);
-    }
 
-
-    private void setupContext(Map<String, String> jsVariables, String workflowConfigurationPath, String defaultsConfigurationPath, String stateDatabasePath) {
         assureDirIsCreated(workflowConfigurationPath);
         assureDirIsCreated(defaultsConfigurationPath);
         assureDirIsCreated(stateDatabasePath);
 
-        ServletContextHandler context = new ServletContextHandler(ServletContextHandler.NO_SESSIONS);
-        context.setContextPath("/");
+        String rootPath = getClass().getClassLoader().getResource(".").toString();
+        WebAppContext context = new WebAppContext(rootPath, "/");
+
         server.setHandler(context);
 
-        context.addServlet(new ServletHolder(new SchedulerServlet()), "/scheduler");
-        context.addServlet(new ServletHolder(new JSONWorkflowListServlet()), "/workflow-list");
-        context.addServlet(new ServletHolder(new JSONWorkflowServlet()), "/workflow");
-        context.addServlet(new ServletHolder(new JSONSlotStateServlet()), "/slot-state");
-        context.addServlet(new ServletHolder(new RerunServlet()), "/rerun");
-        context.addServlet(new ServletHolder(new WorkflowJSConfigServlet()), "/workflow-file");
-        context.addServlet(new ServletHolder(new ClearCacheServlet()), "/clear-cache");
+        ServerConnector connector = new ServerConnector(server);
+        server.setConnectors(new Connector[]{connector});
+        server.start();
 
+        context.setAttribute(AbstractServlet.ADDITIONAL_JS_VARIABLES, jsVariables);
         context.setInitParameter(AbstractServlet.WORKFLOW_CONFIGURATION_PATH_ATTR, workflowConfigurationPath);
         context.setInitParameter(AbstractServlet.DEFAULTS_CONFIGURATION_PATH_ATTR, defaultsConfigurationPath);
         context.setInitParameter(AbstractServlet.STATE_DATABASE_PATH_ATTR, stateDatabasePath);
-        context.setAttribute(AbstractServlet.ADDITIONAL_JS_VARIABLES, jsVariables);
+
+        return connector.getLocalPort();
+
     }
 
     public void stopServer() throws Exception {
