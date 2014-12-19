@@ -1,5 +1,7 @@
 package com.collective.celos.ci.testing.fixtures.convert.avro;
 
+import com.collective.celos.ci.mode.test.TestRun;
+import com.collective.celos.ci.testing.fixtures.create.FixObjectCreator;
 import com.collective.celos.ci.testing.structure.fixobject.AbstractFixFileConverter;
 import com.collective.celos.ci.testing.structure.fixobject.FixFile;
 import org.apache.avro.Schema;
@@ -17,14 +19,15 @@ import java.io.*;
  */
 public class JsonToAvroConverter extends AbstractFixFileConverter {
 
-    private final Schema schema;
+    private final FixObjectCreator<FixFile> schemaCreator;
 
-    public JsonToAvroConverter(Schema schema) {
-        this.schema = schema;
+    public JsonToAvroConverter(FixObjectCreator<FixFile> schemaCreator) {
+        this.schemaCreator = schemaCreator;
     }
 
     @Override
-    public FixFile convert(FixFile ff) throws IOException {
+    public FixFile convert(TestRun tr, FixFile ff) throws Exception {
+        Schema schema = new Schema.Parser().parse(schemaCreator.create(tr).getContent());
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         InputStream input = ff.getContent();
         DataFileWriter<Object> writer;;

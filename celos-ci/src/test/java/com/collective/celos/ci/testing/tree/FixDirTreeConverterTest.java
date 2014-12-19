@@ -1,6 +1,7 @@
 package com.collective.celos.ci.testing.tree;
 
 import com.collective.celos.ci.Utils;
+import com.collective.celos.ci.mode.test.TestRun;
 import com.collective.celos.ci.testing.structure.fixobject.*;
 import com.collective.celos.ci.testing.structure.tree.TreeObjectProcessor;
 import com.google.common.collect.Maps;
@@ -71,7 +72,7 @@ public class FixDirTreeConverterTest {
     private static class UpperCaseStringFixFileConverter extends AbstractFixFileConverter {
 
         @Override
-        public FixFile convert(FixFile ff) throws IOException {
+        public FixFile convert(TestRun tr, FixFile ff) throws IOException {
             String newContent = IOUtils.toString(ff.getContent()).toUpperCase();
             return new FixFile(IOUtils.toInputStream(newContent));
         }

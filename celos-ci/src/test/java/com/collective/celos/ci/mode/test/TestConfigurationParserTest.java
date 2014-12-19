@@ -10,6 +10,7 @@ import com.collective.celos.ci.testing.fixtures.create.OutputFixDirFromHdfsCreat
 import com.collective.celos.ci.testing.fixtures.deploy.HdfsInputDeployer;
 import com.collective.celos.ci.testing.structure.fixobject.FixDir;
 import com.collective.celos.ci.testing.structure.fixobject.FixDirTreeConverter;
+import com.collective.celos.ci.testing.structure.fixobject.FixFile;
 import com.google.common.collect.Lists;
 import org.apache.commons.io.IOUtils;
 import org.apache.hadoop.fs.Path;
@@ -329,5 +330,38 @@ public class TestConfigurationParserTest {
 
     }
 
+    @Test
+    public void testJsonToAvro() throws Exception {
+
+        String jsonStr = "{\"visitor\":{\"com.collective.pythia.avro.Visitor\":{\"cookie_id\":\"133263e9e100000\",\"segments\":[],\"edges\":{},\"behaviors\":{},\"birthdate\":0,\"association_ids\":{}}},\"events\":[{\"cookie_id\":\"133263e9e100000\",\"tstamp\":1403721385042,\"edge\":\"batchimport\",\"changes\":{\"com.collective.pythia.avro.Command\":{\"operation\":\"REMOVE\",\"association_id\":null,\"network\":\"et\",\"segments\":[49118]}}},{\"cookie_id\":\"133263e9e100000\",\"tstamp\":1403721385042,\"edge\":\"batchimport\",\"changes\":{\"com.collective.pythia.avro.Command\":{\"operation\":\"ADD\",\"association_id\":null,\"network\":\"et\",\"segments\":[49117]}}}]}";
+        String schemaStr = "{\"type\":\"record\",\"name\":\"ConsolidatedEvent\",\"namespace\":\"com.collective.pythia.avro\",\"fields\":[{\"name\":\"visitor\",\"type\":[\"null\",{\"type\":\"record\",\"name\":\"Visitor\",\"fields\":[{\"name\":\"cookie_id\",\"type\":\"string\"},{\"name\":\"segments\",\"type\":{\"type\":\"array\",\"items\":{\"type\":\"record\",\"name\":\"Segment\",\"fields\":[{\"name\":\"id\",\"type\":\"int\"},{\"name\":\"expiration\",\"type\":\"long\",\"default\":0}]}},\"default\":[]},{\"name\":\"edges\",\"type\":{\"type\":\"map\",\"values\":\"long\"},\"default\":{}},{\"name\":\"behaviors\",\"type\":{\"type\":\"map\",\"values\":{\"type\":\"map\",\"values\":\"int\"},\"default\":{}},\"doc\":\"Map of net.context to map of YYYYMMDD->number_of_hits\",\"default\":{}},{\"name\":\"birthdate\",\"type\":\"long\"},{\"name\":\"association_ids\",\"type\":{\"type\":\"map\",\"values\":\"string\"},\"default\":{}}]}],\"default\":null},{\"name\":\"events\",\"type\":{\"type\":\"array\",\"items\":{\"type\":\"record\",\"name\":\"ProfileEvent\",\"fields\":[{\"name\":\"cookie_id\",\"type\":\"string\"},{\"name\":\"tstamp\",\"type\":\"long\"},{\"name\":\"edge\",\"type\":\"string\"},{\"name\":\"changes\",\"type\":[{\"type\":\"record\",\"name\":\"Hit\",\"fields\":[{\"name\":\"daystamp\",\"type\":\"string\"},{\"name\":\"context\",\"type\":\"string\"},{\"name\":\"type\",\"type\":{\"type\":\"enum\",\"name\":\"HitType\",\"symbols\":[\"ADX\",\"RETARGET\"]}},{\"name\":\"count\",\"type\":\"int\",\"default\":1}]},{\"type\":\"record\",\"name\":\"Command\",\"fields\":[{\"name\":\"operation\",\"type\":{\"type\":\"enum\",\"name\":\"OperationType\",\"symbols\":[\"ADD\",\"REPLACE\",\"UPDATE\",\"REMOVE\"]}},{\"name\":\"association_id\",\"type\":[\"null\",\"string\"],\"default\":null},{\"name\":\"network\",\"type\":\"string\"},{\"name\":\"segments\",\"type\":{\"type\":\"array\",\"items\":\"int\"},\"default\":[]}]}]}]}},\"default\":[]}]}";
+
+        String js = "" +
+                "jsonToAvro(" +
+                "    fixDir({ avroFile1: fixFile('" + jsonStr + "'), avroFile2: fixFile('" + jsonStr + "')})," +
+                "    fixFile('" + schemaStr + "')" +
+                ");";
+
+        TestConfigurationParser parser = new TestConfigurationParser();
+
+        NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(new StringReader(js), "string");
+        FixDirTreeConverter converter = (FixDirTreeConverter) creatorObj.unwrap();
+
+        Assert.assertEquals(converter.getDescription(null), "[avroFile1, avroFile2]");
+        FixDir fixDir = converter.create(null);
+
+        Assert.assertEquals(fixDir.getChildren().size(), 2);
+
+        AvroToJsonConverter avroToJsonConverter = new AvroToJsonConverter();
+        FixFile jsonFF = avroToJsonConverter.convert(null, new FixFile(fixDir.getChildren().get("avroFile1").asFile().getContent()));
+        String jsonIsBack = IOUtils.toString(jsonFF.getContent());
+        Assert.assertEquals(jsonIsBack, jsonStr);
+
+
+        FixFile jsonFF2 = avroToJsonConverter.convert(null, new FixFile(fixDir.getChildren().get("avroFile2").asFile().getContent()));
+        String jsonIsBack2 = IOUtils.toString(jsonFF2.getContent());
+        Assert.assertEquals(jsonIsBack2, jsonStr);
+
+    }
 
 }
