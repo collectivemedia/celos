@@ -1,14 +1,16 @@
 package com.collective.celos.server;
 
 import com.collective.celos.servlet.*;
+import org.apache.commons.httpclient.URI;
+import org.apache.commons.httpclient.URIException;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
-import org.eclipse.jetty.servlet.ServletContextHandler;
-import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.webapp.WebAppContext;
 
 import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Map;
 
 public class CelosServer {
@@ -21,8 +23,8 @@ public class CelosServer {
         defaultsConfigurationPath.mkdirs();
         stateDatabasePath.mkdirs();
 
-        String rootPath = new File(Thread.currentThread().getContextClassLoader().getResource("WEB-INF").toURI()).getParent();
-        WebAppContext context = new WebAppContext(rootPath, "/");
+        String webAppParent = getUriParentPath(Thread.currentThread().getContextClassLoader().getResource("WEB-INF").toURI().toString());
+        WebAppContext context = new WebAppContext(webAppParent.toString(), "/");
 
         server.setHandler(context);
 
@@ -37,6 +39,13 @@ public class CelosServer {
 
         return connector.getLocalPort();
 
+    }
+
+    private static String getUriParentPath(String oldUri) throws URIException {
+        URI uri = new org.apache.commons.httpclient.URI(oldUri, false);
+        Path parentPath = Paths.get(uri.getPath()).getParent();
+        uri.setPath(parentPath.toString() + "/");
+        return uri.toString();
     }
 
     public void stopServer() throws Exception {
