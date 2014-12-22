@@ -15,13 +15,13 @@ public class CelosServer {
 
     private Server server = new Server();
 
-    public Integer startServer(Map<String, String> jsVariables, String workflowConfigurationPath, String defaultsConfigurationPath, String stateDatabasePath) throws Exception {
+    public Integer startServer(Map<String, String> jsVariables, File workflowConfigurationPath, File defaultsConfigurationPath, File stateDatabasePath) throws Exception {
 
-        assureDirIsCreated(workflowConfigurationPath);
-        assureDirIsCreated(defaultsConfigurationPath);
-        assureDirIsCreated(stateDatabasePath);
+        workflowConfigurationPath.mkdirs();
+        defaultsConfigurationPath.mkdirs();
+        stateDatabasePath.mkdirs();
 
-        String rootPath = getClass().getClassLoader().getResource(".").toString();
+        String rootPath = new File(Thread.currentThread().getContextClassLoader().getResource("WEB-INF").toURI()).getParent();
         WebAppContext context = new WebAppContext(rootPath, "/");
 
         server.setHandler(context);
@@ -31,9 +31,9 @@ public class CelosServer {
         server.start();
 
         context.setAttribute(AbstractServlet.ADDITIONAL_JS_VARIABLES, jsVariables);
-        context.setInitParameter(AbstractServlet.WORKFLOW_CONFIGURATION_PATH_ATTR, workflowConfigurationPath);
-        context.setInitParameter(AbstractServlet.DEFAULTS_CONFIGURATION_PATH_ATTR, defaultsConfigurationPath);
-        context.setInitParameter(AbstractServlet.STATE_DATABASE_PATH_ATTR, stateDatabasePath);
+        context.setInitParameter(AbstractServlet.WORKFLOW_CONFIGURATION_PATH_ATTR, workflowConfigurationPath.getAbsolutePath());
+        context.setInitParameter(AbstractServlet.DEFAULTS_CONFIGURATION_PATH_ATTR, defaultsConfigurationPath.getAbsolutePath());
+        context.setInitParameter(AbstractServlet.STATE_DATABASE_PATH_ATTR, stateDatabasePath.getAbsolutePath());
 
         return connector.getLocalPort();
 
@@ -43,11 +43,6 @@ public class CelosServer {
         server.stop();
         server.destroy();
         server.join();
-    }
-
-    private void assureDirIsCreated(String paramPath) {
-        File path = new File(paramPath);
-        path.mkdirs();
     }
 
 }

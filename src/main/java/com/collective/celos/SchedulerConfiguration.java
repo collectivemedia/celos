@@ -9,6 +9,8 @@ import java.util.Map;
  */
 public class SchedulerConfiguration {
 
+    public static final int SLIDING_WINDOW_DAYS = 7;
+
     private final String workflowConfigurationPath;
     private final String defaultsConfigurationPath;
     private final String stateDatabasePath;
@@ -24,7 +26,7 @@ public class SchedulerConfiguration {
     public Scheduler makeDefaultScheduler() throws Exception {
         WorkflowConfiguration config = getWorkflowConfigurationParser().getWorkflowConfiguration();
         StateDatabase db = makeDefaultStateDatabase();
-        int slidingWindowHours = 24 * 7;
+        int slidingWindowHours = 24 * SLIDING_WINDOW_DAYS;
         return new Scheduler(config, db, slidingWindowHours);
     }
 

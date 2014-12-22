@@ -17,8 +17,8 @@ sourceSets {
         }
         resources {
             srcDir 'src/main/resources'
-            srcDir 'src/main/webapp'
             srcDir 'celos-ci/src/main/resources'
+            srcDir 'src/main/webapp'
         }
     }
     test {
@@ -29,6 +29,7 @@ sourceSets {
         resources {
             srcDir 'src/test/resources'
             srcDir 'celos-ci/src/test/resources'
+            srcDir 'src/main/webapp'
         }
     }
 }
