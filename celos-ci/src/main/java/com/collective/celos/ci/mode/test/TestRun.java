@@ -114,7 +114,7 @@ public class TestRun {
         try {
 
             celosWorkflowDir.mkdirs();
-            celosDefaultsDir.mkdir();
+            celosDefaultsDir.mkdirs();
             celosDbDir.mkdirs();
 
             Integer port = celosServer.startServer(additionalJSParams, celosWorkflowDir, celosDefaultsDir, celosDbDir);
