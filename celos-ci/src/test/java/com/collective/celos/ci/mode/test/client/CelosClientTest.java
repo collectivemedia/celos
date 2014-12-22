@@ -5,10 +5,7 @@ import com.collective.celos.server.CelosServer;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Sets;
 import org.apache.http.conn.HttpHostConnectException;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.rules.TemporaryFolder;
 
 import java.io.ByteArrayInputStream;
@@ -33,6 +30,7 @@ public class CelosClientTest {
     private File workflowsDir;
     private File defaultsDir;
     private File dbDir;
+    private CelosServer celosServer;
 
     @Before
     public void setup() throws IOException {
@@ -40,6 +38,12 @@ public class CelosClientTest {
         workflowsDir = new File(tmpDir, WORKFLOWS_DIR);
         defaultsDir = new File(tmpDir, DEFAULTS_DIR);
         dbDir = new File(tmpDir, DB_DIR);
+        celosServer = new CelosServer();
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        celosServer.stopServer();
     }
 
     @Test(expected = HttpHostConnectException.class)
@@ -49,8 +53,8 @@ public class CelosClientTest {
 
         CelosClient celosClient = new CelosClient("http://localhost:" + port);
         celosClient.getWorkflowList();
-
         celosServer.stopServer();
+        
         celosClient.getWorkflowList();
     }
 
@@ -64,7 +68,7 @@ public class CelosClientTest {
         List<WorkflowID> workflowIDs = celosClient.getWorkflowList();
         Assert.assertTrue(workflowIDs.isEmpty());
 
-        celosServer.stopServer();
+        
     }
 
     @Test
@@ -103,7 +107,7 @@ public class CelosClientTest {
         List<SlotState> workflowIDs = celosClient.getWorkflowStatus(new WorkflowID("noid"));
         Assert.assertTrue(workflowIDs.isEmpty());
 
-        celosServer.stopServer();
+        
     }
 
     @Test
@@ -126,7 +130,7 @@ public class CelosClientTest {
             Assert.assertEquals(slotState.getRetryCount(), 0);
         }
 
-        celosServer.stopServer();
+        
     }
 
     @Test
@@ -150,7 +154,7 @@ public class CelosClientTest {
             Assert.assertEquals(slotState.getRetryCount(), 0);
         }
 
-        celosServer.stopServer();
+        
     }
 
     @Test
@@ -175,7 +179,7 @@ public class CelosClientTest {
             Assert.assertEquals(slotState.getRetryCount(), 0);
         }
 
-        celosServer.stopServer();
+        
     }
 
     @Test
@@ -206,12 +210,12 @@ public class CelosClientTest {
             Assert.assertEquals(slotState.getRetryCount(), 0);
         }
 
-        celosServer.stopServer();
+        
     }
 
     @Test
     public void testGetWorkflowStatusTransitionToSuccess() throws Exception {
-        CelosServer celosServer = new CelosServer();
+        
 
         File src = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/client/wf-list").toURI());
 
@@ -239,7 +243,7 @@ public class CelosClientTest {
             Assert.assertEquals(slotState.getRetryCount(), 0);
         }
 
-        celosServer.stopServer();
+        
     }
 
     @Test
@@ -278,7 +282,7 @@ public class CelosClientTest {
             Assert.assertEquals(slotState.getRetryCount(), 0);
         }
 
-        celosServer.stopServer();
+        
     }
 
 
@@ -305,7 +309,7 @@ public class CelosClientTest {
         Assert.assertNotNull(slotStateFst.getExternalID());
         Assert.assertEquals(slotStateFst.getRetryCount(), 0);
 
-        celosServer.stopServer();
+        
     }
 
     @Test
@@ -381,7 +385,7 @@ public class CelosClientTest {
             Assert.assertEquals(slotState.getRetryCount(), 0);
         }
 
-        celosServer.stopServer();
+        
     }
 
     @Test
