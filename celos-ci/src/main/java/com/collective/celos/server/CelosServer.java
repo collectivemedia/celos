@@ -1,72 +1,63 @@
 package com.collective.celos.server;
 
 import com.collective.celos.servlet.*;
+import org.apache.commons.httpclient.URI;
+import org.apache.commons.httpclient.URIException;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
-import org.eclipse.jetty.servlet.ServletContextHandler;
-import org.eclipse.jetty.servlet.ServletHolder;
+import org.eclipse.jetty.webapp.WebAppContext;
 
 import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Map;
 
 public class CelosServer {
 
-    private Server server;
+    private Server server = new Server();
 
-    public Integer startServer(int port, Map<String, String> jsVariables, String workflowConfigurationPath, String defaultsConfigurationPath, String stateDatabasePath) throws Exception {
-        if (port > 0) {
-            server = new Server(port);
-        } else {
-            server = new Server();
-        }
+    public Integer startServer(Map<String, String> jsVariables, File workflowsDir, File defaultsDir, File stateDatabase) throws Exception {
 
-        setupContext(jsVariables, workflowConfigurationPath, defaultsConfigurationPath, stateDatabasePath);
+        validateDirExists(workflowsDir);
+        validateDirExists(defaultsDir);
+        validateDirExists(stateDatabase);
 
-        ServerConnector connector = new ServerConnector(server);
-        server.setConnectors(new Connector[] { connector });
-        server.start();
+        String webAppParent = getUriParentPath(Thread.currentThread().getContextClassLoader().getResource("WEB-INF").toURI().toString());
+        WebAppContext context = new WebAppContext(webAppParent.toString(), "/");
 
-        return connector.getLocalPort();
-    }
-
-    public Integer startServer(Map<String, String> jsVariables, String workflowConfigurationPath, String defaultsConfigurationPath, String stateDatabasePath) throws Exception {
-        return startServer(-1, jsVariables, workflowConfigurationPath, defaultsConfigurationPath, stateDatabasePath);
-    }
-
-
-    private void setupContext(Map<String, String> jsVariables, String workflowConfigurationPath, String defaultsConfigurationPath, String stateDatabasePath) {
-        assureDirIsCreated(workflowConfigurationPath);
-        assureDirIsCreated(defaultsConfigurationPath);
-        assureDirIsCreated(stateDatabasePath);
-
-        ServletContextHandler context = new ServletContextHandler(ServletContextHandler.NO_SESSIONS);
-        context.setContextPath("/");
         server.setHandler(context);
 
-        context.addServlet(new ServletHolder(new SchedulerServlet()), "/scheduler");
-        context.addServlet(new ServletHolder(new JSONWorkflowListServlet()), "/workflow-list");
-        context.addServlet(new ServletHolder(new JSONWorkflowServlet()), "/workflow");
-        context.addServlet(new ServletHolder(new JSONSlotStateServlet()), "/slot-state");
-        context.addServlet(new ServletHolder(new RerunServlet()), "/rerun");
-        context.addServlet(new ServletHolder(new WorkflowJSConfigServlet()), "/workflow-file");
-        context.addServlet(new ServletHolder(new ClearCacheServlet()), "/clear-cache");
+        ServerConnector connector = new ServerConnector(server);
+        server.setConnectors(new Connector[]{connector});
+        server.start();
 
-        context.setInitParameter(AbstractServlet.WORKFLOW_CONFIGURATION_PATH_ATTR, workflowConfigurationPath);
-        context.setInitParameter(AbstractServlet.DEFAULTS_CONFIGURATION_PATH_ATTR, defaultsConfigurationPath);
-        context.setInitParameter(AbstractServlet.STATE_DATABASE_PATH_ATTR, stateDatabasePath);
         context.setAttribute(AbstractServlet.ADDITIONAL_JS_VARIABLES, jsVariables);
+        context.setInitParameter(AbstractServlet.WORKFLOW_CONFIGURATION_PATH_ATTR, workflowsDir.getAbsolutePath());
+        context.setInitParameter(AbstractServlet.DEFAULTS_CONFIGURATION_PATH_ATTR, defaultsDir.getAbsolutePath());
+        context.setInitParameter(AbstractServlet.STATE_DATABASE_PATH_ATTR, stateDatabase.getAbsolutePath());
+
+        return connector.getLocalPort();
+
+    }
+
+    private void validateDirExists(File dir) {
+        if (!dir.isDirectory() || !dir.exists()) {
+            throw new IllegalStateException("Cannot start server: " + dir + " doesnt exist");
+        }
+    }
+
+    private static String getUriParentPath(String oldUri) throws URIException {
+        URI uri = new org.apache.commons.httpclient.URI(oldUri, false);
+        Path parentPath = Paths.get(uri.getPath()).getParent();
+        uri.setPath(parentPath.toString() + "/");
+        return uri.toString();
     }
 
     public void stopServer() throws Exception {
         server.stop();
         server.destroy();
         server.join();
-    }
-
-    private void assureDirIsCreated(String paramPath) {
-        File path = new File(paramPath);
-        path.mkdirs();
     }
 
 }

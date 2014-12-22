@@ -112,12 +112,12 @@ public class TestRun {
 
         final CelosServer celosServer = new CelosServer();
         try {
-            Integer port = celosServer.startServer(
-                    additionalJSParams,
-                    celosWorkflowDir.toString(),
-                    celosDefaultsDir.toString(),
-                    celosDbDir.toString()
-            );
+
+            celosWorkflowDir.mkdirs();
+            celosDefaultsDir.mkdirs();
+            celosDbDir.mkdirs();
+
+            Integer port = celosServer.startServer(additionalJSParams, celosWorkflowDir, celosDefaultsDir, celosDbDir);
 
             System.out.println("Running test case " + testCase.getName());
             for (FixtureDeployer fixtureDeployer : testCase.getInputs()) {

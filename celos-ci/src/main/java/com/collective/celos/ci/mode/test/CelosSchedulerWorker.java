@@ -36,13 +36,17 @@ public class CelosSchedulerWorker {
 
         while (!actualTime.getDateTime().isAfter(endTime.getDateTime())) {
             System.out.println("Scheduler iteration [" + actualTime + "]");
-            client.iterateScheduler(actualTime);
+            client.iterateScheduler(inclusiveTime(actualTime));
             if (!isThereAnyRunningWorkflows(workflowList, actualTime)) {
                 actualTime = new ScheduledTime(actualTime.getDateTime().plusHours(1));
             } else {
                 Thread.sleep(2000);
             }
         }
+    }
+
+    private ScheduledTime inclusiveTime(ScheduledTime actualTime) {
+        return actualTime.plusSeconds(1);
     }
 
     private boolean isThereAnyRunningWorkflows(List<WorkflowID> workflowList, ScheduledTime schedTime) throws IOException {
@@ -57,7 +61,7 @@ public class CelosSchedulerWorker {
 
 
     public boolean isWorkflowRunning(WorkflowID workflowID, ScheduledTime scheduledTime) throws IOException {
-        List<SlotState> workflowStatuses = client.getWorkflowStatus(workflowID, scheduledTime);
+        List<SlotState> workflowStatuses = client.getWorkflowStatus(workflowID, inclusiveTime(scheduledTime));
         for (SlotState status : workflowStatuses) {
             if (status.getStatus() == SlotState.Status.RUNNING || status.getStatus() == status.getStatus().READY) {
                 return true;

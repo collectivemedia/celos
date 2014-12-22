@@ -3,10 +3,12 @@ package com.collective.celos.ci.mode.test.client;
 import com.collective.celos.*;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 import org.codehaus.jackson.JsonNode;
@@ -37,7 +39,7 @@ public class CelosClient {
     }
 
     public List<WorkflowID> getWorkflowList() throws IOException {
-        HttpResponse getResponse = client.execute(workflowListGet);
+        HttpResponse getResponse = execute(workflowListGet);
         InputStream content = getResponse.getEntity().getContent();
         return parseWorkflowIdsList(content);
     }
@@ -49,20 +51,30 @@ public class CelosClient {
     public List<SlotState> getWorkflowStatus(WorkflowID workflowID, ScheduledTime scheduledTime) throws IOException {
         String timeQuery = "";
         if (scheduledTime != null) {
-            timeQuery = "&time=" + getTimeInclusiveRange(scheduledTime);
+            timeQuery = "&time=" + timeFormatter.formatPretty(scheduledTime);
         }
         HttpGet workflowListGet = new HttpGet(address + "/workflow?id=" + workflowID + timeQuery);
-        HttpResponse getResponse = client.execute(workflowListGet);
+        HttpResponse getResponse = execute(workflowListGet);
         InputStream content = getResponse.getEntity().getContent();
-
         return parseWorkflowStatusesMap(workflowID, content);
     }
 
-    public void iterateScheduler(ScheduledTime schedTime) throws IOException {
-        String schedTimeStr = getTimeInclusiveRange(schedTime);
-        HttpPost post = new HttpPost(address + "/scheduler?time=" + schedTimeStr);
-        HttpResponse postResponse = client.execute(post);
+    public void iterateScheduler(ScheduledTime scheduledTime) throws IOException {
+        HttpPost post = new HttpPost(address + "/scheduler?time=" + timeFormatter.formatPretty(scheduledTime));
+        HttpResponse postResponse = execute(post);
         EntityUtils.consume(postResponse.getEntity());
+    }
+
+    private HttpResponse execute(HttpUriRequest request) throws IOException {
+        HttpResponse getResponse = client.execute(request);
+        if (errorResponse(getResponse)) {
+            throw new IOException(getResponse.getStatusLine().toString());
+        }
+        return getResponse;
+    }
+
+    private boolean errorResponse(HttpResponse getResponse) {
+        return getResponse.getStatusLine() != null && getResponse.getStatusLine().getStatusCode() != 200;
     }
 
     private static class WorkflowList {
@@ -109,11 +121,6 @@ public class CelosClient {
             result.add(slotState);
         }
         return result;
-    }
-
-    private String getTimeInclusiveRange(ScheduledTime schedTime) {
-        //add one second to include last slot in the time period
-        return timeFormatter.formatPretty(schedTime.plusSeconds(1));
     }
 
 }
