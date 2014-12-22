@@ -17,11 +17,11 @@ public class CelosServer {
 
     private Server server = new Server();
 
-    public Integer startServer(Map<String, String> jsVariables, File workflowConfigurationPath, File defaultsConfigurationPath, File stateDatabasePath) throws Exception {
+    public Integer startServer(Map<String, String> jsVariables, File workflowsDir, File defaultsDir, File stateDatabase) throws Exception {
 
-        workflowConfigurationPath.mkdirs();
-        defaultsConfigurationPath.mkdirs();
-        stateDatabasePath.mkdirs();
+        validateDirExists(workflowsDir);
+        validateDirExists(defaultsDir);
+        validateDirExists(stateDatabase);
 
         String webAppParent = getUriParentPath(Thread.currentThread().getContextClassLoader().getResource("WEB-INF").toURI().toString());
         WebAppContext context = new WebAppContext(webAppParent.toString(), "/");
@@ -33,12 +33,18 @@ public class CelosServer {
         server.start();
 
         context.setAttribute(AbstractServlet.ADDITIONAL_JS_VARIABLES, jsVariables);
-        context.setInitParameter(AbstractServlet.WORKFLOW_CONFIGURATION_PATH_ATTR, workflowConfigurationPath.getAbsolutePath());
-        context.setInitParameter(AbstractServlet.DEFAULTS_CONFIGURATION_PATH_ATTR, defaultsConfigurationPath.getAbsolutePath());
-        context.setInitParameter(AbstractServlet.STATE_DATABASE_PATH_ATTR, stateDatabasePath.getAbsolutePath());
+        context.setInitParameter(AbstractServlet.WORKFLOW_CONFIGURATION_PATH_ATTR, workflowsDir.getAbsolutePath());
+        context.setInitParameter(AbstractServlet.DEFAULTS_CONFIGURATION_PATH_ATTR, defaultsDir.getAbsolutePath());
+        context.setInitParameter(AbstractServlet.STATE_DATABASE_PATH_ATTR, stateDatabase.getAbsolutePath());
 
         return connector.getLocalPort();
 
+    }
+
+    private void validateDirExists(File dir) {
+        if (!dir.isDirectory() || !dir.exists()) {
+            throw new IllegalStateException("Cannot start server: " + dir + " doesnt exist");
+        }
     }
 
     private static String getUriParentPath(String oldUri) throws URIException {
