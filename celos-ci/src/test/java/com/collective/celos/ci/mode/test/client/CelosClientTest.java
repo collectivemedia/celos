@@ -39,6 +39,10 @@ public class CelosClientTest {
         defaultsDir = new File(tmpDir, DEFAULTS_DIR);
         dbDir = new File(tmpDir, DB_DIR);
         celosServer = new CelosServer();
+
+        workflowsDir.mkdirs();
+        defaultsDir.mkdirs();
+        dbDir.mkdirs();
     }
 
     @After
