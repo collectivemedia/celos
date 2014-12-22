@@ -55,7 +55,7 @@ function hdfsCheck(path, time, fs) {
     if (time) {
         scheduledTime = time;
     } else {
-	scheduledTime = ScheduledTime.now();
+        scheduledTime = ScheduledTime.now();
     }
     return trigger.isDataAvailable(null, ScheduledTime.now(), scheduledTime);
 }
