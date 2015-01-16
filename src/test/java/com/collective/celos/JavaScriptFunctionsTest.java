@@ -94,6 +94,15 @@ public class JavaScriptFunctionsTest {
     }
     
     @Test
+    public void testOrTrigger() throws Exception {
+        OrTrigger t = (OrTrigger) runJS("orTrigger(delayTrigger(1), alwaysTrigger())");
+        DelayTrigger dt = (DelayTrigger) t.getTriggers().get(0);
+        Assert.assertEquals(1, dt.getSeconds());
+        AlwaysTrigger at = (AlwaysTrigger) t.getTriggers().get(1);
+        Assert.assertEquals(2, t.getTriggers().size());
+    }
+    
+    @Test
     public void testNotTrigger() throws Exception {
         NotTrigger t = (NotTrigger) runJS("notTrigger(alwaysTrigger())");
         AlwaysTrigger at = (AlwaysTrigger) t.getTrigger();
