@@ -87,6 +87,14 @@ function andTrigger() {
     return new AndTrigger(list);
 }
 
+function orTrigger() {
+    var list = new Packages.java.util.LinkedList();
+    for (var i = 0; i < arguments.length; i++) {
+        list.add(arguments[i]);
+    }
+    return new OrTrigger(list);
+}
+
 function notTrigger(subTrigger) {
     if (!subTrigger) {
         throw "Undefined sub trigger";

@@ -281,6 +281,8 @@ Syntax: `andTrigger(triggers...)`
 
 Combines multiple triggers and waits for all of them (logical AND).
 
+Returns true if the list of triggers is empty.
+
 #### Parameters
 
 * `triggers` -- any number of other triggers are passed as parameters
@@ -296,6 +298,49 @@ Combines multiple triggers and waits for all of them (logical AND).
    hdfsCheckTrigger("/quux", ...)
 )
 ...
+</pre>
+
+### orTrigger
+
+Syntax: `orTrigger(triggers...)`
+
+Combines multiple triggers and waits for either one of them (logical OR).
+
+Returns false if the list of triggers is empty.
+
+#### Parameters
+
+* `triggers` -- any number of other triggers are passed as parameters
+
+#### Example
+
+<pre>
+...
+// Wait for either of the HDFS paths /foo, /bar, and /quux
+"trigger": orTrigger(
+   hdfsCheckTrigger("/foo", ...),
+   hdfsCheckTrigger("/bar", ...),
+   hdfsCheckTrigger("/quux", ...)
+)
+...
+</pre>
+
+### notTrigger
+
+Syntax: `notTrigger(trigger)`
+
+Negates another trigger (logical NOT).
+
+#### Parameters
+
+* `trigger` -- another trigger
+
+#### Example
+
+<pre>
+...
+// Triggers if the file /foo doesn't exist
+"trigger": notTrigger(hdfsCheckTrigger("/foo"))
 </pre>
 
 ### delayTrigger
