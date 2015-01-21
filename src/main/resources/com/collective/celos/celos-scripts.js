@@ -49,17 +49,13 @@ function alwaysTrigger() {
     return new AlwaysTrigger();
 }
 
-function hdfsCheck(path, slotID, fs) {
+function hdfsCheck(path, time, fs) {
     var trigger = hdfsCheckTrigger(path, fs);
     var scheduledTime;
-
-    if (!slotID) {
-        scheduledTime = ScheduledTime.now();
+    if (time) {
+        scheduledTime = time;
     } else {
-        if (typeof slotID != "object" || slotID.getClass().getName() !== "com.collective.celos.SlotID") {
-            throw "slotID should be instance of com.collective.celos.SlotID";
-        }
-        scheduledTime = slotID.getScheduledTime();
+        scheduledTime = ScheduledTime.now();
     }
     return trigger.isDataAvailable(null, ScheduledTime.now(), scheduledTime);
 }

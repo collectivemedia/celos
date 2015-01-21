@@ -265,9 +265,7 @@ public class JavaScriptFunctionsTest {
     public void testHdfsCheckNotExists() throws Exception {
         String js = "var CELOS_DEFAULT_HDFS = ''; " +
                 "var schTime = new Packages.com.collective.celos.ScheduledTime('2014-05-12T19:33:01Z');" +
-                "var workflowId = new Packages.com.collective.celos.WorkflowID('id');" +
-                "var slotId = new Packages.com.collective.celos.SlotID(workflowId, schTime);" +
-                "hdfsCheck('/path', slotId)";
+                "hdfsCheck('/path', schTime)";
 
         Boolean s = (Boolean) runJS(js);
         Assert.assertEquals(s, false);
@@ -278,9 +276,7 @@ public class JavaScriptFunctionsTest {
     public void testHdfsCheckExists() throws Exception {
         String js = "var CELOS_DEFAULT_HDFS = ''; " +
                 "var schTime = new Packages.com.collective.celos.ScheduledTime('2014-05-12T19:33:01Z');" +
-                "var workflowId = new Packages.com.collective.celos.WorkflowID('id');" +
-                "var slotId = new Packages.com.collective.celos.SlotID(workflowId, schTime);" +
-                "hdfsCheck('file:///tmp', slotId)";
+                "hdfsCheck('file:///tmp', schTime)";
 
         Boolean s = (Boolean) runJS(js);
         Assert.assertEquals(s, true);
@@ -291,9 +287,7 @@ public class JavaScriptFunctionsTest {
     public void testHdfsCheckExists2() throws Exception {
         String js = "var CELOS_DEFAULT_HDFS = ''; " +
                 "var schTime = new Packages.com.collective.celos.ScheduledTime('2014-05-12T19:33:01Z');" +
-                "var workflowId = new Packages.com.collective.celos.WorkflowID('id');" +
-                "var slotId = new Packages.com.collective.celos.SlotID(workflowId, schTime);" +
-                "hdfsCheck('/tmp', slotId, 'file:///')";
+                "hdfsCheck('/tmp', schTime, 'file:///')";
 
         Boolean s = (Boolean) runJS(js);
         Assert.assertEquals(s, true);
@@ -302,15 +296,8 @@ public class JavaScriptFunctionsTest {
 
     @Test(expected = JavaScriptException.class)
     public void testHdfsCheckWrongType() throws Exception {
-        String js = "var CELOS_DEFAULT_HDFS = ''; " +
-                "var schTime = new Packages.com.collective.celos.ScheduledTime('2014-05-12T19:33:01Z');" +
-                "var workflowId = new Packages.com.collective.celos.WorkflowID('id');" +
-                "var slotId = 'slot';" +
-                "hdfsCheck('file:///tmp', slotId)";
-
-        Boolean s = (Boolean) runJS(js);
-        Assert.assertEquals(s, true);
-
+        String js = "hdfsCheck('file:///tmp', 'foobar')";
+        runJS(js);
     }
 
     private Object runJS(String js) throws Exception {
