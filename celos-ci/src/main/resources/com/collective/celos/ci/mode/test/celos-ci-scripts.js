@@ -5,6 +5,7 @@ importPackage(Packages.com.collective.celos.ci.testing.fixtures.convert.avro);
 importPackage(Packages.com.collective.celos.ci.testing.structure.fixobject);
 importPackage(Packages.com.collective.celos.ci.testing.fixtures.compare.json);
 importPackage(Packages.com.collective.celos.ci.mode.test);
+importPackage(Packages.com.collective.celos);
 importPackage(Packages.java.util);
 
 function fixDirFromResource(resource) {
@@ -100,6 +101,7 @@ function addTestCase(testCase) {
     var outputs = testCase["outputs"];
     var sampleTimeStart = testCase["sampleTimeStart"];
     var sampleTimeEnd = testCase["sampleTimeEnd"];
+    var targetWorkflows = testCase["workflows"];
 
     if (!inputs) {
         throw "Undefined inputs";
@@ -121,6 +123,9 @@ function addTestCase(testCase) {
     }
     for (var i=0; i < outputs.length; i++) {
         result.addOutput(outputs[i]);
+    }
+    for (var i=0; i < targetWorkflows.length; i++) {
+        result.addTargetWorkflow(new WorkflowID(targetWorkflows[i]));
     }
     testConfigurationParser.addTestCase(result);
 }

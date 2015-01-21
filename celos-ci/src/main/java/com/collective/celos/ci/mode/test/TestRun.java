@@ -123,7 +123,7 @@ public class TestRun {
             for (FixtureDeployer fixtureDeployer : testCase.getInputs()) {
                 fixtureDeployer.deploy(this);
             }
-            new CelosSchedulerWorker(port, Lists.<WorkflowID>newArrayList()).runCelosScheduler(testCase);
+            new CelosSchedulerWorker(port).runCelosScheduler(testCase);
             for (FixtureComparer fixtureComparer : testCase.getOutputs()) {
                 FixObjectCompareResult result = fixtureComparer.check(this);
                 if (result.getStatus() == FixObjectCompareResult.Status.FAIL) {
