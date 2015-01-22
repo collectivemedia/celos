@@ -29,7 +29,7 @@ public class CelosCiTargetParser {
         HashMap<String, String> result = new ObjectMapper().readValue(is, HashMap.class);
         URI workflowDir = result.get(CELOS_WORKFLOW_DIR) != null ? URI.create(result.get(CELOS_WORKFLOW_DIR)) : null;
         URI defaultsFile = result.get(DEFAULTS_FILE_URI) != null ? URI.create(result.get(DEFAULTS_FILE_URI)) : null;
-        String hiveJdbc = result.get(HIVE_JDBC_URL);
+        URI hiveJdbc = result.get(HIVE_JDBC_URL) != null ? URI.create(result.get(HIVE_JDBC_URL)) : null;
         return new CelosCiTarget(URI.create(result.get(HADOOP_HDFS_SITE_XML)),
                 URI.create(result.get(HADOOP_CORE_SITE_XML)),
                 workflowDir, defaultsFile, hiveJdbc);
