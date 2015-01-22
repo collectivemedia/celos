@@ -10,8 +10,10 @@ public class CelosCiTarget {
     private final URI pathToCoreSite;
     private final URI celosWorkflowsDirUri;
     private final URI defaultsFile;
+    private final String hiveJdbc;
 
-    public CelosCiTarget(URI pathToHdfsSite, URI pathToCoreSite, URI celosWorkflowsDirUri, URI defaultsFile) {
+    public CelosCiTarget(URI pathToHdfsSite, URI pathToCoreSite, URI celosWorkflowsDirUri, URI defaultsFile, String hiveJdbc) {
+        this.hiveJdbc = hiveJdbc;
         this.pathToHdfsSite = Util.requireNonNull(pathToHdfsSite);
         this.pathToCoreSite = Util.requireNonNull(pathToCoreSite);
         this.celosWorkflowsDirUri = celosWorkflowsDirUri;
@@ -32,6 +34,10 @@ public class CelosCiTarget {
 
     public URI getDefaultsFile() {
         return defaultsFile;
+    }
+
+    public String getHiveJdbc() {
+        return hiveJdbc;
     }
 }
 

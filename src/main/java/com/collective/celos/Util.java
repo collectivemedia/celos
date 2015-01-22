@@ -12,6 +12,7 @@ import org.joda.time.format.DateTimeFormat;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Map;
+import java.util.UUID;
 
 public class Util {
 
@@ -149,6 +150,12 @@ public class Util {
             path = path.replace(ch.toString(), backConversions.get(ch).toString());
         }
         return path;
+    }
+
+    private final static String AUGUMENTED_DB_NAME = "celosci_%s_%s";
+
+    public static String augumentDbName(UUID uuid, String dbName) {
+        return String.format(AUGUMENTED_DB_NAME, dbName, uuid.toString().replace("-", "_"));
     }
 
 }

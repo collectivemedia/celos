@@ -1,10 +1,8 @@
 package com.collective.celos.ci.config.deploy;
 
-
 import com.collective.celos.Util;
+import com.collective.celos.ci.config.HiveConnectionHolder;
 import com.collective.celos.ci.deploy.JScpWorker;
-import org.apache.commons.vfs2.FileContent;
-import org.apache.commons.vfs2.FileObject;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.security.UserGroupInformation;
@@ -25,6 +23,7 @@ public class CelosCiContext {
     private final FileSystem fileSystem;
     private final String hdfsPrefix;
     private final Configuration configuration;
+    private final HiveConnectionHolder hiveConnectionHolder;
 
     public CelosCiContext(CelosCiTarget target,
                           String userName,
@@ -40,6 +39,16 @@ public class CelosCiContext {
         this.hdfsPrefix = Util.requireNonNull(hdfsPrefix);
         this.configuration = setupConfiguration(userName, target);
         this.fileSystem = FileSystem.get(this.configuration);
+        this.hiveConnectionHolder = createHiveConnHolder(target.getHiveJdbc());
+    }
+
+    private HiveConnectionHolder createHiveConnHolder(String jdbcConnectionUrl) {
+        try {
+            Class.forName("org.apache.hive.jdbc.HiveDriver");
+            return new HiveConnectionHolder(jdbcConnectionUrl);
+        } catch (Exception exc) {
+            return null;
+        }
     }
 
     private Configuration setupConfiguration(String username, CelosCiTarget target) throws Exception {
@@ -89,4 +98,9 @@ public class CelosCiContext {
     public Configuration getConfiguration() {
         return configuration;
     }
+
+    public HiveConnectionHolder getHiveConnectionHolder() {
+        return hiveConnectionHolder;
+    }
+
 }

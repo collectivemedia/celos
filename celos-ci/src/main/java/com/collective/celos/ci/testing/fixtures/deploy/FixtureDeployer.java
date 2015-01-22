@@ -9,4 +9,5 @@ public interface FixtureDeployer {
 
     void deploy(TestRun testRun) throws Exception;
 
+    void undeploy(TestRun testRun) throws Exception;
 }

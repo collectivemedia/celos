@@ -28,6 +28,12 @@ public class HdfsInputDeployer implements FixtureDeployer {
         this.path = new Path(StringUtils.removeStart(path, "/"));
     }
 
+    @Override
+    public void undeploy(TestRun testRun) throws Exception {
+        // do nothing, because all HDFS cleanup is already done in TestRun explicitly
+    }
+
+    @Override
     public void deploy(TestRun testRun) throws Exception {
         FileSystem fileSystem = testRun.getCiContext().getFileSystem();
 
