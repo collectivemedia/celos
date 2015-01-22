@@ -1,10 +1,7 @@
 package com.collective.celos.ci.config.deploy;
 
-
 import com.collective.celos.Util;
 import com.collective.celos.ci.deploy.JScpWorker;
-import org.apache.commons.vfs2.FileContent;
-import org.apache.commons.vfs2.FileObject;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.security.UserGroupInformation;
@@ -89,4 +86,5 @@ public class CelosCiContext {
     public Configuration getConfiguration() {
         return configuration;
     }
+
 }
