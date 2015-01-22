@@ -1,5 +1,7 @@
 package com.collective.celos.ci.mode.test;
 
+import com.collective.celos.ScheduledTime;
+import com.collective.celos.WorkflowID;
 import com.collective.celos.ci.testing.fixtures.compare.RecursiveDirComparer;
 import com.collective.celos.ci.testing.fixtures.compare.json.JsonContentsDirComparer;
 import com.collective.celos.ci.testing.fixtures.convert.avro.AvroToJsonConverter;
@@ -12,6 +14,7 @@ import com.collective.celos.ci.testing.structure.fixobject.FixDir;
 import com.collective.celos.ci.testing.structure.fixobject.FixDirTreeConverter;
 import com.collective.celos.ci.testing.structure.fixobject.FixFile;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import org.apache.commons.io.IOUtils;
 import org.apache.hadoop.fs.Path;
 import org.junit.Assert;
@@ -142,6 +145,7 @@ public class TestConfigurationParserTest {
                 "    name: \"wordcount test case 1\",\n" +
                 "    sampleTimeStart: \"2013-11-20T11:00Z\",\n" +
                 "    sampleTimeEnd: \"2013-11-20T18:00Z\",\n" +
+                "    workflows: [\"workflow1\", \"workflow2\"], \n" +
                 "    inputs: [\n" +
                 "        hdfsInput(fixDirFromResource(\"src/test/celos-ci/test-1/input/plain/input/wordcount1\"), \"input/wordcount1\"),\n" +
                 "        hdfsInput(fixDirFromResource(\"src/test/celos-ci/test-1/input/plain/input/wordcount11\"), \"input/wordcount11\")\n" +
@@ -152,9 +156,20 @@ public class TestConfigurationParserTest {
                 "})\n";
 
         TestConfigurationParser parser = new TestConfigurationParser();
-
         parser.evaluateTestConfig(new StringReader(configJS), "string");
 
+        Assert.assertEquals(parser.getTestCases().size(), 1);
+        TestCase testCase = parser.getTestCases().get(0);
+
+        Assert.assertEquals(testCase.getName(), "wordcount test case 1");
+        Assert.assertEquals(testCase.getSampleTimeStart(), new ScheduledTime("2013-11-20T11:00Z"));
+        Assert.assertEquals(testCase.getSampleTimeEnd(), new ScheduledTime("2013-11-20T18:00Z"));
+        Assert.assertEquals(testCase.getTargetWorkflows(), Sets.newHashSet(new WorkflowID("workflow1"), new WorkflowID("workflow2")));
+        Assert.assertEquals(testCase.getInputs().size(), 2);
+        Assert.assertEquals(testCase.getInputs().get(0).getClass(), HdfsInputDeployer.class);
+        Assert.assertEquals(testCase.getInputs().get(1).getClass(), HdfsInputDeployer.class);
+        Assert.assertEquals(testCase.getOutputs().size(), 1);
+        Assert.assertEquals(testCase.getOutputs().get(0).getClass(), RecursiveDirComparer.class);
     }
 
     @Test(expected = JavaScriptException.class)

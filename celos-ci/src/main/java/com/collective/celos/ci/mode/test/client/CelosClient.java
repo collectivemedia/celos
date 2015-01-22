@@ -4,6 +4,7 @@ import com.collective.celos.*;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
@@ -16,9 +17,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by akonopko on 10.12.14.
@@ -38,7 +37,7 @@ public class CelosClient {
         this.workflowListGet = new HttpGet(address + "/workflow-list");
     }
 
-    public List<WorkflowID> getWorkflowList() throws IOException {
+    public Set<WorkflowID> getWorkflowList() throws IOException {
         HttpResponse getResponse = execute(workflowListGet);
         InputStream content = getResponse.getEntity().getContent();
         return parseWorkflowIdsList(content);
@@ -60,7 +59,17 @@ public class CelosClient {
     }
 
     public void iterateScheduler(ScheduledTime scheduledTime) throws IOException {
-        HttpPost post = new HttpPost(address + "/scheduler?time=" + timeFormatter.formatPretty(scheduledTime));
+        iterateScheduler(scheduledTime, Collections.<WorkflowID>emptySet());
+    }
+
+    public void iterateScheduler(ScheduledTime scheduledTime, Set<WorkflowID> workflowIDs) throws IOException {
+        String workflowIdStr;
+        if (!workflowIDs.isEmpty()) {
+            workflowIdStr = "&ids=" + StringUtils.join(workflowIDs, ",");
+        } else {
+            workflowIdStr = "";
+        }
+        HttpPost post = new HttpPost(address + "/scheduler?time=" + timeFormatter.formatPretty(scheduledTime) + workflowIdStr);
         HttpResponse postResponse = execute(post);
         EntityUtils.consume(postResponse.getEntity());
     }
@@ -78,9 +87,9 @@ public class CelosClient {
     }
 
     private static class WorkflowList {
-        private List<WorkflowID> ids;
+        private Set<WorkflowID> ids;
 
-        public List<WorkflowID> getIds() {
+        public Set<WorkflowID> getIds() {
             return ids;
         }
     }
@@ -105,7 +114,7 @@ public class CelosClient {
     }
 
 
-    List<WorkflowID> parseWorkflowIdsList(InputStream content) throws IOException {
+    Set<WorkflowID> parseWorkflowIdsList(InputStream content) throws IOException {
         return objectMapper.readValue(content, WorkflowList.class).getIds();
     }
 

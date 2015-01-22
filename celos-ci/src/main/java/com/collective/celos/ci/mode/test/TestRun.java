@@ -8,6 +8,7 @@ import com.collective.celos.ci.config.deploy.CelosCiTarget;
 import com.collective.celos.ci.deploy.HdfsDeployer;
 import com.collective.celos.ci.deploy.JScpWorker;
 import com.collective.celos.ci.deploy.WorkflowFileDeployer;
+import com.collective.celos.ci.mode.test.client.CelosClient;
 import com.collective.celos.ci.testing.fixtures.compare.FixObjectCompareResult;
 import com.collective.celos.ci.testing.fixtures.compare.FixtureComparer;
 import com.collective.celos.ci.testing.fixtures.deploy.FixtureDeployer;
@@ -123,7 +124,8 @@ public class TestRun {
             for (FixtureDeployer fixtureDeployer : testCase.getInputs()) {
                 fixtureDeployer.deploy(this);
             }
-            new CelosSchedulerWorker(port, Lists.<WorkflowID>newArrayList()).runCelosScheduler(testCase);
+            CelosClient client = new CelosClient("http://localhost:" + port);
+            new CelosSchedulerWorker(client).runCelosScheduler(testCase);
             for (FixtureComparer fixtureComparer : testCase.getOutputs()) {
                 FixObjectCompareResult result = fixtureComparer.check(this);
                 if (result.getStatus() == FixObjectCompareResult.Status.FAIL) {
