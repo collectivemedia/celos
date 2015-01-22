@@ -124,8 +124,10 @@ function addTestCase(testCase) {
     for (var i=0; i < outputs.length; i++) {
         result.addOutput(outputs[i]);
     }
-    for (var i=0; i < targetWorkflows.length; i++) {
-        result.addTargetWorkflow(new WorkflowID(targetWorkflows[i]));
+    if (targetWorkflows) {
+        for (var i=0; i < targetWorkflows.length; i++) {
+            result.addTargetWorkflow(new WorkflowID(targetWorkflows[i]));
+        }
     }
     testConfigurationParser.addTestCase(result);
 }

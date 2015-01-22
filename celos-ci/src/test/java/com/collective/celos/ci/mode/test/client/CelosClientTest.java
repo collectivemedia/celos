@@ -13,6 +13,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by akonopko on 22.12.14.
@@ -69,7 +70,7 @@ public class CelosClientTest {
         Integer port = celosServer.startServer(ImmutableMap.<String, String>of(), workflowsDir, defaultsDir, dbDir);
 
         CelosClient celosClient = new CelosClient("http://localhost:" + port);
-        List<WorkflowID> workflowIDs = celosClient.getWorkflowList();
+        Set<WorkflowID> workflowIDs = celosClient.getWorkflowList();
         Assert.assertTrue(workflowIDs.isEmpty());
 
         
@@ -87,7 +88,7 @@ public class CelosClientTest {
 
         CelosClient celosClient = new CelosClient("http://localhost:" + port);
 
-        List<WorkflowID> workflowIDs = celosClient.getWorkflowList();
+        Set<WorkflowID> workflowIDs = celosClient.getWorkflowList();
         Assert.assertEquals(
                 Sets.newHashSet(workflowIDs),
                 Sets.newHashSet(new WorkflowID("workflow-1"), new WorkflowID("workflow-2"), new WorkflowID("workflow-3"), new WorkflowID("workflow-4"))
@@ -400,10 +401,8 @@ public class CelosClientTest {
                 "  \"ids\" : [ \"GC-export-profiles\", \"GrandCentral-01-harmony\"]" +
                 "}";
 
-        List<WorkflowID> result = client.parseWorkflowIdsList(new ByteArrayInputStream(str.getBytes()));
-        junit.framework.Assert.assertEquals(result.size(), 2);
-        junit.framework.Assert.assertEquals(result.get(0), new WorkflowID("GC-export-profiles"));
-        junit.framework.Assert.assertEquals(result.get(1), new WorkflowID("GrandCentral-01-harmony"));
+        Set<WorkflowID> result = client.parseWorkflowIdsList(new ByteArrayInputStream(str.getBytes()));
+        Assert.assertEquals(result, Sets.newHashSet(new WorkflowID("GrandCentral-01-harmony"), new WorkflowID("GC-export-profiles")));
     }
 
     @Test

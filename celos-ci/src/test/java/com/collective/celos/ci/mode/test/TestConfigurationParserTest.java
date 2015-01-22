@@ -14,6 +14,7 @@ import com.collective.celos.ci.testing.structure.fixobject.FixDir;
 import com.collective.celos.ci.testing.structure.fixobject.FixDirTreeConverter;
 import com.collective.celos.ci.testing.structure.fixobject.FixFile;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import org.apache.commons.io.IOUtils;
 import org.apache.hadoop.fs.Path;
 import org.junit.Assert;
@@ -163,7 +164,7 @@ public class TestConfigurationParserTest {
         Assert.assertEquals(testCase.getName(), "wordcount test case 1");
         Assert.assertEquals(testCase.getSampleTimeStart(), new ScheduledTime("2013-11-20T11:00Z"));
         Assert.assertEquals(testCase.getSampleTimeEnd(), new ScheduledTime("2013-11-20T18:00Z"));
-        Assert.assertEquals(testCase.getTargetWorkflows(), Lists.newArrayList(new WorkflowID("workflow1"), new WorkflowID("workflow2")));
+        Assert.assertEquals(testCase.getTargetWorkflows(), Sets.newHashSet(new WorkflowID("workflow1"), new WorkflowID("workflow2")));
         Assert.assertEquals(testCase.getInputs().size(), 2);
         Assert.assertEquals(testCase.getInputs().get(0).getClass(), HdfsInputDeployer.class);
         Assert.assertEquals(testCase.getInputs().get(1).getClass(), HdfsInputDeployer.class);
