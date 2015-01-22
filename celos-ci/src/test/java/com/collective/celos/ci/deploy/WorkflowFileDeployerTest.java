@@ -42,7 +42,7 @@ public class WorkflowFileDeployerTest {
         CelosCiContext context = mock(CelosCiContext.class);
         WorkflowFileDeployer deployer = new WorkflowFileDeployer(context);
 
-        CelosCiTarget target = new CelosCiTarget(URI.create(""), URI.create(""), URI.create(""), URI.create(""));
+        CelosCiTarget target = new CelosCiTarget(URI.create(""), URI.create(""), URI.create(""), URI.create(""), "hiveJdbc");
         doReturn(target).when(context).getTarget();
         doReturn("workflow").when(context).getWorkflowName();
         Assert.assertEquals(deployer.getWorkflowJsUri(), URI.create("/workflow.js"));
@@ -53,7 +53,7 @@ public class WorkflowFileDeployerTest {
         CelosCiContext context = mock(CelosCiContext.class);
         WorkflowFileDeployer deployer = new WorkflowFileDeployer(context);
 
-        CelosCiTarget target = new CelosCiTarget(URI.create(""), URI.create(""), URI.create("/home"), URI.create(""));
+        CelosCiTarget target = new CelosCiTarget(URI.create(""), URI.create(""), URI.create("/home"), URI.create(""), "hiveJdbc");
         doReturn(target).when(context).getTarget();
         doReturn("workflow").when(context).getWorkflowName();
         Assert.assertEquals(deployer.getWorkflowJsUri(), URI.create("/home/workflow.js"));
@@ -64,7 +64,7 @@ public class WorkflowFileDeployerTest {
         CelosCiContext context = mock(CelosCiContext.class);
         WorkflowFileDeployer deployer = new WorkflowFileDeployer(context);
 
-        CelosCiTarget target = new CelosCiTarget(URI.create(""), URI.create(""), URI.create("sftp://user@server:999/home"), URI.create(""));
+        CelosCiTarget target = new CelosCiTarget(URI.create(""), URI.create(""), URI.create("sftp://user@server:999/home"), URI.create(""), "hiveJdbc");
         doReturn(target).when(context).getTarget();
         doReturn("workflow").when(context).getWorkflowName();
         Assert.assertEquals(deployer.getWorkflowJsUri(), URI.create("sftp://user@server:999/home/workflow.js"));
@@ -88,7 +88,7 @@ public class WorkflowFileDeployerTest {
         File remoteFolder = tempDir.newFolder();
         remoteFolder.mkdirs();
 
-        CelosCiTarget target = new CelosCiTarget(URI.create(""), URI.create(""), remoteFolder.toURI(), URI.create(""));
+        CelosCiTarget target = new CelosCiTarget(URI.create(""), URI.create(""), remoteFolder.toURI(), URI.create(""), "hiveJdbc");
         doReturn(localFolder).when(context).getDeployDir();
         doReturn(target).when(context).getTarget();
         doReturn("workflow").when(context).getWorkflowName();
@@ -107,7 +107,7 @@ public class WorkflowFileDeployerTest {
         File wfFile = new File(remoteFolder, "workflow.js");
         wfFile.createNewFile();
 
-        CelosCiTarget target = new CelosCiTarget(URI.create(""), URI.create(""), remoteFolder.toURI(), URI.create(""));
+        CelosCiTarget target = new CelosCiTarget(URI.create(""), URI.create(""), remoteFolder.toURI(), URI.create(""), "hiveJdbc");
         doReturn(remoteFolder).when(context).getDeployDir();
         doReturn(target).when(context).getTarget();
         doReturn("workflow").when(context).getWorkflowName();
@@ -135,7 +135,7 @@ public class WorkflowFileDeployerTest {
         File remoteFolder = tempDir.newFolder();
         remoteFolder.mkdirs();
 
-        CelosCiTarget target = new CelosCiTarget(URI.create(""), URI.create(""), remoteFolder.toURI(), URI.create(""));
+        CelosCiTarget target = new CelosCiTarget(URI.create(""), URI.create(""), remoteFolder.toURI(), URI.create(""), "hiveJdbc");
         doReturn(localFolder).when(context).getDeployDir();
         doReturn(target).when(context).getTarget();
         doReturn("workflow").when(context).getWorkflowName();
