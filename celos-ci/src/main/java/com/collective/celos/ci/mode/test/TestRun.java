@@ -152,7 +152,6 @@ public class TestRun {
             fixtureDeployer.undeploy(this);
         }
         ciContext.getFileSystem().delete(new org.apache.hadoop.fs.Path(ciContext.getHdfsPrefix()), true);
-        ciContext.getHiveConnectionHolder().close();
     }
 
     public TestCase getTestCase() {
