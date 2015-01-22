@@ -6,7 +6,7 @@ import com.collective.celos.ci.testing.fixtures.compare.FixtureComparer;
 import com.collective.celos.ci.testing.fixtures.create.FixObjectCreator;
 import com.collective.celos.ci.testing.structure.fixobject.FixDir;
 import com.collective.celos.ci.testing.structure.fixobject.FixFile;
-import com.collective.celos.ci.testing.structure.fixobject.FixObject;
+import com.collective.celos.ci.testing.structure.fixobject.FixFsObject;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -63,10 +63,10 @@ public class JsonContentsDirComparer implements FixtureComparer {
         return FixObjectCompareResult.success();
     }
 
-    private <T extends FixObject> Map<JsonElement, Integer> getJsonEntityCountMap(Map<String, FixObject> children) throws IOException {
+    private <T extends FixFsObject> Map<JsonElement, Integer> getJsonEntityCountMap(Map<String, FixFsObject> children) throws IOException {
         Map<JsonElement, Integer> expectedRes = Maps.newHashMap();
 
-        for (Map.Entry<String, FixObject> entry : children.entrySet()) {
+        for (Map.Entry<String, FixFsObject> entry : children.entrySet()) {
             if (!entry.getValue().isFile()) {
                 throw new RuntimeException(getClass().getName() + " only works with directories with no sub-dirs");
             }

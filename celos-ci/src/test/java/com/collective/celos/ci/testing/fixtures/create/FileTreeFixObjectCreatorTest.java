@@ -1,14 +1,12 @@
 package com.collective.celos.ci.testing.fixtures.create;
 
 import com.collective.celos.ci.Utils;
-import com.collective.celos.ci.config.CelosCiCommandLine;
-import com.collective.celos.ci.config.deploy.CelosCiContext;
 import com.collective.celos.ci.mode.test.TestRun;
 import com.collective.celos.ci.testing.fixtures.compare.FixObjectCompareResult;
 import com.collective.celos.ci.testing.fixtures.compare.RecursiveDirComparer;
 import com.collective.celos.ci.testing.structure.fixobject.FixDir;
 import com.collective.celos.ci.testing.structure.fixobject.FixFile;
-import com.collective.celos.ci.testing.structure.fixobject.FixObject;
+import com.collective.celos.ci.testing.structure.fixobject.FixFsObject;
 import com.google.common.collect.Maps;
 import junit.framework.Assert;
 import org.apache.commons.io.IOUtils;
@@ -38,18 +36,18 @@ public class FileTreeFixObjectCreatorTest {
     public void testFixDirCreator() throws Exception {
         String path = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/ci/testing/create").toURI()).getAbsolutePath();
 
-        Map<String, FixObject> contentir2 = Maps.newHashMap();
+        Map<String, FixFsObject> contentir2 = Maps.newHashMap();
         contentir2.put("file2", createFile());
         contentir2.put("file3", createFile());
         FixDir dir2 = new FixDir(contentir2);
 
-        Map<String, FixObject> contentir1 = Maps.newHashMap();
+        Map<String, FixFsObject> contentir1 = Maps.newHashMap();
         contentir1.put("dir2", dir2);
         contentir1.put("file1", createFile());
         FixDir dir1 = new FixDir(contentir1);
 
 
-        Map<String, FixObject> contentRead = Maps.newHashMap();
+        Map<String, FixFsObject> contentRead = Maps.newHashMap();
         contentRead.put("dir1", dir1);
         FixDir readDir = new FixDir(contentRead);
 
@@ -63,18 +61,18 @@ public class FileTreeFixObjectCreatorTest {
     public void testFixDirCreatorFails() throws Exception {
         String path = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/ci/testing/create/dir1/file1").toURI()).getAbsolutePath();
 
-        Map<String, FixObject> contentir2 = Maps.newHashMap();
+        Map<String, FixFsObject> contentir2 = Maps.newHashMap();
         contentir2.put("file2", createFile());
         contentir2.put("file3", createFile());
         FixDir dir2 = new FixDir(contentir2);
 
-        Map<String, FixObject> contentir1 = Maps.newHashMap();
+        Map<String, FixFsObject> contentir1 = Maps.newHashMap();
         contentir1.put("dir2", dir2);
         contentir1.put("file1", createFile());
         FixDir dir1 = new FixDir(contentir1);
 
 
-        Map<String, FixObject> contentRead = Maps.newHashMap();
+        Map<String, FixFsObject> contentRead = Maps.newHashMap();
         contentRead.put("dir1", dir1);
         FixDir readDir = new FixDir(contentRead);
 

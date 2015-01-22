@@ -3,7 +3,7 @@ package com.collective.celos.ci.testing.fixtures.deploy;
 import com.collective.celos.ci.mode.test.TestRun;
 import com.collective.celos.ci.testing.fixtures.create.FixObjectCreator;
 import com.collective.celos.ci.testing.structure.fixobject.FixFile;
-import com.collective.celos.ci.testing.structure.fixobject.FixObject;
+import com.collective.celos.ci.testing.structure.fixobject.FixFsObject;
 import com.collective.celos.ci.testing.structure.tree.TreeObjectProcessor;
 import com.google.common.collect.Maps;
 import org.apache.commons.io.IOUtils;
@@ -20,10 +20,10 @@ import java.util.Map;
  */
 public class HdfsInputDeployer implements FixtureDeployer {
 
-    private final FixObjectCreator<FixObject> fixObjectCreator;
+    private final FixObjectCreator<FixFsObject> fixObjectCreator;
     private final Path path;
 
-    public HdfsInputDeployer(FixObjectCreator<FixObject> fixObjectCreator, String path) {
+    public HdfsInputDeployer(FixObjectCreator<FixFsObject> fixObjectCreator, String path) {
         this.fixObjectCreator = fixObjectCreator;
         this.path = new Path(StringUtils.removeStart(path, "/"));
     }
@@ -50,7 +50,7 @@ public class HdfsInputDeployer implements FixtureDeployer {
         }
     }
 
-    public FixObjectCreator<FixObject> getFixObjectCreator() {
+    public FixObjectCreator<FixFsObject> getFixObjectCreator() {
         return fixObjectCreator;
     }
 
@@ -58,12 +58,12 @@ public class HdfsInputDeployer implements FixtureDeployer {
         return path;
     }
 
-    private static class CollectFilesAndPathsProcessor extends TreeObjectProcessor<FixObject> {
+    private static class CollectFilesAndPathsProcessor extends TreeObjectProcessor<FixFsObject> {
 
         private final Map<java.nio.file.Path, FixFile> pathToFiles = Maps.newHashMap();
 
         @Override
-        public void process(java.nio.file.Path path, FixObject fo) throws IOException {
+        public void process(java.nio.file.Path path, FixFsObject fo) throws IOException {
             if (fo.isFile()) {
                 pathToFiles.put(path, fo.asFile());
             }

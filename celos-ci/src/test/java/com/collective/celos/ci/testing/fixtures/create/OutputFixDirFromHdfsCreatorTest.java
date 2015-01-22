@@ -7,7 +7,7 @@ import com.collective.celos.ci.testing.fixtures.compare.FixObjectCompareResult;
 import com.collective.celos.ci.testing.fixtures.compare.RecursiveDirComparer;
 import com.collective.celos.ci.testing.structure.fixobject.FixDir;
 import com.collective.celos.ci.testing.structure.fixobject.FixFile;
-import com.collective.celos.ci.testing.structure.fixobject.FixObject;
+import com.collective.celos.ci.testing.structure.fixobject.FixFsObject;
 import com.google.common.collect.Maps;
 import org.apache.commons.io.IOUtils;
 import org.apache.hadoop.conf.Configuration;
@@ -35,17 +35,17 @@ public class OutputFixDirFromHdfsCreatorTest {
         doReturn(LocalFileSystem.get(new Configuration())).when(context).getFileSystem();
         OutputFixDirFromHdfsCreator creator = new OutputFixDirFromHdfsCreator(path);
 
-        Map<String, FixObject> contentir2 = Maps.newHashMap();
+        Map<String, FixFsObject> contentir2 = Maps.newHashMap();
         contentir2.put("file2", createFile());
         contentir2.put("file3", createFile());
         FixDir dir2 = new FixDir(contentir2);
 
-        Map<String, FixObject> contentir1 = Maps.newHashMap();
+        Map<String, FixFsObject> contentir1 = Maps.newHashMap();
         contentir1.put("dir2", dir2);
         contentir1.put("file1", createFile());
         FixDir dir1 = new FixDir(contentir1);
 
-        Map<String, FixObject> contentRead = Maps.newHashMap();
+        Map<String, FixFsObject> contentRead = Maps.newHashMap();
         contentRead.put("dir1", dir1);
         FixDir readDir = new FixDir(contentRead);
 

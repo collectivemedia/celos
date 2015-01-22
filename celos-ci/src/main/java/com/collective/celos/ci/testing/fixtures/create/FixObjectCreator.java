@@ -1,6 +1,7 @@
 package com.collective.celos.ci.testing.fixtures.create;
 
 import com.collective.celos.ci.mode.test.TestRun;
+import com.collective.celos.ci.testing.structure.fixobject.FixFsObject;
 import com.collective.celos.ci.testing.structure.fixobject.FixObject;
 
 /**

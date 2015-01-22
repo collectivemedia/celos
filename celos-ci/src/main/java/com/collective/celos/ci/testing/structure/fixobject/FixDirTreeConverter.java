@@ -4,7 +4,6 @@ import com.collective.celos.ci.mode.test.TestRun;
 import com.collective.celos.ci.testing.fixtures.create.FixObjectCreator;
 import com.google.common.collect.Maps;
 
-import java.io.IOException;
 import java.util.Map;
 
 /**
@@ -12,20 +11,20 @@ import java.util.Map;
  */
 public class FixDirTreeConverter implements FixObjectCreator<FixDir> {
 
-    private final FixObjectCreator creator;
+    private final FixObjectCreator<FixFsObject> creator;
     private final AbstractFixFileConverter fixFileConverter;
 
-    public FixDirTreeConverter(FixObjectCreator creator, AbstractFixFileConverter fixFileConverter) {
+    public FixDirTreeConverter(FixObjectCreator<FixFsObject> creator, AbstractFixFileConverter fixFileConverter) {
         this.creator = creator;
         this.fixFileConverter = fixFileConverter;
     }
 
-    private FixObject transform(TestRun tr, FixObject object, AbstractFixFileConverter converter) throws Exception {
+    private FixFsObject transform(TestRun tr, FixFsObject object, AbstractFixFileConverter converter) throws Exception {
         if (!object.isFile()) {
             FixDir fd = (FixDir) object;
-            Map<String, FixObject> result = Maps.newHashMap();
-            Map<String, FixObject> map = fd.getChildren();
-            for(Map.Entry<String, FixObject> entry : map.entrySet()) {
+            Map<String, FixFsObject> result = Maps.newHashMap();
+            Map<String, FixFsObject> map = fd.getChildren();
+            for(Map.Entry<String, FixFsObject> entry : map.entrySet()) {
                 result.put(entry.getKey(), transform(tr, entry.getValue(), converter));
             }
             return new FixDir(result);

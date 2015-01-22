@@ -1,14 +1,10 @@
 package com.collective.celos.ci.testing.fixtures.create;
 
 import com.collective.celos.ci.mode.test.TestRun;
-import com.collective.celos.ci.testing.structure.fixobject.FixDir;
 import com.collective.celos.ci.testing.structure.fixobject.FixFile;
-import com.collective.celos.ci.testing.structure.fixobject.FixObject;
-import com.google.common.collect.Maps;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.util.Map;
 
 /**
  * Created by akonopko on 10/7/14.
