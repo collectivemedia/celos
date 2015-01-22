@@ -7,7 +7,7 @@ import java.util.Map;
 /**
  * Created by akonopko on 10/7/14.
  */
-public class FixFile extends FixObject {
+public class FixFile extends FixFsObject {
 
     private final InputStream inputStream;
 
@@ -20,7 +20,7 @@ public class FixFile extends FixObject {
     }
 
     @Override
-    public Map<String, FixObject> getChildren() {
+    public Map<String, FixFsObject> getChildren() {
         return Collections.EMPTY_MAP;
     }
 

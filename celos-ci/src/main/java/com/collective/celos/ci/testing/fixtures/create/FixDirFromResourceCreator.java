@@ -3,7 +3,7 @@ package com.collective.celos.ci.testing.fixtures.create;
 import com.collective.celos.ci.mode.test.TestRun;
 import com.collective.celos.ci.testing.structure.fixobject.FixDir;
 import com.collective.celos.ci.testing.structure.fixobject.FixFile;
-import com.collective.celos.ci.testing.structure.fixobject.FixObject;
+import com.collective.celos.ci.testing.structure.fixobject.FixFsObject;
 import com.google.common.collect.Maps;
 
 import java.io.File;
@@ -38,9 +38,9 @@ public class FixDirFromResourceCreator implements FixObjectCreator<FixDir> {
         return getPath(testRun).getAbsolutePath();
     }
 
-    private FixObject read(File file) throws Exception {
+    private FixFsObject read(File file) throws Exception {
         if (file.isDirectory()) {
-            Map<String, FixObject> content = Maps.newHashMap();
+            Map<String, FixFsObject> content = Maps.newHashMap();
             for (File f : file.listFiles()) {
                 content.put(f.getName(), read(f));
             }

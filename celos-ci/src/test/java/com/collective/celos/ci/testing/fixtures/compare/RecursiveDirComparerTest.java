@@ -1,12 +1,9 @@
 package com.collective.celos.ci.testing.fixtures.compare;
 
 import com.collective.celos.ci.Utils;
-import com.collective.celos.ci.config.deploy.CelosCiContext;
-import com.collective.celos.ci.mode.test.TestRun;
-import com.collective.celos.ci.testing.fixtures.create.FixObjectCreator;
 import com.collective.celos.ci.testing.structure.fixobject.FixDir;
 import com.collective.celos.ci.testing.structure.fixobject.FixFile;
-import com.collective.celos.ci.testing.structure.fixobject.FixObject;
+import com.collective.celos.ci.testing.structure.fixobject.FixFsObject;
 import com.google.common.collect.Maps;
 import junit.framework.Assert;
 import org.apache.commons.io.IOUtils;
@@ -101,7 +98,7 @@ public class RecursiveDirComparerTest {
     private FixDir createParentDir1() {
         FixDir dir1 = getFixDirWithTwoFiles1();
         FixDir dir2 = getFixDirWithTwoFiles1();
-        Map<String, FixObject> content = Maps.newHashMap();
+        Map<String, FixFsObject> content = Maps.newHashMap();
         content.put("dir1", dir1);
         content.put("dir2", dir2);
         return new FixDir(content);
@@ -110,7 +107,7 @@ public class RecursiveDirComparerTest {
     private FixDir createParentDir2() {
         FixDir dir1 = getFixDirWithTwoFiles1();
         FixDir dir2 = getFixDirWithTwoFiles2();
-        Map<String, FixObject> content = Maps.newHashMap();
+        Map<String, FixFsObject> content = Maps.newHashMap();
         content.put("dir1", dir1);
         content.put("dir2", dir2);
         return new FixDir(content);
@@ -119,7 +116,7 @@ public class RecursiveDirComparerTest {
     private FixDir createParentDir3() {
         FixDir dir1 = getFixDirWithTwoFiles1();
         FixDir dir2 = getFixDirWithTwoFiles3();
-        Map<String, FixObject> content = Maps.newHashMap();
+        Map<String, FixFsObject> content = Maps.newHashMap();
         content.put("dir1", dir1);
         content.put("dir2", dir2);
         return new FixDir(content);
@@ -133,7 +130,7 @@ public class RecursiveDirComparerTest {
         InputStream inputStream2 = IOUtils.toInputStream("stream");
         FixFile file2 = new FixFile(inputStream2);
 
-        Map<String, FixObject> content1 = Maps.newHashMap();
+        Map<String, FixFsObject> content1 = Maps.newHashMap();
         content1.put("file1", file1);
         content1.put("file2", file2);
         return new FixDir(content1);
@@ -143,9 +140,9 @@ public class RecursiveDirComparerTest {
         InputStream inputStream1 = IOUtils.toInputStream("stream");
         FixFile file1 = new FixFile(inputStream1);
 
-        FixDir file2 = new FixDir(Maps.<String, FixObject>newHashMap());
+        FixDir file2 = new FixDir(Maps.<String, FixFsObject>newHashMap());
 
-        Map<String, FixObject> content1 = Maps.newHashMap();
+        Map<String, FixFsObject> content1 = Maps.newHashMap();
         content1.put("file1", file1);
         content1.put("file2", file2);
         return new FixDir(content1);
@@ -161,7 +158,7 @@ public class RecursiveDirComparerTest {
         InputStream inputStream3 = IOUtils.toInputStream("stream");
         FixFile file3 = new FixFile(inputStream3);
 
-        Map<String, FixObject> content1 = Maps.newHashMap();
+        Map<String, FixFsObject> content1 = Maps.newHashMap();
         content1.put("file1", file1);
         content1.put("file2", file2);
         content1.put("file3", file3);
@@ -175,7 +172,7 @@ public class RecursiveDirComparerTest {
         InputStream inputStream2 = IOUtils.toInputStream("stream3");
         FixFile file2 = new FixFile(inputStream2);
 
-        Map<String, FixObject> content1 = Maps.newHashMap();
+        Map<String, FixFsObject> content1 = Maps.newHashMap();
         content1.put("file1", file1);
         content1.put("file2", file2);
         return new FixDir(content1);

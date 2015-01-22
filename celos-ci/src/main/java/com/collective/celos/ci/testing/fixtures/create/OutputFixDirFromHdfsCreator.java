@@ -4,7 +4,7 @@ import com.collective.celos.ci.config.deploy.CelosCiContext;
 import com.collective.celos.ci.mode.test.TestRun;
 import com.collective.celos.ci.testing.structure.fixobject.FixDir;
 import com.collective.celos.ci.testing.structure.fixobject.FixFile;
-import com.collective.celos.ci.testing.structure.fixobject.FixObject;
+import com.collective.celos.ci.testing.structure.fixobject.FixFsObject;
 import com.google.common.collect.Maps;
 import org.apache.commons.lang.StringUtils;
 import org.apache.hadoop.fs.FileStatus;
@@ -41,14 +41,14 @@ public class OutputFixDirFromHdfsCreator implements FixObjectCreator<FixDir> {
         return new Path(testRun.getCiContext().getHdfsPrefix(), path).toString();
     }
 
-    private FixObject read(Path path, CelosCiContext context) throws Exception {
+    private FixFsObject read(Path path, CelosCiContext context) throws Exception {
         FileStatus fileStatus = context.getFileSystem().getFileStatus(path);
         if (fileStatus.isDirectory()) {
-            Map<String, FixObject> content = Maps.newHashMap();
+            Map<String, FixFsObject> content = Maps.newHashMap();
             FileStatus[] statuses = context.getFileSystem().listStatus(fileStatus.getPath());
             for (int i=0; i < statuses.length; i++) {
                 FileStatus childStatus = statuses[i];
-                FixObject fixObject = read(childStatus.getPath(), context);
+                FixFsObject fixObject = read(childStatus.getPath(), context);
                 content.put(childStatus.getPath().getName(), fixObject);
             }
             return new FixDir(content);

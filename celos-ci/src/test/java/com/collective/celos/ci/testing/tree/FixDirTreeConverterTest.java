@@ -28,7 +28,7 @@ public class FixDirTreeConverterTest {
     @Test
     public void testFixDirTreeConverter() throws Exception {
         FixDir dir = createDirWithFileContent("lowercase");
-        FixDirTreeConverter converter = new FixDirTreeConverter(Utils.wrap(dir), new UpperCaseStringFixFileConverter());
+        FixDirTreeConverter converter = new FixDirTreeConverter(Utils.<FixFsObject>wrap(dir), new UpperCaseStringFixFileConverter());
 
         FixDir transformed = converter.create(null);
 
@@ -43,12 +43,12 @@ public class FixDirTreeConverterTest {
         Assert.assertEquals(holder.visited, visited);
     }
 
-    private static class TreeObjectProcessorImpl extends TreeObjectProcessor<FixObject> {
+    private static class TreeObjectProcessorImpl extends TreeObjectProcessor<FixFsObject> {
 
         TreeSet<Path> visited = new TreeSet<>();
 
         @Override
-        public void process(Path path, FixObject ff) throws IOException {
+        public void process(Path path, FixFsObject ff) throws IOException {
             if (ff.isFile()) {
                 String content = IOUtils.toString(ff.asFile().getContent()).toUpperCase();
                 Assert.assertEquals(content, CHECKSTR.toUpperCase());
@@ -63,7 +63,7 @@ public class FixDirTreeConverterTest {
         InputStream inputStream2 = IOUtils.toInputStream(fileContent);
         FixFile file = new FixFile(inputStream2);
 
-        Map<String, FixObject> content = Maps.newHashMap();
+        Map<String, FixFsObject> content = Maps.newHashMap();
         content.put("dir1", dir1);
         content.put("file", file);
         return new FixDir(content);
@@ -84,7 +84,7 @@ public class FixDirTreeConverterTest {
         InputStream inputStream2 = IOUtils.toInputStream(fileContent);
         FixFile file = new FixFile(inputStream2);
 
-        Map<String, FixObject> content = Maps.newHashMap();
+        Map<String, FixFsObject> content = Maps.newHashMap();
         content.put("dir1", dir1);
         content.put("dir2", dir2);
         content.put("file", file);
@@ -98,7 +98,7 @@ public class FixDirTreeConverterTest {
         InputStream inputStream2 = IOUtils.toInputStream(fileContent);
         FixFile file = new FixFile(inputStream2);
 
-        Map<String, FixObject> content = Maps.newHashMap();
+        Map<String, FixFsObject> content = Maps.newHashMap();
         content.put("dir1", dir1);
         content.put("dir2", dir2);
         content.put("file", file);
@@ -112,7 +112,7 @@ public class FixDirTreeConverterTest {
         InputStream inputStream2 = IOUtils.toInputStream(fileContent);
         FixFile file2 = new FixFile(inputStream2);
 
-        Map<String, FixObject> content1 = Maps.newHashMap();
+        Map<String, FixFsObject> content1 = Maps.newHashMap();
         content1.put("file1", file1);
         content1.put("file2", file2);
         return new FixDir(content1);

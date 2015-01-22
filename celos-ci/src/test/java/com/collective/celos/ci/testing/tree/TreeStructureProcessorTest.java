@@ -2,7 +2,7 @@ package com.collective.celos.ci.testing.tree;
 
 import com.collective.celos.ci.testing.structure.fixobject.FixDir;
 import com.collective.celos.ci.testing.structure.fixobject.FixFile;
-import com.collective.celos.ci.testing.structure.fixobject.FixObject;
+import com.collective.celos.ci.testing.structure.fixobject.FixFsObject;
 import com.collective.celos.ci.testing.structure.tree.TreeObjectProcessor;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -29,7 +29,7 @@ public class TreeStructureProcessorTest {
         InputStream inputStream2 = IOUtils.toInputStream("stream3");
         FixFile file = new FixFile(inputStream2);
 
-        Map<String, FixObject> content = Maps.newHashMap();
+        Map<String, FixFsObject> content = Maps.newHashMap();
         content.put("dir1", dir1);
         content.put("file", file);
         FixDir dir = new FixDir(content);
@@ -54,12 +54,12 @@ public class TreeStructureProcessorTest {
         Assert.assertEquals(holder.content, expectedStructure);
     }
 
-    private static class TreeObjectProcessorImpl extends TreeObjectProcessor<FixObject> {
+    private static class TreeObjectProcessorImpl extends TreeObjectProcessor<FixFsObject> {
 
         List<Path> content = Lists.newArrayList();
 
         @Override
-        public void process(Path path, FixObject ff) throws IOException {
+        public void process(Path path, FixFsObject ff) throws IOException {
             content.add(path);
         }
     }
@@ -70,7 +70,7 @@ public class TreeStructureProcessorTest {
         InputStream inputStream2 = IOUtils.toInputStream("stream");
         FixFile file = new FixFile(inputStream2);
 
-        Map<String, FixObject> content = Maps.newHashMap();
+        Map<String, FixFsObject> content = Maps.newHashMap();
         content.put("dir1", dir1);
         content.put("dir2", dir2);
         content.put("file", file);
@@ -84,7 +84,7 @@ public class TreeStructureProcessorTest {
         InputStream inputStream2 = IOUtils.toInputStream("stream2");
         FixFile file2 = new FixFile(inputStream2);
 
-        Map<String, FixObject> content1 = Maps.newHashMap();
+        Map<String, FixFsObject> content1 = Maps.newHashMap();
         content1.put("file1", file1);
         content1.put("file2", file2);
         return new FixDir(content1);

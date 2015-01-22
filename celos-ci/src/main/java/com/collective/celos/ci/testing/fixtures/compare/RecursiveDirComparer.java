@@ -1,11 +1,10 @@
 package com.collective.celos.ci.testing.fixtures.compare;
 
-import com.collective.celos.ci.config.deploy.CelosCiContext;
 import com.collective.celos.ci.mode.test.TestRun;
 import com.collective.celos.ci.testing.fixtures.create.FixObjectCreator;
 import com.collective.celos.ci.testing.structure.fixobject.FixDir;
 import com.collective.celos.ci.testing.structure.fixobject.FixFile;
-import com.collective.celos.ci.testing.structure.fixobject.FixObject;
+import com.collective.celos.ci.testing.structure.fixobject.FixFsObject;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -42,13 +41,13 @@ public class RecursiveDirComparer implements FixtureComparer {
     private FixObjectCompareResult checkInternal(FixDir expectedDirTree, FixDir actualDirTree, TestRun testRun) throws Exception {
 
         Map<String, FixObjectCompareResult> fails = Maps.newHashMap();
-        Map<String, FixObject> expectedChldrn = expectedDirTree.getChildren();
-        Map<String, FixObject> actualChldrn = actualDirTree.getChildren();
+        Map<String, FixFsObject> expectedChldrn = expectedDirTree.getChildren();
+        Map<String, FixFsObject> actualChldrn = actualDirTree.getChildren();
 
         String message = getThisDirError(expectedChldrn, actualChldrn);
 
-        for (Map.Entry<String, FixObject> entry : expectedChldrn.entrySet()) {
-            FixObject other = actualChldrn.get(entry.getKey());
+        for (Map.Entry<String, FixFsObject> entry : expectedChldrn.entrySet()) {
+            FixFsObject other = actualChldrn.get(entry.getKey());
             if (other != null && other.isFile() == entry.getValue().isFile()) {
                 if (entry.getValue().isFile()) {
 
@@ -73,7 +72,7 @@ public class RecursiveDirComparer implements FixtureComparer {
         return FixObjectCompareResult.success();
     }
 
-    private String getThisDirError(Map<String, FixObject> expectedChldrn, Map<String, FixObject> actualChldrn) {
+    private String getThisDirError(Map<String, FixFsObject> expectedChldrn, Map<String, FixFsObject> actualChldrn) {
         Set<String> expectedDiff = Sets.difference(expectedChldrn.keySet(), actualChldrn.keySet());
         Set<String> actualDiff = Sets.difference(actualChldrn.keySet(), expectedChldrn.keySet());
         StrBuilder strBuilder = new StrBuilder();
@@ -105,7 +104,7 @@ public class RecursiveDirComparer implements FixtureComparer {
         strBuilder.appendWithSeparators(sortedMessages, ", ");
     }
 
-    private String getTypeDescr(FixObject fo) {
+    private String getTypeDescr(FixFsObject fo) {
         return fo.isFile() ? "File" : "Dir";
     }
 }
