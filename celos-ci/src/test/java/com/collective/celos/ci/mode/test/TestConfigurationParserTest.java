@@ -10,10 +10,9 @@ import com.collective.celos.ci.testing.fixtures.create.FixDirHierarchyCreator;
 import com.collective.celos.ci.testing.fixtures.create.FixFileFromResourceCreator;
 import com.collective.celos.ci.testing.fixtures.create.OutputFixDirFromHdfsCreator;
 import com.collective.celos.ci.testing.fixtures.deploy.HdfsInputDeployer;
-import com.collective.celos.ci.testing.fixtures.deploy.hive.HiveFileCreator;
-import com.collective.celos.ci.testing.fixtures.deploy.hive.HiveTableDeployer;
+import com.collective.celos.ci.testing.structure.fixobject.ConvertionCreator;
 import com.collective.celos.ci.testing.structure.fixobject.FixDir;
-import com.collective.celos.ci.testing.structure.fixobject.FixDirTreeConverter;
+import com.collective.celos.ci.testing.structure.fixobject.FixDirRecursiveConverter;
 import com.collective.celos.ci.testing.structure.fixobject.FixFile;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -266,8 +265,11 @@ public class TestConfigurationParserTest {
 
         NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(new StringReader("avroToJson(\"1\")"), "string");
 
-        FixDirTreeConverter converter = (FixDirTreeConverter) creatorObj.unwrap();
-        Assert.assertTrue(converter.getFixFileConverter() instanceof AvroToJsonConverter);
+        ConvertionCreator converter = (ConvertionCreator) creatorObj.unwrap();
+
+        Assert.assertTrue(converter.getFixObjectConverter() instanceof FixDirRecursiveConverter);
+        FixDirRecursiveConverter fixDirRecursiveConverter = (FixDirRecursiveConverter) converter.getFixObjectConverter();
+        Assert.assertTrue(fixDirRecursiveConverter.getFixFileConverter() instanceof AvroToJsonConverter);
         Assert.assertTrue(converter.getCreator() instanceof OutputFixDirFromHdfsCreator);
     }
 
@@ -362,7 +364,7 @@ public class TestConfigurationParserTest {
         TestConfigurationParser parser = new TestConfigurationParser();
 
         NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(new StringReader(js), "string");
-        FixDirTreeConverter converter = (FixDirTreeConverter) creatorObj.unwrap();
+        ConvertionCreator<FixDir, FixDir> converter = (ConvertionCreator) creatorObj.unwrap();
 
         Assert.assertEquals(converter.getDescription(null), "[avroFile1, avroFile2]");
         FixDir fixDir = converter.create(null);
@@ -379,45 +381,6 @@ public class TestConfigurationParserTest {
         String jsonIsBack2 = IOUtils.toString(jsonFF2.getContent());
         Assert.assertEquals(jsonIsBack2, jsonStr);
 
-    }
-
-    @Test
-    public void testHiveInput() throws IOException {
-
-        String js = "hiveInput(\"dbname\", \"tablename\", [[\"1\",\"2\",\"3\"],[\"11\",\"22\",\"33\"]])";
-
-        TestConfigurationParser parser = new TestConfigurationParser();
-
-        NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(new StringReader(js), "string");
-        HiveTableDeployer hiveTableDeployer = (HiveTableDeployer) creatorObj.unwrap();
-
-        Assert.assertEquals(hiveTableDeployer.getDatabaseName(), "dbname");
-        Assert.assertEquals(hiveTableDeployer.getTableName(), "tablename");
-        HiveFileCreator.ContentHiveFileCreator creator = (HiveFileCreator.ContentHiveFileCreator) hiveTableDeployer.getDataFileCreator();
-        Assert.assertArrayEquals(creator.getCellData(), new String[][]{new String[]{"1", "2", "3"}, new String[]{"11", "22", "33"}});
-
-    }
-
-    @Test(expected = JavaScriptException.class)
-    public void testHiveInputFails() throws IOException {
-
-        String js = "hiveInput(\"tablename\", [[\"1\",\"2\",\"3\"],[\"11\",\"22\",\"33\"]])";
-
-        TestConfigurationParser parser = new TestConfigurationParser();
-
-        NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(new StringReader(js), "string");
-        HiveTableDeployer hiveTableDeployer = (HiveTableDeployer) creatorObj.unwrap();
-    }
-
-    @Test
-    public void testHiveInputNoData() throws IOException {
-
-        String js = "hiveInput(\"dbname\", \"tablename\")";
-
-        TestConfigurationParser parser = new TestConfigurationParser();
-
-        NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(new StringReader(js), "string");
-        HiveTableDeployer hiveTableDeployer = (HiveTableDeployer) creatorObj.unwrap();
     }
 
 }

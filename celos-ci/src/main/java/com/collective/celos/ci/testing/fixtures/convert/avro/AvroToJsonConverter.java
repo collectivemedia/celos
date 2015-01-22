@@ -1,7 +1,7 @@
 package com.collective.celos.ci.testing.fixtures.convert.avro;
 
 import com.collective.celos.ci.mode.test.TestRun;
-import com.collective.celos.ci.testing.structure.fixobject.AbstractFixFileConverter;
+import com.collective.celos.ci.testing.structure.fixobject.AbstractFixObjectConverter;
 import com.collective.celos.ci.testing.structure.fixobject.FixFile;
 import org.apache.avro.Schema;
 import org.apache.avro.file.DataFileReader;
@@ -21,7 +21,7 @@ import java.io.IOException;
 /**
  * Created by akonopko on 9/29/14.
  */
-public class AvroToJsonConverter extends AbstractFixFileConverter {
+public class AvroToJsonConverter extends AbstractFixObjectConverter<FixFile, FixFile> {
 
     @Override
     public FixFile convert(TestRun testRun, FixFile ff) throws IOException {

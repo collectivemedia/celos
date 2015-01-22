@@ -54,7 +54,7 @@ function avroToJson(creatorOrPath) {
     if (typeof creatorOrPath == 'string') {
         creatorOrPath = new OutputFixDirFromHdfsCreator(creatorOrPath)
     }
-    return new FixDirTreeConverter(creatorOrPath, new AvroToJsonConverter());
+    return new ConvertionCreator(creatorOrPath, new FixDirRecursiveConverter(new AvroToJsonConverter()));
 }
 
 function jsonToAvro(dirCreator, schemaFileCreator) {
@@ -64,7 +64,7 @@ function jsonToAvro(dirCreator, schemaFileCreator) {
     if (!schemaFileCreator) {
         throw "Undefined expected schemaFileCreator";
     }
-    return new FixDirTreeConverter(dirCreator, new JsonToAvroConverter(schemaFileCreator));
+    return new ConvertionCreator(dirCreator, new FixDirRecursiveConverter(new JsonToAvroConverter(schemaFileCreator)));
 }
 
 
@@ -131,24 +131,4 @@ function addTestCase(testCase) {
         }
     }
     testConfigurationParser.addTestCase(result);
-}
-
-function hiveInput(dbName, tableName, data) {
-    if (!dbName || typeof dbName != "string") {
-        throw "dbName should be valid string";
-    }
-    if (!tableName || typeof tableName != "string") {
-        throw "tableName should be valid string";
-    }
-    var hiveFileCreator;
-    if (data) {
-        if (data instanceof Array) {
-            hiveFileCreator = new HiveFileCreator.ContentHiveFileCreator(data);
-        } else {
-            hiveFileCreator = new HiveFileCreator.PlainHiveFileCreator(data);
-        }
-    } else {
-        hiveFileCreator = null;
-    }
-    return new HiveTableDeployer(dbName, tableName, hiveFileCreator);
 }
