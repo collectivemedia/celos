@@ -4,6 +4,7 @@ importPackage(Packages.com.collective.celos.ci.testing.fixtures.compare);
 importPackage(Packages.com.collective.celos.ci.testing.fixtures.convert.avro);
 importPackage(Packages.com.collective.celos.ci.testing.structure.fixobject);
 importPackage(Packages.com.collective.celos.ci.testing.fixtures.compare.json);
+importPackage(Packages.com.collective.celos.ci.testing.fixtures.deploy.hive);
 importPackage(Packages.com.collective.celos.ci.mode.test);
 importPackage(Packages.com.collective.celos);
 importPackage(Packages.java.util);
@@ -81,7 +82,7 @@ function jsonCompare(expectedCreator, actualCreator, ignorePathsRaw) {
             ignorePaths.add(ignorePathsRaw[i]);
         }
     }
-    return new JsonContentsDirComparer(ignorePaths, expectedCreator, actualCreator);
+    return new JsonContentsComparer(ignorePaths, expectedCreator, actualCreator);
 }
 
 function plainCompare(fixObjectCreator, path) {
@@ -130,4 +131,24 @@ function addTestCase(testCase) {
         }
     }
     testConfigurationParser.addTestCase(result);
+}
+
+function hiveInput(dbName, tableName, data) {
+    if (!dbName || typeof dbName != "string") {
+        throw "dbName should be valid string";
+    }
+    if (!tableName || typeof tableName != "string") {
+        throw "tableName should be valid string";
+    }
+    var hiveFileCreator;
+    if (data) {
+        if (data instanceof Array) {
+            hiveFileCreator = new HiveFileCreator.ContentHiveFileCreator(data);
+        } else {
+            hiveFileCreator = new HiveFileCreator.PlainHiveFileCreator(data);
+        }
+    } else {
+        hiveFileCreator = null;
+    }
+    return new HiveTableDeployer(dbName, tableName, hiveFileCreator);
 }

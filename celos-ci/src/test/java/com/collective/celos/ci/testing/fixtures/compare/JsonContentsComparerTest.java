@@ -2,7 +2,7 @@ package com.collective.celos.ci.testing.fixtures.compare;
 
 import com.collective.celos.ci.Utils;
 import com.collective.celos.ci.mode.test.TestRun;
-import com.collective.celos.ci.testing.fixtures.compare.json.JsonContentsDirComparer;
+import com.collective.celos.ci.testing.fixtures.compare.json.JsonContentsComparer;
 import com.collective.celos.ci.testing.fixtures.create.FixDirFromResourceCreator;
 import com.collective.celos.ci.testing.structure.fixobject.FixDir;
 import com.collective.celos.ci.testing.structure.fixobject.FixFile;
@@ -22,7 +22,7 @@ import static org.mockito.Mockito.mock;
 /**
  * Created by akonopko on 10/9/14.
  */
-public class JsonContentsDirComparerTest {
+public class JsonContentsComparerTest {
 
     private TestRun testRun;
 
@@ -40,11 +40,24 @@ public class JsonContentsDirComparerTest {
         FixDir fixDir1 = creator.create(testRun).asDir();
 
         InputStream content = Thread.currentThread().getContextClassLoader().getResourceAsStream("com/collective/celos/ci/fixtures/jsoncompare/2/content");
-        JsonContentsDirComparer dirComparer = new JsonContentsDirComparer(Collections.EMPTY_SET, Utils.wrap(new FixFile(content)), Utils.wrap(fixDir1));
+        JsonContentsComparer dirComparer = new JsonContentsComparer(Collections.EMPTY_SET, Utils.wrap(new FixFile(content)), Utils.wrap(fixDir1));
 
         FixObjectCompareResult compareResult = dirComparer.check(null);
         Assert.assertEquals(compareResult.getStatus(), FixObjectCompareResult.Status.SUCCESS);
     }
+
+    @Test
+    public void testJsonContentsFileComparerOK() throws Exception {
+
+        InputStream content1 = Thread.currentThread().getContextClassLoader().getResourceAsStream("com/collective/celos/ci/fixtures/jsoncompare/2/content");
+        InputStream content2 = Thread.currentThread().getContextClassLoader().getResourceAsStream("com/collective/celos/ci/fixtures/jsoncompare/2/content");
+
+        JsonContentsComparer dirComparer = new JsonContentsComparer(Collections.EMPTY_SET, Utils.wrap(new FixFile(content1)), Utils.wrap(new FixFile(content2)));
+
+        FixObjectCompareResult compareResult = dirComparer.check(null);
+        Assert.assertEquals(compareResult.getStatus(), FixObjectCompareResult.Status.SUCCESS);
+    }
+
 
     @Test
     public void testJsonContentsDirComparerOKIgnorePaths() throws Exception {
@@ -56,7 +69,7 @@ public class JsonContentsDirComparerTest {
 
         FixDirFromResourceCreator creator = new FixDirFromResourceCreator(dir1.getAbsolutePath());
         FixDir fixDir1 = creator.create(testRun).asDir();
-        JsonContentsDirComparer dirComparer = new JsonContentsDirComparer(ignorePaths, Utils.wrap(new FixFile(content)), Utils.wrap(fixDir1));
+        JsonContentsComparer dirComparer = new JsonContentsComparer(ignorePaths, Utils.wrap(new FixFile(content)), Utils.wrap(fixDir1));
 
         FixObjectCompareResult compareResult = dirComparer.check(null);
         Assert.assertEquals(compareResult.getStatus(), FixObjectCompareResult.Status.SUCCESS);
@@ -71,7 +84,7 @@ public class JsonContentsDirComparerTest {
 
         FixDirFromResourceCreator creator = new FixDirFromResourceCreator(dir1.getAbsolutePath());
         FixDir fixDir1 = creator.create(testRun).asDir();
-        JsonContentsDirComparer dirComparer = new JsonContentsDirComparer(Collections.EMPTY_SET, Utils.wrap(new FixFile(content), "desc1"), Utils.wrap(fixDir1, "desc2"));
+        JsonContentsComparer dirComparer = new JsonContentsComparer(Collections.EMPTY_SET, Utils.wrap(new FixFile(content), "desc1"), Utils.wrap(fixDir1, "desc2"));
 
         FixObjectCompareResult compareResult = dirComparer.check(null);
         Assert.assertEquals(compareResult.getStatus(), FixObjectCompareResult.Status.FAIL);
@@ -90,7 +103,7 @@ public class JsonContentsDirComparerTest {
 
         FixDirFromResourceCreator creator = new FixDirFromResourceCreator(dir1.getAbsolutePath());
         FixDir fixDir1 = creator.create(testRun).asDir();
-        JsonContentsDirComparer dirComparer = new JsonContentsDirComparer(Collections.EMPTY_SET, Utils.wrap(new FixFile(is)), Utils.wrap(fixDir1));
+        JsonContentsComparer dirComparer = new JsonContentsComparer(Collections.EMPTY_SET, Utils.wrap(new FixFile(is)), Utils.wrap(fixDir1));
 
         FixObjectCompareResult compareResult = dirComparer.check(null);
         Assert.assertEquals(compareResult.getStatus(), FixObjectCompareResult.Status.FAIL);
@@ -111,7 +124,7 @@ public class JsonContentsDirComparerTest {
 
         FixDirFromResourceCreator creator = new FixDirFromResourceCreator(dir1.getAbsolutePath());
         FixDir fixDir1 = creator.create(testRun).asDir();
-        JsonContentsDirComparer dirComparer = new JsonContentsDirComparer(Collections.EMPTY_SET, Utils.wrap(new FixFile(is), "desc1"), Utils.wrap(fixDir1, "desc2"));
+        JsonContentsComparer dirComparer = new JsonContentsComparer(Collections.EMPTY_SET, Utils.wrap(new FixFile(is), "desc1"), Utils.wrap(fixDir1, "desc2"));
 
         FixObjectCompareResult compareResult = dirComparer.check(null);
         Assert.assertEquals(compareResult.getStatus(), FixObjectCompareResult.Status.FAIL);

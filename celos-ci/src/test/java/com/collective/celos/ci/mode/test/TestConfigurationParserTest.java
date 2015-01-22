@@ -3,13 +3,15 @@ package com.collective.celos.ci.mode.test;
 import com.collective.celos.ScheduledTime;
 import com.collective.celos.WorkflowID;
 import com.collective.celos.ci.testing.fixtures.compare.RecursiveDirComparer;
-import com.collective.celos.ci.testing.fixtures.compare.json.JsonContentsDirComparer;
+import com.collective.celos.ci.testing.fixtures.compare.json.JsonContentsComparer;
 import com.collective.celos.ci.testing.fixtures.convert.avro.AvroToJsonConverter;
 import com.collective.celos.ci.testing.fixtures.create.FixDirFromResourceCreator;
 import com.collective.celos.ci.testing.fixtures.create.FixDirHierarchyCreator;
 import com.collective.celos.ci.testing.fixtures.create.FixFileFromResourceCreator;
 import com.collective.celos.ci.testing.fixtures.create.OutputFixDirFromHdfsCreator;
 import com.collective.celos.ci.testing.fixtures.deploy.HdfsInputDeployer;
+import com.collective.celos.ci.testing.fixtures.deploy.hive.HiveFileCreator;
+import com.collective.celos.ci.testing.fixtures.deploy.hive.HiveTableDeployer;
 import com.collective.celos.ci.testing.structure.fixobject.FixDir;
 import com.collective.celos.ci.testing.structure.fixobject.FixDirTreeConverter;
 import com.collective.celos.ci.testing.structure.fixobject.FixFile;
@@ -275,7 +277,7 @@ public class TestConfigurationParserTest {
 
         NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(new StringReader("jsonCompare(fixDirFromResource(\"stuff\"), fixDirFromResource(\"stuff\"))"), "string");
 
-        JsonContentsDirComparer comparer = (JsonContentsDirComparer) creatorObj.unwrap();
+        JsonContentsComparer comparer = (JsonContentsComparer) creatorObj.unwrap();
         Assert.assertEquals(comparer.getIgnorePaths(), new HashSet<String>());
     }
 
@@ -285,7 +287,7 @@ public class TestConfigurationParserTest {
 
         NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(new StringReader("jsonCompare(fixDirFromResource(\"stuff\"), fixDirFromResource(\"stuff\"), [\"path1\", \"path2\"])"), "string");
 
-        JsonContentsDirComparer comparer = (JsonContentsDirComparer) creatorObj.unwrap();
+        JsonContentsComparer comparer = (JsonContentsComparer) creatorObj.unwrap();
         Assert.assertEquals(comparer.getIgnorePaths(), new HashSet(Lists.newArrayList("path1", "path2")));
     }
 
@@ -296,7 +298,7 @@ public class TestConfigurationParserTest {
 
         NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(new StringReader("jsonCompare(fixDirFromResource(\"stuff\"))"), "string");
 
-        JsonContentsDirComparer comparer = (JsonContentsDirComparer) creatorObj.unwrap();
+        JsonContentsComparer comparer = (JsonContentsComparer) creatorObj.unwrap();
         Assert.assertEquals(comparer.getIgnorePaths(), new HashSet(Lists.newArrayList("path1", "path2")));
     }
 
@@ -377,6 +379,45 @@ public class TestConfigurationParserTest {
         String jsonIsBack2 = IOUtils.toString(jsonFF2.getContent());
         Assert.assertEquals(jsonIsBack2, jsonStr);
 
+    }
+
+    @Test
+    public void testHiveInput() throws IOException {
+
+        String js = "hiveInput(\"dbname\", \"tablename\", [[\"1\",\"2\",\"3\"],[\"11\",\"22\",\"33\"]])";
+
+        TestConfigurationParser parser = new TestConfigurationParser();
+
+        NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(new StringReader(js), "string");
+        HiveTableDeployer hiveTableDeployer = (HiveTableDeployer) creatorObj.unwrap();
+
+        Assert.assertEquals(hiveTableDeployer.getDatabaseName(), "dbname");
+        Assert.assertEquals(hiveTableDeployer.getTableName(), "tablename");
+        HiveFileCreator.ContentHiveFileCreator creator = (HiveFileCreator.ContentHiveFileCreator) hiveTableDeployer.getDataFileCreator();
+        Assert.assertArrayEquals(creator.getCellData(), new String[][]{new String[]{"1", "2", "3"}, new String[]{"11", "22", "33"}});
+
+    }
+
+    @Test(expected = JavaScriptException.class)
+    public void testHiveInputFails() throws IOException {
+
+        String js = "hiveInput(\"tablename\", [[\"1\",\"2\",\"3\"],[\"11\",\"22\",\"33\"]])";
+
+        TestConfigurationParser parser = new TestConfigurationParser();
+
+        NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(new StringReader(js), "string");
+        HiveTableDeployer hiveTableDeployer = (HiveTableDeployer) creatorObj.unwrap();
+    }
+
+    @Test
+    public void testHiveInputNoData() throws IOException {
+
+        String js = "hiveInput(\"dbname\", \"tablename\")";
+
+        TestConfigurationParser parser = new TestConfigurationParser();
+
+        NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(new StringReader(js), "string");
+        HiveTableDeployer hiveTableDeployer = (HiveTableDeployer) creatorObj.unwrap();
     }
 
 }
