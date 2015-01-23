@@ -1,7 +1,7 @@
+importPackage(Packages.com.collective.celos.ci.testing.fixtures.convert);
 importPackage(Packages.com.collective.celos.ci.testing.fixtures.create);
 importPackage(Packages.com.collective.celos.ci.testing.fixtures.deploy);
 importPackage(Packages.com.collective.celos.ci.testing.fixtures.compare);
-importPackage(Packages.com.collective.celos.ci.testing.fixtures.convert.avro);
 importPackage(Packages.com.collective.celos.ci.testing.structure.fixobject);
 importPackage(Packages.com.collective.celos.ci.testing.fixtures.compare.json);
 importPackage(Packages.com.collective.celos.ci.testing.fixtures.deploy.hive);
@@ -54,7 +54,7 @@ function avroToJson(creatorOrPath) {
     if (typeof creatorOrPath == 'string') {
         creatorOrPath = new OutputFixDirFromHdfsCreator(creatorOrPath)
     }
-    return new FixDirTreeConverter(creatorOrPath, new AvroToJsonConverter());
+    return new ConvertionCreator(creatorOrPath, new FixDirRecursiveConverter(new AvroToJsonConverter()));
 }
 
 function jsonToAvro(dirCreator, schemaFileCreator) {
@@ -64,7 +64,7 @@ function jsonToAvro(dirCreator, schemaFileCreator) {
     if (!schemaFileCreator) {
         throw "Undefined expected schemaFileCreator";
     }
-    return new FixDirTreeConverter(dirCreator, new JsonToAvroConverter(schemaFileCreator));
+    return new ConvertionCreator(dirCreator, new FixDirRecursiveConverter(new JsonToAvroConverter(schemaFileCreator)));
 }
 
 
@@ -151,4 +151,36 @@ function hiveInput(dbName, tableName, data) {
         hiveFileCreator = null;
     }
     return new HiveTableDeployer(dbName, tableName, hiveFileCreator);
+}
+
+function hiveTable(databaseName, tableName) {
+    if (!databaseName) {
+        throw "databaseName should be valid string";
+    }
+    if (!tableName) {
+        throw "tableName should be valid string";
+    }
+    return new OutputFixTableFromHiveCreator(databaseName, tableName);
+}
+
+function tableToJson(fixTableCreator) {
+    if (!fixTableCreator) {
+        throw "Undefined fixTableCreator";
+    }
+    return new ConvertionCreator(fixTableCreator, new FixTableToJsonFileConverter());
+}
+
+function expandJson(jsonCreator, fieldsRaw) {
+    if (!jsonCreator) {
+        throw "Undefined jsonCreator";
+    }
+    fields = new HashSet();
+
+    if (fieldsRaw) {
+        for (var i=0; i < fieldsRaw.length; i++) {
+            fields.add(fieldsRaw[i]);
+        }
+    }
+
+    return new ConvertionCreator(jsonCreator, new JsonExpandConverter(fields));
 }

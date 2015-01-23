@@ -4,18 +4,15 @@ import com.collective.celos.ci.Utils;
 import com.collective.celos.ci.mode.test.TestRun;
 import com.collective.celos.ci.testing.fixtures.compare.FixObjectCompareResult;
 import com.collective.celos.ci.testing.fixtures.compare.PlainFileComparer;
-import com.collective.celos.ci.testing.fixtures.convert.avro.AvroToJsonConverter;
-import com.collective.celos.ci.testing.fixtures.convert.avro.JsonToAvroConverter;
+import com.collective.celos.ci.testing.fixtures.convert.AvroToJsonConverter;
+import com.collective.celos.ci.testing.fixtures.convert.JsonToAvroConverter;
 import com.collective.celos.ci.testing.fixtures.create.FixObjectCreator;
 import com.collective.celos.ci.testing.structure.fixobject.FixFile;
-import org.apache.avro.Schema;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 

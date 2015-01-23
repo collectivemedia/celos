@@ -31,7 +31,7 @@ public class TestRun {
 
     private static final String HDFS_PREFIX_PATTERN = "/user/%s/.celos-ci/%s/%s";
     private static final String HDFS_PREFIX_JS_VAR = "HDFS_PREFIX_JS_VAR";
-    private static final String UUID_JS_VAR = "UUID_JS_VAR";
+    private static final String TEST_UUID_JS_VAR = "TEST_UUID_JS_VAR";
     private static final String CELOS_USER_JS_VAR = "CELOS_USER_JS_VAR";
     private static final String WORKFLOW_DIR_CELOS_PATH = "workflows";
     private static final String DEFAULTS_DIR_CELOS_PATH = "defaults";
@@ -113,7 +113,7 @@ public class TestRun {
 
         Map additionalJSParams = ImmutableMap.of(
                 HDFS_PREFIX_JS_VAR, hdfsPrefix,
-                UUID_JS_VAR, testUUID,
+                TEST_UUID_JS_VAR, testUUID,
                 CELOS_USER_JS_VAR, ciContext.getUserName());
 
         final CelosServer celosServer = new CelosServer();
@@ -137,6 +137,7 @@ public class TestRun {
                     System.err.println(result.generateDescription());
                 }
             }
+            System.err.flush();
         } catch (Exception e) {
             e.printStackTrace();
         } finally {

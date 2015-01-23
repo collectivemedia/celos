@@ -203,3 +203,11 @@ function replaceTimeVariables(string, t) {
     string = string.replace(/\${second}/g, t.second());
     return string;                            
 }
+
+function databaseName(database) {
+    if (typeof HDFS_PREFIX_JS_VAR !== "undefined") {
+        return Packages.com.collective.celos.Util.augumentDbName(TEST_UUID_JS_VAR, database);
+    } else {
+        return database;
+    }
+}

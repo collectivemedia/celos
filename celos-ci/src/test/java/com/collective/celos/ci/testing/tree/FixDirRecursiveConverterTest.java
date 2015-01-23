@@ -21,16 +21,16 @@ import java.util.TreeSet;
 /**
  * Created by akonopko on 10/7/14.
  */
-public class FixDirTreeConverterTest {
+public class FixDirRecursiveConverterTest {
 
     public static final String CHECKSTR = "lowercase";
 
     @Test
     public void testFixDirTreeConverter() throws Exception {
         FixDir dir = createDirWithFileContent("lowercase");
-        FixDirTreeConverter converter = new FixDirTreeConverter(Utils.<FixFsObject>wrap(dir), new UpperCaseStringFixFileConverter());
+        FixDirRecursiveConverter converter = new FixDirRecursiveConverter(new UpperCaseStringFixFileConverter());
 
-        FixDir transformed = converter.create(null);
+        FixDir transformed = converter.convert(null, dir);
 
         TreeObjectProcessorImpl holder = new TreeObjectProcessorImpl();
         TreeObjectProcessor.process(transformed, holder);
@@ -69,7 +69,7 @@ public class FixDirTreeConverterTest {
         return new FixDir(content);
     }
 
-    private static class UpperCaseStringFixFileConverter extends AbstractFixFileConverter {
+    private static class UpperCaseStringFixFileConverter extends AbstractFixObjectConverter<FixFile, FixFile> {
 
         @Override
         public FixFile convert(TestRun tr, FixFile ff) throws IOException {

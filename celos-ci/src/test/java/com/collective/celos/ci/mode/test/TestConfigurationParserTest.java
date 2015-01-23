@@ -4,7 +4,7 @@ import com.collective.celos.ScheduledTime;
 import com.collective.celos.WorkflowID;
 import com.collective.celos.ci.testing.fixtures.compare.RecursiveDirComparer;
 import com.collective.celos.ci.testing.fixtures.compare.json.JsonContentsComparer;
-import com.collective.celos.ci.testing.fixtures.convert.avro.AvroToJsonConverter;
+import com.collective.celos.ci.testing.fixtures.convert.AvroToJsonConverter;
 import com.collective.celos.ci.testing.fixtures.create.FixDirFromResourceCreator;
 import com.collective.celos.ci.testing.fixtures.create.FixDirHierarchyCreator;
 import com.collective.celos.ci.testing.fixtures.create.FixFileFromResourceCreator;
@@ -12,8 +12,9 @@ import com.collective.celos.ci.testing.fixtures.create.OutputFixDirFromHdfsCreat
 import com.collective.celos.ci.testing.fixtures.deploy.HdfsInputDeployer;
 import com.collective.celos.ci.testing.fixtures.deploy.hive.HiveFileCreator;
 import com.collective.celos.ci.testing.fixtures.deploy.hive.HiveTableDeployer;
+import com.collective.celos.ci.testing.structure.fixobject.ConvertionCreator;
 import com.collective.celos.ci.testing.structure.fixobject.FixDir;
-import com.collective.celos.ci.testing.structure.fixobject.FixDirTreeConverter;
+import com.collective.celos.ci.testing.structure.fixobject.FixDirRecursiveConverter;
 import com.collective.celos.ci.testing.structure.fixobject.FixFile;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -266,8 +267,11 @@ public class TestConfigurationParserTest {
 
         NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(new StringReader("avroToJson(\"1\")"), "string");
 
-        FixDirTreeConverter converter = (FixDirTreeConverter) creatorObj.unwrap();
-        Assert.assertTrue(converter.getFixFileConverter() instanceof AvroToJsonConverter);
+        ConvertionCreator converter = (ConvertionCreator) creatorObj.unwrap();
+
+        Assert.assertTrue(converter.getFixObjectConverter() instanceof FixDirRecursiveConverter);
+        FixDirRecursiveConverter fixDirRecursiveConverter = (FixDirRecursiveConverter) converter.getFixObjectConverter();
+        Assert.assertTrue(fixDirRecursiveConverter.getFixFileConverter() instanceof AvroToJsonConverter);
         Assert.assertTrue(converter.getCreator() instanceof OutputFixDirFromHdfsCreator);
     }
 
@@ -362,7 +366,7 @@ public class TestConfigurationParserTest {
         TestConfigurationParser parser = new TestConfigurationParser();
 
         NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(new StringReader(js), "string");
-        FixDirTreeConverter converter = (FixDirTreeConverter) creatorObj.unwrap();
+        ConvertionCreator<FixDir, FixDir> converter = (ConvertionCreator) creatorObj.unwrap();
 
         Assert.assertEquals(converter.getDescription(null), "[avroFile1, avroFile2]");
         FixDir fixDir = converter.create(null);

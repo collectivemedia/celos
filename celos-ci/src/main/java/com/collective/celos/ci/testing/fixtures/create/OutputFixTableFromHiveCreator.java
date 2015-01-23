@@ -41,7 +41,7 @@ public class OutputFixTableFromHiveCreator implements FixObjectCreator<FixTable>
 
             Set<String> columnNames = Sets.newHashSet();
             for (int i=0; i < rs.getMetaData().getColumnCount(); i++) {
-                columnNames.add(rs.getMetaData().getColumnName(i));
+                columnNames.add(rs.getMetaData().getColumnName(i + 1));
             }
 
             List<FixTable.FixRow> fixRows = Lists.newArrayList();
