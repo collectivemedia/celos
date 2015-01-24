@@ -3,16 +3,18 @@ package com.collective.celos.ci.testing.fixtures.convert;
 import com.collective.celos.ci.mode.test.TestRun;
 import com.collective.celos.ci.testing.structure.fixobject.AbstractFixObjectConverter;
 import com.collective.celos.ci.testing.structure.fixobject.FixFile;
-import com.google.common.collect.Sets;
+import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrBuilder;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -31,7 +33,7 @@ public class JsonExpandConverter extends AbstractFixObjectConverter<FixFile, Fix
     @Override
     public FixFile convert(TestRun tr, FixFile ff) throws Exception {
 
-        StrBuilder strBuilder = new StrBuilder();
+        List<String> stringList = Lists.newArrayList();
 
         BufferedReader reader = new BufferedReader(new InputStreamReader(ff.getContent()));
         String line;
@@ -42,9 +44,9 @@ public class JsonExpandConverter extends AbstractFixObjectConverter<FixFile, Fix
                 JsonElement fieldElem = jsonParser.parse(strField);
                 jsonElement.getAsJsonObject().add(field, fieldElem);
             }
-            strBuilder.appendln(gson.toJson(jsonElement));
+            stringList.add(gson.toJson(jsonElement));
         }
 
-        return new FixFile(IOUtils.toInputStream(strBuilder.toString()));
+        return new FixFile(IOUtils.toInputStream(StringUtils.join(stringList,"\n")));
     }
 }

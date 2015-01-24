@@ -1,4 +1,4 @@
-package com.collective.celos.ci.testing.tree;
+package com.collective.celos.ci.testing.fixtures.convert;
 
 import com.collective.celos.ci.Utils;
 import com.collective.celos.ci.mode.test.TestRun;

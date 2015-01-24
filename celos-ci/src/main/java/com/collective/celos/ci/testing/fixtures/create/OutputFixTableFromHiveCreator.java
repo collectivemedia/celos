@@ -9,6 +9,7 @@ import com.google.common.collect.Sets;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,28 +36,32 @@ public class OutputFixTableFromHiveCreator implements FixObjectCreator<FixTable>
 
         Connection connection = DriverManager.getConnection(testRun.getCiContext().getTarget().getHiveJdbc().toString());
         try {
-            String augumentedDbData = Util.augumentDbName(testRun.getTestUUID(), databaseName);
-            String query = String.format(READ_TABLE_DATA, augumentedDbData, tableName);
-            ResultSet rs = connection.createStatement().executeQuery(query);
-
-            Set<String> columnNames = Sets.newHashSet();
-            for (int i=0; i < rs.getMetaData().getColumnCount(); i++) {
-                columnNames.add(rs.getMetaData().getColumnName(i + 1));
-            }
-
-            List<FixTable.FixRow> fixRows = Lists.newArrayList();
-            while (rs.next()) {
-                Map<String, String> rowData = new HashMap<>();
-                for (String colName : columnNames) {
-                    rowData.put(colName, rs.getString(colName));
-                }
-                fixRows.add(new FixTable.FixRow(rowData));
-            }
-
-            return new FixTable(fixRows);
+            return createFixTable(testRun, connection);
         } finally {
             connection.close();
         }
+    }
+
+    FixTable createFixTable(TestRun testRun, Connection connection) throws SQLException {
+        String augumentedDbData = Util.augumentDbName(testRun.getTestUUID(), databaseName);
+        String query = String.format(READ_TABLE_DATA, augumentedDbData, tableName);
+        ResultSet rs = connection.createStatement().executeQuery(query);
+
+        Set<String> columnNames = Sets.newHashSet();
+        for (int i=0; i < rs.getMetaData().getColumnCount(); i++) {
+            columnNames.add(rs.getMetaData().getColumnName(i + 1));
+        }
+
+        List<FixTable.FixRow> fixRows = Lists.newArrayList();
+        while (rs.next()) {
+            Map<String, String> rowData = new HashMap<>();
+            for (String colName : columnNames) {
+                rowData.put(colName, rs.getString(colName));
+            }
+            fixRows.add(new FixTable.FixRow(rowData));
+        }
+
+        return new FixTable(fixRows);
     }
 
     @Override
