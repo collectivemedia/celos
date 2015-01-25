@@ -27,10 +27,6 @@ import java.util.Set;
 
 public abstract class CelosCi {
 
-    private final static String READ_TABLE_DATA = "SELECT * FROM %s.%s LIMIT 1";
-
-    private static final String DESCRIBE_TABLE_PATTERN = "DESCRIBE %s.%s";
-
     public static void main(String... args) throws Exception {
 
         //left here for convenience while debugging
@@ -42,20 +38,7 @@ public abstract class CelosCi {
         CelosCi celosCi = createCelosCi(commandLine);
         celosCi.start();
     }
-
-    private static List<String> getColumnDefinitionLines(ResultSet res) throws SQLException {
-        List<String> tableColumns = Lists.newArrayList();
-        while (res.next()) {
-            String column = res.getString(1);
-            String type = res.getString(2);
-            if (column != null && type != null && !column.startsWith("#")) {
-                tableColumns.add(column.trim() + " " + type.trim());
-            }
-        }
-        return tableColumns;
-    }
-
-
+    
     public static CelosCi createCelosCi(CelosCiCommandLine commandLine) throws Exception {
 
         if (commandLine.getMode() == CelosCiContext.Mode.TEST) {
