@@ -1,4 +1,4 @@
-package com.collective.celos.ci.testing.fixtures.convert.avro;
+package com.collective.celos.ci.testing.fixtures.convert;
 
 import com.collective.celos.ci.mode.test.TestRun;
 import com.collective.celos.ci.testing.structure.fixobject.AbstractFixObjectConverter;

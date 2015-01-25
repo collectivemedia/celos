@@ -1,7 +1,7 @@
 importPackage(Packages.com.collective.celos.ci.testing.fixtures.create);
 importPackage(Packages.com.collective.celos.ci.testing.fixtures.deploy);
 importPackage(Packages.com.collective.celos.ci.testing.fixtures.compare);
-importPackage(Packages.com.collective.celos.ci.testing.fixtures.convert.avro);
+importPackage(Packages.com.collective.celos.ci.testing.fixtures.convert);
 importPackage(Packages.com.collective.celos.ci.testing.structure.fixobject);
 importPackage(Packages.com.collective.celos.ci.testing.fixtures.compare.json);
 importPackage(Packages.com.collective.celos.ci.testing.fixtures.deploy.hive);

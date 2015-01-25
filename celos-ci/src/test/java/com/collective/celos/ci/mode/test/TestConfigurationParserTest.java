@@ -4,7 +4,7 @@ import com.collective.celos.ScheduledTime;
 import com.collective.celos.WorkflowID;
 import com.collective.celos.ci.testing.fixtures.compare.RecursiveDirComparer;
 import com.collective.celos.ci.testing.fixtures.compare.json.JsonContentsComparer;
-import com.collective.celos.ci.testing.fixtures.convert.avro.AvroToJsonConverter;
+import com.collective.celos.ci.testing.fixtures.convert.AvroToJsonConverter;
 import com.collective.celos.ci.testing.fixtures.create.FixDirFromResourceCreator;
 import com.collective.celos.ci.testing.fixtures.create.FixDirHierarchyCreator;
 import com.collective.celos.ci.testing.fixtures.create.FixFileFromResourceCreator;

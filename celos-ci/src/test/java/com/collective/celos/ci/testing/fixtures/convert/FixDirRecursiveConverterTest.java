@@ -1,4 +1,4 @@
-package com.collective.celos.ci.testing.tree;
+package com.collective.celos.ci.testing.fixtures.convert;
 
 import com.collective.celos.ci.Utils;
 import com.collective.celos.ci.mode.test.TestRun;
@@ -67,15 +67,6 @@ public class FixDirRecursiveConverterTest {
         content.put("dir1", dir1);
         content.put("file", file);
         return new FixDir(content);
-    }
-
-    private static class UpperCaseStringFixFileConverter extends AbstractFixObjectConverter<FixFile, FixFile> {
-
-        @Override
-        public FixFile convert(TestRun tr, FixFile ff) throws IOException {
-            String newContent = IOUtils.toString(ff.getContent()).toUpperCase();
-            return new FixFile(IOUtils.toInputStream(newContent));
-        }
     }
 
     private FixDir createOutDirWithSubdirsAndFile(String fileContent) {
