@@ -69,15 +69,6 @@ public class FixDirRecursiveConverterTest {
         return new FixDir(content);
     }
 
-    private static class UpperCaseStringFixFileConverter extends AbstractFixObjectConverter<FixFile, FixFile> {
-
-        @Override
-        public FixFile convert(TestRun tr, FixFile ff) throws IOException {
-            String newContent = IOUtils.toString(ff.getContent()).toUpperCase();
-            return new FixFile(IOUtils.toInputStream(newContent));
-        }
-    }
-
     private FixDir createOutDirWithSubdirsAndFile(String fileContent) {
         FixDir dir1 = getFixDirWithTwoFiles1(fileContent);
         FixDir dir2 = getFixDirWithTwoFiles1(fileContent);
