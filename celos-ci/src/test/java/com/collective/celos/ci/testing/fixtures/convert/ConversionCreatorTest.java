@@ -16,7 +16,7 @@ import java.util.Map;
 public class ConversionCreatorTest {
 
     @Test
-    public void testConvertionCreatorForFile() throws Exception {
+    public void testConversionCreatorForFile() throws Exception {
         FixObjectCreator<FixFile> creator = Utils.wrap(new FixFile(IOUtils.toInputStream("lowercase")));
         AbstractFixObjectConverter<FixFile, FixFile> fixObjectConverter = new UpperCaseStringFixFileConverter();
         ConversionCreator<FixFile, FixFile> conversionCreator = new ConversionCreator(creator, fixObjectConverter);
@@ -26,7 +26,7 @@ public class ConversionCreatorTest {
     }
 
     @Test
-    public void testConvertionCreatorForDir() throws Exception {
+    public void testConversionCreatorForDir() throws Exception {
         FixFile fixFile = new FixFile(IOUtils.toInputStream("lowercase"));
         Map<String, FixFsObject> map = Maps.newHashMap();
         map.put("file", fixFile);
