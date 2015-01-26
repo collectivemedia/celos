@@ -5,10 +5,9 @@ import com.collective.celos.WorkflowID;
 import com.collective.celos.ci.testing.fixtures.compare.RecursiveDirComparer;
 import com.collective.celos.ci.testing.fixtures.compare.json.JsonContentsComparer;
 import com.collective.celos.ci.testing.fixtures.convert.AvroToJsonConverter;
-import com.collective.celos.ci.testing.fixtures.create.FixDirFromResourceCreator;
-import com.collective.celos.ci.testing.fixtures.create.FixDirHierarchyCreator;
-import com.collective.celos.ci.testing.fixtures.create.FixFileFromResourceCreator;
-import com.collective.celos.ci.testing.fixtures.create.OutputFixDirFromHdfsCreator;
+import com.collective.celos.ci.testing.fixtures.convert.FixTableToJsonFileConverter;
+import com.collective.celos.ci.testing.fixtures.convert.JsonExpandConverter;
+import com.collective.celos.ci.testing.fixtures.create.*;
 import com.collective.celos.ci.testing.fixtures.deploy.HdfsInputDeployer;
 import com.collective.celos.ci.testing.fixtures.deploy.hive.HiveFileCreator;
 import com.collective.celos.ci.testing.fixtures.deploy.hive.HiveTableDeployer;
@@ -408,9 +407,7 @@ public class TestConfigurationParserTest {
         String js = "hiveInput(\"tablename\", [[\"1\",\"2\",\"3\"],[\"11\",\"22\",\"33\"]])";
 
         TestConfigurationParser parser = new TestConfigurationParser();
-
-        NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(new StringReader(js), "string");
-        HiveTableDeployer hiveTableDeployer = (HiveTableDeployer) creatorObj.unwrap();
+        parser.evaluateTestConfig(new StringReader(js), "string");
     }
 
     @Test
@@ -419,9 +416,84 @@ public class TestConfigurationParserTest {
         String js = "hiveInput(\"dbname\", \"tablename\")";
 
         TestConfigurationParser parser = new TestConfigurationParser();
+        parser.evaluateTestConfig(new StringReader(js), "string");
+    }
+
+    @Test
+    public void testHiveTable() throws IOException {
+        String js = "hiveTable(\"dbname\", \"tablename\")";
+
+        TestConfigurationParser parser = new TestConfigurationParser();
+        parser.evaluateTestConfig(new StringReader(js), "string");
+    }
+
+    @Test (expected = JavaScriptException.class)
+    public void testHiveTableNoTable() throws IOException {
+        String js = "hiveTable(\"dbname\")";
+
+        TestConfigurationParser parser = new TestConfigurationParser();
+        parser.evaluateTestConfig(new StringReader(js), "string");
+    }
+
+    @Test (expected = JavaScriptException.class)
+    public void testHiveTableNoDb() throws IOException {
+        String js = "hiveTable()";
+
+        TestConfigurationParser parser = new TestConfigurationParser();
+        parser.evaluateTestConfig(new StringReader(js), "string");
+    }
+
+    @Test
+    public void testTableToJson() throws IOException {
+        String js = "tableToJson(hiveTable(\"dbname\", \"tablename\"))";
+
+        TestConfigurationParser parser = new TestConfigurationParser();
 
         NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(new StringReader(js), "string");
-        HiveTableDeployer hiveTableDeployer = (HiveTableDeployer) creatorObj.unwrap();
+        ConvertionCreator creator = (ConvertionCreator) creatorObj.unwrap();
+
+        Assert.assertEquals(FixTableToJsonFileConverter.class, creator.getFixObjectConverter().getClass());
+
+    }
+
+    @Test (expected = JavaScriptException.class)
+    public void testTableToJsonNoCreator() throws IOException {
+        String js = "tableToJson()";
+
+        TestConfigurationParser parser = new TestConfigurationParser();
+        parser.evaluateTestConfig(new StringReader(js), "string");
+    }
+
+
+    @Test
+    public void testExpandJson() throws IOException {
+        String js = "expandJson(tableToJson(hiveTable(\"dbname\", \"tablename\")), [\"field1\", \"field2\"])";
+
+        TestConfigurationParser parser = new TestConfigurationParser();
+
+        NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(new StringReader(js), "string");
+        ConvertionCreator creator = (ConvertionCreator) creatorObj.unwrap();
+        Assert.assertEquals(JsonExpandConverter.class, creator.getFixObjectConverter().getClass());
+    }
+
+
+    @Test
+    public void testExpandJsonNoFields() throws IOException {
+        String js = "expandJson(tableToJson(hiveTable(\"dbname\", \"tablename\")))";
+
+        TestConfigurationParser parser = new TestConfigurationParser();
+
+        NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(new StringReader(js), "string");
+        ConvertionCreator creator = (ConvertionCreator) creatorObj.unwrap();
+        Assert.assertEquals(JsonExpandConverter.class, creator.getFixObjectConverter().getClass());
+    }
+
+    @Test (expected = JavaScriptException.class)
+    public void testExpandJsonNoParams() throws IOException {
+        String js = "expandJson()";
+
+        TestConfigurationParser parser = new TestConfigurationParser();
+        parser.evaluateTestConfig(new StringReader(js), "string");
     }
 
 }
