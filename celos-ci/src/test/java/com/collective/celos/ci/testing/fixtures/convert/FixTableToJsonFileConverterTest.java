@@ -1,13 +1,21 @@
 package com.collective.celos.ci.testing.fixtures.convert;
 
+import com.collective.celos.ci.Utils;
 import com.collective.celos.ci.testing.structure.fixobject.FixFile;
 import com.collective.celos.ci.testing.structure.fixobject.FixTable;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
+import jdk.nashorn.internal.parser.JSONParser;
 import junit.framework.Assert;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.List;
 import java.util.Map;
 
@@ -41,6 +49,9 @@ public class FixTableToJsonFileConverterTest {
                 "{\"col1\":\"val1\",\"col2\":\"val2\"}\n" +
                 "{\"col21\":\"val1\",\"col22\":\"val2\"}";
 
-        Assert.assertEquals(expectedStr, tableStr);
+        Map<JsonElement, Integer> expected = Utils.fillMapWithJsonFromIS(IOUtils.toInputStream(expectedStr));
+        Map<JsonElement, Integer> result = Utils.fillMapWithJsonFromIS(IOUtils.toInputStream(tableStr));
+        Assert.assertEquals(expected, result);
     }
+
 }
