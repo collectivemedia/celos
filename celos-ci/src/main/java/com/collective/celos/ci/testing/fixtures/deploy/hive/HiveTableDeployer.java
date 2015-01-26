@@ -54,7 +54,7 @@ public class HiveTableDeployer implements FixtureDeployer {
         this.connection = DriverManager.getConnection(testRun.getCiContext().getTarget().getHiveJdbc().toString());
         Statement statement = connection.createStatement();
 
-        String mockedDbName = Util.augumentDbName(testRun.getTestUUID(), databaseName);
+        String mockedDbName = Util.augmentDbName(testRun.getTestUUID(), databaseName);
         createMockedDatabase(statement, mockedDbName, databaseName, tableName);
 
         statement.close();
@@ -63,7 +63,7 @@ public class HiveTableDeployer implements FixtureDeployer {
     @Override
     public void undeploy(TestRun testRun) throws Exception {
         Statement statement = connection.createStatement();
-        String mockedDbName = Util.augumentDbName(testRun.getTestUUID(), databaseName);
+        String mockedDbName = Util.augmentDbName(testRun.getTestUUID(), databaseName);
         dropMockedDatabase(statement, mockedDbName);
         statement.close();
         connection.close();
@@ -80,18 +80,6 @@ public class HiveTableDeployer implements FixtureDeployer {
 
         String createTable = String.format(CREATE_TABLE_PATTERN, mockedDatabase, tableName, databaseName, tableName);
         statement.execute(createTable);
-    }
-
-    private List<String> getColumnDefinitionLines(ResultSet res) throws SQLException {
-        List<String> tableColumns = Lists.newArrayList();
-        while (res.next()) {
-            String column = res.getString(1);
-            String type = res.getString(2);
-            if (column != null && type != null && !column.startsWith("#")) {
-                tableColumns.add(column.trim() + " " + type.trim());
-            }
-        }
-        return tableColumns;
     }
 
 }

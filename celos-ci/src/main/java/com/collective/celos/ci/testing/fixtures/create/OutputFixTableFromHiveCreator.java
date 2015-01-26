@@ -43,8 +43,8 @@ public class OutputFixTableFromHiveCreator implements FixObjectCreator<FixTable>
     }
 
     FixTable createFixTable(TestRun testRun, Connection connection) throws SQLException {
-        String augumentedDbData = Util.augumentDbName(testRun.getTestUUID(), databaseName);
-        String query = String.format(READ_TABLE_DATA, augumentedDbData, tableName);
+        String augmentedDbData = Util.augmentDbName(testRun.getTestUUID(), databaseName);
+        String query = String.format(READ_TABLE_DATA, augmentedDbData, tableName);
         ResultSet rs = connection.createStatement().executeQuery(query);
 
         Set<String> columnNames = Sets.newHashSet();
@@ -66,6 +66,6 @@ public class OutputFixTableFromHiveCreator implements FixObjectCreator<FixTable>
 
     @Override
     public String getDescription(TestRun testRun) {
-        return String.format(DESCRIPTION, Util.augumentDbName(testRun.getTestUUID(), databaseName), tableName);
+        return String.format(DESCRIPTION, Util.augmentDbName(testRun.getTestUUID(), databaseName), tableName);
     }
 }
