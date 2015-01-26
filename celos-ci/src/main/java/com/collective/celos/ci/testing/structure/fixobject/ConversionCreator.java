@@ -6,12 +6,12 @@ import com.collective.celos.ci.testing.fixtures.create.FixObjectCreator;
 /**
  * Created by akonopko on 10/7/14.
  */
-public class ConvertionCreator<S extends FixObject, T extends FixObject> implements FixObjectCreator<T> {
+public class ConversionCreator<S extends FixObject, T extends FixObject> implements FixObjectCreator<T> {
 
     protected final FixObjectCreator<S> creator;
     protected final AbstractFixObjectConverter<S, T> fixObjectConverter;
 
-    public ConvertionCreator(FixObjectCreator<S> creator, AbstractFixObjectConverter<S, T> fixObjectConverter) {
+    public ConversionCreator(FixObjectCreator<S> creator, AbstractFixObjectConverter<S, T> fixObjectConverter) {
         this.creator = creator;
         this.fixObjectConverter = fixObjectConverter;
     }

@@ -54,7 +54,7 @@ function avroToJson(creatorOrPath) {
     if (typeof creatorOrPath == 'string') {
         creatorOrPath = new OutputFixDirFromHdfsCreator(creatorOrPath)
     }
-    return new ConvertionCreator(creatorOrPath, new FixDirRecursiveConverter(new AvroToJsonConverter()));
+    return new ConversionCreator(creatorOrPath, new FixDirRecursiveConverter(new AvroToJsonConverter()));
 }
 
 function jsonToAvro(dirCreator, schemaFileCreator) {
@@ -64,7 +64,7 @@ function jsonToAvro(dirCreator, schemaFileCreator) {
     if (!schemaFileCreator) {
         throw "Undefined expected schemaFileCreator";
     }
-    return new ConvertionCreator(dirCreator, new FixDirRecursiveConverter(new JsonToAvroConverter(schemaFileCreator)));
+    return new ConversionCreator(dirCreator, new FixDirRecursiveConverter(new JsonToAvroConverter(schemaFileCreator)));
 }
 
 
@@ -133,24 +133,14 @@ function addTestCase(testCase) {
     testConfigurationParser.addTestCase(result);
 }
 
-function hiveInput(dbName, tableName, data) {
+function hiveInput(dbName, tableName) {
     if (!dbName || typeof dbName != "string") {
         throw "dbName should be valid string";
     }
     if (!tableName || typeof tableName != "string") {
         throw "tableName should be valid string";
     }
-    var hiveFileCreator;
-    if (data) {
-        if (data instanceof Array) {
-            hiveFileCreator = new HiveFileCreator.ContentHiveFileCreator(data);
-        } else {
-            hiveFileCreator = new HiveFileCreator.PlainHiveFileCreator(data);
-        }
-    } else {
-        hiveFileCreator = null;
-    }
-    return new HiveTableDeployer(dbName, tableName, hiveFileCreator);
+    return new HiveTableDeployer(dbName, tableName);
 }
 
 function hiveTable(databaseName, tableName) {
@@ -167,7 +157,7 @@ function tableToJson(fixTableCreator) {
     if (!fixTableCreator) {
         throw "Undefined fixTableCreator";
     }
-    return new ConvertionCreator(fixTableCreator, new FixTableToJsonFileConverter());
+    return new ConversionCreator(fixTableCreator, new FixTableToJsonFileConverter());
 }
 
 function expandJson(jsonCreator, fieldsRaw) {
@@ -182,5 +172,5 @@ function expandJson(jsonCreator, fieldsRaw) {
         }
     }
 
-    return new ConvertionCreator(jsonCreator, new JsonExpandConverter(fields));
+    return new ConversionCreator(jsonCreator, new JsonExpandConverter(fields));
 }

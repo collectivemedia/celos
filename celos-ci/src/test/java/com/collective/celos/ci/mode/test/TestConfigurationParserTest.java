@@ -9,9 +9,8 @@ import com.collective.celos.ci.testing.fixtures.convert.FixTableToJsonFileConver
 import com.collective.celos.ci.testing.fixtures.convert.JsonExpandConverter;
 import com.collective.celos.ci.testing.fixtures.create.*;
 import com.collective.celos.ci.testing.fixtures.deploy.HdfsInputDeployer;
-import com.collective.celos.ci.testing.fixtures.deploy.hive.HiveFileCreator;
 import com.collective.celos.ci.testing.fixtures.deploy.hive.HiveTableDeployer;
-import com.collective.celos.ci.testing.structure.fixobject.ConvertionCreator;
+import com.collective.celos.ci.testing.structure.fixobject.ConversionCreator;
 import com.collective.celos.ci.testing.structure.fixobject.FixDir;
 import com.collective.celos.ci.testing.structure.fixobject.FixDirRecursiveConverter;
 import com.collective.celos.ci.testing.structure.fixobject.FixFile;
@@ -30,6 +29,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.HashSet;
+import java.util.UUID;
 
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -266,7 +266,7 @@ public class TestConfigurationParserTest {
 
         NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(new StringReader("avroToJson(\"1\")"), "string");
 
-        ConvertionCreator converter = (ConvertionCreator) creatorObj.unwrap();
+        ConversionCreator converter = (ConversionCreator) creatorObj.unwrap();
 
         Assert.assertTrue(converter.getFixObjectConverter() instanceof FixDirRecursiveConverter);
         FixDirRecursiveConverter fixDirRecursiveConverter = (FixDirRecursiveConverter) converter.getFixObjectConverter();
@@ -365,7 +365,7 @@ public class TestConfigurationParserTest {
         TestConfigurationParser parser = new TestConfigurationParser();
 
         NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(new StringReader(js), "string");
-        ConvertionCreator<FixDir, FixDir> converter = (ConvertionCreator) creatorObj.unwrap();
+        ConversionCreator<FixDir, FixDir> converter = (ConversionCreator) creatorObj.unwrap();
 
         Assert.assertEquals(converter.getDescription(null), "[avroFile1, avroFile2]");
         FixDir fixDir = converter.create(null);
@@ -387,7 +387,7 @@ public class TestConfigurationParserTest {
     @Test
     public void testHiveInput() throws IOException {
 
-        String js = "hiveInput(\"dbname\", \"tablename\", [[\"1\",\"2\",\"3\"],[\"11\",\"22\",\"33\"]])";
+        String js = "hiveInput(\"dbname\", \"tablename\")";
 
         TestConfigurationParser parser = new TestConfigurationParser();
 
@@ -396,8 +396,6 @@ public class TestConfigurationParserTest {
 
         Assert.assertEquals(hiveTableDeployer.getDatabaseName(), "dbname");
         Assert.assertEquals(hiveTableDeployer.getTableName(), "tablename");
-        HiveFileCreator.ContentHiveFileCreator creator = (HiveFileCreator.ContentHiveFileCreator) hiveTableDeployer.getDataFileCreator();
-        Assert.assertArrayEquals(creator.getCellData(), new String[][]{new String[]{"1", "2", "3"}, new String[]{"11", "22", "33"}});
 
     }
 
@@ -411,20 +409,16 @@ public class TestConfigurationParserTest {
     }
 
     @Test
-    public void testHiveInputNoData() throws IOException {
-
-        String js = "hiveInput(\"dbname\", \"tablename\")";
-
-        TestConfigurationParser parser = new TestConfigurationParser();
-        parser.evaluateTestConfig(new StringReader(js), "string");
-    }
-
-    @Test
     public void testHiveTable() throws IOException {
         String js = "hiveTable(\"dbname\", \"tablename\")";
 
         TestConfigurationParser parser = new TestConfigurationParser();
-        parser.evaluateTestConfig(new StringReader(js), "string");
+
+        NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(new StringReader(js), "string");
+        OutputFixTableFromHiveCreator creator = (OutputFixTableFromHiveCreator) creatorObj.unwrap();
+        TestRun testRun = mock(TestRun.class);
+        doReturn(UUID.nameUUIDFromBytes("fake".getBytes())).when(testRun).getTestUUID();
+        Assert.assertEquals("Hive table celosci_dbname_144c9def_ac04_369c_bbfa_d8efaa8ea194.tablename", creator.getDescription(testRun));
     }
 
     @Test (expected = JavaScriptException.class)
@@ -450,7 +444,7 @@ public class TestConfigurationParserTest {
         TestConfigurationParser parser = new TestConfigurationParser();
 
         NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(new StringReader(js), "string");
-        ConvertionCreator creator = (ConvertionCreator) creatorObj.unwrap();
+        ConversionCreator creator = (ConversionCreator) creatorObj.unwrap();
 
         Assert.assertEquals(FixTableToJsonFileConverter.class, creator.getFixObjectConverter().getClass());
 
@@ -472,7 +466,7 @@ public class TestConfigurationParserTest {
         TestConfigurationParser parser = new TestConfigurationParser();
 
         NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(new StringReader(js), "string");
-        ConvertionCreator creator = (ConvertionCreator) creatorObj.unwrap();
+        ConversionCreator creator = (ConversionCreator) creatorObj.unwrap();
         Assert.assertEquals(JsonExpandConverter.class, creator.getFixObjectConverter().getClass());
     }
 
@@ -484,7 +478,7 @@ public class TestConfigurationParserTest {
         TestConfigurationParser parser = new TestConfigurationParser();
 
         NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(new StringReader(js), "string");
-        ConvertionCreator creator = (ConvertionCreator) creatorObj.unwrap();
+        ConversionCreator creator = (ConversionCreator) creatorObj.unwrap();
         Assert.assertEquals(JsonExpandConverter.class, creator.getFixObjectConverter().getClass());
     }
 

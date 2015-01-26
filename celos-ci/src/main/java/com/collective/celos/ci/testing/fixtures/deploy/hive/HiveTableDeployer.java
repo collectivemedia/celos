@@ -3,18 +3,10 @@ package com.collective.celos.ci.testing.fixtures.deploy.hive;
 import com.collective.celos.Util;
 import com.collective.celos.ci.mode.test.TestRun;
 import com.collective.celos.ci.testing.fixtures.deploy.FixtureDeployer;
-import com.collective.celos.ci.testing.structure.fixobject.FixTable;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
-import org.apache.commons.lang.StringUtils;
 
-import java.io.File;
 import java.sql.*;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * Created by akonopko on 16.01.15.
@@ -22,27 +14,21 @@ import java.util.Set;
 public class HiveTableDeployer implements FixtureDeployer {
 
     private static final String CREATE_TABLE_PATTERN = "CREATE TABLE %s.%s LIKE %s.%s";
-    private static final String CREATE_TEMP_TABLE_PATTERN = "CREATE TABLE %s.%s_temp(%s) ROW FORMAT DELIMITED FIELDS TERMINATED BY '\\t' STORED AS TEXTFILE";
-    private static final String DESCRIBE_TABLE_PATTERN = "DESCRIBE %s.%s";
     private static final String CREATE_DB_PATTERN = "CREATE DATABASE IF NOT EXISTS %s";
     private static final String DROP_DB_PATTERN = "DROP DATABASE %s CASCADE";
-    private static final String LOAD_TMP_DATA_PATTERN = "LOAD DATA LOCAL INPATH '%s' OVERWRITE INTO TABLE %s.%s_temp";
-    private static final String LOAD_DATA_PATTERN = "INSERT INTO TABLE %s.%s SELECT * FROM %s.%s_temp";
 
     private static final boolean driverLoaded = tryLoadDriverClass();
 
     private final String databaseName;
     private final String tableName;
-    private final HiveFileCreator dataFileCreator;
     private Connection connection;
 
-    public HiveTableDeployer(String databaseName, String tableName, HiveFileCreator dataFileCreator) throws Exception {
+    public HiveTableDeployer(String databaseName, String tableName) throws Exception {
         if (!driverLoaded) {
             throw new IllegalStateException("Hive JDBC driver was not found");
         }
         this.databaseName = databaseName;
         this.tableName = tableName;
-        this.dataFileCreator = dataFileCreator;
     }
 
     private static boolean tryLoadDriverClass() {
@@ -52,10 +38,6 @@ public class HiveTableDeployer implements FixtureDeployer {
             return false;
         }
         return true;
-    }
-
-    public HiveFileCreator getDataFileCreator() {
-        return dataFileCreator;
     }
 
     public String getDatabaseName() {
@@ -75,10 +57,6 @@ public class HiveTableDeployer implements FixtureDeployer {
         String mockedDbName = Util.augumentDbName(testRun.getTestUUID(), databaseName);
         createMockedDatabase(statement, mockedDbName, databaseName, tableName);
 
-        if (dataFileCreator != null) {
-            loadDataToMockedTable(statement, mockedDbName, dataFileCreator.create(testRun), tableName);
-        }
-
         statement.close();
     }
 
@@ -89,21 +67,6 @@ public class HiveTableDeployer implements FixtureDeployer {
         dropMockedDatabase(statement, mockedDbName);
         statement.close();
         connection.close();
-    }
-
-    private void loadDataToMockedTable(Statement statement, String mockedDatabase, File dataFile, String tableName) throws SQLException {
-
-        String describeQuery = String.format(DESCRIBE_TABLE_PATTERN, databaseName, tableName);
-        ResultSet res = statement.executeQuery(describeQuery);
-        List<String> tableColumns = getColumnDefinitionLines(res);
-        String createMockedTbl = String.format(CREATE_TEMP_TABLE_PATTERN, mockedDatabase, tableName, StringUtils.join(tableColumns, ",\n"));
-        statement.execute(createMockedTbl);
-
-        String loadDataTmp = String.format(LOAD_TMP_DATA_PATTERN, dataFile.getAbsolutePath(), mockedDatabase, tableName);
-        statement.execute(loadDataTmp);
-
-        String loadData = String.format(LOAD_DATA_PATTERN, mockedDatabase, tableName, mockedDatabase, tableName);
-        statement.execute(loadData);
     }
 
     private void dropMockedDatabase(Statement statement, String mockedDatabase) throws SQLException {

@@ -13,15 +13,15 @@ import java.util.Map;
 /**
  * Created by akonopko on 25.01.15.
  */
-public class ConvertionCreatorTest {
+public class ConversionCreatorTest {
 
     @Test
     public void testConvertionCreatorForFile() throws Exception {
         FixObjectCreator<FixFile> creator = Utils.wrap(new FixFile(IOUtils.toInputStream("lowercase")));
         AbstractFixObjectConverter<FixFile, FixFile> fixObjectConverter = new UpperCaseStringFixFileConverter();
-        ConvertionCreator<FixFile, FixFile> convertionCreator = new ConvertionCreator(creator, fixObjectConverter);
+        ConversionCreator<FixFile, FixFile> conversionCreator = new ConversionCreator(creator, fixObjectConverter);
 
-        FixFile result = convertionCreator.create(null);
+        FixFile result = conversionCreator.create(null);
         Assert.assertEquals("LOWERCASE", IOUtils.toString(result.getContent()));
     }
 
@@ -32,9 +32,9 @@ public class ConvertionCreatorTest {
         map.put("file", fixFile);
         FixObjectCreator<FixDir> creator = Utils.wrap(new FixDir(map));
         AbstractFixObjectConverter<FixDir, FixDir> fixObjectConverter = new FixDirRecursiveConverter(new UpperCaseStringFixFileConverter());
-        ConvertionCreator<FixDir, FixDir> convertionCreator = new ConvertionCreator(creator, fixObjectConverter);
+        ConversionCreator<FixDir, FixDir> conversionCreator = new ConversionCreator(creator, fixObjectConverter);
 
-        FixDir result = convertionCreator.create(null);
+        FixDir result = conversionCreator.create(null);
         Assert.assertEquals("LOWERCASE", IOUtils.toString(result.getChildren().get("file").asFile().getContent()));
     }
 
