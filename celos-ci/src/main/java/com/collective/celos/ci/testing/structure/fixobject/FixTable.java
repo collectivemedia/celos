@@ -22,7 +22,7 @@ public class FixTable extends FixObject {
         public FixRow(Map<String, String> cells) {
             for (Map.Entry<String, String> cell: cells.entrySet()) {
                 if (cell.getValue() == null || cell.getKey() == null) {
-                    throw new IllegalStateException("Cannot create FixRow out of Map, that contains nulls");
+                    throw new IllegalStateException("Cannot create FixRow out of Map that contains nulls");
                 }
             }
             this.cells = cells;
