@@ -30,7 +30,7 @@ public abstract class CelosCi {
     public static void main(String... args) throws Exception {
 
         //left here for convenience while debugging
-        args = "--testDir /home/akonopko/work/Pythia/harmony/src/test/celos-ci --deployDir /home/akonopko/work/Pythia/harmony/build/celos_deploy --target sftp://celos001/home/akonopko/testing.json --workflowName grand_central --mode TEST".split(" ");
+        //args = "--testDir /home/akonopko/work/Pythia/harmony/src/test/celos-ci --deployDir /home/akonopko/work/Pythia/harmony/build/celos_deploy --target sftp://celos001/home/akonopko/testing.json --workflowName grand_central --mode TEST".split(" ");
 
         ContextParser contextParser = new ContextParser();
         CelosCiCommandLine commandLine = contextParser.parse(args);
