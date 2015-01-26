@@ -9,17 +9,15 @@ import java.util.Map;
 /**
  * Created by akonopko on 10/7/14.
  */
-public class FixDirTreeConverter implements FixObjectCreator<FixDir> {
+public class FixDirRecursiveConverter extends AbstractFixObjectConverter<FixDir, FixDir> {
 
-    private final FixObjectCreator<FixFsObject> creator;
-    private final AbstractFixFileConverter fixFileConverter;
+    private final AbstractFixObjectConverter<FixFile, FixFile> fixFileConverter;
 
-    public FixDirTreeConverter(FixObjectCreator<FixFsObject> creator, AbstractFixFileConverter fixFileConverter) {
-        this.creator = creator;
+    public FixDirRecursiveConverter(AbstractFixObjectConverter fixFileConverter) {
         this.fixFileConverter = fixFileConverter;
     }
 
-    private FixFsObject transform(TestRun tr, FixFsObject object, AbstractFixFileConverter converter) throws Exception {
+    private FixFsObject transform(TestRun tr, FixFsObject object, AbstractFixObjectConverter<FixFile, FixFile> converter) throws Exception {
         if (!object.isFile()) {
             FixDir fd = (FixDir) object;
             Map<String, FixFsObject> result = Maps.newHashMap();
@@ -35,20 +33,11 @@ public class FixDirTreeConverter implements FixObjectCreator<FixDir> {
     }
 
     @Override
-    public FixDir create(TestRun testRun) throws Exception {
-        return transform(testRun, creator.create(testRun), fixFileConverter).asDir();
+    public FixDir convert(TestRun testRun, FixDir ff) throws Exception {
+        return transform(testRun, ff, fixFileConverter).asDir();
     }
 
-    @Override
-    public String getDescription(TestRun testRun) {
-        return creator.getDescription(testRun);
-    }
-
-    public FixObjectCreator getCreator() {
-        return creator;
-    }
-
-    public AbstractFixFileConverter getFixFileConverter() {
+    public AbstractFixObjectConverter<FixFile, FixFile> getFixFileConverter() {
         return fixFileConverter;
     }
 }

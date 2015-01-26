@@ -78,6 +78,8 @@ dependencies {
     compile("org.slf4j:slf4j-api:1.7.5")
     compile("org.slf4j:slf4j-log4j12:1.7.5")
     compile("com.google.code.gson:gson:2.2.4")
+    compile("org.apache.hive:hive-jdbc:0.12.0-cdh5.1.2")
+    compile("org.apache.hadoop:hadoop-mapreduce-client-core:2.3.0-cdh5.1.2")
 
     testCompile("junit:junit:4.8.2")
     testCompile("org.powermock:powermock-module-junit4:1.5.5") {

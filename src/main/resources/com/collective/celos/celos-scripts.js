@@ -145,7 +145,7 @@ function hdfsPath(path) {
         throw "Undefined path in hdfsPath";
     }
     if (typeof HDFS_PREFIX_JS_VAR !== "undefined") {
-        return Packages.com.collective.celos.Util.augumentHdfsPath(HDFS_PREFIX_JS_VAR, path);
+        return Packages.com.collective.celos.Util.augmentHdfsPath(HDFS_PREFIX_JS_VAR, path);
     } else {
         return path;
     }
@@ -202,4 +202,12 @@ function replaceTimeVariables(string, t) {
     string = string.replace(/\${minute}/g, t.minute());
     string = string.replace(/\${second}/g, t.second());
     return string;                            
+}
+
+function databaseName(database) {
+    if (typeof HDFS_PREFIX_JS_VAR !== "undefined") {
+        return Packages.com.collective.celos.Util.augmentDbName(TEST_UUID_JS_VAR, database);
+    } else {
+        return database;
+    }
 }

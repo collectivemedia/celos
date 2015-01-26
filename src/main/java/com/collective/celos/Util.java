@@ -132,7 +132,7 @@ public class Util {
         }
     }
 
-    public static String augumentHdfsPath(String hdfsPrefix, String path) throws URISyntaxException {
+    public static String augmentHdfsPath(String hdfsPrefix, String path) throws URISyntaxException {
 
         for (String ch : conversions.keySet()) {
             path = path.replace(ch.toString(), conversions.get(ch).toString());
@@ -152,10 +152,10 @@ public class Util {
         return path;
     }
 
-    private final static String AUGUMENTED_DB_NAME = "celosci_%s_%s";
+    private final static String AUGMENTED_DB_NAME = "celosci_%s_%s";
 
-    public static String augumentDbName(UUID uuid, String dbName) {
-        return String.format(AUGUMENTED_DB_NAME, dbName, uuid.toString().replace("-", "_"));
+    public static String augmentDbName(UUID uuid, String dbName) {
+        return String.format(AUGMENTED_DB_NAME, dbName, uuid.toString().replace("-", "_"));
     }
 
 }

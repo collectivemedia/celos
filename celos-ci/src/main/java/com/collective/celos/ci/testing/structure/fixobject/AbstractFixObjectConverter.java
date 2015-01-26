@@ -5,8 +5,8 @@ import com.collective.celos.ci.mode.test.TestRun;
 /**
  * Created by akonopko on 10/7/14.
  */
-public abstract class AbstractFixFileConverter {
+public abstract class AbstractFixObjectConverter<S extends FixObject, T extends FixObject> {
 
-    public abstract FixFile convert(TestRun tr, FixFile ff) throws Exception;
+    public abstract T convert(TestRun tr, S ff) throws Exception;
 
 }

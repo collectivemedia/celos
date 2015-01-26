@@ -1,4 +1,4 @@
-package com.collective.celos.ci.testing.tree;
+package com.collective.celos.ci.testing.fixtures.convert;
 
 import com.collective.celos.ci.Utils;
 import com.collective.celos.ci.mode.test.TestRun;
@@ -21,16 +21,16 @@ import java.util.TreeSet;
 /**
  * Created by akonopko on 10/7/14.
  */
-public class FixDirTreeConverterTest {
+public class FixDirRecursiveConverterTest {
 
     public static final String CHECKSTR = "lowercase";
 
     @Test
     public void testFixDirTreeConverter() throws Exception {
         FixDir dir = createDirWithFileContent("lowercase");
-        FixDirTreeConverter converter = new FixDirTreeConverter(Utils.<FixFsObject>wrap(dir), new UpperCaseStringFixFileConverter());
+        FixDirRecursiveConverter converter = new FixDirRecursiveConverter(new UpperCaseStringFixFileConverter());
 
-        FixDir transformed = converter.create(null);
+        FixDir transformed = converter.convert(null, dir);
 
         TreeObjectProcessorImpl holder = new TreeObjectProcessorImpl();
         TreeObjectProcessor.process(transformed, holder);
@@ -67,15 +67,6 @@ public class FixDirTreeConverterTest {
         content.put("dir1", dir1);
         content.put("file", file);
         return new FixDir(content);
-    }
-
-    private static class UpperCaseStringFixFileConverter extends AbstractFixFileConverter {
-
-        @Override
-        public FixFile convert(TestRun tr, FixFile ff) throws IOException {
-            String newContent = IOUtils.toString(ff.getContent()).toUpperCase();
-            return new FixFile(IOUtils.toInputStream(newContent));
-        }
     }
 
     private FixDir createOutDirWithSubdirsAndFile(String fileContent) {
