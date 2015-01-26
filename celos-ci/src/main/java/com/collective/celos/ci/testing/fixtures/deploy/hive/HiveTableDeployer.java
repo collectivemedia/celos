@@ -21,7 +21,6 @@ public class HiveTableDeployer implements FixtureDeployer {
 
     private final String databaseName;
     private final String tableName;
-    private Connection connection;
 
     public HiveTableDeployer(String databaseName, String tableName) throws Exception {
         if (!driverLoaded) {
@@ -51,22 +50,30 @@ public class HiveTableDeployer implements FixtureDeployer {
     @Override
     public void deploy(TestRun testRun) throws Exception {
 
-        this.connection = DriverManager.getConnection(testRun.getCiContext().getTarget().getHiveJdbc().toString());
+        Connection connection = getConnection(testRun);
         Statement statement = connection.createStatement();
 
         String mockedDbName = Util.augmentDbName(testRun.getTestUUID(), databaseName);
         createMockedDatabase(statement, mockedDbName, databaseName, tableName);
 
         statement.close();
+        connection.close();
     }
 
     @Override
     public void undeploy(TestRun testRun) throws Exception {
+        Connection connection = getConnection(testRun);
         Statement statement = connection.createStatement();
+
         String mockedDbName = Util.augmentDbName(testRun.getTestUUID(), databaseName);
         dropMockedDatabase(statement, mockedDbName);
+
         statement.close();
         connection.close();
+    }
+
+    private Connection getConnection(TestRun testRun) throws SQLException {
+        return DriverManager.getConnection(testRun.getCiContext().getTarget().getHiveJdbc().toString());
     }
 
     private void dropMockedDatabase(Statement statement, String mockedDatabase) throws SQLException {
