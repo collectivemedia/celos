@@ -80,6 +80,7 @@ dependencies {
     compile("com.google.code.gson:gson:2.2.4")
     compile("org.apache.hive:hive-jdbc:0.12.0-cdh5.1.2")
     compile("org.apache.hadoop:hadoop-mapreduce-client-core:2.3.0-cdh5.1.2")
+    compile("net.sf.opencsv:opencsv:2.3")
 
     testCompile("junit:junit:4.8.2")
     testCompile("org.powermock:powermock-module-junit4:1.5.5") {

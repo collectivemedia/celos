@@ -9,6 +9,7 @@ import com.collective.celos.ci.testing.fixtures.convert.FixTableToJsonFileConver
 import com.collective.celos.ci.testing.fixtures.convert.JsonExpandConverter;
 import com.collective.celos.ci.testing.fixtures.create.*;
 import com.collective.celos.ci.testing.fixtures.deploy.HdfsInputDeployer;
+import com.collective.celos.ci.testing.fixtures.deploy.hive.FileFixTableCreator;
 import com.collective.celos.ci.testing.fixtures.deploy.hive.HiveTableDeployer;
 import com.collective.celos.ci.testing.structure.fixobject.ConversionCreator;
 import com.collective.celos.ci.testing.structure.fixobject.FixDir;
@@ -387,7 +388,7 @@ public class TestConfigurationParserTest {
     @Test
     public void testHiveInput() throws IOException {
 
-        String js = "hiveInput(\"dbname\", \"tablename\")";
+        String js = "hiveInput(\"dbname\", \"tablename\", [[\"1\",\"2\",\"3\"],[\"11\",\"22\",\"33\"]])";
 
         TestConfigurationParser parser = new TestConfigurationParser();
 
@@ -396,6 +397,10 @@ public class TestConfigurationParserTest {
 
         Assert.assertEquals(hiveTableDeployer.getDatabaseName(), "dbname");
         Assert.assertEquals(hiveTableDeployer.getTableName(), "tablename");
+
+        throw new RuntimeException();
+//        FileFixTableCreator.ContentHiveFileCreator creator = (FileFixTableCreator.ContentHiveFileCreator) hiveTableDeployer.getDataFileCreator();
+//        Assert.assertArrayEquals(creator.getCellData(), new String[][]{new String[]{"1", "2", "3"}, new String[]{"11", "22", "33"}});
 
     }
 
@@ -408,6 +413,20 @@ public class TestConfigurationParserTest {
         parser.evaluateTestConfig(new StringReader(js), "string");
     }
 
+    @Test
+    public void testHiveInputNoData() throws IOException {
+
+        String js = "hiveInput(\"dbname\", \"tablename\")";
+
+        TestConfigurationParser parser = new TestConfigurationParser();
+
+        NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(new StringReader(js), "string");
+        HiveTableDeployer hiveTableDeployer = (HiveTableDeployer) creatorObj.unwrap();
+
+        Assert.assertEquals(hiveTableDeployer.getDatabaseName(), "dbname");
+        Assert.assertEquals(hiveTableDeployer.getTableName(), "tablename");
+
+    }
     @Test
     public void testHiveTable() throws IOException {
         String js = "hiveTable(\"dbname\", \"tablename\")";

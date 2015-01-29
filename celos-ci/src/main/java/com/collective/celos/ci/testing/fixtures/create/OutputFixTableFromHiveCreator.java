@@ -47,7 +47,7 @@ public class OutputFixTableFromHiveCreator implements FixObjectCreator<FixTable>
         String query = String.format(READ_TABLE_DATA, augmentedDbData, tableName);
         ResultSet rs = connection.createStatement().executeQuery(query);
 
-        Set<String> columnNames = Sets.newHashSet();
+        List<String> columnNames = Lists.newArrayList();
         for (int i=0; i < rs.getMetaData().getColumnCount(); i++) {
             columnNames.add(rs.getMetaData().getColumnName(i + 1));
         }
@@ -61,7 +61,7 @@ public class OutputFixTableFromHiveCreator implements FixObjectCreator<FixTable>
             fixRows.add(new FixTable.FixRow(rowData));
         }
 
-        return new FixTable(fixRows);
+        return new FixTable(columnNames, fixRows);
     }
 
     @Override

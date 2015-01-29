@@ -15,6 +15,23 @@ import java.util.Map;
  */
 public class FixTable extends FixObject {
 
+    private final List<String> columnNames;
+
+    private final List<FixRow> rows;
+
+    public FixTable(List<String> columnNames, List<FixRow> rows) {
+        this.columnNames = columnNames;
+        this.rows = rows;
+    }
+
+    public List<String> getColumnNames() {
+        return Collections.unmodifiableList(columnNames);
+    }
+
+    public List<FixRow> getRows() {
+        return Collections.unmodifiableList(rows);
+    }
+
     public static class FixRow {
 
         private final Map<String, String> cells;
@@ -31,16 +48,6 @@ public class FixTable extends FixObject {
         public Map<String, String> getCells() {
             return Collections.unmodifiableMap(cells);
         }
-    }
-
-    private final List<FixRow> rows;
-
-    public FixTable(List<FixRow> rows) {
-        this.rows = rows;
-    }
-
-    public List<FixRow> getRows() {
-        return Collections.unmodifiableList(rows);
     }
 
 }

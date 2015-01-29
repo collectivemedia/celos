@@ -133,14 +133,27 @@ function addTestCase(testCase) {
     testConfigurationParser.addTestCase(result);
 }
 
-function hiveInput(dbName, tableName) {
+function hiveInput(dbName, tableName, createScriptFile, data) {
     if (!dbName || typeof dbName != "string") {
         throw "dbName should be valid string";
     }
     if (!tableName || typeof tableName != "string") {
         throw "tableName should be valid string";
     }
-    return new HiveTableDeployer(dbName, tableName);
+    if (!createScriptFile) {
+        throw "tableName should be valid string";
+    }
+    var hiveFileCreator;
+    if (data) {
+        if (data instanceof Array) {
+            hiveFileCreator = new HiveFileCreator.ContentHiveFileCreator(data);
+        } else {
+            hiveFileCreator = new HiveFileCreator.PlainHiveFileCreator(data);
+        }
+    } else {
+        hiveFileCreator = null;
+    }
+    return new HiveTableDeployer(dbName, tableName, createScriptFile, hiveFileCreator);
 }
 
 function hiveTable(databaseName, tableName) {
