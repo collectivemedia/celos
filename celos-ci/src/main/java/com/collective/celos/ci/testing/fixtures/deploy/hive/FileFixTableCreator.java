@@ -45,7 +45,7 @@ public class FileFixTableCreator implements FixObjectCreator<FixTable> {
         CSVReader reader = new CSVReader(new FileReader(dataFile), separator, quoteChar, escapeChar);
         List<String[]> myEntries = reader.readAll();
         String[] colNames = myEntries.get(0);
-        List<String[]> rowData = myEntries.subList(1, myEntries.size() - 1);
+        List<String[]> rowData = myEntries.subList(1, myEntries.size());
         return StringArrayFixTableCreator.createFixTable(colNames, rowData);
     }
 
