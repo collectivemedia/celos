@@ -133,7 +133,24 @@ function addTestCase(testCase) {
     testConfigurationParser.addTestCase(result);
 }
 
-function hiveInput(dbName, tableName, createScriptFile, data) {
+function fixTableFromResource(fixTableFile) {
+    if (!fixTableFile) {
+        throw "fixTableFile undefined";
+    }
+    return new FileFixTableCreator(fixTableFile);
+}
+
+function fixTable(columnNames, rowData) {
+    if (!columnNames) {
+        throw "columnNames undefined";
+    }
+    if (!rowData) {
+        throw "rowData undefined";
+    }
+    return new StringArrayFixTableCreator(columnNames, rowData);
+}
+
+function hiveInput(dbName, tableName, createScriptFile, fixTableCreator) {
     if (!dbName || typeof dbName != "string") {
         throw "dbName should be valid string";
     }
@@ -141,19 +158,12 @@ function hiveInput(dbName, tableName, createScriptFile, data) {
         throw "tableName should be valid string";
     }
     if (!createScriptFile) {
-        throw "tableName should be valid string";
+        throw "createScriptFile should be valid string";
     }
-    var hiveFileCreator;
-    if (data) {
-        if (data instanceof Array) {
-            hiveFileCreator = new HiveFileCreator.ContentHiveFileCreator(data);
-        } else {
-            hiveFileCreator = new HiveFileCreator.PlainHiveFileCreator(data);
-        }
-    } else {
-        hiveFileCreator = null;
+    if (!fixTableCreator) {
+        fixTableCreator = null;
     }
-    return new HiveTableDeployer(dbName, tableName, createScriptFile, hiveFileCreator);
+    return new HiveTableDeployer(dbName, tableName, createScriptFile, fixTableCreator);
 }
 
 function hiveTable(databaseName, tableName) {

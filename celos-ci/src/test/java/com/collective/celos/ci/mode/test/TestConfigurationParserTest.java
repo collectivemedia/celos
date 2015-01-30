@@ -416,7 +416,7 @@ public class TestConfigurationParserTest {
     @Test
     public void testHiveInputNoData() throws IOException {
 
-        String js = "hiveInput(\"dbname\", \"tablename\")";
+        String js = "hiveInput(\"dbname\", \"tablename\", fixFile(\"create table blah\"))";
 
         TestConfigurationParser parser = new TestConfigurationParser();
 

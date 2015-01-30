@@ -10,14 +10,16 @@ import com.collective.celos.ci.testing.structure.fixobject.FixTable;
 import com.google.common.collect.Lists;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.hadoop.fs.FileStatus;
+import org.apache.hadoop.fs.FSDataOutputStream;
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.fs.permission.FsAction;
+import org.apache.hadoop.fs.permission.FsPermission;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.nio.file.FileStore;
+import java.io.*;
 import java.sql.*;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Created by akonopko on 16.01.15.
@@ -25,15 +27,18 @@ import java.util.List;
 public class HiveTableDeployer implements FixtureDeployer {
 
     private static final String CREATE_TEMP_TABLE_PATTERN = "CREATE TABLE %s.%s_temp(%s) ROW FORMAT DELIMITED FIELDS TERMINATED BY '\\t' STORED AS TEXTFILE";
+    private static final String PARTITION_PATTERN = "PARTITION(%s)";
     private static final String DESCRIBE_TABLE_PATTERN = "DESCRIBE %s.%s";
     private static final String CREATE_DB_PATTERN = "CREATE DATABASE IF NOT EXISTS %s";
     private static final String USE_DB_PATTERN = "USE %s";
-    private static final String DROP_DB_PATTERN = "DROP DATABASE %s CASCADE";
-    private static final String LOAD_TMP_DATA_PATTERN = "LOAD DATA LOCAL INPATH '%s' OVERWRITE INTO TABLE %s.%s_temp";
-    private static final String LOAD_DATA_PATTERN = "INSERT INTO TABLE %s.%s SELECT * FROM %s.%s_temp";
+    private static final String DROP_DB_PATTERN = "DROP DATABASE IF EXISTS %s CASCADE";
+    private static final String LOAD_TMP_DATA_PATTERN = "LOAD DATA INPATH '%s' OVERWRITE INTO TABLE %s.%s_temp";
+    private static final String LOAD_DATA_PATTERN = "INSERT INTO TABLE %s %s SELECT * FROM %s_temp";
     private static final String SANDBOX_PARAM = "${SANDBOX}";
-    private static final boolean driverLoaded = tryLoadDriverClass();
+    private static final String PARTITION_INFORMATION_MARKER = "# Partition Information";
+    private static final String SET_PARTITION_MODE_NONSTRICT = "set hive.exec.dynamic.partition.mode=nonstrict;";
 
+    private static final boolean driverLoaded = tryLoadDriverClass();
     private final String databaseName;
     private final String tableName;
     private final FixObjectCreator<FixTable> dataFileCreator;
@@ -74,7 +79,7 @@ public class HiveTableDeployer implements FixtureDeployer {
     @Override
     public void deploy(TestRun testRun) throws Exception {
 
-        try (Connection connection = getConnection(testRun)) {
+        try(Connection connection = getConnection(testRun)) {
             Statement statement = connection.createStatement();
 
             String mockedDbName = Util.augmentDbName(testRun.getTestUUID(), databaseName);
@@ -86,18 +91,24 @@ public class HiveTableDeployer implements FixtureDeployer {
 
             if (dataFileCreator != null) {
                 FixTable fixTable = dataFileCreator.create(testRun);
-                File tempFile = prepareTempFileForInsertion(fixTable, testRun);
-                loadDataToMockedTable(statement, mockedDbName, tempFile, tableName);
+                Path tempHdfsFile = prepareTempFileForInsertion(fixTable, testRun);
+
+                loadDataToMockedTable(statement, mockedDbName, tempHdfsFile, tableName);
             }
 
             statement.close();
         }
     }
 
-    public File prepareTempFileForInsertion(FixTable fixTable, TestRun testRun) throws Exception {
-        File hiveLoadFile = new File(testRun.getCelosTempDir(), databaseName + "." + tableName);
+    public Path prepareTempFileForInsertion(FixTable fixTable, TestRun testRun) throws Exception {
 
-        CSVWriter writer = new CSVWriter(new FileWriter(hiveLoadFile), '\t');
+        Path pathToParent = new Path(testRun.getHdfsPrefix(), ".hive");
+        Path pathTo = new Path(pathToParent, UUID.randomUUID().toString());
+        FileSystem fileSystem = testRun.getCiContext().getFileSystem();
+        fileSystem.mkdirs(pathTo.getParent());
+        FSDataOutputStream outputStream = fileSystem.create(pathTo);
+
+        CSVWriter writer = new CSVWriter(new OutputStreamWriter(outputStream), '\t', CSVWriter.NO_QUOTE_CHARACTER);
 
         for (FixTable.FixRow fixRow : fixTable.getRows()) {
             List<String> rowData = Lists.newArrayList();
@@ -109,7 +120,11 @@ public class HiveTableDeployer implements FixtureDeployer {
         }
 
         writer.close();
-        return hiveLoadFile;
+        outputStream.flush();
+        outputStream.close();
+        fileSystem.setPermission(pathToParent, new FsPermission(FsAction.ALL, FsAction.ALL, FsAction.ALL));
+        fileSystem.setPermission(pathTo, new FsPermission(FsAction.ALL, FsAction.ALL, FsAction.ALL));
+        return pathTo;
     }
 
     @Override
@@ -127,30 +142,54 @@ public class HiveTableDeployer implements FixtureDeployer {
         }
     }
 
-    private void loadDataToMockedTable(Statement statement, String mockedDatabase, File dataFile, String tableName) throws SQLException {
-        String describeQuery = String.format(DESCRIBE_TABLE_PATTERN, databaseName, tableName);
+    private void loadDataToMockedTable(Statement statement, String mockedDatabase, Path dataFile, String tableName) throws SQLException, IOException {
+        String describeQuery = String.format(DESCRIBE_TABLE_PATTERN, mockedDatabase, tableName);
         ResultSet res = statement.executeQuery(describeQuery);
-        List<String> tableColumns = getColumnDefinitionLines(res);
-        String createMockedTbl = String.format(CREATE_TEMP_TABLE_PATTERN, mockedDatabase, tableName, StringUtils.join(tableColumns, ",\n"));
-        statement.execute(createMockedTbl);
 
-        String loadDataTmp = String.format(LOAD_TMP_DATA_PATTERN, dataFile.getAbsolutePath(), mockedDatabase, tableName);
-        statement.execute(loadDataTmp);
+        List<String> columnDef = Lists.newArrayList();
+        List<String> partDef = Lists.newArrayList();
+        parseTableDefinition(res, columnDef, partDef);
 
-        String loadData = String.format(LOAD_DATA_PATTERN, mockedDatabase, tableName, mockedDatabase, tableName);
-        statement.execute(loadData);
+        String createMockedTbl = String.format(CREATE_TEMP_TABLE_PATTERN, mockedDatabase, tableName, StringUtils.join(columnDef, ",\n"));
+        statement.executeUpdate(createMockedTbl);
+
+        String loadDataTmp = String.format(LOAD_TMP_DATA_PATTERN, dataFile.toString(), mockedDatabase, tableName);
+        statement.executeUpdate(loadDataTmp);
+
+        loadFromTempToRealDb(statement, tableName, partDef);
     }
 
-    private List<String> getColumnDefinitionLines(ResultSet res) throws SQLException {
-        List<String> tableColumns = Lists.newArrayList();
+    private void loadFromTempToRealDb(Statement statement, String tableName, List<String> partDef) throws SQLException {
+        String partitions;
+        if (partDef.isEmpty()) {
+            partitions = "";
+        } else {
+            partitions = String.format(PARTITION_PATTERN, StringUtils.join(partDef, ", "));
+        }
+
+        statement.execute(SET_PARTITION_MODE_NONSTRICT);
+        String loadData = String.format(LOAD_DATA_PATTERN, tableName, partitions, tableName);
+        statement.executeUpdate(loadData);
+    }
+
+    private void parseTableDefinition(ResultSet res, List<String> columns, List<String> partColumns) throws SQLException {
+        boolean partitionInfo = false;
         while (res.next()) {
             String column = res.getString(1);
             String type = res.getString(2);
-            if (column != null && type != null && !column.startsWith("#")) {
-                tableColumns.add(column.trim() + " " + type.trim());
+            if (PARTITION_INFORMATION_MARKER.equals(column)) {
+                partitionInfo = true;
+            } else {
+                if (column != null && type != null && !column.startsWith("#")) {
+                    if (partitionInfo) {
+                        partColumns.add(column.trim());
+                    } else {
+                        columns.add(column.trim() + " " + type.trim());
+                    }
+
+                }
             }
         }
-        return tableColumns;
     }
 
     private void dropMockedDatabase(Statement statement, String mockedDatabase) throws SQLException {
