@@ -64,6 +64,42 @@ public class HiveTableDeployer implements FixtureDeployer {
         return true;
     }
 
+    @Override
+    public void deploy(TestRun testRun) throws Exception {
+
+        try(Connection connection = getConnection(testRun)) {
+            Statement statement = connection.createStatement();
+
+            String mockedDbName = Util.augmentDbName(testRun.getTestUUID(), databaseName);
+
+            System.out.println("Test case " + testRun.getTestCase().getName() + ": Deploying " + tableName + " to " + mockedDbName);
+
+            createMockedDatabase(statement, mockedDbName);
+            createMockedTable(statement, mockedDbName, testRun);
+
+            if (dataFileCreator != null) {
+                FixTable fixTable = dataFileCreator.create(testRun);
+                Path tempHdfsFile = createTempHdfsFileForInsertion(fixTable, testRun);
+
+                loadDataToMockedTable(statement, mockedDbName, tempHdfsFile, tableName);
+            }
+
+            statement.close();
+        }
+    }
+
+    @Override
+    public void undeploy(TestRun testRun) throws Exception {
+
+        try (Connection connection = getConnection(testRun)) {
+            Statement statement = connection.createStatement();
+
+            String mockedDbName = Util.augmentDbName(testRun.getTestUUID(), databaseName);
+            dropMockedDatabase(statement, mockedDbName);
+            statement.close();
+        }
+    }
+
     public String getDatabaseName() {
         return databaseName;
     }
@@ -77,31 +113,7 @@ public class HiveTableDeployer implements FixtureDeployer {
         return DriverManager.getConnection(testRun.getCiContext().getTarget().getHiveJdbc().toString());
     }
 
-    @Override
-    public void deploy(TestRun testRun) throws Exception {
-
-        try(Connection connection = getConnection(testRun)) {
-            Statement statement = connection.createStatement();
-
-            String mockedDbName = Util.augmentDbName(testRun.getTestUUID(), databaseName);
-
-            createMockedDatabase(statement, mockedDbName);
-            System.out.println("Test case " + testRun.getTestCase().getName() + ": Deploying " + tableName + " to " + mockedDbName);
-
-            createMockedTable(statement, mockedDbName, testRun);
-
-            if (dataFileCreator != null) {
-                FixTable fixTable = dataFileCreator.create(testRun);
-                Path tempHdfsFile = prepareTempFileForInsertion(fixTable, testRun);
-
-                loadDataToMockedTable(statement, mockedDbName, tempHdfsFile, tableName);
-            }
-
-            statement.close();
-        }
-    }
-
-    public Path prepareTempFileForInsertion(FixTable fixTable, TestRun testRun) throws Exception {
+    private Path createTempHdfsFileForInsertion(FixTable fixTable, TestRun testRun) throws Exception {
 
         Path pathToParent = new Path(testRun.getHdfsPrefix(), ".hive");
         Path pathTo = new Path(pathToParent, UUID.randomUUID().toString());
@@ -121,23 +133,10 @@ public class HiveTableDeployer implements FixtureDeployer {
         }
 
         writer.close();
-        outputStream.flush();
-        outputStream.close();
+
         fileSystem.setPermission(pathToParent, new FsPermission(FsAction.ALL, FsAction.ALL, FsAction.ALL));
         fileSystem.setPermission(pathTo, new FsPermission(FsAction.ALL, FsAction.ALL, FsAction.ALL));
         return pathTo;
-    }
-
-    @Override
-    public void undeploy(TestRun testRun) throws Exception {
-
-        try (Connection connection = getConnection(testRun)) {
-            Statement statement = connection.createStatement();
-
-            String mockedDbName = Util.augmentDbName(testRun.getTestUUID(), databaseName);
-            dropMockedDatabase(statement, mockedDbName);
-            statement.close();
-        }
     }
 
     private void loadDataToMockedTable(Statement statement, String mockedDatabase, Path dataFile, String tableName) throws SQLException, IOException {
