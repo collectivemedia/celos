@@ -86,7 +86,7 @@ public class HiveTableDeployer implements FixtureDeployer {
             String mockedDbName = Util.augmentDbName(testRun.getTestUUID(), databaseName);
 
             createMockedDatabase(statement, mockedDbName);
-            System.out.println("Test case " + testRun.getTestCase().getName() + ": Created Hive DB " + mockedDbName);
+            System.out.println("Test case " + testRun.getTestCase().getName() + ": Deploying " + tableName + " to " + mockedDbName);
 
             createMockedTable(statement, mockedDbName, testRun);
 
@@ -136,9 +136,6 @@ public class HiveTableDeployer implements FixtureDeployer {
 
             String mockedDbName = Util.augmentDbName(testRun.getTestUUID(), databaseName);
             dropMockedDatabase(statement, mockedDbName);
-
-            System.out.println("Test case " + testRun.getTestCase().getName() + ": Dropped Hive DB " + mockedDbName);
-
             statement.close();
         }
     }
