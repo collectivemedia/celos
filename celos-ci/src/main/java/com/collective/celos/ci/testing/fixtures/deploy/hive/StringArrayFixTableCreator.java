@@ -44,4 +44,12 @@ public class StringArrayFixTableCreator implements FixObjectCreator<FixTable> {
     public String getDescription(TestRun testRun) {
         return "FixTable out of String[][]";
     }
+
+    public String[] getColumnNames() {
+        return columnNames;
+    }
+
+    public String[][] getData() {
+        return data;
+    }
 }

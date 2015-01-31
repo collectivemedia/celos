@@ -11,6 +11,7 @@ import com.collective.celos.ci.testing.fixtures.create.*;
 import com.collective.celos.ci.testing.fixtures.deploy.HdfsInputDeployer;
 import com.collective.celos.ci.testing.fixtures.deploy.hive.FileFixTableCreator;
 import com.collective.celos.ci.testing.fixtures.deploy.hive.HiveTableDeployer;
+import com.collective.celos.ci.testing.fixtures.deploy.hive.StringArrayFixTableCreator;
 import com.collective.celos.ci.testing.structure.fixobject.ConversionCreator;
 import com.collective.celos.ci.testing.structure.fixobject.FixDir;
 import com.collective.celos.ci.testing.structure.fixobject.FixDirRecursiveConverter;
@@ -29,6 +30,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
+import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.UUID;
 
@@ -386,9 +388,84 @@ public class TestConfigurationParserTest {
     }
 
     @Test
-    public void testHiveInput() throws IOException {
+    public void testFixTable() throws IOException {
 
-        String js = "hiveInput(\"dbname\", \"tablename\", [[\"1\",\"2\",\"3\"],[\"11\",\"22\",\"33\"]])";
+        String js = "fixTable([\"col1\", \"col2\"], [[\"row1\", \"row2\"],[\"row11\", \"row22\"]])";
+
+        TestConfigurationParser parser = new TestConfigurationParser();
+
+        NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(new StringReader(js), "string");
+        StringArrayFixTableCreator creator = (StringArrayFixTableCreator) creatorObj.unwrap();
+
+        Assert.assertArrayEquals(creator.getColumnNames(), new String[]{"col1", "col2"});
+        Assert.assertArrayEquals(creator.getData(), new String[][]{new String[]{"row1", "row2"}, new String[]{"row11", "row22"}});
+
+    }
+
+    @Test (expected = JavaScriptException.class)
+    public void testFixTableNoRows() throws IOException {
+
+        String js = "fixTable([\"col1\", \"col2\"])";
+
+        TestConfigurationParser parser = new TestConfigurationParser();
+
+        parser.evaluateTestConfig(new StringReader(js), "string");
+    }
+
+    @Test
+    public void testFixTableFromResource() throws IOException {
+
+        String js = "fixTableFromResource(\"somedata\")";
+
+        TestConfigurationParser parser = new TestConfigurationParser();
+
+        NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(new StringReader(js), "string");
+        FileFixTableCreator creator = (FileFixTableCreator) creatorObj.unwrap();
+
+
+        TestRun testRun = mock(TestRun.class);
+        doReturn(new File("/some/path")).when(testRun).getTestCasesDir();
+
+        Assert.assertEquals(creator.getRelativePath(), Paths.get("somedata"));
+        Assert.assertEquals(creator.getDescription(testRun), "FixTable out of /some/path/somedata");
+    }
+
+    @Test(expected = JavaScriptException.class)
+    public void testFixTableFromResourceError() throws IOException {
+
+        String js = "fixTableFromResource()";
+
+        TestConfigurationParser parser = new TestConfigurationParser();
+
+        parser.evaluateTestConfig(new StringReader(js), "string");
+    }
+
+    @Test
+    public void testHiveInput() throws Exception {
+
+        String tableCreationScript = "table creation script";
+        String js = "hiveInput(\"dbname\", \"tablename\", fixFile(\"" + tableCreationScript + "\"))";
+
+        TestConfigurationParser parser = new TestConfigurationParser();
+
+        NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(new StringReader(js), "string");
+        HiveTableDeployer hiveTableDeployer = (HiveTableDeployer) creatorObj.unwrap();
+
+        FixFile tableCreationFile = hiveTableDeployer.getTableCreationScriptFile().create(null);
+
+        Assert.assertEquals(hiveTableDeployer.getDatabaseName(), "dbname");
+        Assert.assertEquals(hiveTableDeployer.getTableName(), "tablename");
+        Assert.assertEquals(IOUtils.toString(tableCreationFile.getContent()), tableCreationScript);
+        Assert.assertNull(hiveTableDeployer.getDataFileCreator());
+    }
+
+    @Test
+    public void testHiveInputWithData() throws Exception {
+
+        String tableCreationScript = "table creation script";
+        String js =
+                "var table = fixTable([\"col1\", \"col2\"], [[\"row1\", \"row2\"],[\"row11\", \"row22\"]]);" +
+                "hiveInput(\"dbname\", \"tablename\", fixFile(\"" + tableCreationScript + "\"), table)";
 
         TestConfigurationParser parser = new TestConfigurationParser();
 
@@ -398,11 +475,11 @@ public class TestConfigurationParserTest {
         Assert.assertEquals(hiveTableDeployer.getDatabaseName(), "dbname");
         Assert.assertEquals(hiveTableDeployer.getTableName(), "tablename");
 
-        throw new RuntimeException();
-//        FileFixTableCreator.ContentHiveFileCreator creator = (FileFixTableCreator.ContentHiveFileCreator) hiveTableDeployer.getDataFileCreator();
-//        Assert.assertArrayEquals(creator.getCellData(), new String[][]{new String[]{"1", "2", "3"}, new String[]{"11", "22", "33"}});
-
+        FixFile tableCreationFile = hiveTableDeployer.getTableCreationScriptFile().create(null);
+        Assert.assertEquals(IOUtils.toString(tableCreationFile.getContent()), tableCreationScript);
+        Assert.assertEquals(hiveTableDeployer.getDataFileCreator().getClass(), StringArrayFixTableCreator.class);
     }
+
 
     @Test(expected = JavaScriptException.class)
     public void testHiveInputFails() throws IOException {

@@ -16,7 +16,8 @@ import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.fs.permission.FsAction;
 import org.apache.hadoop.fs.permission.FsPermission;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.sql.*;
 import java.util.List;
 import java.util.UUID;
@@ -143,12 +144,10 @@ public class HiveTableDeployer implements FixtureDeployer {
     }
 
     private void loadDataToMockedTable(Statement statement, String mockedDatabase, Path dataFile, String tableName) throws SQLException, IOException {
-        String describeQuery = String.format(DESCRIBE_TABLE_PATTERN, mockedDatabase, tableName);
-        ResultSet res = statement.executeQuery(describeQuery);
 
         List<String> columnDef = Lists.newArrayList();
         List<String> partDef = Lists.newArrayList();
-        parseTableDefinition(res, columnDef, partDef);
+        parseTableDefinition(columnDef, partDef, mockedDatabase, statement);
 
         String createMockedTbl = String.format(CREATE_TEMP_TABLE_PATTERN, mockedDatabase, tableName, StringUtils.join(columnDef, ",\n"));
         statement.executeUpdate(createMockedTbl);
@@ -172,7 +171,11 @@ public class HiveTableDeployer implements FixtureDeployer {
         statement.executeUpdate(loadData);
     }
 
-    private void parseTableDefinition(ResultSet res, List<String> columns, List<String> partColumns) throws SQLException {
+    private void parseTableDefinition(List<String> columns, List<String> partColumns, String mockedDatabase, Statement statement) throws SQLException {
+
+        String describeQuery = String.format(DESCRIBE_TABLE_PATTERN, mockedDatabase, tableName);
+        ResultSet res = statement.executeQuery(describeQuery);
+
         boolean partitionInfo = false;
         while (res.next()) {
             String column = res.getString(1);
@@ -186,7 +189,6 @@ public class HiveTableDeployer implements FixtureDeployer {
                     } else {
                         columns.add(column.trim() + " " + type.trim());
                     }
-
                 }
             }
         }
@@ -215,4 +217,7 @@ public class HiveTableDeployer implements FixtureDeployer {
         return dataFileCreator;
     }
 
+    public FixObjectCreator<FixFile> getTableCreationScriptFile() {
+        return tableCreationScriptFile;
+    }
 }

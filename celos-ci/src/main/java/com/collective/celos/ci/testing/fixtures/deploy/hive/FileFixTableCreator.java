@@ -8,6 +8,8 @@ import com.collective.celos.ci.testing.structure.fixobject.FixTable;
 
 import java.io.File;
 import java.io.FileReader;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 /**
@@ -15,58 +17,39 @@ import java.util.List;
  */
 public class FileFixTableCreator implements FixObjectCreator<FixTable> {
 
-    private final String relativePath;
+    private final Path relativePath;
     private final Character separator;
-    private final Character quoteChar;
-    private final Character escapeChar;
 
     public FileFixTableCreator(String relativePath) {
         this(relativePath, '\t');
     }
 
     public FileFixTableCreator(String relativePath, Character separator) {
-        this(relativePath, separator, CSVParser.DEFAULT_QUOTE_CHARACTER);
-    }
-
-    public FileFixTableCreator(String relativePath, Character separator, Character quoteChar) {
-        this(relativePath, separator, quoteChar, CSVParser.DEFAULT_ESCAPE_CHARACTER);
-    }
-
-    public FileFixTableCreator(String relativePath, Character separator, Character quoteChar, Character escapeChar) {
-        this.relativePath = relativePath;
+        this.relativePath = Paths.get(relativePath);
         this.separator = separator;
-        this.quoteChar = quoteChar;
-        this.escapeChar = escapeChar;
     }
 
     @Override
     public FixTable create(TestRun testRun) throws Exception {
-        File dataFile = new File(testRun.getTestCasesDir(), relativePath);
-        CSVReader reader = new CSVReader(new FileReader(dataFile), separator, quoteChar, escapeChar);
+        File dataFile = getCsvFilePath(testRun);
+        CSVReader reader = new CSVReader(new FileReader(dataFile), separator, CSVParser.DEFAULT_QUOTE_CHARACTER, CSVParser.DEFAULT_ESCAPE_CHARACTER);
         List<String[]> myEntries = reader.readAll();
         String[] colNames = myEntries.get(0);
         List<String[]> rowData = myEntries.subList(1, myEntries.size());
         return StringArrayFixTableCreator.createFixTable(colNames, rowData);
     }
 
-    @Override
-    public String getDescription(TestRun testRun) {
-        return "FixTable out of " + relativePath;
+    private File getCsvFilePath(TestRun testRun) {
+        return new File(testRun.getTestCasesDir(), relativePath.toString());
     }
 
-    public String getRelativePath() {
+    @Override
+    public String getDescription(TestRun testRun) {
+        return "FixTable out of " + getCsvFilePath(testRun);
+    }
+
+    public Path getRelativePath() {
         return relativePath;
     }
 
-    public Character getSeparator() {
-        return separator;
-    }
-
-    public Character getQuoteChar() {
-        return quoteChar;
-    }
-
-    public Character getEscapeChar() {
-        return escapeChar;
-    }
 }
