@@ -167,7 +167,7 @@ public class HiveTableDeployer implements FixtureDeployer {
         statement.executeUpdate(loadData);
     }
 
-    private void parseTableDefinition(List<String> columns, List<String> partColumns, String mockedDatabase, Statement statement) throws SQLException {
+    void parseTableDefinition(List<String> columns, List<String> partColumns, String mockedDatabase, Statement statement) throws SQLException {
 
         String describeQuery = String.format(DESCRIBE_TABLE_PATTERN, mockedDatabase, tableName);
         ResultSet res = statement.executeQuery(describeQuery);
