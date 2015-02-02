@@ -15,6 +15,8 @@ import com.collective.celos.server.CelosServer;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.Selectors;
 
@@ -112,13 +114,17 @@ public class TestRun {
 
         List<FixObjectCompareResult> results = executeTestRun();
 
-        FixObjectCompareResult.Status status = getTestRunStatus(results);
-
-        if (status == FixObjectCompareResult.Status.FAIL) {
-            printComparisonResults(results);
-            System.exit(1);
+        if (isTestRunFailed(results)) {
+            throw new TestRunFailedException(getComparisonResults(results));
         } else {
             System.out.println("Real and expected fixtures matched");
+        }
+    }
+
+    public static class TestRunFailedException extends RuntimeException {
+
+        public TestRunFailedException(String message) {
+            super(message);
         }
     }
 
@@ -158,22 +164,23 @@ public class TestRun {
         }
     }
 
-    private FixObjectCompareResult.Status getTestRunStatus(List<FixObjectCompareResult> results) {
+    private boolean isTestRunFailed(List<FixObjectCompareResult> results) {
         for (FixObjectCompareResult result : results) {
             if (result.getStatus() == FixObjectCompareResult.Status.FAIL) {
-                return FixObjectCompareResult.Status.FAIL;
+                return true;
             }
         }
-        return FixObjectCompareResult.Status.SUCCESS;
+        return false;
     }
 
-    private void printComparisonResults(List<FixObjectCompareResult> results) throws IOException {
+    private String getComparisonResults(List<FixObjectCompareResult> results) throws IOException {
+        List<String> messages = Lists.newArrayList();
         for (FixObjectCompareResult result : results) {
             if (result.getStatus() == FixObjectCompareResult.Status.FAIL) {
-                System.err.println(result.generateDescription());
+                messages.add(result.generateDescription());
             }
         }
-        System.err.flush();
+        return StringUtils.join(messages, "\n");
     }
 
     private void doCleanup() throws Exception {
