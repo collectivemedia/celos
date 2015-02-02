@@ -121,13 +121,6 @@ public class TestRun {
         }
     }
 
-    public static class TestRunFailedException extends RuntimeException {
-
-        public TestRunFailedException(String message) {
-            super(message);
-        }
-    }
-
     private List<FixObjectCompareResult> executeTestRun() throws Exception {
 
         final CelosServer celosServer = new CelosServer();
