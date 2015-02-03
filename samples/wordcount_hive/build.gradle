@@ -1,0 +1,45 @@
+apply plugin: 'application'
+apply plugin: 'java'
+apply plugin: 'idea'
+
+sourceCompatibility = 1.7
+version = '0.1'
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    maven { url "http://repo1.maven.org/maven2" }
+    maven { url "https://repository.cloudera.com/artifactory/cloudera-repos" }
+    maven { url "http://nexus.collective-media.net/content/repositories/releases" }
+}
+
+configurations {
+    celos_ci
+}
+
+dependencies {
+    celos_ci "com.collective:celos-ci:2.+"
+}
+
+
+task celos_ci << {
+    
+    task run_ci(type: JavaExec) {
+       main = "com.collective.celos.ci.CelosCi"
+       classpath configurations.celos_ci
+       target_uri
+       args '--deployDir', 'build/celos_deploy', '--target', 'target_uri', '--workflowName', 'wordcount' , '--mode', 'TEST'
+    }
+
+    new File('build/celos_deploy').deleteDir()
+    new File('build/celos_deploy/hdfs/lib').mkdirs()
+    copy {
+       from 'src/main/celos'
+       into 'build/celos_deploy'
+    }
+    copy {
+       from 'src/main/oozie'
+       into 'build/celos_deploy/hdfs'
+    }
+    run_ci.execute()
+}

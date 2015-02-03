@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<workflow-app xmlns="uri:oozie:workflow:0.4" name="Harmony-Hive-${year}-${month}-${day}-${hour}">
+    <credentials>
+        <credential name='hcatauth' type='hcat'>
+            <property>
+                <name>hcat.metastore.uri</name>
+                <value>${hiveMetastore}</value>
+            </property>
+            <property>
+                <name>hcat.metastore.principal</name>
+                <value>hive/_HOST@COLLECTIVE-MEDIA.NET</value>
+            </property>
+        </credential>
+    </credentials>
+    <start to="wordcount"/>
+    <action name="wordcount" cred='hcatauth'>
+        <hive xmlns="uri:oozie:hive-action:0.2">
+            <job-tracker>${jobTracker}</job-tracker>
+            <name-node>${nameNode}</name-node>
+            <job-xml>${hiveDefaults}</job-xml>
+            <configuration>
+                <property>
+                    <name>oozie.hive.defaults</name>
+                    <value>${hiveDefaults}</value>
+                </property>
+            </configuration>
+            <script>${oozie_wf_base_path}/sql/wordcount.sql</script>
+            <param>DB_NAME=${db_name}</param>
+        </hive>
+        <ok to="done"/>
+        <error to="kill"/>
+    </action>
+    <kill name="kill">
+        <message>Action failed, error message[${wf:errorMessage(wf:lastErrorNode())}]</message>
+    </kill>
+    <end name="done"/>
+</workflow-app>

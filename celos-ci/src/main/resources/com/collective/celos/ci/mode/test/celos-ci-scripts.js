@@ -133,14 +133,37 @@ function addTestCase(testCase) {
     testConfigurationParser.addTestCase(result);
 }
 
-function hiveInput(dbName, tableName) {
+function fixTableFromResource(fixTableFile) {
+    if (!fixTableFile) {
+        throw "fixTableFile undefined";
+    }
+    return new FileFixTableCreator(fixTableFile);
+}
+
+function fixTable(columnNames, rowData) {
+    if (!columnNames) {
+        throw "columnNames undefined";
+    }
+    if (!rowData) {
+        throw "rowData undefined";
+    }
+    return new StringArrayFixTableCreator(columnNames, rowData);
+}
+
+function hiveInput(dbName, tableName, createScriptFile, fixTableCreator) {
     if (!dbName || typeof dbName != "string") {
         throw "dbName should be valid string";
     }
     if (!tableName || typeof tableName != "string") {
         throw "tableName should be valid string";
     }
-    return new HiveTableDeployer(dbName, tableName);
+    if (!createScriptFile) {
+        throw "createScriptFile should be valid string";
+    }
+    if (!fixTableCreator) {
+        fixTableCreator = null;
+    }
+    return new HiveTableDeployer(dbName, tableName, createScriptFile, fixTableCreator);
 }
 
 function hiveTable(databaseName, tableName) {
