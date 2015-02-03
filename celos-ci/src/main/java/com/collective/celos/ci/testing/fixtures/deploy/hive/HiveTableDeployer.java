@@ -4,6 +4,7 @@ import au.com.bytecode.opencsv.CSVWriter;
 import com.collective.celos.Util;
 import com.collective.celos.ci.mode.test.TestRun;
 import com.collective.celos.ci.testing.fixtures.create.FixObjectCreator;
+import com.collective.celos.ci.testing.fixtures.deploy.CelosCiDirtyStateException;
 import com.collective.celos.ci.testing.fixtures.deploy.FixtureDeployer;
 import com.collective.celos.ci.testing.structure.fixobject.FixFile;
 import com.collective.celos.ci.testing.structure.fixobject.FixTable;
@@ -38,6 +39,7 @@ public class HiveTableDeployer implements FixtureDeployer {
     private static final String SANDBOX_PARAM = "${SANDBOX}";
     private static final String PARTITION_INFORMATION_MARKER = "# Partition Information";
     private static final String SET_PARTITION_MODE_NONSTRICT = "set hive.exec.dynamic.partition.mode=nonstrict;";
+    private static final String SHOW_DATABASES = "SHOW DATABASES LIKE '%s'";
 
     private static final boolean driverLoaded = tryLoadDriverClass();
     private final String databaseName;
@@ -67,8 +69,7 @@ public class HiveTableDeployer implements FixtureDeployer {
     @Override
     public void deploy(TestRun testRun) throws Exception {
 
-        try(Connection connection = getConnection(testRun)) {
-            Statement statement = connection.createStatement();
+        try(Connection connection = getConnection(testRun); Statement statement = connection.createStatement()) {
 
             String mockedDbName = Util.augmentDbName(testRun.getTestUUID(), databaseName);
 
@@ -83,21 +84,30 @@ public class HiveTableDeployer implements FixtureDeployer {
 
                 loadDataToMockedTable(statement, mockedDbName, tempHdfsFile, tableName);
             }
-
-            statement.close();
         }
     }
 
     @Override
     public void undeploy(TestRun testRun) throws Exception {
 
-        try (Connection connection = getConnection(testRun)) {
-            Statement statement = connection.createStatement();
-
+        try (Connection connection = getConnection(testRun); Statement statement = connection.createStatement()) {
             String mockedDbName = Util.augmentDbName(testRun.getTestUUID(), databaseName);
-            dropMockedDatabase(statement, mockedDbName);
-            statement.close();
+            String createMockedDb = String.format(DROP_DB_PATTERN, mockedDbName);
+            statement.execute(createMockedDb);
         }
+    }
+
+    @Override
+    public void validate(TestRun testRun) throws Exception {
+        try (Connection connection = getConnection(testRun); Statement statement = connection.createStatement()) {
+            String mockedDbName = Util.augmentDbName(testRun.getTestUUID(), databaseName);
+            String createMockedDb = String.format(SHOW_DATABASES, mockedDbName);
+            ResultSet rs = statement.executeQuery(createMockedDb);
+            if (rs.next()) {
+                throw new CelosCiDirtyStateException("Celos-CI temporaty Hive DB still exists: " + mockedDbName);
+            }
+        }
+
     }
 
     public String getDatabaseName() {
@@ -188,11 +198,6 @@ public class HiveTableDeployer implements FixtureDeployer {
                 }
             }
         }
-    }
-
-    private void dropMockedDatabase(Statement statement, String mockedDatabase) throws SQLException {
-        String createMockedDb = String.format(DROP_DB_PATTERN, mockedDatabase);
-        statement.execute(createMockedDb);
     }
 
     private void createMockedDatabase(Statement statement, String mockedDatabase) throws Exception {

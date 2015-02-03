@@ -144,6 +144,13 @@ public class TestRun {
             System.out.println("Stopping Celos");
             celosServer.stopServer();
             doCleanup();
+            validateCleanState();
+        }
+    }
+
+    private void validateCleanState() throws Exception {
+        for (FixtureDeployer fixtureDeployer : testCase.getInputs()) {
+            fixtureDeployer.validate(this);
         }
     }
 
