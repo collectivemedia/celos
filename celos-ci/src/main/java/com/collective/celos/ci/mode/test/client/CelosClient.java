@@ -17,6 +17,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.util.*;
 
 /**
@@ -26,15 +27,19 @@ public class CelosClient {
 
     private final HttpClient client;
     private final ScheduledTimeFormatter timeFormatter;
-    private final String address;
+    private final URI address;
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final HttpGet workflowListGet;
 
     public CelosClient(String address) {
-        this.address = address;
+        this.address = URI.create(address);
         this.client = new DefaultHttpClient();
         this.timeFormatter = new ScheduledTimeFormatter();
         this.workflowListGet = new HttpGet(address + "/workflow-list");
+    }
+
+    public URI getAddress() {
+        return address;
     }
 
     public Set<WorkflowID> getWorkflowList() throws IOException {
@@ -69,7 +74,30 @@ public class CelosClient {
         } else {
             workflowIdStr = "";
         }
-        HttpPost post = new HttpPost(address + "/scheduler?time=" + timeFormatter.formatPretty(scheduledTime) + workflowIdStr);
+        executePost(address + "/scheduler?time=" + timeFormatter.formatPretty(scheduledTime) + workflowIdStr);
+    }
+
+    public void clearCache() throws IOException {
+        executePost(address + "/clear-cache");
+    }
+
+    public SlotState getSlotState(WorkflowID workflowID, ScheduledTime scheduledTime) throws IOException {
+        HttpGet workflowListGet = new HttpGet(address + "/slot-state?id=" + workflowID + "&time=" + scheduledTime);
+        HttpResponse getResponse = execute(workflowListGet);
+        InputStream content = getResponse.getEntity().getContent();
+        SlotStateDTO ss = objectMapper.readValue(content, SlotStateDTO.class);
+        return new SlotState(new SlotID(workflowID, scheduledTime), ss.getStatus(), ss.getExternalID(), ss.getRetryCount());
+    }
+
+    public String getWorkflowFile(WorkflowID workflowID) throws IOException {
+        HttpGet workflowListGet = new HttpGet(address + "/workflow-file?id=" + workflowID);
+        HttpResponse getResponse = execute(workflowListGet);
+        InputStream content = getResponse.getEntity().getContent();
+        return IOUtils.toString(content);
+    }
+
+    private void executePost(String request) throws IOException {
+        HttpPost post = new HttpPost(request);
         HttpResponse postResponse = execute(post);
         EntityUtils.consume(postResponse.getEntity());
     }
