@@ -170,7 +170,7 @@ public class CelosClientServerTest {
         List<SlotState> slotStates = celosClient.getWorkflowStatus(new WorkflowID("workflow-2"));
         Assert.assertEquals(slotStates.size(), SLOTS_IN_CELOS_SERVER_SLIDING_WINDOW);
 
-        List<SlotState> slotStatesOther = slotStates.subList(1, slotStates.size() - 1);
+        List<SlotState> slotStatesOther = slotStates.subList(1, slotStates.size());
         SlotState slotStateFst = slotStates.get(0);
         Assert.assertEquals(slotStateFst.getStatus(), SlotState.Status.RUNNING);
         Assert.assertNotNull(slotStateFst.getExternalID());
@@ -201,7 +201,7 @@ public class CelosClientServerTest {
         Assert.assertNotNull(slotStateFst.getExternalID());
         Assert.assertEquals(slotStateFst.getRetryCount(), 0);
 
-        slotStates = slotStates.subList(1, slotStates.size() - 1);
+        slotStates = slotStates.subList(1, slotStates.size());
         for (SlotState slotState : slotStates) {
             Assert.assertEquals(slotState.getStatus(), SlotState.Status.READY);
             Assert.assertNull(slotState.getExternalID());
@@ -233,7 +233,7 @@ public class CelosClientServerTest {
         Assert.assertNotNull(slotStateSnd.getExternalID());
         Assert.assertEquals(slotStateSnd.getRetryCount(), 0);
 
-        slotStates = slotStates.subList(2, slotStates.size() - 1);
+        slotStates = slotStates.subList(2, slotStates.size());
         for (SlotState slotState : slotStates) {
             Assert.assertEquals(slotState.getStatus(), SlotState.Status.READY);
             Assert.assertNull(slotState.getExternalID());
