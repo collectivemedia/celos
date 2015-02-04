@@ -1,5 +1,6 @@
 package com.collective.celos.ci.testing.fixtures.create;
 
+import com.collective.celos.DatabaseName;
 import com.collective.celos.Util;
 import com.collective.celos.ci.mode.test.TestRun;
 import com.collective.celos.ci.testing.structure.fixobject.FixTable;
@@ -23,10 +24,10 @@ public class OutputFixTableFromHiveCreator implements FixObjectCreator<FixTable>
     private final static String READ_TABLE_DATA = "SELECT * FROM %s.%s";
     public static final String DESCRIPTION = "Hive table %s.%s";
 
-    private final String databaseName;
+    private final DatabaseName databaseName;
     private final String tableName;
 
-    public OutputFixTableFromHiveCreator(String databaseName, String tableName) {
+    public OutputFixTableFromHiveCreator(DatabaseName databaseName, String tableName) {
         this.databaseName = databaseName;
         this.tableName = tableName;
     }
@@ -43,7 +44,7 @@ public class OutputFixTableFromHiveCreator implements FixObjectCreator<FixTable>
     }
 
     FixTable createFixTable(TestRun testRun, Connection connection) throws SQLException {
-        String augmentedDbData = Util.augmentDbName(testRun.getTestUUID(), databaseName);
+        String augmentedDbData = databaseName.getMockedName(testRun.getTestUUID());
         String query = String.format(READ_TABLE_DATA, augmentedDbData, tableName);
         ResultSet rs = connection.createStatement().executeQuery(query);
 
@@ -66,6 +67,6 @@ public class OutputFixTableFromHiveCreator implements FixObjectCreator<FixTable>
 
     @Override
     public String getDescription(TestRun testRun) {
-        return String.format(DESCRIPTION, Util.augmentDbName(testRun.getTestUUID(), databaseName), tableName);
+        return String.format(DESCRIPTION, databaseName.getMockedName(testRun.getTestUUID()), tableName);
     }
 }

@@ -28,7 +28,7 @@ task celos_ci << {
        main = "com.collective.celos.ci.CelosCi"
        classpath configurations.celos_ci
        target_uri
-       args '--deployDir', 'build/celos_deploy', '--target', 'target_uri', '--workflowName', 'wordcount' , '--mode', 'TEST'
+       args '--deployDir', 'build/celos_deploy', '--target', target_uri, '--workflowName', 'wordcount' , '--mode', 'TEST'
     }
 
     new File('build/celos_deploy').deleteDir()

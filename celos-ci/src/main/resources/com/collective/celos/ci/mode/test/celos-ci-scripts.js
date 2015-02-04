@@ -137,7 +137,7 @@ function fixTableFromResource(fixTableFile) {
     if (!fixTableFile) {
         throw "fixTableFile undefined";
     }
-    return new FileFixTableCreator(fixTableFile);
+    return new FileFixTableCreator(Packages.java.nio.file.Paths.get(fixTableFile));
 }
 
 function fixTable(columnNames, rowData) {
@@ -163,7 +163,7 @@ function hiveInput(dbName, tableName, createScriptFile, fixTableCreator) {
     if (!fixTableCreator) {
         fixTableCreator = null;
     }
-    return new HiveTableDeployer(dbName, tableName, createScriptFile, fixTableCreator);
+    return new HiveTableDeployer(new DatabaseName(dbName), tableName, createScriptFile, fixTableCreator);
 }
 
 function hiveTable(databaseName, tableName) {
@@ -173,7 +173,7 @@ function hiveTable(databaseName, tableName) {
     if (!tableName) {
         throw "tableName should be valid string";
     }
-    return new OutputFixTableFromHiveCreator(databaseName, tableName);
+    return new OutputFixTableFromHiveCreator(new DatabaseName(databaseName), tableName);
 }
 
 function tableToJson(fixTableCreator) {

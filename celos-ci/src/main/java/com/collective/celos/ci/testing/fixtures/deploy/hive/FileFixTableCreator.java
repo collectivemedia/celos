@@ -20,12 +20,12 @@ public class FileFixTableCreator implements FixObjectCreator<FixTable> {
     private final Path relativePath;
     private final Character separator;
 
-    public FileFixTableCreator(String relativePath) {
+    public FileFixTableCreator(Path relativePath) {
         this(relativePath, '\t');
     }
 
-    public FileFixTableCreator(String relativePath, Character separator) {
-        this.relativePath = Paths.get(relativePath);
+    public FileFixTableCreator(Path relativePath, Character separator) {
+        this.relativePath = relativePath;
         this.separator = separator;
     }
 

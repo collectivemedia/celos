@@ -56,6 +56,15 @@ public class HdfsInputDeployer implements FixtureDeployer {
         }
     }
 
+    @Override
+    public void validate(TestRun testRun) throws Exception {
+        Path pathToCheck = new Path(testRun.getHdfsPrefix(), path);
+        FileSystem fileSystem = testRun.getCiContext().getFileSystem();
+        if (fileSystem.exists(pathToCheck)) {
+            throw new CelosCiDirtyStateException("Celos-CI temporary path still exists: " + pathToCheck);
+        }
+    }
+
     public FixObjectCreator<FixFsObject> getFixObjectCreator() {
         return fixObjectCreator;
     }

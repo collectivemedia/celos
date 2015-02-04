@@ -151,11 +151,4 @@ public class Util {
         }
         return path;
     }
-
-    private final static String AUGMENTED_DB_NAME = "celosci_%s_%s";
-
-    public static String augmentDbName(UUID uuid, String dbName) {
-        return String.format(AUGMENTED_DB_NAME, dbName, uuid.toString().replace("-", "_"));
-    }
-
 }

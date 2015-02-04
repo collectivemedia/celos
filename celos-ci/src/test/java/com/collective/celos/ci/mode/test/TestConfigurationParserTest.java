@@ -1,5 +1,6 @@
 package com.collective.celos.ci.mode.test;
 
+import com.collective.celos.DatabaseName;
 import com.collective.celos.ScheduledTime;
 import com.collective.celos.WorkflowID;
 import com.collective.celos.ci.testing.fixtures.compare.RecursiveDirComparer;
@@ -453,7 +454,7 @@ public class TestConfigurationParserTest {
 
         FixFile tableCreationFile = hiveTableDeployer.getTableCreationScriptFile().create(null);
 
-        Assert.assertEquals(hiveTableDeployer.getDatabaseName(), "dbname");
+        Assert.assertEquals(hiveTableDeployer.getDatabaseName(), new DatabaseName("dbname"));
         Assert.assertEquals(hiveTableDeployer.getTableName(), "tablename");
         Assert.assertEquals(IOUtils.toString(tableCreationFile.getContent()), tableCreationScript);
         Assert.assertNull(hiveTableDeployer.getDataFileCreator());
@@ -472,7 +473,7 @@ public class TestConfigurationParserTest {
         NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(new StringReader(js), "string");
         HiveTableDeployer hiveTableDeployer = (HiveTableDeployer) creatorObj.unwrap();
 
-        Assert.assertEquals(hiveTableDeployer.getDatabaseName(), "dbname");
+        Assert.assertEquals(hiveTableDeployer.getDatabaseName(), new DatabaseName("dbname"));
         Assert.assertEquals(hiveTableDeployer.getTableName(), "tablename");
 
         FixFile tableCreationFile = hiveTableDeployer.getTableCreationScriptFile().create(null);
@@ -500,7 +501,7 @@ public class TestConfigurationParserTest {
         NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(new StringReader(js), "string");
         HiveTableDeployer hiveTableDeployer = (HiveTableDeployer) creatorObj.unwrap();
 
-        Assert.assertEquals(hiveTableDeployer.getDatabaseName(), "dbname");
+        Assert.assertEquals(hiveTableDeployer.getDatabaseName(), new DatabaseName("dbname"));
         Assert.assertEquals(hiveTableDeployer.getTableName(), "tablename");
 
     }
