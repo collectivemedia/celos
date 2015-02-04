@@ -13,7 +13,10 @@ import com.collective.celos.ci.testing.fixtures.compare.FixtureComparer;
 import com.collective.celos.ci.testing.fixtures.deploy.FixtureDeployer;
 import com.collective.celos.server.CelosServer;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.Selectors;
 
@@ -21,6 +24,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -103,45 +107,51 @@ public class TestRun {
     }
 
     public void start() throws Exception {
-        prepareCelosServerEnv();
 
+        System.out.println("Running test case " + testCase.getName());
         System.out.println("Test case " + testCase.getName() + ": temp dir for Celos is " + celosTempDir.getAbsolutePath().toString());
         System.out.println("Test case " + testCase.getName() + ": HDFS prefix is: " + hdfsPrefix);
 
-        wfDeployer.deploy();
-        hdfsDeployer.deploy();
+        List<FixObjectCompareResult> results = executeTestRun();
 
-        Map additionalJSParams = ImmutableMap.of(
-                HDFS_PREFIX_JS_VAR, hdfsPrefix,
-                TEST_UUID_JS_VAR, testUUID,
-                CELOS_USER_JS_VAR, ciContext.getUserName());
+        if (isTestRunFailed(results)) {
+            throw new TestRunFailedException(getComparisonResults(results));
+        } else {
+            System.out.println("Real and expected fixtures matched");
+        }
+    }
+
+    private List<FixObjectCompareResult> executeTestRun() throws Exception {
 
         final CelosServer celosServer = new CelosServer();
-        try {
 
-            celosWorkflowDir.mkdirs();
-            celosDefaultsDir.mkdirs();
-            celosDbDir.mkdirs();
+        try {
+            Map additionalJSParams = ImmutableMap.of(
+                    HDFS_PREFIX_JS_VAR, hdfsPrefix,
+                    TEST_UUID_JS_VAR, testUUID,
+                    CELOS_USER_JS_VAR, ciContext.getUserName());
+
+            prepareCelosServerEnv();
+
+            wfDeployer.deploy();
+            hdfsDeployer.deploy();
 
             Integer port = celosServer.startServer(additionalJSParams, celosWorkflowDir, celosDefaultsDir, celosDbDir);
 
-            System.out.println("Running test case " + testCase.getName());
             for (FixtureDeployer fixtureDeployer : testCase.getInputs()) {
                 fixtureDeployer.deploy(this);
             }
             CelosClient client = new CelosClient("http://localhost:" + port);
             new CelosSchedulerWorker(client).runCelosScheduler(testCase);
+
+            List<FixObjectCompareResult> results = Lists.newArrayList();
             for (FixtureComparer fixtureComparer : testCase.getOutputs()) {
-                FixObjectCompareResult result = fixtureComparer.check(this);
-                if (result.getStatus() == FixObjectCompareResult.Status.FAIL) {
-                    System.err.println(result.generateDescription());
-                }
+                results.add(fixtureComparer.check(this));
             }
-            System.err.flush();
-        } catch (Exception e) {
-            e.printStackTrace();
+            return results;
         } finally {
             System.out.println("Stopping Celos");
+            System.out.flush();
             celosServer.stopServer();
             doCleanup();
             validateCleanState();
@@ -152,6 +162,25 @@ public class TestRun {
         for (FixtureDeployer fixtureDeployer : testCase.getInputs()) {
             fixtureDeployer.validate(this);
         }
+    }
+
+    private boolean isTestRunFailed(List<FixObjectCompareResult> results) {
+        for (FixObjectCompareResult result : results) {
+            if (result.getStatus() == FixObjectCompareResult.Status.FAIL) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private String getComparisonResults(List<FixObjectCompareResult> results) throws IOException {
+        List<String> messages = Lists.newArrayList();
+        for (FixObjectCompareResult result : results) {
+            if (result.getStatus() == FixObjectCompareResult.Status.FAIL) {
+                messages.add(result.generateDescription());
+            }
+        }
+        return StringUtils.join(messages, "\n");
     }
 
     private void doCleanup() throws Exception {
