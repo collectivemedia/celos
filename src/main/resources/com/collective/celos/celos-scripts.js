@@ -206,7 +206,7 @@ function replaceTimeVariables(string, t) {
 
 function databaseName(database) {
     if (typeof HDFS_PREFIX_JS_VAR !== "undefined") {
-        return Packages.com.collective.celos.Util.augmentDbName(TEST_UUID_JS_VAR, database + "_");
+        return new DatabaseName(database).getMockedName(TEST_UUID_JS_VAR);
     } else {
         return database;
     }

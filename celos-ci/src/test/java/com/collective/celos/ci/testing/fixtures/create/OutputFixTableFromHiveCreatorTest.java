@@ -1,5 +1,6 @@
 package com.collective.celos.ci.testing.fixtures.create;
 
+import com.collective.celos.DatabaseName;
 import com.collective.celos.ci.mode.test.TestRun;
 import com.collective.celos.ci.testing.structure.fixobject.FixTable;
 import com.google.common.collect.Maps;
@@ -20,7 +21,7 @@ public class OutputFixTableFromHiveCreatorTest {
 
     @Test
     public void testCreateFixTable() throws SQLException {
-        OutputFixTableFromHiveCreator creator = new OutputFixTableFromHiveCreator("db", "table");
+        OutputFixTableFromHiveCreator creator = new OutputFixTableFromHiveCreator(new DatabaseName("db"), "table");
 
         Connection connection = mock(Connection.class);
         Statement statement = mock(Statement.class);
@@ -69,7 +70,7 @@ public class OutputFixTableFromHiveCreatorTest {
 
     @Test
     public void testCreateFixTableNoData() throws SQLException {
-        OutputFixTableFromHiveCreator creator = new OutputFixTableFromHiveCreator("db", "table");
+        OutputFixTableFromHiveCreator creator = new OutputFixTableFromHiveCreator(new DatabaseName("db"), "table");
 
         Connection connection = mock(Connection.class);
         Statement statement = mock(Statement.class);

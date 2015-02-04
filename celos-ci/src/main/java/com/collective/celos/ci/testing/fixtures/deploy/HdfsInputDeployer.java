@@ -61,7 +61,7 @@ public class HdfsInputDeployer implements FixtureDeployer {
         Path pathToCheck = new Path(testRun.getHdfsPrefix(), path);
         FileSystem fileSystem = testRun.getCiContext().getFileSystem();
         if (fileSystem.exists(pathToCheck)) {
-            throw new CelosCiDirtyStateException("Celos-CI temporaty path still exists: " + pathToCheck);
+            throw new CelosCiDirtyStateException("Celos-CI temporary path still exists: " + pathToCheck);
         }
     }
 

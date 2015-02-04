@@ -1,6 +1,7 @@
 package com.collective.celos.ci.testing.fixtures.deploy.hive;
 
 import au.com.bytecode.opencsv.CSVWriter;
+import com.collective.celos.DatabaseName;
 import com.collective.celos.Util;
 import com.collective.celos.ci.mode.test.TestRun;
 import com.collective.celos.ci.testing.fixtures.create.FixObjectCreator;
@@ -42,12 +43,12 @@ public class HiveTableDeployer implements FixtureDeployer {
     private static final String SHOW_DATABASES = "SHOW DATABASES LIKE '%s'";
 
     private static final boolean driverLoaded = tryLoadDriverClass();
-    private final String databaseName;
+    private final DatabaseName databaseName;
     private final String tableName;
     private final FixObjectCreator<FixTable> dataFileCreator;
     private final FixObjectCreator<FixFile> tableCreationScriptFile;
 
-    public HiveTableDeployer(String databaseName, String tableName, FixObjectCreator<FixFile> tableCreationScriptFile, FixObjectCreator<FixTable> dataFileCreator) throws Exception {
+    public HiveTableDeployer(DatabaseName databaseName, String tableName, FixObjectCreator<FixFile> tableCreationScriptFile, FixObjectCreator<FixTable> dataFileCreator) throws Exception {
         if (!driverLoaded) {
             throw new IllegalStateException("Hive JDBC driver was not found");
         }
@@ -71,18 +72,17 @@ public class HiveTableDeployer implements FixtureDeployer {
 
         try(Connection connection = getConnection(testRun); Statement statement = connection.createStatement()) {
 
-            String mockedDbName = Util.augmentDbName(testRun.getTestUUID(), databaseName);
+            String mockedName = databaseName.getMockedName(testRun.getTestUUID());
+            System.out.println("Test case " + testRun.getTestCase().getName() + ": Deploying " + tableName + " to " + mockedName);
 
-            System.out.println("Test case " + testRun.getTestCase().getName() + ": Deploying " + tableName + " to " + mockedDbName);
-
-            createMockedDatabase(statement, mockedDbName);
-            createMockedTable(statement, mockedDbName, testRun);
+            createMockedDatabase(statement, mockedName);
+            createMockedTable(statement, mockedName, testRun);
 
             if (dataFileCreator != null) {
                 FixTable fixTable = dataFileCreator.create(testRun);
                 Path tempHdfsFile = createTempHdfsFileForInsertion(fixTable, testRun);
 
-                loadDataToMockedTable(statement, mockedDbName, tempHdfsFile, tableName);
+                loadDataToMockedTable(statement, mockedName, tempHdfsFile, tableName);
             }
         }
     }
@@ -91,8 +91,7 @@ public class HiveTableDeployer implements FixtureDeployer {
     public void undeploy(TestRun testRun) throws Exception {
 
         try (Connection connection = getConnection(testRun); Statement statement = connection.createStatement()) {
-            String mockedDbName = Util.augmentDbName(testRun.getTestUUID(), databaseName);
-            String createMockedDb = String.format(DROP_DB_PATTERN, mockedDbName);
+            String createMockedDb = String.format(DROP_DB_PATTERN, databaseName.getMockedName(testRun.getTestUUID()));
             statement.execute(createMockedDb);
         }
     }
@@ -100,17 +99,18 @@ public class HiveTableDeployer implements FixtureDeployer {
     @Override
     public void validate(TestRun testRun) throws Exception {
         try (Connection connection = getConnection(testRun); Statement statement = connection.createStatement()) {
-            String mockedDbName = Util.augmentDbName(testRun.getTestUUID(), databaseName);
-            String createMockedDb = String.format(SHOW_DATABASES, mockedDbName);
+            String mockedName = databaseName.getMockedName(testRun.getTestUUID());
+
+            String createMockedDb = String.format(SHOW_DATABASES, mockedName);
             ResultSet rs = statement.executeQuery(createMockedDb);
             if (rs.next()) {
-                throw new CelosCiDirtyStateException("Celos-CI temporaty Hive DB still exists: " + mockedDbName);
+                throw new CelosCiDirtyStateException("Celos-CI temporary Hive DB still exists: " + mockedName);
             }
         }
 
     }
 
-    public String getDatabaseName() {
+    public DatabaseName getDatabaseName() {
         return databaseName;
     }
 
