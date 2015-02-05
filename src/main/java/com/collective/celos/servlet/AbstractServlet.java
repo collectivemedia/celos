@@ -13,6 +13,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Map;
 
@@ -40,10 +41,12 @@ public abstract class AbstractServlet extends HttpServlet {
     protected static final Object LOCK = new Object();
 
     @Override
-    public void service(ServletRequest req, ServletResponse res) throws ServletException, IOException {
+    public void service(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         synchronized(LOCK) {
             try {
                 super.service(req, res);
+            } catch (ResourceNotFoundException e) {
+                res.sendError(HttpServletResponse.SC_NOT_FOUND, e.getMessage());
             } catch(ServletException|IOException|RuntimeException e) {
                 LOGGER.error(e.getMessage(), e);
                 throw e;
