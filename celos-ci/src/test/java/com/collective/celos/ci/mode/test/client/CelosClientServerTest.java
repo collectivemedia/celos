@@ -19,6 +19,7 @@ import org.junit.rules.TemporaryFolder;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 import java.nio.file.Files;
 import java.util.List;
@@ -505,6 +506,42 @@ public class CelosClientServerTest {
 
         celosClient.getWorkflowFile(new WorkflowID("thereisnosuchwf"));
 
+    }
+
+    @Test
+    public void testRerunSlot() throws Exception {
+
+        File src = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/client/wf-list").toURI());
+        FileUtils.copyDirectory(src, workflowsDir);
+
+        celosClient.iterateScheduler(ScheduledTime.now());
+        celosClient.iterateScheduler(ScheduledTime.now());
+        celosClient.iterateScheduler(ScheduledTime.now());
+
+        WorkflowID workflowID = new WorkflowID("workflow-3");
+
+        List<SlotState> slotStates = celosClient.getWorkflowStatus(workflowID);
+        Assert.assertEquals(slotStates.size(), SLOTS_IN_CELOS_SERVER_SLIDING_WINDOW);
+
+        SlotState slotStateFst = slotStates.get(0);
+        Assert.assertEquals(slotStateFst.getStatus(), SlotState.Status.FAILURE);
+        ScheduledTime scheduledTime = slotStateFst.getScheduledTime();
+
+        celosClient.rerunSlot(workflowID, scheduledTime);
+        SlotState slotStateUpdated = celosClient.getSlotState(workflowID, scheduledTime);
+
+        Assert.assertEquals(slotStateUpdated.getStatus(), SlotState.Status.WAITING);
+    }
+
+
+    @Test(expected = IOException.class)
+    public void testRerunSlotFails() throws Exception {
+
+        File src = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/client/wf-list").toURI());
+        FileUtils.copyDirectory(src, workflowsDir);
+
+        WorkflowID workflowID = new WorkflowID("unknown-workflow");
+        celosClient.rerunSlot(workflowID, ScheduledTime.now());
     }
 
 }
