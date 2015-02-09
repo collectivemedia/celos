@@ -32,7 +32,11 @@ public class ContextParser {
         String workflowName = commandLine.getOptionValue(CLI_WORKFLOW_NAME);
         String targetUri = commandLine.getOptionValue(CLI_TARGET);
         String testCasesDir = getTestCasesDir(commandLine, DEFAULT_TEST_CASES_DIR);
-        String userName = System.getenv(USERNAME_ENV_VAR) == null ? System.getProperty("user.name") : System.getenv("username");
+
+        String userName = System.getenv(USERNAME_ENV_VAR);
+        if (userName == null) {
+            userName = System.getProperty("user.name");
+        }
 
         return new CelosCiCommandLine(targetUri, mode, deployDir, workflowName, testCasesDir, userName);
     }
