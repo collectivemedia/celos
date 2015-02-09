@@ -50,9 +50,9 @@ public class RerunServlet extends AbstractServlet {
     }
 
     void updateSlotToRerun(SlotState state, StateDatabase db) throws Exception {
+        LOGGER.info("Scheduling Slot for rerun: " + state.getSlotID());
         SlotState newState = state.transitionToRerun();
         db.putSlotState(newState);
-        LOGGER.info("Slot scheduled for rerun: " + state.getSlotID());
     }
 
 }
