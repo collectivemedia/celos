@@ -8,12 +8,6 @@ import org.junit.Test;
 
 public class RerunServletTest {
 
-    @Test(expected = IllegalArgumentException.class)
-    public void failsOnUndefinedSlot() throws Exception {
-        StateDatabase db = new MemoryStateDatabase();
-        new RerunServlet().updateSlotToRerun(new SlotID(new WorkflowID("foo"), new ScheduledTime("2014-02-08T20:00Z")), db);
-    }
-    
     @Test(expected = IllegalStateException.class)
     public void failsOnRunningSlot() throws Exception {
         failsOnWrongStatusTest(SlotState.Status.RUNNING);
@@ -34,9 +28,9 @@ public class RerunServletTest {
         SlotID id = new SlotID(new WorkflowID("foo"), new ScheduledTime("2014-02-08T20:00Z"));
         SlotState state = new SlotState(id, status);
         db.putSlotState(state);
-        new RerunServlet().updateSlotToRerun(id, db);
+        new RerunServlet().updateSlotToRerun(state, db);
     }
-    
+
     @Test
     public void succeedsOnSuccessSlot() throws Exception {
         succeedsOnRightStatusTest(SlotState.Status.SUCCESS);
@@ -52,7 +46,7 @@ public class RerunServletTest {
         SlotID id = new SlotID(new WorkflowID("foo"), new ScheduledTime("2014-02-08T20:00Z"));
         SlotState state = new SlotState(id, status);
         db.putSlotState(state);
-        new RerunServlet().updateSlotToRerun(id, db);
+        new RerunServlet().updateSlotToRerun(state, db);
         SlotState dbState = db.getSlotState(id);
         Assert.assertEquals(state.transitionToRerun(), dbState);
     }
