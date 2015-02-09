@@ -8,12 +8,13 @@ import java.io.PrintWriter;
 
 public class ContextParser {
 
-    static final String CLI_TARGET = "target";
-    static final String CLI_MODE = "mode";
-    static final String CLI_DEPLOY_DIR = "deployDir";
-    static final String CLI_WORKFLOW_NAME = "workflowName";
-    static final String CLI_TEST_CASES_DIR = "testDir";
-    static final String DEFAULT_TEST_CASES_DIR = "src/test/celos-ci";
+    private static final String CLI_TARGET = "target";
+    private static final String CLI_MODE = "mode";
+    private static final String CLI_DEPLOY_DIR = "deployDir";
+    private static final String CLI_WORKFLOW_NAME = "workflowName";
+    private static final String CLI_TEST_CASES_DIR = "testDir";
+    private static final String DEFAULT_TEST_CASES_DIR = "src/test/celos-ci";
+    private static final String USERNAME_ENV_VAR = "CELOS_CI_USERNAME";
 
     public CelosCiCommandLine parse(final String[] commandLineArguments) throws Exception {
 
@@ -31,7 +32,11 @@ public class ContextParser {
         String workflowName = commandLine.getOptionValue(CLI_WORKFLOW_NAME);
         String targetUri = commandLine.getOptionValue(CLI_TARGET);
         String testCasesDir = getTestCasesDir(commandLine, DEFAULT_TEST_CASES_DIR);
-        String userName = System.getenv("username") == null ? System.getProperty("user.name") : System.getenv("username");
+
+        String userName = System.getenv(USERNAME_ENV_VAR);
+        if (userName == null) {
+            userName = System.getProperty("user.name");
+        }
 
         return new CelosCiCommandLine(targetUri, mode, deployDir, workflowName, testCasesDir, userName);
     }

@@ -94,7 +94,7 @@ public class ContextParserTest {
         ContextParser contextParser = new ContextParser();
 
         CommandLine commandLine = mock(CommandLine.class);
-        doReturn("testCasesDir").when(commandLine).getOptionValue(ContextParser.CLI_TEST_CASES_DIR);
+        doReturn("testCasesDir").when(commandLine).getOptionValue("testDir");
         String result = contextParser.getTestCasesDir(commandLine, null);
         Assert.assertEquals(result, "testCasesDir");
     }
