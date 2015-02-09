@@ -96,6 +96,10 @@ public class CelosClient {
         return IOUtils.toString(content);
     }
 
+    public void rerunSlot(WorkflowID workflowID, ScheduledTime scheduledTime) throws IOException {
+        executePost(address + "/rerun?id=" + workflowID + "&time=" + scheduledTime);
+    }
+
     private void executePost(String request) throws IOException {
         HttpPost post = new HttpPost(request);
         HttpResponse postResponse = execute(post);
