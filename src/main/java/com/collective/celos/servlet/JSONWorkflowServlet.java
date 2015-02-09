@@ -37,7 +37,7 @@ public class JSONWorkflowServlet extends AbstractJSONServlet {
         String id = req.getParameter(ID_PARAM);
         try {
             if (id == null) {
-                res.sendError(HttpServletResponse.SC_NOT_FOUND, ID_PARAM + " parameter missing.");
+                res.sendError(HttpServletResponse.SC_BAD_REQUEST, ID_PARAM + " parameter missing.");
                 return;
             }
             Scheduler scheduler = getOrCreateCachedScheduler();
@@ -50,7 +50,7 @@ public class JSONWorkflowServlet extends AbstractJSONServlet {
                 writer.writeValue(res.getOutputStream(), object);
             }
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new ServletException(e);
         }
     }
 

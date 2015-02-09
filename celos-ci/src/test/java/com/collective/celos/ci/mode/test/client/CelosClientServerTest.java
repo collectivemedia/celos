@@ -349,9 +349,8 @@ public class CelosClientServerTest {
 
         HttpGet request = new HttpGet(celosClient.getAddress() + "/workflow");
         HttpResponse response = new DefaultHttpClient().execute(request);
-        Assert.assertEquals(response.getStatusLine().getStatusCode(), 500);
-        Assert.assertEquals(response.getStatusLine().getReasonPhrase(), "Server Error");
-        // TODO: !!! DOESNT GET CONVERTED TO GRACEFUL HTTP ERROR
+        Assert.assertEquals(response.getStatusLine().getStatusCode(), 400);
+        Assert.assertEquals(response.getStatusLine().getReasonPhrase(), "id parameter missing.");
     }
 
     @Test (expected = IOException.class)
