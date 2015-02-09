@@ -16,10 +16,11 @@ public class JSONSlotStateServlet extends AbstractJSONServlet {
     private static final String ID_PARAM = "id";
 
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException {
+        String id = req.getParameter(ID_PARAM);
         try {
-            String id = req.getParameter(ID_PARAM);
             if (id == null) {
-                throw new ResourceNotFoundException(ID_PARAM + " parameter missing.");
+                res.sendError(HttpServletResponse.SC_BAD_REQUEST, ID_PARAM + " parameter missing.");
+                return;
             }
             Scheduler scheduler = getOrCreateCachedScheduler();
             SlotID slotID = new SlotID(new WorkflowID(id), getRequestTime(req));
@@ -30,8 +31,6 @@ public class JSONSlotStateServlet extends AbstractJSONServlet {
                 ObjectNode object = slotState.toJSONNode();
                 writer.writeValue(res.getOutputStream(), object);
             }
-        } catch (RuntimeException e) {
-            throw e;
         } catch (Exception e) {
             throw new ServletException(e);
         }

@@ -37,19 +37,18 @@ public class JSONWorkflowServlet extends AbstractJSONServlet {
         String id = req.getParameter(ID_PARAM);
         try {
             if (id == null) {
-                throw new ResourceNotFoundException(ID_PARAM + " parameter missing.");
+                res.sendError(HttpServletResponse.SC_BAD_REQUEST, ID_PARAM + " parameter missing.");
+                return;
             }
             Scheduler scheduler = getOrCreateCachedScheduler();
             Workflow wf = scheduler.getWorkflowConfiguration().findWorkflow(new WorkflowID(id));
             if (wf == null) {
-                throw new ResourceNotFoundException("Workflow not found: " + id);
+                res.sendError(HttpServletResponse.SC_NOT_FOUND, "Workflow not found: " + id);
             } else {
                 List<SlotState> slotStates = scheduler.getSlotStates(wf, getRequestTime(req));
                 ObjectNode object = createJSONObject(slotStates);
                 writer.writeValue(res.getOutputStream(), object);
             }
-        } catch (RuntimeException e) {
-            throw e;
         } catch (Exception e) {
             throw new ServletException(e);
         }
