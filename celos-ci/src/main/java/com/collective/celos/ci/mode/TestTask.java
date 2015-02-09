@@ -11,6 +11,7 @@ import com.google.common.collect.Lists;
 
 import java.io.File;
 import java.util.List;
+import java.util.concurrent.*;
 
 /**
  * Created by akonopko on 10/1/14.
@@ -36,10 +37,37 @@ public class TestTask extends CelosCi {
         }
     }
 
+
     @Override
-    public void start() throws Exception {
-        for (TestRun testRun : testRuns) {
-            testRun.start();
+    public void start() throws Throwable {
+
+        List<Future> futures = submitTestRuns();
+        rethrowExceptions(futures);
+    }
+
+    private List<Future> submitTestRuns() {
+        ExecutorService executor = Executors.newCachedThreadPool();
+        List<Future> futures = Lists.newArrayList();
+        for (final TestRun testRun : testRuns) {
+            Callable callable = new Callable<Void>() {
+                @Override
+                public Void call() throws Exception {
+                    testRun.start();
+                    return null;
+                }
+            };
+            futures.add(executor.submit(callable));
+        }
+        return futures;
+    }
+
+    private void rethrowExceptions(List<Future> futures) throws Throwable {
+        try {
+            for (Future future : futures) {
+                future.get();
+            }
+        } catch (ExecutionException ee) {
+            throw ee.getCause();
         }
     }
 
