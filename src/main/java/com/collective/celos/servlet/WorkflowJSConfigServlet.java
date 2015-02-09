@@ -34,10 +34,11 @@ public class WorkflowJSConfigServlet extends AbstractJSONServlet {
 
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException {
         String id = req.getParameter(ID_PARAM);
-        if (id == null) {
-            throw new IllegalArgumentException(ID_PARAM + " parameter missing.");
-        }
         try {
+            if (id == null) {
+                res.sendError(HttpServletResponse.SC_BAD_REQUEST, ID_PARAM + " parameter missing.");
+                return;
+            }
             String contents = getWorkflowConfigurationFileContents(id);
             if (contents == null) {
                 res.sendError(HttpServletResponse.SC_NOT_FOUND, "JS config for workflow not found: " + id);

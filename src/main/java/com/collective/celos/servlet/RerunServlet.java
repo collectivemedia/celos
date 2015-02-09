@@ -33,22 +33,24 @@ public class RerunServlet extends AbstractServlet {
             ScheduledTime time = getRequestTime(req);
             String id = req.getParameter(ID_PARAM);
             if (id == null) {
-                throw new IllegalArgumentException(ID_PARAM + " parameter missing.");
+                res.sendError(HttpServletResponse.SC_BAD_REQUEST, ID_PARAM + " parameter missing.");
+                return;
             }
             SlotID slot = new SlotID(new WorkflowID(id), time);
             StateDatabase db = getOrCreateCachedScheduler().getStateDatabase();
-            updateSlotToRerun(slot, db);
-            LOGGER.info("Slot scheduled for rerun: " + slot);
+            SlotState state = db.getSlotState(slot);
+            if (state == null) {
+                res.sendError(HttpServletResponse.SC_NOT_FOUND, "Slot not found: " + slot);
+                return;
+            }
+            updateSlotToRerun(state, db);
         } catch(Exception e) {
-            throw new RuntimeException(e);
+            throw new ServletException(e);
         }
     }
 
-    void updateSlotToRerun(SlotID slot, StateDatabase db) throws Exception {
-        SlotState state = db.getSlotState(slot);
-        if (state == null) {
-            throw new IllegalArgumentException("Slot not found: " + slot);
-        }
+    void updateSlotToRerun(SlotState state, StateDatabase db) throws Exception {
+        LOGGER.info("Scheduling Slot for rerun: " + state.getSlotID());
         SlotState newState = state.transitionToRerun();
         db.putSlotState(newState);
     }
