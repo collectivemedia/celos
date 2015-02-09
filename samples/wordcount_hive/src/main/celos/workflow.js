@@ -1,7 +1,7 @@
 importDefaults("collective");
 
 addWorkflow({
-    "id": "wordcount",
+    "id": "hive-wordcount",
     "schedule": hourlySchedule(),
     "schedulingStrategy": serialSchedulingStrategy(),
     "trigger": hdfsCheckTrigger(hdfsPath("/input/wordcount/${year}-${month}-${day}-${hour}00/_SUCCESS")),
