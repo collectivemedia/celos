@@ -42,7 +42,7 @@ public class TestTask extends CelosCi {
     public void start() throws Throwable {
 
         List<Future> futures = submitTestRuns();
-        rethrowExceptions(futures);
+        printAndThrowExceptions(futures);
     }
 
     private List<Future> submitTestRuns() {
@@ -61,13 +61,22 @@ public class TestTask extends CelosCi {
         return futures;
     }
 
-    private void rethrowExceptions(List<Future> futures) throws Throwable {
-        try {
-            for (Future future : futures) {
+    void printAndThrowExceptions(List<Future> futures) throws Throwable {
+        List<Throwable> throwables = Lists.newArrayList();
+        for (Future future : futures) {
+            try {
                 future.get();
+            } catch (ExecutionException ee) {
+                throwables.add(ee.getCause());
             }
-        } catch (ExecutionException ee) {
-            throw ee.getCause();
+        }
+        if (!throwables.isEmpty()) {
+            List<Throwable> throwablesWOLast = throwables.subList(0, throwables.size() - 1);
+            for (Throwable t : throwablesWOLast) {
+                t.printStackTrace();
+            }
+            Throwable lastThrowable = throwables.get(throwables.size() - 1);
+            throw lastThrowable;
         }
     }
 

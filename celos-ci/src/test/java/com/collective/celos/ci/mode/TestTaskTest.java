@@ -23,6 +23,7 @@ import org.junit.rules.TemporaryFolder;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -111,7 +112,7 @@ public class TestTaskTest {
 
     private static class MockTestRun extends TestRun {
 
-        private static volatile int parallelRuns = 0;
+        private static AtomicInteger parallelRuns = new AtomicInteger(0);
         private boolean finished;
 
         public MockTestRun(CelosCiTarget target, CelosCiCommandLine commandLine, TestCase testCase) throws Exception {
@@ -119,8 +120,8 @@ public class TestTaskTest {
         }
 
         public void start() throws Exception {
-            parallelRuns++;
-            while (parallelRuns != 2) {
+            parallelRuns.incrementAndGet();
+            while (parallelRuns.get() != 2) {
                 Thread.sleep(500);
             }
             finished = true;
@@ -195,6 +196,43 @@ public class TestTaskTest {
 
     @Test(expected = TestRunFailedException.class)
     public void testTestException() throws Throwable {
+
+        String hadoopCoreUrl = Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/ci/testing/config/core-site.xml").getFile();
+        String hadoopHdfsUrl = Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/ci/testing/config/hdfs-site.xml").getFile();
+
+        String targetFileStr = "{\n" +
+                "    \"security.settings\": \"secsettings\",\n" +
+                "    \"celos.workflow.dir\": \"celoswfdir\",\n" +
+                "    \"hadoop.hdfs-site.xml\": \"" + hadoopHdfsUrl +"\",\n" +
+                "    \"hadoop.core-site.xml\": \"" + hadoopCoreUrl +"\",\n" +
+                "    \"defaults.file.uri\": \"deffile\"\n" +
+                "}\n";
+
+        File targetFile = tempDir.newFile();
+        FileOutputStream stream = new FileOutputStream(targetFile);
+        stream.write(targetFileStr.getBytes());
+        stream.flush();
+
+        CelosCiCommandLine commandLine = new CelosCiCommandLine(targetFile.toURI().toString(), "DEPLOY", "deploydir", "workflow", "testDir", "uname");
+        String configJS = Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/ci/testing/config/test.js").getFile();
+
+        TestConfigurationParser testConfigurationParser = mock(TestConfigurationParser.class);
+
+        CelosCiTargetParser parser = new CelosCiTargetParser("");
+        CelosCiTarget target = parser.parse(targetFile.toURI());
+
+        List<MockTestRunException> runList = Lists.newArrayList(new MockTestRunException("error2", target, commandLine, null));
+        doReturn(runList).when(testConfigurationParser).getTestCases();
+
+        TestTask testTask = new TestTask(commandLine, new File(configJS));
+        testTask.getTestRuns().clear();
+        testTask.getTestRuns().addAll(runList);
+
+        testTask.start();
+    }
+
+    @Test(expected = TestRunFailedException.class)
+    public void testTestTwoExceptions() throws Throwable {
 
         String hadoopCoreUrl = Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/ci/testing/config/core-site.xml").getFile();
         String hadoopHdfsUrl = Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/ci/testing/config/hdfs-site.xml").getFile();
