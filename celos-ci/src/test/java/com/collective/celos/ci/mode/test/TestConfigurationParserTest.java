@@ -1,5 +1,24 @@
 package com.collective.celos.ci.mode.test;
 
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.StringReader;
+import java.nio.file.Paths;
+import java.util.HashSet;
+import java.util.UUID;
+
+import org.apache.commons.io.IOUtils;
+import org.apache.hadoop.fs.Path;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.mozilla.javascript.JavaScriptException;
+import org.mozilla.javascript.NativeJavaObject;
+
 import com.collective.celos.DatabaseName;
 import com.collective.celos.ScheduledTime;
 import com.collective.celos.WorkflowID;
@@ -7,8 +26,13 @@ import com.collective.celos.ci.testing.fixtures.compare.RecursiveDirComparer;
 import com.collective.celos.ci.testing.fixtures.compare.json.JsonContentsComparer;
 import com.collective.celos.ci.testing.fixtures.convert.AvroToJsonConverter;
 import com.collective.celos.ci.testing.fixtures.convert.FixTableToJsonFileConverter;
+import com.collective.celos.ci.testing.fixtures.convert.FixTableToTSVFileConverter;
 import com.collective.celos.ci.testing.fixtures.convert.JsonExpandConverter;
-import com.collective.celos.ci.testing.fixtures.create.*;
+import com.collective.celos.ci.testing.fixtures.create.FixDirFromResourceCreator;
+import com.collective.celos.ci.testing.fixtures.create.FixDirHierarchyCreator;
+import com.collective.celos.ci.testing.fixtures.create.FixFileFromResourceCreator;
+import com.collective.celos.ci.testing.fixtures.create.OutputFixDirFromHdfsCreator;
+import com.collective.celos.ci.testing.fixtures.create.OutputFixTableFromHiveCreator;
 import com.collective.celos.ci.testing.fixtures.deploy.HdfsInputDeployer;
 import com.collective.celos.ci.testing.fixtures.deploy.hive.FileFixTableCreator;
 import com.collective.celos.ci.testing.fixtures.deploy.hive.HiveTableDeployer;
@@ -19,24 +43,6 @@ import com.collective.celos.ci.testing.structure.fixobject.FixDirRecursiveConver
 import com.collective.celos.ci.testing.structure.fixobject.FixFile;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import org.apache.commons.io.IOUtils;
-import org.apache.hadoop.fs.Path;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.mozilla.javascript.JavaScriptException;
-import org.mozilla.javascript.NativeJavaObject;
-
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.StringReader;
-import java.nio.file.Paths;
-import java.util.HashSet;
-import java.util.UUID;
-
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
 
 /**
  * Created by akonopko on 27.11.14.
@@ -550,6 +556,27 @@ public class TestConfigurationParserTest {
     @Test (expected = JavaScriptException.class)
     public void testTableToJsonNoCreator() throws IOException {
         String js = "tableToJson()";
+
+        TestConfigurationParser parser = new TestConfigurationParser();
+        parser.evaluateTestConfig(new StringReader(js), "string");
+    }
+    
+    @Test
+    public void testTableToTSV() throws IOException {
+        String js = "tableToTSV(hiveTable(\"dbname\", \"tablename\"))";
+
+        TestConfigurationParser parser = new TestConfigurationParser();
+
+        NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(new StringReader(js), "string");
+        ConversionCreator creator = (ConversionCreator) creatorObj.unwrap();
+
+        Assert.assertEquals(FixTableToTSVFileConverter.class, creator.getFixObjectConverter().getClass());
+
+    }
+
+    @Test (expected = JavaScriptException.class)
+    public void testTableToTSVNoCreator() throws IOException {
+        String js = "tableToTSV()";
 
         TestConfigurationParser parser = new TestConfigurationParser();
         parser.evaluateTestConfig(new StringReader(js), "string");
