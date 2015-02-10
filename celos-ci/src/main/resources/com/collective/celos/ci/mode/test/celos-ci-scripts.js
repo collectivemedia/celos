@@ -185,6 +185,13 @@ ci.tableToJson = function (fixTableCreator) {
     return new ConversionCreator(fixTableCreator, new FixTableToJsonFileConverter());
 }
 
+ci.tableToTSV = function (fixTableCreator) {
+    if (!fixTableCreator) {
+        throw "Undefined fixTableCreator";
+    }
+    return new ConversionCreator(fixTableCreator, new FixTableToTSVFileConverter());
+}
+
 ci.expandJson = function (jsonCreator, fieldsRaw) {
     if (!jsonCreator) {
         throw "Undefined jsonCreator";
@@ -215,4 +222,5 @@ var fixTable = ci.fixTable;
 var hiveInput = ci.hiveInput;
 var hiveTable = ci.hiveTable;
 var tableToJson = ci.tableToJson;
+var tableToTSV = ci.tableToTSV;
 var expandJson = ci.expandJson;
