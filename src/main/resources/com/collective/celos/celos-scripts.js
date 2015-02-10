@@ -2,9 +2,11 @@ importPackage(Packages.com.collective.celos);
 importPackage(Packages.com.collective.celos.trigger);
 importPackage(Packages.com.collective.celos.ci.testing);
 
+var celos = {};
+
 // FIXME: temporary solution: until all utility functions return real Java objects,
 // allow JSON also and create instances from it using the JSONInstanceCreator.
-function addWorkflow(json) {
+celos.addWorkflow = function (json) {
     if (typeof(json.id) !== "string") {
         throw "Workflow ID must be a string: " + json.id;
     }
@@ -22,34 +24,34 @@ function addWorkflow(json) {
     );
 }
 
-function importDefaults(label) {
+celos.importDefaults = function (label) {
     celosWorkflowConfigurationParser.importDefaultsIntoScope(label, celosScope);
 }
 
-function hourlySchedule() {
+celos.hourlySchedule = function () {
     return new HourlySchedule();
 }
 
-function minutelySchedule() {
+celos.minutelySchedule = function () {
     return new MinutelySchedule();
 }
 
-function cronSchedule(cronExpression) {
+celos.cronSchedule = function (cronExpression) {
     if (!cronExpression) {
         throw "Undefined cron expression";
     }
     return new CronSchedule(cronExpression);
 }
 
-function serialSchedulingStrategy(concurrency) {
+celos.serialSchedulingStrategy = function (concurrency) {
     return new SerialSchedulingStrategy(concurrency === undefined ? 1 : concurrency);
 }
 
-function alwaysTrigger() {
+celos.alwaysTrigger = function () {
     return new AlwaysTrigger();
 }
 
-function hdfsCheck(path, slotID, fs) {
+celos.hdfsCheck = function (path, slotID, fs) {
     var trigger = hdfsCheckTrigger(path, fs);
     var scheduledTime;
 
@@ -65,7 +67,7 @@ function hdfsCheck(path, slotID, fs) {
 }
 
 // Pass fs as last parameter so we can later use a default if parameter not supplied
-function hdfsCheckTrigger(path, fs) {
+celos.hdfsCheckTrigger = function (path, fs) {
     if (!path) {
         throw "Undefined path in hdfsCheckTrigger";
     }
@@ -79,7 +81,7 @@ function hdfsCheckTrigger(path, fs) {
     return new HDFSCheckTrigger(path, fs);
 }
 
-function andTrigger() {
+celos.andTrigger = function () {
     var list = new Packages.java.util.LinkedList();
     for (var i = 0; i < arguments.length; i++) {
         list.add(arguments[i]);
@@ -87,7 +89,7 @@ function andTrigger() {
     return new AndTrigger(list);
 }
 
-function orTrigger() {
+celos.orTrigger = function () {
     var list = new Packages.java.util.LinkedList();
     for (var i = 0; i < arguments.length; i++) {
         list.add(arguments[i]);
@@ -95,21 +97,21 @@ function orTrigger() {
     return new OrTrigger(list);
 }
 
-function notTrigger(subTrigger) {
+celos.notTrigger = function (subTrigger) {
     if (!subTrigger) {
         throw "Undefined sub trigger";
     }
     return new NotTrigger(subTrigger);
 }
 
-function delayTrigger(seconds) {
+celos.delayTrigger = function (seconds) {
     if (!seconds) {
         throw "Undefined seconds";
     }
     return new DelayTrigger(seconds);
 }
 
-function offsetTrigger(seconds, trigger) {
+celos.offsetTrigger = function (seconds, trigger) {
     if (!seconds) {
         throw "Undefined seconds";
     }
@@ -119,7 +121,7 @@ function offsetTrigger(seconds, trigger) {
     return new OffsetTrigger(seconds, trigger);
 }
 
-function commandTrigger() {
+celos.commandTrigger = function () {
     var list = new Packages.java.util.LinkedList();
     for (var i = 0; i < arguments.length; i++) {
         list.add(arguments[i]);
@@ -127,20 +129,20 @@ function commandTrigger() {
     return new CommandTrigger(list);
 }
 
-function successTrigger(workflowName) {
+celos.successTrigger = function (workflowName) {
     if (!workflowName) {
         throw "Undefined workflow name in success trigger";
     }
     return new SuccessTrigger(workflowName);
 }
 
-function mergeProperties(source, target) {
+celos.mergeProperties = function (source, target) {
     for (var name in source) {
         target[name] = source[name];
     }
 }
 
-function hdfsPath(path) {
+celos.hdfsPath = function (path) {
     if (!path) {
         throw "Undefined path in hdfsPath";
     }
@@ -151,32 +153,20 @@ function hdfsPath(path) {
     }
 }
 
-function oozieExternalService(userPropertiesOrFun, oozieURL) {
-    if (oozieURL === undefined) {
-        if (typeof CELOS_DEFAULT_OOZIE !== "undefined") {
-            oozieURL = CELOS_DEFAULT_OOZIE;
-        } else {
-            throw "Undefined Oozie URL";
-        }
-    }
-    var propertiesGen = makePropertiesGen(userPropertiesOrFun);
-    return new OozieExternalService(oozieURL, propertiesGen);
-}
-
-function makePropertiesGen(userPropertiesOrFun) {
+celos.makePropertiesGen = function (userPropertiesOrFun) {
     // If user passes in a function, use it as the properties
     // generator.  Otherwise create a a function that always
     // returns the passed in object.
     var userFun = (typeof userPropertiesOrFun === "function")
-        ? userPropertiesOrFun 
+        ? userPropertiesOrFun
         : function(ignoredSlotID) { return userPropertiesOrFun; };
     function getPropertiesFun(slotID) {
         var userProperties = userFun(slotID);
         var theProperties = {};
         if (typeof CELOS_DEFAULT_OOZIE_PROPERTIES !== "undefined") {
-            mergeProperties(CELOS_DEFAULT_OOZIE_PROPERTIES, theProperties);
+            celos.mergeProperties(CELOS_DEFAULT_OOZIE_PROPERTIES, theProperties);
         }
-        mergeProperties(userProperties, theProperties);
+        celos.mergeProperties(userProperties, theProperties);
         if (typeof USERNAME !== "undefined") {
             theProperties["user.name"] = USERNAME;
         }
@@ -186,7 +176,21 @@ function makePropertiesGen(userPropertiesOrFun) {
     return new PropertiesGenerator({ getProperties: getPropertiesFun });
 }
 
-function commandExternalService(command) {
+
+celos.oozieExternalService = function (userPropertiesOrFun, oozieURL) {
+
+    if (oozieURL === undefined) {
+        if (typeof CELOS_DEFAULT_OOZIE !== "undefined") {
+            oozieURL = CELOS_DEFAULT_OOZIE;
+        } else {
+            throw "Undefined Oozie URL";
+        }
+    }
+    var propertiesGen = celos.makePropertiesGen(userPropertiesOrFun);
+    return new OozieExternalService(oozieURL, propertiesGen);
+}
+
+celos.commandExternalService = function (command) {
     if (!command) {
         throw "Undefined command";
     }
@@ -194,7 +198,7 @@ function commandExternalService(command) {
     return new CommandExternalService(command, "celos-wrapper", "/var/lib/celos/jobs");
 }
 
-function replaceTimeVariables(string, t) {
+celos.replaceTimeVariables = function (string, t) {
     string = string.replace(/\${year}/g, t.year());
     string = string.replace(/\${month}/g, t.month());
     string = string.replace(/\${day}/g, t.day());
@@ -204,10 +208,33 @@ function replaceTimeVariables(string, t) {
     return string;                            
 }
 
-function databaseName(database) {
+celos.databaseName = function (database) {
     if (typeof HDFS_PREFIX_JS_VAR !== "undefined") {
         return new DatabaseName(database).getMockedName(TEST_UUID_JS_VAR);
     } else {
         return database;
     }
 }
+
+var addWorkflow = celos.addWorkflow;
+var importDefaults = celos.importDefaults;
+var hourlySchedule = celos.hourlySchedule;
+var minutelySchedule = celos.minutelySchedule;
+var cronSchedule = celos.cronSchedule;
+var serialSchedulingStrategy = celos.serialSchedulingStrategy;
+var alwaysTrigger = celos.alwaysTrigger;
+var hdfsCheck = celos.hdfsCheck;
+var hdfsCheckTrigger = celos.hdfsCheckTrigger;
+var andTrigger = celos.andTrigger;
+var orTrigger = celos.orTrigger;
+var notTrigger = celos.notTrigger;
+var delayTrigger = celos.delayTrigger;
+var offsetTrigger = celos.offsetTrigger;
+var commandTrigger = celos.commandTrigger;
+var successTrigger = celos.successTrigger;
+var mergeProperties = celos.mergeProperties;
+var hdfsPath = celos.hdfsPath;
+var oozieExternalService = celos.oozieExternalService;
+var commandExternalService = celos.commandExternalService;
+var replaceTimeVariables = celos.replaceTimeVariables;
+var databaseName = celos.databaseName;

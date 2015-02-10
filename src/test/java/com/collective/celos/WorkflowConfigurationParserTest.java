@@ -163,7 +163,7 @@ public class WorkflowConfigurationParserTest {
                 "        }" +
                 "    }";
 
-        String str = "importDefaults(\"test\"); makePropertiesGen(" + func + "); ";
+        String str = "importDefaults(\"test\"); celos.makePropertiesGen(" + func + "); ";
         NativeJavaObject jsResult = (NativeJavaObject) parser.evaluateReader(new StringReader(str), "string");
         PropertiesGenerator generator = (PropertiesGenerator) jsResult.unwrap();
         Assert.assertEquals(generator.getProperties(null).get("user.name").asText(), "default");
@@ -185,7 +185,7 @@ public class WorkflowConfigurationParserTest {
                 "        }" +
                 "    }";
 
-        String str = "importDefaults(\"test\"); makePropertiesGen(" + func + "); ";
+        String str = "importDefaults(\"test\"); celos.makePropertiesGen(" + func + "); ";
         NativeJavaObject jsResult = (NativeJavaObject) parser.evaluateReader(new StringReader(str), "string");
         PropertiesGenerator generator = (PropertiesGenerator) jsResult.unwrap();
         Assert.assertEquals(generator.getProperties(null).get("user.name").asText(), "nameIsChanged");
