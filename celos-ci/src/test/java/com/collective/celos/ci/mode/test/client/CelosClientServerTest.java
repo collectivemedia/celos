@@ -86,7 +86,7 @@ public class CelosClientServerTest {
         workflowIDs = celosClient.getWorkflowList();
         Assert.assertEquals(
                 Sets.newHashSet(workflowIDs),
-                Sets.newHashSet(new WorkflowID("workflow-1"), new WorkflowID("workflow-2"), new WorkflowID("workflow-3"), new WorkflowID("workflow-4"))
+                Sets.newHashSet(new WorkflowID("workflow-1"), new WorkflowID("workflow-2"), new WorkflowID("workflow-Iñtërnâtiônàlizætiøn"), new WorkflowID("workflow-4"))
         );
     }
 
@@ -253,7 +253,7 @@ public class CelosClientServerTest {
         celosClient.iterateScheduler(ScheduledTime.now());
         celosClient.iterateScheduler(ScheduledTime.now());
 
-        List<SlotState> slotStates = celosClient.getWorkflowStatus(new WorkflowID("workflow-3"));
+        List<SlotState> slotStates = celosClient.getWorkflowStatus(new WorkflowID("workflow-Iñtërnâtiônàlizætiøn"));
         Assert.assertEquals(slotStates.size(), SLOTS_IN_CELOS_SERVER_SLIDING_WINDOW);
 
         SlotState slotStateFst = slotStates.get(0);
@@ -517,7 +517,7 @@ public class CelosClientServerTest {
         celosClient.iterateScheduler(ScheduledTime.now());
         celosClient.iterateScheduler(ScheduledTime.now());
 
-        WorkflowID workflowID = new WorkflowID("workflow-3");
+        WorkflowID workflowID = new WorkflowID("workflow-Iñtërnâtiônàlizætiøn");
 
         List<SlotState> slotStates = celosClient.getWorkflowStatus(workflowID);
         Assert.assertEquals(slotStates.size(), SLOTS_IN_CELOS_SERVER_SLIDING_WINDOW);
