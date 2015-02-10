@@ -50,7 +50,7 @@ public class CelosSchedulerWorker {
         }
     }
 
-    boolean isThereAnyRunningWorkflows(Set<WorkflowID> workflowList, ScheduledTime schedTime) throws IOException {
+    boolean isThereAnyRunningWorkflows(Set<WorkflowID> workflowList, ScheduledTime schedTime) throws Exception {
         for (WorkflowID workflowID : workflowList) {
             List<SlotState> slotStates = client.getWorkflowStatus(workflowID, schedTime);
             for (SlotState slotState : slotStates) {
@@ -62,7 +62,7 @@ public class CelosSchedulerWorker {
         return false;
     }
 
-    Set<String> getWorkflowStatusesInfo(Set<WorkflowID> workflowList, ScheduledTime schedTime) throws IOException {
+    Set<String> getWorkflowStatusesInfo(Set<WorkflowID> workflowList, ScheduledTime schedTime) throws Exception {
         Set<String> messages = Sets.newHashSet();
         for (WorkflowID workflowID : workflowList) {
             List<SlotState> slotStates = client.getWorkflowStatus(workflowID, schedTime);

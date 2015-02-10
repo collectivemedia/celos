@@ -323,7 +323,7 @@ public class CelosClientServerTest {
     }
 
     @Test
-    public void testServerRespondsToScheduler() throws IOException {
+    public void testServerRespondsToScheduler() throws Exception {
         ScheduledTime time1 = new ScheduledTime("2014-10-27T14:00:00.000Z");
         celosClient.iterateScheduler(time1);
     }

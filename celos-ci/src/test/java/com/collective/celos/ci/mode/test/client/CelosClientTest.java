@@ -26,7 +26,7 @@ public class CelosClientTest {
     }
 
     @Test (expected = UnknownHostException.class)
-    public void testCelosClientFailsNoServer() throws IOException {
+    public void testCelosClientFailsNoServer() throws Exception {
         CelosClient celosClient = new CelosClient("http://thereisnosuchhost:1234");
         celosClient.getWorkflowList();
     }

@@ -23,7 +23,7 @@ import static org.mockito.Mockito.*;
 public class CelosSchedulerWorkerTest {
 
     @Test
-    public void testIsThereAnyRunningWorkflowsFalse1() throws IOException {
+    public void testIsThereAnyRunningWorkflowsFalse1() throws Exception {
         CelosClient celosClient = mock(CelosClient.class);
         CelosSchedulerWorker worker = new CelosSchedulerWorker(celosClient);
         WorkflowID wf1 = new WorkflowID("wf1");
@@ -44,7 +44,7 @@ public class CelosSchedulerWorkerTest {
 
 
     @Test
-    public void testIsThereAnyRunningWorkflowsTrue() throws IOException {
+    public void testIsThereAnyRunningWorkflowsTrue() throws Exception {
         CelosClient celosClient = mock(CelosClient.class);
         CelosSchedulerWorker worker = new CelosSchedulerWorker(celosClient);
         WorkflowID wf1 = new WorkflowID("wf1");
@@ -67,7 +67,7 @@ public class CelosSchedulerWorkerTest {
 
 
     @Test
-    public void testGetWorkflowStatusesInfo() throws IOException {
+    public void testGetWorkflowStatusesInfo() throws Exception {
         CelosClient celosClient = mock(CelosClient.class);
         CelosSchedulerWorker worker = new CelosSchedulerWorker(celosClient);
 
