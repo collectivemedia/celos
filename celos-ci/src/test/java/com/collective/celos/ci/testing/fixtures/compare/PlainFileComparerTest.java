@@ -27,7 +27,7 @@ public class PlainFileComparerTest {
 
         doReturn(inputStream1).when(fixFile1).getContent();
         FixObjectCompareResult compareResult = comparer.check(null);
-        Assert.assertEquals(compareResult, FixObjectCompareResult.success());
+        Assert.assertEquals(compareResult, FixObjectCompareResult.SUCCESS);
     }
 
     @Test

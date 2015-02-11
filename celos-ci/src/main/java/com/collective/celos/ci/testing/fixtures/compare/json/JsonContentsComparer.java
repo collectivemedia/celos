@@ -67,7 +67,7 @@ public class JsonContentsComparer implements FixtureComparer {
 
         }
 
-        return FixObjectCompareResult.success();
+        return FixObjectCompareResult.SUCCESS;
     }
 
     private <T extends FixFsObject> Map<JsonElement, Integer> getJsonEntityCountMap(
