@@ -17,8 +17,8 @@ addTestCase({
         hiveInput("celosdb", "result", resTableScript)
     ],
     outputs: [
-        jsonCompare(
-            fixFileFromResource("test-1/output/json/result.json"), tableToJson(hiveTable("celosdb", "result"))
+        plainFileCompare(
+            fixFileFromResource("test-1/output/tsv/result.tsv"), tableToTSV(hiveTable("celosdb", "result"))
         )
     ]
 });
