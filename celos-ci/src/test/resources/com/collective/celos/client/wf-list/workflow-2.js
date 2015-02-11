@@ -8,7 +8,7 @@ addWorkflow({
 });
 
 addWorkflow({
-    "id": "workflow-3",
+    "id": "workflow-Iñtërnâtiônàlizætiøn",
     "schedule": hourlySchedule(),
     "schedulingStrategy": serialSchedulingStrategy(),
     "trigger": hdfsCheckTrigger("/", "file:///"),
