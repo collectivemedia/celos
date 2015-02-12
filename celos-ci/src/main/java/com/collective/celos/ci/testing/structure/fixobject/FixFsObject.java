@@ -9,6 +9,10 @@ public abstract class FixFsObject extends FixObject implements TreeObject<FixFsO
 
     public abstract boolean isFile();
 
+    public boolean isDir() {
+        return !isFile();
+    }
+
     public FixFile asFile() {
         return (FixFile) this;
     }

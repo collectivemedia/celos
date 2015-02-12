@@ -25,7 +25,7 @@ public class PlainFileComparer implements FixtureComparer {
         if (!IOUtils.contentEquals(content, file.getContent())) {
             return FixObjectCompareResult.failed("File contents differed");
         }
-        return FixObjectCompareResult.success();
+        return FixObjectCompareResult.SUCCESS;
     }
 
 }

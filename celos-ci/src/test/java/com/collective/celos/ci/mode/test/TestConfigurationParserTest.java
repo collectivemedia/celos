@@ -11,6 +11,7 @@ import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.UUID;
 
+import com.collective.celos.ci.testing.fixtures.compare.RecursiveFsObjectComparer;
 import org.apache.commons.io.IOUtils;
 import org.apache.hadoop.fs.Path;
 import org.junit.Assert;
@@ -22,7 +23,6 @@ import org.mozilla.javascript.NativeJavaObject;
 import com.collective.celos.DatabaseName;
 import com.collective.celos.ScheduledTime;
 import com.collective.celos.WorkflowID;
-import com.collective.celos.ci.testing.fixtures.compare.RecursiveDirComparer;
 import com.collective.celos.ci.testing.fixtures.compare.json.JsonContentsComparer;
 import com.collective.celos.ci.testing.fixtures.convert.AvroToJsonConverter;
 import com.collective.celos.ci.testing.fixtures.convert.FixTableToJsonFileConverter;
@@ -120,20 +120,20 @@ public class TestConfigurationParserTest {
     }
 
     @Test(expected = JavaScriptException.class)
-    public void testRecursiveDirComparer1() throws IOException {
+    public void testRecursiveFsObjectComparer1() throws IOException {
         TestConfigurationParser parser = new TestConfigurationParser();
 
         NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(new StringReader("plainCompare()"), "string");
-        RecursiveDirComparer creator = (RecursiveDirComparer) creatorObj.unwrap();
+        RecursiveFsObjectComparer creator = (RecursiveFsObjectComparer) creatorObj.unwrap();
     }
 
     @Test
-    public void testRecursiveDirComparer2() throws IOException {
+    public void testRecursiveFsObjectComparer2() throws IOException {
         TestConfigurationParser parser = new TestConfigurationParser();
 
         NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(new StringReader("plainCompare(fixDirFromResource(\"stuff\"), \"here\")"), "string");
 
-        RecursiveDirComparer comparer = (RecursiveDirComparer) creatorObj.unwrap();
+        RecursiveFsObjectComparer comparer = (RecursiveFsObjectComparer) creatorObj.unwrap();
 
         OutputFixDirFromHdfsCreator actualCreator = (OutputFixDirFromHdfsCreator) comparer.getActualDataCreator();
         FixDirFromResourceCreator expectedDataCreator = (FixDirFromResourceCreator) comparer.getExpectedDataCreator();
@@ -142,11 +142,11 @@ public class TestConfigurationParserTest {
     }
 
     @Test(expected = JavaScriptException.class)
-    public void testRecursiveDirComparer3() throws IOException {
+    public void testRecursiveFsObjectComparer3() throws IOException {
         TestConfigurationParser parser = new TestConfigurationParser();
 
         NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(new StringReader("plainCompare(fixFileFromResource(\"stuff\"))"), "string");
-        RecursiveDirComparer creator = (RecursiveDirComparer) creatorObj.unwrap();
+        RecursiveFsObjectComparer creator = (RecursiveFsObjectComparer) creatorObj.unwrap();
     }
 
 
@@ -181,7 +181,7 @@ public class TestConfigurationParserTest {
         Assert.assertEquals(testCase.getInputs().get(0).getClass(), HdfsInputDeployer.class);
         Assert.assertEquals(testCase.getInputs().get(1).getClass(), HdfsInputDeployer.class);
         Assert.assertEquals(testCase.getOutputs().size(), 1);
-        Assert.assertEquals(testCase.getOutputs().get(0).getClass(), RecursiveDirComparer.class);
+        Assert.assertEquals(testCase.getOutputs().get(0).getClass(), RecursiveFsObjectComparer.class);
     }
 
     @Test(expected = JavaScriptException.class)

@@ -94,7 +94,7 @@ ci.plainCompare = function (fixObjectCreator, path) {
     if (!path) {
         throw "Undefined path";
     }
-    return new RecursiveDirComparer(fixObjectCreator, new OutputFixDirFromHdfsCreator(path));
+    return new RecursiveFsObjectComparer(fixObjectCreator, new OutputFixDirFromHdfsCreator(path));
 }
 
 ci.addTestCase = function (testCase) {
