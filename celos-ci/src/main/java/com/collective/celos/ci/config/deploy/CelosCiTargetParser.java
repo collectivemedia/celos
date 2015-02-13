@@ -14,7 +14,7 @@ public class CelosCiTargetParser {
     public static final String WORKFLOWS_DIR_URI = "workflows.dir.uri";
     public static final String HADOOP_HDFS_SITE_XML = "hadoop.hdfs-site.xml";
     public static final String HADOOP_CORE_SITE_XML = "hadoop.core-site.xml";
-    public static final String DEFAULTS_FILE_URI = "defaults.dir.uri";
+    public static final String DEFAULTS_DIR_URI = "defaults.dir.uri";
     public static final String HIVE_JDBC_URL = "hive.jdbc.url";
 
     private JScpWorker worker;
@@ -28,7 +28,7 @@ public class CelosCiTargetParser {
         InputStream is = file.getContent().getInputStream();
         HashMap<String, String> result = new ObjectMapper().readValue(is, HashMap.class);
         URI workflowDir = result.get(WORKFLOWS_DIR_URI) != null ? URI.create(result.get(WORKFLOWS_DIR_URI)) : null;
-        URI defaultsFile = result.get(DEFAULTS_FILE_URI) != null ? URI.create(result.get(DEFAULTS_FILE_URI)) : null;
+        URI defaultsFile = result.get(DEFAULTS_DIR_URI) != null ? URI.create(result.get(DEFAULTS_DIR_URI)) : null;
         URI hiveJdbc = result.get(HIVE_JDBC_URL) != null ? URI.create(result.get(HIVE_JDBC_URL)) : null;
         return new CelosCiTarget(URI.create(result.get(HADOOP_HDFS_SITE_XML)),
                 URI.create(result.get(HADOOP_CORE_SITE_XML)),
