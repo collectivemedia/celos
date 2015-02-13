@@ -1,7 +1,7 @@
 {
     "security.settings": "secsettings",
-    "celos.workflow.dir": "celoswfdir",
+    "workflows.dir.uri": "celoswfdir",
     "hadoop.hdfs-site.xml": "hadoophdfsurl",
     "hadoop.core-site.xml": "hadoopcoreurl",
-    "defaults.file.uri": "deffile"
+    "defaults.dir.uri": "defdir"
 }
