@@ -55,7 +55,7 @@ public class WorkflowFilesDeployerTest {
         Assert.assertEquals(deployer.getTargetJsFileUri(URI.create("sftp://user@server:999/home")), URI.create("sftp://user@server:999/home/workflow.js"));
     }
 
-    @Test
+    @Test(expected=NullPointerException.class)
     public void testGetWorkflowJsUri4() throws FileSystemException, URISyntaxException {
         CelosCiContext context = mock(CelosCiContext.class);
         WorkflowFilesDeployer deployer = new WorkflowFilesDeployer(context);
