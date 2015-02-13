@@ -95,7 +95,7 @@ public class FixTableComparer implements FixtureComparer {
 
     private FixTable orderFixTableRows(FixTable expected) {
         List<FixTable.FixRow> expectedRows = Lists.newArrayList(expected.getRows());
-        expectedRows.sort(fixRowComparator);
+        Collections.sort(expectedRows, fixRowComparator);
         return new FixTable(expected.getColumnNames(), expectedRows);
     }
 
