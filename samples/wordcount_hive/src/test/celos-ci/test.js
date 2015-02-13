@@ -8,20 +8,6 @@ var tableScript = fixFile("CREATE TABLE wordcount PARTITIONED BY (year INT)" +
 
 var resTableScript = fixFile("CREATE TABLE result (word string, number int)");
 
-// temporary for local testing
-ci.plainCompare = function (expectedCreator, actualCreator) {
-    if (!expectedCreator) {
-        throw "Undefined expected creator";
-    }
-    if (!actualCreator) {
-        throw "Undefined actual creator";
-    }
-    if (typeof actualCreator == "string") {
-        actualCreator = new OutputFixDirFromHdfsCreator(actualCreator)
-    }
-    return new RecursiveFsObjectComparer(expectedCreator, actualCreator);
-}
-
 addTestCase({
     name: "Hive wordcount test case 1",
     sampleTimeStart: "2013-12-20T16:00Z",
@@ -33,9 +19,9 @@ addTestCase({
         hiveInput("celosdb", "result", resTableScript)
     ],
     outputs: [
-        ci.plainCompare(
-            fixFileFromResource("test-1/output/tsv/result.tsv"),
-            tableToTSV(hiveTable("celosdb", "result"))
+        ci.fixTableCompare(
+            ci.fixTableFromResource("test-1/output/tsv/result.tsv"),
+            ci.hiveTable("celosdb", "result")
         )
     ]
 });
