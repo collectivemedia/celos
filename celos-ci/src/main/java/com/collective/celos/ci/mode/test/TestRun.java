@@ -14,9 +14,11 @@ import com.collective.celos.ci.testing.fixtures.deploy.FixtureDeployer;
 import com.collective.celos.server.CelosServer;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.vfs2.FileObject;
+import org.apache.commons.vfs2.FileSystemException;
 import org.apache.commons.vfs2.Selectors;
 
 import java.io.File;
@@ -204,12 +206,16 @@ public class TestRun {
         celosDbDir.mkdirs();
 
         JScpWorker worker = new JScpWorker(ciContext.getUserName());
-        if (originalTarget.getDefaultsDirUri() != null) {
-            FileObject remoteDefaultsFile = worker.getFileObjectByUri(originalTarget.getDefaultsDirUri());
+        copyRemoteDefaultsToLocal(worker);
+    }
 
-            if (remoteDefaultsFile.exists()) {
+    private void copyRemoteDefaultsToLocal(JScpWorker worker)
+            throws URISyntaxException, FileSystemException {
+        if (originalTarget.getDefaultsDirUri() != null) {
+            FileObject remoteDefaultsDir = worker.getFileObjectByUri(originalTarget.getDefaultsDirUri());
+            if (remoteDefaultsDir.exists()) {
                 FileObject localDefaultsDir = worker.getFileObjectByUri(celosDefaultsDir.toURI());
-                localDefaultsDir.copyFrom(remoteDefaultsFile, Selectors.SELECT_CHILDREN);
+                localDefaultsDir.copyFrom(remoteDefaultsDir, Selectors.SELECT_CHILDREN);
             }
         }
     }
