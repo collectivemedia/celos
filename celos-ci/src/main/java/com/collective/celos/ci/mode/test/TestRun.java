@@ -6,7 +6,7 @@ import com.collective.celos.ci.config.deploy.CelosCiContext;
 import com.collective.celos.ci.config.deploy.CelosCiTarget;
 import com.collective.celos.ci.deploy.HdfsDeployer;
 import com.collective.celos.ci.deploy.JScpWorker;
-import com.collective.celos.ci.deploy.WorkflowFileDeployer;
+import com.collective.celos.ci.deploy.WorkflowFilesDeployer;
 import com.collective.celos.ci.mode.test.client.CelosClient;
 import com.collective.celos.ci.testing.fixtures.compare.FixObjectCompareResult;
 import com.collective.celos.ci.testing.fixtures.compare.FixtureComparer;
@@ -15,7 +15,6 @@ import com.collective.celos.server.CelosServer;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.Selectors;
@@ -41,7 +40,7 @@ public class TestRun {
     private static final String DEFAULTS_DIR_CELOS_PATH = "defaults";
     private static final String DB_DIR_CELOS_PATH = "db";
 
-    private final WorkflowFileDeployer wfDeployer;
+    private final WorkflowFilesDeployer wfDeployer;
     private final HdfsDeployer hdfsDeployer;
     private final CelosCiContext ciContext;
     private final File celosWorkflowDir;
@@ -52,6 +51,7 @@ public class TestRun {
     private final TestCase testCase;
     private final File testCasesDir;
     private final UUID testUUID;
+    private final CelosCiTarget originalTarget;
 
     public TestRun(CelosCiTarget target, CelosCiCommandLine commandLine, TestCase testCase) throws Exception {
 
@@ -66,11 +66,12 @@ public class TestRun {
         this.celosWorkflowDir = new File(celosTempDir, WORKFLOW_DIR_CELOS_PATH);
         this.celosDefaultsDir = new File(celosTempDir, DEFAULTS_DIR_CELOS_PATH);
         this.celosDbDir = new File(celosTempDir, DB_DIR_CELOS_PATH);
+        this.originalTarget = target;
 
-        CelosCiTarget testTarget = new CelosCiTarget(target.getPathToHdfsSite(), target.getPathToCoreSite(), celosWorkflowDir.toURI(), target.getDefaultsFile(), target.getHiveJdbc());
+        CelosCiTarget testTarget = new CelosCiTarget(target.getPathToHdfsSite(), target.getPathToCoreSite(), celosWorkflowDir.toURI(), celosDefaultsDir.toURI(), target.getHiveJdbc());
         this.ciContext = new CelosCiContext(testTarget, commandLine.getUserName(), CelosCiContext.Mode.TEST, commandLine.getDeployDir(), commandLine.getWorkflowName(), hdfsPrefix);
 
-        this.wfDeployer = new WorkflowFileDeployer(ciContext);
+        this.wfDeployer = new WorkflowFilesDeployer(ciContext);
         this.hdfsDeployer = new HdfsDeployer(ciContext);
     }
 
@@ -119,6 +120,7 @@ public class TestRun {
         } else {
             System.out.println("Real and expected fixtures matched");
         }
+
     }
 
     private List<FixObjectCompareResult> executeTestRun() throws Exception {
@@ -195,17 +197,20 @@ public class TestRun {
         return testCase;
     }
 
-    private void prepareCelosServerEnv() throws IOException, URISyntaxException {
+    void prepareCelosServerEnv() throws IOException, URISyntaxException {
 
         celosWorkflowDir.mkdirs();
         celosDefaultsDir.mkdirs();
         celosDbDir.mkdirs();
 
         JScpWorker worker = new JScpWorker(ciContext.getUserName());
-        FileObject remoteDefaultsFile = worker.getFileObjectByUri(ciContext.getTarget().getDefaultsFile());
-        if (remoteDefaultsFile.exists()) {
-            FileObject localDefaultsFile = worker.getFileObjectByUri(new File(celosDefaultsDir, remoteDefaultsFile.getName().getBaseName()).toURI());
-            localDefaultsFile.copyFrom(remoteDefaultsFile, Selectors.SELECT_SELF);
+        if (ciContext.getTarget().getDefaultsDirUri() != null) {
+            FileObject remoteDefaultsFile = worker.getFileObjectByUri(originalTarget.getDefaultsDirUri());
+
+            if (remoteDefaultsFile.exists()) {
+                FileObject localDefaultsDir = worker.getFileObjectByUri(celosDefaultsDir.toURI());
+                localDefaultsDir.copyFrom(remoteDefaultsFile, Selectors.SELECT_CHILDREN);
+            }
         }
     }
 }
