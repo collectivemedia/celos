@@ -112,7 +112,6 @@ public class TestTaskTest {
 
     private static class MockTestRun extends TestRun {
 
-        private static AtomicInteger parallelRuns = new AtomicInteger(0);
         private boolean finished;
 
         public MockTestRun(CelosCiTarget target, CelosCiCommandLine commandLine, TestCase testCase) throws Exception {
@@ -120,10 +119,6 @@ public class TestTaskTest {
         }
 
         public void start() throws Exception {
-            parallelRuns.incrementAndGet();
-            while (parallelRuns.get() != 2) {
-                Thread.sleep(500);
-            }
             finished = true;
         }
 
