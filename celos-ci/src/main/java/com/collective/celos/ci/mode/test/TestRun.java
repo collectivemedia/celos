@@ -204,7 +204,7 @@ public class TestRun {
         celosDbDir.mkdirs();
 
         JScpWorker worker = new JScpWorker(ciContext.getUserName());
-        if (ciContext.getTarget().getDefaultsDirUri() != null) {
+        if (originalTarget.getDefaultsDirUri() != null) {
             FileObject remoteDefaultsFile = worker.getFileObjectByUri(originalTarget.getDefaultsDirUri());
 
             if (remoteDefaultsFile.exists()) {

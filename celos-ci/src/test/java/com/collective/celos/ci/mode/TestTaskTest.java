@@ -68,7 +68,7 @@ public class TestTaskTest {
         CelosCiCommandLine commandLine = new CelosCiCommandLine(targetFile.toURI().toString(), "DEPLOY", "deploydir", "workflow", "testDir", "uname");
         TestTask testTask = new TestTask(commandLine, new File(configJS));
 
-        Assert.assertEquals(testTask.getTestRuns().get(0).getCiContext().getTarget().getDefaultsDirUri(), target.getDefaultsDirUri());
+        Assert.assertTrue(testTask.getTestRuns().get(0).getCiContext().getTarget().getDefaultsDirUri().toString().startsWith(tmpDir));
         Assert.assertEquals(testTask.getTestRuns().get(0).getCiContext().getTarget().getPathToCoreSite(), target.getPathToCoreSite());
         Assert.assertEquals(testTask.getTestRuns().get(0).getCiContext().getTarget().getPathToHdfsSite(), target.getPathToHdfsSite());
         Assert.assertTrue(testTask.getTestRuns().get(0).getCiContext().getTarget().getWorkflowsDirUri().toString().startsWith(tmpDir));
