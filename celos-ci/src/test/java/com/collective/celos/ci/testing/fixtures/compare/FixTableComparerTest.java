@@ -53,6 +53,35 @@ public class FixTableComparerTest {
     }
 
     @Test
+    public void testFailsDiffRowOrder() throws Exception {
+        FixObjectCreator<FixTable> expectedDataCreator = mock(FixObjectCreator.class);
+        FixObjectCreator<FixTable> actualDataCreator = mock(FixObjectCreator.class);
+        boolean columnNamesOrdered = true;
+        FixTableComparer comparer = new FixTableComparer(expectedDataCreator, actualDataCreator, columnNamesOrdered, false);
+
+        FixTable table1 = generateFixTable();
+        FixTable table2 = generateFixTableDiffData();
+
+        doReturn(table1).when(expectedDataCreator).create(null);
+        doReturn(table2).when(actualDataCreator).create(null);
+
+        doReturn("table1").when(expectedDataCreator).getDescription(null);
+        doReturn("table2").when(actualDataCreator).getDescription(null);
+
+        String message = "Diff:\n" +
+                "Actual [table2]:\n" +
+                "FixTable.FixRow[cells={col1=val11_, col2=val22_}] [1 times]\n" +
+                "FixTable.FixRow[cells={col1=val1_, col2=val2_}] [1 times]\n" +
+                "Expected [table1]:\n" +
+                "FixTable.FixRow[cells={col1=val1, col2=val2}] [1 times]\n" +
+                "FixTable.FixRow[cells={col1=val11, col2=val22}] [1 times]\n";
+
+        FixObjectCompareResult result = comparer.check(null);
+        Assert.assertEquals(FixObjectCompareResult.Status.FAIL, result.getStatus());
+        Assert.assertEquals(message, result.generateDescription());
+    }
+
+    @Test
     public void testFailDifferentCells() throws Exception {
         FixObjectCreator<FixTable> expectedDataCreator = mock(FixObjectCreator.class);
         FixObjectCreator<FixTable> actualDataCreator = mock(FixObjectCreator.class);
@@ -67,8 +96,8 @@ public class FixTableComparerTest {
 
         FixObjectCompareResult result = comparer.check(null);
         Assert.assertEquals(FixObjectCompareResult.Status.FAIL, result.getStatus());
-        String expected = "Row #0 : Cells in expected data set: [col2=val2, col1=val1], cells in actual data set: [col2=val2_, col1=val1_]\n" +
-                "Row #1 : Cells in expected data set: [col2=val22, col1=val11], cells in actual data set: [col2=val22_, col1=val11_]\n";
+        String expected = "Row #0 : Cells in expected data set: [col1=val1, col2=val2], cells in actual data set: [col1=val1_, col2=val2_]\n" +
+                "Row #1 : Cells in expected data set: [col1=val11, col2=val22], cells in actual data set: [col1=val11_, col2=val22_]\n";
 
         Assert.assertEquals(expected, result.generateDescription());
     }
@@ -88,8 +117,8 @@ public class FixTableComparerTest {
 
         FixObjectCompareResult result = comparer.check(null);
         Assert.assertEquals(FixObjectCompareResult.Status.FAIL, result.getStatus());
-        String expected = "Row #0 : Cells in expected data set: [col2=val2, col1=val1], cells in actual data set: [col2=val2_, col1=val1_]\n" +
-                "Row #1 : Cells in expected data set: [col2=val22, col1=val11], cells in actual data set: [col2=val22_, col1=val11_]\n";
+        String expected = "Row #0 : Cells in expected data set: [col1=val1, col2=val2], cells in actual data set: [col1=val1_, col2=val2_]\n" +
+                "Row #1 : Cells in expected data set: [col1=val11, col2=val22], cells in actual data set: [col1=val11_, col2=val22_]\n";
 
         Assert.assertEquals(expected, result.generateDescription());
     }

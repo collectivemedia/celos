@@ -51,8 +51,7 @@ public class FixObjectCompareResultTest {
         c2.put("path3", e3);
         FixObjectCompareResult result = FixObjectCompareResult.wrapFailed(c2, null);
         Assert.assertEquals(result.getStatus(), FixObjectCompareResult.Status.FAIL);
-        Assert.assertEquals(result.generateDescription(), "path3/path1 : fail\n" +
-                "path3 : my own error\n");
+        Assert.assertEquals(result.generateDescription(), "path3 : my own error\npath3/path1 : fail\n");
     }
 
 }

@@ -4,8 +4,8 @@ import com.collective.celos.ci.mode.test.TestRun;
 import com.collective.celos.ci.testing.fixtures.create.FixObjectCreator;
 import com.collective.celos.ci.testing.structure.fixobject.FixTable;
 import com.google.common.collect.Lists;
-import com.google.common.collect.MapDifference;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.*;
@@ -65,57 +65,49 @@ public class FixTableComparer implements FixtureComparer {
         if (expected.getRows().size() != actual.getRows().size()) {
             return FixObjectCompareResult.failed(
                     "Data set size for expected and actual data set differed: expected has " +
-                    expected.getRows().size() + " while actual data has " + actual.getRows().size() + " rows"
+                            expected.getRows().size() + " while actual data has " + actual.getRows().size() + " rows"
             );
         }
 
-        return compareTables(expected, actual);
-    }
-
-    private FixObjectCompareResult compareTables(FixTable expected, FixTable actual) {
-        FixTable expectedToCompare;
-        FixTable actualToCompare;
-
         if (respectRowOrder) {
-            expectedToCompare = expected;
-            actualToCompare = actual;
+            Map<String, FixObjectCompareResult> fails = compareRespectOrder(expected, actual);
+            if (!fails.isEmpty()) {
+                return FixObjectCompareResult.wrapFailed(fails, "");
+            }
+            return FixObjectCompareResult.SUCCESS;
         } else {
-            expectedToCompare = orderFixTableRows(expected);
-            actualToCompare = orderFixTableRows(actual);
+            Map<FixTable.FixRow, Integer> expectedRes = countEntries(expected);
+            Map<FixTable.FixRow, Integer> actualRes = countEntries(actual);
+
+            return CompareHelper.compareEntityNumber(testRun, actualDataCreator, expectedDataCreator, expectedRes, actualRes);
         }
 
-        Map<String, FixObjectCompareResult> fails = compareOrderedTable(expectedToCompare, actualToCompare);
-
-        if (!fails.isEmpty()) {
-            return FixObjectCompareResult.wrapFailed(fails, "");
-        }
-
-        return FixObjectCompareResult.SUCCESS;
     }
 
-    private FixTable orderFixTableRows(FixTable expected) {
-        List<FixTable.FixRow> expectedRows = Lists.newArrayList(expected.getRows());
-        Collections.sort(expectedRows, fixRowComparator);
-        return new FixTable(expected.getColumnNames(), expectedRows);
+    private Map<FixTable.FixRow, Integer> countEntries(FixTable expected) {
+        Map<FixTable.FixRow, Integer> expEntryCount = Maps.newHashMap();
+
+        for (FixTable.FixRow row : expected.getRows()) {
+            Integer count = expEntryCount.get(row);
+            if (count == null) {
+                count = 1;
+            } else {
+                count = count + 1;
+            }
+            expEntryCount.put(row, count);
+        }
+        return expEntryCount;
     }
 
-    private Comparator<FixTable.FixRow> fixRowComparator = new Comparator<FixTable.FixRow>() {
-
-        @Override
-        public int compare(FixTable.FixRow o1, FixTable.FixRow o2) {
-            return Integer.valueOf(o1.hashCode()).compareTo(o2.hashCode());
-        }
-    };
-
-    private Map<String, FixObjectCompareResult> compareOrderedTable(FixTable expected, FixTable actual) {
-        Map<String, FixObjectCompareResult> fails = Maps.newHashMap();
+    private Map<String, FixObjectCompareResult> compareRespectOrder(FixTable expected, FixTable actual) {
+        Map<String, FixObjectCompareResult> fails = Maps.newLinkedHashMap();
         ListIterator<FixTable.FixRow> expIter = expected.getRows().listIterator();
         ListIterator<FixTable.FixRow> actIter = actual.getRows().listIterator();
         while (expIter.hasNext()) {
             FixTable.FixRow expRow = expIter.next();
             FixTable.FixRow actRow = actIter.next();
 
-            FixObjectCompareResult result = compareFixRows(expRow, actRow);
+            FixObjectCompareResult result = compareFixRows(expected.getColumnNames(), expRow, actRow);
             if (result.getStatus() == FixObjectCompareResult.Status.FAIL) {
                 fails.put("Row #" + expIter.previousIndex(), result);
             }
@@ -123,19 +115,21 @@ public class FixTableComparer implements FixtureComparer {
         return fails;
     }
 
-    private FixObjectCompareResult compareFixRows(FixTable.FixRow expRow, FixTable.FixRow actRow) {
+    private FixObjectCompareResult compareFixRows(List<String> columnNames, FixTable.FixRow expRow, FixTable.FixRow actRow) {
         if (expRow.equals(actRow)) {
             return FixObjectCompareResult.SUCCESS;
         }
 
-        Map<String, MapDifference.ValueDifference<String>> differing = Maps.difference(expRow.getCells(), actRow.getCells()).entriesDiffering();
         List<String> expDesc = Lists.newArrayList();
         List<String> actDesc = Lists.newArrayList();
-        for (String key: differing.keySet()) {
+
+        for (String key: columnNames) {
             String expValue = expRow.getCells().get(key);
             String actValue = actRow.getCells().get(key);
-            expDesc.add(key + "=" + expValue);
-            actDesc.add(key + "=" + actValue);
+            if (!expValue.equals(actValue)) {
+                expDesc.add(key + "=" + expValue);
+                actDesc.add(key + "=" + actValue);
+            }
         }
 
         String differenctDescription =
