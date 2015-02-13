@@ -86,7 +86,7 @@ public class TestTaskTest {
         FixDirFromResourceCreator resourceDataCreator = (FixDirFromResourceCreator) comparer.getExpectedDataCreator();
         Assert.assertEquals(resourceDataCreator.getPath(testRun), new File("testDir/src/test/celos-ci/test-1/output/plain/output/wordcount1"));
 
-        Assert.assertEquals(testTask.getTestRuns().get(1).getCiContext().getTarget().getDefaultsDirUri(), target.getDefaultsDirUri());
+        Assert.assertTrue(testTask.getTestRuns().get(1).getCiContext().getTarget().getDefaultsDirUri().toString().startsWith(tmpDir));
         Assert.assertEquals(testTask.getTestRuns().get(1).getCiContext().getTarget().getPathToCoreSite(), target.getPathToCoreSite());
         Assert.assertEquals(testTask.getTestRuns().get(1).getCiContext().getTarget().getPathToHdfsSite(), target.getPathToHdfsSite());
         Assert.assertTrue(testTask.getTestRuns().get(1).getCiContext().getTarget().getWorkflowsDirUri().toString().startsWith(tmpDir));
