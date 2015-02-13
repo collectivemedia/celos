@@ -205,12 +205,12 @@ public class TestRun {
         celosDefaultsDir.mkdirs();
         celosDbDir.mkdirs();
 
-        JScpWorker worker = new JScpWorker(ciContext.getUserName());
-        copyRemoteDefaultsToLocal(worker);
+        copyRemoteDefaultsToLocal();
     }
 
-    private void copyRemoteDefaultsToLocal(JScpWorker worker)
+    private void copyRemoteDefaultsToLocal()
             throws URISyntaxException, FileSystemException {
+        JScpWorker worker = new JScpWorker(ciContext.getUserName());
         if (originalTarget.getDefaultsDirUri() != null) {
             FileObject remoteDefaultsDir = worker.getFileObjectByUri(originalTarget.getDefaultsDirUri());
             if (remoteDefaultsDir.exists()) {
