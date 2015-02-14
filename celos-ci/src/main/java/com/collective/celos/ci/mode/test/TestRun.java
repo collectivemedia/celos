@@ -34,10 +34,11 @@ import java.util.UUID;
  */
 public class TestRun {
 
+    public static final String CELOS_USER_JS_VAR = "CELOS_USER_JS_VAR";
+
     private static final String HDFS_PREFIX_PATTERN = "/user/%s/.celos-ci/%s/%s";
     private static final String HDFS_PREFIX_JS_VAR = "HDFS_PREFIX_JS_VAR";
     private static final String TEST_UUID_JS_VAR = "TEST_UUID_JS_VAR";
-    private static final String CELOS_USER_JS_VAR = "CELOS_USER_JS_VAR";
     private static final String WORKFLOW_DIR_CELOS_PATH = "workflows";
     private static final String DEFAULTS_DIR_CELOS_PATH = "defaults";
     private static final String DB_DIR_CELOS_PATH = "db";

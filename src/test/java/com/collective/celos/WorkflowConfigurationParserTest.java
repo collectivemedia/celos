@@ -175,7 +175,7 @@ public class WorkflowConfigurationParserTest {
         URL resource = Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/defaults-oozie-props");
         File defaults = new File(resource.toURI());
 
-        WorkflowConfigurationParser parser = new WorkflowConfigurationParser(defaults, ImmutableMap.of("USERNAME", "nameIsChanged"));
+        WorkflowConfigurationParser parser = new WorkflowConfigurationParser(defaults, ImmutableMap.of("CELOS_USER_JS_VAR", "nameIsChanged"));
 
         String func = "function (slotId) {" +
                 "        return {" +
