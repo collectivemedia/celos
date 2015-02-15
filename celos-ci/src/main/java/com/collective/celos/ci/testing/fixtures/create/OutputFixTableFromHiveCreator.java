@@ -1,27 +1,21 @@
 package com.collective.celos.ci.testing.fixtures.create;
 
 import com.collective.celos.DatabaseName;
-import com.collective.celos.Util;
 import com.collective.celos.ci.mode.test.TestRun;
 import com.collective.celos.ci.testing.structure.fixobject.FixTable;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Created by akonopko on 22.01.15.
  */
 public class OutputFixTableFromHiveCreator implements FixObjectCreator<FixTable> {
 
-    private final static String READ_TABLE_DATA = "SELECT * FROM %s.%s";
+    private final static String READ_TABLE_DATA_SQL = "SELECT * FROM %s.%s";
     public static final String DESCRIPTION = "Hive table %s.%s";
 
     private final DatabaseName databaseName;
@@ -34,19 +28,21 @@ public class OutputFixTableFromHiveCreator implements FixObjectCreator<FixTable>
 
     @Override
     public FixTable create(TestRun testRun) throws Exception {
-
-        Connection connection = DriverManager.getConnection(testRun.getCiContext().getTarget().getHiveJdbc().toString());
-        try {
-            return createFixTable(testRun, connection);
-        } finally {
-            connection.close();
+        try (Connection connection = getConnection(testRun); Statement statement = connection.createStatement()) {
+            return createFixTable(testRun, statement);
         }
     }
 
-    FixTable createFixTable(TestRun testRun, Connection connection) throws SQLException {
+    private Connection getConnection(TestRun testRun) throws SQLException {
+        return DriverManager.getConnection(testRun.getCiContext().getTarget().getHiveJdbc().toString());
+    }
+
+
+    FixTable createFixTable(TestRun testRun, Statement statement) throws SQLException {
+
         String augmentedDbData = databaseName.getMockedName(testRun.getTestUUID());
-        String query = String.format(READ_TABLE_DATA, augmentedDbData, tableName);
-        ResultSet rs = connection.createStatement().executeQuery(query);
+        String query = String.format(READ_TABLE_DATA_SQL, augmentedDbData, tableName);
+        ResultSet rs = statement.executeQuery(query);
 
         List<String> columnNames = Lists.newArrayList();
         for (int i=0; i < rs.getMetaData().getColumnCount(); i++) {
