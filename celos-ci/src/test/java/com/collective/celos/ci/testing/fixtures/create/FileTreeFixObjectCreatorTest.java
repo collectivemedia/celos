@@ -3,7 +3,7 @@ package com.collective.celos.ci.testing.fixtures.create;
 import com.collective.celos.ci.Utils;
 import com.collective.celos.ci.mode.test.TestRun;
 import com.collective.celos.ci.testing.fixtures.compare.FixObjectCompareResult;
-import com.collective.celos.ci.testing.fixtures.compare.RecursiveDirComparer;
+import com.collective.celos.ci.testing.fixtures.compare.RecursiveFsObjectComparer;
 import com.collective.celos.ci.testing.structure.fixobject.FixDir;
 import com.collective.celos.ci.testing.structure.fixobject.FixFile;
 import com.collective.celos.ci.testing.structure.fixobject.FixFsObject;
@@ -52,7 +52,7 @@ public class FileTreeFixObjectCreatorTest {
         FixDir readDir = new FixDir(contentRead);
 
         FixDirFromResourceCreator creator = new FixDirFromResourceCreator(path);
-        FixObjectCompareResult compareResult = new RecursiveDirComparer(Utils.wrap(readDir), creator).check(testRun);
+        FixObjectCompareResult compareResult = new RecursiveFsObjectComparer(Utils.wrap(readDir), creator).check(testRun);
 
         Assert.assertEquals(compareResult.getStatus(), FixObjectCompareResult.Status.SUCCESS);
     }
@@ -77,7 +77,7 @@ public class FileTreeFixObjectCreatorTest {
         FixDir readDir = new FixDir(contentRead);
 
         FixDirFromResourceCreator creator = new FixDirFromResourceCreator(path);
-        FixObjectCompareResult compareResult = new RecursiveDirComparer(Utils.wrap(readDir), creator).check(testRun);
+        FixObjectCompareResult compareResult = new RecursiveFsObjectComparer(Utils.wrap(readDir), creator).check(testRun);
 
         Assert.assertEquals(compareResult.getStatus(), FixObjectCompareResult.Status.SUCCESS);
     }

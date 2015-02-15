@@ -47,7 +47,7 @@ public class OutputFixTableFromHiveCreatorTest {
         when(resultSet.getString("col2")).thenReturn("col2val1").thenReturn("col2val2").thenReturn("col2val3");
         when(resultSet.getString("col3")).thenReturn("col3val1").thenReturn("col3val2").thenReturn("col3val3");
 
-        FixTable resultTable = creator.createFixTable(testRun, statement);
+        FixTable resultTable = creator.createFixTable(testRun, connection);
         List<FixTable.FixRow> rowList = resultTable.getRows();
 
         Assert.assertEquals(rowList.size(), 2);
@@ -93,7 +93,7 @@ public class OutputFixTableFromHiveCreatorTest {
 
         when(resultSet.next()).thenReturn(false);
 
-        FixTable resultTable = creator.createFixTable(testRun, statement);
+        FixTable resultTable = creator.createFixTable(testRun, connection);
         List<FixTable.FixRow> rowList = resultTable.getRows();
 
         Assert.assertEquals(rowList.size(), 0);

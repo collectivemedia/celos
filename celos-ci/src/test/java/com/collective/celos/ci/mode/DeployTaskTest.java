@@ -13,7 +13,6 @@ import org.powermock.api.mockito.PowerMockito;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.net.URI;
 import java.util.Set;
 
@@ -34,10 +33,10 @@ public class DeployTaskTest {
 
         String targetFileStr = "{\n" +
                 "    \"security.settings\": \"secsettings\",\n" +
-                "    \"celos.workflow.dir\": \"celoswfdir\",\n" +
+                "    \"workflows.dir.uri\": \"celoswfdir\",\n" +
                 "    \"hadoop.hdfs-site.xml\": \"" + hadoopHdfsUrl +"\",\n" +
                 "    \"hadoop.core-site.xml\": \"" + hadoopCoreUrl +"\",\n" +
-                "    \"defaults.file.uri\": \"deffile\"\n" +
+                "    \"defaults.dir.uri\": \"defdir\"\n" +
                 "}\n";
 
         File targetFile = tempDir.newFile();
@@ -53,8 +52,8 @@ public class DeployTaskTest {
         Assert.assertEquals(context.getDeployDir(), commandLine.getDeployDir());
         Assert.assertEquals(context.getHdfsPrefix(), "");
         Assert.assertEquals(context.getMode(), commandLine.getMode());
-        Assert.assertEquals(context.getTarget().getCelosWorkflowsDirUri(), URI.create("celoswfdir"));
-        Assert.assertEquals(context.getTarget().getDefaultsFile(), URI.create("deffile"));
+        Assert.assertEquals(context.getTarget().getWorkflowsDirUri(), URI.create("celoswfdir"));
+        Assert.assertEquals(context.getTarget().getDefaultsDirUri(), URI.create("defdir"));
         Assert.assertEquals(context.getTarget().getPathToCoreSite(), URI.create(hadoopCoreUrl));
         Assert.assertEquals(context.getTarget().getPathToHdfsSite(), URI.create(hadoopHdfsUrl));
         Assert.assertEquals(context.getUserName(), commandLine.getUserName());
@@ -73,7 +72,7 @@ public class DeployTaskTest {
         File deployDir = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/ci/testing/deploy").getFile());
 
         String targetFileStr = "{\n" +
-                "    \"celos.workflow.dir\": \"" + celosWfDir.getAbsolutePath() +"\",\n" +
+                "    \"workflows.dir.uri\": \"" + celosWfDir.getAbsolutePath() +"\",\n" +
                 "    \"hadoop.hdfs-site.xml\": \"" + hadoopHdfsUrl +"\",\n" +
                 "    \"hadoop.core-site.xml\": \"" + hadoopCoreUrl +"\"\n" +
                 "}\n";

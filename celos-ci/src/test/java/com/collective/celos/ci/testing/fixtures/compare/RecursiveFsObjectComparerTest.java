@@ -15,14 +15,14 @@ import java.util.Map;
 /**
  * Created by akonopko on 10/9/14.
  */
-public class RecursiveDirComparerTest {
+public class RecursiveFsObjectComparerTest {
 
     @Test
     public void testSubDirs() throws Exception {
         FixDir dir1 = createParentDir1();
         FixDir dir2 = createParentDir1();
 
-        FixObjectCompareResult compareResult = new RecursiveDirComparer(Utils.wrap(dir2), Utils.wrap(dir1)).check(null);
+        FixObjectCompareResult compareResult = new RecursiveFsObjectComparer(Utils.wrap(dir2), Utils.wrap(dir1)).check(null);
         Assert.assertEquals(compareResult.getStatus(), FixObjectCompareResult.Status.SUCCESS);
     }
 
@@ -32,7 +32,7 @@ public class RecursiveDirComparerTest {
         FixDir dir1 = createParentDir1();
         FixDir dir2 = createParentDir2();
 
-        FixObjectCompareResult compareResult = new RecursiveDirComparer(Utils.wrap(dir2), Utils.wrap(dir1)).check(null);
+        FixObjectCompareResult compareResult = new RecursiveFsObjectComparer(Utils.wrap(dir2), Utils.wrap(dir1)).check(null);
         Assert.assertEquals(compareResult.getStatus(), FixObjectCompareResult.Status.FAIL);
         String message = "dir2/file2 : File contents differed\n";
         Assert.assertEquals(compareResult.generateDescription(), message);
@@ -44,7 +44,7 @@ public class RecursiveDirComparerTest {
         FixDir dir1 = createParentDir1();
         FixDir dir2 = createParentDir3();
 
-        FixObjectCompareResult compareResult = new RecursiveDirComparer(Utils.wrap(dir2), Utils.wrap(dir1)).check(null);
+        FixObjectCompareResult compareResult = new RecursiveFsObjectComparer(Utils.wrap(dir2), Utils.wrap(dir1)).check(null);
         Assert.assertEquals(compareResult.getStatus(), FixObjectCompareResult.Status.FAIL);
         String message = "dir2 : Files found only in expected set: file3\n" +
                 "dir2/file2 : File contents differed\n";
@@ -57,16 +57,45 @@ public class RecursiveDirComparerTest {
         FixDir dir1 = getFixDirWithTwoFiles1();
         FixDir dir2 = getFixDirWithTwoFiles1();
 
-        FixObjectCompareResult compareResult = new RecursiveDirComparer(Utils.wrap(dir2), Utils.wrap(dir1)).check(null);
+        FixObjectCompareResult compareResult = new RecursiveFsObjectComparer(Utils.wrap(dir2), Utils.wrap(dir1)).check(null);
+        Assert.assertEquals(compareResult.getStatus(), FixObjectCompareResult.Status.SUCCESS);
+    }
+
+
+    @Test
+    public void testComparesFilesOK() throws Exception {
+        FixFile file1 = new FixFile(IOUtils.toInputStream("content"));
+        FixFile file2 = new FixFile(IOUtils.toInputStream("content"));
+
+        FixObjectCompareResult compareResult = new RecursiveFsObjectComparer(Utils.wrap(file1), Utils.wrap(file2)).check(null);
         Assert.assertEquals(compareResult.getStatus(), FixObjectCompareResult.Status.SUCCESS);
     }
 
     @Test
+    public void testComparesFilesFail() throws Exception {
+        FixFile file1 = new FixFile(IOUtils.toInputStream("content"));
+        FixFile file2 = new FixFile(IOUtils.toInputStream("contend"));
+
+        FixObjectCompareResult compareResult = new RecursiveFsObjectComparer(Utils.wrap(file1), Utils.wrap(file2)).check(null);
+        Assert.assertEquals(compareResult.getStatus(), FixObjectCompareResult.Status.FAIL);
+    }
+    
+    @Test
     public void testComparesWrongTypes() throws Exception {
+        FixFile file1 = new FixFile(IOUtils.toInputStream("content"));
+        FixDir file2 = getFixDirWithTwoFiles1();
+
+        FixObjectCompareResult compareResult = new RecursiveFsObjectComparer(Utils.wrap(file1), Utils.wrap(file2)).check(null);
+        Assert.assertEquals("RecursiveFsObjectComparer: expected is [File] and actual is [Dir]\n", compareResult.generateDescription());
+        Assert.assertEquals(compareResult.getStatus(), FixObjectCompareResult.Status.FAIL);
+    }
+
+    @Test
+    public void testComparesWrongTypesInSubdirs() throws Exception {
         FixDir dir1 = getFixDirWithTwoFiles1();
         FixDir dir2 = getFixDirWithTwoFilesWrongTypes();
 
-        FixObjectCompareResult compareResult = new RecursiveDirComparer(Utils.wrap(dir2), Utils.wrap(dir1)).check(null);
+        FixObjectCompareResult compareResult = new RecursiveFsObjectComparer(Utils.wrap(dir2), Utils.wrap(dir1)).check(null);
         Assert.assertEquals(compareResult.getStatus(), FixObjectCompareResult.Status.FAIL);
         Assert.assertEquals(compareResult.generateDescription(), "Files have different types: file2: expected is [Dir] and actual is [File]\n");
     }
@@ -77,7 +106,7 @@ public class RecursiveDirComparerTest {
         FixDir dir1 = getFixDirWithTwoFiles1();
         FixDir dir2 = getFixDirWithTwoFiles2();
 
-        FixObjectCompareResult compareResult = new RecursiveDirComparer(Utils.wrap(dir2), Utils.wrap(dir1)).check(null);
+        FixObjectCompareResult compareResult = new RecursiveFsObjectComparer(Utils.wrap(dir2), Utils.wrap(dir1)).check(null);
         Assert.assertEquals(compareResult.getStatus(), FixObjectCompareResult.Status.FAIL);
         String message = "file2 : File contents differed\n";
         Assert.assertEquals(compareResult.generateDescription(), message);
@@ -88,7 +117,7 @@ public class RecursiveDirComparerTest {
         FixDir dir1 = getFixDirWithTwoFiles1();
         FixDir dir2 = getFixDirWithTwoFiles3();
 
-        FixObjectCompareResult compareResult = new RecursiveDirComparer(Utils.wrap(dir2), Utils.wrap(dir1)).check(null);
+        FixObjectCompareResult compareResult = new RecursiveFsObjectComparer(Utils.wrap(dir2), Utils.wrap(dir1)).check(null);
         Assert.assertEquals(compareResult.getStatus(), FixObjectCompareResult.Status.FAIL);
         String message = "Files found only in expected set: file3\n" +
                 "file2 : File contents differed\n";
