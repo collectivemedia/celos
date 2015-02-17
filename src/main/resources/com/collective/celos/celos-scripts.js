@@ -10,8 +10,8 @@ celos.addWorkflow = function (json) {
     if (typeof(json.id) !== "string") {
         throw "Workflow ID must be a string: " + json.id;
     }
-    celosWorkflowConfigurationParser.addWorkflow(
-        new Workflow(
+
+    var workflow = new Workflow(
             new WorkflowID(json.id),
             json.schedule,
             json.schedulingStrategy,
@@ -19,9 +19,26 @@ celos.addWorkflow = function (json) {
             json.externalService,
             json.maxRetryCount ? json.maxRetryCount : 0,
             new ScheduledTime(json.startTime ? json.startTime : "1970-01-01T00:00:00.000Z")
-        ),
-        celosWorkflowConfigFilePath
     );
+
+    var contacts = new Packages.java.util.ArrayList();
+    if (json.contacts) {
+        for (var i = 0; i < json.contacts.length; i++) {
+            var email = null;
+            if (json.contacts[i].email) {
+                email = Packages.java.net.URI.create(json.contacts[i].email);
+            }
+            var name = json.contacts[i].name || null;
+            contacts.add(new WorkflowInfo.ContactsInfo(name, email));
+        }
+    }
+    var url = null;
+    if (json.url) {
+        url = Packages.java.net.URI.create(json.url);
+    }
+    var workflowInfo = new WorkflowInfo(new Packages.java.io.File(celosWorkflowConfigFilePath), url, contacts)
+
+    celosWorkflowConfigurationParser.addWorkflow(workflow, workflowInfo);
 }
 
 celos.importDefaults = function (label) {

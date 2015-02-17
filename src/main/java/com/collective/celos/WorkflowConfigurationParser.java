@@ -86,8 +86,8 @@ public class WorkflowConfigurationParser {
         jsConfigParser.evaluateReader(scope, fileReader, fileName);
     }
 
-    public void addWorkflow(Workflow wf, String celosWorkflowConfigFilePath) {
-        cfg.addWorkflow(wf, celosWorkflowConfigFilePath);
+    public void addWorkflow(Workflow wf, WorkflowInfo workflowInfo) {
+        cfg.addWorkflow(wf, workflowInfo);
     }
 
 }

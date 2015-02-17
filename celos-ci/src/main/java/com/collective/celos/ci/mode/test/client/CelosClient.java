@@ -27,7 +27,7 @@ public class CelosClient {
 
     private static final String SCHEDULER_PATH = "/scheduler";
     private static final String RERUN_PATH = "/rerun";
-    private static final String WORKFLOW_FILE_PATH = "/workflow-file";
+    private static final String WORKFLOW_INFO_PATH = "/workflow-info";
     private static final String SLOT_STATE_PATH = "/slot-state";
     private static final String CLEAR_CACHE_PATH = "/clear-cache";
     private static final String WORKFLOW_LIST_PATH = "/workflow-list";
@@ -114,9 +114,9 @@ public class CelosClient {
         return new SlotState(new SlotID(workflowID, scheduledTime), ss.getStatus(), ss.getExternalID(), ss.getRetryCount());
     }
 
-    public String getWorkflowFile(WorkflowID workflowID) throws Exception {
+    public String getWorkflowInfo(WorkflowID workflowID) throws Exception {
         URIBuilder uriBuilder = new URIBuilder(address);
-        uriBuilder.setPath(WORKFLOW_FILE_PATH);
+        uriBuilder.setPath(WORKFLOW_INFO_PATH);
         uriBuilder.addParameter(ID_PARAM, workflowID.toString());
 
         HttpGet workflowListGet = new HttpGet(uriBuilder.build());

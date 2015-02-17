@@ -6,8 +6,6 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
@@ -16,12 +14,8 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.junit.*;
 import org.junit.rules.TemporaryFolder;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
-import java.net.UnknownHostException;
-import java.nio.file.Files;
 import java.util.List;
 import java.util.Set;
 
@@ -485,14 +479,14 @@ public class CelosClientServerTest {
         File src = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/client/wf-list").toURI());
         FileUtils.copyDirectory(src, workflowsDir);
 
-        String workflowFile1 = celosClient.getWorkflowFile(new WorkflowID("workflow-1"));
-        String workflowFile2 = celosClient.getWorkflowFile(new WorkflowID("workflow-1"));
+        String workflowFile1 = celosClient.getWorkflowInfo(new WorkflowID("workflow-1"));
+        String workflowFile2 = celosClient.getWorkflowInfo(new WorkflowID("workflow-2"));
 
         File wfFile1 = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/client/wf-list/workflow-1.js").toURI());
         File wfFile2 = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/client/wf-list/workflow-2.js").toURI());
 
         String expectedWfFile1 = FileUtils.readFileToString(wfFile1);
-        String expectedWfFile2 = FileUtils.readFileToString(wfFile1);
+        String expectedWfFile2 = FileUtils.readFileToString(wfFile2);
 
         Assert.assertEquals(expectedWfFile1, workflowFile1);
         Assert.assertEquals(expectedWfFile2, workflowFile2);
@@ -503,7 +497,7 @@ public class CelosClientServerTest {
         File src = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/client/wf-list").toURI());
         FileUtils.copyDirectory(src, workflowsDir);
 
-        celosClient.getWorkflowFile(new WorkflowID("thereisnosuchwf"));
+        celosClient.getWorkflowInfo(new WorkflowID("thereisnosuchwf"));
 
     }
 

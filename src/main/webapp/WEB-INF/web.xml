@@ -63,12 +63,12 @@
   </servlet-mapping>
 
   <servlet>
-    <servlet-name>WorkflowJSConfigServlet</servlet-name>
-    <servlet-class>com.collective.celos.servlet.WorkflowJSConfigServlet</servlet-class>
+    <servlet-name>WorkflowInfoServlet</servlet-name>
+    <servlet-class>com.collective.celos.servlet.WorkflowInfoServlet</servlet-class>
   </servlet>
   <servlet-mapping>
-    <servlet-name>WorkflowJSConfigServlet</servlet-name>
-    <url-pattern>/workflow-file</url-pattern>
+    <servlet-name>WorkflowInfoServlet</servlet-name>
+    <url-pattern>/workflow-info</url-pattern>
   </servlet-mapping>
 
   <servlet>
