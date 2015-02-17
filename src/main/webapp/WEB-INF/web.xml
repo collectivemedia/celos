@@ -44,7 +44,16 @@
     <url-pattern>/workflow</url-pattern>
   </servlet-mapping>
 
-  <servlet>
+    <servlet>
+        <servlet-name>JSONWorkflowSlotsServlet</servlet-name>
+        <servlet-class>com.collective.celos.servlet.JSONWorkflowSlotsServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>JSONWorkflowSlotsServlet</servlet-name>
+        <url-pattern>/workflow-slots</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
     <servlet-name>JSONSlotStateServlet</servlet-name>
     <servlet-class>com.collective.celos.servlet.JSONSlotStateServlet</servlet-class>
   </servlet>

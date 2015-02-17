@@ -1,36 +1,35 @@
 package com.collective.celos.servlet;
 
+import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.collective.celos.Scheduler;
-import com.collective.celos.SlotState;
-import com.collective.celos.Workflow;
-import com.collective.celos.WorkflowID;
+import com.collective.celos.*;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.common.collect.Lists;
 
 /**
  * Returns information about the slot states of a single workflow as JSON.
  * 
- * GET /workflow?id=workflow-1
+ * GET /workflow-slots?id=workflow-1
  * ==>
- * {
- *   "slots": {
- *     "2013-12-07T13:00:00.000Z": { "status": "RUNNING", "externalID": "237982137-371832798321-W", retryCount: 5 },
- *     "2013-12-07T14:00:00.000Z": { "status": "READY", "externalID": null, retryCount: 0 },
+ * [
+ *   { "time": "2013-12-07T13:00:00.000Z", "status": "RUNNING", "externalID": "237982137-371832798321-W", retryCount: 5 },
+ *   { "time": "2013-12-07T14:00:00.000Z", "status": "READY", "externalID": null, retryCount: 0 },
  *     ...
- *   }
- * }
+ * ]
  * 
  * If the "time" parameter is supplied, information is returned about 
  * slot states up to that time.
  */
 @SuppressWarnings("serial")
-@Deprecated
-public class JSONWorkflowServlet extends AbstractJSONServlet {
+public class JSONWorkflowSlotsServlet extends AbstractJSONServlet {
 
     private static final String ID_PARAM = "id";
 
@@ -47,20 +46,15 @@ public class JSONWorkflowServlet extends AbstractJSONServlet {
                 res.sendError(HttpServletResponse.SC_NOT_FOUND, "Workflow not found: " + id);
             } else {
                 List<SlotState> slotStates = scheduler.getSlotStates(wf, getRequestTime(req));
-                ObjectNode object = createJSONObject(slotStates);
-                writer.writeValue(res.getOutputStream(), object);
+                List<ObjectNode> objectNodes = Lists.newArrayList();
+                for (SlotState state : slotStates) {
+                    objectNodes.add(state.toJSONNode());
+                }
+                writer.writeValue(res.getOutputStream(), objectNodes);
             }
         } catch (Exception e) {
             throw new ServletException(e);
         }
-    }
-
-    ObjectNode createJSONObject(List<SlotState> slotStates) {
-        ObjectNode node = mapper.createObjectNode();
-        for (SlotState state : slotStates) {
-            node.put(state.getScheduledTime().toString(), state.toJSONNode());
-        }
-        return node;
     }
 
 }
