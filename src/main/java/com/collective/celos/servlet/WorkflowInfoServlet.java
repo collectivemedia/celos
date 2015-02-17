@@ -54,31 +54,15 @@ public class WorkflowInfoServlet extends AbstractJSONServlet {
                 return;
             }
             WorkflowID workflowId = new WorkflowID(id);
-            WorkflowInfo info = getOrCreateCachedScheduler().getWorkflowConfiguration().getWorkflowInfo(workflowId);
+            WorkflowInfo info = getOrCreateCachedScheduler().getWorkflowConfiguration().findWorkflow(workflowId).getWorkflowInfo();
             if (info == null) {
                 res.sendError(HttpServletResponse.SC_NOT_FOUND, "Workflow info for " + id + " was not found");
             } else {
-                ObjectNode node = workflowInfoToNode(info);
-                writer.writeValue(res.getOutputStream(), node);
+                writer.writeValue(res.getOutputStream(), mapper.valueToTree(info));
             }
         } catch (Exception e) {
             throw new ServletException(e);
         }
     }
-
-    private ObjectNode workflowInfoToNode(WorkflowInfo info) throws IOException {
-        ObjectNode node = mapper.createObjectNode();
-        node.put("contacts", mapper.valueToTree(info.getContacts()));
-
-        if (info.getURL() != null) {
-            node.put("url", mapper.valueToTree(info.getURL()));
-        }
-
-        String jsFile = FileUtils.readFileToString(info.getWorkflowJSFile());
-        node.put("jsFile", jsFile);
-
-        return node;
-    }
-
 
 }

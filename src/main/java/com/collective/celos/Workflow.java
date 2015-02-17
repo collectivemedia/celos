@@ -11,15 +11,16 @@ public class Workflow {
     private final ExternalService externalService;
     private final int maxRetryCount;
     private final ScheduledTime startTime;
+    private final WorkflowInfo workflowInfo;
     
     public Workflow(WorkflowID id,
-            Schedule schedule,
-            SchedulingStrategy strategy,
-            Trigger trigger,
-            ExternalService service,
-            int maxRetryCount,
-            ScheduledTime startTime) {
-        
+                    Schedule schedule,
+                    SchedulingStrategy strategy,
+                    Trigger trigger,
+                    ExternalService service,
+                    int maxRetryCount,
+                    ScheduledTime startTime,
+                    WorkflowInfo workflowInfo) {
         this.id = Util.requireNonNull(id);
         this.schedule = Util.requireNonNull(schedule);
         this.schedulingStrategy = Util.requireNonNull(strategy);
@@ -27,6 +28,7 @@ public class Workflow {
         this.externalService = Util.requireNonNull(service);
         this.maxRetryCount = maxRetryCount;
         this.startTime = Util.requireNonNull(startTime);
+        this.workflowInfo = Util.requireNonNull(workflowInfo);
     }
 
     public WorkflowID getID() {
@@ -57,4 +59,7 @@ public class Workflow {
         return startTime;
     }
 
+    public WorkflowInfo getWorkflowInfo() {
+        return workflowInfo;
+    }
 }

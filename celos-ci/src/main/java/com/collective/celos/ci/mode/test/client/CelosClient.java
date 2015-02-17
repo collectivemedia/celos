@@ -114,7 +114,7 @@ public class CelosClient {
         return new SlotState(new SlotID(workflowID, scheduledTime), ss.getStatus(), ss.getExternalID(), ss.getRetryCount());
     }
 
-    public String getWorkflowInfo(WorkflowID workflowID) throws Exception {
+    public WorkflowInfo getWorkflowInfo(WorkflowID workflowID) throws Exception {
         URIBuilder uriBuilder = new URIBuilder(address);
         uriBuilder.setPath(WORKFLOW_INFO_PATH);
         uriBuilder.addParameter(ID_PARAM, workflowID.toString());
@@ -122,7 +122,7 @@ public class CelosClient {
         HttpGet workflowListGet = new HttpGet(uriBuilder.build());
         HttpResponse getResponse = execute(workflowListGet);
         InputStream content = getResponse.getEntity().getContent();
-        return IOUtils.toString(content);
+        return objectMapper.readValue(content, WorkflowInfo.class);
     }
 
     public void rerunSlot(WorkflowID workflowID, ScheduledTime scheduledTime) throws Exception {

@@ -7,10 +7,32 @@ var celos = {};
 // FIXME: temporary solution: until all utility functions return real Java objects,
 // allow JSON also and create instances from it using the JSONInstanceCreator.
 celos.addWorkflow = function (json) {
+
+    function createWorkflowInfo(json) {
+        var contacts = new Packages.java.util.ArrayList();
+        if (json.contacts) {
+            for (var i = 0; i < json.contacts.length; i++) {
+                var email = json.contacts[i].email;
+                if (!email) {
+                    email = null;
+                }
+                var name = json.contacts[i].name || null;
+                contacts.add(new WorkflowInfo.ContactsInfo(name, email));
+            }
+        }
+        var url = null;
+        if (json.url) {
+            url = new Packages.java.net.URL(json.url);
+        }
+        return new WorkflowInfo(url, contacts);
+    }
+
+
     if (typeof(json.id) !== "string") {
         throw "Workflow ID must be a string: " + json.id;
     }
 
+    var workflowInfo = createWorkflowInfo(json);
     var workflow = new Workflow(
             new WorkflowID(json.id),
             json.schedule,
@@ -18,28 +40,13 @@ celos.addWorkflow = function (json) {
             json.trigger,
             json.externalService,
             json.maxRetryCount ? json.maxRetryCount : 0,
-            new ScheduledTime(json.startTime ? json.startTime : "1970-01-01T00:00:00.000Z")
+            new ScheduledTime(json.startTime ? json.startTime : "1970-01-01T00:00:00.000Z"),
+            workflowInfo
     );
 
-    var contacts = new Packages.java.util.ArrayList();
-    if (json.contacts) {
-        for (var i = 0; i < json.contacts.length; i++) {
-            var email = null;
-            if (json.contacts[i].email) {
-                email = Packages.java.net.URI.create(json.contacts[i].email);
-            }
-            var name = json.contacts[i].name || null;
-            contacts.add(new WorkflowInfo.ContactsInfo(name, email));
-        }
-    }
-    var url = null;
-    if (json.url) {
-        url = Packages.java.net.URI.create(json.url);
-    }
-    var workflowInfo = new WorkflowInfo(new Packages.java.io.File(celosWorkflowConfigFilePath), url, contacts)
-
-    celosWorkflowConfigurationParser.addWorkflow(workflow, workflowInfo);
+    celosWorkflowConfigurationParser.addWorkflow(workflow);
 }
+
 
 celos.importDefaults = function (label) {
     celosWorkflowConfigurationParser.importDefaultsIntoScope(label, celosScope);

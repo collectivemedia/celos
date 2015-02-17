@@ -63,15 +63,6 @@
   </servlet-mapping>
 
   <servlet>
-    <servlet-name>WorkflowInfoServlet</servlet-name>
-    <servlet-class>com.collective.celos.servlet.WorkflowInfoServlet</servlet-class>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>WorkflowInfoServlet</servlet-name>
-    <url-pattern>/workflow-info</url-pattern>
-  </servlet-mapping>
-
-  <servlet>
     <servlet-name>ClearCacheServlet</servlet-name>
     <servlet-class>com.collective.celos.servlet.ClearCacheServlet</servlet-class>
   </servlet>

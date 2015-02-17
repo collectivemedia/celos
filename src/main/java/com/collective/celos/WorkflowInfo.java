@@ -1,7 +1,7 @@
 package com.collective.celos;
 
-import java.io.File;
 import java.net.URI;
+import java.net.URL;
 import java.util.List;
 
 public class WorkflowInfo {
@@ -12,8 +12,13 @@ public class WorkflowInfo {
 
         private final String name;
 
-        public ContactsInfo(String name, URI email) {
-            this.email = email;
+        private ContactsInfo() {
+            this.email = null;
+            this.name = null;
+        }
+
+        public ContactsInfo(String name, String email) {
+            this.email = email == null ? null : URI.create(email);
             this.name = name;
         }
 
@@ -26,25 +31,25 @@ public class WorkflowInfo {
         }
     }
 
-    private final File workflowJSFile;
-    private final URI URL;
+    private final URL url;
     private final List<ContactsInfo> contacts;
 
-    public WorkflowInfo(File workflowJSFile, URI url, List<ContactsInfo> contacts) {
-        this.workflowJSFile = workflowJSFile;
-        this.URL = url;
+    private WorkflowInfo() {
+        this.url = null;
+        this.contacts = null;
+    }
+
+    public WorkflowInfo(URL url, List<ContactsInfo> contacts) {
+        this.url = url;
         this.contacts = contacts;
     }
 
-    public File getWorkflowJSFile() {
-        return workflowJSFile;
-    }
-
-    public URI getURL() {
-        return URL;
+    public URL getUrl() {
+        return url;
     }
 
     public List<ContactsInfo> getContacts() {
         return contacts;
     }
+
 }

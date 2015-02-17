@@ -16,6 +16,8 @@ import org.junit.rules.TemporaryFolder;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URL;
 import java.util.List;
 import java.util.Set;
 
@@ -479,17 +481,17 @@ public class CelosClientServerTest {
         File src = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/client/wf-list").toURI());
         FileUtils.copyDirectory(src, workflowsDir);
 
-        String workflowFile1 = celosClient.getWorkflowInfo(new WorkflowID("workflow-1"));
-        String workflowFile2 = celosClient.getWorkflowInfo(new WorkflowID("workflow-2"));
+        WorkflowInfo workflowInfo1 = celosClient.getWorkflowInfo(new WorkflowID("workflow-1"));
+        WorkflowInfo workflowInfo2 = celosClient.getWorkflowInfo(new WorkflowID("workflow-2"));
 
-        File wfFile1 = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/client/wf-list/workflow-1.js").toURI());
-        File wfFile2 = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/client/wf-list/workflow-2.js").toURI());
+        Assert.assertNull(workflowInfo1.getUrl());
+        Assert.assertTrue(workflowInfo1.getContacts().isEmpty());
 
-        String expectedWfFile1 = FileUtils.readFileToString(wfFile1);
-        String expectedWfFile2 = FileUtils.readFileToString(wfFile2);
+        Assert.assertEquals(new URL("http://collective.com"), workflowInfo2.getUrl());
+        Assert.assertEquals(1, workflowInfo2.getContacts().size());
 
-        Assert.assertEquals(expectedWfFile1, workflowFile1);
-        Assert.assertEquals(expectedWfFile2, workflowFile2);
+        Assert.assertEquals(URI.create("john.doe@collective.com"), workflowInfo2.getContacts().get(0).getEmail());
+        Assert.assertEquals("John Doe", workflowInfo2.getContacts().get(0).getName());
     }
 
     @Test (expected = IOException.class)
