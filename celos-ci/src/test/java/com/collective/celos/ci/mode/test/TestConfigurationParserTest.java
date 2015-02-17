@@ -11,6 +11,7 @@ import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.UUID;
 
+import com.collective.celos.ci.testing.fixtures.compare.FixTableComparer;
 import com.collective.celos.ci.testing.fixtures.compare.RecursiveFsObjectComparer;
 import org.apache.commons.io.IOUtils;
 import org.apache.hadoop.fs.Path;
@@ -609,6 +610,55 @@ public class TestConfigurationParserTest {
     @Test (expected = JavaScriptException.class)
     public void testExpandJsonNoParams() throws IOException {
         String js = "expandJson()";
+
+        TestConfigurationParser parser = new TestConfigurationParser();
+        parser.evaluateTestConfig(new StringReader(js), "string");
+    }
+
+    @Test
+    public void testFixTableComparerNotOrdered() throws IOException {
+        String js =
+                "var table1 = fixTable([\"col1\", \"col2\"], [[\"row1\", \"row2\"],[\"row11\", \"row22\"]]);" +
+                        "var table2 = fixTable([\"col1\", \"col2\"], [[\"row1\", \"row2\"],[\"row11\", \"row22\"]]);" +
+                        "ci.fixTableCompare(table1, table2);";
+
+        TestConfigurationParser parser = new TestConfigurationParser();
+
+        NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(new StringReader(js), "string");
+        FixTableComparer comparer = (FixTableComparer) creatorObj.unwrap();
+        Assert.assertEquals(false, comparer.isColumnNamesOrdered());
+        Assert.assertEquals(false, comparer.isRespectRowOrder());
+    }
+
+    @Test
+    public void testFixTableComparerOrdered() throws IOException {
+        String js =
+                "var table1 = fixTable([\"col1\", \"col2\"], [[\"row1\", \"row2\"],[\"row11\", \"row22\"]]);" +
+                        "var table2 = fixTable([\"col1\", \"col2\"], [[\"row1\", \"row2\"],[\"row11\", \"row22\"]]);" +
+                        "ci.fixTableCompare(table1, table2, true, true);";
+
+        TestConfigurationParser parser = new TestConfigurationParser();
+
+        NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(new StringReader(js), "string");
+        FixTableComparer comparer = (FixTableComparer) creatorObj.unwrap();
+        Assert.assertEquals(true, comparer.isColumnNamesOrdered());
+        Assert.assertEquals(true, comparer.isRespectRowOrder());
+
+    }
+
+    @Test (expected = JavaScriptException.class)
+    public void testFixTableComparerFails1() throws IOException {
+        String js =
+                "var table1 = fixTable([\"col1\", \"col2\"], [[\"row1\", \"row2\"],[\"row11\", \"row22\"]]);" +
+                "ci.fixTableCompare(table1);";
+
+        TestConfigurationParser parser = new TestConfigurationParser();
+        parser.evaluateTestConfig(new StringReader(js), "string");
+    }
+
+    @Test (expected = JavaScriptException.class)
+    public void testFixTableComparerFails2() throws IOException {
+        String js = "ci.fixTableCompare();";
 
         TestConfigurationParser parser = new TestConfigurationParser();
         parser.evaluateTestConfig(new StringReader(js), "string");

@@ -1,5 +1,7 @@
 package com.collective.celos.ci.testing.structure.fixobject;
 
+import com.collective.celos.ValueObject;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -27,7 +29,7 @@ public class FixTable extends FixObject {
         return Collections.unmodifiableList(rows);
     }
 
-    public static class FixRow {
+    public static class FixRow extends ValueObject {
 
         private final Map<String, String> cells;
 

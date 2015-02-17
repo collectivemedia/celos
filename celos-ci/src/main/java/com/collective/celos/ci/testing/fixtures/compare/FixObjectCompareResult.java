@@ -65,7 +65,7 @@ public class FixObjectCompareResult implements TreeObject<FixObjectCompareResult
 
     private static class PathToMessageProcessor extends TreeObjectProcessor<FixObjectCompareResult> {
 
-        private final Map<Path, String> messages = Maps.newHashMap();
+        private final Map<Path, String> messages = Maps.newLinkedHashMap();
 
         @Override
         public void process(Path path, FixObjectCompareResult ff) throws IOException {

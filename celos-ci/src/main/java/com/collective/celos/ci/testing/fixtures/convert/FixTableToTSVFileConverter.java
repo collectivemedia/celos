@@ -15,7 +15,6 @@ public class FixTableToTSVFileConverter extends AbstractFixObjectConverter<FixTa
 
     @Override
     public FixFile convert(TestRun tr, FixTable table) throws Exception {
-        StringBuffer sb = new StringBuffer();
         List<String> lines = new ArrayList<>();
         for (FixTable.FixRow row : table.getRows()) {
             lines.add(StringUtils.join(row.getOrderedColumns(table.getColumnNames()), "\t"));
