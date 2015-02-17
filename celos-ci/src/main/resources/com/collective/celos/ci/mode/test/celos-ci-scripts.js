@@ -97,6 +97,22 @@ ci.plainCompare = function (fixObjectCreator, path) {
     return new RecursiveFsObjectComparer(fixObjectCreator, new OutputFixDirFromHdfsCreator(path));
 }
 
+ci.fixTableCompare = function (expectedCreator, actualCreator, columnNamesOrdered, rowsOrdered) {
+    if (!expectedCreator) {
+        throw "Undefined expectedCreator";
+    }
+    if (!actualCreator) {
+        throw "Undefined actualCreator";
+    }
+    if (!columnNamesOrdered) {
+        columnNamesOrdered = false;
+    }
+    if (!rowsOrdered) {
+        rowsOrdered = false;
+    }
+    return new FixTableComparer(expectedCreator, actualCreator, columnNamesOrdered, rowsOrdered);
+}
+
 ci.addTestCase = function (testCase) {
     var name = testCase["name"];
 

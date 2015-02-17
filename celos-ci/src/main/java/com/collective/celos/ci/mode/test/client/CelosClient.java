@@ -1,6 +1,7 @@
 package com.collective.celos.ci.mode.test.client;
 
 import com.collective.celos.*;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.Lists;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -12,8 +13,8 @@ import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.map.ObjectMapper;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -31,7 +32,7 @@ public class CelosClient {
     private static final String SLOT_STATE_PATH = "/slot-state";
     private static final String CLEAR_CACHE_PATH = "/clear-cache";
     private static final String WORKFLOW_LIST_PATH = "/workflow-list";
-    private static final String WORKFLOW_PATH = "/workflow";
+    private static final String WORKFLOW_PATH = "/workflow-slots";
     private static final String TIME_PARAM = "time";
     private static final String ID_PARAM = "id";
     private static final String IDS_PARAM = "ids";
@@ -110,8 +111,7 @@ public class CelosClient {
         HttpGet workflowListGet = new HttpGet(uriBuilder.build());
         HttpResponse getResponse = execute(workflowListGet);
         InputStream content = getResponse.getEntity().getContent();
-        SlotStateDTO ss = objectMapper.readValue(content, SlotStateDTO.class);
-        return new SlotState(new SlotID(workflowID, scheduledTime), ss.getStatus(), ss.getExternalID(), ss.getRetryCount());
+        return SlotState.fromJSONNode(workflowID, objectMapper.readValue(content, ObjectNode.class));
     }
 
     public WorkflowInfo getWorkflowInfo(WorkflowID workflowID) throws Exception {
@@ -159,40 +159,15 @@ public class CelosClient {
         }
     }
 
-    private static class SlotStateDTO {
-
-        SlotState.Status status;
-        String externalID;
-        Integer retryCount;
-
-        public SlotState.Status getStatus() {
-            return status;
-        }
-
-        public String getExternalID() {
-            return externalID;
-        }
-
-        public Integer getRetryCount() {
-            return retryCount;
-        }
-    }
-
-
     Set<WorkflowID> parseWorkflowIdsList(InputStream content) throws IOException {
         return objectMapper.readValue(content, WorkflowList.class).getIds();
     }
 
     List<SlotState> parseWorkflowStatusesMap(WorkflowID workflowID, InputStream content) throws IOException {
-        JsonNode responseTree = objectMapper.readTree(content);
-        Iterator<Map.Entry<String, JsonNode>> iterator = responseTree.getFields();
+        ObjectNode[] response = objectMapper.readValue(content, ObjectNode[].class);
         List<SlotState> result = Lists.newArrayList();
-        while (iterator.hasNext()) {
-            Map.Entry<String, JsonNode> entry = iterator.next();
-            ScheduledTime itemSchedTime = new ScheduledTime(entry.getKey());
-            SlotStateDTO ss = objectMapper.readValue(entry.getValue(), SlotStateDTO.class);
-            SlotState slotState = new SlotState(new SlotID(workflowID, itemSchedTime), ss.getStatus(), ss.getExternalID(), ss.getRetryCount());
-            result.add(slotState);
+        for (ObjectNode jn : response) {
+            result.add(SlotState.fromJSONNode(workflowID, jn));
         }
         return result;
     }

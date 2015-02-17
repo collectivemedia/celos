@@ -35,18 +35,20 @@ public class CelosClientTest {
     @Test
     public void testParseWorkflowStatusesMap() throws IOException {
 
-        String str = "{\n" +
-                "  \"2014-10-27T14:00:00.000Z\" : {\n" +
+        String str = "[\n" +
+                "  {\n" +
+                "    \"time\" : \"2014-10-27T14:00:00.000Z\",\n" +
                 "    \"status\" : \"SUCCESS\",\n" +
                 "    \"externalID\" : \"0029532-141007123109603-oozie-oozi-W\",\n" +
                 "    \"retryCount\" : 0\n" +
                 "  },\n" +
-                "  \"2014-10-27T15:00:00.000Z\" : {\n" +
+                "  {\n" +
+                "    \"time\" : \"2014-10-27T15:00:00.000Z\",\n" +
                 "    \"status\" : \"FAILURE\",\n" +
                 "    \"externalID\" : \"0029595-141007123109603-oozie-oozi-W\",\n" +
                 "    \"retryCount\" : 2\n" +
                 "  }" +
-                "}";
+                "]";
 
         WorkflowID workflowID = new WorkflowID("123");
         List<SlotState> result = new CelosClient("localhost").parseWorkflowStatusesMap(workflowID, new ByteArrayInputStream(str.getBytes()));
