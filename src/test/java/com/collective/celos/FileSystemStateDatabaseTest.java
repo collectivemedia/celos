@@ -44,7 +44,18 @@ public class FileSystemStateDatabaseTest {
      * Compare slot states returned by getStates against those under src/test/resources.
      */
     @Test
-    public void canReadFromFileSystem() throws Exception {
+    public void canReadFromFileSystem1() throws Exception {
+        StateDatabase db = new FileSystemStateDatabase(getResourceDirNoTimestamp());
+        for(SlotState state : getStates()) {
+            Assert.assertEquals(state, db.getSlotState(state.getSlotID()));
+        }
+    }
+
+    /**
+     * Compare slot states returned by getStates against those under src/test/resources.
+     */
+    @Test
+    public void canReadFromFileSystem2() throws Exception {
         StateDatabase db = new FileSystemStateDatabase(getResourceDir());
         for(SlotState state : getStates()) {
             Assert.assertEquals(state, db.getSlotState(state.getSlotID()));
@@ -80,13 +91,21 @@ public class FileSystemStateDatabaseTest {
     }
 
     /**
-     * Returns dir of prepared database in src/test/resources.
+     * Returns dir of prepared database in src/test/resources (old format without timestamp)
+     */
+    private File getResourceDirNoTimestamp() throws URISyntaxException {
+        String path = "com/collective/celos/state-database-test/db-1-old";
+        return new File(Thread.currentThread().getContextClassLoader().getResource(path).toURI());
+    }
+
+    /**
+     * Returns dir of prepared database in src/test/resources
      */
     private File getResourceDir() throws URISyntaxException {
         String path = "com/collective/celos/state-database-test/db-1";
         return new File(Thread.currentThread().getContextClassLoader().getResource(path).toURI());
     }
-    
+
     /**
      * Create a bunch of slot states that mirror those under
      * src/test/resources/com/collective/celos/state-database-test/db-1
