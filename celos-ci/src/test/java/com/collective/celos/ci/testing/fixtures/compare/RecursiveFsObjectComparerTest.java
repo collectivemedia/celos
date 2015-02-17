@@ -79,18 +79,17 @@ public class RecursiveFsObjectComparerTest {
         FixObjectCompareResult compareResult = new RecursiveFsObjectComparer(Utils.wrap(file1), Utils.wrap(file2)).check(null);
         Assert.assertEquals(compareResult.getStatus(), FixObjectCompareResult.Status.FAIL);
     }
-
-/*  FIXME: fails
+    
     @Test
     public void testComparesWrongTypes() throws Exception {
         FixFile file1 = new FixFile(IOUtils.toInputStream("content"));
         FixDir file2 = getFixDirWithTwoFiles1();
 
         FixObjectCompareResult compareResult = new RecursiveFsObjectComparer(Utils.wrap(file1), Utils.wrap(file2)).check(null);
-        Assert.assertEquals("RecursiveFsObjectComparer: expected is [File] and actual is [Dir]", compareResult.generateDescription());
+        Assert.assertEquals("RecursiveFsObjectComparer: expected is [File] and actual is [Dir]\n", compareResult.generateDescription());
         Assert.assertEquals(compareResult.getStatus(), FixObjectCompareResult.Status.FAIL);
     }
-*/
+
     @Test
     public void testComparesWrongTypesInSubdirs() throws Exception {
         FixDir dir1 = getFixDirWithTwoFiles1();

@@ -2,7 +2,6 @@ package com.collective.celos.ci.config;
 
 import com.collective.celos.ci.config.deploy.CelosCiTarget;
 import com.collective.celos.ci.config.deploy.CelosCiTargetParser;
-import com.collective.celos.ci.deploy.JScpWorker;
 import junit.framework.Assert;
 import org.junit.Test;
 
@@ -20,8 +19,8 @@ public class CelosCiTargetParserTest {
         File targetFile = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/ci/testing/config/target.json").toURI());
 
         CelosCiTarget target = parser.parse(targetFile.toURI());
-        Assert.assertEquals(target.getCelosWorkflowsDirUri(), URI.create("celoswfdir"));
-        Assert.assertEquals(target.getDefaultsFile(), URI.create("deffile"));
+        Assert.assertEquals(target.getWorkflowsDirUri(), URI.create("celoswfdir"));
+        Assert.assertEquals(target.getDefaultsDirUri(), URI.create("defdir"));
         Assert.assertEquals(target.getPathToCoreSite(), URI.create("hadoopcoreurl"));
         Assert.assertEquals(target.getPathToHdfsSite(), URI.create("hadoophdfsurl"));
 
@@ -34,7 +33,7 @@ public class CelosCiTargetParserTest {
         File targetFile = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/ci/testing/config/target.json").toURI());
 
         CelosCiTarget target = parser.parse(targetFile.toURI());
-        Assert.assertEquals(target.getDefaultsFile(), URI.create("deffile"));
+        Assert.assertEquals(target.getDefaultsDirUri(), URI.create("defdir"));
         Assert.assertEquals(target.getPathToCoreSite(), URI.create("hadoopcoreurl"));
         Assert.assertEquals(target.getPathToHdfsSite(), URI.create("hadoophdfsurl"));
 
@@ -46,7 +45,7 @@ public class CelosCiTargetParserTest {
         File targetFile = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/ci/testing/config/target.json").toURI());
 
         CelosCiTarget target = parser.parse(targetFile.toURI());
-        Assert.assertEquals(target.getCelosWorkflowsDirUri(), URI.create("celoswfdir"));
+        Assert.assertEquals(target.getWorkflowsDirUri(), URI.create("celoswfdir"));
         Assert.assertEquals(target.getPathToCoreSite(), URI.create("hadoopcoreurl"));
         Assert.assertEquals(target.getPathToHdfsSite(), URI.create("hadoophdfsurl"));
 

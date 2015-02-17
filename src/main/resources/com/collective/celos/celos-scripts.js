@@ -167,8 +167,8 @@ celos.makePropertiesGen = function (userPropertiesOrFun) {
             celos.mergeProperties(CELOS_DEFAULT_OOZIE_PROPERTIES, theProperties);
         }
         celos.mergeProperties(userProperties, theProperties);
-        if (typeof USERNAME !== "undefined") {
-            theProperties["user.name"] = USERNAME;
+        if (typeof CELOS_USER_JS_VAR !== "undefined") {
+            theProperties["user.name"] = CELOS_USER_JS_VAR;
         }
 
         return celosMapper.readTree(JSON.stringify(theProperties));

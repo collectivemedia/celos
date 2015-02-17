@@ -6,7 +6,7 @@ import com.collective.celos.ci.config.deploy.CelosCiContext;
 import com.collective.celos.ci.config.deploy.CelosCiTarget;
 import com.collective.celos.ci.config.deploy.CelosCiTargetParser;
 import com.collective.celos.ci.deploy.HdfsDeployer;
-import com.collective.celos.ci.deploy.WorkflowFileDeployer;
+import com.collective.celos.ci.deploy.WorkflowFilesDeployer;
 
 /**
  * Created by akonopko on 10/1/14.
@@ -27,7 +27,7 @@ public class DeployTask extends CelosCi {
 
     @Override
     public void start() throws Exception {
-        WorkflowFileDeployer wfDeployer = new WorkflowFileDeployer(ciContext);
+        WorkflowFilesDeployer wfDeployer = new WorkflowFilesDeployer(ciContext);
         HdfsDeployer hdfsDeployer = new HdfsDeployer(ciContext);
         wfDeployer.deploy();
         hdfsDeployer.deploy();
