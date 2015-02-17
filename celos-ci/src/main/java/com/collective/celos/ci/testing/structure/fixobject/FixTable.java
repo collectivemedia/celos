@@ -2,10 +2,7 @@ package com.collective.celos.ci.testing.structure.fixobject;
 
 import com.collective.celos.ValueObject;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by akonopko on 22.01.15.
@@ -39,7 +36,7 @@ public class FixTable extends FixObject {
                     throw new IllegalStateException("Cannot create FixRow out of Map that contains nulls");
                 }
             }
-            this.cells = cells;
+            this.cells = new TreeMap<>(cells);
         }
 
         public Map<String, String> getCells() {

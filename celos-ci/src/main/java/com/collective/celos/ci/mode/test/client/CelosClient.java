@@ -3,7 +3,6 @@ package com.collective.celos.ci.mode.test.client;
 import com.collective.celos.*;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.Lists;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -28,7 +27,6 @@ public class CelosClient {
 
     private static final String SCHEDULER_PATH = "/scheduler";
     private static final String RERUN_PATH = "/rerun";
-    private static final String WORKFLOW_INFO_PATH = "/workflow-info";
     private static final String SLOT_STATE_PATH = "/slot-state";
     private static final String CLEAR_CACHE_PATH = "/clear-cache";
     private static final String WORKFLOW_LIST_PATH = "/workflow-list";
@@ -62,11 +60,7 @@ public class CelosClient {
         return parseWorkflowIdsList(content);
     }
 
-    public List<SlotState> getWorkflowStatus(WorkflowID workflowID) throws Exception {
-        return getWorkflowStatus(workflowID, null);
-    }
-
-    public List<SlotState> getWorkflowStatus(WorkflowID workflowID, ScheduledTime scheduledTime) throws Exception {
+    public WorkflowStatus getWorkflowStatus(WorkflowID workflowID, ScheduledTime scheduledTime) throws Exception {
 
         URIBuilder uriBuilder = new URIBuilder(address);
         uriBuilder.setPath(WORKFLOW_PATH);
@@ -80,6 +74,10 @@ public class CelosClient {
         HttpResponse getResponse = execute(workflowListGet);
         InputStream content = getResponse.getEntity().getContent();
         return parseWorkflowStatusesMap(workflowID, content);
+    }
+
+    public WorkflowStatus getWorkflowStatus(WorkflowID workflowID) throws Exception {
+        return getWorkflowStatus(workflowID, null);
     }
 
     public void iterateScheduler(ScheduledTime scheduledTime) throws Exception {
@@ -112,17 +110,6 @@ public class CelosClient {
         HttpResponse getResponse = execute(workflowListGet);
         InputStream content = getResponse.getEntity().getContent();
         return SlotState.fromJSONNode(workflowID, objectMapper.readValue(content, ObjectNode.class));
-    }
-
-    public WorkflowInfo getWorkflowInfo(WorkflowID workflowID) throws Exception {
-        URIBuilder uriBuilder = new URIBuilder(address);
-        uriBuilder.setPath(WORKFLOW_INFO_PATH);
-        uriBuilder.addParameter(ID_PARAM, workflowID.toString());
-
-        HttpGet workflowListGet = new HttpGet(uriBuilder.build());
-        HttpResponse getResponse = execute(workflowListGet);
-        InputStream content = getResponse.getEntity().getContent();
-        return objectMapper.readValue(content, WorkflowInfo.class);
     }
 
     public void rerunSlot(WorkflowID workflowID, ScheduledTime scheduledTime) throws Exception {
@@ -163,13 +150,19 @@ public class CelosClient {
         return objectMapper.readValue(content, WorkflowList.class).getIds();
     }
 
-    List<SlotState> parseWorkflowStatusesMap(WorkflowID workflowID, InputStream content) throws IOException {
-        ObjectNode[] response = objectMapper.readValue(content, ObjectNode[].class);
+    private static final String INFO_NODE = "info";
+    private static final String SLOTS_NODE = "slots";
+
+    WorkflowStatus parseWorkflowStatusesMap(WorkflowID workflowID, InputStream content) throws IOException {
+        JsonNode node = objectMapper.readValue(content, JsonNode.class);
+        WorkflowInfo info = objectMapper.treeToValue(node.get(INFO_NODE), WorkflowInfo.class);
+
+        Iterator<JsonNode> elems = node.get(SLOTS_NODE).elements();
         List<SlotState> result = Lists.newArrayList();
-        for (ObjectNode jn : response) {
-            result.add(SlotState.fromJSONNode(workflowID, jn));
+        while (elems.hasNext()) {
+            result.add(SlotState.fromJSONNode(workflowID, elems.next()));
         }
-        return result;
+        return new WorkflowStatus(info, result);
     }
 
 }
