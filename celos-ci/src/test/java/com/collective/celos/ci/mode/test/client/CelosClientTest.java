@@ -26,7 +26,7 @@ public class CelosClientTest {
     }
 
     @Test (expected = UnknownHostException.class)
-    public void testCelosClientFailsNoServer() throws IOException {
+    public void testCelosClientFailsNoServer() throws Exception {
         CelosClient celosClient = new CelosClient("http://thereisnosuchhost:1234");
         celosClient.getWorkflowList();
     }
@@ -35,21 +35,27 @@ public class CelosClientTest {
     @Test
     public void testParseWorkflowStatusesMap() throws IOException {
 
-        String str = "{\n" +
-                "  \"2014-10-27T14:00:00.000Z\" : {\n" +
+        String str = "" +
+                "{\n" +
+                "\"info\": { \"url\": \"http://myurl\", \"contacts\": [ { \"name\": \"John Doe\", \"email\": \"John.Doe@Gmail.Com\"} ] },\n" +
+                "\"slots\": [\n" +
+                "  {\n" +
+                "    \"time\" : \"2014-10-27T14:00:00.000Z\",\n" +
                 "    \"status\" : \"SUCCESS\",\n" +
                 "    \"externalID\" : \"0029532-141007123109603-oozie-oozi-W\",\n" +
                 "    \"retryCount\" : 0\n" +
                 "  },\n" +
-                "  \"2014-10-27T15:00:00.000Z\" : {\n" +
+                "  {\n" +
+                "    \"time\" : \"2014-10-27T15:00:00.000Z\",\n" +
                 "    \"status\" : \"FAILURE\",\n" +
                 "    \"externalID\" : \"0029595-141007123109603-oozie-oozi-W\",\n" +
                 "    \"retryCount\" : 2\n" +
-                "  }" +
+                "   }" +
+                "   ]" +
                 "}";
 
         WorkflowID workflowID = new WorkflowID("123");
-        List<SlotState> result = new CelosClient("localhost").parseWorkflowStatusesMap(workflowID, new ByteArrayInputStream(str.getBytes()));
+        List<SlotState> result = new CelosClient("localhost").parseWorkflowStatusesMap(workflowID, new ByteArrayInputStream(str.getBytes())).getSlotStates();
         Assert.assertEquals(result.size(), 2);
 
         ScheduledTime time1 = new ScheduledTime("2014-10-27T14:00:00.000Z");

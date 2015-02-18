@@ -1,5 +1,5 @@
 {
-    "celos.workflow.dir": "celoswfdir",
+    "workflows.dir.uri": "celoswfdir",
     "hadoop.hdfs-site.xml": "hadoophdfsurl",
     "hadoop.core-site.xml": "hadoopcoreurl"
 }

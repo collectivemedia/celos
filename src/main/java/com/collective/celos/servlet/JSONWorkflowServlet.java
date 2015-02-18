@@ -29,16 +29,18 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  * slot states up to that time.
  */
 @SuppressWarnings("serial")
+@Deprecated
 public class JSONWorkflowServlet extends AbstractJSONServlet {
 
     private static final String ID_PARAM = "id";
 
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException {
         String id = req.getParameter(ID_PARAM);
-        if (id == null) {
-            throw new IllegalArgumentException(ID_PARAM + " parameter missing.");
-        }
         try {
+            if (id == null) {
+                res.sendError(HttpServletResponse.SC_BAD_REQUEST, ID_PARAM + " parameter missing.");
+                return;
+            }
             Scheduler scheduler = getOrCreateCachedScheduler();
             Workflow wf = scheduler.getWorkflowConfiguration().findWorkflow(new WorkflowID(id));
             if (wf == null) {
@@ -49,7 +51,7 @@ public class JSONWorkflowServlet extends AbstractJSONServlet {
                 writer.writeValue(res.getOutputStream(), object);
             }
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new ServletException(e);
         }
     }
 

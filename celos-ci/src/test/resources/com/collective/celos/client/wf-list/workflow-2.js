@@ -3,12 +3,14 @@ addWorkflow({
     "schedule": hourlySchedule(),
     "schedulingStrategy": serialSchedulingStrategy(),
     "trigger": hdfsCheckTrigger("/", "file:///"),
+    "url": "http://collective.com",
+    "contacts": [{ name: "John Doe", email: "john.doe@collective.com"}],
     "externalService": mockExternalService(),
     "maxRetryCount": 0
 });
 
 addWorkflow({
-    "id": "workflow-3",
+    "id": "workflow-Iñtërnâtiônàlizætiøn",
     "schedule": hourlySchedule(),
     "schedulingStrategy": serialSchedulingStrategy(),
     "trigger": hdfsCheckTrigger("/", "file:///"),

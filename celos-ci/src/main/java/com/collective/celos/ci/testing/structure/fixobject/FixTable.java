@@ -1,14 +1,8 @@
 package com.collective.celos.ci.testing.structure.fixobject;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
+import com.collective.celos.ValueObject;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by akonopko on 22.01.15.
@@ -32,7 +26,7 @@ public class FixTable extends FixObject {
         return Collections.unmodifiableList(rows);
     }
 
-    public static class FixRow {
+    public static class FixRow extends ValueObject {
 
         private final Map<String, String> cells;
 
@@ -42,11 +36,20 @@ public class FixTable extends FixObject {
                     throw new IllegalStateException("Cannot create FixRow out of Map that contains nulls");
                 }
             }
-            this.cells = cells;
+            this.cells = new TreeMap<>(cells);
         }
 
         public Map<String, String> getCells() {
             return Collections.unmodifiableMap(cells);
+        }
+        
+        // Utility to get columns in the order they are declared in a table
+        public List<String> getOrderedColumns(List<String> columnNames) {
+            List<String> values = new ArrayList<String>(columnNames.size());
+            for (String name : columnNames) {
+                values.add(cells.get(name));
+            }
+            return values;
         }
     }
 

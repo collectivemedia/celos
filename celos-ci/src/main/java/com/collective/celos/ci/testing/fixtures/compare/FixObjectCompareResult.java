@@ -16,10 +16,11 @@ import java.util.Map;
  */
 public class FixObjectCompareResult implements TreeObject<FixObjectCompareResult> {
 
+    public static final FixObjectCompareResult SUCCESS = new FixObjectCompareResult(Collections.EMPTY_MAP, "", Status.SUCCESS);
+
     private final Map<String, FixObjectCompareResult> children;
     private final String message;
     private final Status status;
-    private static final FixObjectCompareResult SUCCESS_STATUS = new FixObjectCompareResult(Collections.EMPTY_MAP, "", Status.SUCCESS);
 
     public enum Status {
         FAIL, SUCCESS
@@ -35,10 +36,6 @@ public class FixObjectCompareResult implements TreeObject<FixObjectCompareResult
         return new FixObjectCompareResult(Collections.EMPTY_MAP, message, Status.FAIL);
     }
 
-    public static FixObjectCompareResult success() {
-        return SUCCESS_STATUS;
-    }
-
     public static FixObjectCompareResult wrapFailed(Map<String, FixObjectCompareResult> child, String message) {
         return new FixObjectCompareResult(child, message, Status.FAIL);
     }
@@ -49,6 +46,10 @@ public class FixObjectCompareResult implements TreeObject<FixObjectCompareResult
 
     public Status getStatus() {
         return status;
+    }
+
+    public String getMessage() {
+        return message;
     }
 
     public String generateDescription() throws IOException {
@@ -64,7 +65,7 @@ public class FixObjectCompareResult implements TreeObject<FixObjectCompareResult
 
     private static class PathToMessageProcessor extends TreeObjectProcessor<FixObjectCompareResult> {
 
-        private final Map<Path, String> messages = Maps.newHashMap();
+        private final Map<Path, String> messages = Maps.newLinkedHashMap();
 
         @Override
         public void process(Path path, FixObjectCompareResult ff) throws IOException {

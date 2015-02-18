@@ -4,11 +4,9 @@ import com.collective.celos.ScheduledTime;
 import com.collective.celos.SlotState;
 import com.collective.celos.WorkflowID;
 import com.collective.celos.ci.mode.test.client.CelosClient;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import org.apache.commons.lang.StringUtils;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 
@@ -50,9 +48,9 @@ public class CelosSchedulerWorker {
         }
     }
 
-    boolean isThereAnyRunningWorkflows(Set<WorkflowID> workflowList, ScheduledTime schedTime) throws IOException {
+    boolean isThereAnyRunningWorkflows(Set<WorkflowID> workflowList, ScheduledTime schedTime) throws Exception {
         for (WorkflowID workflowID : workflowList) {
-            List<SlotState> slotStates = client.getWorkflowStatus(workflowID, schedTime);
+            List<SlotState> slotStates = client.getWorkflowStatus(workflowID, schedTime).getSlotStates();
             for (SlotState slotState : slotStates) {
                 if (slotState.getStatus() == SlotState.Status.READY || slotState.getStatus() == SlotState.Status.RUNNING) {
                     return true;
@@ -62,10 +60,10 @@ public class CelosSchedulerWorker {
         return false;
     }
 
-    Set<String> getWorkflowStatusesInfo(Set<WorkflowID> workflowList, ScheduledTime schedTime) throws IOException {
+    Set<String> getWorkflowStatusesInfo(Set<WorkflowID> workflowList, ScheduledTime schedTime) throws Exception {
         Set<String> messages = Sets.newHashSet();
         for (WorkflowID workflowID : workflowList) {
-            List<SlotState> slotStates = client.getWorkflowStatus(workflowID, schedTime);
+            List<SlotState> slotStates = client.getWorkflowStatus(workflowID, schedTime).getSlotStates();
             for (SlotState slotState : slotStates) {
                 if (slotState.getStatus() != SlotState.Status.WAITING) {
                     messages.add(slotState.toString());

@@ -1,6 +1,7 @@
 
 package com.collective.celos.ci.testing.fixtures.compare.json;
 import com.collective.celos.ci.mode.test.TestRun;
+import com.collective.celos.ci.testing.fixtures.compare.CompareHelper;
 import com.collective.celos.ci.testing.fixtures.compare.FixObjectCompareResult;
 import com.collective.celos.ci.testing.fixtures.compare.FixtureComparer;
 import com.collective.celos.ci.testing.fixtures.create.FixObjectCreator;
@@ -52,22 +53,7 @@ public class JsonContentsComparer implements FixtureComparer {
         Map<JsonElement, Integer> expectedRes = Maps.newHashMap();
         fillMapWithJsonFromIS(expectedRes, expectedDataCreator.create(testRun).getContent());
 
-        Set<Map.Entry<JsonElement,Integer>> actualDiffers = Sets.difference(actualRes.entrySet(), expectedRes.entrySet());
-        Set<Map.Entry<JsonElement,Integer>> expectedDiffers = Sets.difference(expectedRes.entrySet(), actualRes.entrySet());
-
-        if (actualDiffers.size() + expectedDiffers.size() > 0) {
-            String actualDir = getDifference(actualDiffers);
-            String expectedDiff = getDifference(expectedDiffers);
-            return FixObjectCompareResult.failed(
-                    "Diff:\n" +
-                            "Actual [" + actualDataCreator.getDescription(testRun) + "]:\n" +
-                            actualDir + "\n" +
-                            "Expected [" + expectedDataCreator.getDescription(testRun) + "]:\n" +
-                            expectedDiff);
-
-        }
-
-        return FixObjectCompareResult.success();
+        return CompareHelper.compareEntityNumber(testRun, actualDataCreator, expectedDataCreator, expectedRes, actualRes);
     }
 
     private <T extends FixFsObject> Map<JsonElement, Integer> getJsonEntityCountMap(
@@ -91,15 +77,6 @@ public class JsonContentsComparer implements FixtureComparer {
             Integer cnt = jsonElems.get(entity);
             jsonElems.put(entity, cnt == null ? 1 : cnt + 1);
         }
-    }
-
-    private String getDifference(Set<Map.Entry<JsonElement, Integer>> entrySet) {
-        List<String> strs = Lists.newArrayList();
-        for (Map.Entry<JsonElement, Integer> entry : entrySet) {
-            strs.add(entry.getKey().toString() + " [" + entry.getValue() + " times]");
-        }
-        Collections.sort(strs);
-        return StringUtils.join(strs, "\n");
     }
 
     public Set<String> getIgnorePaths() {

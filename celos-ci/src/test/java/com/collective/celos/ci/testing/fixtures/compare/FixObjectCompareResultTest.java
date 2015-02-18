@@ -16,7 +16,7 @@ public class FixObjectCompareResultTest {
     public void testDescription() throws IOException {
         Map<String, FixObjectCompareResult> children = Maps.newHashMap();
         FixObjectCompareResult e1 = FixObjectCompareResult.failed("fail");
-        FixObjectCompareResult e2 = FixObjectCompareResult.success();
+        FixObjectCompareResult e2 = FixObjectCompareResult.SUCCESS;
         children.put("path1", e1);
         children.put("path2", e2);
         FixObjectCompareResult result = FixObjectCompareResult.wrapFailed(children, null);
@@ -29,7 +29,7 @@ public class FixObjectCompareResultTest {
     public void testDescriptionWithMessage() throws IOException {
         Map<String, FixObjectCompareResult> children = Maps.newHashMap();
         FixObjectCompareResult e1 = FixObjectCompareResult.failed("fail");
-        FixObjectCompareResult e2 = FixObjectCompareResult.success();
+        FixObjectCompareResult e2 = FixObjectCompareResult.SUCCESS;
         children.put("path1", e1);
         children.put("path2", e2);
         FixObjectCompareResult result = FixObjectCompareResult.wrapFailed(children, "my own error");
@@ -42,7 +42,7 @@ public class FixObjectCompareResultTest {
     public void testDescriptionWithMessageMoreLayers() throws IOException {
         Map<String, FixObjectCompareResult> c1 = Maps.newHashMap();
         FixObjectCompareResult e1 = FixObjectCompareResult.failed("fail");
-        FixObjectCompareResult e2 = FixObjectCompareResult.success();
+        FixObjectCompareResult e2 = FixObjectCompareResult.SUCCESS;
         c1.put("path1", e1);
         c1.put("path2", e2);
         FixObjectCompareResult e3 = FixObjectCompareResult.wrapFailed(c1, "my own error");
@@ -51,8 +51,7 @@ public class FixObjectCompareResultTest {
         c2.put("path3", e3);
         FixObjectCompareResult result = FixObjectCompareResult.wrapFailed(c2, null);
         Assert.assertEquals(result.getStatus(), FixObjectCompareResult.Status.FAIL);
-        Assert.assertEquals(result.generateDescription(), "path3/path1 : fail\n" +
-                "path3 : my own error\n");
+        Assert.assertEquals(result.generateDescription(), "path3 : my own error\npath3/path1 : fail\n");
     }
 
 }

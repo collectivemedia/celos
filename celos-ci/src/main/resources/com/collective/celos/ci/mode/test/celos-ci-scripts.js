@@ -9,35 +9,37 @@ importPackage(Packages.com.collective.celos.ci.mode.test);
 importPackage(Packages.com.collective.celos);
 importPackage(Packages.java.util);
 
-function fixDirFromResource(resource) {
+var ci = {};
+
+ci.fixDirFromResource = function (resource) {
     if (!resource) {
         throw "Undefined resource";
     }
     return new FixDirFromResourceCreator(resource);
 }
 
-function fixFileFromResource(resource) {
+ci.fixFileFromResource = function (resource) {
     if (!resource) {
         throw "Undefined resource";
     }
     return new FixFileFromResourceCreator(resource);
 }
 
-function fixFile(content) {
+ci.fixFile = function (content) {
     if (!content) {
         throw "Undefined content";
     }
     return new FixFileFromStringCreator(content);
 }
 
-function fixDir(content) {
+ci.fixDir = function (content) {
     if (!content) {
         throw "Undefined content";
     }
     return new FixDirHierarchyCreator(content);
 }
 
-function hdfsInput(fixObject, whereToPlace) {
+ci.hdfsInput = function (fixObject, whereToPlace) {
     if (!fixObject) {
         throw "Undefined input fixObject";
     }
@@ -47,7 +49,7 @@ function hdfsInput(fixObject, whereToPlace) {
     return new HdfsInputDeployer(fixObject, whereToPlace);
 }
 
-function avroToJson(creatorOrPath) {
+ci.avroToJson = function (creatorOrPath) {
     if (!creatorOrPath) {
         throw "Undefined expected creatorOrPath";
     }
@@ -57,7 +59,7 @@ function avroToJson(creatorOrPath) {
     return new ConversionCreator(creatorOrPath, new FixDirRecursiveConverter(new AvroToJsonConverter()));
 }
 
-function jsonToAvro(dirCreator, schemaFileCreator) {
+ci.jsonToAvro = function (dirCreator, schemaFileCreator) {
     if (!dirCreator) {
         throw "Undefined expected dirCreator";
     }
@@ -68,14 +70,14 @@ function jsonToAvro(dirCreator, schemaFileCreator) {
 }
 
 
-function jsonCompare(expectedCreator, actualCreator, ignorePathsRaw) {
+ci.jsonCompare = function (expectedCreator, actualCreator, ignorePathsRaw) {
     if (!expectedCreator) {
         throw "Undefined expectedCreator";
     }
     if (!actualCreator) {
         throw "Undefined actualCreator";
     }
-    ignorePaths = new HashSet();
+    var ignorePaths = new HashSet();
 
     if (ignorePathsRaw) {
         for (var i=0; i < ignorePathsRaw.length; i++) {
@@ -85,17 +87,33 @@ function jsonCompare(expectedCreator, actualCreator, ignorePathsRaw) {
     return new JsonContentsComparer(ignorePaths, expectedCreator, actualCreator);
 }
 
-function plainCompare(fixObjectCreator, path) {
+ci.plainCompare = function (fixObjectCreator, path) {
     if (!fixObjectCreator) {
         throw "Undefined expected fixObject";
     }
     if (!path) {
         throw "Undefined path";
     }
-    return new RecursiveDirComparer(fixObjectCreator, new OutputFixDirFromHdfsCreator(path));
+    return new RecursiveFsObjectComparer(fixObjectCreator, new OutputFixDirFromHdfsCreator(path));
 }
 
-function addTestCase(testCase) {
+ci.fixTableCompare = function (expectedCreator, actualCreator, columnNamesOrdered, rowsOrdered) {
+    if (!expectedCreator) {
+        throw "Undefined expectedCreator";
+    }
+    if (!actualCreator) {
+        throw "Undefined actualCreator";
+    }
+    if (!columnNamesOrdered) {
+        columnNamesOrdered = false;
+    }
+    if (!rowsOrdered) {
+        rowsOrdered = false;
+    }
+    return new FixTableComparer(expectedCreator, actualCreator, columnNamesOrdered, rowsOrdered);
+}
+
+ci.addTestCase = function (testCase) {
     var name = testCase["name"];
 
     var inputs = testCase["inputs"];
@@ -133,14 +151,14 @@ function addTestCase(testCase) {
     testConfigurationParser.addTestCase(result);
 }
 
-function fixTableFromResource(fixTableFile) {
+ci.fixTableFromResource = function (fixTableFile) {
     if (!fixTableFile) {
         throw "fixTableFile undefined";
     }
     return new FileFixTableCreator(Packages.java.nio.file.Paths.get(fixTableFile));
 }
 
-function fixTable(columnNames, rowData) {
+ci.fixTable = function (columnNames, rowData) {
     if (!columnNames) {
         throw "columnNames undefined";
     }
@@ -150,7 +168,7 @@ function fixTable(columnNames, rowData) {
     return new StringArrayFixTableCreator(columnNames, rowData);
 }
 
-function hiveInput(dbName, tableName, createScriptFile, fixTableCreator) {
+ci.hiveInput = function (dbName, tableName, createScriptFile, fixTableCreator) {
     if (!dbName || typeof dbName != "string") {
         throw "dbName should be valid string";
     }
@@ -166,7 +184,7 @@ function hiveInput(dbName, tableName, createScriptFile, fixTableCreator) {
     return new HiveTableDeployer(new DatabaseName(dbName), tableName, createScriptFile, fixTableCreator);
 }
 
-function hiveTable(databaseName, tableName) {
+ci.hiveTable = function (databaseName, tableName) {
     if (!databaseName) {
         throw "databaseName should be valid string";
     }
@@ -176,14 +194,21 @@ function hiveTable(databaseName, tableName) {
     return new OutputFixTableFromHiveCreator(new DatabaseName(databaseName), tableName);
 }
 
-function tableToJson(fixTableCreator) {
+ci.tableToJson = function (fixTableCreator) {
     if (!fixTableCreator) {
         throw "Undefined fixTableCreator";
     }
     return new ConversionCreator(fixTableCreator, new FixTableToJsonFileConverter());
 }
 
-function expandJson(jsonCreator, fieldsRaw) {
+ci.tableToTSV = function (fixTableCreator) {
+    if (!fixTableCreator) {
+        throw "Undefined fixTableCreator";
+    }
+    return new ConversionCreator(fixTableCreator, new FixTableToTSVFileConverter());
+}
+
+ci.expandJson = function (jsonCreator, fieldsRaw) {
     if (!jsonCreator) {
         throw "Undefined jsonCreator";
     }
@@ -197,3 +222,21 @@ function expandJson(jsonCreator, fieldsRaw) {
 
     return new ConversionCreator(jsonCreator, new JsonExpandConverter(fields));
 }
+
+var fixDirFromResource = ci.fixDirFromResource;
+var fixFileFromResource = ci.fixFileFromResource;
+var fixFile = ci.fixFile;
+var fixDir = ci.fixDir;
+var hdfsInput = ci.hdfsInput;
+var avroToJson = ci.avroToJson;
+var jsonToAvro = ci.jsonToAvro;
+var jsonCompare = ci.jsonCompare;
+var plainCompare = ci.plainCompare;
+var addTestCase = ci.addTestCase;
+var fixTableFromResource = ci.fixTableFromResource;
+var fixTable = ci.fixTable;
+var hiveInput = ci.hiveInput;
+var hiveTable = ci.hiveTable;
+var tableToJson = ci.tableToJson;
+var tableToTSV = ci.tableToTSV;
+var expandJson = ci.expandJson;

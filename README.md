@@ -458,7 +458,7 @@ Schedules a workflow to run via a `cron`-like expression.
 
 #### Parameters
 
-* `cronExpression` -- The [cron expression](http://quartz-scheduler.org/api/2.0.0/org/quartz/CronExpression.html)
+* `cronExpression` -- The [cron expression](http://www.quartz-scheduler.org/documentation/quartz-1.x/tutorials/crontrigger)
 
 #### Example
 

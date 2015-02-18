@@ -1,14 +1,39 @@
 package com.collective.celos.ci.mode.test;
 
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.StringReader;
+import java.nio.file.Paths;
+import java.util.HashSet;
+import java.util.UUID;
+
+import com.collective.celos.ci.testing.fixtures.compare.FixTableComparer;
+import com.collective.celos.ci.testing.fixtures.compare.RecursiveFsObjectComparer;
+import org.apache.commons.io.IOUtils;
+import org.apache.hadoop.fs.Path;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.mozilla.javascript.JavaScriptException;
+import org.mozilla.javascript.NativeJavaObject;
+
 import com.collective.celos.DatabaseName;
 import com.collective.celos.ScheduledTime;
 import com.collective.celos.WorkflowID;
-import com.collective.celos.ci.testing.fixtures.compare.RecursiveDirComparer;
 import com.collective.celos.ci.testing.fixtures.compare.json.JsonContentsComparer;
 import com.collective.celos.ci.testing.fixtures.convert.AvroToJsonConverter;
 import com.collective.celos.ci.testing.fixtures.convert.FixTableToJsonFileConverter;
+import com.collective.celos.ci.testing.fixtures.convert.FixTableToTSVFileConverter;
 import com.collective.celos.ci.testing.fixtures.convert.JsonExpandConverter;
-import com.collective.celos.ci.testing.fixtures.create.*;
+import com.collective.celos.ci.testing.fixtures.create.FixDirFromResourceCreator;
+import com.collective.celos.ci.testing.fixtures.create.FixDirHierarchyCreator;
+import com.collective.celos.ci.testing.fixtures.create.FixFileFromResourceCreator;
+import com.collective.celos.ci.testing.fixtures.create.OutputFixDirFromHdfsCreator;
+import com.collective.celos.ci.testing.fixtures.create.OutputFixTableFromHiveCreator;
 import com.collective.celos.ci.testing.fixtures.deploy.HdfsInputDeployer;
 import com.collective.celos.ci.testing.fixtures.deploy.hive.FileFixTableCreator;
 import com.collective.celos.ci.testing.fixtures.deploy.hive.HiveTableDeployer;
@@ -19,24 +44,6 @@ import com.collective.celos.ci.testing.structure.fixobject.FixDirRecursiveConver
 import com.collective.celos.ci.testing.structure.fixobject.FixFile;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import org.apache.commons.io.IOUtils;
-import org.apache.hadoop.fs.Path;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.mozilla.javascript.JavaScriptException;
-import org.mozilla.javascript.NativeJavaObject;
-
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.StringReader;
-import java.nio.file.Paths;
-import java.util.HashSet;
-import java.util.UUID;
-
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
 
 /**
  * Created by akonopko on 27.11.14.
@@ -114,20 +121,20 @@ public class TestConfigurationParserTest {
     }
 
     @Test(expected = JavaScriptException.class)
-    public void testRecursiveDirComparer1() throws IOException {
+    public void testRecursiveFsObjectComparer1() throws IOException {
         TestConfigurationParser parser = new TestConfigurationParser();
 
         NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(new StringReader("plainCompare()"), "string");
-        RecursiveDirComparer creator = (RecursiveDirComparer) creatorObj.unwrap();
+        RecursiveFsObjectComparer creator = (RecursiveFsObjectComparer) creatorObj.unwrap();
     }
 
     @Test
-    public void testRecursiveDirComparer2() throws IOException {
+    public void testRecursiveFsObjectComparer2() throws IOException {
         TestConfigurationParser parser = new TestConfigurationParser();
 
         NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(new StringReader("plainCompare(fixDirFromResource(\"stuff\"), \"here\")"), "string");
 
-        RecursiveDirComparer comparer = (RecursiveDirComparer) creatorObj.unwrap();
+        RecursiveFsObjectComparer comparer = (RecursiveFsObjectComparer) creatorObj.unwrap();
 
         OutputFixDirFromHdfsCreator actualCreator = (OutputFixDirFromHdfsCreator) comparer.getActualDataCreator();
         FixDirFromResourceCreator expectedDataCreator = (FixDirFromResourceCreator) comparer.getExpectedDataCreator();
@@ -136,11 +143,11 @@ public class TestConfigurationParserTest {
     }
 
     @Test(expected = JavaScriptException.class)
-    public void testRecursiveDirComparer3() throws IOException {
+    public void testRecursiveFsObjectComparer3() throws IOException {
         TestConfigurationParser parser = new TestConfigurationParser();
 
         NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(new StringReader("plainCompare(fixFileFromResource(\"stuff\"))"), "string");
-        RecursiveDirComparer creator = (RecursiveDirComparer) creatorObj.unwrap();
+        RecursiveFsObjectComparer creator = (RecursiveFsObjectComparer) creatorObj.unwrap();
     }
 
 
@@ -175,7 +182,7 @@ public class TestConfigurationParserTest {
         Assert.assertEquals(testCase.getInputs().get(0).getClass(), HdfsInputDeployer.class);
         Assert.assertEquals(testCase.getInputs().get(1).getClass(), HdfsInputDeployer.class);
         Assert.assertEquals(testCase.getOutputs().size(), 1);
-        Assert.assertEquals(testCase.getOutputs().get(0).getClass(), RecursiveDirComparer.class);
+        Assert.assertEquals(testCase.getOutputs().get(0).getClass(), RecursiveFsObjectComparer.class);
     }
 
     @Test(expected = JavaScriptException.class)
@@ -554,6 +561,27 @@ public class TestConfigurationParserTest {
         TestConfigurationParser parser = new TestConfigurationParser();
         parser.evaluateTestConfig(new StringReader(js), "string");
     }
+    
+    @Test
+    public void testTableToTSV() throws IOException {
+        String js = "tableToTSV(hiveTable(\"dbname\", \"tablename\"))";
+
+        TestConfigurationParser parser = new TestConfigurationParser();
+
+        NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(new StringReader(js), "string");
+        ConversionCreator creator = (ConversionCreator) creatorObj.unwrap();
+
+        Assert.assertEquals(FixTableToTSVFileConverter.class, creator.getFixObjectConverter().getClass());
+
+    }
+
+    @Test (expected = JavaScriptException.class)
+    public void testTableToTSVNoCreator() throws IOException {
+        String js = "tableToTSV()";
+
+        TestConfigurationParser parser = new TestConfigurationParser();
+        parser.evaluateTestConfig(new StringReader(js), "string");
+    }
 
 
     @Test
@@ -582,6 +610,55 @@ public class TestConfigurationParserTest {
     @Test (expected = JavaScriptException.class)
     public void testExpandJsonNoParams() throws IOException {
         String js = "expandJson()";
+
+        TestConfigurationParser parser = new TestConfigurationParser();
+        parser.evaluateTestConfig(new StringReader(js), "string");
+    }
+
+    @Test
+    public void testFixTableComparerNotOrdered() throws IOException {
+        String js =
+                "var table1 = fixTable([\"col1\", \"col2\"], [[\"row1\", \"row2\"],[\"row11\", \"row22\"]]);" +
+                        "var table2 = fixTable([\"col1\", \"col2\"], [[\"row1\", \"row2\"],[\"row11\", \"row22\"]]);" +
+                        "ci.fixTableCompare(table1, table2);";
+
+        TestConfigurationParser parser = new TestConfigurationParser();
+
+        NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(new StringReader(js), "string");
+        FixTableComparer comparer = (FixTableComparer) creatorObj.unwrap();
+        Assert.assertEquals(false, comparer.isColumnNamesOrdered());
+        Assert.assertEquals(false, comparer.isRespectRowOrder());
+    }
+
+    @Test
+    public void testFixTableComparerOrdered() throws IOException {
+        String js =
+                "var table1 = fixTable([\"col1\", \"col2\"], [[\"row1\", \"row2\"],[\"row11\", \"row22\"]]);" +
+                        "var table2 = fixTable([\"col1\", \"col2\"], [[\"row1\", \"row2\"],[\"row11\", \"row22\"]]);" +
+                        "ci.fixTableCompare(table1, table2, true, true);";
+
+        TestConfigurationParser parser = new TestConfigurationParser();
+
+        NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(new StringReader(js), "string");
+        FixTableComparer comparer = (FixTableComparer) creatorObj.unwrap();
+        Assert.assertEquals(true, comparer.isColumnNamesOrdered());
+        Assert.assertEquals(true, comparer.isRespectRowOrder());
+
+    }
+
+    @Test (expected = JavaScriptException.class)
+    public void testFixTableComparerFails1() throws IOException {
+        String js =
+                "var table1 = fixTable([\"col1\", \"col2\"], [[\"row1\", \"row2\"],[\"row11\", \"row22\"]]);" +
+                "ci.fixTableCompare(table1);";
+
+        TestConfigurationParser parser = new TestConfigurationParser();
+        parser.evaluateTestConfig(new StringReader(js), "string");
+    }
+
+    @Test (expected = JavaScriptException.class)
+    public void testFixTableComparerFails2() throws IOException {
+        String js = "ci.fixTableCompare();";
 
         TestConfigurationParser parser = new TestConfigurationParser();
         parser.evaluateTestConfig(new StringReader(js), "string");
