@@ -72,15 +72,6 @@
   </servlet-mapping>
 
   <servlet>
-    <servlet-name>WorkflowJSConfigServlet</servlet-name>
-    <servlet-class>com.collective.celos.servlet.WorkflowJSConfigServlet</servlet-class>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>WorkflowJSConfigServlet</servlet-name>
-    <url-pattern>/workflow-file</url-pattern>
-  </servlet-mapping>
-
-  <servlet>
     <servlet-name>ClearCacheServlet</servlet-name>
     <servlet-class>com.collective.celos.servlet.ClearCacheServlet</servlet-class>
   </servlet>

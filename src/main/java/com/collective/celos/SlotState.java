@@ -1,5 +1,6 @@
 package com.collective.celos;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
@@ -117,12 +118,12 @@ public class SlotState extends ValueObject {
         return node;
     }
 
-    public static SlotState fromJSONNode(WorkflowID id, ObjectNode node) {
+    public static SlotState fromJSONNode(WorkflowID id, JsonNode node) {
         ScheduledTime time = new ScheduledTime(node.get(TIME_PROP).textValue());
         return fromJSONNode(new SlotID(id, time), node);
     }
 
-    public static SlotState fromJSONNode(SlotID id, ObjectNode node) {
+    public static SlotState fromJSONNode(SlotID id, JsonNode node) {
         SlotState.Status status = SlotState.Status.valueOf(node.get(STATUS_PROP).textValue());
         String externalID = node.get(EXTERNAL_ID_PROP).textValue();
         int retryCount = node.get(RETRY_COUNT_PROP).intValue();
