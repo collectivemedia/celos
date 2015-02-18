@@ -45,16 +45,16 @@ def prepareDeployDir() {
     }
 }
 
-task celos_ci() {
+task celos_ci << {
     prepareDeployDir()
     celosCiTask('TEST')
 }
 
-task celos_ci_deploy() {
+task celos_ci_deploy << {
     prepareDeployDir()
     celosCiTask('DEPLOY')
 }
 
-task celos_ci_undeploy() {
+task celos_ci_undeploy << {
     celosCiTask('UNDEPLOY')
 }
