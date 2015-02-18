@@ -211,11 +211,11 @@ public class CelosClientServerTest {
         List<SlotState> slotStates = celosClient.getWorkflowStatus(new WorkflowID("workflow-2")).getSlotStates();
         Assert.assertEquals(slotStates.size(), SLOTS_IN_CELOS_SERVER_SLIDING_WINDOW);
 
-        List<SlotState> slotStatesOther = slotStates.subList(1, slotStates.size());
-        SlotState slotStateFst = slotStates.get(0);
-        Assert.assertEquals(slotStateFst.getStatus(), SlotState.Status.RUNNING);
-        Assert.assertNotNull(slotStateFst.getExternalID());
-        Assert.assertEquals(slotStateFst.getRetryCount(), 0);
+        List<SlotState> slotStatesOther = slotStates.subList(0, slotStates.size() - 1);
+        SlotState slotStateLst = slotStates.get(slotStates.size() - 1);
+        Assert.assertEquals(slotStateLst.getStatus(), SlotState.Status.RUNNING);
+        Assert.assertNotNull(slotStateLst.getExternalID());
+        Assert.assertEquals(slotStateLst.getRetryCount(), 0);
 
         for (SlotState slotState : slotStatesOther) {
             Assert.assertEquals(slotState.getStatus(), SlotState.Status.READY);
@@ -237,12 +237,12 @@ public class CelosClientServerTest {
         List<SlotState> slotStates = celosClient.getWorkflowStatus(new WorkflowID("workflow-2")).getSlotStates();
         Assert.assertEquals(slotStates.size(), SLOTS_IN_CELOS_SERVER_SLIDING_WINDOW);
 
-        SlotState slotStateFst = slotStates.get(0);
-        Assert.assertEquals(slotStateFst.getStatus(), SlotState.Status.SUCCESS);
-        Assert.assertNotNull(slotStateFst.getExternalID());
-        Assert.assertEquals(slotStateFst.getRetryCount(), 0);
+        SlotState slotStateLst = slotStates.get(slotStates.size() - 1);
+        Assert.assertEquals(slotStateLst.getStatus(), SlotState.Status.SUCCESS);
+        Assert.assertNotNull(slotStateLst.getExternalID());
+        Assert.assertEquals(slotStateLst.getRetryCount(), 0);
 
-        slotStates = slotStates.subList(1, slotStates.size());
+        slotStates = slotStates.subList(0, slotStates.size() - 1);
         for (SlotState slotState : slotStates) {
             Assert.assertEquals(slotState.getStatus(), SlotState.Status.READY);
             Assert.assertNull(slotState.getExternalID());
@@ -264,17 +264,17 @@ public class CelosClientServerTest {
         List<SlotState> slotStates = celosClient.getWorkflowStatus(new WorkflowID("workflow-2")).getSlotStates();
         Assert.assertEquals(slotStates.size(), SLOTS_IN_CELOS_SERVER_SLIDING_WINDOW);
 
-        SlotState slotStateFst = slotStates.get(0);
-        Assert.assertEquals(slotStateFst.getStatus(), SlotState.Status.SUCCESS);
-        Assert.assertNotNull(slotStateFst.getExternalID());
-        Assert.assertEquals(slotStateFst.getRetryCount(), 0);
+        SlotState slotStateLst = slotStates.get(slotStates.size() - 1);
+        Assert.assertEquals(slotStateLst.getStatus(), SlotState.Status.SUCCESS);
+        Assert.assertNotNull(slotStateLst.getExternalID());
+        Assert.assertEquals(slotStateLst.getRetryCount(), 0);
 
-        SlotState slotStateSnd = slotStates.get(1);
-        Assert.assertEquals(slotStateSnd.getStatus(), SlotState.Status.RUNNING);
-        Assert.assertNotNull(slotStateSnd.getExternalID());
-        Assert.assertEquals(slotStateSnd.getRetryCount(), 0);
+        SlotState slotStatePreLst = slotStates.get(slotStates.size() - 2);
+        Assert.assertEquals(slotStatePreLst.getStatus(), SlotState.Status.RUNNING);
+        Assert.assertNotNull(slotStatePreLst.getExternalID());
+        Assert.assertEquals(slotStatePreLst.getRetryCount(), 0);
 
-        slotStates = slotStates.subList(2, slotStates.size());
+        slotStates = slotStates.subList(0, slotStates.size() - 2);
         for (SlotState slotState : slotStates) {
             Assert.assertEquals(slotState.getStatus(), SlotState.Status.READY);
             Assert.assertNull(slotState.getExternalID());
@@ -296,7 +296,7 @@ public class CelosClientServerTest {
         List<SlotState> slotStates = celosClient.getWorkflowStatus(new WorkflowID("workflow-Iñtërnâtiônàlizætiøn")).getSlotStates();
         Assert.assertEquals(slotStates.size(), SLOTS_IN_CELOS_SERVER_SLIDING_WINDOW);
 
-        SlotState slotStateFst = slotStates.get(0);
+        SlotState slotStateFst = slotStates.get(slotStates.size() - 1);
         Assert.assertEquals(slotStateFst.getStatus(), SlotState.Status.FAILURE);
         Assert.assertNotNull(slotStateFst.getExternalID());
         Assert.assertEquals(slotStateFst.getRetryCount(), 0);
@@ -311,14 +311,14 @@ public class CelosClientServerTest {
 
         List<SlotState> slotStates = celosClient.getWorkflowStatus(new WorkflowID("workflow-4")).getSlotStates();
         Assert.assertEquals(slotStates.size(), SLOTS_IN_CELOS_SERVER_SLIDING_WINDOW);
-        Assert.assertTrue(slotStates.get(0).getScheduledTime().getDateTime().isAfter(timeInPast.getDateTime().plusYears(1)));
+        Assert.assertTrue(slotStates.get(slotStates.size() - 1).getScheduledTime().getDateTime().isAfter(timeInPast.getDateTime().plusYears(1)));
 
         slotStates = celosClient.getWorkflowStatus(new WorkflowID("workflow-4"), timeInPast).getSlotStates();
-        Assert.assertEquals(slotStates.get(0).getScheduledTime(), timeInPast.minusDays(SchedulerConfiguration.SLIDING_WINDOW_DAYS));
-        Assert.assertEquals(slotStates.get(slotStates.size() - 1).getScheduledTime(), timeInPast.minusHours(1));
+        Assert.assertEquals(slotStates.get(slotStates.size() - 1).getScheduledTime(), timeInPast.minusDays(SchedulerConfiguration.SLIDING_WINDOW_DAYS));
+        Assert.assertEquals(slotStates.get(0).getScheduledTime(), timeInPast.minusHours(1));
 
         slotStates = celosClient.getWorkflowStatus(new WorkflowID("workflow-4"), timeInPast.plusSeconds(1)).getSlotStates();
-        Assert.assertEquals(slotStates.get(slotStates.size() - 1).getScheduledTime(), timeInPast);
+        Assert.assertEquals(slotStates.get(0).getScheduledTime(), timeInPast);
     }
 
     @Test
@@ -354,8 +354,8 @@ public class CelosClientServerTest {
 
         celosClient.iterateScheduler(inclusivePeriod);
         slotStates = celosClient.getWorkflowStatus(new WorkflowID("workflow-4"), inclusivePeriod).getSlotStates();
-        Assert.assertEquals(slotStates.get(slotStates.size() - 1).getStatus(), SlotState.Status.READY);
-        for (SlotState slotState : slotStates.subList(0, slotStates.size() - 2)) {
+        Assert.assertEquals(slotStates.get(0).getStatus(), SlotState.Status.READY);
+        for (SlotState slotState : slotStates.subList(1, slotStates.size())) {
             Assert.assertEquals(slotState.getStatus(), SlotState.Status.WAITING);
             Assert.assertEquals(slotState.getExternalID(), null);
             Assert.assertEquals(slotState.getRetryCount(), 0);
@@ -413,22 +413,24 @@ public class CelosClientServerTest {
         FileUtils.copyDirectory(src2, slotDbDir);
 
         ScheduledTime timeStart = new ScheduledTime("2013-11-25T20:00:00.000Z");
-        ScheduledTime waitingSlotsTimeEnd = new ScheduledTime("2013-12-02T17:00:00.000Z");
+        ScheduledTime waitingSlotsTimeEnd = new ScheduledTime("2013-12-02T19:00:00.000Z");
 
-        ScheduledTime time = timeStart;
+        ScheduledTime time = waitingSlotsTimeEnd;
 
         List<SlotState> expectedSlotStates = Lists.newArrayList();
-        while (!time.getDateTime().isAfter(waitingSlotsTimeEnd.getDateTime())) {
+        SlotState slotStateRunning = new SlotState(new SlotID(new WorkflowID("workflow-1"), time), SlotState.Status.RUNNING, "foo-bar", 0);
+        time = time.minusHours(1);
+        SlotState slotStateReady = new SlotState(new SlotID(new WorkflowID("workflow-1"), time), SlotState.Status.READY, null, 14);
+        time = time.minusHours(1);
+
+        expectedSlotStates.add(slotStateRunning);
+        expectedSlotStates.add(slotStateReady);
+
+        while (!time.getDateTime().isBefore(timeStart.getDateTime())) {
             SlotState slotState = new SlotState(new SlotID(new WorkflowID("workflow-1"), time), SlotState.Status.WAITING);
             expectedSlotStates.add(slotState);
-            time = time.plusHours(1);
+            time = time.minusHours(1);
         }
-        SlotState slotStateReady = new SlotState(new SlotID(new WorkflowID("workflow-1"), time), SlotState.Status.READY, null, 14);
-        time = time.plusHours(1);
-        SlotState slotStateRunning = new SlotState(new SlotID(new WorkflowID("workflow-1"), time), SlotState.Status.RUNNING, "foo-bar", 0);
-
-        expectedSlotStates.add(slotStateReady);
-        expectedSlotStates.add(slotStateRunning);
 
         List<SlotState> resultSlotStates = celosClient.getWorkflowStatus(new WorkflowID("workflow-1"), new ScheduledTime("2013-12-02T20:00Z")).getSlotStates();
 
@@ -444,22 +446,24 @@ public class CelosClientServerTest {
         FileUtils.copyDirectory(src2, slotDbDir);
 
         ScheduledTime timeStart = new ScheduledTime("2013-11-25T20:00:00.000Z");
-        ScheduledTime waitingSlotsTimeEnd = new ScheduledTime("2013-12-02T17:00:00.000Z");
+        ScheduledTime waitingSlotsTimeEnd = new ScheduledTime("2013-12-02T19:00:00.000Z");
 
-        ScheduledTime time = timeStart;
+        ScheduledTime time = waitingSlotsTimeEnd;
 
         List<SlotState> expectedSlotStates = Lists.newArrayList();
-        while (!time.getDateTime().isAfter(waitingSlotsTimeEnd.getDateTime())) {
+        SlotState slotStateRunning = new SlotState(new SlotID(new WorkflowID("workflow-2"), time), SlotState.Status.RUNNING, "quux", 2);
+        time = time.minusHours(1);
+        SlotState slotStateReady = new SlotState(new SlotID(new WorkflowID("workflow-2"), time), SlotState.Status.READY);
+        time = time.minusHours(1);
+
+        expectedSlotStates.add(slotStateRunning);
+        expectedSlotStates.add(slotStateReady);
+
+        while (!time.getDateTime().isBefore(timeStart.getDateTime())) {
             SlotState slotState = new SlotState(new SlotID(new WorkflowID("workflow-2"), time), SlotState.Status.WAITING);
             expectedSlotStates.add(slotState);
-            time = time.plusHours(1);
+            time = time.minusHours(1);
         }
-        SlotState slotStateReady = new SlotState(new SlotID(new WorkflowID("workflow-2"), time), SlotState.Status.READY);
-        time = time.plusHours(1);
-        SlotState slotStateRunning = new SlotState(new SlotID(new WorkflowID("workflow-2"), time), SlotState.Status.RUNNING, "quux", 2);
-
-        expectedSlotStates.add(slotStateReady);
-        expectedSlotStates.add(slotStateRunning);
 
         List<SlotState> resultSlotStates = celosClient.getWorkflowStatus(new WorkflowID("workflow-2"), new ScheduledTime("2013-12-02T20:00Z")).getSlotStates();
 
@@ -535,9 +539,9 @@ public class CelosClientServerTest {
         List<SlotState> slotStates = celosClient.getWorkflowStatus(workflowID).getSlotStates();
         Assert.assertEquals(slotStates.size(), SLOTS_IN_CELOS_SERVER_SLIDING_WINDOW);
 
-        SlotState slotStateFst = slotStates.get(0);
-        Assert.assertEquals(slotStateFst.getStatus(), SlotState.Status.FAILURE);
-        ScheduledTime scheduledTime = slotStateFst.getScheduledTime();
+        SlotState slotStateLst = slotStates.get(slotStates.size() - 1);
+        Assert.assertEquals(slotStateLst.getStatus(), SlotState.Status.FAILURE);
+        ScheduledTime scheduledTime = slotStateLst.getScheduledTime();
 
         celosClient.rerunSlot(workflowID, scheduledTime);
         SlotState slotStateUpdated = celosClient.getSlotState(workflowID, scheduledTime);
