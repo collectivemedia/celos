@@ -21,16 +21,18 @@ dependencies {
     celos_ci "com.collective:celos-ci:2.+"
 }
 
-
-task celos_ci << {
-    
-    task run_ci(type: JavaExec) {
-       main = "com.collective.celos.ci.CelosCi"
-       classpath configurations.celos_ci
-       target_uri
-       args '--deployDir', 'build/celos_deploy', '--target', target_uri, '--workflowName', 'wordcount' , '--mode', 'TEST'
+def celosCiTask(mode) {
+    task celos_ci_task(type: JavaExec) {
+        main = "com.collective.celos.ci.CelosCi"
+        classpath configurations.celos_ci
+        target_uri
+        mode
+        args '--deployDir', 'build/celos_deploy', '--target', target_uri, '--workflowName', 'wordcount' , '--mode', mode
     }
+    celos_ci_task.execute()
+}
 
+def prepareDeployDir() {
     new File('build/celos_deploy').deleteDir()
     new File('build/celos_deploy/hdfs/lib').mkdirs()
     copy {
@@ -41,5 +43,18 @@ task celos_ci << {
        from 'src/main/oozie'
        into 'build/celos_deploy/hdfs'
     }
-    run_ci.execute()
+}
+
+task celos_ci << {
+    prepareDeployDir()
+    celosCiTask('TEST')
+}
+
+task celos_ci_deploy << {
+    prepareDeployDir()
+    celosCiTask('DEPLOY')
+}
+
+task celos_ci_undeploy << {
+    celosCiTask('UNDEPLOY')
 }
