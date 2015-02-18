@@ -61,6 +61,5 @@ task celos_ci_deploy() {
 }
 
 task celos_ci_undeploy() {
-    prepareDeployDir()
     celosCiTask('UNDEPLOY')
 }
