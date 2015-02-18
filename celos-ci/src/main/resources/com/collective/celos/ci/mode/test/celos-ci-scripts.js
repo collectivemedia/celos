@@ -77,7 +77,7 @@ ci.jsonCompare = function (expectedCreator, actualCreator, ignorePathsRaw) {
     if (!actualCreator) {
         throw "Undefined actualCreator";
     }
-    ignorePaths = new HashSet();
+    var ignorePaths = new HashSet();
 
     if (ignorePathsRaw) {
         for (var i=0; i < ignorePathsRaw.length; i++) {

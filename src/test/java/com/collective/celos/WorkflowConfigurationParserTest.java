@@ -2,6 +2,7 @@ package com.collective.celos;
 
 import java.io.File;
 import java.io.StringReader;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
@@ -76,12 +77,54 @@ public class WorkflowConfigurationParserTest {
     }
 
     @Test
-    public void propertiesForCronAreCorrectlySet() throws Exception {
-        Workflow wf = parseDir("cron-task-test").findWorkflow(new WorkflowID("workflow-1"));
-        Assert.assertEquals("workflow-1", wf.getID().toString());
+    public void workflowInfoWF1() throws Exception {
+        WorkflowConfiguration cfg = parseFile("workflow-info-test");
+        WorkflowInfo workflowInfo = cfg.findWorkflow(new WorkflowID("workflow-1")).getWorkflowInfo();
 
-        CronSchedule schedule = (CronSchedule) wf.getSchedule();
-        Assert.assertEquals(schedule.getCronExpression(), "0 12 * * * ?");
+        Assert.assertNull(workflowInfo.getUrl());
+        Assert.assertTrue(workflowInfo.getContacts().isEmpty());
+    }
+
+    @Test
+    public void workflowInfoWF2() throws Exception {
+        WorkflowConfiguration cfg = parseFile("workflow-info-test");
+
+        WorkflowInfo workflowInfo = cfg.findWorkflow(new WorkflowID("workflow-2")).getWorkflowInfo();
+        Assert.assertEquals(new URL("http://collective.com/workflow"), workflowInfo.getUrl());
+        Assert.assertEquals(1, workflowInfo.getContacts().size());
+        Assert.assertEquals("John Doe", workflowInfo.getContacts().get(0).getName());
+        Assert.assertEquals(URI.create("john.doe@collective.com"), workflowInfo.getContacts().get(0).getEmail());
+    }
+
+    @Test
+    public void workflowInfoWFNoName() throws Exception {
+        WorkflowConfiguration cfg = parseFile("workflow-info-test");
+
+        WorkflowInfo workflowInfo = cfg.findWorkflow(new WorkflowID("workflow-3")).getWorkflowInfo();
+        Assert.assertEquals(new URL("http://collective.com/workflow"), workflowInfo.getUrl());
+        Assert.assertEquals(1, workflowInfo.getContacts().size());
+        Assert.assertNull(workflowInfo.getContacts().get(0).getName());
+        Assert.assertEquals(URI.create("john.doe@collective.com"), workflowInfo.getContacts().get(0).getEmail());
+    }
+
+    @Test
+    public void workflowInfoNoEmail() throws Exception {
+        WorkflowConfiguration cfg = parseFile("workflow-info-test");
+
+        WorkflowInfo workflowInfo = cfg.findWorkflow(new WorkflowID("workflow-4")).getWorkflowInfo();
+        Assert.assertEquals(new URL("http://collective.com/workflow"), workflowInfo.getUrl());
+        Assert.assertEquals(1, workflowInfo.getContacts().size());
+        Assert.assertEquals("John Doe", workflowInfo.getContacts().get(0).getName());
+        Assert.assertNull(workflowInfo.getContacts().get(0).getEmail());
+    }
+
+    @Test
+    public void workflowInfoNoContacts() throws Exception {
+        WorkflowConfiguration cfg = parseFile("workflow-info-test");
+
+        WorkflowInfo workflowInfo = cfg.findWorkflow(new WorkflowID("workflow-5")).getWorkflowInfo();
+        Assert.assertEquals(new URL("http://collective.com/workflow"), workflowInfo.getUrl());
+        Assert.assertTrue(workflowInfo.getContacts().isEmpty());
     }
 
     @Test

@@ -1,29 +1,11 @@
 package com.collective.celos.ci;
 
-import com.collective.celos.Util;
 import com.collective.celos.ci.config.CelosCiCommandLine;
 import com.collective.celos.ci.config.ContextParser;
 import com.collective.celos.ci.config.deploy.CelosCiContext;
 import com.collective.celos.ci.mode.DeployTask;
 import com.collective.celos.ci.mode.TestTask;
 import com.collective.celos.ci.mode.UndeployTask;
-import com.collective.celos.ci.testing.structure.fixobject.FixTable;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import org.apache.avro.Schema;
-import org.json.JSONObject;
-
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 public abstract class CelosCi {
 
