@@ -121,6 +121,22 @@ public class CelosClientServerTest {
         }
     }
 
+
+    @Test
+    public void testGetWorkflowStatusCorrectOrder() throws Exception {
+        File src = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/client/wf-list").toURI());
+        FileUtils.copyDirectory(src, workflowsDir);
+
+        List<SlotState> slotStates = celosClient.getWorkflowStatus(new WorkflowID("workflow-2")).getSlotStates();
+        Assert.assertEquals(slotStates.size(), SLOTS_IN_CELOS_SERVER_SLIDING_WINDOW);
+
+        for (int i = 0; i < slotStates.size() - 1; i ++ ) {
+            SlotState slotState = slotStates.get(i);
+            SlotState nextSlotState = slotStates.get(i + 1);
+            Assert.assertTrue(!slotState.getScheduledTime().getDateTime().isBefore(nextSlotState.getScheduledTime().getDateTime()));
+        }
+    }
+
     @Test
     public void testGetWorkflowStatusTransitionToReady() throws Exception {
 
