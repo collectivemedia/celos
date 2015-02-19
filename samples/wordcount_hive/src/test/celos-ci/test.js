@@ -11,6 +11,7 @@ ci.addTestCase({
     sampleTimeStart: "2013-12-20T16:00Z",
     sampleTimeEnd: "2013-12-20T16:00Z",
     inputs: [
+        ci.hdfsInput(ci.fixDirFromResource("test-1/input/wordcount"), "input/wordcount"),
         ci.hdfsInput(ci.fixDirFromResource("test-1/schema"), "/schema"),
         ci.hiveInput("wordcountdb", "input", tableScript, ci.fixTableFromResource("test-1/input.tsv")),
         ci.hiveInput("wordcountdb", "result", resTableScript)
