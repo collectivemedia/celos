@@ -63,10 +63,10 @@ public class TestTask extends CelosCi {
     private boolean allTestCasesDeletedTheirData() {
         for (File child : celosCiTempDir.listFiles()) {
             if (child.isDirectory()) {
-                return true;
+                return false;
             }
         }
-        return false;
+        return true;
     }
 
     private List<Future> submitTestRuns() {
