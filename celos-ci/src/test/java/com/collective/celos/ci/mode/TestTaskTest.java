@@ -9,12 +9,12 @@ import com.collective.celos.ci.mode.test.TestConfigurationParser;
 import com.collective.celos.ci.mode.test.TestRun;
 import com.collective.celos.ci.mode.test.TestRunFailedException;
 import com.collective.celos.ci.testing.fixtures.compare.RecursiveFsObjectComparer;
+import com.collective.celos.ci.testing.fixtures.create.FixDirFromResourceCreator;
 import com.collective.celos.ci.testing.fixtures.create.OutputFixDirFromHdfsCreator;
 import com.collective.celos.ci.testing.fixtures.deploy.HdfsInputDeployer;
-import com.collective.celos.ci.testing.fixtures.create.FixDirFromResourceCreator;
 import com.google.common.collect.Lists;
-import junit.framework.Assert;
 import org.apache.hadoop.fs.Path;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -23,7 +23,6 @@ import org.junit.rules.TemporaryFolder;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -67,18 +66,20 @@ public class TestTaskTest {
         CelosCiTargetParser parser = new CelosCiTargetParser("");
         CelosCiTarget target = parser.parse(targetFile.toURI());
 
-        String tmpDir = new File(System.getProperty("java.io.tmpdir")).toURI().toString() + "celos";
-        
+        File tmpDir = tempDir.newFolder();
+
         String configJS = Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/ci/testing/config/test.js").getFile();
 
         CelosCiCommandLine commandLine = new CelosCiCommandLine(targetFile.toURI().toString(), "DEPLOY", "deploydir", "workflow", "testDir", "uname");
-        TestTask testTask = new TestTask(commandLine, new File(configJS));
+        TestTask testTask = new TestTask(commandLine, new File(configJS), tmpDir);
 
-        Assert.assertTrue(testTask.getTestRuns().get(0).getCiContext().getTarget().getDefaultsDirUri().toString().startsWith(tmpDir));
+        String tempDirUri = tmpDir.toURI().toString();
+
+        Assert.assertTrue(testTask.getTestRuns().get(0).getCiContext().getTarget().getDefaultsDirUri().toString().startsWith(tempDirUri));
         Assert.assertEquals(testTask.getTestRuns().get(0).getCiContext().getTarget().getPathToCoreSite(), target.getPathToCoreSite());
         Assert.assertEquals(testTask.getTestRuns().get(0).getCiContext().getTarget().getPathToHdfsSite(), target.getPathToHdfsSite());
-        Assert.assertTrue(testTask.getTestRuns().get(0).getCiContext().getTarget().getWorkflowsDirUri().toString().startsWith(tmpDir));
-        Assert.assertTrue(testTask.getTestRuns().get(0).getCiContext().getTarget().getWorkflowsDirUri().toString().length() > tmpDir.length());
+        Assert.assertTrue(testTask.getTestRuns().get(0).getCiContext().getTarget().getWorkflowsDirUri().toString().startsWith(tempDirUri));
+        Assert.assertTrue(testTask.getTestRuns().get(0).getCiContext().getTarget().getWorkflowsDirUri().toString().length() > tempDirUri.length());
         Assert.assertEquals(testTask.getTestRuns().get(0).getTestCase().getName(), "wordcount test case 1");
         Assert.assertEquals(testTask.getTestRuns().get(0).getTestCase().getSampleTimeStart(), new ScheduledTime("2013-11-20T11:00Z"));
         Assert.assertEquals(testTask.getTestRuns().get(0).getTestCase().getSampleTimeEnd(), new ScheduledTime("2013-11-20T18:00Z"));
@@ -92,11 +93,11 @@ public class TestTaskTest {
         FixDirFromResourceCreator resourceDataCreator = (FixDirFromResourceCreator) comparer.getExpectedDataCreator();
         Assert.assertEquals(resourceDataCreator.getPath(testRun), new File("testDir/src/test/celos-ci/test-1/output/plain/output/wordcount1"));
 
-        Assert.assertTrue(testTask.getTestRuns().get(1).getCiContext().getTarget().getDefaultsDirUri().toString().startsWith(tmpDir));
+        Assert.assertTrue(testTask.getTestRuns().get(1).getCiContext().getTarget().getDefaultsDirUri().toString().startsWith(tempDirUri));
         Assert.assertEquals(testTask.getTestRuns().get(1).getCiContext().getTarget().getPathToCoreSite(), target.getPathToCoreSite());
         Assert.assertEquals(testTask.getTestRuns().get(1).getCiContext().getTarget().getPathToHdfsSite(), target.getPathToHdfsSite());
-        Assert.assertTrue(testTask.getTestRuns().get(1).getCiContext().getTarget().getWorkflowsDirUri().toString().startsWith(tmpDir));
-        Assert.assertTrue(testTask.getTestRuns().get(1).getCiContext().getTarget().getWorkflowsDirUri().toString().length() > tmpDir.length());
+        Assert.assertTrue(testTask.getTestRuns().get(1).getCiContext().getTarget().getWorkflowsDirUri().toString().startsWith(tempDirUri));
+        Assert.assertTrue(testTask.getTestRuns().get(1).getCiContext().getTarget().getWorkflowsDirUri().toString().length() > tempDirUri.length());
         Assert.assertEquals(testTask.getTestRuns().get(1).getTestCase().getName(), "wordcount test case 2");
         Assert.assertEquals(testTask.getTestRuns().get(1).getTestCase().getSampleTimeStart(), new ScheduledTime("2013-12-20T16:00Z"));
         Assert.assertEquals(testTask.getTestRuns().get(1).getTestCase().getSampleTimeEnd(), new ScheduledTime("2013-12-20T18:00Z"));
@@ -107,6 +108,10 @@ public class TestTaskTest {
         Assert.assertEquals(hdfsCreator2.getPath(), new Path("output/wordcount2"));
         FixDirFromResourceCreator resourceDataCreator2 = (FixDirFromResourceCreator) comparer2.getExpectedDataCreator();
         Assert.assertEquals(resourceDataCreator2.getPath(testRun), new File("testDir/src/test/celos-ci/test-1/output/plain/output/wordcount2"));
+
+        File logFile = new File(tmpDir, "celos.log");
+        Assert.assertArrayEquals(new File[]{ logFile }, tmpDir.listFiles());
+        Assert.assertTrue(logFile.length() > 0);
 
     }
 
@@ -157,7 +162,7 @@ public class TestTaskTest {
         List<MockTestRun> runList = Lists.newArrayList(new MockTestRun(target, commandLine, null), new MockTestRun(target, commandLine, null));
         doReturn(runList).when(testConfigurationParser).getTestCases();
 
-        TestTask testTask = new TestTask(commandLine, new File(configJS));
+        TestTask testTask = new TestTask(commandLine, new File(configJS), tempDir.newFolder());
         testTask.getTestRuns().clear();
         testTask.getTestRuns().addAll(runList);
         testTask.start();
@@ -171,7 +176,6 @@ public class TestTaskTest {
             }
             Thread.sleep(1000);
         }
-
     }
 
     private class MockTestRunException extends TestRun {
@@ -219,7 +223,7 @@ public class TestTaskTest {
         List<MockTestRunException> runList = Lists.newArrayList(new MockTestRunException("error2", target, commandLine, null));
         doReturn(runList).when(testConfigurationParser).getTestCases();
 
-        TestTask testTask = new TestTask(commandLine, new File(configJS));
+        TestTask testTask = new TestTask(commandLine, new File(configJS), tempDir.newFolder());
         testTask.getTestRuns().clear();
         testTask.getTestRuns().addAll(runList);
 
@@ -256,7 +260,7 @@ public class TestTaskTest {
         List<MockTestRunException> runList = Lists.newArrayList(new MockTestRunException("error1", target, commandLine, null), new MockTestRunException("error2", target, commandLine, null));
         doReturn(runList).when(testConfigurationParser).getTestCases();
 
-        TestTask testTask = new TestTask(commandLine, new File(configJS));
+        TestTask testTask = new TestTask(commandLine, new File(configJS), tempDir.newFolder());
         testTask.getTestRuns().clear();
         testTask.getTestRuns().addAll(runList);
 

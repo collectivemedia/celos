@@ -32,12 +32,12 @@ public class TestTask extends CelosCi {
     private final File celosCiTempDir;
 
     public TestTask(CelosCiCommandLine commandLine) throws Exception {
-        this(commandLine, new File(commandLine.getTestCasesDir(), TEST_CONFIG_JS_FILE));
+        this(commandLine, getConfigJSFile(commandLine), getTempDir());
     }
 
-    TestTask(CelosCiCommandLine commandLine, File configJSFile) throws Exception {
+    TestTask(CelosCiCommandLine commandLine, File configJSFile, File tempDir) throws Exception {
 
-        this.celosCiTempDir = Files.createTempDirectory("celos").toFile();
+        this.celosCiTempDir = tempDir;
         substituteLoggers();
 
         CelosCiTargetParser parser = new CelosCiTargetParser(commandLine.getUserName());
@@ -49,6 +49,14 @@ public class TestTask extends CelosCi {
         for (TestCase testCase : configurationParser.getTestCases()) {
             testRuns.add(new TestRun(target, commandLine, testCase, celosCiTempDir));
         }
+    }
+
+    private static File getConfigJSFile(CelosCiCommandLine commandLine) {
+        return new File(commandLine.getTestCasesDir(), TEST_CONFIG_JS_FILE);
+    }
+
+    private static File getTempDir() throws IOException {
+        return Files.createTempDirectory("celos").toFile();
     }
 
     private void substituteLoggers() throws IOException {
