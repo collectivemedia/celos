@@ -13,13 +13,13 @@ ci.addTestCase({
     inputs: [
         ci.hdfsInput(ci.fixDirFromResource("test-1/input/wordcount"), "input/wordcount"),
         ci.hdfsInput(ci.fixDirFromResource("test-1/schema"), "/schema"),
-        ci.hiveInput("celosdb", "wordcount", tableScript, ci.fixTableFromResource("test-1/input/tsv/wordcount.tsv")),
-        ci.hiveInput("celosdb", "result", resTableScript)
+        ci.hiveInput("wordcountdb", "wordcount", tableScript, ci.fixTableFromResource("test-1/input/tsv/wordcount.tsv")),
+        ci.hiveInput("wordcountdb", "result", resTableScript)
     ],
     outputs: [
         ci.fixTableCompare(
             ci.fixTableFromResource("test-1/output/tsv/result.tsv"),
-            ci.hiveTable("celosdb", "result")
+            ci.hiveTable("wordcountdb", "result")
         )
     ]
 });
