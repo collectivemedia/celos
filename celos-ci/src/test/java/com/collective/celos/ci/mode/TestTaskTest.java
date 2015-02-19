@@ -110,12 +110,12 @@ public class TestTaskTest {
 
     }
 
-    private static class MockTestRun extends TestRun {
+    private class MockTestRun extends TestRun {
 
         private boolean finished;
 
         public MockTestRun(CelosCiTarget target, CelosCiCommandLine commandLine, TestCase testCase) throws Exception {
-            super(target, commandLine, testCase);
+            super(target, commandLine, testCase, tempDir.newFolder());
         }
 
         public void start() throws Exception {
@@ -174,12 +174,12 @@ public class TestTaskTest {
 
     }
 
-    private static class MockTestRunException extends TestRun {
+    private class MockTestRunException extends TestRun {
 
         private final String testRunFailedText;
 
         public MockTestRunException(String testRunFailedText, CelosCiTarget target, CelosCiCommandLine commandLine, TestCase testCase) throws Exception {
-            super(target, commandLine, testCase);
+            super(target, commandLine, testCase, tempDir.newFolder());
             this.testRunFailedText = testRunFailedText;
         }
 

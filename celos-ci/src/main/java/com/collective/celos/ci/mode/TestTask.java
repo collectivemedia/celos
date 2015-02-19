@@ -4,12 +4,18 @@ import com.collective.celos.ci.CelosCi;
 import com.collective.celos.ci.config.CelosCiCommandLine;
 import com.collective.celos.ci.config.deploy.CelosCiTarget;
 import com.collective.celos.ci.config.deploy.CelosCiTargetParser;
-import com.collective.celos.ci.mode.test.TestRun;
 import com.collective.celos.ci.mode.test.TestCase;
 import com.collective.celos.ci.mode.test.TestConfigurationParser;
+import com.collective.celos.ci.mode.test.TestRun;
 import com.google.common.collect.Lists;
+import org.apache.commons.io.FileUtils;
+import org.apache.log4j.FileAppender;
+import org.apache.log4j.Logger;
+import org.apache.log4j.PatternLayout;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.List;
 import java.util.concurrent.*;
 
@@ -18,14 +24,19 @@ import java.util.concurrent.*;
  */
 public class TestTask extends CelosCi {
 
-    private final List<TestRun> testRuns = Lists.newArrayList();
     private static final String TEST_CONFIG_JS_FILE = "test.js";
+
+    private final List<TestRun> testRuns = Lists.newArrayList();
+    private final File celosCiTempDir;
 
     public TestTask(CelosCiCommandLine commandLine) throws Exception {
         this(commandLine, new File(commandLine.getTestCasesDir(), TEST_CONFIG_JS_FILE));
     }
 
     TestTask(CelosCiCommandLine commandLine, File configJSFile) throws Exception {
+
+        this.celosCiTempDir = Files.createTempDirectory("celos").toFile();
+
         CelosCiTargetParser parser = new CelosCiTargetParser(commandLine.getUserName());
         CelosCiTarget target = parser.parse(commandLine.getTargetUri());
 
@@ -33,16 +44,29 @@ public class TestTask extends CelosCi {
         configurationParser.evaluateTestConfig(configJSFile);
 
         for (TestCase testCase : configurationParser.getTestCases()) {
-            testRuns.add(new TestRun(target, commandLine, testCase));
+            testRuns.add(new TestRun(target, commandLine, testCase, celosCiTempDir));
         }
     }
 
-
     @Override
     public void start() throws Throwable {
+        try {
+            List<Future> futures = submitTestRuns();
+            waitForCompletion(futures);
+        } finally {
+            if (allTestCasesDeletedTheirData()) {
+                FileUtils.forceDelete(celosCiTempDir);
+            }
+        }
+    }
 
-        List<Future> futures = submitTestRuns();
-        printAndThrowExceptions(futures);
+    private boolean allTestCasesDeletedTheirData() {
+        for (File child : celosCiTempDir.listFiles()) {
+            if (child.isDirectory()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private List<Future> submitTestRuns() {
@@ -61,7 +85,7 @@ public class TestTask extends CelosCi {
         return futures;
     }
 
-    void printAndThrowExceptions(List<Future> futures) throws Throwable {
+    void waitForCompletion(List<Future> futures) throws Throwable {
         List<Throwable> throwables = Lists.newArrayList();
         for (Future future : futures) {
             try {
