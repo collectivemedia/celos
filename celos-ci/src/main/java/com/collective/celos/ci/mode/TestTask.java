@@ -10,6 +10,7 @@ import com.collective.celos.ci.mode.test.TestRun;
 import com.google.common.collect.Lists;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.FileAppender;
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 
@@ -25,6 +26,7 @@ import java.util.concurrent.*;
 public class TestTask extends CelosCi {
 
     private static final String TEST_CONFIG_JS_FILE = "test.js";
+    private static final String CELOS_LOG_FILE = "celos.log";
 
     private final List<TestRun> testRuns = Lists.newArrayList();
     private final File celosCiTempDir;
@@ -36,6 +38,7 @@ public class TestTask extends CelosCi {
     TestTask(CelosCiCommandLine commandLine, File configJSFile) throws Exception {
 
         this.celosCiTempDir = Files.createTempDirectory("celos").toFile();
+        substituteLoggers();
 
         CelosCiTargetParser parser = new CelosCiTargetParser(commandLine.getUserName());
         CelosCiTarget target = parser.parse(commandLine.getTargetUri());
@@ -47,6 +50,22 @@ public class TestTask extends CelosCi {
             testRuns.add(new TestRun(target, commandLine, testCase, celosCiTempDir));
         }
     }
+
+    private void substituteLoggers() throws IOException {
+        //don't load configuration from log4j.xml -- we're doing this programmatically
+        System.getProperties().setProperty("log4j.defaultInitOverride", "true");
+
+        FileAppender fileAppender = new FileAppender();
+        fileAppender.setFile(new File(celosCiTempDir, CELOS_LOG_FILE).getAbsolutePath());
+
+        PatternLayout patternLayout = new PatternLayout();
+        patternLayout.setConversionPattern("[%d{YYYY-MM-dd HH:mm:ss.SSS}] [%t] %-5p: %m%n");
+        fileAppender.setLayout(patternLayout);
+        fileAppender.activateOptions();
+        Logger.getRootLogger().addAppender(fileAppender);
+        Logger.getRootLogger().setLevel(Level.INFO);
+    }
+
 
     @Override
     public void start() throws Throwable {
