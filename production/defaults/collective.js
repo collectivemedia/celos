@@ -6,7 +6,7 @@ var CELOS_DEFAULT_HDFS = "hdfs://nameservice1";
 
 var NAME_NODE = CELOS_DEFAULT_HDFS;
 
-var JOB_TRACKER = "admin1.ny7.collective-media.net:8032";
+var JOB_TRACKER = "cldmgr001.ewr004.collective-media.net:8032";
 
 var HIVE_METASTORE = "thrift://hive002.ny7.collective-media.net:9083";
 
