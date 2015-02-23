@@ -15,12 +15,16 @@ public class DependentSchedule implements Schedule {
     
     @Override
     public SortedSet<ScheduledTime> getScheduledTimes(Scheduler scheduler, ScheduledTime start, ScheduledTime end) {
-        Workflow otherWorkflow = scheduler.getWorkflowConfiguration().findWorkflow(otherWorkflowID);
+        Workflow otherWorkflow = scheduler.getWorkflowConfiguration().findWorkflow(getOtherWorkflowID());
         if (otherWorkflow == null) {
-            throw new RuntimeException("Workflow " + otherWorkflowID + " doesn't exist.");
+            throw new RuntimeException("Workflow " + getOtherWorkflowID() + " doesn't exist.");
         }
         Schedule otherSchedule = otherWorkflow.getSchedule();
         return otherSchedule.getScheduledTimes(scheduler, start, end);
+    }
+
+    public WorkflowID getOtherWorkflowID() {
+        return otherWorkflowID;
     }
 
 }

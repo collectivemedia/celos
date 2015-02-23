@@ -67,6 +67,10 @@ celos.cronSchedule = function (cronExpression) {
     return new CronSchedule(cronExpression);
 }
 
+celos.dependentSchedule = function (workflowID) {
+    return new DependentSchedule(new WorkflowID(workflowID));
+}
+
 celos.serialSchedulingStrategy = function (concurrency) {
     return new SerialSchedulingStrategy(concurrency === undefined ? 1 : concurrency);
 }
@@ -245,6 +249,7 @@ var importDefaults = celos.importDefaults;
 var hourlySchedule = celos.hourlySchedule;
 var minutelySchedule = celos.minutelySchedule;
 var cronSchedule = celos.cronSchedule;
+var dependentSchedule = celos.dependentSchedule;
 var serialSchedulingStrategy = celos.serialSchedulingStrategy;
 var alwaysTrigger = celos.alwaysTrigger;
 var hdfsCheck = celos.hdfsCheck;
