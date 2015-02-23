@@ -86,7 +86,7 @@ public class Scheduler {
      * Get the slot states of all slots of the workflow from within the sliding window.
      */
     public List<SlotState> getSlotStates(Workflow wf, ScheduledTime current) throws Exception {
-        SortedSet<ScheduledTime> scheduledTimes =  wf.getSchedule().getScheduledTimes(getWorkflowStartTime(wf, current), current);
+        SortedSet<ScheduledTime> scheduledTimes =  wf.getSchedule().getScheduledTimes(this, getWorkflowStartTime(wf, current), current);
         List<SlotState> slotStates = new ArrayList<SlotState>(scheduledTimes.size());
         for (ScheduledTime t : scheduledTimes) {
             SlotID slotID = new SlotID(wf.getID(), t);
