@@ -474,7 +474,7 @@ Run a workflow at second 0, minute 15 of every hour of every day of the year.
 
 Syntax: `dependentSchedule(otherWorkflowID)`
 
-Schedules a workflow to run with the same schedule as another workflow.
+Schedules a workflow to run with the same schedule as another workflow.  Effectively, this clones the other workflow's schedule.
 
 #### Parameters
 
