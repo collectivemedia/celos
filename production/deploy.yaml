@@ -26,6 +26,3 @@
 
   - name: Deploy WAR
     shell: cd {{remote_celos}} && ./production/war-deploy.sh
-
-  - name: Deploy wrapper
-    shell: cd {{remote_celos}} && ./production/wrapper-deploy.sh

@@ -149,14 +149,6 @@ celos.offsetTrigger = function (seconds, trigger) {
     return new OffsetTrigger(seconds, trigger);
 }
 
-celos.commandTrigger = function () {
-    var list = new Packages.java.util.LinkedList();
-    for (var i = 0; i < arguments.length; i++) {
-        list.add(arguments[i]);
-    }
-    return new CommandTrigger(list);
-}
-
 celos.successTrigger = function (workflowName) {
     if (!workflowName) {
         throw "Undefined workflow name in success trigger";
@@ -218,14 +210,6 @@ celos.oozieExternalService = function (userPropertiesOrFun, oozieURL) {
     return new OozieExternalService(oozieURL, propertiesGen);
 }
 
-celos.commandExternalService = function (command) {
-    if (!command) {
-        throw "Undefined command";
-    }
-    // FIXME: the wrapper and /var/lib path should probably be specified elsewhere
-    return new CommandExternalService(command, "celos-wrapper", "/var/lib/celos/jobs");
-}
-
 celos.replaceTimeVariables = function (string, t) {
     string = string.replace(/\${year}/g, t.year());
     string = string.replace(/\${month}/g, t.month());
@@ -259,11 +243,9 @@ var orTrigger = celos.orTrigger;
 var notTrigger = celos.notTrigger;
 var delayTrigger = celos.delayTrigger;
 var offsetTrigger = celos.offsetTrigger;
-var commandTrigger = celos.commandTrigger;
 var successTrigger = celos.successTrigger;
 var mergeProperties = celos.mergeProperties;
 var hdfsPath = celos.hdfsPath;
 var oozieExternalService = celos.oozieExternalService;
-var commandExternalService = celos.commandExternalService;
 var replaceTimeVariables = celos.replaceTimeVariables;
 var databaseName = celos.databaseName;
