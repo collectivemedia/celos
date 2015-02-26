@@ -448,6 +448,23 @@ public class TestConfigurationParserTest {
         parser.evaluateTestConfig(new StringReader(js), "string");
     }
 
+
+    @Test
+    public void testHiveInputOnlyDbName() throws Exception {
+
+        String js = "hiveInput(\"dbname\")";
+
+        TestConfigurationParser parser = new TestConfigurationParser();
+
+        NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(new StringReader(js), "string");
+        HiveTableDeployer hiveTableDeployer = (HiveTableDeployer) creatorObj.unwrap();
+
+        Assert.assertEquals(hiveTableDeployer.getDatabaseName(), new DatabaseName("dbname"));
+        Assert.assertNull(hiveTableDeployer.getTableName());
+        Assert.assertNull(hiveTableDeployer.getTableCreationScriptFile());
+        Assert.assertNull(hiveTableDeployer.getDataFileCreator());
+    }
+
     @Test
     public void testHiveInput() throws Exception {
 
