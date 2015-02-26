@@ -69,7 +69,7 @@ public class TestConfigurationParserTest {
     public void fixDirFromResource() throws IOException {
         TestConfigurationParser parser = new TestConfigurationParser();
 
-        NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(new StringReader("fixDirFromResource(\"stuff\")"), "string");
+        NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(new StringReader("ci.fixDirFromResource(\"stuff\")"), "string");
         FixDirFromResourceCreator creator = (FixDirFromResourceCreator) creatorObj.unwrap();
         Assert.assertEquals(new File("/stuff"), creator.getPath(testRun));
     }
@@ -78,7 +78,7 @@ public class TestConfigurationParserTest {
     public void fixDirFromResourceFails() throws IOException {
         TestConfigurationParser parser = new TestConfigurationParser();
 
-        NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(new StringReader("fixDirFromResource()"), "string");
+        NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(new StringReader("ci.fixDirFromResource()"), "string");
         FixDirFromResourceCreator creator = (FixDirFromResourceCreator) creatorObj.unwrap();
         Assert.assertEquals(new File("/stuff"), creator.getPath(testRun));
     }
@@ -88,7 +88,7 @@ public class TestConfigurationParserTest {
     public void fixFileFromResource() throws IOException {
         TestConfigurationParser parser = new TestConfigurationParser();
 
-        NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(new StringReader("fixFileFromResource(\"stuff\")"), "string");
+        NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(new StringReader("ci.fixFileFromResource(\"stuff\")"), "string");
         FixFileFromResourceCreator creator = (FixFileFromResourceCreator) creatorObj.unwrap();
         Assert.assertEquals(new File("/stuff"), creator.getPath(testRun));
     }
@@ -97,7 +97,7 @@ public class TestConfigurationParserTest {
     public void fixFileFromResourceFails() throws IOException {
         TestConfigurationParser parser = new TestConfigurationParser();
 
-        NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(new StringReader("fixFileFromResource()"), "string");
+        NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(new StringReader("ci.fixFileFromResource()"), "string");
         FixFileFromResourceCreator creator = (FixFileFromResourceCreator) creatorObj.unwrap();
         Assert.assertEquals(new File("stuff"), creator.getPath(testRun));
     }
@@ -106,7 +106,7 @@ public class TestConfigurationParserTest {
     public void testHdfsInputDeployerCall1() throws IOException {
         TestConfigurationParser parser = new TestConfigurationParser();
 
-        NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(new StringReader("hdfsInput()"), "string");
+        NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(new StringReader("ci.hdfsInput()"), "string");
         HdfsInputDeployer creator = (HdfsInputDeployer) creatorObj.unwrap();
         Assert.assertEquals(new File("stuff"), creator.getPath());
     }
@@ -115,7 +115,7 @@ public class TestConfigurationParserTest {
     public void testHdfsInputDeployerCall2() throws IOException {
         TestConfigurationParser parser = new TestConfigurationParser();
 
-        NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(new StringReader("hdfsInput(fixFileFromResource(\"stuff\"), \"here\")"), "string");
+        NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(new StringReader("ci.hdfsInput(ci.fixFileFromResource(\"stuff\"), \"here\")"), "string");
         HdfsInputDeployer creator = (HdfsInputDeployer) creatorObj.unwrap();
         Assert.assertEquals(new Path("here"), creator.getPath());
     }
@@ -124,7 +124,7 @@ public class TestConfigurationParserTest {
     public void testRecursiveFsObjectComparer1() throws IOException {
         TestConfigurationParser parser = new TestConfigurationParser();
 
-        NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(new StringReader("plainCompare()"), "string");
+        NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(new StringReader("ci.plainCompare()"), "string");
         RecursiveFsObjectComparer creator = (RecursiveFsObjectComparer) creatorObj.unwrap();
     }
 
@@ -132,7 +132,7 @@ public class TestConfigurationParserTest {
     public void testRecursiveFsObjectComparer2() throws IOException {
         TestConfigurationParser parser = new TestConfigurationParser();
 
-        NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(new StringReader("plainCompare(fixDirFromResource(\"stuff\"), \"here\")"), "string");
+        NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(new StringReader("ci.plainCompare(ci.fixDirFromResource(\"stuff\"), \"here\")"), "string");
 
         RecursiveFsObjectComparer comparer = (RecursiveFsObjectComparer) creatorObj.unwrap();
 
@@ -146,7 +146,7 @@ public class TestConfigurationParserTest {
     public void testRecursiveFsObjectComparer3() throws IOException {
         TestConfigurationParser parser = new TestConfigurationParser();
 
-        NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(new StringReader("plainCompare(fixFileFromResource(\"stuff\"))"), "string");
+        NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(new StringReader("ci.plainCompare(ci.fixFileFromResource(\"stuff\"))"), "string");
         RecursiveFsObjectComparer creator = (RecursiveFsObjectComparer) creatorObj.unwrap();
     }
 
@@ -154,17 +154,17 @@ public class TestConfigurationParserTest {
     @Test
     public void testAddTestCase() throws IOException {
 
-        String configJS = "addTestCase({\n" +
+        String configJS = "ci.addTestCase({\n" +
                 "    name: \"wordcount test case 1\",\n" +
                 "    sampleTimeStart: \"2013-11-20T11:00Z\",\n" +
                 "    sampleTimeEnd: \"2013-11-20T18:00Z\",\n" +
                 "    workflows: [\"workflow1\", \"workflow2\"], \n" +
                 "    inputs: [\n" +
-                "        hdfsInput(fixDirFromResource(\"src/test/celos-ci/test-1/input/plain/input/wordcount1\"), \"input/wordcount1\"),\n" +
-                "        hdfsInput(fixDirFromResource(\"src/test/celos-ci/test-1/input/plain/input/wordcount11\"), \"input/wordcount11\")\n" +
+                "        ci.hdfsInput(ci.fixDirFromResource(\"src/test/celos-ci/test-1/input/plain/input/wordcount1\"), \"input/wordcount1\"),\n" +
+                "        ci.hdfsInput(ci.fixDirFromResource(\"src/test/celos-ci/test-1/input/plain/input/wordcount11\"), \"input/wordcount11\")\n" +
                 "    ],\n" +
                 "    outputs: [\n" +
-                "        plainCompare(fixDirFromResource(\"src/test/celos-ci/test-1/output/plain/output/wordcount1\"), \"output/wordcount1\")\n" +
+                "        ci.plainCompare(ci.fixDirFromResource(\"src/test/celos-ci/test-1/output/plain/output/wordcount1\"), \"output/wordcount1\")\n" +
                 "    ]\n" +
                 "})\n";
 
@@ -188,13 +188,13 @@ public class TestConfigurationParserTest {
     @Test(expected = JavaScriptException.class)
     public void testAddTestCaseNoOutput() throws IOException {
 
-        String configJS = "addTestCase({\n" +
+        String configJS = "ci.addTestCase({\n" +
                 "    name: \"wordcount test case 1\",\n" +
                 "    sampleTimeStart: \"2013-11-20T11:00Z\",\n" +
                 "    sampleTimeEnd: \"2013-11-20T18:00Z\",\n" +
                 "    inputs: [\n" +
-                "        hdfsInput(fixDirFromResource(\"src/test/celos-ci/test-1/input/plain/input/wordcount1\"), \"input/wordcount1\"),\n" +
-                "        hdfsInput(fixDirFromResource(\"src/test/celos-ci/test-1/input/plain/input/wordcount11\"), \"input/wordcount11\")\n" +
+                "        ci.hdfsInput(ci.fixDirFromResource(\"src/test/celos-ci/test-1/input/plain/input/wordcount1\"), \"input/wordcount1\"),\n" +
+                "        ci.hdfsInput(ci.fixDirFromResource(\"src/test/celos-ci/test-1/input/plain/input/wordcount11\"), \"input/wordcount11\")\n" +
                 "    ]\n" +
                 "})\n";
 
@@ -208,12 +208,12 @@ public class TestConfigurationParserTest {
     @Test(expected = JavaScriptException.class)
     public void testAddTestCaseNoInput() throws IOException {
 
-        String configJS = "addTestCase({\n" +
+        String configJS = "ci.addTestCase({\n" +
                 "    name: \"wordcount test case 1\",\n" +
                 "    sampleTimeStart: \"2013-11-20T11:00Z\",\n" +
                 "    sampleTimeEnd: \"2013-11-20T18:00Z\",\n" +
                 "    outputs: [\n" +
-                "        plainCompare(fixDirFromResource(\"src/test/celos-ci/test-1/output/plain/output/wordcount1\"), \"output/wordcount1\")\n" +
+                "        ci.plainCompare(ci.fixDirFromResource(\"src/test/celos-ci/test-1/output/plain/output/wordcount1\"), \"output/wordcount1\")\n" +
                 "    ]\n" +
                 "})\n";
 
@@ -227,15 +227,15 @@ public class TestConfigurationParserTest {
     @Test(expected = JavaScriptException.class)
     public void testAddTestCaseNoSampleTimeStart() throws IOException {
 
-        String configJS = "addTestCase({\n" +
+        String configJS = "ci.addTestCase({\n" +
                 "    name: \"wordcount test case 1\",\n" +
                 "    sampleTimeEnd: \"2013-11-20T18:00Z\",\n" +
                 "    inputs: [\n" +
-                "        hdfsInput(fixDirFromResource(\"src/test/celos-ci/test-1/input/plain/input/wordcount1\"), \"input/wordcount1\"),\n" +
-                "        hdfsInput(fixDirFromResource(\"src/test/celos-ci/test-1/input/plain/input/wordcount11\"), \"input/wordcount11\")\n" +
+                "        ci.hdfsInput(ci.fixDirFromResource(\"src/test/celos-ci/test-1/input/plain/input/wordcount1\"), \"input/wordcount1\"),\n" +
+                "        ci.hdfsInput(ci.fixDirFromResource(\"src/test/celos-ci/test-1/input/plain/input/wordcount11\"), \"input/wordcount11\")\n" +
                 "    ],\n" +
                 "    outputs: [\n" +
-                "        plainCompare(fixDirFromResource(\"src/test/celos-ci/test-1/output/plain/output/wordcount1\"), \"output/wordcount1\")\n" +
+                "        ci.plainCompare(ci.fixDirFromResource(\"src/test/celos-ci/test-1/output/plain/output/wordcount1\"), \"output/wordcount1\")\n" +
                 "    ]\n" +
                 "})\n";
 
@@ -247,15 +247,15 @@ public class TestConfigurationParserTest {
     @Test(expected = JavaScriptException.class)
     public void testAddTestCaseNoSampleTimeEnd() throws IOException {
 
-        String configJS = "addTestCase({\n" +
+        String configJS = "ci.addTestCase({\n" +
                 "    name: \"wordcount test case 1\",\n" +
                 "    sampleTimeStart: \"2013-11-20T18:00Z\",\n" +
                 "    inputs: [\n" +
-                "        hdfsInput(fixDirFromResource(\"src/test/celos-ci/test-1/input/plain/input/wordcount1\"), \"input/wordcount1\"),\n" +
-                "        hdfsInput(fixDirFromResource(\"src/test/celos-ci/test-1/input/plain/input/wordcount11\"), \"input/wordcount11\")\n" +
+                "        ci.hdfsInput(ci.fixDirFromResource(\"src/test/celos-ci/test-1/input/plain/input/wordcount1\"), \"input/wordcount1\"),\n" +
+                "        ci.hdfsInput(ci.fixDirFromResource(\"src/test/celos-ci/test-1/input/plain/input/wordcount11\"), \"input/wordcount11\")\n" +
                 "    ],\n" +
                 "    outputs: [\n" +
-                "        plainCompare(fixDirFromResource(\"src/test/celos-ci/test-1/output/plain/output/wordcount1\"), \"output/wordcount1\")\n" +
+                "        ci.plainCompare(ci.fixDirFromResource(\"src/test/celos-ci/test-1/output/plain/output/wordcount1\"), \"output/wordcount1\")\n" +
                 "    ]\n" +
                 "})\n";
 
@@ -268,14 +268,14 @@ public class TestConfigurationParserTest {
     public void testAvroToJsonFails() throws IOException {
         TestConfigurationParser parser = new TestConfigurationParser();
 
-        parser.evaluateTestConfig(new StringReader("avroToJson()"), "string");
+        parser.evaluateTestConfig(new StringReader("ci.avroToJson()"), "string");
     }
 
     @Test
     public void testAvroToJson() throws IOException {
         TestConfigurationParser parser = new TestConfigurationParser();
 
-        NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(new StringReader("avroToJson(\"1\")"), "string");
+        NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(new StringReader("ci.avroToJson(\"1\")"), "string");
 
         ConversionCreator converter = (ConversionCreator) creatorObj.unwrap();
 
@@ -289,7 +289,7 @@ public class TestConfigurationParserTest {
     public void testJsonCompare() throws IOException {
         TestConfigurationParser parser = new TestConfigurationParser();
 
-        NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(new StringReader("jsonCompare(fixDirFromResource(\"stuff\"), fixDirFromResource(\"stuff\"))"), "string");
+        NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(new StringReader("ci.jsonCompare(ci.fixDirFromResource(\"stuff\"), ci.fixDirFromResource(\"stuff\"))"), "string");
 
         JsonContentsComparer comparer = (JsonContentsComparer) creatorObj.unwrap();
         Assert.assertEquals(comparer.getIgnorePaths(), new HashSet<String>());
@@ -299,7 +299,7 @@ public class TestConfigurationParserTest {
     public void testJsonCompare2() throws IOException {
         TestConfigurationParser parser = new TestConfigurationParser();
 
-        NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(new StringReader("jsonCompare(fixDirFromResource(\"stuff\"), fixDirFromResource(\"stuff\"), [\"path1\", \"path2\"])"), "string");
+        NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(new StringReader("ci.jsonCompare(ci.fixDirFromResource(\"stuff\"), ci.fixDirFromResource(\"stuff\"), [\"path1\", \"path2\"])"), "string");
 
         JsonContentsComparer comparer = (JsonContentsComparer) creatorObj.unwrap();
         Assert.assertEquals(comparer.getIgnorePaths(), new HashSet(Lists.newArrayList("path1", "path2")));
@@ -310,7 +310,7 @@ public class TestConfigurationParserTest {
     public void testJsonCompareFails() throws IOException {
         TestConfigurationParser parser = new TestConfigurationParser();
 
-        NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(new StringReader("jsonCompare(fixDirFromResource(\"stuff\"))"), "string");
+        NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(new StringReader("ci.jsonCompare(ci.fixDirFromResource(\"stuff\"))"), "string");
 
         JsonContentsComparer comparer = (JsonContentsComparer) creatorObj.unwrap();
         Assert.assertEquals(comparer.getIgnorePaths(), new HashSet(Lists.newArrayList("path1", "path2")));
@@ -319,9 +319,9 @@ public class TestConfigurationParserTest {
     @Test
     public void testFixDir() throws Exception {
         String js = "" +
-                "fixDir({" +
-                "   file1: fixFile('123')," +
-                "   file2: fixFile('234')" +
+                "ci.fixDir({" +
+                "   file1: ci.fixFile('123')," +
+                "   file2: ci.fixFile('234')" +
                 "})";
 
         TestConfigurationParser parser = new TestConfigurationParser();
@@ -338,11 +338,11 @@ public class TestConfigurationParserTest {
     @Test
     public void testFixDirWithFixDir() throws Exception {
         String js = "" +
-                "fixDir({" +
-                "    file0: fixFile('012')," +
-                "    dir1: fixDir({" +
-                "        file1: fixFile('123')," +
-                "        file2: fixFile('234')" +
+                "ci.fixDir({" +
+                "    file0: ci.fixFile('012')," +
+                "    dir1: ci.fixDir({" +
+                "        file1: ci.fixFile('123')," +
+                "        file2: ci.fixFile('234')" +
                 "    })" +
                 "})";
 
@@ -368,9 +368,9 @@ public class TestConfigurationParserTest {
         String schemaStr = "{\"type\":\"record\",\"name\":\"ConsolidatedEvent\",\"namespace\":\"com.collective.pythia.avro\",\"fields\":[{\"name\":\"visitor\",\"type\":[\"null\",{\"type\":\"record\",\"name\":\"Visitor\",\"fields\":[{\"name\":\"cookie_id\",\"type\":\"string\"},{\"name\":\"segments\",\"type\":{\"type\":\"array\",\"items\":{\"type\":\"record\",\"name\":\"Segment\",\"fields\":[{\"name\":\"id\",\"type\":\"int\"},{\"name\":\"expiration\",\"type\":\"long\",\"default\":0}]}},\"default\":[]},{\"name\":\"edges\",\"type\":{\"type\":\"map\",\"values\":\"long\"},\"default\":{}},{\"name\":\"behaviors\",\"type\":{\"type\":\"map\",\"values\":{\"type\":\"map\",\"values\":\"int\"},\"default\":{}},\"doc\":\"Map of net.context to map of YYYYMMDD->number_of_hits\",\"default\":{}},{\"name\":\"birthdate\",\"type\":\"long\"},{\"name\":\"association_ids\",\"type\":{\"type\":\"map\",\"values\":\"string\"},\"default\":{}}]}],\"default\":null},{\"name\":\"events\",\"type\":{\"type\":\"array\",\"items\":{\"type\":\"record\",\"name\":\"ProfileEvent\",\"fields\":[{\"name\":\"cookie_id\",\"type\":\"string\"},{\"name\":\"tstamp\",\"type\":\"long\"},{\"name\":\"edge\",\"type\":\"string\"},{\"name\":\"changes\",\"type\":[{\"type\":\"record\",\"name\":\"Hit\",\"fields\":[{\"name\":\"daystamp\",\"type\":\"string\"},{\"name\":\"context\",\"type\":\"string\"},{\"name\":\"type\",\"type\":{\"type\":\"enum\",\"name\":\"HitType\",\"symbols\":[\"ADX\",\"RETARGET\"]}},{\"name\":\"count\",\"type\":\"int\",\"default\":1}]},{\"type\":\"record\",\"name\":\"Command\",\"fields\":[{\"name\":\"operation\",\"type\":{\"type\":\"enum\",\"name\":\"OperationType\",\"symbols\":[\"ADD\",\"REPLACE\",\"UPDATE\",\"REMOVE\"]}},{\"name\":\"association_id\",\"type\":[\"null\",\"string\"],\"default\":null},{\"name\":\"network\",\"type\":\"string\"},{\"name\":\"segments\",\"type\":{\"type\":\"array\",\"items\":\"int\"},\"default\":[]}]}]}]}},\"default\":[]}]}";
 
         String js = "" +
-                "jsonToAvro(" +
-                "    fixDir({ avroFile1: fixFile('" + jsonStr + "'), avroFile2: fixFile('" + jsonStr + "')})," +
-                "    fixFile('" + schemaStr + "')" +
+                "ci.jsonToAvro(" +
+                "    ci.fixDir({ avroFile1: ci.fixFile('" + jsonStr + "'), avroFile2: ci.fixFile('" + jsonStr + "')})," +
+                "    ci.fixFile('" + schemaStr + "')" +
                 ");";
 
         TestConfigurationParser parser = new TestConfigurationParser();
@@ -398,7 +398,7 @@ public class TestConfigurationParserTest {
     @Test
     public void testFixTable() throws IOException {
 
-        String js = "fixTable([\"col1\", \"col2\"], [[\"row1\", \"row2\"],[\"row11\", \"row22\"]])";
+        String js = "ci.fixTable([\"col1\", \"col2\"], [[\"row1\", \"row2\"],[\"row11\", \"row22\"]])";
 
         TestConfigurationParser parser = new TestConfigurationParser();
 
@@ -413,7 +413,7 @@ public class TestConfigurationParserTest {
     @Test (expected = JavaScriptException.class)
     public void testFixTableNoRows() throws IOException {
 
-        String js = "fixTable([\"col1\", \"col2\"])";
+        String js = "ci.fixTable([\"col1\", \"col2\"])";
 
         TestConfigurationParser parser = new TestConfigurationParser();
 
@@ -423,7 +423,7 @@ public class TestConfigurationParserTest {
     @Test
     public void testFixTableFromResource() throws IOException {
 
-        String js = "fixTableFromResource(\"somedata\")";
+        String js = "ci.fixTableFromResource(\"somedata\")";
 
         TestConfigurationParser parser = new TestConfigurationParser();
 
@@ -441,7 +441,7 @@ public class TestConfigurationParserTest {
     @Test(expected = JavaScriptException.class)
     public void testFixTableFromResourceError() throws IOException {
 
-        String js = "fixTableFromResource()";
+        String js = "ci.fixTableFromResource()";
 
         TestConfigurationParser parser = new TestConfigurationParser();
 
@@ -469,7 +469,7 @@ public class TestConfigurationParserTest {
     public void testHiveInput() throws Exception {
 
         String tableCreationScript = "table creation script";
-        String js = "hiveInput(\"dbname\", \"tablename\", fixFile(\"" + tableCreationScript + "\"))";
+        String js = "ci.hiveInput(\"dbname\", \"tablename\", ci.fixFile(\"" + tableCreationScript + "\"))";
 
         TestConfigurationParser parser = new TestConfigurationParser();
 
@@ -489,8 +489,8 @@ public class TestConfigurationParserTest {
 
         String tableCreationScript = "table creation script";
         String js =
-                "var table = fixTable([\"col1\", \"col2\"], [[\"row1\", \"row2\"],[\"row11\", \"row22\"]]);" +
-                "hiveInput(\"dbname\", \"tablename\", fixFile(\"" + tableCreationScript + "\"), table)";
+                "var table = ci.fixTable([\"col1\", \"col2\"], [[\"row1\", \"row2\"],[\"row11\", \"row22\"]]);" +
+                "ci.hiveInput(\"dbname\", \"tablename\", ci.fixFile(\"" + tableCreationScript + "\"), table)";
 
         TestConfigurationParser parser = new TestConfigurationParser();
 
@@ -509,7 +509,7 @@ public class TestConfigurationParserTest {
     @Test(expected = JavaScriptException.class)
     public void testHiveInputFails() throws IOException {
 
-        String js = "hiveInput(\"tablename\", [[\"1\",\"2\",\"3\"],[\"11\",\"22\",\"33\"]])";
+        String js = "ci.hiveInput(\"tablename\", [[\"1\",\"2\",\"3\"],[\"11\",\"22\",\"33\"]])";
 
         TestConfigurationParser parser = new TestConfigurationParser();
         parser.evaluateTestConfig(new StringReader(js), "string");
@@ -518,7 +518,7 @@ public class TestConfigurationParserTest {
     @Test
     public void testHiveInputNoData() throws IOException {
 
-        String js = "hiveInput(\"dbname\", \"tablename\", fixFile(\"create table blah\"))";
+        String js = "ci.hiveInput(\"dbname\", \"tablename\", ci.fixFile(\"create table blah\"))";
 
         TestConfigurationParser parser = new TestConfigurationParser();
 
@@ -531,7 +531,7 @@ public class TestConfigurationParserTest {
     }
     @Test
     public void testHiveTable() throws IOException {
-        String js = "hiveTable(\"dbname\", \"tablename\")";
+        String js = "ci.hiveTable(\"dbname\", \"tablename\")";
 
         TestConfigurationParser parser = new TestConfigurationParser();
 
@@ -544,7 +544,7 @@ public class TestConfigurationParserTest {
 
     @Test (expected = JavaScriptException.class)
     public void testHiveTableNoTable() throws IOException {
-        String js = "hiveTable(\"dbname\")";
+        String js = "ci.hiveTable(\"dbname\")";
 
         TestConfigurationParser parser = new TestConfigurationParser();
         parser.evaluateTestConfig(new StringReader(js), "string");
@@ -552,7 +552,7 @@ public class TestConfigurationParserTest {
 
     @Test (expected = JavaScriptException.class)
     public void testHiveTableNoDb() throws IOException {
-        String js = "hiveTable()";
+        String js = "ci.hiveTable()";
 
         TestConfigurationParser parser = new TestConfigurationParser();
         parser.evaluateTestConfig(new StringReader(js), "string");
@@ -560,7 +560,7 @@ public class TestConfigurationParserTest {
 
     @Test
     public void testTableToJson() throws IOException {
-        String js = "tableToJson(hiveTable(\"dbname\", \"tablename\"))";
+        String js = "ci.tableToJson(ci.hiveTable(\"dbname\", \"tablename\"))";
 
         TestConfigurationParser parser = new TestConfigurationParser();
 
@@ -573,7 +573,7 @@ public class TestConfigurationParserTest {
 
     @Test (expected = JavaScriptException.class)
     public void testTableToJsonNoCreator() throws IOException {
-        String js = "tableToJson()";
+        String js = "ci.tableToJson()";
 
         TestConfigurationParser parser = new TestConfigurationParser();
         parser.evaluateTestConfig(new StringReader(js), "string");
@@ -581,7 +581,7 @@ public class TestConfigurationParserTest {
     
     @Test
     public void testTableToTSV() throws IOException {
-        String js = "tableToTSV(hiveTable(\"dbname\", \"tablename\"))";
+        String js = "ci.tableToTSV(ci.hiveTable(\"dbname\", \"tablename\"))";
 
         TestConfigurationParser parser = new TestConfigurationParser();
 
@@ -594,7 +594,7 @@ public class TestConfigurationParserTest {
 
     @Test (expected = JavaScriptException.class)
     public void testTableToTSVNoCreator() throws IOException {
-        String js = "tableToTSV()";
+        String js = "ci.tableToTSV()";
 
         TestConfigurationParser parser = new TestConfigurationParser();
         parser.evaluateTestConfig(new StringReader(js), "string");
@@ -603,7 +603,7 @@ public class TestConfigurationParserTest {
 
     @Test
     public void testExpandJson() throws IOException {
-        String js = "expandJson(tableToJson(hiveTable(\"dbname\", \"tablename\")), [\"field1\", \"field2\"])";
+        String js = "ci.expandJson(ci.tableToJson(ci.hiveTable(\"dbname\", \"tablename\")), [\"field1\", \"field2\"])";
 
         TestConfigurationParser parser = new TestConfigurationParser();
 
@@ -615,7 +615,7 @@ public class TestConfigurationParserTest {
 
     @Test
     public void testExpandJsonNoFields() throws IOException {
-        String js = "expandJson(tableToJson(hiveTable(\"dbname\", \"tablename\")))";
+        String js = "ci.expandJson(ci.tableToJson(ci.hiveTable(\"dbname\", \"tablename\")))";
 
         TestConfigurationParser parser = new TestConfigurationParser();
 
@@ -626,7 +626,7 @@ public class TestConfigurationParserTest {
 
     @Test (expected = JavaScriptException.class)
     public void testExpandJsonNoParams() throws IOException {
-        String js = "expandJson()";
+        String js = "ci.expandJson()";
 
         TestConfigurationParser parser = new TestConfigurationParser();
         parser.evaluateTestConfig(new StringReader(js), "string");
@@ -635,8 +635,8 @@ public class TestConfigurationParserTest {
     @Test
     public void testFixTableComparerNotOrdered() throws IOException {
         String js =
-                "var table1 = fixTable([\"col1\", \"col2\"], [[\"row1\", \"row2\"],[\"row11\", \"row22\"]]);" +
-                        "var table2 = fixTable([\"col1\", \"col2\"], [[\"row1\", \"row2\"],[\"row11\", \"row22\"]]);" +
+                "var table1 = ci.fixTable([\"col1\", \"col2\"], [[\"row1\", \"row2\"],[\"row11\", \"row22\"]]);" +
+                        "var table2 = ci.fixTable([\"col1\", \"col2\"], [[\"row1\", \"row2\"],[\"row11\", \"row22\"]]);" +
                         "ci.fixTableCompare(table1, table2);";
 
         TestConfigurationParser parser = new TestConfigurationParser();
@@ -650,8 +650,8 @@ public class TestConfigurationParserTest {
     @Test
     public void testFixTableComparerOrdered() throws IOException {
         String js =
-                "var table1 = fixTable([\"col1\", \"col2\"], [[\"row1\", \"row2\"],[\"row11\", \"row22\"]]);" +
-                        "var table2 = fixTable([\"col1\", \"col2\"], [[\"row1\", \"row2\"],[\"row11\", \"row22\"]]);" +
+                "var table1 = ci.fixTable([\"col1\", \"col2\"], [[\"row1\", \"row2\"],[\"row11\", \"row22\"]]);" +
+                        "var table2 = ci.fixTable([\"col1\", \"col2\"], [[\"row1\", \"row2\"],[\"row11\", \"row22\"]]);" +
                         "ci.fixTableCompare(table1, table2, true, true);";
 
         TestConfigurationParser parser = new TestConfigurationParser();
@@ -666,7 +666,7 @@ public class TestConfigurationParserTest {
     @Test (expected = JavaScriptException.class)
     public void testFixTableComparerFails1() throws IOException {
         String js =
-                "var table1 = fixTable([\"col1\", \"col2\"], [[\"row1\", \"row2\"],[\"row11\", \"row22\"]]);" +
+                "var table1 = ci.fixTable([\"col1\", \"col2\"], [[\"row1\", \"row2\"],[\"row11\", \"row22\"]]);" +
                 "ci.fixTableCompare(table1);";
 
         TestConfigurationParser parser = new TestConfigurationParser();
