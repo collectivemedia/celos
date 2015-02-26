@@ -452,7 +452,7 @@ public class TestConfigurationParserTest {
     @Test
     public void testHiveInputOnlyDbName() throws Exception {
 
-        String js = "hiveInput(\"dbname\")";
+        String js = "ci.hiveInput(\"dbname\")";
 
         TestConfigurationParser parser = new TestConfigurationParser();
 
