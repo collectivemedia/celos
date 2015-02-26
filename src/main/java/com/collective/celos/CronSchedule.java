@@ -28,7 +28,7 @@ public class CronSchedule implements Schedule {
     }
 
     @Override
-    public SortedSet<ScheduledTime> getScheduledTimes(ScheduledTime start, ScheduledTime end) {
+    public SortedSet<ScheduledTime> getScheduledTimes(Scheduler scheduler, ScheduledTime start, ScheduledTime end) {
         SortedSet<ScheduledTime> scheduledTimes = new TreeSet<ScheduledTime>();
         DateTime startDT = start.getDateTime();
         DateTime endDT = end.getDateTime();

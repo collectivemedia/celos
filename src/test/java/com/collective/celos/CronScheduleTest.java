@@ -14,7 +14,7 @@ public class CronScheduleTest {
     public void cronScheduleEmpty() {
         Schedule sch = makeCronSchedule("0 0 12 * * ?");
         ScheduledTime t = new ScheduledTime("2013-11-25T20:00Z");
-        Set<ScheduledTime> times = sch.getScheduledTimes(t, t);
+        Set<ScheduledTime> times = sch.getScheduledTimes(null, t, t);
         Assert.assertEquals(0, times.size());
     }
 
@@ -23,7 +23,7 @@ public class CronScheduleTest {
         Schedule sch = makeCronSchedule("0 0 12 * * ?");
         ScheduledTime t1 = new ScheduledTime("2013-11-25T20:00Z");
         ScheduledTime t2 = new ScheduledTime("2013-11-25T21:00Z");
-        Set<ScheduledTime> times = sch.getScheduledTimes(t1, t2);
+        Set<ScheduledTime> times = sch.getScheduledTimes(null, t1, t2);
         Assert.assertEquals(0, times.size());
     }
 
@@ -32,7 +32,7 @@ public class CronScheduleTest {
         Schedule sch = makeCronSchedule("0 0 12 * * ?");
         ScheduledTime t1 = new ScheduledTime("2013-11-25T14:00Z");
         ScheduledTime t2 = new ScheduledTime("2013-11-25T11:00Z");
-        Set<ScheduledTime> times = sch.getScheduledTimes(t1, t2);
+        Set<ScheduledTime> times = sch.getScheduledTimes(null, t1, t2);
 
         Assert.assertEquals(0, times.size());
     }
@@ -43,7 +43,7 @@ public class CronScheduleTest {
         Schedule sch = makeCronSchedule("0 0 12 * * ?");
         ScheduledTime t1 = new ScheduledTime("2013-11-25T12:00Z");
         ScheduledTime t2 = new ScheduledTime("2013-11-25T13:00Z");
-        Set<ScheduledTime> times = sch.getScheduledTimes(t1, t2);
+        Set<ScheduledTime> times = sch.getScheduledTimes(null, t1, t2);
 
         List<ScheduledTime> expectedMinutes = Arrays.asList(new ScheduledTime("2013-11-25T12:00Z"));
         Assert.assertEquals(new TreeSet<ScheduledTime>(expectedMinutes), times);
@@ -55,7 +55,7 @@ public class CronScheduleTest {
         Schedule sch = makeCronSchedule("0 0/15 14 * * ?");
         ScheduledTime t1 = new ScheduledTime("2013-11-25T12:00Z");
         ScheduledTime t2 = new ScheduledTime("2013-11-25T18:00Z");
-        Set<ScheduledTime> times = sch.getScheduledTimes(t1, t2);
+        Set<ScheduledTime> times = sch.getScheduledTimes(null, t1, t2);
 
         List<ScheduledTime> expectedMinutes = Arrays.asList(
                 new ScheduledTime("2013-11-25T14:00Z"),
@@ -72,7 +72,7 @@ public class CronScheduleTest {
         Schedule sch = makeCronSchedule("0 0 12 * * ?");
         ScheduledTime t1 = new ScheduledTime("2013-11-25T11:00Z");
         ScheduledTime t2 = new ScheduledTime("2013-11-25T12:00Z");
-        Set<ScheduledTime> hours = sch.getScheduledTimes(t1, t2);
+        Set<ScheduledTime> hours = sch.getScheduledTimes(null, t1, t2);
         Assert.assertEquals(0, hours.size());
     }
 
@@ -94,7 +94,7 @@ public class CronScheduleTest {
         Schedule sch = makeCronSchedule("0 0 12 * * ?");
         ScheduledTime t1 = new ScheduledTime("2013-11-25T11:30Z");
         ScheduledTime t2 = new ScheduledTime("2013-11-25T12:30Z");
-        Set<ScheduledTime> hours = sch.getScheduledTimes(t1, t2);
+        Set<ScheduledTime> hours = sch.getScheduledTimes(null, t1, t2);
         Assert.assertEquals(1, hours.size());
     }
 
@@ -106,7 +106,7 @@ public class CronScheduleTest {
     public void hourlyScheduleEmpty() {
         Schedule sch = makeHourlySchedule();
         ScheduledTime t = new ScheduledTime("2013-11-25T20:00Z");
-        Set<ScheduledTime> hours = sch.getScheduledTimes(t, t);
+        Set<ScheduledTime> hours = sch.getScheduledTimes(null, t, t);
         Assert.assertEquals(0, hours.size());
     }
 
@@ -115,7 +115,7 @@ public class CronScheduleTest {
         Schedule sch = makeHourlySchedule();
         ScheduledTime t1 = new ScheduledTime("2013-11-25T20:00Z");
         ScheduledTime t2 = new ScheduledTime("2013-11-25T21:00Z");
-        Set<ScheduledTime> hours = sch.getScheduledTimes(t1, t2);
+        Set<ScheduledTime> hours = sch.getScheduledTimes(null, t1, t2);
         Assert.assertEquals(new TreeSet<ScheduledTime>(Arrays.asList(t1)), hours);
     }
     
@@ -124,7 +124,7 @@ public class CronScheduleTest {
         Schedule sch = makeHourlySchedule();
         ScheduledTime t1 = new ScheduledTime("2013-11-25T20:05Z");
         ScheduledTime t2 = new ScheduledTime("2013-11-25T21:00Z");
-        Set<ScheduledTime> hours = sch.getScheduledTimes(t1, t2);
+        Set<ScheduledTime> hours = sch.getScheduledTimes(null, t1, t2);
         Assert.assertEquals(0, hours.size());
     }
 
@@ -133,7 +133,7 @@ public class CronScheduleTest {
         Schedule sch = makeHourlySchedule();
         ScheduledTime t1 = new ScheduledTime("2013-11-25T20:05:12.00182Z");
         ScheduledTime t2 = new ScheduledTime("2013-11-25T23:05:56.2182Z");
-        Set<ScheduledTime> hours = sch.getScheduledTimes(t1, t2);
+        Set<ScheduledTime> hours = sch.getScheduledTimes(null, t1, t2);
         List<ScheduledTime> expectedHours =
                 Arrays.asList(new ScheduledTime("2013-11-25T21:00Z"),
                               new ScheduledTime("2013-11-25T22:00Z"),
@@ -146,7 +146,7 @@ public class CronScheduleTest {
         Schedule sch = makeHourlySchedule();
         ScheduledTime t1 = new ScheduledTime("2013-11-25T20:00Z");
         ScheduledTime t2 = new ScheduledTime("2013-11-25T23:05:56.2182Z");
-        Set<ScheduledTime> hours = sch.getScheduledTimes(t1, t2);
+        Set<ScheduledTime> hours = sch.getScheduledTimes(null, t1, t2);
         List<ScheduledTime> expectedHours =
                 Arrays.asList(new ScheduledTime("2013-11-25T20:00Z"),
                               new ScheduledTime("2013-11-25T21:00Z"),
@@ -165,7 +165,7 @@ public class CronScheduleTest {
         // -> empty schedule
         Schedule sch = makeMinutelySchedule();
         ScheduledTime t = new ScheduledTime("2013-11-25T20:00Z");
-        Set<ScheduledTime> minutes = sch.getScheduledTimes(t, t);
+        Set<ScheduledTime> minutes = sch.getScheduledTimes(null, t, t);
         Assert.assertEquals(0, minutes.size());
     }
 
@@ -176,7 +176,7 @@ public class CronScheduleTest {
         Schedule sch = makeMinutelySchedule();
         ScheduledTime t1 = new ScheduledTime("2013-11-25T20:00Z");
         ScheduledTime t2 = new ScheduledTime("2013-11-25T20:01Z");
-        Set<ScheduledTime> minutes = sch.getScheduledTimes(t1, t2);
+        Set<ScheduledTime> minutes = sch.getScheduledTimes(null, t1, t2);
         Assert.assertEquals(new TreeSet<ScheduledTime>(Arrays.asList(t1)), minutes);
     }
     
@@ -188,7 +188,7 @@ public class CronScheduleTest {
         Schedule sch = makeMinutelySchedule();
         ScheduledTime t1 = new ScheduledTime("2013-11-25T20:01:05Z");
         ScheduledTime t2 = new ScheduledTime("2013-11-25T20:02:00Z");
-        Set<ScheduledTime> minutes = sch.getScheduledTimes(t1, t2);
+        Set<ScheduledTime> minutes = sch.getScheduledTimes(null, t1, t2);
         Assert.assertEquals(0, minutes.size());
     }
 
@@ -200,7 +200,7 @@ public class CronScheduleTest {
         Schedule sch = makeMinutelySchedule();
         ScheduledTime t1 = new ScheduledTime("2013-11-25T20:05:12.00182Z");
         ScheduledTime t2 = new ScheduledTime("2013-11-25T20:08:56.2182Z");
-        Set<ScheduledTime> minutes = sch.getScheduledTimes(t1, t2);
+        Set<ScheduledTime> minutes = sch.getScheduledTimes(null, t1, t2);
         List<ScheduledTime> expectedMinutes =
                 Arrays.asList(new ScheduledTime("2013-11-25T20:06Z"),
                               new ScheduledTime("2013-11-25T20:07Z"),
@@ -216,7 +216,7 @@ public class CronScheduleTest {
         Schedule sch = makeMinutelySchedule();
         ScheduledTime t1 = new ScheduledTime("2013-11-25T20:00Z");
         ScheduledTime t2 = new ScheduledTime("2013-11-25T20:03:56.2182Z");
-        Set<ScheduledTime> minutes = sch.getScheduledTimes(t1, t2);
+        Set<ScheduledTime> minutes = sch.getScheduledTimes(null, t1, t2);
         List<ScheduledTime> expectedMinutes =
                 Arrays.asList(new ScheduledTime("2013-11-25T20:00Z"),
                               new ScheduledTime("2013-11-25T20:01Z"),

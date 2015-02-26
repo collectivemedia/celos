@@ -39,6 +39,12 @@ public class JavaScriptFunctionsTest {
     }
     
     @Test
+    public void testDependentSchedule() throws Exception {
+        DependentSchedule s = (DependentSchedule) runJS("dependentSchedule('foo')");
+        Assert.assertEquals(new WorkflowID("foo"), s.getOtherWorkflowID());
+    }
+
+    @Test
     public void testCronScheduleRequiresExpr() throws Exception {
         expectMessage("cronSchedule()", "Undefined cron expression");
     }

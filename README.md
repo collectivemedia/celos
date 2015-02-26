@@ -470,6 +470,27 @@ Run a workflow at second 0, minute 15 of every hour of every day of the year.
 ...
 </pre>
 
+### dependentSchedule
+
+Syntax: `dependentSchedule(otherWorkflowID)`
+
+Schedules a workflow to run with the same schedule as another workflow.  Effectively, this clones the other workflow's schedule.
+
+#### Parameters
+
+* `otherWorkflowID` -- The ID of the other workflow as a string.
+
+#### Example
+
+Run the workflow with the same schedule as workflow "foo".
+
+<pre>
+...
+"schedule": dependentSchedule("foo")
+...
+</pre>
+
+
 ## Scheduling Strategies
 
 ### serialSchedulingStrategy

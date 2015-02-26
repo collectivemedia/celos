@@ -16,7 +16,7 @@ public class MinutelyScheduleTest {
         // -> empty schedule
         Schedule sch = makeMinutelySchedule();
         ScheduledTime t = new ScheduledTime("2013-11-25T20:00Z");
-        Set<ScheduledTime> minutes = sch.getScheduledTimes(t, t);
+        Set<ScheduledTime> minutes = sch.getScheduledTimes(null, t, t);
         Assert.assertEquals(0, minutes.size());
     }
 
@@ -27,7 +27,7 @@ public class MinutelyScheduleTest {
         Schedule sch = makeMinutelySchedule();
         ScheduledTime t1 = new ScheduledTime("2013-11-25T20:00Z");
         ScheduledTime t2 = new ScheduledTime("2013-11-25T20:01Z");
-        Set<ScheduledTime> minutes = sch.getScheduledTimes(t1, t2);
+        Set<ScheduledTime> minutes = sch.getScheduledTimes(null, t1, t2);
         Assert.assertEquals(new TreeSet<ScheduledTime>(Arrays.asList(t1)), minutes);
     }
     
@@ -39,7 +39,7 @@ public class MinutelyScheduleTest {
         Schedule sch = makeMinutelySchedule();
         ScheduledTime t1 = new ScheduledTime("2013-11-25T20:01:05Z");
         ScheduledTime t2 = new ScheduledTime("2013-11-25T20:02:00Z");
-        Set<ScheduledTime> minutes = sch.getScheduledTimes(t1, t2);
+        Set<ScheduledTime> minutes = sch.getScheduledTimes(null, t1, t2);
         Assert.assertEquals(0, minutes.size());
     }
 
@@ -51,7 +51,7 @@ public class MinutelyScheduleTest {
         Schedule sch = makeMinutelySchedule();
         ScheduledTime t1 = new ScheduledTime("2013-11-25T20:05:12.00182Z");
         ScheduledTime t2 = new ScheduledTime("2013-11-25T20:08:56.2182Z");
-        Set<ScheduledTime> minutes = sch.getScheduledTimes(t1, t2);
+        Set<ScheduledTime> minutes = sch.getScheduledTimes(null, t1, t2);
         List<ScheduledTime> expectedMinutes =
                 Arrays.asList(new ScheduledTime("2013-11-25T20:06Z"),
                               new ScheduledTime("2013-11-25T20:07Z"),
@@ -67,7 +67,7 @@ public class MinutelyScheduleTest {
         Schedule sch = makeMinutelySchedule();
         ScheduledTime t1 = new ScheduledTime("2013-11-25T20:00Z");
         ScheduledTime t2 = new ScheduledTime("2013-11-25T20:03:56.2182Z");
-        Set<ScheduledTime> minutes = sch.getScheduledTimes(t1, t2);
+        Set<ScheduledTime> minutes = sch.getScheduledTimes(null, t1, t2);
         List<ScheduledTime> expectedMinutes =
                 Arrays.asList(new ScheduledTime("2013-11-25T20:00Z"),
                               new ScheduledTime("2013-11-25T20:01Z"),

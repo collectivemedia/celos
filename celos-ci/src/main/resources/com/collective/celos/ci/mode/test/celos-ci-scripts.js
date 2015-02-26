@@ -172,15 +172,19 @@ ci.hiveInput = function (dbName, tableName, createScriptFile, fixTableCreator) {
     if (!dbName || typeof dbName != "string") {
         throw "dbName should be valid string";
     }
-    if (!tableName || typeof tableName != "string") {
-        throw "tableName should be valid string";
-    }
-    if (!createScriptFile) {
-        throw "createScriptFile should be valid string";
-    }
-    if (!fixTableCreator) {
+    if (!tableName) {
+        tableName = null;
+        createScriptFile = null;
         fixTableCreator = null;
+    } else {
+        if (!createScriptFile) {
+            throw "createScriptFile should be valid string";
+        }
+        if (!fixTableCreator) {
+            fixTableCreator = null;
+        }
     }
+
     return new HiveTableDeployer(new DatabaseName(dbName), tableName, createScriptFile, fixTableCreator);
 }
 
@@ -222,21 +226,3 @@ ci.expandJson = function (jsonCreator, fieldsRaw) {
 
     return new ConversionCreator(jsonCreator, new JsonExpandConverter(fields));
 }
-
-var fixDirFromResource = ci.fixDirFromResource;
-var fixFileFromResource = ci.fixFileFromResource;
-var fixFile = ci.fixFile;
-var fixDir = ci.fixDir;
-var hdfsInput = ci.hdfsInput;
-var avroToJson = ci.avroToJson;
-var jsonToAvro = ci.jsonToAvro;
-var jsonCompare = ci.jsonCompare;
-var plainCompare = ci.plainCompare;
-var addTestCase = ci.addTestCase;
-var fixTableFromResource = ci.fixTableFromResource;
-var fixTable = ci.fixTable;
-var hiveInput = ci.hiveInput;
-var hiveTable = ci.hiveTable;
-var tableToJson = ci.tableToJson;
-var tableToTSV = ci.tableToTSV;
-var expandJson = ci.expandJson;
