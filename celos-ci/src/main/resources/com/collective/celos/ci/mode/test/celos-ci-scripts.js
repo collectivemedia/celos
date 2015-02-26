@@ -172,15 +172,19 @@ ci.hiveInput = function (dbName, tableName, createScriptFile, fixTableCreator) {
     if (!dbName || typeof dbName != "string") {
         throw "dbName should be valid string";
     }
-    if (!tableName || typeof tableName != "string") {
-        throw "tableName should be valid string";
-    }
-    if (!createScriptFile) {
-        throw "createScriptFile should be valid string";
-    }
-    if (!fixTableCreator) {
+    if (!tableName) {
+        tableName = null;
+        createScriptFile = null;
         fixTableCreator = null;
+    } else {
+        if (!createScriptFile) {
+            throw "createScriptFile should be valid string";
+        }
+        if (!fixTableCreator) {
+            fixTableCreator = null;
+        }
     }
+
     return new HiveTableDeployer(new DatabaseName(dbName), tableName, createScriptFile, fixTableCreator);
 }
 
