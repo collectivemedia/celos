@@ -149,12 +149,6 @@ public class JavaScriptFunctionsTest {
     }
 
     @Test
-    public void testShellCommandTrigger() throws Exception {
-        CommandTrigger t = (CommandTrigger) runJS("commandTrigger('hello', 'this', 'is', 'cool')");
-        Assert.assertEquals(Arrays.asList("hello", "this", "is", "cool"), t.getRawCommandElements());
-    }
-
-    @Test
     public void testSuccessTrigger() throws Exception {
         SuccessTrigger t = (SuccessTrigger) runJS("successTrigger('myworkflow')");
         Assert.assertEquals(new WorkflowID("myworkflow"), t.getTriggerWorkflowId());
@@ -230,19 +224,6 @@ public class JavaScriptFunctionsTest {
         props.put("c", "2013");
         ScheduledTime t = new ScheduledTime("2014-03-01T00:00Z");
         Assert.assertEquals(props, s.setupDefaultProperties(s.getProperties(new SlotID(new WorkflowID("foo"), t)), t));
-    }
-    
-    // CommandExternalService
-    
-    @Test
-    public void testCESCommandRequired() throws Exception {
-        expectMessage("commandExternalService()", "Undefined command");
-    }
-    
-    @Test
-    public void testCESUsesCommand() throws Exception {
-        CommandExternalService s = (CommandExternalService) runJS("commandExternalService('shutdown -h now')");
-        Assert.assertEquals("shutdown -h now", s.getRawCommand());
     }
     
     @Test

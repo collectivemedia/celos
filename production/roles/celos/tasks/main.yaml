@@ -26,10 +26,6 @@
     shell: sudo mkdir -p {{celos_db_dir}} && sudo chown {{celos_user}} {{celos_db_dir}}
     tags: celos_dirs
 
-  - name: Prepare jobs dir
-    shell: sudo mkdir -p {{celos_jobs_dir}} && sudo chown {{celos_user}} {{celos_jobs_dir}}
-    tags: celos_dirs
-
   - name: Prepare log dir
     shell: sudo mkdir -p {{celos_log_dir}} && sudo chown {{celos_user}} {{celos_log_dir}}
     tags: celos_dirs
