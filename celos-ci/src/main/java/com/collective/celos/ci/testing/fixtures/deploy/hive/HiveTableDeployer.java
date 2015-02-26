@@ -73,11 +73,11 @@ public class HiveTableDeployer implements FixtureDeployer {
         try(Connection connection = getConnection(testRun); Statement statement = connection.createStatement()) {
 
             String mockedName = databaseName.getMockedName(testRun.getTestUUID());
-            System.out.println("Test case " + testRun.getTestCase().getName() + ": Creating Hive DB " + mockedName);
+            System.out.println(testRun.getTestCase().getName() + ": Creating Hive DB " + mockedName);
 
             createMockedDatabase(statement, mockedName);
             if (tableName != null) {
-                System.out.println("Test case " + testRun.getTestCase().getName() + ": Deploying " + tableName + " to " + mockedName);
+                System.out.println(testRun.getTestCase().getName() + ": Deploying " + tableName + " to " + mockedName);
                 createMockedTable(statement, mockedName, testRun);
 
                 if (dataFileCreator != null) {

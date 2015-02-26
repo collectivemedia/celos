@@ -21,30 +21,30 @@ public class CelosSchedulerWorker {
         this.client = client;
     }
 
-    public void runCelosScheduler(TestCase testConfig) throws Exception {
+    public void runCelosScheduler(TestCase testCase) throws Exception {
         Set<WorkflowID> workflowList;
-        if (testConfig.getTargetWorkflows().isEmpty()) {
+        if (testCase.getTargetWorkflows().isEmpty()) {
             workflowList = client.getWorkflowList();
         } else {
-            workflowList = testConfig.getTargetWorkflows();
+            workflowList = testCase.getTargetWorkflows();
         }
 
-        ScheduledTime startTime = testConfig.getSampleTimeStart().plusSeconds(1);
+        ScheduledTime startTime = testCase.getSampleTimeStart().plusSeconds(1);
         ScheduledTime actualTime = startTime;
-        ScheduledTime endTime = testConfig.getSampleTimeEnd().plusSeconds(1);
+        ScheduledTime endTime = testCase.getSampleTimeEnd().plusSeconds(1);
 
-        System.out.println("Starting scheduler for: " + StringUtils.join(workflowList, ", "));
-        client.iterateScheduler(actualTime, testConfig.getTargetWorkflows());
+        System.out.println(testCase.getName() + ": Starting scheduler for: " + StringUtils.join(workflowList, ", "));
+        client.iterateScheduler(actualTime, testCase.getTargetWorkflows());
 
         while (!actualTime.getDateTime().isAfter(endTime.getDateTime())) {
             String workflowStatuses = StringUtils.join(getWorkflowStatusesInfo(workflowList, actualTime), " ");
-            System.out.println("Workflow statuses: " + workflowStatuses);
+            System.out.println(testCase.getName() + ": Workflow statuses: " + workflowStatuses);
             if (!isThereAnyRunningWorkflows(workflowList, actualTime)) {
                 actualTime = new ScheduledTime(actualTime.getDateTime().plusHours(1));
             } else {
                 Thread.sleep(2000);
             }
-            client.iterateScheduler(actualTime, testConfig.getTargetWorkflows());
+            client.iterateScheduler(actualTime, testCase.getTargetWorkflows());
         }
     }
 

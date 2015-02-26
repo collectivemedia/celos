@@ -4,13 +4,17 @@ import com.collective.celos.ScheduledTime;
 import com.collective.celos.ci.config.CelosCiCommandLine;
 import com.collective.celos.ci.config.deploy.CelosCiTarget;
 import com.collective.celos.ci.config.deploy.CelosCiTargetParser;
+import com.collective.celos.ci.mode.test.TestCase;
+import com.collective.celos.ci.mode.test.TestConfigurationParser;
 import com.collective.celos.ci.mode.test.TestRun;
+import com.collective.celos.ci.mode.test.TestRunFailedException;
 import com.collective.celos.ci.testing.fixtures.compare.RecursiveFsObjectComparer;
-import com.collective.celos.ci.testing.fixtures.create.OutputFixDirFromHdfsCreator;
 import com.collective.celos.ci.testing.fixtures.create.FixDirFromResourceCreator;
+import com.collective.celos.ci.testing.fixtures.create.OutputFixDirFromHdfsCreator;
 import com.collective.celos.ci.testing.fixtures.deploy.HdfsInputDeployer;
-import junit.framework.Assert;
+import com.google.common.collect.Lists;
 import org.apache.hadoop.fs.Path;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -18,6 +22,7 @@ import org.junit.rules.TemporaryFolder;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.util.List;
 
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -61,18 +66,20 @@ public class TestTaskTest {
         CelosCiTargetParser parser = new CelosCiTargetParser("");
         CelosCiTarget target = parser.parse(targetFile.toURI());
 
-        String tmpDir = new File(System.getProperty("java.io.tmpdir")).toURI().toString() + "celos";
-        
+        File tmpDir = tempDir.newFolder();
+
         String configJS = Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/ci/testing/config/test.js").getFile();
 
         CelosCiCommandLine commandLine = new CelosCiCommandLine(targetFile.toURI().toString(), "DEPLOY", "deploydir", "workflow", "testDir", "uname");
-        TestTask testTask = new TestTask(commandLine, new File(configJS));
+        TestTask testTask = new TestTask(commandLine, new File(configJS), tmpDir);
 
-        Assert.assertTrue(testTask.getTestRuns().get(0).getCiContext().getTarget().getDefaultsDirUri().toString().startsWith(tmpDir));
+        String tempDirUri = tmpDir.toURI().toString();
+
+        Assert.assertTrue(testTask.getTestRuns().get(0).getCiContext().getTarget().getDefaultsDirUri().toString().startsWith(tempDirUri));
         Assert.assertEquals(testTask.getTestRuns().get(0).getCiContext().getTarget().getPathToCoreSite(), target.getPathToCoreSite());
         Assert.assertEquals(testTask.getTestRuns().get(0).getCiContext().getTarget().getPathToHdfsSite(), target.getPathToHdfsSite());
-        Assert.assertTrue(testTask.getTestRuns().get(0).getCiContext().getTarget().getWorkflowsDirUri().toString().startsWith(tmpDir));
-        Assert.assertTrue(testTask.getTestRuns().get(0).getCiContext().getTarget().getWorkflowsDirUri().toString().length() > tmpDir.length());
+        Assert.assertTrue(testTask.getTestRuns().get(0).getCiContext().getTarget().getWorkflowsDirUri().toString().startsWith(tempDirUri));
+        Assert.assertTrue(testTask.getTestRuns().get(0).getCiContext().getTarget().getWorkflowsDirUri().toString().length() > tempDirUri.length());
         Assert.assertEquals(testTask.getTestRuns().get(0).getTestCase().getName(), "wordcount test case 1");
         Assert.assertEquals(testTask.getTestRuns().get(0).getTestCase().getSampleTimeStart(), new ScheduledTime("2013-11-20T11:00Z"));
         Assert.assertEquals(testTask.getTestRuns().get(0).getTestCase().getSampleTimeEnd(), new ScheduledTime("2013-11-20T18:00Z"));
@@ -86,11 +93,11 @@ public class TestTaskTest {
         FixDirFromResourceCreator resourceDataCreator = (FixDirFromResourceCreator) comparer.getExpectedDataCreator();
         Assert.assertEquals(resourceDataCreator.getPath(testRun), new File("testDir/src/test/celos-ci/test-1/output/plain/output/wordcount1"));
 
-        Assert.assertTrue(testTask.getTestRuns().get(1).getCiContext().getTarget().getDefaultsDirUri().toString().startsWith(tmpDir));
+        Assert.assertTrue(testTask.getTestRuns().get(1).getCiContext().getTarget().getDefaultsDirUri().toString().startsWith(tempDirUri));
         Assert.assertEquals(testTask.getTestRuns().get(1).getCiContext().getTarget().getPathToCoreSite(), target.getPathToCoreSite());
         Assert.assertEquals(testTask.getTestRuns().get(1).getCiContext().getTarget().getPathToHdfsSite(), target.getPathToHdfsSite());
-        Assert.assertTrue(testTask.getTestRuns().get(1).getCiContext().getTarget().getWorkflowsDirUri().toString().startsWith(tmpDir));
-        Assert.assertTrue(testTask.getTestRuns().get(1).getCiContext().getTarget().getWorkflowsDirUri().toString().length() > tmpDir.length());
+        Assert.assertTrue(testTask.getTestRuns().get(1).getCiContext().getTarget().getWorkflowsDirUri().toString().startsWith(tempDirUri));
+        Assert.assertTrue(testTask.getTestRuns().get(1).getCiContext().getTarget().getWorkflowsDirUri().toString().length() > tempDirUri.length());
         Assert.assertEquals(testTask.getTestRuns().get(1).getTestCase().getName(), "wordcount test case 2");
         Assert.assertEquals(testTask.getTestRuns().get(1).getTestCase().getSampleTimeStart(), new ScheduledTime("2013-12-20T16:00Z"));
         Assert.assertEquals(testTask.getTestRuns().get(1).getTestCase().getSampleTimeEnd(), new ScheduledTime("2013-12-20T18:00Z"));
@@ -102,6 +109,162 @@ public class TestTaskTest {
         FixDirFromResourceCreator resourceDataCreator2 = (FixDirFromResourceCreator) comparer2.getExpectedDataCreator();
         Assert.assertEquals(resourceDataCreator2.getPath(testRun), new File("testDir/src/test/celos-ci/test-1/output/plain/output/wordcount2"));
 
+        File logFile = new File(tmpDir, "celos.log");
+        Assert.assertArrayEquals(new File[]{ logFile }, tmpDir.listFiles());
+        Assert.assertTrue(logFile.length() > 0);
+
+    }
+
+    private class MockTestRun extends TestRun {
+
+        private boolean finished;
+
+        public MockTestRun(CelosCiTarget target, CelosCiCommandLine commandLine, TestCase testCase) throws Exception {
+            super(target, commandLine, testCase, tempDir.newFolder());
+        }
+
+        public void start() throws Exception {
+            finished = true;
+        }
+
+        public boolean isFinished() {
+            return finished;
+        }
+    }
+
+    @Test
+    public void testTest() throws Throwable {
+
+        String hadoopCoreUrl = Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/ci/testing/config/core-site.xml").getFile();
+        String hadoopHdfsUrl = Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/ci/testing/config/hdfs-site.xml").getFile();
+
+        String targetFileStr = "{\n" +
+                "    \"security.settings\": \"secsettings\",\n" +
+                "    \"celos.workflow.dir\": \"celoswfdir\",\n" +
+                "    \"hadoop.hdfs-site.xml\": \"" + hadoopHdfsUrl +"\",\n" +
+                "    \"hadoop.core-site.xml\": \"" + hadoopCoreUrl +"\",\n" +
+                "    \"defaults.file.uri\": \"deffile\"\n" +
+                "}\n";
+
+        File targetFile = tempDir.newFile();
+        FileOutputStream stream = new FileOutputStream(targetFile);
+        stream.write(targetFileStr.getBytes());
+        stream.flush();
+
+        CelosCiCommandLine commandLine = new CelosCiCommandLine(targetFile.toURI().toString(), "DEPLOY", "deploydir", "workflow", "testDir", "uname");
+        String configJS = Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/ci/testing/config/test.js").getFile();
+
+        TestConfigurationParser testConfigurationParser = mock(TestConfigurationParser.class);
+
+        CelosCiTargetParser parser = new CelosCiTargetParser("");
+        CelosCiTarget target = parser.parse(targetFile.toURI());
+
+        List<MockTestRun> runList = Lists.newArrayList(new MockTestRun(target, commandLine, null), new MockTestRun(target, commandLine, null));
+        doReturn(runList).when(testConfigurationParser).getTestCases();
+
+        TestTask testTask = new TestTask(commandLine, new File(configJS), tempDir.newFolder());
+        testTask.getTestRuns().clear();
+        testTask.getTestRuns().addAll(runList);
+        testTask.start();
+
+        int SLEEP_SECONDS_BEFORE_TEST_FAIL = 5;
+
+        int waitCount = 0;
+        while (!runList.get(0).isFinished() || !runList.get(1).isFinished()) {
+            if (waitCount ++ == SLEEP_SECONDS_BEFORE_TEST_FAIL) {
+                Assert.assertTrue(false);
+            }
+            Thread.sleep(1000);
+        }
+    }
+
+    private class MockTestRunException extends TestRun {
+
+        private final String testRunFailedText;
+
+        public MockTestRunException(String testRunFailedText, CelosCiTarget target, CelosCiCommandLine commandLine, TestCase testCase) throws Exception {
+            super(target, commandLine, testCase, tempDir.newFolder());
+            this.testRunFailedText = testRunFailedText;
+        }
+
+        public void start() throws Exception {
+            throw new TestRunFailedException(testRunFailedText);
+        }
+
+    }
+
+    @Test(expected = TestRunFailedException.class)
+    public void testTestException() throws Throwable {
+
+        String hadoopCoreUrl = Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/ci/testing/config/core-site.xml").getFile();
+        String hadoopHdfsUrl = Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/ci/testing/config/hdfs-site.xml").getFile();
+
+        String targetFileStr = "{\n" +
+                "    \"security.settings\": \"secsettings\",\n" +
+                "    \"celos.workflow.dir\": \"celoswfdir\",\n" +
+                "    \"hadoop.hdfs-site.xml\": \"" + hadoopHdfsUrl +"\",\n" +
+                "    \"hadoop.core-site.xml\": \"" + hadoopCoreUrl +"\",\n" +
+                "    \"defaults.file.uri\": \"deffile\"\n" +
+                "}\n";
+
+        File targetFile = tempDir.newFile();
+        FileOutputStream stream = new FileOutputStream(targetFile);
+        stream.write(targetFileStr.getBytes());
+        stream.flush();
+
+        CelosCiCommandLine commandLine = new CelosCiCommandLine(targetFile.toURI().toString(), "DEPLOY", "deploydir", "workflow", "testDir", "uname");
+        String configJS = Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/ci/testing/config/test.js").getFile();
+
+        TestConfigurationParser testConfigurationParser = mock(TestConfigurationParser.class);
+
+        CelosCiTargetParser parser = new CelosCiTargetParser("");
+        CelosCiTarget target = parser.parse(targetFile.toURI());
+
+        List<MockTestRunException> runList = Lists.newArrayList(new MockTestRunException("error2", target, commandLine, null));
+        doReturn(runList).when(testConfigurationParser).getTestCases();
+
+        TestTask testTask = new TestTask(commandLine, new File(configJS), tempDir.newFolder());
+        testTask.getTestRuns().clear();
+        testTask.getTestRuns().addAll(runList);
+
+        testTask.start();
+    }
+
+    @Test(expected = TestRunFailedException.class)
+    public void testTestTwoExceptions() throws Throwable {
+
+        String hadoopCoreUrl = Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/ci/testing/config/core-site.xml").getFile();
+        String hadoopHdfsUrl = Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/ci/testing/config/hdfs-site.xml").getFile();
+
+        String targetFileStr = "{\n" +
+                "    \"security.settings\": \"secsettings\",\n" +
+                "    \"celos.workflow.dir\": \"celoswfdir\",\n" +
+                "    \"hadoop.hdfs-site.xml\": \"" + hadoopHdfsUrl +"\",\n" +
+                "    \"hadoop.core-site.xml\": \"" + hadoopCoreUrl +"\",\n" +
+                "    \"defaults.file.uri\": \"deffile\"\n" +
+                "}\n";
+
+        File targetFile = tempDir.newFile();
+        FileOutputStream stream = new FileOutputStream(targetFile);
+        stream.write(targetFileStr.getBytes());
+        stream.flush();
+
+        CelosCiCommandLine commandLine = new CelosCiCommandLine(targetFile.toURI().toString(), "DEPLOY", "deploydir", "workflow", "testDir", "uname");
+        String configJS = Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/ci/testing/config/test.js").getFile();
+
+        TestConfigurationParser testConfigurationParser = mock(TestConfigurationParser.class);
+
+        CelosCiTargetParser parser = new CelosCiTargetParser("");
+        CelosCiTarget target = parser.parse(targetFile.toURI());
+
+        List<MockTestRunException> runList = Lists.newArrayList(new MockTestRunException("error1", target, commandLine, null), new MockTestRunException("error2", target, commandLine, null));
+        doReturn(runList).when(testConfigurationParser).getTestCases();
+
+        TestTask testTask = new TestTask(commandLine, new File(configJS), tempDir.newFolder());
+        testTask.getTestRuns().clear();
+        testTask.getTestRuns().addAll(runList);
+
+        testTask.start();
     }
 
 }
