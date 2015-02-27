@@ -138,6 +138,9 @@ public class TestRun {
 
             prepareCelosServerEnv();
 
+            logJsFileExists(WorkflowFilesDeployer.WORKFLOW_FILENAME);
+            logJsFileExists(WorkflowFilesDeployer.DEFAULTS_FILENAME);
+
             wfDeployer.deploy();
             hdfsDeployer.deploy();
 
@@ -160,6 +163,13 @@ public class TestRun {
             celosServer.stopServer();
             doCleanup();
             validateCleanState();
+        }
+    }
+
+    private void logJsFileExists(String fileName) {
+        File localFile = new File(ciContext.getDeployDir(), fileName);
+        if (!localFile.exists()) {
+            System.out.println(testCase.getName() + ": " + localFile.getAbsolutePath() + " was not found, so not deploying it");
         }
     }
 

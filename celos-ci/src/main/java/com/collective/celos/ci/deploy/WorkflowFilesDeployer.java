@@ -14,8 +14,8 @@ import java.net.URISyntaxException;
 
 public class WorkflowFilesDeployer {
 
-    private static final String WORKFLOW_FILENAME = "workflow.js";
-    private static final String DEFAULTS_FILENAME = "defaults.js";
+    public static final String WORKFLOW_FILENAME = "workflow.js";
+    public static final String DEFAULTS_FILENAME = "defaults.js";
 
     private final JScpWorker jScpWorker;
     private final CelosCiContext config;
