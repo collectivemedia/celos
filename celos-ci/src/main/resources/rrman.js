@@ -1,31 +1,118 @@
-const CANVAS_WIDTH = 1024;
-const CANVAS_HEIGHT = 768;
-const CELL_HEIGHT = 36;
-
 const SECONDS_MS = 1000;
 const MINUTE_MS = 60 * SECONDS_MS;
 const HOUR_MS = 60 * MINUTE_MS;
 
-const START_TIME = new Date();
-const END_TIME = distractMs(START_TIME, HOUR_MS * 24 * 7);
+const SUCCESS = { name: 'SUCCESS' };
+const FAILED = { name: 'FAILED' };
 
-const BASE_CELL_WIDTH = 69;
-var baseCellTimeIndex = 3;
+const CONSTANTS = {
+    //const ZOOM_TOO_LOW_STROKE_MARGIN = 10;
+    //const ZOOM_TOO_LOW_STROKE_STEP = 5;
 
-const BASE_CELL_TIMES = [5 * MINUTE_MS, 15 * MINUTE_MS, 30 * MINUTE_MS, HOUR_MS, 2 * HOUR_MS];
+    workflowNameMargin: 20,
+    workflowNameYOffset: 8,
+    workflowGroupNameFontSize: 22,
+    workflowNameFontSize: 20,
+    dateTextFontSize: 17,
+    baseCellWidth: 69,
+    cellHeight: 36,
+    scrollbarWidth: 20,
+    cellMinimalWidth: 3,
+    cellColorSuccess: '#caffca',
+    cellColorFailed: '#ffcaca',
+    cellColorSelected :'#99ff99'
+};
 
-const MINIMAL_WIDTH = 3;
-const ZOOM_TOO_LOW_STROKE_MARGIN = 5;
-const ZOOM_TOO_LOW_STROKE_STEP = 5;
-const VERTICAL_MARGIN = 5;
-var drawingContext;
-var canvasElement;
+var twoHoursZoomer = {
+    baseCellDuration: 2 * HOUR_MS,
+    getDesc: function(date) {
+        return date.getPaddedUTCHours();
+    },
+    updateDateToNextStep: function(date) {
+        date.setUTCHours(date.getUTCHours() - 2);
+        return date;
+    }
+};
 
-function SlotState(status, workflow, time, duration) {
+var hourZoomer = {
+    baseCellDuration: HOUR_MS,
+    getDesc: function(date) {
+        return date.getPaddedUTCHours();
+    },
+    updateDateToNextStep: function(date) {
+        date.setUTCHours(date.getUTCHours() - 1);
+        return date;
+    }
+};
+
+var halfHourZoomer = {
+    baseCellDuration: 30 * MINUTE_MS,
+    getDesc: function(date) {
+        return date.getPaddedUTCHours() + ":" + date.getPaddedUTCMinutes();
+    },
+    updateDateToNextStep: function(date) {
+        date.setUTCMinutes(date.getUTCMinutes() - 30);
+        return date;
+    }
+};
+
+var fifteenMinZoomer = {
+    baseCellDuration: 15 * MINUTE_MS,
+    getDesc: function(date) {
+        return date.getPaddedUTCHours() + ":" + date.getPaddedUTCMinutes();
+    },
+    updateDateToNextStep: function(date) {
+        date.setUTCMinutes(date.getUTCMinutes() - 15);
+        return date;
+    }
+};
+
+var fiveMinZoomer = {
+    baseCellDuration: 5 * MINUTE_MS,
+    getDesc: function(date) {
+        return date.getPaddedUTCHours() + ":" + date.getPaddedUTCMinutes();
+    },
+    updateDateToNextStep: function(date) {
+        date.setUTCMinutes(date.getUTCMinutes() - 5);
+        return date;
+    }
+};
+var currentZoom = 3;
+var zoomers = [fiveMinZoomer, fifteenMinZoomer, halfHourZoomer, hourZoomer, twoHoursZoomer];
+
+
+function SlotState(status, workflow, date, duration) {
     this.status = status;
     this.workflow = workflow;
-    this.time = time;
-    this.duration = duration;
+    this.date = date;
+    this.expectedDuration = duration;
+}
+
+(function() {
+    function pad(n){
+        return n<10 ? '0'+n : n
+    }
+
+    Date.prototype.getPaddedUTCHours = function(){
+        return pad(this.getUTCHours());
+    }
+
+    Date.prototype.getPaddedUTCMinutes = function(){
+        return pad(this.getUTCMinutes());
+    }
+
+    Date.prototype.toCelosUTCString = function() {
+        return this.toISOString().slice(0, 10) + " " + this.getPaddedUTCHours() + ':' + this.getPaddedUTCMinutes() + " UTC";
+    };
+})();
+
+SlotState.prototype.getDescription = function() {
+    return 'Slot ' + this.workflow.id + '@' + this.date.toISOString() + ': ' + this.status.name;
+};
+
+function WorkflowGroup(name, workflowToSlotsMap) {
+    this.name = name;
+    this.workflowToSlotsMap = workflowToSlotsMap;
 }
 
 function Workflow(id, description, author) {
@@ -34,186 +121,373 @@ function Workflow(id, description, author) {
     this.author = author;
 }
 
-function WorkflowInfo(workflow, slotStates) {
-    this.workflow = workflow;
-    this.slotStates = slotStates;
-}
-
-function distractMs(time, ms) {
-    return new Date(time.getTime() - ms);
-}
-
-var workflowInfos = [];
+Workflow.prototype.getDescription = function() {
+    return 'Workflow ' + this.id + ': [author: ' + this.author + ']';
+};
 
 function init() {
-    canvasElement = document.createElement("canvas");
-    canvasElement.id = "rrman_canvas";
-    document.getElementById("dashboardPanel").appendChild(canvasElement);
 
-    canvasElement.width = CANVAS_WIDTH;
-    canvasElement.height = CANVAS_HEIGHT;
-    drawingContext = canvasElement.getContext("2d");
+    var slotStatesPanel = $("#slotStatesPanel");
+    var slotStatesStage = new Konva.Stage({
+        container: 'slotStatesPanel',
+        width: slotStatesPanel.width(),
+        height: slotStatesPanel.height()
+    });
+    var slotStatesLayer = new Konva.Layer();
+    slotStatesStage.add(slotStatesLayer);
 
-    canvasElement.addEventListener('mousemove', onCanvasMouse, false);
+    var datePanel = $("#datePanel");
+    var dateStage = new Konva.Stage({
+        container: 'datePanel',
+        width: datePanel.width(),
+        height: datePanel.height()
+    });
+    var dateLayer = new Konva.Layer();
+    dateStage.add(dateLayer);
 
-    var workflow = new Workflow("workflow-1", "WF #1: every 5 minutes", "John Doe");
-    var slotStates = generateSlotStates(workflow, START_TIME, END_TIME, 5 * MINUTE_MS);
-    var workflowInfo = new WorkflowInfo(workflow, slotStates);
-    workflowInfos.push(workflowInfo);
+    var slotStatesContext = { layer: slotStatesLayer, stage: slotStatesStage, panel: slotStatesPanel };
+    var dateContext = { layer: dateLayer, stage: dateStage, panel: datePanel };
 
-    workflow = new Workflow("workflow-2", "WF #2: every 30 minutes", "John Doe");
-    slotStates = generateSlotStates(workflow, START_TIME, END_TIME, 30 * MINUTE_MS);
-    workflowInfo = new WorkflowInfo(workflow, slotStates);
-    workflowInfos.push(workflowInfo);
+    var rrmanView = new RrmanView(slotStatesContext, dateContext);
+    rrmanView.setModel(new RrmanModel());
 
-    workflow = new Workflow("workflow-3", "WF #3: every hour", "John Doe");
-    slotStates = generateSlotStates(workflow, START_TIME, END_TIME, HOUR_MS);
-    workflowInfo = new WorkflowInfo(workflow, slotStates);
-    workflowInfos.push(workflowInfo);
+    document.getElementById("zoomIn").addEventListener("click", rrmanView.zoomIn);
+    document.getElementById("zoomOut").addEventListener("click", rrmanView.zoomOut);
+    document.getElementById("nextPage").addEventListener("click", rrmanView.nextPage);
+    document.getElementById("prevPage").addEventListener("click", rrmanView.prevPage);
 
-    workflow = new Workflow("workflow-4", "WF #4: every minute", "John Doe");
-    slotStates = generateSlotStates(workflow, START_TIME, END_TIME, MINUTE_MS);
-    workflowInfo = new WorkflowInfo(workflow, slotStates);
-    workflowInfos.push(workflowInfo);
+    window.addEventListener('resize', rrmanView.updateCanvasSize, false);
 
-    document.getElementById("zoomIn").addEventListener("click", zoomIn);
-    document.getElementById("zoomOut").addEventListener("click", zoomOut);
-
-    drawBoard(workflowInfos);
-
+    rrmanView.updateCanvasSize();
+    rrmanView.repaint();
 }
 
-function zoomIn() {
-    if (baseCellTimeIndex > 0) {
-        baseCellTimeIndex--;
-    }
-    drawBoard(workflowInfos);
+function showCellDetails(slotState) {
+    $('#bottomPanel').text(slotState.getDescription());
 }
 
-function zoomOut() {
-    if (baseCellTimeIndex < BASE_CELL_TIMES.length - 1) {
-        baseCellTimeIndex++;
-    }
-    drawBoard(workflowInfos);
+function clearCellDetails() {
+    $('#bottomPanel').text('');
 }
 
-function onCanvasMouse(event) {
-    var rect = canvasElement.getBoundingClientRect();
-    var x = event.clientX - rect.left;
-    var y = event.clientY - rect.top;
-
-    var obj = getWorkflowObjectByCoords(x, y, workflowInfos);
-    console.log(obj);
+function getTextWidth(text, fontSize) {
+    var workflowName = new Konva.Text({text: text, fontSize: fontSize});
+    return workflowName.getWidth();
 }
 
-function generateSlotStates(workflow, startTime, endTime, duration) {
-    var slotStates = [];
-    var time = startTime;
-    while (time.getTime() > endTime.getTime() ) {
-        slotStates.push(new SlotState(null, workflow, time, duration));
-        time = distractMs(time, duration);
-    }
-    return slotStates;
-}
+function RrmanView(slotStatesView, datesView) {
 
-var canvasDrawer = {
-    drawCell: function drawCell(slotState, xOffset, yOffset, width, height)
-    {
-        drawingContext.beginPath();
-        drawingContext.rect(xOffset, yOffset, width, height);
-        drawingContext.fillStyle = 'green';
-        drawingContext.fill();
+    var rrmanModel;
+    var pagingData;
+    var mutableDims;
 
-        drawingContext.lineWidth = 1;
-        drawingContext.strokeStyle = 'white';
-        drawingContext.stroke();
-    },
-    drawSolidDashedCell: function (workflowInfo, yOffset, expWidth) {
-        drawingContext.beginPath();
-        drawingContext.rect(0, yOffset, expWidth, CELL_HEIGHT);
-        drawingContext.fillStyle = 'green';
-        drawingContext.fill();
+    this.updateCanvasSize = updateCanvasSize();
+    this.repaint = repaint;
 
-        drawingContext.beginPath();
-        var stepY = CELL_HEIGHT - ZOOM_TOO_LOW_STROKE_MARGIN * 2;
-        var stepX = ZOOM_TOO_LOW_STROKE_STEP;
-        var x = -ZOOM_TOO_LOW_STROKE_MARGIN;
-        var y = yOffset + CELL_HEIGHT - ZOOM_TOO_LOW_STROKE_MARGIN;
-        while (x + stepX < expWidth) {
-            drawingContext.moveTo(x, y);
-            drawingContext.lineTo(x + stepX, y - stepY);
-            x += stepX;
+    slotStatesView.stage.on('mouseover mousemove dragmove', function(evt) {
+        if (evt.target && evt.target.object) {
+            showCellDetails(evt.target.object);
+        } else {
+            clearCellDetails();
         }
-        drawingContext.strokeStyle = "#FFF";
-        drawingContext.stroke();
+    });
+    slotStatesView.stage.on('click', function(evt) {
+        if (evt.target && evt.target.object) {
+            var obj = evt.target.object;
+            obj.selected = !obj.selected;
+            if (obj.selected) {
+                evt.target.setFill(CONSTANTS.cellColorSelected);
+            } else {
+                evt.target.setFill(CONSTANTS.cellColorSuccess);
+            }
+            evt.target.draw();
+        }
+    });
+    slotStatesView.stage.on('mouseout', function(evt) {
+        clearCellDetails();
+    });
+
+    function getMutableDims() {
+        var workflowNameWidth = getTextWidth('2015-02-05 13:23 UTC', 17);
+        for (var i=0; i < rrmanModel.workflowGroups.length; i++) {
+            var entries = rrmanModel.workflowGroups[i].workflowToSlotsMap.keys();
+            var next = entries.next();
+            while (!next.done) {
+                var width = getTextWidth(next.value.id, CONSTANTS.workflowNameFontSize);
+                workflowNameWidth = Math.max(workflowNameWidth, width);
+                next = entries.next();
+            }
+        }
+        return {
+            workflowNameWidth: workflowNameWidth,
+            cellDataOffset: workflowNameWidth + 2 * CONSTANTS.workflowNameMargin
+        }
     }
-};
 
-function CollideDrawer(x, y) {
-    this.x = x;
-    this.y = y;
-}
+    function repaint() {
+        //var a1 = new Date().getTime();
 
-CollideDrawer.prototype.drawCell = function(slotState, xOffset, yOffset, width, height) {
-    if (this.x >= xOffset && this.x <= xOffset + width &&
-        this.y >= yOffset && this.y <= yOffset + height) {
-        this.foundObject = slotState;
+        mutableDims = getMutableDims();
+        if (!pagingData) {
+            pagingData = { dateXOffset: 0, date: rrmanModel.startTime }
+        }
+        repaintDatePanel(mutableDims, pagingData, zoomers[currentZoom]);
+        repaintSlotStatePanel(mutableDims);
+        //var a2 = new Date().getTime();
+        //console.log("Paint: " + (a2 - a1));
+
+    };
+
+    this.setModel = function(_rrmanModel) {
+        rrmanModel = _rrmanModel;
+    };
+
+    this.zoomIn = function () {
+        if (currentZoom > 0) {
+            currentZoom--;
+        }
+        repaint();
+    };
+
+    this.zoomOut = function () {
+        if (currentZoom < zoomers.length - 1) {
+            currentZoom++;
+        }
+        repaint();
+    };
+
+    function calcDrawCellNum() {
+        var datesPanelWidth = datesView.stage.width() - mutableDims.cellDataOffset;
+        var cellNum = Math.max(0, Math.floor(datesPanelWidth / CONSTANTS.baseCellWidth) - 1);
+        return cellNum;
     }
-};
 
-CollideDrawer.prototype.drawSolidDashedCell = function (workflowInfo, yOffset) {
-    if (this.y >= yOffset && this.y <= yOffset + CELL_HEIGHT + VERTICAL_MARGIN) {
-        this.foundObject = workflowInfo;
+    this.nextPage = function() {
+        var cellNum = calcDrawCellNum();
+        var thisDate = new Date(pagingData.date.getTime());
+        thisDate.setUTCHours(thisDate.getUTCHours() - cellNum);
+        pagingData = { dateXOffset: 0, date: thisDate }
+
+        repaint();
+    };
+
+    this.prevPage = function () {
+
+        var cellNum = calcDrawCellNum();
+
+        var thisDate = new Date(pagingData.date.getTime());
+        thisDate.setUTCHours(thisDate.getUTCHours() + cellNum);
+        if (thisDate.getTime() > new Date().getTime()) {
+            thisDate = new Date();
+        }
+        pagingData = { dateXOffset: 0, date: thisDate }
+
+        repaint();
+    };
+
+    function repaintDatePanel(mutableDims, paging, zoomer) {
+        datesView.layer.destroyChildren();
+        var dateText = new Konva.Text({
+            x: CONSTANTS.workflowNameMargin,
+            y: 0,
+            align: 'right',
+            text: paging.date.toCelosUTCString(),
+            fontSize: CONSTANTS.dateTextFontSize, fontStyle: 'bold'
+        });
+        datesView.layer.add(dateText);
+
+        var aDate = new Date(paging.date.getTime());
+        var x = mutableDims.cellDataOffset;
+        while (x < datesView.stage.width()) {
+            var aText = new Konva.Text({
+                x: x,
+                y: 0,
+                width: CONSTANTS.baseCellWidth,
+                align: 'center',
+                text: zoomer.getDesc(aDate),
+                fontSize: CONSTANTS.dateTextFontSize, fontStyle: 'bold'
+            });
+            datesView.layer.add(aText);
+            aDate = zoomer.updateDateToNextStep(aDate);
+            x += CONSTANTS.baseCellWidth;
+        }
+
+        datesView.layer.draw();
     }
-};
 
-function getWorkflowObjectByCoords(x, y, workflowInfos) {
-    var collideDrawer = new CollideDrawer(x, y);
-    canvasWorkflowsProcessing(collideDrawer)(workflowInfos);
-    return collideDrawer.foundObject;
-}
+    function repaintSlotStatePanel(mutableDims) {
 
-drawBoard = (function() {
-    var drawWithCanvasDrawer = canvasWorkflowsProcessing(canvasDrawer);
-    return function(workflowInfos) {
-        drawingContext.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-        drawWithCanvasDrawer(workflowInfos);
+        slotStatesView.layer.destroyChildren();
+        var yOffset = 0;
+        for (var i=0; i < rrmanModel.workflowGroups.length; i++) {
+            var workflowGroupName = new Konva.Text({
+                x: CONSTANTS.workflowNameMargin,
+                y: yOffset + CONSTANTS.workflowNameYOffset,
+                align: 'right',
+                text: rrmanModel.workflowGroups[i].name,
+                width: mutableDims.workflowNameWidth,
+                fontSize: CONSTANTS.workflowGroupNameFontSize,
+                fontStyle: 'bold'
+            });
+            yOffset += CONSTANTS.cellHeight;
+            slotStatesView.layer.add(workflowGroupName);
+
+            var entries = rrmanModel.workflowGroups[i].workflowToSlotsMap.entries();
+            var next = entries.next();
+            while (!next.done) {
+                drawWorkflow(yOffset, next.value[0], next.value[1], mutableDims);
+                yOffset += CONSTANTS.cellHeight;
+                next = entries.next();
+            }
+            yOffset += CONSTANTS.cellHeight;
+        }
+        slotStatesView.layer.draw();
     }
-})();
 
-function canvasWorkflowsProcessing(drawer) {
+    function updateCanvasSize() {
+        return function() {
+            var totalHeight = 0;
+            for (var i=0; i < rrmanModel.workflowGroups.length; i++) {
+                totalHeight += rrmanModel.workflowGroups[i].workflowToSlotsMap.count() * CONSTANTS.cellHeight;
+                totalHeight += CONSTANTS.cellHeight * 2;
+            }
+            totalHeight -= CONSTANTS.cellHeight;
 
-    function expectedWidth(slotStates) {
+            slotStatesView.stage.setWidth(slotStatesView.panel.width() - CONSTANTS.scrollbarWidth);
+            slotStatesView.stage.setHeight(totalHeight);
+            slotStatesView.stage.draw();
+        }
+    }
+
+    function isSlotStateCellBigEnough(slotStates) {
         var width = 0;
         for (var i = 0; i < slotStates.length; i++) {
-            var cellSizeFactor = slotStates[i].duration / BASE_CELL_TIMES[baseCellTimeIndex];
-            width += cellSizeFactor * BASE_CELL_WIDTH;
+            var cellSizeFactor = slotStates[i].expectedDuration / zoomers[currentZoom].baseCellDuration;
+            width += cellSizeFactor * CONSTANTS.baseCellWidth;
         }
-        return width;
+        return width / slotStates.length >= CONSTANTS.cellMinimalWidth;
     }
 
-    function drawWorkflow(yOffset, workflowInfo) {
-        var slotStates = workflowInfo.slotStates;
-        var expWidth = expectedWidth(slotStates);
-        if (expWidth / slotStates.length >= MINIMAL_WIDTH) {
-            var xOffset = 0;
-            for (var i = 0; i < slotStates.length; i++) {
-                var cellSizeFactor = slotStates[i].duration / BASE_CELL_TIMES[baseCellTimeIndex];
-                var width = cellSizeFactor * BASE_CELL_WIDTH;
-                drawer.drawCell(slotStates[i], xOffset, yOffset, width, CELL_HEIGHT);
-                xOffset += width;
-            }
+    function drawWorkflow(yOffset, workflow, slotStates, mutableDims) {
+
+        var workflowName = new Konva.Text({
+            x: CONSTANTS.workflowNameMargin, y: yOffset + CONSTANTS.workflowNameYOffset,
+            align: 'right', text: workflow.id, width: mutableDims.workflowNameWidth,
+            fontSize: CONSTANTS.workflowNameFontSize
+        });
+
+        slotStatesView.layer.add(workflowName);
+
+        if (isSlotStateCellBigEnough(slotStates)) {
+            drawSlotsStates(yOffset, slotStates, mutableDims);
         } else {
-            drawer.drawSolidDashedCell(workflowInfo, yOffset, expWidth);
+            drawWorkflowSlot(yOffset, slotStatesView.stage.width(), workflow, mutableDims);
         }
     }
 
-    return function(workflowInfos) {
-        var yOffset = 0;
-        for (var i = 0; i < workflowInfos.length; i++) {
-            drawWorkflow(yOffset, workflowInfos[i]);
-            yOffset += CELL_HEIGHT + VERTICAL_MARGIN;
-        }
+    function drawSlotsStates(yOffset, slotStates, mutableDims) {
+        var x = mutableDims.cellDataOffset;
+        var slotStatesSeq = new Immutable.Seq(slotStates);
+        var iterator = slotStatesSeq.filter( function(x) { return x.date.getTime() <= pagingData.date.getTime() }).values();
+        var next = iterator.next();
+        while (!next.done) {
+            var slotState = next.value;
+            if (x <= slotStatesView.stage.getWidth()) {
+                var cellSizeFactor = slotState.expectedDuration / zoomers[currentZoom].baseCellDuration;
+                var width = cellSizeFactor * CONSTANTS.baseCellWidth;
 
+                var color = slotState.status === FAILED ? CONSTANTS.cellColorFailed : CONSTANTS.cellColorSuccess;
+
+                var rect = new Konva.Rect({
+                    x: x, y: yOffset, width: width, height: CONSTANTS.cellHeight,
+                    fill: color, stroke: 'white', strokeWidth: 1
+                });
+
+                rect.object = slotState;
+                slotStatesView.layer.add(rect);
+            }
+            x += width;
+            next = iterator.next();
+        }
     }
+
+    function drawWorkflowSlot(y, width, workflow, mutableDims) {
+
+        var rect = new Konva.Rect({
+            x: mutableDims.cellDataOffset, y: y, width: width, height: CONSTANTS.cellHeight,
+            fill: CONSTANTS.cellColorSuccess, stroke: 'white', strokeWidth: 1,
+            transformsEnabled: 'position'
+        });
+        rect.object = workflow;
+        workflow.shape = rect;
+
+        slotStatesView.layer.add(rect);
+
+        //var stepY = CELL_HEIGHT - ZOOM_TOO_LOW_STROKE_MARGIN * 2;
+        //var stepX = ZOOM_TOO_LOW_STROKE_STEP * 2;
+        //var lineX = -ZOOM_TOO_LOW_STROKE_MARGIN;
+        //var lineY = y + CELL_HEIGHT - ZOOM_TOO_LOW_STROKE_MARGIN;
+        //
+        //var coords = [];
+        //while (lineX + stepX < width) {
+        //    coords.push({ x: lineX, y: lineY})
+        //    coords.push({ x: lineX + stepX, y: lineY + stepY})
+        //    lineX += stepX * 2;
+        //}
+        //var poly = new fabric.Polyline(coords, {
+        //    stroke: 'white',
+        //    fill: CELL_COLOR,
+        //    strokeWidth: 2,
+        //    left: x,
+        //    top: y + ZOOM_TOO_LOW_STROKE_MARGIN
+        //});
+        //
+        //console.add(poly);
+    }
+
 }
+
+function RrmanModel() {
+    var startTime = new Date();
+    this.startTime = startTime;
+    var endTime = distractMs(startTime, HOUR_MS * 24 * 7);
+    this.endTime = endTime;
+
+    this.workflowGroups = (function() {
+
+
+        var slotLengths = [5 * MINUTE_MS, 30 * MINUTE_MS, HOUR_MS, HOUR_MS];
+        var wfGroups = [];
+        for (var i=0; i < 5; i++) {
+
+            var workflowToSlots = [];
+            for (var j=0; j <= i; j++) {
+                var wf = new Workflow("wf-" + i + "" + j, "WF #" + i + "" + j + ": every 5 minutes", "John Doe");
+                var slotStates = generateSlotStates(wf, startTime, endTime, slotLengths[j % slotLengths.length]);
+                workflowToSlots.push([wf, slotStates]);
+            }
+            var wfGroup = new WorkflowGroup("Group #" + i, new Immutable.OrderedMap(workflowToSlots));
+            wfGroups.push(wfGroup);
+        }
+        return wfGroups;
+
+        function generateSlotStates(workflow, startTime, endTime, duration) {
+            var slotStates = [];
+            var time = startTime;
+            while (time.getTime() > endTime.getTime() ) {
+                var status = Math.random() > 0.3 ? SUCCESS : FAILED;
+                slotStates.push(new SlotState(status, workflow, time, duration));
+                time = distractMs(time, duration);
+            }
+            return slotStates;
+        }
+
+
+    })();
+
+    function distractMs(time, ms) {
+        return new Date(time.getTime() - ms);
+    }
+
+}
+
