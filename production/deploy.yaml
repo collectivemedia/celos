@@ -26,6 +26,3 @@
 
   - name: Deploy WAR
     shell: cd {{remote_celos}} && ./production/war-deploy.sh
-
-  - name: Deploy defaults
-    shell: cd {{remote_celos}} && ./production/defaults-deploy.sh
