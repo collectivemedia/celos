@@ -13,11 +13,11 @@ public class CelosCiTarget {
     private final URI hiveJdbc;
 
     public CelosCiTarget(URI pathToHdfsSite, URI pathToCoreSite, URI workflowsDirUri, URI defaultsDirUri, URI hiveJdbc) {
-        this.hiveJdbc = hiveJdbc;
         this.pathToHdfsSite = Util.requireNonNull(pathToHdfsSite);
         this.pathToCoreSite = Util.requireNonNull(pathToCoreSite);
-        this.workflowsDirUri = workflowsDirUri;
-        this.defaultsDirUri = defaultsDirUri;
+        this.workflowsDirUri = Util.requireNonNull(workflowsDirUri);
+        this.defaultsDirUri = Util.requireNonNull(defaultsDirUri);
+        this.hiveJdbc = hiveJdbc;
     }
 
     public URI getPathToHdfsSite() {

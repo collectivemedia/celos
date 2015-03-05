@@ -27,28 +27,20 @@ public class CelosCiTargetParserTest {
     }
 
 
-    @Test
+    @Test (expected = IllegalStateException.class)
     public void testParseTargetFileNoWfDir() throws Exception {
         CelosCiTargetParser parser = new CelosCiTargetParser("uname");
-        File targetFile = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/ci/testing/config/target.json").toURI());
+        File targetFile = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/ci/testing/config/target-no-wf-uri.json").toURI());
 
-        CelosCiTarget target = parser.parse(targetFile.toURI());
-        Assert.assertEquals(target.getDefaultsDirUri(), URI.create("defdir"));
-        Assert.assertEquals(target.getPathToCoreSite(), URI.create("hadoopcoreurl"));
-        Assert.assertEquals(target.getPathToHdfsSite(), URI.create("hadoophdfsurl"));
-
+        parser.parse(targetFile.toURI());
     }
 
-    @Test
+    @Test (expected = IllegalStateException.class)
     public void testParseTargetFileNoDeffile() throws Exception {
         CelosCiTargetParser parser = new CelosCiTargetParser("uname");
-        File targetFile = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/ci/testing/config/target.json").toURI());
+        File targetFile = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/ci/testing/config/target-no-deffile.json").toURI());
 
-        CelosCiTarget target = parser.parse(targetFile.toURI());
-        Assert.assertEquals(target.getWorkflowsDirUri(), URI.create("celoswfdir"));
-        Assert.assertEquals(target.getPathToCoreSite(), URI.create("hadoopcoreurl"));
-        Assert.assertEquals(target.getPathToHdfsSite(), URI.create("hadoophdfsurl"));
-
+        parser.parse(targetFile.toURI());
     }
 
 
