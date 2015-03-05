@@ -52,6 +52,7 @@ public class DependentScheduleTest {
                                 new MockExternalService.MockExternalStatusSuccess()),
                         slidingWindowHours,
                         workflowStartTime,
+                        Workflow.DEFAULT_WAIT_TIMEOUT_SECONDS,
                         new WorkflowInfo(null, Collections.<ContactsInfo>emptyList())));
         
         DependentSchedule schedule = new DependentSchedule(new WorkflowID(id));

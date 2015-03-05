@@ -627,6 +627,22 @@ When the workflow should start.
 ...
 </pre>
 
+### waitTimeoutSeconds
+
+Type: number, optional
+
+The number of seconds a workflow should stay waiting until it times out.
+
+If unspecified, a workflow will wait forever without timing out.
+
+#### Example
+
+<pre>
+...
+"waitTimeoutSeconds": 60 * 60 // time out after one hour
+...
+</pre>
+
 ## Defaults
 
 Files containing defaults can be placed in `/etc/celos/defaults` and
