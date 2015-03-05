@@ -139,6 +139,9 @@ public class Scheduler {
             if (callTrigger(wf, slotState, current)) {
                 LOGGER.info("Slot is ready: " + slotID);
                 database.putSlotState(slotState.transitionToReady());
+            } else if (isSlotTimedOut(slotState.getScheduledTime(), current, wf.getWaitTimeoutSeconds())) {
+                LOGGER.info("Slot timed out waiting: " + slotID);
+                database.putSlotState(slotState.transitionToWaitTimeout());
             } else {
                 LOGGER.info("Waiting for slot: " + slotID);
             }

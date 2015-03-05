@@ -384,6 +384,38 @@ public class SchedulerTest {
         Assert.assertEquals(0, db.size());
     }
     
+    @Test
+    public void updatesWaitingSlotsToWaitTimeout() throws Exception {
+        WorkflowID wfID1 = new WorkflowID("wf1");
+        Schedule sch1 = makeHourlySchedule();
+        SchedulingStrategy str1 = makeSerialSchedulingStrategy();
+        Trigger tr1 = new NeverTrigger();
+        ExternalService srv1 = new MockExternalService(new MockExternalService.MockExternalStatusRunning());
+        int maxRetryCount = 0;
+        int waitTimeoutSeconds = 20;
+        Workflow wf1 = new Workflow(wfID1, sch1, str1, tr1, srv1, maxRetryCount, Workflow.DEFAULT_START_TIME, waitTimeoutSeconds, emptyWorkflowInfo);
+        
+        WorkflowConfiguration cfg = new WorkflowConfiguration();
+        cfg.addWorkflow(wf1);
+        
+        MemoryStateDatabase db = new MemoryStateDatabase();
+        
+        SlotID id1 = new SlotID(wfID1, new ScheduledTime("2013-11-27T22:00:00Z"));
+        SlotState slot1 = new SlotState(id1, SlotState.Status.WAITING);
+        db.putSlotState(slot1);
+
+        int slidingWindowHours = 24;
+        
+        Scheduler sched = new Scheduler(cfg, db, slidingWindowHours);
+        
+        sched.step(new ScheduledTime("2013-11-27T22:00:19Z"));
+        Assert.assertEquals(SlotState.Status.WAITING, db.getSlotState(id1).getStatus());
+        sched.step(new ScheduledTime("2013-11-27T22:00:20Z"));
+        Assert.assertEquals(SlotState.Status.WAITING, db.getSlotState(id1).getStatus());
+        sched.step(new ScheduledTime("2013-11-27T22:00:21Z"));
+        Assert.assertEquals(SlotState.Status.WAIT_TIMEOUT, db.getSlotState(id1).getStatus());
+    }
+
     /**
      * Creates running slots in memory database, with mock external service
      * that always says the external jobs are still running.
