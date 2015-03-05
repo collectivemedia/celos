@@ -856,7 +856,14 @@ public class SchedulerTest {
         Assert.assertEquals(SlotState.Status.WAITING, slot2After.getStatus());
     }
 
-    
+    @Test
+    public void testTimeoutCalculation() {
+        Assert.assertTrue(Scheduler.isSlotTimedOut(new ScheduledTime("2015-03-05T00:00:00Z"), new ScheduledTime("2015-03-05T00:00:21Z"), 20));
+        Assert.assertFalse(Scheduler.isSlotTimedOut(new ScheduledTime("2015-03-05T00:00:00Z"), new ScheduledTime("2015-03-05T00:00:20Z"), 20));
+        Assert.assertFalse(Scheduler.isSlotTimedOut(new ScheduledTime("2015-03-05T00:00:00Z"), new ScheduledTime("2014-03-05T00:00:20Z"), 20));
+        Assert.assertTrue(Scheduler.isSlotTimedOut(new ScheduledTime("2015-03-05T00:00:00Z"), new ScheduledTime("2016-03-05T00:00:21Z"), 20));
+    }
+        
     private AlwaysTrigger makeAlwaysTrigger() {
         return new AlwaysTrigger();
     }

@@ -170,6 +170,11 @@ public class Scheduler {
         return trigger.isDataAvailable(this, current, scheduledTime);
     }
     
+    static boolean isSlotTimedOut(ScheduledTime nominalTime, ScheduledTime current, int timeoutSeconds) {
+        ScheduledTime timeoutTime = nominalTime.plusSeconds(timeoutSeconds);
+        return current.getDateTime().isAfter(timeoutTime.getDateTime());
+    }
+    
     public int getSlidingWindowHours() {
         return slidingWindowHours;
     }
