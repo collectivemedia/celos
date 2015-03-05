@@ -15,6 +15,8 @@ public class SlotStateTest {
         SlotState waiting = new SlotState(id, SlotState.Status.WAITING);
         SlotState ready = new SlotState(id, SlotState.Status.READY);
         Assert.assertEquals(ready, waiting.transitionToReady());
+        SlotState waitTimeout = new SlotState(id, SlotState.Status.WAIT_TIMEOUT);
+        Assert.assertEquals(waitTimeout, waiting.transitionToWaitTimeout());
         SlotState running = new SlotState(id, SlotState.Status.RUNNING, "external", 0);
         Assert.assertEquals(running, ready.transitionToRunning("external"));
         SlotState success = new SlotState(id, SlotState.Status.SUCCESS, "external", 0);
@@ -47,6 +49,13 @@ public class SlotStateTest {
         Assert.assertEquals(expected, success.transitionToRerun());        
     }
     
+    @Test
+    public void rerunWorksAsExpectedForWaitTimeout() {
+        SlotState waitTimeout = new SlotState(id, SlotState.Status.WAIT_TIMEOUT, "external-ID", 14);
+        SlotState expected = new SlotState(id, SlotState.Status.WAITING);
+        Assert.assertEquals(expected, waitTimeout.transitionToRerun());        
+    }
+
     @Test
     public void rerunWorksAsExpectedForFailure() {
         SlotState failure = new SlotState(id, SlotState.Status.FAILURE, "external-ID", 14);
