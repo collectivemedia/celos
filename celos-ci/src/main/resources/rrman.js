@@ -1,11 +1,11 @@
-const SECONDS_MS = 1000;
-const MINUTE_MS = 60 * SECONDS_MS;
+const SECOND_MS = 1000;
+const MINUTE_MS = 60 * SECOND_MS;
 const HOUR_MS = 60 * MINUTE_MS;
-
+const DAY_MS = 24 * HOUR_MS;
+const SAMPLE_DATE = '2015-02-05 13:23 UTC';
 const SUCCESS = { name: 'SUCCESS' };
 const FAILED = { name: 'FAILED' };
-
-const CONSTANTS = {
+const UI_PROPERTIES = {
     //const ZOOM_TOO_LOW_STROKE_MARGIN = 10;
     //const ZOOM_TOO_LOW_STROKE_STEP = 5;
 
@@ -23,34 +23,132 @@ const CONSTANTS = {
     cellColorSelected :'#99ff99'
 };
 
-function ZoomView(baseCellDuration, descFunc) {
-    this.baseCellDuration = baseCellDuration;
-    this.getDescription = descFunc;
+function SlotState(status, workflow, date, duration, externalId, retryCount) {
+    this.status = status;
+    this.workflow = workflow;
+    this.date = date;
+    this.expectedDuration = duration;
+    this.externalId = externalId;
+    this.retryCount = retryCount;
+    this.selected = false;
 }
 
-ZoomView.prototype.getDateAfterSteps = function(date, steps) {
-    var newDate = new Date(date);
-    newDate.setUTCMinutes(newDate.getUTCMinutes() - (this.baseCellDuration / MINUTE_MS) * steps);
-    return newDate;
+SlotState.prototype.getSlotID = function() {
+    return this.workflow.id + '@' + this.date.toISOString();
 };
 
-var Zoomer = function(view) {
+SlotState.prototype.getDescription = function() {
+    return 'Slot ' + this.getSlotID() + ': ' + this.status.name;
+};
 
-    var zoomers = [ new ZoomView(2 * HOUR_MS, function(date) { return date.getPaddedUTCHours() + ":00"; }),
-                    new ZoomView(HOUR_MS, function(date) { return date.getPaddedUTCHours() + ":00"; }),
-                    new ZoomView(30 * MINUTE_MS, function(date) { return date.getPaddedUTCHours() + ":" + date.getPaddedUTCMinutes(); }),
-                    new ZoomView(15 * MINUTE_MS, function(date) { return date.getPaddedUTCHours() + ":" + date.getPaddedUTCMinutes(); }),
-                    new ZoomView(5 * MINUTE_MS, function(date) { return date.getPaddedUTCHours() + ":" + date.getPaddedUTCMinutes(); })];
+SlotState.prototype.getColor = function() {
+    if (this.selected) {
+        return UI_PROPERTIES.cellColorSelected;
+    } else {
+        if (this.status == FAILED) {
+            return UI_PROPERTIES.cellColorFailed;
+        } else {
+            return UI_PROPERTIES.cellColorSuccess;
+        }
+    }
+};
 
-    var currentZoom = 1;
-    var pagingOffsetDate = null;
-    this.getPagingOffsetDate = getPagingOffsetDate;
+function WorkflowGroup(name, workflowToSlotsMap) {
+    this.name = name;
+    this.workflowToSlotsMap = workflowToSlotsMap;
+}
 
-    this.getCurrentZoom = function() {
-        return zoomers[currentZoom];
+function Workflow(id, author) {
+    this.id = id;
+    this.author = author;
+}
+
+Workflow.prototype.getDescription = function() {
+    return 'Workflow ' + this.id + ': [author: ' + this.author + ']';
+};
+
+
+function RrmanModel(updateTime, workflowGroups) {
+    this.updateTime = updateTime;
+    this.workflowGroups = workflowGroups;
+}
+
+
+var DateUtils = (function(){
+
+    var _this = this;
+
+    function pad(n){
+        return n < 10 ? '0' + n : n
+    }
+
+    this.distractMs = function(date, ms) {
+        return new Date(date.getTime() - ms);
     };
 
-    function getPagingOffsetDate() {
+    this.getPaddedUTCHours = function(date){
+        return pad(date.getUTCHours());
+    };
+
+    this.getPaddedUTCMinutes = function(date){
+        return pad(date.getUTCMinutes());
+    };
+
+    this.toCelosUTCString = function(date) {
+        return date.toISOString().slice(0, 10) + " " + _this.getPaddedUTCHours(date) + ':' + _this.getPaddedUTCMinutes(date) + ":" + pad(date.getSeconds());
+    };
+
+    return this;
+
+})();
+
+var SelectManager = function() {
+    var selectedSlots = new Immutable.Set();
+
+    this.addSlot = function(slot) {
+        selectedSlots = selectedSlots.add(slot.getSlotID());
+    };
+
+    this.removeSlot = function(slot) {
+        selectedSlots = selectedSlots.remove(slot.getSlotID());
+    };
+
+    this.containsSlot = function(slot) {
+        return selectedSlots.contains(slot.getSlotID());
+    }
+};
+
+var ZoomManager = function(view) {
+
+    function ZoomView(baseCellDuration, descFunc) {
+        this.baseCellDuration = baseCellDuration;
+        this.getDescription = descFunc;
+    }
+
+
+    ZoomView.prototype.getDateAfterSteps = function(date, steps) {
+        var newDate = new Date(date);
+        newDate.setUTCMinutes(newDate.getUTCMinutes() - (this.baseCellDuration / MINUTE_MS) * steps);
+        return newDate;
+    };
+
+    var _this = this;
+    var zoomers = [
+        new ZoomView(2 * HOUR_MS, function(date) { return DateUtils.getPaddedUTCHours(date) + ":00"; }),
+        new ZoomView(HOUR_MS, function(date) { return DateUtils.getPaddedUTCHours(date) + ":00"; }),
+        new ZoomView(30 * MINUTE_MS, function(date) { return DateUtils.getPaddedUTCHours(date) + ":" + DateUtils.getPaddedUTCMinutes(date); }),
+        new ZoomView(15 * MINUTE_MS, function(date) { return DateUtils.getPaddedUTCHours(date) + ":" + DateUtils.getPaddedUTCMinutes(date); }),
+        new ZoomView(5 * MINUTE_MS, function(date) { return DateUtils.getPaddedUTCHours(date) + ":" + DateUtils.getPaddedUTCMinutes(date); })
+    ];
+
+    var currentZoomerIndex = 1;
+    var pagingOffsetDate = null;
+
+    this.getCurrentZoom = function() {
+        return zoomers[currentZoomerIndex];
+    };
+
+    this.getPagingOffsetDate = function() {
         if (pagingOffsetDate) {
             return pagingOffsetDate;
         }
@@ -58,59 +156,44 @@ var Zoomer = function(view) {
     };
 
     this.zoomIn = function () {
-        if (currentZoom < zoomers.length - 1) {
-            currentZoom++;
+        if (currentZoomerIndex < zoomers.length - 1) {
+            currentZoomerIndex++;
         }
         view.repaint();
     };
 
     this.zoomOut = function () {
-        if (currentZoom > 0) {
-            currentZoom--;
+        if (currentZoomerIndex > 0) {
+            currentZoomerIndex--;
         }
         view.repaint();
     };
 
     this.nextPage = function() {
         var cellNum = view.getCellsNumber();
-        pagingOffsetDate = zoomers[currentZoom].getDateAfterSteps(getPagingOffsetDate(), cellNum - 1);
-
-        $(document).trigger("rrman:request_data");
+        pagingOffsetDate = zoomers[currentZoomerIndex].getDateAfterSteps(_this.getPagingOffsetDate(), cellNum - 1);
         view.repaint();
+
+        setTimeout(function() {
+            $(document).trigger("rrman:request_data", pagingOffsetDate);
+        }, 50);
     };
 
     this.prevPage = function () {
         var cellNum = view.getCellsNumber();
-        var newDate = zoomers[currentZoom].getDateAfterSteps(getPagingOffsetDate(), -(cellNum - 1));
-        if (new Date().getTime() - newDate.getTime() < zoomers[currentZoom].baseCellDuration) {
+        var newDate = zoomers[currentZoomerIndex].getDateAfterSteps(_this.getPagingOffsetDate(), -(cellNum - 1));
+        if (new Date().getTime() - newDate.getTime() < zoomers[currentZoomerIndex].baseCellDuration) {
             newDate = null;
         }
         pagingOffsetDate = newDate;
-        $(document).trigger("rrman:request_data");
         view.repaint();
-    };
 
+        setTimeout(function() {
+            $(document).trigger("rrman:request_data", pagingOffsetDate);
+        }, 50);
+    };
 
 };
-
-(function() {
-    function pad(n){
-        return n < 10 ? '0'+n : n
-    }
-
-    Date.prototype.getPaddedUTCHours = function(){
-        return pad(this.getUTCHours());
-    }
-
-    Date.prototype.getPaddedUTCMinutes = function(){
-        return pad(this.getUTCMinutes());
-    }
-
-    Date.prototype.toCelosUTCString = function() {
-        return this.toISOString().slice(0, 10) + " " + this.getPaddedUTCHours() + ':' + this.getPaddedUTCMinutes() + ":" + pad(this.getSeconds());
-    };
-})();
-
 
 function init() {
 
@@ -136,25 +219,24 @@ function init() {
 
     var slotStatesContext = { activeLayer: slotStatesLayerActive, inactiveLayer: slotStatesLayerInactive, stage: slotStatesStage, panel: slotStatesPanel };
     var dateContext = { layer: dateLayer, stage: dateStage, panel: datePanel };
-    
+
     var rrmanView = new RrmanView(slotStatesContext, dateContext);
-    
     var client = new RrmanServerClient(rrmanView);
-    client.update();
-    rrmanView.updateCanvasSize();
-    rrmanView.repaint();
 
-
-    $(document).on( "rrman:model_updated", function() {
+    $(document).on( "rrman:model_updated", function(evt, model) {
+        rrmanView.setModel(model);
         rrmanView.repaint();
     });
-    $(document).on( "rrman:request_data", function() {
-        client.update();
+    $(document).on( "rrman:request_data", function(evt, date) {
+        client.update(date);
     });
+    rrmanView.setupEventListeners();
+    rrmanView.triggerUpdate();
 
     setInterval(function () {
-        $(document).trigger("rrman:request_data");
+        rrmanView.triggerUpdate();
     }, 5000);
+
 }
 
 
@@ -173,85 +255,172 @@ function getTextWidth(text, fontSize) {
 
 function RrmanView(slotStatesView, datesView) {
 
+    var _this = this;
     var mutableDims;
-    var model;
+    var rrmanModel;
 
-    var zoomer = new Zoomer(this);
+    var selection = new SelectManager();
+    var zoomer = new ZoomManager(this);
+    var initialCanvasSizeUpdate = false;
+    
+    this.repaint = function() {
+        if (!initialCanvasSizeUpdate) {
+            _this.updateCanvasSize();
+            initialCanvasSizeUpdate = true;
+        }
+        updateMutableDimensions();
+        repaintSlotStatePanel();
+        repaintDatePanel();
+    };
 
-    this.repaint = repaint;
-    this.updateCanvasSize = updateCanvasSize;
-    setupEventListeners();
+    this.triggerUpdate = function() {
+        $(document).trigger("rrman:request_data", _this.getCurrentDate());
+    };
+
+    this.setupEventListeners = function() {
+        slotStatesView.stage.on('mouseover mousemove dragmove', function (evt) {
+            if (evt.target && evt.target.object) {
+                showCellDetails(evt.target.object);
+            } else {
+                clearCellDetails();
+            }
+        });
+        slotStatesView.stage.on('click', function (evt) {
+            if (evt.target && evt.target.object) {
+                var obj = evt.target.object;
+                obj.selected = !obj.selected;
+                if (obj.selected) {
+                    selection.addSlot(obj);
+                    evt.target.setFill(obj.getColor());
+                } else {
+                    selection.removeSlot(obj);
+                }
+                evt.target.setFill(obj.getColor());
+                evt.target.draw();
+            }
+        });
+        slotStatesView.stage.on('mouseout', function () {
+            clearCellDetails();
+        });
+        document.getElementById("zoomIn").addEventListener("click", zoomer.zoomIn);
+        document.getElementById("zoomOut").addEventListener("click", zoomer.zoomOut);
+        document.getElementById("nextPage").addEventListener("click", zoomer.nextPage);
+        document.getElementById("prevPage").addEventListener("click", zoomer.prevPage);
+        var onResize = function() {
+            _this.updateCanvasSize();
+            _this.repaint()
+        };
+        window.addEventListener('resize', onResize, false);
+
+        //var m = 0;
+        //window.addEventListener('resize', function() {console.log(m++)}, false);
+        //$('input').bind('keyup blur', $.debounce(process, 300));
+    };
+
+    this.updateCanvasSize = function() {
+        var totalHeight = 0;
+        for (var i=0; i < rrmanModel.workflowGroups.length; i++) {
+            totalHeight += rrmanModel.workflowGroups[i].workflowToSlotsMap.count() * UI_PROPERTIES.cellHeight;
+            totalHeight += UI_PROPERTIES.cellHeight * 2;
+        }
+        totalHeight -= UI_PROPERTIES.cellHeight;
+
+        slotStatesView.stage.setWidth(slotStatesView.panel.width() - UI_PROPERTIES.scrollbarWidth);
+        slotStatesView.stage.setHeight(totalHeight);
+
+        datesView.stage.setWidth(slotStatesView.panel.width() - UI_PROPERTIES.scrollbarWidth);
+    };
 
     this.getCurrentDate = function() {
         return zoomer.getPagingOffsetDate();
-    }
+    };
+
 
     this.setModel = function(_model) {
-        model = _model;
-    }
+        resetSelectedMarkers(_model);
+        rrmanModel = _model;
+    };
 
     this.getCellsNumber = function () {
         var datesPanelWidth = datesView.stage.width() - mutableDims.cellDataOffset;
-        return Math.floor(datesPanelWidth / CONSTANTS.baseCellWidth);
+        return Math.floor(datesPanelWidth / UI_PROPERTIES.baseCellWidth);
     };
 
-    function updateMutableDims() {
-        var workflowNameWidth = getTextWidth('2015-02-05 13:23 UTC', 17);
-        for (var i=0; i < model.workflowGroups.length; i++) {
-            var entries = model.workflowGroups[i].workflowToSlotsMap.keys();
+    function resetSelectedMarkers(_model) {
+
+        function markersOnSlotStates(slotStates) {
+            var slotStateIterator = slotStates.values();
+            var slotStateCursor = slotStateIterator.next();
+            while (!slotStateCursor.done) {
+                var slotState = slotStateCursor.value;
+                if (selection.containsSlot(slotState)) {
+                    slotState.selected = true;
+                }
+                slotStateCursor = slotStateIterator.next();
+            }
+        }
+
+        for (var i = 0; i < _model.workflowGroups.length; i++) {
+            var entries = _model.workflowGroups[i].workflowToSlotsMap.values();
+            var dateToSlotsCursor = entries.next();
+            while (!dateToSlotsCursor.done) {
+                var slotStatesCollection = dateToSlotsCursor.value;
+                markersOnSlotStates(slotStatesCollection);
+                dateToSlotsCursor = entries.next();
+            }
+        }
+    }
+
+    function updateMutableDimensions() {
+        var workflowNameWidth = getTextWidth(SAMPLE_DATE, UI_PROPERTIES.dateTextFontSize);
+        for (var i=0; i < rrmanModel.workflowGroups.length; i++) {
+            var entries = rrmanModel.workflowGroups[i].workflowToSlotsMap.keys();
             var next = entries.next();
             while (!next.done) {
-                var width = getTextWidth(next.value.id, CONSTANTS.workflowNameFontSize);
+                var width = getTextWidth(next.value.id, UI_PROPERTIES.workflowNameFontSize);
                 workflowNameWidth = Math.max(workflowNameWidth, width);
                 next = entries.next();
             }
         }
         mutableDims = {
             workflowNameWidth: workflowNameWidth,
-            cellDataOffset: workflowNameWidth + 2 * CONSTANTS.workflowNameMargin
+            cellDataOffset: workflowNameWidth + 2 * UI_PROPERTIES.workflowNameMargin
         }
-    }
-
-    function repaint() {
-        updateMutableDims();
-        var callback1 = repaintDatePanel();
-        var callback2 = repaintSlotStatePanel();
-        setTimeout(function() {
-            callback2();
-            callback1();
-        }, 1);
     }
 
     function repaintDatePanel() {
         datesView.layer.destroyChildren();
         var dateText = new Konva.Text({
-            x: CONSTANTS.workflowNameMargin,
+            x: UI_PROPERTIES.workflowNameMargin,
             y: 0,
             align: 'right',
-            text: zoomer.getPagingOffsetDate().toCelosUTCString(),
-            fontSize: CONSTANTS.dateTextFontSize, fontStyle: 'bold'
+            text: DateUtils.toCelosUTCString(zoomer.getPagingOffsetDate()),
+            fontSize: UI_PROPERTIES.dateTextFontSize, fontStyle: 'bold'
         });
         datesView.layer.add(dateText);
 
         var aDate = new Date(zoomer.getPagingOffsetDate().getTime());
         var x = mutableDims.cellDataOffset;
-        while (x + CONSTANTS.baseCellWidth < datesView.stage.width()) {
+        while (x + UI_PROPERTIES.baseCellWidth < datesView.stage.width()) {
+            if (aDate.getUTCHours() == 0) {
+
+            }
             var aText = new Konva.Text({
                 x: x,
                 y: 0,
-                width: CONSTANTS.baseCellWidth,
+                textColor: 'red',
+                backgroundColor: 'green',
+                width: UI_PROPERTIES.baseCellWidth,
                 align: 'center',
                 text: zoomer.getCurrentZoom().getDescription(aDate),
-                fontSize: CONSTANTS.dateTextFontSize, fontStyle: 'bold'
+                fontSize: UI_PROPERTIES.dateTextFontSize, fontStyle: 'bold'
             });
             datesView.layer.add(aText);
             aDate = zoomer.getCurrentZoom().getDateAfterSteps(aDate, 1);
-            x += CONSTANTS.baseCellWidth;
+            x += UI_PROPERTIES.baseCellWidth;
         }
 
-        return function() {
-            datesView.layer.batchDraw();
-        }
+        datesView.layer.batchDraw();
     }
 
     function repaintSlotStatePanel() {
@@ -261,95 +430,78 @@ function RrmanView(slotStatesView, datesView) {
         slotStatesView.inactiveLayer = oldLayer;
 
         var yOffset = 0;
-        for (var i=0; i < model.workflowGroups.length; i++) {
+        for (var i=0; i < rrmanModel.workflowGroups.length; i++) {
             var workflowGroupName = new Konva.Text({
-                x: CONSTANTS.workflowNameMargin,
-                y: yOffset + CONSTANTS.workflowNameYOffset,
+                x: UI_PROPERTIES.workflowNameMargin,
+                y: yOffset + UI_PROPERTIES.workflowNameYOffset,
                 align: 'right',
-                text: model.workflowGroups[i].name,
+                text: rrmanModel.workflowGroups[i].name,
                 width: mutableDims.workflowNameWidth,
-                fontSize: CONSTANTS.workflowGroupNameFontSize,
+                fontSize: UI_PROPERTIES.workflowGroupNameFontSize,
                 fontStyle: 'bold'
             });
-            yOffset += CONSTANTS.cellHeight;
+            yOffset += UI_PROPERTIES.cellHeight;
             slotStatesView.activeLayer.add(workflowGroupName);
 
-            var entries = model.workflowGroups[i].workflowToSlotsMap.entries();
+            var entries = rrmanModel.workflowGroups[i].workflowToSlotsMap.entries();
             var next = entries.next();
             while (!next.done) {
                 drawWorkflow(yOffset, next.value[0], next.value[1]);
-                yOffset += CONSTANTS.cellHeight;
+                yOffset += UI_PROPERTIES.cellHeight;
                 next = entries.next();
             }
-            yOffset += CONSTANTS.cellHeight;
+            yOffset += UI_PROPERTIES.cellHeight;
         }
 
-        var callback = function () {
-            slotStatesView.activeLayer.listening(true);
-            slotStatesView.activeLayer.setVisible(true);
-            slotStatesView.activeLayer.batchDraw();
-            slotStatesView.inactiveLayer.listening(false);
-            slotStatesView.inactiveLayer.setVisible(false);
-            slotStatesView.inactiveLayer.destroyChildren();
-        };
-        return callback;
+        slotStatesView.activeLayer.listening(true);
+        slotStatesView.activeLayer.setVisible(true);
+        slotStatesView.activeLayer.batchDraw();
+        slotStatesView.inactiveLayer.listening(false);
+        slotStatesView.inactiveLayer.setVisible(false);
+        slotStatesView.inactiveLayer.destroyChildren();
     }
 
-    function updateCanvasSize() {
-        var totalHeight = 0;
-        for (var i=0; i < model.workflowGroups.length; i++) {
-            totalHeight += model.workflowGroups[i].workflowToSlotsMap.count() * CONSTANTS.cellHeight;
-            totalHeight += CONSTANTS.cellHeight * 2;
-        }
-        totalHeight -= CONSTANTS.cellHeight;
-
-        slotStatesView.stage.setWidth(slotStatesView.panel.width() - CONSTANTS.scrollbarWidth);
-        slotStatesView.stage.setHeight(totalHeight);
-        slotStatesView.stage.batchDraw();;
+    function isSlotStateCellBigEnough(slotStatesMap) {
+        var iterator = slotStatesMap.values();
+        var next = iterator.next();
+        var cellSizeFactor = next.value.expectedDuration / zoomer.getCurrentZoom().baseCellDuration;
+        var width = cellSizeFactor * UI_PROPERTIES.baseCellWidth;
+        return width >= UI_PROPERTIES.cellMinimalWidth;
     }
 
-    function isSlotStateCellBigEnough(slotStates) {
-        var width = 0;
-        for (var i = 0; i < slotStates.length; i++) {
-            var cellSizeFactor = slotStates[i].expectedDuration / zoomer.getCurrentZoom().baseCellDuration;
-            width += cellSizeFactor * CONSTANTS.baseCellWidth;
-        }
-        return width / slotStates.length >= CONSTANTS.cellMinimalWidth;
-    }
-
-    function drawWorkflow(yOffset, workflow, slotStates) {
+    function drawWorkflow(yOffset, workflow, slotStatesMap) {
 
         var workflowName = new Konva.Text({
-            x: CONSTANTS.workflowNameMargin, y: yOffset + CONSTANTS.workflowNameYOffset,
+            x: UI_PROPERTIES.workflowNameMargin, y: yOffset + UI_PROPERTIES.workflowNameYOffset,
             align: 'right', text: workflow.id, width: mutableDims.workflowNameWidth,
-            fontSize: CONSTANTS.workflowNameFontSize
+            fontSize: UI_PROPERTIES.workflowNameFontSize
         });
 
         slotStatesView.activeLayer.add(workflowName);
 
-        if (isSlotStateCellBigEnough(slotStates)) {
-            drawSlotsStates(yOffset, slotStates);
+        if (isSlotStateCellBigEnough(slotStatesMap)) {
+            drawSlots(yOffset, slotStatesMap);
         } else {
-            drawWorkflowSlot(yOffset, slotStatesView.stage.width(), workflow);
+            drawSolidSlot(yOffset, slotStatesView.stage.width(), workflow);
         }
     }
 
-    function drawSlotsStates(yOffset, slotStates) {
+    function drawSlots(yOffset, slotStatesMap) {
         var x = mutableDims.cellDataOffset;
-        var slotStatesSeq = new Immutable.Seq(slotStates);
-        var iterator = slotStatesSeq.filter( function(x) { return x.date.getTime() <= zoomer.getPagingOffsetDate().getTime() }).values();
+        var beforeNow = function(x, y) {
+            return y.getTime() <= zoomer.getPagingOffsetDate().getTime();
+        };
+        var iterator = slotStatesMap.filter(beforeNow).values();
         var next = iterator.next();
         while (!next.done) {
             var slotState = next.value;
             if (x <= slotStatesView.stage.getWidth()) {
                 var cellSizeFactor = slotState.expectedDuration / zoomer.getCurrentZoom().baseCellDuration;
-                var width = cellSizeFactor * CONSTANTS.baseCellWidth;
-
-                var color = slotState.status === FAILED ? CONSTANTS.cellColorFailed : CONSTANTS.cellColorSuccess;
+                var width = cellSizeFactor * UI_PROPERTIES.baseCellWidth;
 
                 var rect = new Konva.Rect({
-                    x: x, y: yOffset, width: width, height: CONSTANTS.cellHeight,
-                    fill: color, stroke: 'white', strokeWidth: 1
+                    x: x, y: yOffset, width: width, height: UI_PROPERTIES.cellHeight,
+                    fill: slotState.getColor(), stroke: 'white', strokeWidth: 1
                 });
 
                 rect.object = slotState;
@@ -360,11 +512,11 @@ function RrmanView(slotStatesView, datesView) {
         }
     }
 
-    function drawWorkflowSlot(y, width, workflow) {
+    function drawSolidSlot(y, width, workflow) {
 
         var rect = new Konva.Rect({
-            x: mutableDims.cellDataOffset, y: y, width: width, height: CONSTANTS.cellHeight,
-            fill: CONSTANTS.cellColorSuccess, stroke: 'white', strokeWidth: 1,
+            x: mutableDims.cellDataOffset, y: y, width: width, height: UI_PROPERTIES.cellHeight,
+            fill: UI_PROPERTIES.cellColorSuccess, stroke: 'white', strokeWidth: 1,
             transformsEnabled: 'position'
         });
         rect.object = workflow;
@@ -394,76 +546,17 @@ function RrmanView(slotStatesView, datesView) {
         //console.add(poly);
     }
 
-    function setupEventListeners() {
-        slotStatesView.stage.on('mouseover mousemove dragmove', function (evt) {
-            if (evt.target && evt.target.object) {
-                showCellDetails(evt.target.object);
-            } else {
-                clearCellDetails();
-            }
-        });
-        slotStatesView.stage.on('click', function (evt) {
-            if (evt.target && evt.target.object) {
-                var obj = evt.target.object;
-                obj.selected = !obj.selected;
-                if (obj.selected) {
-                    evt.target.setFill(CONSTANTS.cellColorSelected);
-                } else {
-                    evt.target.setFill(CONSTANTS.cellColorSuccess);
-                }
-                evt.target.draw();
-            }
-        });
-        slotStatesView.stage.on('mouseout', function () {
-            clearCellDetails();
-        });
-        document.getElementById("zoomIn").addEventListener("click", zoomer.zoomIn);
-        document.getElementById("zoomOut").addEventListener("click", zoomer.zoomOut);
-        document.getElementById("nextPage").addEventListener("click", zoomer.nextPage);
-        document.getElementById("prevPage").addEventListener("click", zoomer.prevPage);
-        window.addEventListener('resize', updateCanvasSize, false);
-    }
 
 }
 
-function SlotState(status, workflow, date, duration) {
-    this.status = status;
-    this.workflow = workflow;
-    this.date = date;
-    this.expectedDuration = duration;
-}
-
-SlotState.prototype.getDescription = function() {
-    return 'Slot ' + this.workflow.id + '@' + this.date.toISOString() + ': ' + this.status.name;
-};
-
-function WorkflowGroup(name, workflowToSlotsMap) {
-    this.name = name;
-    this.workflowToSlotsMap = workflowToSlotsMap;
-}
-
-function Workflow(id, author) {
-    this.id = id;
-    this.author = author;
-}
-
-Workflow.prototype.getDescription = function() {
-    return 'Workflow ' + this.id + ': [author: ' + this.author + ']';
-};
-
-
-function RrmanServerClient(view) {
+function RrmanServerClient() {
 
     var slotLengths = [5 * MINUTE_MS, 30 * MINUTE_MS, HOUR_MS, HOUR_MS];
 
-    function distractMs(time, ms) {
-        return new Date(time.getTime() - ms);
-    }
-
-    this.update = function() {
-        view.setModel(getDataFor(distractMs(view.getCurrentDate(), -24 * 3 * HOUR_MS)))
-        $(document).trigger("rrman:model_updated");
-    }
+    this.update = function(date) {
+        var model = getDataFor(DateUtils.distractMs(date, -3 * DAY_MS));
+        $(document).trigger("rrman:model_updated", model);
+    };
 
     function getDataFor(forDate) {
         var wfList = getWorkflowList();
@@ -477,7 +570,7 @@ function RrmanServerClient(view) {
         }
         var workflowGroup = new WorkflowGroup("Default Group", new Immutable.OrderedMap(wgContent));
         return new RrmanModel(forDate, [ workflowGroup ])
-    };
+    }
 
     function getWorkflowList() {
         var wfs = [];
@@ -485,25 +578,19 @@ function RrmanServerClient(view) {
             wfs.push(new Workflow("workflow-" + i, "John Doe"));
         }
         return wfs;
-    };
-
-    function getWorkflowSlots(workflow, forDate, fakeNum) {
-        var slotStates = [];
-        var time = forDate;
-        var endTime = distractMs(time, 7*24*HOUR_MS);
-        while (time.getTime() > endTime.getTime() ) {
-            var duration = slotLengths[fakeNum % slotLengths.length];
-            var status = Math.random() > 0.1 ? SUCCESS : FAILED;
-            slotStates.push(new SlotState(status, workflow, time, duration));
-            time = distractMs(time, duration);
-        }
-        return slotStates;
     }
-}
 
-
-
-function RrmanModel(updateTime, workflowGroups) {
-    this.updateTime = updateTime;
-    this.workflowGroups = workflowGroups;
+    function getWorkflowSlots(workflow, time, fakeNum) {
+        var slotStatesMap = [];
+        var duration = slotLengths[fakeNum % slotLengths.length];
+        time = DateUtils.distractMs(time, time.getTime() % duration);
+        var endTime = DateUtils.distractMs(time, 7 * DAY_MS);
+        while (time.getTime() > endTime.getTime() ) {
+            var status = Math.random() > 0.01 ? SUCCESS : FAILED;
+            var slotState = new SlotState(status, workflow, time, duration, "externalId@" + workflow.id + "@" + DateUtils.toCelosUTCString(time));
+            slotStatesMap.push([time, slotState]);
+            time = DateUtils.distractMs(time, duration);
+        }
+        return new Immutable.OrderedMap(slotStatesMap);
+    }
 }
