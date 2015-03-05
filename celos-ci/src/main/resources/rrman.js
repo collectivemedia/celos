@@ -318,16 +318,12 @@ function RrmanView(slotStatesView, datesView) {
     };
 
     this.updateCanvasSize = function() {
-        var totalHeight = 0;
-        for (var i=0; i < rrmanModel.workflowGroups.length; i++) {
-            totalHeight += rrmanModel.workflowGroups[i].workflowToSlotsMap.count() * UI_PROPERTIES.cellHeight;
-            totalHeight += UI_PROPERTIES.cellHeight * 2;
+        function reducer(prevValue, workflowGroup) {
+            return prevValue + workflowGroup.workflowToSlotsMap.count() * UI_PROPERTIES.cellHeight + UI_PROPERTIES.cellHeight * 2;
         }
-        totalHeight -= UI_PROPERTIES.cellHeight;
-
+        var totalHeight = rrmanModel.workflowGroups.reduce(reducer, 0) - UI_PROPERTIES.cellHeight;
         slotStatesView.stage.setWidth(slotStatesView.panel.width() - UI_PROPERTIES.scrollbarWidth);
         slotStatesView.stage.setHeight(totalHeight);
-
         datesView.stage.setWidth(slotStatesView.panel.width() - UI_PROPERTIES.scrollbarWidth);
     };
 
@@ -347,44 +343,40 @@ function RrmanView(slotStatesView, datesView) {
     };
 
     function resetSelectedMarkers(_model) {
-
-        function markersOnSlotStates(slotStates) {
-            var slotStateIterator = slotStates.values();
-            var slotStateCursor = slotStateIterator.next();
-            while (!slotStateCursor.done) {
-                var slotState = slotStateCursor.value;
-                if (selection.containsSlot(slotState)) {
-                    slotState.selected = true;
-                }
-                slotStateCursor = slotStateIterator.next();
+        function toSlots(datesToSlotStates) {
+            return datesToSlotStates.values();
+        }
+        function toSlotsMap(workflowGroup) {
+            return workflowGroup.workflowToSlotsMap.values();
+        }
+        function updateSlotState(slotState) {
+            if (selection.containsSlot(slotState)) {
+                slotState.selected = true;
             }
         }
 
-        for (var i = 0; i < _model.workflowGroups.length; i++) {
-            var entries = _model.workflowGroups[i].workflowToSlotsMap.values();
-            var dateToSlotsCursor = entries.next();
-            while (!dateToSlotsCursor.done) {
-                var slotStatesCollection = dateToSlotsCursor.value;
-                markersOnSlotStates(slotStatesCollection);
-                dateToSlotsCursor = entries.next();
-            }
-        }
+        _model.workflowGroups.flatMap(toSlotsMap).flatMap(toSlots).forEach(updateSlotState);
     }
 
     function updateMutableDimensions() {
-        var workflowNameWidth = getTextWidth(SAMPLE_DATE, UI_PROPERTIES.dateTextFontSize);
-        for (var i=0; i < rrmanModel.workflowGroups.length; i++) {
-            var entries = rrmanModel.workflowGroups[i].workflowToSlotsMap.keys();
-            var next = entries.next();
-            while (!next.done) {
-                var width = getTextWidth(next.value.id, UI_PROPERTIES.workflowNameFontSize);
-                workflowNameWidth = Math.max(workflowNameWidth, width);
-                next = entries.next();
-            }
+        var dateWidth = getTextWidth(SAMPLE_DATE, UI_PROPERTIES.dateTextFontSize);
+
+        function getMaxWorkflowNameWidth(wfName1, wfName2) {
+            var width1 = getTextWidth(wfName1, UI_PROPERTIES.workflowNameFontSize);
+            var width2 = getTextWidth(wfName2, UI_PROPERTIES.workflowNameFontSize);
+            return Math.max(width1, width2);
         }
+
+        function toWorkflowNames(workflowGroup) {
+            return workflowGroup.workflowToSlotsMap.keys();
+        }
+
+        var workflowNameWidth = rrmanModel.workflowGroups.flatMap(toWorkflowNames).reduce(getMaxWorkflowNameWidth)
+        var maxWidth = Math.max(dateWidth, workflowNameWidth);
+
         mutableDims = {
-            workflowNameWidth: workflowNameWidth,
-            cellDataOffset: workflowNameWidth + 2 * UI_PROPERTIES.workflowNameMargin
+            workflowNameWidth: maxWidth,
+            cellDataOffset: maxWidth + 2 * UI_PROPERTIES.workflowNameMargin
         }
     }
 
@@ -430,12 +422,13 @@ function RrmanView(slotStatesView, datesView) {
         slotStatesView.inactiveLayer = oldLayer;
 
         var yOffset = 0;
-        for (var i=0; i < rrmanModel.workflowGroups.length; i++) {
+
+        function drawWorkflowGroup(wfGroup) {
             var workflowGroupName = new Konva.Text({
                 x: UI_PROPERTIES.workflowNameMargin,
                 y: yOffset + UI_PROPERTIES.workflowNameYOffset,
                 align: 'right',
-                text: rrmanModel.workflowGroups[i].name,
+                text: wfGroup.name,
                 width: mutableDims.workflowNameWidth,
                 fontSize: UI_PROPERTIES.workflowGroupNameFontSize,
                 fontStyle: 'bold'
@@ -443,15 +436,14 @@ function RrmanView(slotStatesView, datesView) {
             yOffset += UI_PROPERTIES.cellHeight;
             slotStatesView.activeLayer.add(workflowGroupName);
 
-            var entries = rrmanModel.workflowGroups[i].workflowToSlotsMap.entries();
-            var next = entries.next();
-            while (!next.done) {
-                drawWorkflow(yOffset, next.value[0], next.value[1]);
+            wfGroup.workflowToSlotsMap.forEach(function(slotStatesMap, workflow) {
+                drawWorkflow(yOffset, workflow, slotStatesMap);
                 yOffset += UI_PROPERTIES.cellHeight;
-                next = entries.next();
-            }
+            });
             yOffset += UI_PROPERTIES.cellHeight;
         }
+
+        rrmanModel.workflowGroups.forEach(drawWorkflowGroup);
 
         slotStatesView.activeLayer.listening(true);
         slotStatesView.activeLayer.setVisible(true);
@@ -487,29 +479,29 @@ function RrmanView(slotStatesView, datesView) {
     }
 
     function drawSlots(yOffset, slotStatesMap) {
-        var x = mutableDims.cellDataOffset;
-        var beforeNow = function(x, y) {
-            return y.getTime() <= zoomer.getPagingOffsetDate().getTime();
-        };
-        var iterator = slotStatesMap.filter(beforeNow).values();
-        var next = iterator.next();
-        while (!next.done) {
-            var slotState = next.value;
+
+        function beforeNow(x, y) {
+            return y.getTime() <= _this.getCurrentDate().getTime();
+        }
+
+        function drawSlot(slotState) {
+            var millisInPixel = zoomer.getCurrentZoom().baseCellDuration / UI_PROPERTIES.baseCellWidth;
+            var x = mutableDims.cellDataOffset + (_this.getCurrentDate().getTime() - slotState.date.getTime()) / millisInPixel;
             if (x <= slotStatesView.stage.getWidth()) {
-                var cellSizeFactor = slotState.expectedDuration / zoomer.getCurrentZoom().baseCellDuration;
-                var width = cellSizeFactor * UI_PROPERTIES.baseCellWidth;
+                var cellSizeFactor = Math.min(1, slotState.expectedDuration / zoomer.getCurrentZoom().baseCellDuration);
+                var widthToDraw = cellSizeFactor * UI_PROPERTIES.baseCellWidth;
 
                 var rect = new Konva.Rect({
-                    x: x, y: yOffset, width: width, height: UI_PROPERTIES.cellHeight,
+                    x: x, y: yOffset, width: widthToDraw, height: UI_PROPERTIES.cellHeight,
                     fill: slotState.getColor(), stroke: 'white', strokeWidth: 1
                 });
 
                 rect.object = slotState;
                 slotStatesView.activeLayer.add(rect);
             }
-            x += width;
-            next = iterator.next();
         }
+
+        slotStatesMap.filter(beforeNow).forEach(drawSlot);
     }
 
     function drawSolidSlot(y, width, workflow) {
@@ -569,7 +561,7 @@ function RrmanServerClient() {
             wgContent.push([wfList[i], slotStates]);
         }
         var workflowGroup = new WorkflowGroup("Default Group", new Immutable.OrderedMap(wgContent));
-        return new RrmanModel(forDate, [ workflowGroup ])
+        return new RrmanModel(forDate, new Immutable.Seq([ workflowGroup ]));
     }
 
     function getWorkflowList() {
@@ -586,9 +578,11 @@ function RrmanServerClient() {
         time = DateUtils.distractMs(time, time.getTime() % duration);
         var endTime = DateUtils.distractMs(time, 7 * DAY_MS);
         while (time.getTime() > endTime.getTime() ) {
-            var status = Math.random() > 0.01 ? SUCCESS : FAILED;
-            var slotState = new SlotState(status, workflow, time, duration, "externalId@" + workflow.id + "@" + DateUtils.toCelosUTCString(time));
-            slotStatesMap.push([time, slotState]);
+            if (Math.random() > 0.02) {
+                var status = Math.random() > 0.01 ? SUCCESS : FAILED;
+                var slotState = new SlotState(status, workflow, time, duration, "externalId@" + workflow.id + "@" + DateUtils.toCelosUTCString(time));
+                slotStatesMap.push([time, slotState]);
+            }
             time = DateUtils.distractMs(time, duration);
         }
         return new Immutable.OrderedMap(slotStatesMap);
