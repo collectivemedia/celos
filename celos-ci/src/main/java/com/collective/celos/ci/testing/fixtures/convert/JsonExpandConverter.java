@@ -40,9 +40,13 @@ public class JsonExpandConverter extends AbstractFixObjectConverter<FixFile, Fix
         while ((line = reader.readLine()) != null) {
             JsonElement jsonElement = jsonParser.parse(line);
             for (String field : expandFields) {
-                String strField = jsonElement.getAsJsonObject().get(field).getAsString();
-                JsonElement fieldElem = jsonParser.parse(strField);
-                jsonElement.getAsJsonObject().add(field, fieldElem);
+                try {
+                    String strField = jsonElement.getAsJsonObject().get(field).getAsString();
+                    JsonElement fieldElem = jsonParser.parse(strField);
+                    jsonElement.getAsJsonObject().add(field, fieldElem);
+                } catch(Exception e) {
+                    throw new Exception("Error caused in line: " + line + " trying to expand field: " + field, e); 
+                }
             }
             stringList.add(gson.toJson(jsonElement));
         }
