@@ -16,5 +16,6 @@ addWorkflow({
     "trigger": new WorkflowConfigurationParserTest$TestTrigger(),
     "externalService": new WorkflowConfigurationParserTest$TestExternalService(),
     "maxRetryCount": 66,
-    "startTime": "2014-03-10T12:34:56.789Z"
+    "startTime": "2014-03-10T12:34:56.789Z",
+    "waitTimeoutSeconds": 23
 });

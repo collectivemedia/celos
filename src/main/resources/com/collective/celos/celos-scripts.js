@@ -32,6 +32,17 @@ celos.addWorkflow = function (json) {
         throw "Workflow ID must be a string: " + json.id;
     }
 
+    var waitTimeoutSeconds;
+    if (typeof(json.waitTimeoutSeconds) === "undefined") {
+        waitTimeoutSeconds = Workflow.DEFAULT_WAIT_TIMEOUT_SECONDS;
+    } else {
+        if (typeof(json.waitTimeoutSeconds) === "number") {
+            waitTimeoutSeconds = json.waitTimeoutSeconds;
+        } else {
+            throw "waitTimeoutSeconds must be a number: " + json.waitTimeoutSeconds;
+        }
+    }
+
     var workflowInfo = createWorkflowInfo(json);
     var workflow = new Workflow(
             new WorkflowID(json.id),
@@ -41,6 +52,7 @@ celos.addWorkflow = function (json) {
             json.externalService,
             json.maxRetryCount ? json.maxRetryCount : 0,
             new ScheduledTime(json.startTime ? json.startTime : "1970-01-01T00:00:00.000Z"),
+            waitTimeoutSeconds,
             workflowInfo
     );
 
