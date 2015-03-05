@@ -249,6 +249,22 @@ public class JavaScriptFunctionsTest {
     }
 
     @Test
+    public void testIsRunningInTestModeFalse() throws Exception {
+        String js = "celos.isRunningInTestMode()";
+        Boolean s = (Boolean) runJS(js);
+        Assert.assertEquals(s, false);
+    }
+
+    @Test
+    public void testIsRunningInTestModeTrue() throws Exception {
+        String js = "TEST_UUID_JS_VAR = 'some';" +
+                "celos.isRunningInTestMode()";
+        Boolean s = (Boolean) runJS(js);
+        Assert.assertEquals(s, true);
+    }
+
+
+    @Test
     public void testHdfsCheckNotExists() throws Exception {
         String js = "var CELOS_DEFAULT_HDFS = ''; " +
                 "var schTime = new Packages.com.collective.celos.ScheduledTime('2014-05-12T19:33:01Z');" +

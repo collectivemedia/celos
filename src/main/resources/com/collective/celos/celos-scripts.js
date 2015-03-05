@@ -233,11 +233,15 @@ celos.replaceTimeVariables = function (string, t) {
 }
 
 celos.databaseName = function (database) {
-    if (typeof HDFS_PREFIX_JS_VAR !== "undefined") {
+    if (typeof TEST_UUID_JS_VAR !== "undefined") {
         return new DatabaseName(database).getMockedName(TEST_UUID_JS_VAR);
     } else {
         return database;
     }
+}
+
+celos.isRunningInTestMode = function() {
+    return (typeof TEST_UUID_JS_VAR !== "undefined");
 }
 
 var addWorkflow = celos.addWorkflow;
