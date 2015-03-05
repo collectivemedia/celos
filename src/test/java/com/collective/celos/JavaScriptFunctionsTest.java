@@ -257,7 +257,7 @@ public class JavaScriptFunctionsTest {
 
     @Test
     public void testIsRunningInTestModeTrue() throws Exception {
-        String js = "HDFS_PREFIX_JS_VAR = 'some';" +
+        String js = "TEST_UUID_JS_VAR = 'some';" +
                 "celos.isRunningInTestMode()";
         Boolean s = (Boolean) runJS(js);
         Assert.assertEquals(s, true);
