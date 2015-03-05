@@ -240,6 +240,10 @@ celos.databaseName = function (database) {
     }
 }
 
+celos.isRunningInTestMode = function() {
+    return (typeof HDFS_PREFIX_JS_VAR !== "undefined");
+}
+
 var addWorkflow = celos.addWorkflow;
 var importDefaults = celos.importDefaults;
 var hourlySchedule = celos.hourlySchedule;
