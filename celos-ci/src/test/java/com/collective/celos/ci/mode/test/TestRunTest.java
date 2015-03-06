@@ -28,7 +28,7 @@ public class TestRunTest {
         URI hadoopCoreUrl = Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/ci/testing/config/core-site.xml").toURI();
         URI hadoopHdfsUrl = Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/ci/testing/config/hdfs-site.xml").toURI();
 
-        CelosCiCommandLine commandLine = new CelosCiCommandLine("", "TEST", "deploydir", "workflow", "testDir", "uname");
+        CelosCiCommandLine commandLine = new CelosCiCommandLine("", "TEST", "deploydir", "workflow", "testDir", "uname", false);
         CelosCiTarget target = new CelosCiTarget(hadoopHdfsUrl, hadoopCoreUrl, URI.create("celoswfdir"), URI.create("defdir"), URI.create(""));
         TestCase testCase = new TestCase("tc1", "2013-12-20T16:00Z", "2013-12-20T16:00Z");
         TestRun celosCiTest = new TestRun(target, commandLine, testCase, tempDir.newFolder());
@@ -74,7 +74,7 @@ public class TestRunTest {
         File otherDefFile2 = new File(remoteFolderDef, "some-defaults2.js");
         otherDefFile2.createNewFile();
 
-        CelosCiCommandLine commandLine = new CelosCiCommandLine("", "TEST", deployDir.getAbsolutePath(), "myworkflow", "testDir", "uname");
+        CelosCiCommandLine commandLine = new CelosCiCommandLine("", "TEST", deployDir.getAbsolutePath(), "myworkflow", "testDir", "uname", false);
         CelosCiTarget target = new CelosCiTarget(hadoopHdfsUrl, hadoopCoreUrl, remoteFolderWf.toURI(), remoteFolderDef.toURI(), URI.create(""));
         TestCase testCase = new TestCase("tc1", "2013-12-20T16:00Z", "2013-12-20T16:00Z");
 
@@ -101,7 +101,7 @@ public class TestRunTest {
         File defFile = new File(deployDir, "defaults.js");
         defFile.createNewFile();
 
-        CelosCiCommandLine commandLine = new CelosCiCommandLine("", "TEST", deployDir.getAbsolutePath(), "myworkflow", "testDir", "uname");
+        CelosCiCommandLine commandLine = new CelosCiCommandLine("", "TEST", deployDir.getAbsolutePath(), "myworkflow", "testDir", "uname", false);
         CelosCiTarget target = new CelosCiTarget(hadoopHdfsUrl, hadoopCoreUrl, null, null, URI.create(""));
         TestCase testCase = new TestCase("tc1", "2013-12-20T16:00Z", "2013-12-20T16:00Z");
 
