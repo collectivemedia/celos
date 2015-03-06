@@ -68,10 +68,12 @@ public class DeployTaskTest {
         String hadoopHdfsUrl = Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/ci/testing/config/hdfs-site.xml").getFile();
 
         File celosWfDir = tempDir.newFolder();
+        File defDir = tempDir.newFolder();
         File hdfsDir = tempDir.newFolder();
         File deployDir = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/ci/testing/deploy").getFile());
 
         String targetFileStr = "{\n" +
+                "    \"defaults.dir.uri\": \"" + defDir.getAbsolutePath() +"\",\n" +
                 "    \"workflows.dir.uri\": \"" + celosWfDir.getAbsolutePath() +"\",\n" +
                 "    \"hadoop.hdfs-site.xml\": \"" + hadoopHdfsUrl +"\",\n" +
                 "    \"hadoop.core-site.xml\": \"" + hadoopCoreUrl +"\"\n" +
