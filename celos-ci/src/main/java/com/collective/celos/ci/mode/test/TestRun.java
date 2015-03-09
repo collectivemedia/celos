@@ -54,6 +54,7 @@ public class TestRun {
     private final File testCasesDir;
     private final UUID testUUID;
     private final CelosCiTarget originalTarget;
+    private final boolean keepTempData;
 
     public TestRun(CelosCiTarget target, CelosCiCommandLine commandLine, TestCase testCase, File celosCiTempDir) throws Exception {
 
@@ -76,6 +77,7 @@ public class TestRun {
 
         this.wfDeployer = new WorkflowFilesDeployer(ciContext);
         this.hdfsDeployer = new HdfsDeployer(ciContext);
+        this.keepTempData = commandLine.isKeepTempData();
     }
 
     public UUID getTestUUID() {
@@ -161,8 +163,10 @@ public class TestRun {
             System.out.println(testCase.getName() + ": Stopping Celos");
             System.out.flush();
             celosServer.stopServer();
-            doCleanup();
-            validateCleanState();
+            if (!keepTempData) {
+                doCleanup();
+                validateCleanState();
+            }
         }
     }
 

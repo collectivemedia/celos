@@ -16,9 +16,11 @@ public class CelosCiCommandLine {
     private final String workflowName;
     private final File testCasesDir;
     private final String userName;
+    private final boolean keepTempData;
 
-    public CelosCiCommandLine(String targetUri, String mode, String deployDir, String workflowName, String testCasesDir, String userName) {
+    public CelosCiCommandLine(String targetUri, String mode, String deployDir, String workflowName, String testCasesDir, String userName, boolean keepTempData) {
         this.userName = userName;
+        this.keepTempData = keepTempData;
         this.targetUri = URI.create(targetUri);
         this.mode = CelosCiContext.Mode.valueOf(mode);
         this.deployDir = new File(deployDir);
@@ -48,5 +50,9 @@ public class CelosCiCommandLine {
 
     public String getUserName() {
         return userName;
+    }
+
+    public boolean isKeepTempData() {
+        return keepTempData;
     }
 }
