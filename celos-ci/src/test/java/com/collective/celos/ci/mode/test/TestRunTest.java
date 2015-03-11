@@ -97,12 +97,14 @@ public class TestRunTest {
         URI hadoopHdfsUrl = Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/ci/testing/config/hdfs-site.xml").toURI();
 
         File deployDir = tempDir.newFolder();
+        File emptyDir = tempDir.newFolder();
         deployDir.mkdirs();
         File defFile = new File(deployDir, "defaults.js");
         defFile.createNewFile();
 
         CelosCiCommandLine commandLine = new CelosCiCommandLine("", "TEST", deployDir.getAbsolutePath(), "myworkflow", "testDir", "uname", false);
-        CelosCiTarget target = new CelosCiTarget(hadoopHdfsUrl, hadoopCoreUrl, null, null, URI.create(""));
+        CelosCiTarget target = new CelosCiTarget(hadoopHdfsUrl, hadoopCoreUrl, emptyDir.toURI(), emptyDir.toURI(), URI.create(""));
+
         TestCase testCase = new TestCase("tc1", "2013-12-20T16:00Z", "2013-12-20T16:00Z");
 
         TestRun testRun = new TestRun(target, commandLine, testCase, tempDir.newFolder());

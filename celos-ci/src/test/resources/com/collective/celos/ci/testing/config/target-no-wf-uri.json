@@ -1,0 +1,5 @@
+{
+    "defaults.dir.uri": "celoswfdir",
+    "hadoop.hdfs-site.xml": "hadoophdfsurl",
+    "hadoop.core-site.xml": "hadoopcoreurl"
+}

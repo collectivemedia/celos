@@ -4,6 +4,7 @@ import com.collective.celos.ci.config.deploy.CelosCiContext;
 import com.collective.celos.ci.config.deploy.CelosCiTarget;
 import org.apache.commons.vfs2.FileSystemException;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -26,12 +27,20 @@ public class WorkflowFilesDeployerTest {
     @Rule
     public TemporaryFolder tempDir = new TemporaryFolder();
 
+    private URI emptyURI;
+
+    @Before
+    public void setUp() throws IOException {
+        emptyURI = tempDir.newFolder().toURI();
+    }
+
+
     @Test
     public void testGetWorkflowJsUri1() throws FileSystemException, URISyntaxException {
         CelosCiContext context = mock(CelosCiContext.class);
         WorkflowFilesDeployer deployer = new WorkflowFilesDeployer(context);
 
-        CelosCiTarget target = new CelosCiTarget(URI.create(""), URI.create(""), null, null, URI.create("hiveJdbc"));
+        CelosCiTarget target = new CelosCiTarget(URI.create(""), URI.create(""), emptyURI, emptyURI, URI.create("hiveJdbc"));
         doReturn(target).when(context).getTarget();
         doReturn("workflow").when(context).getWorkflowName();
         Assert.assertEquals(deployer.getTargetJsFileUri(URI.create("")), URI.create("/workflow.js"));
@@ -152,7 +161,7 @@ public class WorkflowFilesDeployerTest {
         File remoteFolderDef = tempDir.newFolder();
         remoteFolderDef.mkdirs();
 
-        CelosCiTarget target = new CelosCiTarget(URI.create(""), URI.create(""), remoteFolderWf.toURI(), null, URI.create("hiveJdbc"));
+        CelosCiTarget target = new CelosCiTarget(URI.create(""), URI.create(""), remoteFolderWf.toURI(), emptyURI, URI.create("hiveJdbc"));
 
         doReturn(localFolder).when(context).getDeployDir();
         doReturn(target).when(context).getTarget();
@@ -185,7 +194,7 @@ public class WorkflowFilesDeployerTest {
         File remoteFolderDef = tempDir.newFolder();
         remoteFolderDef.mkdirs();
 
-        CelosCiTarget target = new CelosCiTarget(URI.create(""), URI.create(""), null, remoteFolderDef.toURI(), URI.create("hiveJdbc"));
+        CelosCiTarget target = new CelosCiTarget(URI.create(""), URI.create(""), emptyURI, remoteFolderDef.toURI(), URI.create("hiveJdbc"));
 
         doReturn(localFolder).when(context).getDeployDir();
         doReturn(target).when(context).getTarget();
@@ -335,7 +344,7 @@ public class WorkflowFilesDeployerTest {
         File remoteFolder = tempDir.newFolder();
         remoteFolder.mkdirs();
 
-        CelosCiTarget target = new CelosCiTarget(URI.create(""), URI.create(""), remoteFolder.toURI(), null, URI.create("hiveJdbc"));
+        CelosCiTarget target = new CelosCiTarget(URI.create(""), URI.create(""), remoteFolder.toURI(), emptyURI, URI.create("hiveJdbc"));
         doReturn(localFolder).when(context).getDeployDir();
         doReturn(target).when(context).getTarget();
         doReturn("workflow").when(context).getWorkflowName();

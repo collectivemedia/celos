@@ -140,10 +140,10 @@ public class TestTaskTest {
 
         String targetFileStr = "{\n" +
                 "    \"security.settings\": \"secsettings\",\n" +
-                "    \"celos.workflow.dir\": \"celoswfdir\",\n" +
+                "    \"workflows.dir.uri\": \"celoswfdir\",\n" +
                 "    \"hadoop.hdfs-site.xml\": \"" + hadoopHdfsUrl +"\",\n" +
                 "    \"hadoop.core-site.xml\": \"" + hadoopCoreUrl +"\",\n" +
-                "    \"defaults.file.uri\": \"deffile\"\n" +
+                "    \"defaults.dir.uri\": \"deffile\"\n" +
                 "}\n";
 
         File targetFile = tempDir.newFile();
@@ -201,10 +201,10 @@ public class TestTaskTest {
 
         String targetFileStr = "{\n" +
                 "    \"security.settings\": \"secsettings\",\n" +
-                "    \"celos.workflow.dir\": \"celoswfdir\",\n" +
+                "    \"workflows.dir.uri\": \"celoswfdir\",\n" +
                 "    \"hadoop.hdfs-site.xml\": \"" + hadoopHdfsUrl +"\",\n" +
                 "    \"hadoop.core-site.xml\": \"" + hadoopCoreUrl +"\",\n" +
-                "    \"defaults.file.uri\": \"deffile\"\n" +
+                "    \"defaults.dir.uri\": \"deffile\"\n" +
                 "}\n";
 
         File targetFile = tempDir.newFile();
@@ -238,10 +238,10 @@ public class TestTaskTest {
 
         String targetFileStr = "{\n" +
                 "    \"security.settings\": \"secsettings\",\n" +
-                "    \"celos.workflow.dir\": \"celoswfdir\",\n" +
+                "    \"workflows.dir.uri\": \"celoswfdir\",\n" +
                 "    \"hadoop.hdfs-site.xml\": \"" + hadoopHdfsUrl +"\",\n" +
                 "    \"hadoop.core-site.xml\": \"" + hadoopCoreUrl +"\",\n" +
-                "    \"defaults.file.uri\": \"deffile\"\n" +
+                "    \"defaults.dir.uri\": \"deffile\"\n" +
                 "}\n";
 
         File targetFile = tempDir.newFile();
