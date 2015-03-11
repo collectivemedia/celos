@@ -66,7 +66,7 @@ public class TestTask extends CelosCi {
         return new File(commandLine.getTestCasesDir(), TEST_CONFIG_JS_FILE);
     }
 
-    private static File getTempDir() throws IOException {
+    static File getTempDir() throws IOException {
         File celosCiDir = new File(System.getProperty("user.home"), CELOS_CI_DIR);
         File tempDir = new File(celosCiDir, UUID.randomUUID().toString());
         return Files.createDirectories(tempDir.toPath(), getTempDirAttributes()).toFile();
