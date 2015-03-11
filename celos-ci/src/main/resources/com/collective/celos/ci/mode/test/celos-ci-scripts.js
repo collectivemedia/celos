@@ -49,7 +49,10 @@ ci.hdfsInput = function (fixObject, whereToPlace) {
     return new HdfsInputDeployer(fixObject, whereToPlace);
 }
 
-ci.fixFileFromHDFS = function (path) {
+ci.fixFileFromHdfs = function (path) {
+    if (!path) {
+        throw "Undefined path";
+    }
     return new OutputFixDirFromHdfsCreator(path);
 }
 
@@ -159,12 +162,12 @@ ci.fixTableFromResource = function (path) {
     if (!path) {
         throw "path undefined";
     }
-    return ci.fixTableFromTSV(ci.fixFileFromResoure(path));
+    return ci.fixTableFromTsv(ci.fixFileFromResoure(path));
 }
 
-ci.fixTableFromTSV = function (fileCreator) {
+ci.fixTableFromTsv = function (fileCreator) {
     if (!fileCreator) {
-        throw "fixTableFile undefined";
+        throw "fileCreator undefined";
     }
     return new FileFixTableCreator(fileCreator);
 }

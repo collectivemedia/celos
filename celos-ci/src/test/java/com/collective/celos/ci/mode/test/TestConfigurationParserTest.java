@@ -423,7 +423,7 @@ public class TestConfigurationParserTest {
     @Test
     public void testFixTableFromTSV() throws Exception {
 
-        String js = "ci.fixTableFromTSV(ci.fixFile(\"A\\tB\\n1\\t2\\n11\\t22\"))";
+        String js = "ci.fixTableFromTsv(ci.fixFile(\"A\\tB\\n1\\t2\\n11\\t22\"))";
 
         TestConfigurationParser parser = new TestConfigurationParser();
 
@@ -440,6 +440,33 @@ public class TestConfigurationParserTest {
         Assert.assertEquals("22", r2.getCells().get("B"));
     }
 
+    @Test(expected = JavaScriptException.class)
+    public void testFixTableFromTSVError() throws IOException {
+        String js = "ci.fixTableFromTsv()";
+        TestConfigurationParser parser = new TestConfigurationParser();
+        parser.evaluateTestConfig(new StringReader(js), "string");
+    }
+    
+    @Test
+    public void testFixFileFromHDFS() throws IOException {
+
+        String js = "ci.fixFileFromHdfs(\"/foo\")";
+
+        TestConfigurationParser parser = new TestConfigurationParser();
+
+        NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(new StringReader(js), "string");
+        OutputFixDirFromHdfsCreator creator = (OutputFixDirFromHdfsCreator) creatorObj.unwrap();
+
+        Assert.assertEquals(creator.getPath(), new Path("foo")); // OutputFixDirFromHdfsCreator strips initial /
+    }
+
+    @Test(expected = JavaScriptException.class)
+    public void testFixFileFromHDFSError() throws IOException {
+        String js = "ci.fixFileFromHdfs()";
+        TestConfigurationParser parser = new TestConfigurationParser();
+        parser.evaluateTestConfig(new StringReader(js), "string");
+    }
+        
     @Test(expected = JavaScriptException.class)
     public void testFixTableFromResourceError() throws IOException {
 
