@@ -1,1 +1,1 @@
-./gradlew clean build --project-prop target_uri=file:///home/celos-ci/celos-settings/targets/test.json celos_ci
+./gradlew clean build --project-prop target_uri=file:///home/celos-ci/celos-settings/targets/test.json celos_ci --refresh-dependencies

@@ -1,7 +1,6 @@
 importPackage(Packages.com.collective.celos);
 importPackage(Packages.com.collective.celos.trigger);
 importPackage(Packages.com.collective.celos.ci.testing);
-
 var celos = {};
 
 // FIXME: temporary solution: until all utility functions return real Java objects,
@@ -238,6 +237,10 @@ celos.databaseName = function (database) {
     } else {
         return database;
     }
+}
+
+celos.isRunningInTestMode = function() {
+    return (typeof HDFS_PREFIX_JS_VAR !== "undefined");
 }
 
 var addWorkflow = celos.addWorkflow;
