@@ -1,7 +1,6 @@
 importPackage(Packages.com.collective.celos);
 importPackage(Packages.com.collective.celos.trigger);
 importPackage(Packages.com.collective.celos.ci.testing);
-
 var celos = {};
 
 // FIXME: temporary solution: until all utility functions return real Java objects,
@@ -233,7 +232,7 @@ celos.replaceTimeVariables = function (string, t) {
 }
 
 celos.databaseName = function (database) {
-    if (typeof TEST_UUID_JS_VAR !== "undefined") {
+    if (typeof HDFS_PREFIX_JS_VAR !== "undefined") {
         return new DatabaseName(database).getMockedName(TEST_UUID_JS_VAR);
     } else {
         return database;
@@ -241,7 +240,7 @@ celos.databaseName = function (database) {
 }
 
 celos.isRunningInTestMode = function() {
-    return (typeof TEST_UUID_JS_VAR !== "undefined");
+    return (typeof HDFS_PREFIX_JS_VAR !== "undefined");
 }
 
 var addWorkflow = celos.addWorkflow;
