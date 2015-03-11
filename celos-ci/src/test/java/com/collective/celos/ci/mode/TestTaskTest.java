@@ -278,6 +278,9 @@ public class TestTaskTest {
         Set<PosixFilePermission> perms = Files.getPosixFilePermissions(tempDir.toPath());
         Assert.assertTrue(perms.contains(PosixFilePermission.OTHERS_READ));
         Assert.assertTrue(perms.contains(PosixFilePermission.OTHERS_EXECUTE));
+        Assert.assertTrue(perms.contains(PosixFilePermission.OWNER_READ));
+        Assert.assertTrue(perms.contains(PosixFilePermission.OWNER_EXECUTE));
+        Assert.assertTrue(perms.contains(PosixFilePermission.OWNER_WRITE));
         tempDir.delete();
     }
 
