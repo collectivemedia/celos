@@ -7,12 +7,9 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
-import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.UUID;
 
-import com.collective.celos.ci.testing.fixtures.compare.FixTableComparer;
-import com.collective.celos.ci.testing.fixtures.compare.RecursiveFsObjectComparer;
 import org.apache.commons.io.IOUtils;
 import org.apache.hadoop.fs.Path;
 import org.junit.Assert;
@@ -24,6 +21,8 @@ import org.mozilla.javascript.NativeJavaObject;
 import com.collective.celos.DatabaseName;
 import com.collective.celos.ScheduledTime;
 import com.collective.celos.WorkflowID;
+import com.collective.celos.ci.testing.fixtures.compare.FixTableComparer;
+import com.collective.celos.ci.testing.fixtures.compare.RecursiveFsObjectComparer;
 import com.collective.celos.ci.testing.fixtures.compare.json.JsonContentsComparer;
 import com.collective.celos.ci.testing.fixtures.convert.AvroToJsonConverter;
 import com.collective.celos.ci.testing.fixtures.convert.FixTableToJsonFileConverter;
@@ -42,6 +41,7 @@ import com.collective.celos.ci.testing.structure.fixobject.ConversionCreator;
 import com.collective.celos.ci.testing.structure.fixobject.FixDir;
 import com.collective.celos.ci.testing.structure.fixobject.FixDirRecursiveConverter;
 import com.collective.celos.ci.testing.structure.fixobject.FixFile;
+import com.collective.celos.ci.testing.structure.fixobject.FixTable;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
@@ -421,21 +421,23 @@ public class TestConfigurationParserTest {
     }
 
     @Test
-    public void testFixTableFromResource() throws IOException {
+    public void testFixTableFromTSV() throws Exception {
 
-        String js = "ci.fixTableFromResource(\"somedata\")";
+        String js = "ci.fixTableFromTSV(ci.fixFile(\"A\\tB\\n1\\t2\\n11\\t22\"))";
 
         TestConfigurationParser parser = new TestConfigurationParser();
 
         NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(new StringReader(js), "string");
         FileFixTableCreator creator = (FileFixTableCreator) creatorObj.unwrap();
-
-
         TestRun testRun = mock(TestRun.class);
-        doReturn(new File("/some/path")).when(testRun).getTestCasesDir();
 
-        Assert.assertEquals(creator.getRelativePath(), Paths.get("somedata"));
-        Assert.assertEquals(creator.getDescription(testRun), "FixTable out of /some/path/somedata");
+        FixTable t = creator.create(testRun);
+        FixTable.FixRow r1 = t.getRows().get(0);
+        FixTable.FixRow r2 = t.getRows().get(1);
+        Assert.assertEquals("1", r1.getCells().get("A"));
+        Assert.assertEquals("2", r1.getCells().get("B"));
+        Assert.assertEquals("11", r2.getCells().get("A"));
+        Assert.assertEquals("22", r2.getCells().get("B"));
     }
 
     @Test(expected = JavaScriptException.class)
