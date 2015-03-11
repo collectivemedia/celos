@@ -8,6 +8,7 @@ import java.nio.file.attribute.PosixFilePermission;
 import java.nio.file.attribute.PosixFilePermissions;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -28,13 +29,13 @@ import com.collective.celos.ci.mode.test.TestCase;
 import com.collective.celos.ci.mode.test.TestConfigurationParser;
 import com.collective.celos.ci.mode.test.TestRun;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 
 /**
  * Created by akonopko on 10/1/14.
  */
 public class TestTask extends CelosCi {
 
+    private static final String CELOS_CI_DIR = ".celos-ci";
     private static final String TEST_CONFIG_JS_FILE = "test.js";
     private static final String CELOS_LOG_FILE = "celos.log";
 
@@ -66,7 +67,9 @@ public class TestTask extends CelosCi {
     }
 
     private static File getTempDir() throws IOException {
-        return Files.createTempDirectory("celos", getTempDirAttributes()).toFile();
+        File celosCiDir = new File(System.getProperty("user.home"), CELOS_CI_DIR);
+        File tempDir = new File(celosCiDir, UUID.randomUUID().toString());
+        return Files.createDirectories(tempDir.toPath(), getTempDirAttributes()).toFile();
     }
 
     private static FileAttribute<Set<PosixFilePermission>> getTempDirAttributes() {
