@@ -49,6 +49,10 @@ ci.hdfsInput = function (fixObject, whereToPlace) {
     return new HdfsInputDeployer(fixObject, whereToPlace);
 }
 
+ci.fixFileFromHDFS = function (path) {
+    return new OutputFixDirFromHdfsCreator(path);
+}
+
 ci.avroToJson = function (creatorOrPath) {
     if (!creatorOrPath) {
         throw "Undefined expected creatorOrPath";
@@ -151,11 +155,18 @@ ci.addTestCase = function (testCase) {
     testConfigurationParser.addTestCase(result);
 }
 
-ci.fixTableFromResource = function (fixTableFile) {
-    if (!fixTableFile) {
+ci.fixTableFromResource = function (path) {
+    if (!path) {
+        throw "path undefined";
+    }
+    return ci.fixTableFromTSV(ci.fixFileFromResoure(path));
+}
+
+ci.fixTableFromTSV = function (fileCreator) {
+    if (!fileCreator) {
         throw "fixTableFile undefined";
     }
-    return new FileFixTableCreator(Packages.java.nio.file.Paths.get(fixTableFile));
+    return new FileFixTableCreator(fileCreator);
 }
 
 ci.fixTable = function (columnNames, rowData) {

@@ -1,5 +1,6 @@
 package com.collective.celos.ci.testing.fixtures.create;
 
+import com.collective.celos.Util;
 import com.collective.celos.ci.mode.test.TestRun;
 import com.collective.celos.ci.testing.structure.fixobject.FixFile;
 
@@ -15,8 +16,12 @@ public class FixFileFromResourceCreator implements FixObjectCreator<FixFile> {
 
     private final Path relativePath;
 
+    public FixFileFromResourceCreator(Path path) {
+        this.relativePath = Util.requireNonNull(path);
+    }
+    
     public FixFileFromResourceCreator(String path) {
-        this.relativePath = Paths.get(path);
+        this(Paths.get(path));
     }
 
     public FixFile create(TestRun testRun) throws Exception {
