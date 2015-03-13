@@ -1,5 +1,26 @@
 package com.collective.celos.ci.mode;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.attribute.FileAttribute;
+import java.nio.file.attribute.PosixFilePermission;
+import java.nio.file.attribute.PosixFilePermissions;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.log4j.FileAppender;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.log4j.PatternLayout;
+
 import com.collective.celos.ci.CelosCi;
 import com.collective.celos.ci.config.CelosCiCommandLine;
 import com.collective.celos.ci.config.deploy.CelosCiTarget;
@@ -8,23 +29,13 @@ import com.collective.celos.ci.mode.test.TestCase;
 import com.collective.celos.ci.mode.test.TestConfigurationParser;
 import com.collective.celos.ci.mode.test.TestRun;
 import com.google.common.collect.Lists;
-import org.apache.commons.io.FileUtils;
-import org.apache.log4j.FileAppender;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PatternLayout;
-
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.util.List;
-import java.util.concurrent.*;
 
 /**
  * Created by akonopko on 10/1/14.
  */
 public class TestTask extends CelosCi {
 
+    private static final String CELOS_CI_DIR = ".celos-ci";
     private static final String TEST_CONFIG_JS_FILE = "test.js";
     private static final String CELOS_LOG_FILE = "celos.log";
 
@@ -55,8 +66,14 @@ public class TestTask extends CelosCi {
         return new File(commandLine.getTestCasesDir(), TEST_CONFIG_JS_FILE);
     }
 
-    private static File getTempDir() throws IOException {
-        return Files.createTempDirectory("celos").toFile();
+    static File getTempDir() throws IOException {
+        File celosCiDir = new File(System.getProperty("user.home"), CELOS_CI_DIR);
+        File tempDir = new File(celosCiDir, UUID.randomUUID().toString());
+        return Files.createDirectories(tempDir.toPath(), getTempDirAttributes()).toFile();
+    }
+
+    private static FileAttribute<Set<PosixFilePermission>> getTempDirAttributes() {
+        return PosixFilePermissions.asFileAttribute(PosixFilePermissions.fromString("rwxr-xr-x"));
     }
 
     private void substituteLoggers() throws IOException {

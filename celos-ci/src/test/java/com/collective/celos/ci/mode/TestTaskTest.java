@@ -13,6 +13,7 @@ import com.collective.celos.ci.testing.fixtures.create.FixDirFromResourceCreator
 import com.collective.celos.ci.testing.fixtures.create.OutputFixDirFromHdfsCreator;
 import com.collective.celos.ci.testing.fixtures.deploy.HdfsInputDeployer;
 import com.google.common.collect.Lists;
+
 import org.apache.hadoop.fs.Path;
 import org.junit.Assert;
 import org.junit.Before;
@@ -22,7 +23,11 @@ import org.junit.rules.TemporaryFolder;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.attribute.PosixFilePermission;
 import java.util.List;
+import java.util.Set;
 
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -265,6 +270,18 @@ public class TestTaskTest {
         testTask.getTestRuns().addAll(runList);
 
         testTask.start();
+    }
+    
+    @Test
+    public void testTempDirIsWorldReadable() throws IOException {
+        File tempDir = TestTask.getTempDir();
+        Set<PosixFilePermission> perms = Files.getPosixFilePermissions(tempDir.toPath());
+        Assert.assertTrue(perms.contains(PosixFilePermission.OTHERS_READ));
+        Assert.assertTrue(perms.contains(PosixFilePermission.OTHERS_EXECUTE));
+        Assert.assertTrue(perms.contains(PosixFilePermission.OWNER_READ));
+        Assert.assertTrue(perms.contains(PosixFilePermission.OWNER_EXECUTE));
+        Assert.assertTrue(perms.contains(PosixFilePermission.OWNER_WRITE));
+        tempDir.delete();
     }
 
 }
