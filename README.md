@@ -767,3 +767,31 @@ Reruns a specific slot.
 <pre>
 curl -X POST http://celos001.ny7.collective-media.net:8080/celos/rerun?id=workflow-1&time=2014-02-10T20:00Z
 </pre>
+
+## Tips & Tricks
+
+### Rerunning old workflow slots
+
+Celos only processes slots within a sliding window (currently set to 7
+days).  Slots outside the sliding window are ignored.
+
+To rerun slots outside the sliding window, you need to manually
+trigger the scheduler servlet for the window the slot lies in.
+
+#### Example
+
+This example shows how to rerun a slot `workflow-1@2014-02-10T20:00Z`.
+
+<pre>
+CELOS=http://celos001.ny7.collective-media.net:8080/celos
+
+# Mark workflow-1@2014-02-10T20:00Z to be rerun in scheduler state database
+curl -X POST "$CELOS/rerun?id=workflow-1&time=2014-02-10T20:00Z"
+
+# Trigger scheduler to process the slot
+# Note that we use sliding window starting 1 hour after the workflow
+watch -n 10 curl -X POST "$CELOS/scheduler?ids=workflow-1&time=2014-02-10T21:00Z"
+
+# While watch is running, check slot status with this command
+curl "${CELOS}/workflow-slots?id=workflow-1&time=2014-02-10T21:00Z"
+</pre>
