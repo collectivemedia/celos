@@ -162,7 +162,7 @@ ci.fixTableFromResource = function (path) {
     if (!path) {
         throw "path undefined";
     }
-    return ci.fixTableFromTsv(ci.fixFileFromResoure(path));
+    return ci.fixTableFromTsv(ci.fixFileFromResource(path));
 }
 
 ci.fixTableFromTsv = function (fileCreator) {
