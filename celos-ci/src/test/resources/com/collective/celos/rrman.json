@@ -1,0 +1,299 @@
+{
+  "hueURL": "http://cldmgr001.ewr004.collective-media.net:8888/oozie/list_oozie_workflow/%s/",
+  "workflowToSlotMap": [
+    {
+      "name": "Flume",
+      "workflows": [
+        "flume-ready-dal",
+        "flume-ready-dc",
+        "flume-ready-dc3",
+        "flume-ready-lax1",
+        "flume-ready-nym1",
+        "flume-ready-sea",
+        "flume-ready-sv4",
+        "flume-tmp-file-closer"
+      ]
+    },
+    {
+      "name": "Parquetify",
+      "workflows": [
+        "parquetify-ad-transaction",
+        "parquetify-segment",
+        "parquetify-retarget",
+        "parquetify-urlus",
+        "parquetify-idpair"
+      ]
+    },
+    {
+      "name": "Grand-Central 1.5",
+      "workflows": [
+        "GrandCentral-01-harmony",
+        "GrandCentral-02-pythia",
+        "GrandCentral-03-hive",
+        "gc-ampimport"
+      ]
+    },
+    {
+      "name": "Grand Central Syndicates",
+      "workflows": [
+        "gc-syndicate-appnexus",
+        "gc-syndicate-multiscreen",
+        "gc-export-profiles",
+        "aerospike-import",
+        "aerospike-import-v2",
+        "gc-syndicate-liveramp",
+        "process-and-send-liveramp"
+      ]
+    },
+    {
+      "name": "Batch Import",
+      "workflows": [
+        "gc-batchimport-audext_uk",
+        "gc-batchimport-amp_look",
+        "gc-batchimport-audopt_us",
+        "gc-batchimport-audopt_uk",
+        "gc-batchimport-audext_us",
+        "gc-batchimport-multiscreen"
+      ]
+    },
+    {
+      "name": "DS modelling",
+      "workflows": [
+        "ds-modeling-adhoc",
+        "ds-modeling-audopt_dorado",
+        "ds-modeling-audopt_us",
+        "ds-modeling-audopt_uk",
+        "ds-modeling-audext_us",
+        "ds-modeling-audext_uk"
+      ]
+    },
+    {
+      "name": "Dorado Log Processing",
+      "workflows": [
+        "dorado-bidProto-dc3",
+        "dorado-bidProto-lax1",
+        "dorado-bidProto-nym1",
+        "dorado-bidProto-sv4",
+        "dorado-notify-dc3",
+        "dorado-notify-lax1",
+        "dorado-notify-nym1",
+        "dorado-notify-sv4",
+        "dorado-pacingProtoBuf-dc3",
+        "dorado-pacingProtoBuf-lax1",
+        "dorado-pacingProtoBuf-nym1",
+        "dorado-pacingProtoBuf-sv4",
+        "dorado-smallbidProto-dc3",
+        "dorado-smallbidProto-lax1",
+        "dorado-smallbidProto-nym1",
+        "dorado-smallbidProto-sv4"
+      ]
+    },
+    {
+      "name": "Sibyl Google CM (network 4155)",
+      "workflows": [
+        "sibyl-google2-download-4155",
+        "sibyl-google2-sqoop-4155",
+        "sibyl-google2-extract-4155-Activity",
+        "sibyl-google2-extract-4155-Click",
+        "sibyl-google2-extract-4155-Impression",
+        "sibyl-google2-extract-4155-Met",
+        "sibyl-google2-transfer-netezza-4155-Activity",
+        "sibyl-google2-transfer-netezza-4155-Click",
+        "sibyl-google2-transfer-netezza-4155-Impression",
+        "sibyl-google2-transfer-netezza-4155-Met"
+      ]
+    },
+    {
+      "name": "Sibyl Google CNU (network 6452)",
+      "workflows": [
+        "sibyl-google2-download-6452",
+        "sibyl-google2-sqoop-6452",
+        "sibyl-google2-extract-6452-Activity",
+        "sibyl-google2-extract-6452-Click",
+        "sibyl-google2-extract-6452-Impression",
+        "sibyl-google2-extract-6452-Met",
+        "sibyl-google2-transfer-netezza-6452-Activity",
+        "sibyl-google2-transfer-netezza-6452-Click",
+        "sibyl-google2-transfer-netezza-6452-Impression",
+        "sibyl-google2-transfer-netezza-6452-Met",
+        "sibyl-google2-create-success-files-6452-Activity"
+      ]
+    },
+    {
+      "name": "Google Integration",
+      "workflows": [
+        "google-dmp",
+        "google-s2s"
+      ]
+    },
+    {
+      "name": "Sibyl S2S",
+      "workflows": [
+        "sibyl-s2s-bk",
+        "sibyl-s2s-lr",
+        "sibyl-s2s-ab",
+        "sibyl-s2s-an"
+      ]
+    },
+    {
+      "name": "Sibyl S2S Test",
+      "workflows": [
+        "sibyl-s2s-test-bk",
+        "sibyl-s2s-test-lr",
+        "sibyl-s2s-test-ab"
+      ]
+    },
+    {
+      "name": "Sibyl Hopscotch",
+      "workflows": [
+        "sibyl-hopscotch-s3-luid",
+        "sibyl-hopscotch-s3-pid",
+        "sibyl-hopscotch-sftp-HH",
+        "sibyl-hopscotch-sftp-Indv"
+      ]
+    },
+    {
+      "name": "Sibyl Appnexus",
+      "workflows": [
+        "sibyl-appnexus-download-standard_feed",
+        "sibyl-appnexus-download-bid_landscape_feed",
+        "sibyl-appnexus-download-custom_data_feed",
+        "sibyl-appnexus-process-buyer",
+        "sibyl-appnexus-process-seller",
+        "sibyl-appnexus-process-bid_landscape"
+      ]
+    },
+    {
+      "name": "Sibyl Appnexus Test",
+      "workflows": [
+        "sibyl-appnexus-download-test-standard_feed",
+        "sibyl-appnexus-download-test-bid_landscape_feed",
+        "sibyl-appnexus-download-test-custom_data_feed",
+        "sibyl-appnexus-process-test-buyer",
+        "sibyl-appnexus-process-test-seller",
+        "sibyl-appnexus-process-test-bid_landscape"
+      ]
+    },
+    {
+      "name": "Sibyl IAS",
+      "workflows": ["sibyl-ias"]
+    },
+    {
+      "name": "Sibyl IAS Test",
+      "workflows": ["sibyl-ias-test"]
+    },
+    {
+      "name": "Sibyl Monitor",
+      "workflows": [
+        "sibyl-monitor",
+        "sibyl-monitor-test"
+      ]
+    },
+    {
+      "name": "ad transaction log copy",
+      "workflows": [
+        "atl-ny7-ads",
+        "atl-ny7-retgt",
+        "atl-ny7-urlus",
+        "atl-ny7-pixel"
+      ]
+    },
+    {
+      "name": "Monitoring",
+      "workflows": [
+        "hive-monitoring"
+      ]
+    },
+    {
+      "name": "FTDS: /logs",
+      "workflows": [
+        "ftds-logs-dal",
+        "ftds-logs-dc",
+        "ftds-logs-lax1",
+        "ftds-logs-nym1",
+        "ftds-logs-sea",
+        "ftds-logs-dc3",
+        "ftds-logs-sv4"
+      ]
+    },
+    {
+      "name": "FTDS: /output/dorado",
+      "workflows": [
+        "ftds-dorado-dc3",
+        "ftds-dorado-sv4",
+        "ftds-dorado-lax1",
+        "ftds-dorado-nym1"
+      ]
+    },
+    {
+      "name": "FTDS Hive Partitions: default",
+      "workflows": [
+        "ftds-ad-transaction-log",
+        "ftds-ad-transaction-ua-expanded",
+        "ftds-aerospike-import",
+        "ftds-datapair-log",
+        "ftds-pythia-aggregator",
+        "ftds-pythia-profilemod",
+        "ftds-pythia-queue",
+        "ftds-retarget-log",
+        "ftds-urlus-log"
+      ]
+    },
+    {
+      "name": "FTDS Hive Partitions: google_4155",
+      "workflows": [
+        "ftds-google-4155-impression",
+        "ftds-google-4155-met"
+      ]
+    },
+    {
+      "name": "FTDS Hive Partitions: grand_central",
+      "workflows": [
+        "ftds-grand-central-aggregator",
+        "ftds-grand-central-profilemod",
+        "ftds-grand-central-multiscreen",
+        "ftds-grand-central-liveramp-ad",
+        "ftds-grand-central-liveramp-rm"
+      ]
+    },
+    {
+      "name": "FTDS GC-AOF",
+      "workflows": [
+        "ftds-gc-aof",
+        "ftds-gc-amp"
+      ]
+    },
+    {
+      "name": "FTDS Runway",
+      "workflows": [
+        "ftds-runway-input-adhoc",
+        "ftds-runway-input-audext_uk",
+        "ftds-runway-input-audext_us",
+        "ftds-runway-input-audopt_dorado",
+        "ftds-runway-input-audopt_uk",
+        "ftds-runway-input-audopt_us",
+        "ftds-runway-output-adhoc",
+        "ftds-runway-output-audext_uk",
+        "ftds-runway-output-audext_us",
+        "ftds-runway-output-audopt_dorado",
+        "ftds-runway-output-audopt_uk",
+        "ftds-runway-output-audopt_us"
+      ]
+    },
+    {
+      "name": "FTDS Hive Partitions: s2s",
+      "workflows": [
+        "ftds-s2s-acxiom",
+        "ftds-s2s-batchimport",
+        "ftds-s2s-bluekai",
+        "ftds-s2s-liveramp"
+      ]
+    },
+    {
+      "name": "FTAS",
+      "workflows": [
+        "ftas-gc-aof"
+      ]
+    }
+  ]
+}

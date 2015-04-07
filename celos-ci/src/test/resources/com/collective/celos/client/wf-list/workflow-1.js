@@ -1,5 +1,5 @@
 addWorkflow({
-    "id": "workflow-1",
+    "id": "GrandCentral-01-harmony",
     "schedule": hourlySchedule(),
     "schedulingStrategy": serialSchedulingStrategy(),
     "trigger": hdfsCheckTrigger("/", "file:///"),

@@ -1,20 +1,26 @@
 body {
     margin: 0;
+    font-family: "Trebuchet MS", "Helvetica", "Arial",  "Verdana", "sans-serif";
+}
+
+input, button {
+    margin: 2px;
 }
 
 #topPanel {
     /*background-color: blue;*/
     position: absolute;
     height: 100px;
-    width: 100%;
+    width: 350px;
     top: 0;
+    font-size: 62.5%;
 }
 
 #datePanel {
     /*background-color: green;*/
     position: absolute;
     top: 100px;
-    height: 17px;
+    height: 45px;
     right: 400px;
     left: 0;
 }
@@ -22,7 +28,7 @@ body {
 #slotStatesPanel {
     /*background-color: green;*/
     position: absolute;
-    top: 117px;
+    top: 145px;
     bottom: 20px;
     right: 400px;
     left: 0;
@@ -33,9 +39,10 @@ body {
     /*background-color: red;*/
     width: 400px;
     position: absolute;
-    top: 117px;
+    top: 100px;
     right: 0;
     bottom: 20px;
+    overflow: auto;
 }
 
 #bottomPanel {

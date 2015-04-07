@@ -13,6 +13,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
+import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 
@@ -30,6 +31,7 @@ public abstract class AbstractServlet extends HttpServlet {
     public static final String WORKFLOW_CONFIGURATION_PATH_ATTR = "workflow.configuration.path";
     public static final String DEFAULTS_CONFIGURATION_PATH_ATTR = "defaults.configuration.path";
     public static final String STATE_DATABASE_PATH_ATTR = "state.database.path";
+    public static final String CONFIGURATION_PATH_ATTR = "celos.config.path";
     public static final String ADDITIONAL_JS_VARIABLES = "additional.js.variables";
 
     private static final String SCHEDULER_ATTR = "celos.scheduler";
@@ -77,12 +79,16 @@ public abstract class AbstractServlet extends HttpServlet {
         String workflowConfigPath = getServletContext().getInitParameter(WORKFLOW_CONFIGURATION_PATH_ATTR);
         String defaultsConfigPath = getServletContext().getInitParameter(DEFAULTS_CONFIGURATION_PATH_ATTR);
         String stateDatabasePath = getServletContext().getInitParameter(STATE_DATABASE_PATH_ATTR);
+        String configPath = getServletContext().getInitParameter(CONFIGURATION_PATH_ATTR);
         Map<String, String> additionalVars = (Map<String, String>) getServletContext().getAttribute(ADDITIONAL_JS_VARIABLES);
         if (additionalVars == null) {
             additionalVars = ImmutableMap.of();
         }
 
-        Scheduler sch = new SchedulerConfiguration(workflowConfigPath, defaultsConfigPath, stateDatabasePath, additionalVars).makeDefaultScheduler();
+        Scheduler sch = new SchedulerConfiguration(
+                new File(workflowConfigPath), new File(defaultsConfigPath), new File(stateDatabasePath), new File(configPath), additionalVars
+        ).makeDefaultScheduler();
+
         getServletContext().setAttribute(SCHEDULER_ATTR, sch);
         return sch;
     }

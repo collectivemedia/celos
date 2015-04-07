@@ -28,6 +28,7 @@ public class CelosClientServerTest {
 
     public static final String WORKFLOWS_DIR = "workflows";
     public static final String DEFAULTS_DIR = "defaults";
+    public static final String CONFIG_DIR = "config";
     public static final String DB_DIR = "db";
     public static final int SLOTS_IN_CELOS_SERVER_SLIDING_WINDOW = SchedulerConfiguration.SLIDING_WINDOW_DAYS * 24;
 
@@ -36,6 +37,7 @@ public class CelosClientServerTest {
 
     private File workflowsDir;
     private File slotDbDir;
+    private File configDir;
     private CelosServer celosServer;
     private CelosClient celosClient;
 
@@ -44,14 +46,16 @@ public class CelosClientServerTest {
         File tmpDir = folder.newFolder();
         this.workflowsDir = new File(tmpDir, WORKFLOWS_DIR);
         File defaultsDir = new File(tmpDir, DEFAULTS_DIR);
+        this.configDir = new File(tmpDir, CONFIG_DIR);
         this.slotDbDir = new File(tmpDir, DB_DIR);
 
         this.workflowsDir.mkdirs();
         defaultsDir.mkdirs();
         this.slotDbDir.mkdirs();
+        this.configDir.mkdirs();
 
         this.celosServer = new CelosServer();
-        Integer port = celosServer.startServer(ImmutableMap.<String, String>of(), workflowsDir, defaultsDir, slotDbDir);
+        Integer port = celosServer.startServer(ImmutableMap.<String, String>of(), workflowsDir, defaultsDir, slotDbDir, configDir);
         this.celosClient = new CelosClient("http://localhost:" + port);
     }
 
@@ -67,6 +71,33 @@ public class CelosClientServerTest {
     }
 
     @Test
+    public void runRrmanTestMode() throws Exception {
+        Set<WorkflowID> workflowIDs = celosClient.getWorkflowList();
+        Assert.assertTrue(workflowIDs.isEmpty());
+
+        File src = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/client/wf-list").toURI());
+        FileUtils.copyDirectory(src, workflowsDir);
+
+        File rrmanConfig = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/rrman.json").toURI());
+        FileUtils.copyFileToDirectory(rrmanConfig, configDir);
+
+        File src2 = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/server/slot-db-1").toURI());
+        FileUtils.copyDirectory(src2, slotDbDir);
+
+        workflowIDs = celosClient.getWorkflowList();
+        Assert.assertTrue(workflowIDs.isEmpty());
+
+        celosClient.clearCache();
+
+        System.out.println(celosClient.getAddress());
+
+        
+
+        Thread.sleep(1000*60*60);
+    }
+
+
+    @Test
     public void testGetWorkflowListEmptyBeforeClearCache() throws Exception {
         Set<WorkflowID> workflowIDs = celosClient.getWorkflowList();
         Assert.assertTrue(workflowIDs.isEmpty());
@@ -78,6 +109,10 @@ public class CelosClientServerTest {
         Assert.assertTrue(workflowIDs.isEmpty());
 
         celosClient.clearCache();
+
+        System.out.println(celosClient.getAddress());
+
+        Thread.sleep(1000*60*60);
 
         workflowIDs = celosClient.getWorkflowList();
         Assert.assertEquals(

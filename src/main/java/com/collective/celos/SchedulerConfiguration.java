@@ -11,15 +11,17 @@ public class SchedulerConfiguration {
 
     public static final int SLIDING_WINDOW_DAYS = 7;
 
-    private final String workflowConfigurationPath;
-    private final String defaultsConfigurationPath;
-    private final String stateDatabasePath;
+    private final File workflowConfigurationPath;
+    private final File defaultsConfigurationPath;
+    private final File stateDatabasePath;
+    private final File configDir;
     private final Map<String, String> additionalVars;
 
-    public SchedulerConfiguration(String workflowConfigurationPath, String defaultsConfigurationPath, String stateDatabasePath, Map<String, String> additionalVars) {
+    public SchedulerConfiguration(File workflowConfigurationPath, File defaultsConfigurationPath, File stateDatabasePath, File configDir, Map<String, String> additionalVars) {
         this.workflowConfigurationPath = workflowConfigurationPath;
         this.defaultsConfigurationPath = defaultsConfigurationPath;
         this.stateDatabasePath = stateDatabasePath;
+        this.configDir = configDir;
         this.additionalVars = additionalVars;
     }
     
@@ -31,14 +33,14 @@ public class SchedulerConfiguration {
     }
 
     private WorkflowConfigurationParser getWorkflowConfigurationParser() throws Exception {
-        File configDir = new File(workflowConfigurationPath);
-        File defaultsDir = new File(defaultsConfigurationPath);
-        return new WorkflowConfigurationParser(defaultsDir, additionalVars).parseConfiguration(configDir);
+        return new WorkflowConfigurationParser(defaultsConfigurationPath, additionalVars).parseConfiguration(workflowConfigurationPath);
     }
 
     private StateDatabase makeDefaultStateDatabase() throws IOException {
-        File dbDir = new File(stateDatabasePath);
-        return new FileSystemStateDatabase(dbDir);
+        return new FileSystemStateDatabase(stateDatabasePath);
     }
 
+    public File getConfigDir() {
+        return configDir;
+    }
 }
