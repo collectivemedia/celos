@@ -8,6 +8,8 @@ import java.util.SortedSet;
 
 import org.apache.log4j.Logger;
 
+import com.google.common.collect.Sets;
+
 public class Scheduler {
 
     private final int slidingWindowHours;
@@ -31,7 +33,15 @@ public class Scheduler {
     ScheduledTime getSlidingWindowStartTime(ScheduledTime current) {
         return new ScheduledTime(current.getDateTime().minusHours(slidingWindowHours));
     }
+
+    public Set<SchedulingWindow> getSchedulingWindows(ScheduledTime current, Set<WorkflowID> workflowIDs) {
+        return Sets.<SchedulingWindow>newHashSet(getDefaultSchedulingWindow(current, workflowIDs));
+    }
     
+    public SchedulingWindow getDefaultSchedulingWindow(ScheduledTime current, Set<WorkflowID> workflowIDs) {
+        return new SchedulingWindow(workflowIDs, getSlidingWindowStartTime(current), current);
+    }
+
     /**
      * Main method, called every minute.
      * 
@@ -48,12 +58,21 @@ public class Scheduler {
      * Otherwise, schedule only workflows in the set.
      */
     public void step(ScheduledTime current, Set<WorkflowID> workflowIDs) {
-        LOGGER.info("Starting scheduler step: " + current + " -- " + getSlidingWindowStartTime(current));
+        LOGGER.info("Starting scheduler step for time: " + current);
+        for(SchedulingWindow window : getSchedulingWindows(current, workflowIDs)) {
+            stepWindow(current, window);
+        }
+        LOGGER.info("Ending scheduler step for time: " + current);
+    }
+
+    private void stepWindow(ScheduledTime current, SchedulingWindow window) {
+        LOGGER.info("Scheduling window: " + window.getStartTime() + " -- " + window.getEndTime());
+        Set<WorkflowID> workflowIDs = window.getWorkflowIDs();
         for (Workflow wf : configuration.getWorkflows()) {
             WorkflowID id = wf.getID();
             if (workflowIDs.isEmpty() || workflowIDs.contains(id)) {
                 try {
-                    stepWorkflow(wf, current);
+                    stepWorkflow(wf, current, window);
                 } catch (Exception e) {
                     LOGGER.error("Exception in workflow: " + id + ": " + e.getMessage(), e);
                 }
@@ -61,7 +80,6 @@ public class Scheduler {
                 LOGGER.info("Ignoring workflow: " + id);
             }
         }
-        LOGGER.info("Ending scheduler step: " + current + " -- " + getSlidingWindowStartTime(current));
     }
 
     /**
@@ -72,10 +90,11 @@ public class Scheduler {
      * - Check any WAITING slots for data availability.
      * 
      * - Check any RUNNING slots for their current external status.
+     * @param window 
      */
-    private void stepWorkflow(Workflow wf, ScheduledTime current) throws Exception {
+    private void stepWorkflow(Workflow wf, ScheduledTime current, SchedulingWindow window) throws Exception {
         LOGGER.info("Processing workflow: " + wf.getID() + " at: " + current);
-        List<SlotState> slotStates = getSlotStates(wf, current);
+        List<SlotState> slotStates = getSlotStates(wf, window);
         runExternalWorkflows(wf, slotStates);
         for (SlotState slotState : slotStates) {
             updateSlotState(wf, slotState, current);
@@ -84,9 +103,10 @@ public class Scheduler {
 
     /**
      * Get the slot states of all slots of the workflow from within the sliding window.
+     * @param window 
      */
-    public List<SlotState> getSlotStates(Workflow wf, ScheduledTime current) throws Exception {
-        SortedSet<ScheduledTime> scheduledTimes =  wf.getSchedule().getScheduledTimes(this, getWorkflowStartTime(wf, current), current);
+    public List<SlotState> getSlotStates(Workflow wf, SchedulingWindow window) throws Exception {
+        SortedSet<ScheduledTime> scheduledTimes =  wf.getSchedule().getScheduledTimes(this, getWorkflowStartTime(wf, window), window.getEndTime());
         List<SlotState> slotStates = new ArrayList<SlotState>(scheduledTimes.size());
         for (ScheduledTime t : scheduledTimes) {
             SlotID slotID = new SlotID(wf.getID(), t);
@@ -103,10 +123,8 @@ public class Scheduler {
         return Collections.unmodifiableList(slotStates);
     }
 
-    private ScheduledTime getWorkflowStartTime(Workflow wf, ScheduledTime current) {
-        ScheduledTime slidingWindowStartTime = getSlidingWindowStartTime(current);
-        ScheduledTime workflowStartTime = wf.getStartTime();
-        return Util.max(slidingWindowStartTime, workflowStartTime);
+    private ScheduledTime getWorkflowStartTime(Workflow wf, SchedulingWindow window) {
+        return Util.max(window.getStartTime(), wf.getStartTime());
     }
     
     /**

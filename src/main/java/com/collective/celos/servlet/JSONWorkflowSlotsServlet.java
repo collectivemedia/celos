@@ -14,6 +14,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 /**
  * Returns information about the slot states of a single workflow as JSON.
@@ -58,7 +59,7 @@ public class JSONWorkflowSlotsServlet extends AbstractJSONServlet {
                 res.sendError(HttpServletResponse.SC_NOT_FOUND, "Workflow not found: " + id);
             } else {
                 ObjectNode node = mapper.createObjectNode();
-                List<SlotState> slotStates = scheduler.getSlotStates(wf, getRequestTime(req));
+                List<SlotState> slotStates = scheduler.getSlotStates(wf, scheduler.getDefaultSchedulingWindow(getRequestTime(req), Sets.<WorkflowID>newHashSet(wf.getID())));
                 List<JsonNode> objectNodes = Lists.newArrayList();
                 for (SlotState state : Lists.reverse(slotStates)) {
                     objectNodes.add(state.toJSONNode());
