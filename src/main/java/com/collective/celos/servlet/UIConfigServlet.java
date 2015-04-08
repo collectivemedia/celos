@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 
 @SuppressWarnings("serial")
-public class RrmanConfigServlet extends AbstractJSONServlet {
+public class UIConfigServlet extends AbstractJSONServlet {
 
     private final static String RRMAN_CONFIG = "rrman.json";
 

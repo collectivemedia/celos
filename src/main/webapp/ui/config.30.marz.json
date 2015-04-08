@@ -1,0 +1,367 @@
+{
+  "dataSources": {
+    "oozie": {
+      "tp" : "oozie",
+      "httpHost": "http://oozie002.ny7.collective-media.net:11000/oozie"
+    },
+    "celos": {
+      "tp" : "celos",
+      "httpHost": "http://celos001.ny7.collective-media.net:8080/celos"
+    }},
+  "pythiaMonitor": {
+    "pythiaURL": "http://cldmgr001.ewr004.collective-media.net:19888/jobhistory/"
+  },
+  "alertMonitor": {
+    "state" : 0,
+    "waitTime": 60,
+    "coordinatorGroups": [
+      {
+        "name": "Grand-Central 1.5",
+        "coordinators": [
+          { "name": "pythia-main", "alert": {"period":120,"circonusUrl":"https://trap.noit.circonus.net/module/httptrap/f1506657-783f-4089-bf87-6c4920cd75f6/mys3cr3t", "metric":"oozie_job_failed", "defaultValue":"pythia", "thresholdValue":"ok"} },
+          { "name": "pythia-hive", "alert": {"period":120,"circonusUrl":"https://trap.noit.circonus.net/module/httptrap/f1506657-783f-4089-bf87-6c4920cd75f6/mys3cr3t", "metric":"oozie_job_failed", "defaultValue":"pythia-hive", "thresholdValue":"ok"} },
+          { "name": "batchimport-audext_uk", "alert": {"period":120,"circonusUrl":"https://trap.noit.circonus.net/module/httptrap/f1506657-783f-4089-bf87-6c4920cd75f6/mys3cr3t", "metric":"oozie_job_failed", "defaultValue":"batchimport-audext_uk", "thresholdValue":"ok"} },
+          { "name": "batchimport-audext_us", "alert": {"period":120,"circonusUrl":"https://trap.noit.circonus.net/module/httptrap/f1506657-783f-4089-bf87-6c4920cd75f6/mys3cr3t", "metric":"oozie_job_failed", "defaultValue":"batchimport-audext_us", "thresholdValue":"ok"} },
+          { "name": "batchimport-audopt_us", "alert": {"period":120,"circonusUrl":"https://trap.noit.circonus.net/module/httptrap/f1506657-783f-4089-bf87-6c4920cd75f6/mys3cr3t", "metric":"oozie_job_failed", "defaultValue":"batchimport-audopt_us", "thresholdValue":"ok"} },
+          { "name": "batchimport-audopt_uk", "alert": {"period":120,"circonusUrl":"https://trap.noit.circonus.net/module/httptrap/f1506657-783f-4089-bf87-6c4920cd75f6/mys3cr3t", "metric":"oozie_job_failed", "defaultValue":"batchimport-audopt_uk", "thresholdValue":"ok"} },
+
+
+
+          { "name": "sibyl-bluekai-download", "alert": {"period":120,"circonusUrl":"https://trap.noit.circonus.net/module/httptrap/f1506657-783f-4089-bf87-6c4920cd75f6/mys3cr3t", "metric":"oozie_job_failed", "defaultValue":"sibyl-bluekai-download", "thresholdValue":"ok"} },
+          { "name": "ad-transaction-avroify", "alert": {"period":120,"circonusUrl":"https://trap.noit.circonus.net/module/httptrap/f1506657-783f-4089-bf87-6c4920cd75f6/mys3cr3t", "metric":"oozie_job_failed", "defaultValue":"ad-transaction-avroify", "thresholdValue":"ok"} },
+          { "name": "datapair-avroify", "alert": {"period":120,"circonusUrl":"https://trap.noit.circonus.net/module/httptrap/f1506657-783f-4089-bf87-6c4920cd75f6/mys3cr3t", "metric":"oozie_job_failed", "defaultValue":"datapair-avroify", "thresholdValue":"ok"} },
+          { "name": "retarget-avroify", "alert": {"period":120,"circonusUrl":"https://trap.noit.circonus.net/module/httptrap/f1506657-783f-4089-bf87-6c4920cd75f6/mys3cr3t", "metric":"oozie_job_failed", "defaultValue":"retarget-avroify", "thresholdValue":"ok"} },
+          { "name": "urlus-avroify", "alert": {"period":120,"circonusUrl":"https://trap.noit.circonus.net/module/httptrap/f1506657-783f-4089-bf87-6c4920cd75f6/mys3cr3t", "metric":"oozie_job_failed", "defaultValue":"urlus-avroify", "thresholdValue":"ok"} },
+          { "name": "urlus-export", "alert": {"period":120,"circonusUrl":"https://trap.noit.circonus.net/module/httptrap/f1506657-783f-4089-bf87-6c4920cd75f6/mys3cr3t", "metric":"oozie_job_failed", "defaultValue":"urlus-export", "thresholdValue":"ok"} },
+          { "name": "batchimport-amp_look", "alert": {"period":120,"circonusUrl":"https://trap.noit.circonus.net/module/httptrap/f1506657-783f-4089-bf87-6c4920cd75f6/mys3cr3t", "metric":"oozie_job_failed", "defaultValue":"batchimport-amp_look", "thresholdValue":"ok"} },
+          { "name": "grandcentral-syndicate-appnexus", "alert": {"period":120,"circonusUrl":"https://trap.noit.circonus.net/module/httptrap/f1506657-783f-4089-bf87-6c4920cd75f6/mys3cr3t", "metric":"oozie_job_failed", "defaultValue":"grandcentral-syndicate-appnexus", "thresholdValue":"ok"} },
+          { "name": "grandcentral-syndicate-liveramp", "alert": {"period":120,"circonusUrl":"https://trap.noit.circonus.net/module/httptrap/f1506657-783f-4089-bf87-6c4920cd75f6/mys3cr3t", "metric":"oozie_job_failed", "defaultValue":"grandcentral-syndicate-liveramp", "thresholdValue":"ok"} },
+          { "name": "edge2-batchimport", "alert": {"period":120,"circonusUrl":"https://trap.noit.circonus.net/module/httptrap/f1506657-783f-4089-bf87-6c4920cd75f6/mys3cr3t", "metric":"oozie_job_failed", "defaultValue":"edge2-batchimport", "thresholdValue":"ok"} },
+          { "name": "edge2-urlus-view", "alert": {"period":120,"circonusUrl":"https://trap.noit.circonus.net/module/httptrap/f1506657-783f-4089-bf87-6c4920cd75f6/mys3cr3t", "metric":"oozie_job_failed", "defaultValue":"edge2-urlus-view", "thresholdValue":"ok"} },
+          { "name": "edge2-urlus-demo", "alert": {"period":120,"circonusUrl":"https://trap.noit.circonus.net/module/httptrap/f1506657-783f-4089-bf87-6c4920cd75f6/mys3cr3t", "metric":"oozie_job_failed", "defaultValue":"edge2-urlus-demo", "thresholdValue":"ok"} },
+          { "name": "dorado-pacing-log-processor-nym1", "alert": {"period":120,"circonusUrl":"https://trap.noit.circonus.net/module/httptrap/f1506657-783f-4089-bf87-6c4920cd75f6/mys3cr3t", "metric":"oozie_job_failed", "defaultValue":"dorado-pacing-log-processor-nym1", "thresholdValue":"ok"} },
+          { "name": "dorado-bid-log-processor-nym1", "alert": {"period":120,"circonusUrl":"https://trap.noit.circonus.net/module/httptrap/f1506657-783f-4089-bf87-6c4920cd75f6/mys3cr3t", "metric":"oozie_job_failed", "defaultValue":"dorado-bid-log-processor-nym1", "thresholdValue":"ok"} },
+          { "name": "dorado-notify-log-processor-nym1", "alert": {"period":120,"circonusUrl":"https://trap.noit.circonus.net/module/httptrap/f1506657-783f-4089-bf87-6c4920cd75f6/mys3cr3t", "metric":"oozie_job_failed", "defaultValue":"dorado-notify-log-processor-nym1", "thresholdValue":"ok"} },
+          { "name": "dorado-pacing-log-processor-lax1", "alert": {"period":120,"circonusUrl":"https://trap.noit.circonus.net/module/httptrap/f1506657-783f-4089-bf87-6c4920cd75f6/mys3cr3t", "metric":"oozie_job_failed", "defaultValue":"dorado-pacing-log-processor-lax1", "thresholdValue":"ok"} },
+          { "name": "dorado-bid-log-processor-lax1", "alert": {"period":120,"circonusUrl":"https://trap.noit.circonus.net/module/httptrap/f1506657-783f-4089-bf87-6c4920cd75f6/mys3cr3t", "metric":"oozie_job_failed", "defaultValue":"dorado-bid-log-processor-lax1", "thresholdValue":"ok"} },
+          { "name": "dorado-notify-log-processor-lax1", "alert": {"period":120,"circonusUrl":"https://trap.noit.circonus.net/module/httptrap/f1506657-783f-4089-bf87-6c4920cd75f6/mys3cr3t", "metric":"oozie_job_failed", "defaultValue":"dorado-notify-log-processor-lax1", "thresholdValue":"ok"} },
+          { "name": "contexo-log-processor", "alert": {"period":120,"circonusUrl":"https://trap.noit.circonus.net/module/httptrap/f1506657-783f-4089-bf87-6c4920cd75f6/mys3cr3t", "metric":"oozie_job_failed", "defaultValue":"contexo-log-processor", "thresholdValue":"ok"} },
+          { "name": "tmp-file-closer", "alert": {"period":120,"circonusUrl":"https://trap.noit.circonus.net/module/httptrap/f1506657-783f-4089-bf87-6c4920cd75f6/mys3cr3t", "metric":"oozie_job_failed", "defaultValue":"tmp-file-closer", "thresholdValue":"ok"} },
+          { "name": "flume-ready-check-dc", "alert": {"period":120,"circonusUrl":"https://trap.noit.circonus.net/module/httptrap/f1506657-783f-4089-bf87-6c4920cd75f6/mys3cr3t", "metric":"oozie_job_failed", "defaultValue":"flume-ready-check-dc", "thresholdValue":"ok"} },
+          { "name": "flume-ready-check-dal", "alert": {"period":120,"circonusUrl":"https://trap.noit.circonus.net/module/httptrap/f1506657-783f-4089-bf87-6c4920cd75f6/mys3cr3t", "metric":"oozie_job_failed", "defaultValue":"flume-ready-check-dal", "thresholdValue":"ok"} },
+          { "name": "flume-ready-check-sea", "alert": {"period":120,"circonusUrl":"https://trap.noit.circonus.net/module/httptrap/f1506657-783f-4089-bf87-6c4920cd75f6/mys3cr3t", "metric":"oozie_job_failed", "defaultValue":"flume-ready-check-sea", "thresholdValue":"ok"} },
+          { "name": "flume-ready-check-lax1", "alert": {"period":120,"circonusUrl":"https://trap.noit.circonus.net/module/httptrap/f1506657-783f-4089-bf87-6c4920cd75f6/mys3cr3t", "metric":"oozie_job_failed", "defaultValue":"flume-ready-check-lax1", "thresholdValue":"ok"} },
+          { "name": "flume-ready-check-nym1", "alert": {"period":120,"circonusUrl":"https://trap.noit.circonus.net/module/httptrap/f1506657-783f-4089-bf87-6c4920cd75f6/mys3cr3t", "metric":"oozie_job_failed", "defaultValue":"flume-ready-check-nym1", "thresholdValue":"ok"} }
+        ]
+      }
+    ]
+  },
+  "oozieMonitor": {
+    "hueURL": "http://cldmgr001.ewr004.collective-media.net:8888/oozie/list_oozie_workflow/%s/",
+    "coordinatorGroups": [
+      {
+        "name": "Flume",
+        "coordinators": [
+          { "name": "flume-ready-dal", "tp": "celos" },
+          { "name": "flume-ready-dc", "tp": "celos" },
+          { "name": "flume-ready-dc3", "tp": "celos" },
+          { "name": "flume-ready-lax1", "tp": "celos" },
+          { "name": "flume-ready-nym1", "tp": "celos" },
+          { "name": "flume-ready-sea", "tp": "celos" },
+          { "name": "flume-ready-sv4", "tp": "celos" },
+          { "name": "flume-tmp-file-closer", "tp": "celos" }
+        ]
+      },
+      {
+        "name": "Parquetify",
+        "coordinators": [
+          { "name": "parquetify-ad-transaction", "tp": "celos" },
+          { "name": "parquetify-segment", "tp": "celos" },
+          { "name": "parquetify-retarget", "tp": "celos" },
+          { "name": "parquetify-urlus", "tp": "celos" },
+          { "name": "parquetify-idpair", "tp": "celos" }
+        ]
+      },
+      {
+        "name": "Grand-Central 1.5",
+        "coordinators": [
+          { "name": "GrandCentral-01-harmony", "tp": "celos" },
+          { "name": "GrandCentral-02-pythia", "tp": "celos" },
+          { "name": "GrandCentral-03-hive", "tp": "celos" },
+          { "name": "gc-ampimport", "tp": "celos" }
+        ]
+      },
+      {
+        "name": "Grand Central Syndicates",
+        "coordinators": [
+          { "name": "gc-syndicate-appnexus", "tp": "celos" },
+          { "name": "gc-syndicate-multiscreen", "tp": "celos" },
+          { "name": "gc-export-profiles", "tp": "celos" },
+          { "name": "aerospike-import", "tp": "celos" },
+          { "name": "aerospike-import-v2", "tp": "celos" },
+          { "name": "gc-syndicate-liveramp", "tp": "celos" },
+          { "name": "process-and-send-liveramp", "tp": "celos" }
+        ]
+      },
+      {
+        "name": "Batch Import",
+        "coordinators": [
+          { "name": "gc-batchimport-audext_uk", "tp": "celos" },
+          { "name": "gc-batchimport-amp_look", "tp": "celos" },
+          { "name": "gc-batchimport-audopt_us", "tp": "celos" },
+          { "name": "gc-batchimport-audopt_uk", "tp": "celos" },
+          { "name": "gc-batchimport-audext_us", "tp": "celos" },
+          { "name": "gc-batchimport-multiscreen", "tp": "celos" }
+        ]
+      },
+      {
+        "name": "DS modelling",
+        "coordinators": [
+          { "name": "ds-modeling-adhoc", "tp": "celos" },
+          { "name": "ds-modeling-audopt_dorado", "tp": "celos" },
+          { "name": "ds-modeling-audopt_us", "tp": "celos" },
+          { "name": "ds-modeling-audopt_uk", "tp": "celos" },
+          { "name": "ds-modeling-audext_us", "tp": "celos" },
+          { "name": "ds-modeling-audext_uk", "tp": "celos" }
+        ]
+      },
+      {
+        "name": "Dorado Log Processing",
+        "coordinators": [
+          { "name": "dorado-bidProto-dc3", "tp": "celos" },
+          { "name": "dorado-bidProto-lax1",  "tp": "celos" },
+          { "name": "dorado-bidProto-nym1", "tp": "celos" },
+          { "name": "dorado-bidProto-sv4",  "tp": "celos" },
+          { "name": "dorado-notify-dc3", "tp": "celos" },
+          { "name": "dorado-notify-lax1",  "tp": "celos" },
+          { "name": "dorado-notify-nym1", "tp": "celos" },
+          { "name": "dorado-notify-sv4",  "tp": "celos" },
+          { "name": "dorado-pacingProtoBuf-dc3", "tp": "celos" },
+          { "name": "dorado-pacingProtoBuf-lax1",  "tp": "celos" },
+          { "name": "dorado-pacingProtoBuf-nym1", "tp": "celos" },
+          { "name": "dorado-pacingProtoBuf-sv4",  "tp": "celos" },
+          { "name": "dorado-smallbidProto-dc3", "tp": "celos" },
+          { "name": "dorado-smallbidProto-lax1",  "tp": "celos" },
+          { "name": "dorado-smallbidProto-nym1", "tp": "celos" },
+          { "name": "dorado-smallbidProto-sv4",  "tp": "celos" }
+        ]
+      },
+      {
+        "name": "Sibyl Google CM (network 4155)",
+        "coordinators": [
+          { "name": "sibyl-google2-download-4155", "tp": "celos" },
+          { "name": "sibyl-google2-sqoop-4155", "tp": "celos" },
+          { "name": "sibyl-google2-extract-4155-Activity", "tp": "celos" },
+          { "name": "sibyl-google2-extract-4155-Click", "tp": "celos" },
+          { "name": "sibyl-google2-extract-4155-Impression", "tp": "celos" },
+          { "name": "sibyl-google2-extract-4155-Met", "tp": "celos" },
+          { "name": "sibyl-google2-transfer-netezza-4155-Activity", "tp": "celos" },
+          { "name": "sibyl-google2-transfer-netezza-4155-Click", "tp": "celos" },
+          { "name": "sibyl-google2-transfer-netezza-4155-Impression", "tp": "celos" },
+          { "name": "sibyl-google2-transfer-netezza-4155-Met", "tp": "celos" }
+        ]
+      },
+      {
+        "name": "Sibyl Google CNU (network 6452)",
+        "coordinators": [
+          { "name": "sibyl-google2-download-6452", "tp": "celos" },
+          { "name": "sibyl-google2-sqoop-6452", "tp": "celos" },
+          { "name": "sibyl-google2-extract-6452-Activity", "tp": "celos" },
+          { "name": "sibyl-google2-extract-6452-Click", "tp": "celos" },
+          { "name": "sibyl-google2-extract-6452-Impression", "tp": "celos" },
+          { "name": "sibyl-google2-extract-6452-Met", "tp": "celos" },
+          { "name": "sibyl-google2-transfer-netezza-6452-Activity", "tp": "celos" },
+          { "name": "sibyl-google2-transfer-netezza-6452-Click", "tp": "celos" },
+          { "name": "sibyl-google2-transfer-netezza-6452-Impression", "tp": "celos" },
+          { "name": "sibyl-google2-transfer-netezza-6452-Met", "tp": "celos" },
+          { "name": "sibyl-google2-create-success-files-6452-Activity", "tp": "celos" }
+        ]
+      },
+      {
+        "name": "Google Integration",
+        "coordinators": [
+          { "name": "google-dmp", "tp": "celos" },
+          { "name": "google-s2s", "tp": "celos" }
+        ]
+      },
+      {
+        "name": "Sibyl S2S",
+        "coordinators": [
+          { "name": "sibyl-s2s-bk", "tp": "celos" },
+          { "name": "sibyl-s2s-lr", "tp": "celos" },
+          { "name": "sibyl-s2s-ab", "tp": "celos" },
+          { "name": "sibyl-s2s-an", "tp": "celos" }
+        ]
+      },
+      {
+        "name": "Sibyl S2S Test",
+        "coordinators": [
+          { "name": "sibyl-s2s-test-bk", "tp": "celos" },
+          { "name": "sibyl-s2s-test-lr", "tp": "celos" },
+          { "name": "sibyl-s2s-test-ab", "tp": "celos" }
+        ]
+      },
+      {
+        "name": "Sibyl Hopscotch",
+        "coordinators": [
+          { "name": "sibyl-hopscotch-s3-luid", "tp": "celos" },
+          { "name": "sibyl-hopscotch-s3-pid", "tp": "celos" },
+          { "name": "sibyl-hopscotch-sftp-HH", "tp": "celos" },
+          { "name": "sibyl-hopscotch-sftp-Indv", "tp": "celos" }
+        ]
+      },
+      {
+        "name": "Sibyl Appnexus",
+        "coordinators": [
+          { "name": "sibyl-appnexus-download-standard_feed", "tp": "celos" },
+          { "name": "sibyl-appnexus-download-bid_landscape_feed", "tp": "celos" },
+          { "name": "sibyl-appnexus-download-custom_data_feed", "tp": "celos" },
+          { "name": "sibyl-appnexus-process-buyer", "tp": "celos" },
+          { "name": "sibyl-appnexus-process-seller", "tp": "celos" },
+          { "name": "sibyl-appnexus-process-bid_landscape", "tp": "celos" }
+        ]
+      },
+      {
+        "name": "Sibyl Appnexus Test",
+        "coordinators": [
+          { "name": "sibyl-appnexus-download-test-standard_feed", "tp": "celos" },
+          { "name": "sibyl-appnexus-download-test-bid_landscape_feed", "tp": "celos" },
+          { "name": "sibyl-appnexus-download-test-custom_data_feed", "tp": "celos" },
+          { "name": "sibyl-appnexus-process-test-buyer", "tp": "celos" },
+          { "name": "sibyl-appnexus-process-test-seller", "tp": "celos" },
+          { "name": "sibyl-appnexus-process-test-bid_landscape", "tp": "celos" }
+        ]
+      },
+      {
+        "name": "Sibyl IAS",
+        "coordinators": [
+          { "name": "sibyl-ias", "tp": "celos" }
+        ]
+      },
+      {
+        "name": "Sibyl IAS Test",
+        "coordinators": [
+          { "name": "sibyl-ias-test", "tp": "celos" }
+        ]
+      },
+      {
+        "name": "Sibyl Monitor",
+        "coordinators": [
+          { "name": "sibyl-monitor", "tp": "celos" },
+          { "name": "sibyl-monitor-test", "tp": "celos" }
+        ]
+      },
+      {
+        "name": "ad transaction log copy",
+        "coordinators": [
+          { "name": "atl-ny7-ads", "tp": "celos" },
+          { "name": "atl-ny7-retgt", "tp": "celos" },
+          { "name": "atl-ny7-urlus", "tp": "celos" },
+          { "name": "atl-ny7-pixel", "tp": "celos" }
+        ]
+      },
+      {
+        "name": "Monitoring",
+        "coordinators": [
+          { "name": "hive-monitoring", "tp": "celos" }
+        ]
+      },
+      {
+        "name": "FTDS: /logs",
+        "coordinators": [
+          { "name": "ftds-logs-dal", "tp": "celos" },
+          { "name": "ftds-logs-dc", "tp": "celos" },
+          { "name": "ftds-logs-lax1", "tp": "celos" },
+          { "name": "ftds-logs-nym1", "tp": "celos" },
+          { "name": "ftds-logs-sea", "tp": "celos" },
+          { "name": "ftds-logs-dc3", "tp": "celos" },
+          { "name": "ftds-logs-sv4", "tp": "celos" }
+        ]
+      },
+
+      {
+        "name": "FTDS: /output/dorado",
+        "coordinators": [
+          { "name": "ftds-dorado-dc3", "tp": "celos" },
+          { "name": "ftds-dorado-sv4", "tp": "celos" },
+          { "name": "ftds-dorado-lax1", "tp": "celos" },
+          { "name": "ftds-dorado-nym1", "tp": "celos" }
+        ]
+      },
+
+      {
+        "name": "FTDS Hive Partitions: default",
+        "coordinators": [
+          { "name": "ftds-ad-transaction-log", "tp": "celos" },
+          { "name": "ftds-ad-transaction-ua-expanded", "tp": "celos" },
+          { "name": "ftds-aerospike-import", "tp": "celos" },
+          { "name": "ftds-datapair-log", "tp": "celos" },
+          { "name": "ftds-pythia-aggregator", "tp": "celos" },
+          { "name": "ftds-pythia-profilemod", "tp": "celos" },
+          { "name": "ftds-pythia-queue", "tp": "celos" },
+          { "name": "ftds-retarget-log", "tp": "celos" },
+          { "name": "ftds-urlus-log", "tp": "celos" }
+        ]
+      },
+      {
+        "name": "FTDS Hive Partitions: google_4155",
+        "coordinators": [
+          { "name": "ftds-google-4155-impression", "tp": "celos" },
+          { "name": "ftds-google-4155-met", "tp": "celos" }
+        ]
+      },
+      {
+        "name": "FTDS Hive Partitions: grand_central",
+        "coordinators": [
+          { "name": "ftds-grand-central-aggregator", "tp": "celos" },
+          { "name": "ftds-grand-central-profilemod", "tp": "celos" },
+          { "name": "ftds-grand-central-multiscreen", "tp": "celos" },
+          { "name": "ftds-grand-central-liveramp-ad", "tp": "celos" },
+          { "name": "ftds-grand-central-liveramp-rm", "tp": "celos" }
+        ]
+      },
+      {
+        "name": "FTDS GC-AOF",
+        "coordinators": [
+          { "name": "ftds-gc-aof", "tp": "celos" },
+          { "name": "ftds-gc-amp", "tp": "celos" }
+        ]
+      },
+      {
+        "name": "FTDS Runway",
+        "coordinators": [
+          { "name": "ftds-runway-input-adhoc", "tp": "celos" },
+          { "name": "ftds-runway-input-audext_uk", "tp": "celos" },
+          { "name": "ftds-runway-input-audext_us", "tp": "celos" },
+          { "name": "ftds-runway-input-audopt_dorado", "tp": "celos" },
+          { "name": "ftds-runway-input-audopt_uk", "tp": "celos" },
+          { "name": "ftds-runway-input-audopt_us", "tp": "celos" },
+          { "name": "ftds-runway-output-adhoc", "tp": "celos" },
+          { "name": "ftds-runway-output-audext_uk", "tp": "celos" },
+          { "name": "ftds-runway-output-audext_us", "tp": "celos" },
+          { "name": "ftds-runway-output-audopt_dorado", "tp": "celos" },
+          { "name": "ftds-runway-output-audopt_uk", "tp": "celos" },
+          { "name": "ftds-runway-output-audopt_us", "tp": "celos" }
+        ]
+      },
+      {
+        "name": "FTDS Hive Partitions: s2s",
+        "coordinators": [
+          { "name": "ftds-s2s-acxiom", "tp": "celos" },
+          { "name": "ftds-s2s-batchimport", "tp": "celos" },
+          { "name": "ftds-s2s-bluekai", "tp": "celos" },
+          { "name": "ftds-s2s-liveramp", "tp": "celos" }
+        ]
+      },
+      {
+        "name": "FTAS",
+        "coordinators": [
+          { "name": "ftas-gc-aof", "tp": "celos" }
+        ]
+      }
+
+
+
+    ]
+  }
+}

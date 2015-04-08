@@ -78,12 +78,12 @@
     </servlet-mapping>
 
     <servlet>
-        <servlet-name>RrmanServlet</servlet-name>
-        <servlet-class>com.collective.celos.servlet.RrmanServlet</servlet-class>
+        <servlet-name>UIServlet</servlet-name>
+        <servlet-class>com.collective.celos.servlet.UIServlet</servlet-class>
     </servlet>
     <servlet-mapping>
-        <servlet-name>RrmanServlet</servlet-name>
-        <url-pattern>/rrman</url-pattern>
+        <servlet-name>UIServlet</servlet-name>
+        <url-pattern>/ui</url-pattern>
     </servlet-mapping>
 
     <servlet>
@@ -96,12 +96,12 @@
     </servlet-mapping>
 
     <servlet>
-        <servlet-name>RrmanConfigServlet</servlet-name>
-        <servlet-class>com.collective.celos.servlet.RrmanConfigServlet</servlet-class>
+        <servlet-name>UIConfigServlet</servlet-name>
+        <servlet-class>com.collective.celos.servlet.UIConfigServlet</servlet-class>
     </servlet>
     <servlet-mapping>
-        <servlet-name>RrmanConfigServlet</servlet-name>
-        <url-pattern>/rrman-config</url-pattern>
+        <servlet-name>UIConfigServlet</servlet-name>
+        <url-pattern>/ui-config</url-pattern>
     </servlet-mapping>
 
 </web-app>

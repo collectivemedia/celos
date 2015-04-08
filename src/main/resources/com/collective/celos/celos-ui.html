@@ -4,13 +4,8 @@
     <meta charset="UTF-8">
     <meta name="robots" content="noindex">
     <title>Re-running Man</title>
-    <link rel="stylesheet" href="rrman.css">
+    <link rel="stylesheet" href="ui/celos-ui.css">
     <link rel="stylesheet" href="http://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
-    <script src="http://code.jquery.com/jquery-1.10.2.js"></script>
-    <script src="http://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
-    <script src="konva.min.js"></script>
-    <script src="immutable.min.js"></script>
-    <script src="rrman.js"></script>
 </head>
 
 <body>
@@ -33,8 +28,7 @@
 <div id="selectedSlotsDetailsPanel"></div>
 <div id="bottomPanel"></div>
 
-<script>
-    init();
-</script>
+<script data-main="ui/app" src="ui/lib/require.js"></script>
+
 </body>
 </html>
