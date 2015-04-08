@@ -58,12 +58,15 @@ public class Scheduler {
      * Otherwise, schedule only workflows in the set.
      */
     public void step(ScheduledTime current, Set<WorkflowID> workflowIDs) {
+        LOGGER.info("Starting scheduler step for time: " + current);
         for(SchedulingWindow window : getSchedulingWindows(current, workflowIDs)) {
             stepWindow(current, window);
         }
+        LOGGER.info("Ending scheduler step for time: " + current);
     }
 
     private void stepWindow(ScheduledTime current, SchedulingWindow window) {
+        LOGGER.info("Scheduling window: " + window.getStartTime() + " -- " + window.getEndTime());
         Set<WorkflowID> workflowIDs = window.getWorkflowIDs();
         for (Workflow wf : configuration.getWorkflows()) {
             WorkflowID id = wf.getID();
