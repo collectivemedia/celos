@@ -11,6 +11,7 @@ import com.collective.celos.SlotState;
 import com.collective.celos.Workflow;
 import com.collective.celos.WorkflowID;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.common.collect.Sets;
 
 /**
  * Returns information about the slot states of a single workflow as JSON.
@@ -46,7 +47,7 @@ public class JSONWorkflowServlet extends AbstractJSONServlet {
             if (wf == null) {
                 res.sendError(HttpServletResponse.SC_NOT_FOUND, "Workflow not found: " + id);
             } else {
-                List<SlotState> slotStates = scheduler.getSlotStates(wf, getRequestTime(req));
+                List<SlotState> slotStates = scheduler.getSlotStates(wf, scheduler.getDefaultSchedulingWindow(getRequestTime(req), Sets.<WorkflowID>newHashSet(wf.getID())));
                 ObjectNode object = createJSONObject(slotStates);
                 writer.writeValue(res.getOutputStream(), object);
             }
