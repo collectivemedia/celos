@@ -13,12 +13,13 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
+import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 
 /**
  * Superclass for all servlets that access the database.
- * 
+ *
  * Serializes all database accesses with a lock.
  */
 @SuppressWarnings("serial")
@@ -30,6 +31,7 @@ public abstract class AbstractServlet extends HttpServlet {
     public static final String WORKFLOW_CONFIGURATION_PATH_ATTR = "workflow.configuration.path";
     public static final String DEFAULTS_CONFIGURATION_PATH_ATTR = "defaults.configuration.path";
     public static final String STATE_DATABASE_PATH_ATTR = "state.database.path";
+    public static final String UI_PATH_ATTR = "celos.ui.path";
     public static final String ADDITIONAL_JS_VARIABLES = "additional.js.variables";
 
     private static final String SCHEDULER_ATTR = "celos.scheduler";
@@ -50,7 +52,7 @@ public abstract class AbstractServlet extends HttpServlet {
             }
         }
     }
-    
+
     protected ScheduledTime getRequestTime(HttpServletRequest req) {
         String t = req.getParameter(TIME_PARAM);
         if (t == null) {
@@ -62,27 +64,31 @@ public abstract class AbstractServlet extends HttpServlet {
 
     /*
      * Scheduler cache
-     * 
+     *
      * Reading and evaluating the .js files takes a bit of time, so it is cached
      * between servlet calls.
-     * 
+     *
      * The scheduler servlet uses createAndCacheScheduler(), which refreshes
      * the cache once a minute, whereas all other servlets use, for performance,
      * getOrCreateCachedScheduler() which usually retrieves the cached
      * scheduler. The clear-cache servlet can be used during e.g. integration testing
      * to reset the cache and force a reload of the configuration.
      */
-    
+
     protected Scheduler createAndCacheScheduler() throws Exception {
         String workflowConfigPath = getServletContext().getInitParameter(WORKFLOW_CONFIGURATION_PATH_ATTR);
         String defaultsConfigPath = getServletContext().getInitParameter(DEFAULTS_CONFIGURATION_PATH_ATTR);
         String stateDatabasePath = getServletContext().getInitParameter(STATE_DATABASE_PATH_ATTR);
+        String uiPath = getServletContext().getInitParameter(UI_PATH_ATTR);
         Map<String, String> additionalVars = (Map<String, String>) getServletContext().getAttribute(ADDITIONAL_JS_VARIABLES);
         if (additionalVars == null) {
             additionalVars = ImmutableMap.of();
         }
 
-        Scheduler sch = new SchedulerConfiguration(workflowConfigPath, defaultsConfigPath, stateDatabasePath, additionalVars).makeDefaultScheduler();
+        Scheduler sch = new SchedulerConfiguration(
+                new File(workflowConfigPath), new File(defaultsConfigPath), new File(stateDatabasePath), new File(uiPath), additionalVars
+        ).makeDefaultScheduler();
+
         getServletContext().setAttribute(SCHEDULER_ATTR, sch);
         return sch;
     }
@@ -95,9 +101,9 @@ public abstract class AbstractServlet extends HttpServlet {
             return sch;
         }
     }
-    
+
     protected void clearSchedulerCache() {
         getServletContext().removeAttribute(SCHEDULER_ATTR);
     }
-    
+
 }
