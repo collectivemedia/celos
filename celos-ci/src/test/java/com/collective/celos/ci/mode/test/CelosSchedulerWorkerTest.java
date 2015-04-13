@@ -3,12 +3,10 @@ package com.collective.celos.ci.mode.test;
 import com.collective.celos.*;
 import com.collective.celos.ci.mode.test.client.CelosClient;
 import com.collective.celos.ci.mode.test.client.WorkflowStatus;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import junit.framework.Assert;
 import org.junit.Test;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Set;
@@ -35,14 +33,14 @@ public class CelosSchedulerWorkerTest {
         SlotState slotState3 = new SlotState(new SlotID(wf2, scheduledTime), SlotState.Status.WAITING);
         SlotState slotState4 = new SlotState(new SlotID(wf2, scheduledTime), SlotState.Status.FAILURE);
 
-        doReturn(createWfStatus(slotState1, slotState2)).when(celosClient).getWorkflowStatus(wf1, scheduledTime);
-        doReturn(createWfStatus(slotState3, slotState4)).when(celosClient).getWorkflowStatus(wf2, scheduledTime);
+        doReturn(createWfStatus(wf1, slotState1, slotState2)).when(celosClient).getWorkflowStatus(wf1, scheduledTime);
+        doReturn(createWfStatus(wf2, slotState3, slotState4)).when(celosClient).getWorkflowStatus(wf2, scheduledTime);
         Assert.assertFalse(worker.isThereAnyRunningWorkflows(workflowSet, scheduledTime));
     }
 
-    private WorkflowStatus createWfStatus(SlotState... states) {
+    private WorkflowStatus createWfStatus(WorkflowID id, SlotState... states) {
         WorkflowInfo info = new WorkflowInfo(null, Collections.<WorkflowInfo.ContactsInfo>emptyList());
-        return new WorkflowStatus(info, Arrays.asList(states));
+        return new WorkflowStatus(id, info, Arrays.asList(states));
     }
 
 
@@ -62,8 +60,8 @@ public class CelosSchedulerWorkerTest {
         SlotState slotState4 = new SlotState(new SlotID(wf2, scheduledTime), SlotState.Status.RUNNING);
 
 
-        doReturn(createWfStatus(slotState1, slotState2)).when(celosClient).getWorkflowStatus(wf1, scheduledTime);
-        doReturn(createWfStatus(slotState3, slotState4)).when(celosClient).getWorkflowStatus(wf2, scheduledTime);
+        doReturn(createWfStatus(wf1, slotState1, slotState2)).when(celosClient).getWorkflowStatus(wf1, scheduledTime);
+        doReturn(createWfStatus(wf2, slotState3, slotState4)).when(celosClient).getWorkflowStatus(wf2, scheduledTime);
 
         Assert.assertTrue(worker.isThereAnyRunningWorkflows(workflowSet, scheduledTime));
     }
@@ -86,8 +84,8 @@ public class CelosSchedulerWorkerTest {
         SlotState slotState4 = new SlotState(new SlotID(wf2, scheduledTime), SlotState.Status.RUNNING);
 
 
-        doReturn(createWfStatus(slotState1, slotState2)).when(celosClient).getWorkflowStatus(wf1, scheduledTime);
-        doReturn(createWfStatus(slotState3, slotState4)).when(celosClient).getWorkflowStatus(wf2, scheduledTime);
+        doReturn(createWfStatus(wf1, slotState1, slotState2)).when(celosClient).getWorkflowStatus(wf1, scheduledTime);
+        doReturn(createWfStatus(wf2, slotState3, slotState4)).when(celosClient).getWorkflowStatus(wf2, scheduledTime);
 
         Set<String> statuses = worker.getWorkflowStatusesInfo(workflowSet, scheduledTime);
         Assert.assertEquals(statuses, Sets.newHashSet(
@@ -117,12 +115,12 @@ public class CelosSchedulerWorkerTest {
         Set<WorkflowID> workflowIDs = Sets.newHashSet(wf1, wf2);
         doReturn(workflowIDs).when(celosClient).getWorkflowList();
 
-        doReturn(createWfStatus()).when(celosClient).getWorkflowStatus(wf1, time1);
-        doReturn(createWfStatus()).when(celosClient).getWorkflowStatus(wf2, time1);
-        doReturn(createWfStatus()).when(celosClient).getWorkflowStatus(wf1, time2);
-        doReturn(createWfStatus()).when(celosClient).getWorkflowStatus(wf2, time2);
-        doReturn(createWfStatus()).when(celosClient).getWorkflowStatus(wf1, time3);
-        doReturn(createWfStatus()).when(celosClient).getWorkflowStatus(wf2, time3);
+        doReturn(createWfStatus(wf1)).when(celosClient).getWorkflowStatus(wf1, time1);
+        doReturn(createWfStatus(wf2)).when(celosClient).getWorkflowStatus(wf2, time1);
+        doReturn(createWfStatus(wf1)).when(celosClient).getWorkflowStatus(wf1, time2);
+        doReturn(createWfStatus(wf2)).when(celosClient).getWorkflowStatus(wf2, time2);
+        doReturn(createWfStatus(wf1)).when(celosClient).getWorkflowStatus(wf1, time3);
+        doReturn(createWfStatus(wf2)).when(celosClient).getWorkflowStatus(wf2, time3);
 
         worker.runCelosScheduler(testCase);
 
@@ -153,12 +151,12 @@ public class CelosSchedulerWorkerTest {
         Set<WorkflowID> workflowIDs = Sets.newHashSet(wf1, wf2);
         doReturn(workflowIDs).when(celosClient).getWorkflowList();
 
-        doReturn(createWfStatus()).when(celosClient).getWorkflowStatus(wf1, time1);
-        doReturn(createWfStatus()).when(celosClient).getWorkflowStatus(wf2, time1);
-        doReturn(createWfStatus()).when(celosClient).getWorkflowStatus(wf1, time2);
-        doReturn(createWfStatus()).when(celosClient).getWorkflowStatus(wf2, time2);
-        doReturn(createWfStatus()).when(celosClient).getWorkflowStatus(wf1, time3);
-        doReturn(createWfStatus()).when(celosClient).getWorkflowStatus(wf2, time3);
+        doReturn(createWfStatus(wf1)).when(celosClient).getWorkflowStatus(wf1, time1);
+        doReturn(createWfStatus(wf2)).when(celosClient).getWorkflowStatus(wf2, time1);
+        doReturn(createWfStatus(wf1)).when(celosClient).getWorkflowStatus(wf1, time2);
+        doReturn(createWfStatus(wf2)).when(celosClient).getWorkflowStatus(wf2, time2);
+        doReturn(createWfStatus(wf1)).when(celosClient).getWorkflowStatus(wf1, time3);
+        doReturn(createWfStatus(wf2)).when(celosClient).getWorkflowStatus(wf2, time3);
 
         worker.runCelosScheduler(testCase);
 
