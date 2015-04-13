@@ -1,21 +1,22 @@
 package com.collective.celos.ci.mode.test.client;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.net.UnknownHostException;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Set;
+
+import org.junit.Assert;
+import org.junit.Test;
+
 import com.collective.celos.ScheduledTime;
 import com.collective.celos.SlotID;
 import com.collective.celos.SlotState;
 import com.collective.celos.WorkflowID;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import org.junit.Assert;
-import org.junit.Test;
-
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.net.URI;
-import java.net.UnknownHostException;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Set;
 
 /**
  * Created by akonopko on 03.02.15.
@@ -94,7 +95,7 @@ public class CelosClientTest {
 
         List<WorkflowStatus> resultAsList = Lists.newArrayList(result);
 
-        resultAsList.sort(new Comparator<WorkflowStatus>() {
+        Collections.sort(resultAsList, new Comparator<WorkflowStatus>() {
             @Override
             public int compare(WorkflowStatus o1, WorkflowStatus o2) {
                 return o1.getId().toString().compareTo(o2.getId().toString());
