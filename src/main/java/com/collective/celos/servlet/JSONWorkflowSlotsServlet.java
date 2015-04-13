@@ -105,18 +105,16 @@ public class JSONWorkflowSlotsServlet extends AbstractJSONServlet {
     }
 
     private Collection<Workflow> getWorkflows(String id, WorkflowConfiguration cfg) throws IOException {
-        Collection<Workflow> workflows;
         if (id == null) {
-            workflows = cfg.getWorkflows();
+            return cfg.getWorkflows();
         } else {
             Workflow wf = cfg.findWorkflow(new WorkflowID(id));
             if (wf == null) {
-                workflows = null;
+                return null;
             } else {
-                workflows = Arrays.asList(wf);
+                return Arrays.asList(wf);
             }
         }
-        return workflows;
     }
 
 }
