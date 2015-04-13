@@ -19,7 +19,11 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.Lists;
 
 /**
- * Returns information about the slot states of a single workflow as JSON.
+ * Returns information about the slot states of one or more workflows as JSON.
+ *
+ * If no id parameter is specified, returns slot states of all workflows.
+ *
+ * If the id parameter is specified, returns only slot states of that workflow.
  *
  * GET /workflow-slots
  * ==>
@@ -56,6 +60,7 @@ import com.google.common.collect.Lists;
  *     }
  *   ]
  * }
+ *
  * If the "time" parameter is supplied, information is returned about
  * slot states up to that time.
  */
