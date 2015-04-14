@@ -42,7 +42,7 @@ public class TestRun {
     private static final String WORKFLOW_DIR_CELOS_PATH = "workflows";
     private static final String DEFAULTS_DIR_CELOS_PATH = "defaults";
     private static final String DB_DIR_CELOS_PATH = "db";
-    private static final String CELOS_CONFIG_PATH = "config";
+    private static final String CELOS_UI_PATH = "ui";
 
     private final WorkflowFilesDeployer wfDeployer;
     private final HdfsDeployer hdfsDeployer;
@@ -50,7 +50,7 @@ public class TestRun {
     private final File celosWorkflowDir;
     private final File celosDefaultsDir;
     private final File celosDbDir;
-    private final File celosConfigDir;
+    private final File celosUiDir;
     private final File celosTempDir;
     private final String hdfsPrefix;
     private final TestCase testCase;
@@ -71,7 +71,7 @@ public class TestRun {
         this.celosWorkflowDir = new File(celosTempDir, WORKFLOW_DIR_CELOS_PATH);
         this.celosDefaultsDir = new File(celosTempDir, DEFAULTS_DIR_CELOS_PATH);
         this.celosDbDir = new File(celosTempDir, DB_DIR_CELOS_PATH);
-        this.celosConfigDir = new File(celosTempDir, CELOS_CONFIG_PATH);
+        this.celosUiDir = new File(celosTempDir, CELOS_UI_PATH);
         this.originalTarget = target;
 
         CelosCiTarget testTarget = new CelosCiTarget(target.getPathToHdfsSite(), target.getPathToCoreSite(), celosWorkflowDir.toURI(), celosDefaultsDir.toURI(), target.getHiveJdbc());
@@ -144,7 +144,7 @@ public class TestRun {
             wfDeployer.deploy();
             hdfsDeployer.deploy();
 
-            Integer port = celosServer.startServer(additionalJSParams, celosWorkflowDir, celosDefaultsDir, celosDbDir, celosConfigDir);
+            Integer port = celosServer.startServer(additionalJSParams, celosWorkflowDir, celosDefaultsDir, celosDbDir, celosUiDir);
 
             for (FixtureDeployer fixtureDeployer : testCase.getInputs()) {
                 fixtureDeployer.deploy(this);

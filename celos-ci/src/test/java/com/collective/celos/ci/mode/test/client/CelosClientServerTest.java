@@ -28,7 +28,7 @@ public class CelosClientServerTest {
 
     public static final String WORKFLOWS_DIR = "workflows";
     public static final String DEFAULTS_DIR = "defaults";
-    public static final String CONFIG_DIR = "config";
+    public static final String CONFIG_DIR = "ui";
     public static final String DB_DIR = "db";
     public static final int SLOTS_IN_CELOS_SERVER_SLIDING_WINDOW = SchedulerConfiguration.SLIDING_WINDOW_DAYS * 24;
 
@@ -78,8 +78,8 @@ public class CelosClientServerTest {
         File src = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/client/wf-list").toURI());
         FileUtils.copyDirectory(src, workflowsDir);
 
-        File rrmanConfig = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/rrman.json").toURI());
-        FileUtils.copyFileToDirectory(rrmanConfig, configDir);
+        File uiConfig = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/config.json").toURI());
+        FileUtils.copyFileToDirectory(uiConfig, configDir);
 
         File src2 = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/server/slot-db-1").toURI());
         FileUtils.copyDirectory(src2, slotDbDir);
@@ -91,7 +91,7 @@ public class CelosClientServerTest {
 
         System.out.println(celosClient.getAddress());
 
-        
+
 
         Thread.sleep(1000*60*60);
     }

@@ -14,13 +14,13 @@
     </context-param>
 
     <context-param>
-        <param-name>state.database.path</param-name>
-        <param-value>/var/lib/celos/db</param-value>
+        <param-name>celos.ui.path</param-name>
+        <param-value>/etc/celos/ui</param-value>
     </context-param>
 
     <context-param>
-        <param-name>celos.config.path</param-name>
-        <param-value>/etc/celos/defaults</param-value>
+        <param-name>state.database.path</param-name>
+        <param-value>/var/lib/celos/db</param-value>
     </context-param>
 
     <servlet>

@@ -69,14 +69,16 @@ define(["app/utils", "app/constants", "lib/immutable"], function (Utils, Const, 
         return 'Workflow ' + this.id;
     };
 
-    function Model(rrmanConfig, workflowToSlotMap) {
-        this.rrmanConfig = rrmanConfig;
+    function Model(uiConfig, workflowToSlotMap, _requestDate, _showDate) {
+        this.uiConfig = uiConfig;
         this.workflowToSlotMap = workflowToSlotMap;
         var idsToWf = workflowToSlotMap.reduce(function (accum, slots, workflow) {
             accum.push([workflow.id, workflow]);
             return accum;
         }, []);
         this.workflowByName = new Immutable.Map(idsToWf);
+        this.requestDate = _requestDate;
+        this.showDate = _showDate;
     }
 
 

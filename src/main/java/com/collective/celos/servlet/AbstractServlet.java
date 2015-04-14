@@ -31,7 +31,7 @@ public abstract class AbstractServlet extends HttpServlet {
     public static final String WORKFLOW_CONFIGURATION_PATH_ATTR = "workflow.configuration.path";
     public static final String DEFAULTS_CONFIGURATION_PATH_ATTR = "defaults.configuration.path";
     public static final String STATE_DATABASE_PATH_ATTR = "state.database.path";
-    public static final String CONFIGURATION_PATH_ATTR = "celos.config.path";
+    public static final String UI_PATH_ATTR = "celos.ui.path";
     public static final String ADDITIONAL_JS_VARIABLES = "additional.js.variables";
 
     private static final String SCHEDULER_ATTR = "celos.scheduler";
@@ -79,7 +79,7 @@ public abstract class AbstractServlet extends HttpServlet {
         String workflowConfigPath = getServletContext().getInitParameter(WORKFLOW_CONFIGURATION_PATH_ATTR);
         String defaultsConfigPath = getServletContext().getInitParameter(DEFAULTS_CONFIGURATION_PATH_ATTR);
         String stateDatabasePath = getServletContext().getInitParameter(STATE_DATABASE_PATH_ATTR);
-        String configPath = getServletContext().getInitParameter(CONFIGURATION_PATH_ATTR);
+        String configPath = getServletContext().getInitParameter(UI_PATH_ATTR);
         Map<String, String> additionalVars = (Map<String, String>) getServletContext().getAttribute(ADDITIONAL_JS_VARIABLES);
         if (additionalVars == null) {
             additionalVars = ImmutableMap.of();

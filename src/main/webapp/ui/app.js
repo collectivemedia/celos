@@ -1,5 +1,5 @@
-require(['app/main-view', 'app/domain', 'app/constants', 'app/celos-client', 'lib/konva', 'jquery', 'jquery-ui'],
-function (MainView, Domain, Const, CelosClient, Konva, $) {
+require(['app/utils', 'lib/jsurl', 'app/main-view', 'app/domain', 'app/constants', 'app/celos-client', 'lib/konva', 'jquery', 'jquery-ui'],
+function (Utils, JSUrl, MainView, Domain, Const, CelosClient, Konva, $) {
 
     var slotStatesPanel = $("#slotStatesPanel");
     var slotStatesStage = new Konva.Stage({
@@ -41,12 +41,12 @@ function (MainView, Domain, Const, CelosClient, Konva, $) {
     var detailsContext = {layer: detailsLayer, stage: detailsStage, panel: detailsPanel};
 
 
-    var view = new MainView(slotStatesContext, dateContext, detailsContext);
+    var view = new MainView(new JSUrl(), slotStatesContext, dateContext, detailsContext);
     var client = new CelosClient(view);
 
     $(document).on("rrman:model_updated", function (evt, model) {
         view.setModel(model);
-        view.repaint();
+        view.repaintAll();
     });
     $(document).on("rrman:request_data", function (evt, date) {
         client.update(date);
@@ -56,6 +56,10 @@ function (MainView, Domain, Const, CelosClient, Konva, $) {
     });
     window.addEventListener('resize', view.onResize, false);
 
+    //if (url.query.date) {
+    //    var newDate = Utils.addMs(new Date(url.query.date), Const.DAY_MS);
+    //    view.setDate(newDate);
+    //}
 
     view.setupEventListeners();
     view.triggerUpdate();
@@ -68,5 +72,6 @@ function (MainView, Domain, Const, CelosClient, Konva, $) {
         $("#datepicker").datepicker();
         $("button").button();
     });
+
 
 });

@@ -1,5 +1,5 @@
 {
-  "hueURL": "http://cldmgr001.ewr004.collective-media.net:8888/oozie/list_oozie_workflow/%s/",
+  "hueURL": "http://cldmgr001.ewr004.collective-media.net:8888/oozie/list_oozie_workflow/${EXTERNAL_ID}/",
   "workflowToSlotMap": [
     {
       "name": "Flume",

@@ -33,7 +33,6 @@ define(['lib/konva'], function (Konva) {
             return workflowName.getWidth();
         };
 
-
         return this;
 
     };
