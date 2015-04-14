@@ -8,7 +8,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  * The execution status of a slot.
  */
 public class SlotState extends ValueObject {
-    
+
     /** Never null. */
     protected final SlotID slotID;
     /** Never null. */
@@ -17,19 +17,21 @@ public class SlotState extends ValueObject {
     private final String externalID;
     /** Initially zero, increased every time the slot is rerun. */
     private final int retryCount;
-    
+
     // JSON support
     private static final ObjectMapper MAPPER = new ObjectMapper();
     private static final String TIME_PROP = "time";
     private static final String STATUS_PROP = "status";
     private static final String EXTERNAL_ID_PROP = "externalID";
     private static final String RETRY_COUNT_PROP = "retryCount";
-    
+
     public enum Status {
         /** No data availability yet. */
         WAITING,
+        /** No data availability for too long. */
+        WAIT_TIMEOUT,
         /** Data is available and the workflow will be run shortly. 
-            Workflow will also enter this state when it is retried. */
+         Workflow will also enter this state when it is retried. */
         READY,
         /** The workflow is currently running. */
         RUNNING,
@@ -38,7 +40,7 @@ public class SlotState extends ValueObject {
         /** The workflow has failed and will not be retried. */
         FAILURE
     };
-    
+
     public SlotState(SlotID slotID, Status status) {
         this(slotID, status, null, 0);
     }
@@ -49,15 +51,15 @@ public class SlotState extends ValueObject {
         this.externalID = externalID;
         this.retryCount = retryCount;
     }
-    
+
     public SlotID getSlotID() {
         return slotID;
     }
-    
+
     public Status getStatus() {
         return status;
     }
-    
+
     public ScheduledTime getScheduledTime() {
         return slotID.getScheduledTime();
     }
@@ -65,16 +67,21 @@ public class SlotState extends ValueObject {
     public String getExternalID() {
         return externalID;
     }
-    
+
     public int getRetryCount() {
         return retryCount;
     }
-    
+
     public SlotState transitionToReady() {
         assertStatus(Status.WAITING);
         return new SlotState(slotID, Status.READY, null, retryCount);
     }
-    
+
+    public SlotState transitionToWaitTimeout() {
+        assertStatus(Status.WAITING);
+        return new SlotState(slotID, Status.WAIT_TIMEOUT, null, retryCount);
+    }
+
     public SlotState transitionToRunning(String externalID) {
         assertStatus(Status.READY);
         return new SlotState(slotID, Status.RUNNING, externalID, retryCount);
@@ -96,13 +103,16 @@ public class SlotState extends ValueObject {
     }
 
     public SlotState transitionToRerun() {
-        boolean successOrFailure = (status.equals(Status.SUCCESS)) || (status.equals(Status.FAILURE));
-        if (!successOrFailure) {
+        if (!isRerunnable()) {
             throw new IllegalStateException("Slot must be successful or failed, but is: " + status);
         }
         return new SlotState(slotID, Status.WAITING, null, 0); // reset retryCount to 0
     }
-    
+
+    private boolean isRerunnable() {
+        return status.equals(Status.SUCCESS) || status.equals(Status.FAILURE) || status.equals(Status.WAIT_TIMEOUT);
+    }
+
     private void assertStatus(Status st) {
         if (!status.equals(st)) {
             throw new IllegalStateException("Expected status " + st + " but was " + status + " (slot: " + this + ")");
