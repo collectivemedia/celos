@@ -8,13 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 
 /**
- * Returns list of IDs of configured workflows as JSON.
- *
- * GET /workflow-list
- * ==>
- * {
- *   "ids": [ "workflow-1", "workflow-2" ]
- * }
+ * Returns static HTML which runs User Interface JS App
  */
 @SuppressWarnings("serial")
 public class UIServlet extends AbstractJSONServlet {
