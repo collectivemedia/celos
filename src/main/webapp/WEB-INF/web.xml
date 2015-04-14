@@ -14,7 +14,7 @@
     </context-param>
 
     <context-param>
-        <param-name>celos.ui.path</param-name>
+        <param-name>ui.configuration.path</param-name>
         <param-value>/etc/celos/ui</param-value>
     </context-param>
 
@@ -75,15 +75,6 @@
     <servlet-mapping>
         <servlet-name>RerunServlet</servlet-name>
         <url-pattern>/rerun</url-pattern>
-    </servlet-mapping>
-
-    <servlet>
-        <servlet-name>UIServlet</servlet-name>
-        <servlet-class>com.collective.celos.servlet.UIConfigServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>UIServlet</servlet-name>
-        <url-pattern>/ui</url-pattern>
     </servlet-mapping>
 
     <servlet>

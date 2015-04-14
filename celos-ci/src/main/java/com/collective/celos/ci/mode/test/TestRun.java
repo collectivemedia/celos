@@ -153,7 +153,7 @@ public class TestRun {
             Integer port = celosServer.startServer(additionalJSParams, celosWorkflowDir, celosDefaultsDir, celosDbDir, celosUiDir);
 
             for (FixtureDeployer fixtureDeployer : testCase.getInputs()) {
-//                fixtureDeployer.deploy(this);
+                fixtureDeployer.deploy(this);
             }
             CelosClient client = new CelosClient("http://localhost:" + port);
             new CelosSchedulerWorker(client).runCelosScheduler(testCase);
@@ -167,10 +167,10 @@ public class TestRun {
             System.out.println(testCase.getName() + ": Stopping Celos");
             System.out.flush();
             celosServer.stopServer();
-//            if (!keepTempData) {
-//                doCleanup();
-//                validateCleanState();
-//            }
+            if (!keepTempData) {
+                doCleanup();
+                validateCleanState();
+            }
         }
     }
 
