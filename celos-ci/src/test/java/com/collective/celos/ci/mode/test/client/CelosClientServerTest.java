@@ -7,6 +7,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
@@ -18,6 +19,7 @@ import org.junit.rules.TemporaryFolder;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +33,7 @@ public class CelosClientServerTest {
     public static final String WORKFLOWS_DIR = "workflows";
     public static final String DEFAULTS_DIR = "defaults";
     public static final String DB_DIR = "db";
+    public static final String UI_DIR = "ui";
     public static final int SLOTS_IN_CELOS_SERVER_SLIDING_WINDOW = SchedulerConfiguration.SLIDING_WINDOW_DAYS * 24;
 
     @Rule
@@ -38,6 +41,7 @@ public class CelosClientServerTest {
 
     private File workflowsDir;
     private File slotDbDir;
+    private File uiDir;
     private CelosServer celosServer;
     private CelosClient celosClient;
 
@@ -47,13 +51,14 @@ public class CelosClientServerTest {
         this.workflowsDir = new File(tmpDir, WORKFLOWS_DIR);
         File defaultsDir = new File(tmpDir, DEFAULTS_DIR);
         this.slotDbDir = new File(tmpDir, DB_DIR);
-
+        this.uiDir = new File(tmpDir, UI_DIR);
         this.workflowsDir.mkdirs();
         defaultsDir.mkdirs();
         this.slotDbDir.mkdirs();
+        this.uiDir.mkdirs();
 
         this.celosServer = new CelosServer();
-        Integer port = celosServer.startServer(ImmutableMap.<String, String>of(), workflowsDir, defaultsDir, slotDbDir);
+        Integer port = celosServer.startServer(ImmutableMap.<String, String>of(), workflowsDir, defaultsDir, slotDbDir, uiDir);
         this.celosClient = new CelosClient("http://localhost:" + port);
     }
 
@@ -602,5 +607,45 @@ public class CelosClientServerTest {
         WorkflowID workflowID = new WorkflowID("unknown-workflow");
         celosClient.rerunSlot(workflowID, ScheduledTime.now());
     }
+
+    @Test
+    public void testUIConfig() throws IOException, URISyntaxException {
+
+        String expectedConfig = "{\n" +
+                "  \"hueURL\": \"http://cldmgr001.ewr004.collective-media.net:8888/oozie/list_oozie_workflow/${EXTERNAL_ID}/\",\n" +
+                "  \"workflowToSlotMap\": [\n" +
+                "    {\n" +
+                "      \"name\": \"Flume\",\n" +
+                "      \"workflows\": [\n" +
+                "        \"flume-ready-dal\",\n" +
+                "        \"flume-ready-dc\",\n" +
+                "        \"flume-ready-dc3\",\n" +
+                "        \"flume-ready-lax1\",\n" +
+                "        \"flume-ready-nym1\",\n" +
+                "        \"flume-ready-sea\",\n" +
+                "        \"flume-ready-sv4\",\n" +
+                "        \"flume-tmp-file-closer\"\n" +
+                "      ]\n" +
+                "   },\n" +
+                "    {\n" +
+                "      \"name\": \"FTAS\",\n" +
+                "      \"workflows\": [\n" +
+                "        \"ftas-gc-aof\"\n" +
+                "      ]\n" +
+                "    }\n" +
+                "  ]\n" +
+                "}";
+
+        File src = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/ui/config.json").toURI());
+        FileUtils.copyFileToDirectory(src, uiDir);
+
+        HttpGet request = new HttpGet(celosClient.getAddress() + "/ui-config");
+        HttpResponse response = new DefaultHttpClient().execute(request);
+        String uiConfig = IOUtils.toString(response.getEntity().getContent());
+
+        Assert.assertEquals(uiConfig, expectedConfig);
+    }
+
+
 
 }

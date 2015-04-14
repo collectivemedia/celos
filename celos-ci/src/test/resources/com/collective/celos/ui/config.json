@@ -1,0 +1,24 @@
+{
+  "hueURL": "http://cldmgr001.ewr004.collective-media.net:8888/oozie/list_oozie_workflow/${EXTERNAL_ID}/",
+  "workflowToSlotMap": [
+    {
+      "name": "Flume",
+      "workflows": [
+        "flume-ready-dal",
+        "flume-ready-dc",
+        "flume-ready-dc3",
+        "flume-ready-lax1",
+        "flume-ready-nym1",
+        "flume-ready-sea",
+        "flume-ready-sv4",
+        "flume-tmp-file-closer"
+      ]
+   },
+    {
+      "name": "FTAS",
+      "workflows": [
+        "ftas-gc-aof"
+      ]
+    }
+  ]
+}
