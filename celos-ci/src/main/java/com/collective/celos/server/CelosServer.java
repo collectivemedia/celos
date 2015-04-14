@@ -17,11 +17,12 @@ public class CelosServer {
 
     private Server server = new Server();
 
-    public Integer startServer(Map<String, String> jsVariables, File workflowsDir, File defaultsDir, File stateDatabase) throws Exception {
+    public Integer startServer(Map<String, String> jsVariables, File workflowsDir, File defaultsDir, File stateDatabase, File uiDir) throws Exception {
 
         validateDirExists(workflowsDir);
         validateDirExists(defaultsDir);
         validateDirExists(stateDatabase);
+        validateDirExists(uiDir);
 
         String webAppParent = getUriParentPath(Thread.currentThread().getContextClassLoader().getResource("WEB-INF").toURI().toString());
         WebAppContext context = new WebAppContext(webAppParent.toString(), "/");
@@ -36,6 +37,7 @@ public class CelosServer {
         context.setInitParameter(AbstractServlet.WORKFLOW_CONFIGURATION_PATH_ATTR, workflowsDir.getAbsolutePath());
         context.setInitParameter(AbstractServlet.DEFAULTS_CONFIGURATION_PATH_ATTR, defaultsDir.getAbsolutePath());
         context.setInitParameter(AbstractServlet.STATE_DATABASE_PATH_ATTR, stateDatabase.getAbsolutePath());
+        context.setInitParameter(AbstractServlet.UI_PATH_ATTR, uiDir.getAbsolutePath());
 
         return connector.getLocalPort();
 
