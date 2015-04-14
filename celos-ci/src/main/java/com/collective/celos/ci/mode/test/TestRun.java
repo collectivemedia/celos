@@ -148,7 +148,7 @@ public class TestRun {
             logJsFileExists(WorkflowFilesDeployer.DEFAULTS_FILENAME);
 
             wfDeployer.deploy();
-//            hdfsDeployer.deploy();
+            hdfsDeployer.deploy();
 
             Integer port = celosServer.startServer(additionalJSParams, celosWorkflowDir, celosDefaultsDir, celosDbDir, celosUiDir);
 
