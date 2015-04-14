@@ -9,7 +9,7 @@ import com.collective.celos.ci.mode.UndeployTask;
 
 public abstract class CelosCi {
 
-    public static void main(String... args) throws Exception {
+    public static void main(String... args) throws Throwable {
 
         //left here for convenience while debugging
         //args = "--testDir /home/akonopko/work/Pythia/harmony/src/test/celos-ci --deployDir /home/akonopko/work/Pythia/harmony/build/celos_deploy --target sftp://celos001/home/akonopko/testing.json --workflowName grand_central --mode TEST".split(" ");
@@ -20,7 +20,7 @@ public abstract class CelosCi {
         CelosCi celosCi = createCelosCi(commandLine);
         celosCi.start();
     }
-    
+
     public static CelosCi createCelosCi(CelosCiCommandLine commandLine) throws Exception {
 
         if (commandLine.getMode() == CelosCiContext.Mode.TEST) {
@@ -33,6 +33,6 @@ public abstract class CelosCi {
         throw new IllegalStateException("Unknown mode " + commandLine.getMode());
     }
 
-    public abstract void start() throws Exception;
+    public abstract void start() throws Throwable;
 
 }

@@ -24,7 +24,6 @@ import org.apache.commons.vfs2.Selectors;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.nio.file.Files;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -42,7 +41,7 @@ public class TestRun {
     private static final String WORKFLOW_DIR_CELOS_PATH = "workflows";
     private static final String DEFAULTS_DIR_CELOS_PATH = "defaults";
     private static final String DB_DIR_CELOS_PATH = "db";
-    private static final String CELOS_UI_PATH = "ui";
+    private static final String UI_DIR_CELOS_PATH = "ui";
 
     private final WorkflowFilesDeployer wfDeployer;
     private final HdfsDeployer hdfsDeployer;
@@ -51,27 +50,30 @@ public class TestRun {
     private final File celosDefaultsDir;
     private final File celosDbDir;
     private final File celosUiDir;
-    private final File celosTempDir;
+    private final File testCaseTempDir;
     private final String hdfsPrefix;
     private final TestCase testCase;
     private final File testCasesDir;
     private final UUID testUUID;
     private final CelosCiTarget originalTarget;
+    private final boolean keepTempData;
 
-    public TestRun(CelosCiTarget target, CelosCiCommandLine commandLine, TestCase testCase) throws Exception {
+    public TestRun(CelosCiTarget target, CelosCiCommandLine commandLine, TestCase testCase, File celosCiTempDir) throws Exception {
 
         this.testCase = testCase;
-        this.celosTempDir = Files.createTempDirectory("celos").toFile();
         this.testCasesDir = commandLine.getTestCasesDir();
 
         testUUID = UUID.randomUUID();
         String hdfsPrefix = String.format(HDFS_PREFIX_PATTERN, commandLine.getUserName(), commandLine.getWorkflowName(), testUUID);
 
         this.hdfsPrefix = Util.requireNonNull(hdfsPrefix);
-        this.celosWorkflowDir = new File(celosTempDir, WORKFLOW_DIR_CELOS_PATH);
-        this.celosDefaultsDir = new File(celosTempDir, DEFAULTS_DIR_CELOS_PATH);
-        this.celosDbDir = new File(celosTempDir, DB_DIR_CELOS_PATH);
-        this.celosUiDir = new File(celosTempDir, CELOS_UI_PATH);
+        this.testCaseTempDir = new File(celosCiTempDir, testUUID.toString());
+
+        this.celosWorkflowDir = new File(testCaseTempDir, WORKFLOW_DIR_CELOS_PATH);
+        this.celosDefaultsDir = new File(testCaseTempDir, DEFAULTS_DIR_CELOS_PATH);
+        this.celosDbDir = new File(testCaseTempDir, DB_DIR_CELOS_PATH);
+        this.celosUiDir = new File(testCaseTempDir, UI_DIR_CELOS_PATH);
+
         this.originalTarget = target;
 
         CelosCiTarget testTarget = new CelosCiTarget(target.getPathToHdfsSite(), target.getPathToCoreSite(), celosWorkflowDir.toURI(), celosDefaultsDir.toURI(), target.getHiveJdbc());
@@ -79,6 +81,7 @@ public class TestRun {
 
         this.wfDeployer = new WorkflowFilesDeployer(ciContext);
         this.hdfsDeployer = new HdfsDeployer(ciContext);
+        this.keepTempData = commandLine.isKeepTempData();
     }
 
     public UUID getTestUUID() {
@@ -97,8 +100,8 @@ public class TestRun {
         return celosDbDir;
     }
 
-    public File getCelosTempDir() {
-        return celosTempDir;
+    public File getTestCaseTempDir() {
+        return testCaseTempDir;
     }
 
     public File getTestCasesDir() {
@@ -116,15 +119,15 @@ public class TestRun {
     public void start() throws Exception {
 
         System.out.println("Running test case " + testCase.getName());
-        System.out.println("Test case " + testCase.getName() + ": temp dir for Celos is " + celosTempDir.getAbsolutePath().toString());
-        System.out.println("Test case " + testCase.getName() + ": HDFS prefix is: " + hdfsPrefix);
+        System.out.println(testCase.getName() + ": temp dir for Celos is " + testCaseTempDir.getAbsolutePath().toString());
+        System.out.println(testCase.getName() + ": HDFS prefix is: " + hdfsPrefix);
 
         List<FixObjectCompareResult> results = executeTestRun();
 
         if (isTestRunFailed(results)) {
             throw new TestRunFailedException(getComparisonResults(results));
         } else {
-            System.out.println("Real and expected fixtures matched");
+            System.out.println(testCase.getName() + ": Real and expected fixtures matched");
         }
 
     }
@@ -140,6 +143,9 @@ public class TestRun {
                     CELOS_USER_JS_VAR, ciContext.getUserName());
 
             prepareCelosServerEnv();
+
+            logJsFileExists(WorkflowFilesDeployer.WORKFLOW_FILENAME);
+            logJsFileExists(WorkflowFilesDeployer.DEFAULTS_FILENAME);
 
             wfDeployer.deploy();
             hdfsDeployer.deploy();
@@ -158,11 +164,20 @@ public class TestRun {
             }
             return results;
         } finally {
-            System.out.println("Stopping Celos");
+            System.out.println(testCase.getName() + ": Stopping Celos");
             System.out.flush();
             celosServer.stopServer();
-            doCleanup();
-            validateCleanState();
+            if (!keepTempData) {
+                doCleanup();
+                validateCleanState();
+            }
+        }
+    }
+
+    private void logJsFileExists(String fileName) {
+        File localFile = new File(ciContext.getDeployDir(), fileName);
+        if (!localFile.exists()) {
+            System.out.println(testCase.getName() + ": " + localFile.getAbsolutePath() + " was not found, so not deploying it");
         }
     }
 
@@ -192,7 +207,7 @@ public class TestRun {
     }
 
     private void doCleanup() throws Exception {
-        FileUtils.forceDelete(celosTempDir);
+        FileUtils.forceDelete(testCaseTempDir);
         for (FixtureDeployer fixtureDeployer : testCase.getInputs()) {
             fixtureDeployer.undeploy(this);
         }
@@ -208,6 +223,7 @@ public class TestRun {
         celosWorkflowDir.mkdirs();
         celosDefaultsDir.mkdirs();
         celosDbDir.mkdirs();
+        celosUiDir.mkdirs();
 
         copyRemoteDefaultsToLocal();
     }

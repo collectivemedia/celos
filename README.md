@@ -243,38 +243,6 @@ var CELOS_DEFAULT_HDFS = "hdfs://nameservice1";
 The `path` can contain the variables `${year}`, `${month}`, `${day}`,
 `${hour}`, `${minute}`, and `${second}`, which are zero-padded.
 
-### commandTrigger
-
-Syntax: `commandTrigger(commandElements...)`
-
-Call an external command to determine data availability.
-
-#### Parameters
-
-* `commandElements` -- the command name and any number of arguments, as separate strings
-
-#### Example
-
-This trigger calls the script `/usr/local/bin/is-data-ready.sh` with a
-formatted date as single argument.
-
-<pre>
-...
-"trigger": commandTrigger("/usr/local/bin/is-data-ready.sh", "${year}-${month}-${day}T${hour}:${minute}Z")
-...
-</pre>
-
-#### Variables
-
-The `commandElements` can contain the variables `${year}`, `${month}`,
-`${day}`, `${hour}`, `${minute}`, and `${second}`, which are
-zero-padded.
-
-#### Note
-
-The command is executed synchronously from Celos' scheduler loop, so
-it should run quickly.
-
 ### andTrigger
 
 Syntax: `andTrigger(triggers...)`
@@ -474,7 +442,7 @@ Run a workflow at second 0, minute 15 of every hour of every day of the year.
 
 Syntax: `dependentSchedule(otherWorkflowID)`
 
-Schedules a workflow to run with the same schedule as another workflow.
+Schedules a workflow to run with the same schedule as another workflow.  Effectively, this clones the other workflow's schedule.
 
 #### Parameters
 
