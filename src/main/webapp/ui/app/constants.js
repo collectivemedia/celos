@@ -12,7 +12,7 @@ define(function () {
         SAMPLE_DATE: '2015-02-05 13:23 UTC',
         SAMPLE_DATE_DAY: '2015-02-05',
         SAMPLE_LINE_TIME: '13:23',
-        REFRESH_INTERVAL: 5000,
+        REFRESH_INTERVAL: MINUTE_MS,
         ZOOM_TOO_LOW_STROKE_MARGIN: 5,
         ZOOM_TOO_LOW_STROKE_STEP: 10,
         workflowNameMargin: 20,
