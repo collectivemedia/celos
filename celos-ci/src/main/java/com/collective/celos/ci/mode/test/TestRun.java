@@ -223,6 +223,7 @@ public class TestRun {
         celosWorkflowDir.mkdirs();
         celosDefaultsDir.mkdirs();
         celosDbDir.mkdirs();
+        celosUiDir.mkdirs();
 
         copyRemoteDefaultsToLocal();
     }
