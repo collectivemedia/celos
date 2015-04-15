@@ -19,7 +19,7 @@ define(['app/utils', 'app/constants', 'lib/konva'], function(Utils, Const, Konva
                 x: Const.workflowNameMargin,
                 y: 0,
                 align: 'right',
-                text: Utils.toCelosUTCString(parent.getZoomer().getPagingOffsetDate()),
+                text: Utils.toCelosUTCString(parent.getZoomer().getCurrentViewDate()),
                 fontSize: Const.dateTextFontSize, fontStyle: 'bold'
             });
             datesCanvas.layer.add(dateText);
@@ -27,7 +27,7 @@ define(['app/utils', 'app/constants', 'lib/konva'], function(Utils, Const, Konva
             var mainDateWidth = Utils.getTextWidth(Const.SAMPLE_DATE_DAY, Const.dateTextFontSize);
             var width = Utils.getTextWidth(Const.SAMPLE_LINE_TIME, Const.dateTextFontSize);
 
-            var current = parent.getZoomer().getPagingOffsetDate().getTime();
+            var current = parent.getZoomer().getCurrentViewDate().getTime();
             var aDate = new Date(current - current % parent.getZoomer().getCurrentZoom().baseCellDuration);
             var metrics = parent.getMetricsByDate(aDate);
             var midnightPass = false;

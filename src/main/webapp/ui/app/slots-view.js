@@ -16,7 +16,7 @@ define(['app/utils', 'app/constants', 'lib/konva'], function(Utils, Const, Konva
         slotStatesView.activeLayer.batchDraw();
 
         this.onResize = function () {
-            updateCanvasSize();
+            _this.updateCanvasSize();
             _this.repaint()
         };
 
