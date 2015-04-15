@@ -57,18 +57,22 @@ define(["app/utils", "app/constants", "lib/immutable"], function (Utils, Const, 
         ];
 
         var currentZoomerIndex = 1;
-        var pagingOffsetDate = null;
+        var pagingOffsetDate = null;//view.getUrl();
 
         this.getCurrentZoom = function () {
             return zoomers[currentZoomerIndex];
         };
 
-        this.getPagingOffsetDate = function () {
+        this.getCurrentViewDate = function () {
             //return new Date('2013-12-02 19:23 UTC');
             if (pagingOffsetDate) {
                 return pagingOffsetDate;
             }
             return new Date();
+        };
+
+        this.getPagingOffsetDate = function () {
+            return pagingOffsetDate;
         };
 
         this.zoomIn = function () {
@@ -85,28 +89,23 @@ define(["app/utils", "app/constants", "lib/immutable"], function (Utils, Const, 
             view.repaintAll();
         };
 
-        this.nextPage = function () {
+        this.setDateNextPage = function () {
             var cellNum = view.getWidthInCells();
-            var newDate = zoomers[currentZoomerIndex].getDateAfterSteps(_this.getPagingOffsetDate(), cellNum - 1);
-            _this.gotoDate(newDate);
+            var newDate = zoomers[currentZoomerIndex].getDateAfterSteps(_this.getCurrentViewDate(), cellNum - 1);
+            _this.setDate(newDate);
         };
 
-        this.prevPage = function () {
+        this.setDatePrevPage = function () {
             var cellNum = view.getWidthInCells();
-            var newDate = zoomers[currentZoomerIndex].getDateAfterSteps(_this.getPagingOffsetDate(), -(cellNum - 1));
+            var newDate = zoomers[currentZoomerIndex].getDateAfterSteps(_this.getCurrentViewDate(), -(cellNum - 1));
             if (new Date().getTime() - newDate.getTime() < zoomers[currentZoomerIndex].baseCellDuration) {
                 newDate = null;
             }
-            _this.gotoDate(newDate);
+            _this.setDate(newDate);
         };
 
-        this.gotoDate = function (newDate) {
+        this.setDate = function(newDate) {
             pagingOffsetDate = newDate;
-            //view.repaint();
-
-            setTimeout(function () {
-                $(document).trigger("rrman:request_data", _this.getPagingOffsetDate());
-            }, 50);
         }
 
     };

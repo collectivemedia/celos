@@ -29,21 +29,25 @@ define(['app/utils', 'app/domain', 'app/constants', 'lib/immutable'], function (
             });
         };
 
-        this.update = function (date) {
+        this.update = function (showDate) {
+            var requestDate = showDate;
+            if (!requestDate) {
+                requestDate = new Date();
+            }
             this.getConfig(function (config) {
-                var forDate = Utils.addMs(date, 3 * Const.DAY_MS);
+                var forDate = Utils.addMs(requestDate, 3 * Const.DAY_MS);
                 $.ajax({
                     dataType: "json",
                     data: {time: Utils.toCelosUTCString(forDate)},
                     url: "workflow-slots",
                     success: function (workflowsData) {
-                        onWorkflowsData(workflowsData, config);
+                        onWorkflowsData(workflowsData, config, requestDate, showDate);
                     }
                 })
             });
         };
 
-        function onWorkflowsData(workflowsData, uiConfig) {
+        function onWorkflowsData(workflowsData, uiConfig, requestDate, showDate) {
 
             var wgContent = [];
             for (var i = 0; i < workflowsData.workflows.length; i++) {
@@ -61,7 +65,7 @@ define(['app/utils', 'app/domain', 'app/constants', 'lib/immutable'], function (
                 var slotStates = Immutable.OrderedMap(slotStatesArr);
                 wgContent.push([workflow, slotStates]);
             }
-            var model = new Domain.Model(uiConfig, new Immutable.Map(wgContent));
+            var model = new Domain.Model(uiConfig, new Immutable.Map(wgContent), requestDate, showDate);
             $(document).trigger("rrman:model_updated", model);
         }
     }

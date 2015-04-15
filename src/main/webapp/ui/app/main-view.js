@@ -1,7 +1,7 @@
 define(['app/details-view', 'app/dates-view', 'app/slots-view', 'app/managers', 'app/constants', 'app/utils'],
     function(DetailsView, DatesView, SlotsView, Managers, Const, Utils) {
 
-    function MainView(slotStatesCanvas, datesViewCanvas, detailsViewCanvas) {
+    function MainView(url, slotStatesCanvas, datesViewCanvas, detailsViewCanvas) {
 
         var _this = this;
 
@@ -15,6 +15,14 @@ define(['app/details-view', 'app/dates-view', 'app/slots-view', 'app/managers', 
         var slotsView = new SlotsView(slotStatesCanvas, _this);
         var datesView = new DatesView(datesViewCanvas, _this);
         var detailsView = new DetailsView(detailsViewCanvas, _this);
+
+        if (url.query.date) {
+            zoomer.setDate(new Date(url.query.date));
+        }
+
+        this.getUrl = function() {
+            return url;
+        };
 
         this.getSelectionManager = function() {
             return selectionManager;
@@ -47,6 +55,13 @@ define(['app/details-view', 'app/dates-view', 'app/slots-view', 'app/managers', 
             detailsView.repaint();
             datesView.repaint();
             slotsView.repaint();
+
+            if (_this.getModel().showDate) {
+                _this.getUrl().query.date = Utils.toCelosUTCString(_this.getModel().showDate);
+            } else {
+                delete _this.getUrl().query.date;
+            }
+            window.history.replaceState(null, null, _this.getUrl().toString());
         };
 
         this.getWidthInCells = function () {
@@ -55,7 +70,7 @@ define(['app/details-view', 'app/dates-view', 'app/slots-view', 'app/managers', 
         };
 
         this.getMetricsByDate = function(date) {
-            var currentDate = _this.getZoomer().getPagingOffsetDate();
+            var currentDate = _this.getZoomer().getCurrentViewDate();
             var millisInPixel = zoomer.getCurrentZoom().baseCellDuration / Const.baseCellWidth;
             var relativeX = (currentDate.getTime() - date.getTime()) / millisInPixel;
             var absoluteX = relativeX + mutableDims.cellDataOffset;
@@ -150,11 +165,18 @@ define(['app/details-view', 'app/dates-view', 'app/slots-view', 'app/managers', 
 
             document.getElementById("zoomIn").addEventListener("click", _this.getZoomer().zoomIn);
             document.getElementById("zoomOut").addEventListener("click", _this.getZoomer().zoomOut);
-            document.getElementById("nextPage").addEventListener("click", _this.getZoomer().nextPage);
-            document.getElementById("prevPage").addEventListener("click", _this.getZoomer().prevPage);
+            document.getElementById("nextPage").addEventListener("click", function() {
+                _this.getZoomer().setDateNextPage();
+                _this.triggerUpdate();
+            });
+            document.getElementById("prevPage").addEventListener("click", function() {
+                _this.getZoomer().setDatePrevPage();
+                _this.triggerUpdate();
+            });
             document.getElementById("gotoDate").addEventListener("click", function () {
                 var newDate = Utils.addMs(new Date(document.getElementById("datepicker").value), Const.DAY_MS);
-                _this.getZoomer().gotoDate(newDate);
+                _this.getZoomer().setDate(newDate);
+                _this.triggerUpdate();
             });
             document.getElementById("rerunSelected").addEventListener("click", function () {
                 var iter = _this.getSelectionManager().slotsIterator();

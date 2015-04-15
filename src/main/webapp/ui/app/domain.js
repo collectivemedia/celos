@@ -19,6 +19,7 @@ define(["app/utils", "app/constants", "lib/immutable"], function (Utils, Const, 
     addStatus('SUCCESS', '#cfc', '#afa', 'succ');
     addStatus('FAILURE', '#fcc', '#faa', 'fail');
     addStatus('WAITING', '#ccf', '#aaf', 'wait');
+    addStatus('WAIT_TIMEOUT', '#ccf', '#aaf', 'tmut');
 
     function SlotState(status, workflow, date, externalID, retryCount) {
         this.status = status;
@@ -57,7 +58,7 @@ define(["app/utils", "app/constants", "lib/immutable"], function (Utils, Const, 
     };
 
     SlotState.prototype.canBeRestarted = function () {
-        return (this.status == STATUSES['FAILURE'] || this.status == STATUSES['SUCCESS']);
+        return (this.status == STATUSES['FAILURE'] || this.status == STATUSES['WAIT_TIMEOUT'] || this.status == STATUSES['SUCCESS']);
     };
 
     function Workflow(id, info) {
@@ -69,7 +70,7 @@ define(["app/utils", "app/constants", "lib/immutable"], function (Utils, Const, 
         return 'Workflow ' + this.id;
     };
 
-    function Model(uiConfig, workflowToSlotMap) {
+    function Model(uiConfig, workflowToSlotMap, _requestDate, _showDate) {
         this.uiConfig = uiConfig;
         this.workflowToSlotMap = workflowToSlotMap;
         var idsToWf = workflowToSlotMap.reduce(function (accum, slots, workflow) {
@@ -77,6 +78,8 @@ define(["app/utils", "app/constants", "lib/immutable"], function (Utils, Const, 
             return accum;
         }, []);
         this.workflowByName = new Immutable.Map(idsToWf);
+        this.requestDate = _requestDate;
+        this.showDate = _showDate;
     }
 
 
