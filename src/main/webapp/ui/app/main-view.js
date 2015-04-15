@@ -1,7 +1,7 @@
 define(['app/details-view', 'app/dates-view', 'app/slots-view', 'app/managers', 'app/constants', 'app/utils'],
     function(DetailsView, DatesView, SlotsView, Managers, Const, Utils) {
 
-    function MainView(_url, slotStatesCanvas, datesViewCanvas, detailsViewCanvas) {
+    function MainView(url, slotStatesCanvas, datesViewCanvas, detailsViewCanvas) {
 
         var _this = this;
 
@@ -15,8 +15,6 @@ define(['app/details-view', 'app/dates-view', 'app/slots-view', 'app/managers', 
         var slotsView = new SlotsView(slotStatesCanvas, _this);
         var datesView = new DatesView(datesViewCanvas, _this);
         var detailsView = new DetailsView(detailsViewCanvas, _this);
-
-        var url = _url;
 
         if (url.query.date) {
             zoomer.setDate(new Date(url.query.date));
