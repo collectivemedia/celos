@@ -6,10 +6,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.collective.celos.Scheduler;
-import com.collective.celos.SlotState;
-import com.collective.celos.Workflow;
-import com.collective.celos.WorkflowID;
+import com.collective.celos.*;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
@@ -46,7 +43,8 @@ public class JSONWorkflowServlet extends AbstractJSONServlet {
             if (wf == null) {
                 res.sendError(HttpServletResponse.SC_NOT_FOUND, "Workflow not found: " + id);
             } else {
-                List<SlotState> slotStates = scheduler.getSlotStates(wf, getRequestTime(req));
+                ScheduledTime time = getRequestTime(req);
+                List<SlotState> slotStates = scheduler.getSlotStates(wf, scheduler.getWorkflowStartTime(wf, time), time);
                 ObjectNode object = createJSONObject(slotStates);
                 writer.writeValue(res.getOutputStream(), object);
             }
