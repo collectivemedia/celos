@@ -4,7 +4,6 @@ import com.collective.celos.*;
 import com.collective.celos.server.CelosServer;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -22,7 +21,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -61,7 +59,6 @@ public class CelosClientServerTest {
         Integer port = celosServer.startServer(ImmutableMap.<String, String>of(), workflowsDir, defaultsDir, slotDbDir, uiDir);
         this.celosClient = new CelosClient("http://localhost:" + port);
     }
-
     @After
     public void tearDown() throws Exception {
         celosServer.stopServer();
@@ -444,44 +441,51 @@ public class CelosClientServerTest {
         Assert.assertEquals(expectedSlotStates, resultSlotStates);
     }
 
+
     @Test
-    public void testGetAllWorkflowData() throws Exception {
+    public void testCorrectWorkflowStatesFromDbWf1Only10Hours() throws Exception {
         File src = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/client/wf-list").toURI());
         FileUtils.copyDirectory(src, workflowsDir);
 
         File src2 = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/server/slot-db-1").toURI());
         FileUtils.copyDirectory(src2, slotDbDir);
 
-        ScheduledTime timeStart = new ScheduledTime("2013-11-25T20:00:00.000Z");
+        ScheduledTime timeStart = new ScheduledTime("2013-12-02T10:00:00.000Z");
         ScheduledTime waitingSlotsTimeEnd = new ScheduledTime("2013-12-02T19:00:00.000Z");
 
         ScheduledTime time = waitingSlotsTimeEnd;
 
         List<SlotState> expectedSlotStates = Lists.newArrayList();
-        WorkflowID workflow1ID = new WorkflowID("workflow-1");
-        SlotState slotStateRunning = new SlotState(new SlotID(workflow1ID, time), SlotState.Status.RUNNING, "foo-bar", 0);
+        SlotState slotStateRunning = new SlotState(new SlotID(new WorkflowID("workflow-1"), time), SlotState.Status.RUNNING, "foo-bar", 0);
         time = time.minusHours(1);
-        SlotState slotStateReady = new SlotState(new SlotID(workflow1ID, time), SlotState.Status.READY, null, 14);
+        SlotState slotStateReady = new SlotState(new SlotID(new WorkflowID("workflow-1"), time), SlotState.Status.READY, null, 14);
         time = time.minusHours(1);
 
         expectedSlotStates.add(slotStateRunning);
         expectedSlotStates.add(slotStateReady);
 
         while (!time.getDateTime().isBefore(timeStart.getDateTime())) {
-            SlotState slotState = new SlotState(new SlotID(workflow1ID, time), SlotState.Status.WAITING);
+            SlotState slotState = new SlotState(new SlotID(new WorkflowID("workflow-1"), time), SlotState.Status.WAITING);
             expectedSlotStates.add(slotState);
             time = time.minusHours(1);
         }
 
-        Set<WorkflowStatus> resultWfs = celosClient.getWorkflowsStatuses(new ScheduledTime("2013-12-02T20:00Z"));
-        Map<WorkflowID, WorkflowStatus> wfIds = Maps.newHashMap();
-        for (WorkflowStatus ws : resultWfs) {
-            wfIds.put(ws.getId(), ws);
-        }
+        ScheduledTime reqTimeEnd = new ScheduledTime("2013-12-02T20:00Z");
+        ScheduledTime reqTimeStart = new ScheduledTime("2013-12-02T10:00Z");
+        List<SlotState> resultSlotStates = celosClient.getWorkflowStatus(new WorkflowID("workflow-1"), reqTimeStart, reqTimeEnd).getSlotStates();
 
-        Assert.assertEquals(wfIds.keySet(), Sets.newHashSet(workflow1ID, new WorkflowID("workflow-2"), new WorkflowID("workflow-4"), new WorkflowID("workflow-Iñtërnâtiônàlizætiøn")));
-        Assert.assertEquals(expectedSlotStates, wfIds.get(workflow1ID).getSlotStates());
+        Assert.assertEquals(expectedSlotStates, resultSlotStates);
+    }
 
+    @Test(expected = IOException.class)
+    public void testCorrectWorkflowStatesFromDbWf1StartTimeIsAfterEndTime() throws Exception {
+
+        File src = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/client/wf-list").toURI());
+        FileUtils.copyDirectory(src, workflowsDir);
+
+        ScheduledTime reqTimeEnd = new ScheduledTime("2013-12-02T20:00Z");
+        ScheduledTime reqTimeStart = new ScheduledTime("2013-12-02T21:00Z");
+        celosClient.getWorkflowStatus(new WorkflowID("workflow-1"), reqTimeStart, reqTimeEnd).getSlotStates();
     }
 
 
@@ -609,7 +613,7 @@ public class CelosClientServerTest {
     }
 
     @Test
-    public void testUIConfig() throws IOException, URISyntaxException {
+    public void testUIConfig() throws IOException, URISyntaxException, URISyntaxException {
 
         String expectedConfig = "{\n" +
                 "  \"hueURL\": \"http://cldmgr001.ewr004.collective-media.net:8888/oozie/list_oozie_workflow/${EXTERNAL_ID}/\",\n" +
@@ -645,7 +649,5 @@ public class CelosClientServerTest {
 
         Assert.assertEquals(uiConfig, expectedConfig);
     }
-
-
 
 }

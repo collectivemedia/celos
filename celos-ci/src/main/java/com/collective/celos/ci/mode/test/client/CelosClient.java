@@ -3,7 +3,6 @@ package com.collective.celos.ci.mode.test.client;
 import com.collective.celos.*;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -19,7 +18,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.*;
 
 /**
@@ -36,6 +34,7 @@ public class CelosClient {
     private static final String TIME_PARAM = "time";
     private static final String ID_PARAM = "id";
     private static final String IDS_PARAM = "ids";
+    private static final String START_TIME_PARAM = "startTime";
 
     private final HttpClient client;
     private final ScheduledTimeFormatter timeFormatter;
@@ -62,32 +61,31 @@ public class CelosClient {
         return parseWorkflowIdsList(content);
     }
 
-    public Set<WorkflowStatus> getWorkflowsStatuses(ScheduledTime scheduledTime) throws Exception {
-        return requestWorkflowsSlotsInfo(null, scheduledTime);
-    }
+    public WorkflowStatus getWorkflowStatus(WorkflowID workflowID, ScheduledTime startTime, ScheduledTime time) throws Exception {
 
-    public WorkflowStatus getWorkflowStatus(WorkflowID workflowID, ScheduledTime scheduledTime) throws Exception {
-        return requestWorkflowsSlotsInfo(workflowID, scheduledTime).iterator().next();
-    }
-
-    private Set<WorkflowStatus> requestWorkflowsSlotsInfo(WorkflowID workflowID, ScheduledTime scheduledTime) throws URISyntaxException, IOException {
         URIBuilder uriBuilder = new URIBuilder(address);
         uriBuilder.setPath(WORKFLOW_SLOTS_PATH);
-        if (scheduledTime != null) {
-            uriBuilder.addParameter(TIME_PARAM, timeFormatter.formatPretty(scheduledTime));
+        if (time != null) {
+            uriBuilder.addParameter(TIME_PARAM, timeFormatter.formatPretty(time));
         }
-        if (workflowID != null) {
-            uriBuilder.addParameter(ID_PARAM, workflowID.toString());
+        if (startTime != null) {
+            uriBuilder.addParameter(START_TIME_PARAM, timeFormatter.formatPretty(startTime));
         }
+        uriBuilder.addParameter(ID_PARAM, workflowID.toString());
         URI uri = uriBuilder.build();
+
         HttpGet workflowListGet = new HttpGet(uri);
         HttpResponse getResponse = execute(workflowListGet);
         InputStream content = getResponse.getEntity().getContent();
-        return parseWorkflowStatusesMap(content);
+        return parseWorkflowStatusesMap(workflowID, content);
+    }
+
+    public WorkflowStatus getWorkflowStatus(WorkflowID workflowID, ScheduledTime time) throws Exception {
+        return getWorkflowStatus(workflowID, null, time);
     }
 
     public WorkflowStatus getWorkflowStatus(WorkflowID workflowID) throws Exception {
-        return getWorkflowStatus(workflowID, null);
+        return getWorkflowStatus(workflowID, null, null);
     }
 
     public void iterateScheduler(ScheduledTime scheduledTime) throws Exception {
@@ -163,25 +161,16 @@ public class CelosClient {
     private static final String INFO_NODE = "info";
     private static final String SLOTS_NODE = "slots";
 
-    Set<WorkflowStatus> parseWorkflowStatusesMap(InputStream content) throws IOException {
-        JsonNode root = objectMapper.readValue(content, JsonNode.class);
-        JsonNode workflowsArrayNode = root.get("workflows");
+    WorkflowStatus parseWorkflowStatusesMap(WorkflowID workflowID, InputStream content) throws IOException {
+        JsonNode node = objectMapper.readValue(content, JsonNode.class);
+        WorkflowInfo info = objectMapper.treeToValue(node.get(INFO_NODE), WorkflowInfo.class);
 
-        Set<WorkflowStatus> workflowStatuses = Sets.newHashSet();
-        for(JsonNode workflowNode : workflowsArrayNode) {
-            WorkflowInfo info = objectMapper.treeToValue(workflowNode.get(INFO_NODE), WorkflowInfo.class);
-
-            Iterator<JsonNode> elems = workflowNode.get(SLOTS_NODE).elements();
-            List<SlotState> result = Lists.newArrayList();
-            String workflowID = workflowNode.get(ID_PARAM).textValue();
-            WorkflowID id = new WorkflowID(workflowID);
-
-            while (elems.hasNext()) {
-                result.add(SlotState.fromJSONNode(id, elems.next()));
-            }
-            workflowStatuses.add(new WorkflowStatus(id, info, result));
+        Iterator<JsonNode> elems = node.get(SLOTS_NODE).elements();
+        List<SlotState> result = Lists.newArrayList();
+        while (elems.hasNext()) {
+            result.add(SlotState.fromJSONNode(workflowID, elems.next()));
         }
-        return workflowStatuses;
+        return new WorkflowStatus(info, result);
     }
 
 }
