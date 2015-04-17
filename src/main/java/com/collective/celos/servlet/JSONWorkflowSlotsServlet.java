@@ -33,8 +33,12 @@ import org.joda.time.DateTimeZone;
  *   ]
  * }
  * 
- * If the "time" parameter is supplied, information is returned about 
- * slot states up to that time.
+ * If the "end" parameter is supplied, information is returned about 
+ * slot states up to that time.  Defaults to the current time.
+ *
+ * If the "start" parameter is supplied, information is returned about 
+ * slot states starting at that time.
+ * Defaults to the beginning of the sliding window ending at "end".
  */
 @SuppressWarnings("serial")
 public class JSONWorkflowSlotsServlet extends AbstractJSONServlet {
