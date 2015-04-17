@@ -10,6 +10,8 @@ import com.collective.celos.*;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.Lists;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 
 /**
  * Returns information about the slot states of a single workflow as JSON.
@@ -40,7 +42,8 @@ public class JSONWorkflowSlotsServlet extends AbstractJSONServlet {
     private static final String ID_PARAM = "id";
     private static final String INFO_PARAM = "info";
     private static final String SLOTS_PARAM = "slots";
-    private static final String START_TIME_PARAM = "startTime";
+    private static final String START_TIME_PARAM = "start";
+    private static final String END_TIME_PARAM = "end";
 
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException {
         String id = req.getParameter(ID_PARAM);
@@ -55,42 +58,30 @@ public class JSONWorkflowSlotsServlet extends AbstractJSONServlet {
                 res.sendError(HttpServletResponse.SC_NOT_FOUND, "Workflow not found: " + id);
             } else {
                 ObjectNode node = mapper.createObjectNode();
-                List<SlotState> slotStates = getSlotStates(res, scheduler, wf, getRequestTime(req), getStartTime(req));
 
-                if (slotStates != null) {
-                    List<JsonNode> objectNodes = Lists.newArrayList();
-                    for (SlotState state : Lists.reverse(slotStates)) {
-                        objectNodes.add(state.toJSONNode());
-                    }
-                    node.put(INFO_PARAM, mapper.valueToTree(wf.getWorkflowInfo()));
-                    node.putArray(SLOTS_PARAM).addAll(objectNodes);
-                    writer.writeValue(res.getOutputStream(), node);
+                ScheduledTime endTime = getTimeParam(req, END_TIME_PARAM, new ScheduledTime(DateTime.now(DateTimeZone.UTC)));
+                ScheduledTime startTime = getTimeParam(req, START_TIME_PARAM, scheduler.getWorkflowStartTime(wf, endTime));
+
+                List<SlotState> slotStates = scheduler.getSlotStates(wf, startTime, endTime);
+                List<JsonNode> objectNodes = Lists.newArrayList();
+                for (SlotState state : Lists.reverse(slotStates)) {
+                    objectNodes.add(state.toJSONNode());
                 }
+                node.put(INFO_PARAM, mapper.valueToTree(wf.getWorkflowInfo()));
+                node.putArray(SLOTS_PARAM).addAll(objectNodes);
+                writer.writeValue(res.getOutputStream(), node);
             }
         } catch (Exception e) {
             throw new ServletException(e);
         }
     }
 
-    private List<SlotState> getSlotStates(HttpServletResponse res, Scheduler scheduler, Workflow wf, ScheduledTime time, ScheduledTime startTime) throws Exception {
-        if (startTime != null) {
-            if (startTime.getDateTime().isAfter(time.getDateTime())) {
-                res.sendError(HttpServletResponse.SC_BAD_REQUEST, "'startTime' param " + startTime + " is after 'time' param: " + time.toString());
-                return null;
-            } else {
-                return scheduler.getSlotStates(wf, startTime, time);
-            }
-        } else {
-            return scheduler.getSlotStates(wf, time);
-        }
-    }
-
-    private ScheduledTime getStartTime(HttpServletRequest req) throws Exception {
-        String timeParam = req.getParameter(START_TIME_PARAM);
+    private ScheduledTime getTimeParam(HttpServletRequest req, String paramName, ScheduledTime defaultTime) throws Exception {
+        String timeParam = req.getParameter(paramName);
         if (timeParam != null) {
             return new ScheduledTime(timeParam);
         }
-        return null;
+        return defaultTime;
     }
 
 }

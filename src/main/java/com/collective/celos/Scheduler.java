@@ -75,18 +75,11 @@ public class Scheduler {
      */
     private void stepWorkflow(Workflow wf, ScheduledTime current) throws Exception {
         LOGGER.info("Processing workflow: " + wf.getID() + " at: " + current);
-        List<SlotState> slotStates = getSlotStates(wf, current);
+        List<SlotState> slotStates = getSlotStates(wf, getWorkflowStartTime(wf, current), current);
         runExternalWorkflows(wf, slotStates);
         for (SlotState slotState : slotStates) {
             updateSlotState(wf, slotState, current);
         }
-    }
-
-    /**
-     * Get the slot states of all slots of the workflow from within the sliding window.
-     */
-    public List<SlotState> getSlotStates(Workflow wf, ScheduledTime endTime) throws Exception {
-        return getSlotStates(wf, getWorkflowStartTime(wf, endTime), endTime);
     }
 
     /**
@@ -110,7 +103,7 @@ public class Scheduler {
         return Collections.unmodifiableList(slotStates);
     }
 
-    private ScheduledTime getWorkflowStartTime(Workflow wf, ScheduledTime current) {
+    public ScheduledTime getWorkflowStartTime(Workflow wf, ScheduledTime current) {
         ScheduledTime slidingWindowStartTime = getSlidingWindowStartTime(current);
         ScheduledTime workflowStartTime = wf.getStartTime();
         return Util.max(slidingWindowStartTime, workflowStartTime);

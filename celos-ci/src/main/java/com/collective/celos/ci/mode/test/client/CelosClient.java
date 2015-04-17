@@ -31,10 +31,11 @@ public class CelosClient {
     private static final String CLEAR_CACHE_PATH = "/clear-cache";
     private static final String WORKFLOW_LIST_PATH = "/workflow-list";
     private static final String WORKFLOW_SLOTS_PATH = "/workflow-slots";
+    private static final String WORKFLOW_SLOTS_START_TIME_PARAM = "start";
+    private static final String WORKFLOW_SLOTS_END_TIME_PARAM = "end";
     private static final String TIME_PARAM = "time";
     private static final String ID_PARAM = "id";
     private static final String IDS_PARAM = "ids";
-    private static final String START_TIME_PARAM = "startTime";
 
     private final HttpClient client;
     private final ScheduledTimeFormatter timeFormatter;
@@ -61,15 +62,15 @@ public class CelosClient {
         return parseWorkflowIdsList(content);
     }
 
-    public WorkflowStatus getWorkflowStatus(WorkflowID workflowID, ScheduledTime startTime, ScheduledTime time) throws Exception {
+    public WorkflowStatus getWorkflowStatus(WorkflowID workflowID, ScheduledTime startTime, ScheduledTime endTime) throws Exception {
 
         URIBuilder uriBuilder = new URIBuilder(address);
         uriBuilder.setPath(WORKFLOW_SLOTS_PATH);
-        if (time != null) {
-            uriBuilder.addParameter(TIME_PARAM, timeFormatter.formatPretty(time));
+        if (endTime != null) {
+            uriBuilder.addParameter(WORKFLOW_SLOTS_END_TIME_PARAM, timeFormatter.formatPretty(endTime));
         }
         if (startTime != null) {
-            uriBuilder.addParameter(START_TIME_PARAM, timeFormatter.formatPretty(startTime));
+            uriBuilder.addParameter(WORKFLOW_SLOTS_START_TIME_PARAM, timeFormatter.formatPretty(startTime));
         }
         uriBuilder.addParameter(ID_PARAM, workflowID.toString());
         URI uri = uriBuilder.build();
@@ -80,8 +81,8 @@ public class CelosClient {
         return parseWorkflowStatusesMap(workflowID, content);
     }
 
-    public WorkflowStatus getWorkflowStatus(WorkflowID workflowID, ScheduledTime time) throws Exception {
-        return getWorkflowStatus(workflowID, null, time);
+    public WorkflowStatus getWorkflowStatus(WorkflowID workflowID, ScheduledTime endTime) throws Exception {
+        return getWorkflowStatus(workflowID, null, endTime);
     }
 
     public WorkflowStatus getWorkflowStatus(WorkflowID workflowID) throws Exception {

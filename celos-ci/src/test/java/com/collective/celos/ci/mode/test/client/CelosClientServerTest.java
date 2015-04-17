@@ -477,7 +477,7 @@ public class CelosClientServerTest {
         Assert.assertEquals(expectedSlotStates, resultSlotStates);
     }
 
-    @Test(expected = IOException.class)
+    @Test
     public void testCorrectWorkflowStatesFromDbWf1StartTimeIsAfterEndTime() throws Exception {
 
         File src = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/client/wf-list").toURI());
@@ -485,7 +485,8 @@ public class CelosClientServerTest {
 
         ScheduledTime reqTimeEnd = new ScheduledTime("2013-12-02T20:00Z");
         ScheduledTime reqTimeStart = new ScheduledTime("2013-12-02T21:00Z");
-        celosClient.getWorkflowStatus(new WorkflowID("workflow-1"), reqTimeStart, reqTimeEnd).getSlotStates();
+        WorkflowStatus workflowStatus = celosClient.getWorkflowStatus(new WorkflowID("workflow-1"), reqTimeStart, reqTimeEnd);
+        Assert.assertEquals(workflowStatus.getSlotStates().size(), 0);
     }
 
 
