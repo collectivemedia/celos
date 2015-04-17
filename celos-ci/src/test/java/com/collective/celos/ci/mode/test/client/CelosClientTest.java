@@ -3,8 +3,6 @@ package com.collective.celos.ci.mode.test.client;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.UnknownHostException;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
@@ -15,7 +13,6 @@ import com.collective.celos.ScheduledTime;
 import com.collective.celos.SlotID;
 import com.collective.celos.SlotState;
 import com.collective.celos.WorkflowID;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 /**
@@ -58,7 +55,7 @@ public class CelosClientTest {
                 "}";
 
         WorkflowID workflowID = new WorkflowID("123");
-        List<SlotState> result = new CelosClient("localhost").parseWorkflowStatusesMap(workflowID, new ByteArrayInputStream(str.getBytes())).getSlotStates();
+        List<SlotState> result = new CelosClient("localhost").parseWorkflowStatus(workflowID, new ByteArrayInputStream(str.getBytes())).getSlotStates();
         Assert.assertEquals(result.size(), 2);
 
         ScheduledTime time1 = new ScheduledTime("2014-10-27T14:00:00.000Z");

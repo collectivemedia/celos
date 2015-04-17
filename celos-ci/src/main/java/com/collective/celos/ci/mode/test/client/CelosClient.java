@@ -31,8 +31,8 @@ public class CelosClient {
     private static final String CLEAR_CACHE_PATH = "/clear-cache";
     private static final String WORKFLOW_LIST_PATH = "/workflow-list";
     private static final String WORKFLOW_SLOTS_PATH = "/workflow-slots";
-    private static final String WORKFLOW_SLOTS_START_TIME_PARAM = "start";
-    private static final String WORKFLOW_SLOTS_END_TIME_PARAM = "end";
+    private static final String START_TIME_PARAM = "start";
+    private static final String END_TIME_PARAM = "end";
     private static final String TIME_PARAM = "time";
     private static final String ID_PARAM = "id";
     private static final String IDS_PARAM = "ids";
@@ -67,10 +67,10 @@ public class CelosClient {
         URIBuilder uriBuilder = new URIBuilder(address);
         uriBuilder.setPath(WORKFLOW_SLOTS_PATH);
         if (endTime != null) {
-            uriBuilder.addParameter(WORKFLOW_SLOTS_END_TIME_PARAM, timeFormatter.formatPretty(endTime));
+            uriBuilder.addParameter(END_TIME_PARAM, timeFormatter.formatPretty(endTime));
         }
         if (startTime != null) {
-            uriBuilder.addParameter(WORKFLOW_SLOTS_START_TIME_PARAM, timeFormatter.formatPretty(startTime));
+            uriBuilder.addParameter(START_TIME_PARAM, timeFormatter.formatPretty(startTime));
         }
         uriBuilder.addParameter(ID_PARAM, workflowID.toString());
         URI uri = uriBuilder.build();
@@ -78,7 +78,7 @@ public class CelosClient {
         HttpGet workflowListGet = new HttpGet(uri);
         HttpResponse getResponse = execute(workflowListGet);
         InputStream content = getResponse.getEntity().getContent();
-        return parseWorkflowStatusesMap(workflowID, content);
+        return parseWorkflowStatus(workflowID, content);
     }
 
     public WorkflowStatus getWorkflowStatus(WorkflowID workflowID, ScheduledTime endTime) throws Exception {
@@ -162,7 +162,7 @@ public class CelosClient {
     private static final String INFO_NODE = "info";
     private static final String SLOTS_NODE = "slots";
 
-    WorkflowStatus parseWorkflowStatusesMap(WorkflowID workflowID, InputStream content) throws IOException {
+    WorkflowStatus parseWorkflowStatus(WorkflowID workflowID, InputStream content) throws IOException {
         JsonNode node = objectMapper.readValue(content, JsonNode.class);
         WorkflowInfo info = objectMapper.treeToValue(node.get(INFO_NODE), WorkflowInfo.class);
 
