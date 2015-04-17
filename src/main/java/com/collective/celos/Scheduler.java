@@ -85,8 +85,8 @@ public class Scheduler {
     /**
      * Get the slot states of all slots of the workflow from within the sliding window.
      */
-    public List<SlotState> getSlotStates(Workflow wf, ScheduledTime current) throws Exception {
-        return getSlotStates(wf, getWorkflowStartTime(wf, current), current);
+    public List<SlotState> getSlotStates(Workflow wf, ScheduledTime endTime) throws Exception {
+        return getSlotStates(wf, getWorkflowStartTime(wf, endTime), endTime);
     }
 
     /**
