@@ -72,6 +72,7 @@ public class FileSystemStateDatabase implements StateDatabase {
         String json = mapper.writeValueAsString(state.toJSONNode());
         File file = getSlotFile(state.getSlotID());
         FileUtils.forceMkdir(file.getParentFile());
+        // TODO CCI-54 make state atomic and check how FileUtils.write works
         FileUtils.write(file, json, CHARSET);
     }
 
