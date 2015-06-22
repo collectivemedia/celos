@@ -1,23 +1,51 @@
 package com.collective.celos;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.util.HashSet;
-import java.util.Set;
-
 import junit.framework.Assert;
-
 import org.apache.commons.io.IOUtils;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 public class FileSystemStateDatabaseTest {
 
     @Rule
     public TemporaryFolder tempFolder = new TemporaryFolder();
-    
+
+    private final static String tmpFileName = "cellosState.txt";
+
+    private final static String myJson = "{dsad: 14,\n dsad: 222}";
+
+    @Test
+    public void writeShouldBeAtomic() throws IOException {
+
+//        System.out.println("Temp folder: " + tempFolder.getRoot().toString());
+
+        Path tmpPath0 = tempFolder.getRoot().toPath();
+        Path myPath1 = tmpPath0.resolve("relativeDir1").resolve("relativeDir2").resolve(tmpFileName);
+        Path myPath2 = tmpPath0.resolve(tmpFileName);
+        org.junit.Assert.assertFalse(myPath1.toFile().exists());
+        // check write to new dir
+        FileSystemStateDatabase.writeStringToFileAtomic(myPath1, myJson);
+        org.junit.Assert.assertTrue(myPath1.toFile().isFile());
+        // check existing dir
+        FileSystemStateDatabase.writeStringToFileAtomic(myPath2, myJson);
+        org.junit.Assert.assertTrue(myPath2.toFile().isFile());
+        List<String> strings = Files.readAllLines(myPath1);
+        String writtenJson = String.join("\n", strings);
+        org.junit.Assert.assertEquals(writtenJson, myJson);
+
+    }
+
+
     @Test(expected=IOException.class)
     public void directoryMustExist() throws IOException {
         File dir = getDatabaseDir();
@@ -111,7 +139,7 @@ public class FileSystemStateDatabaseTest {
      * src/test/resources/com/collective/celos/state-database-test/db-1
      */
     private Set<SlotState> getStates() {
-        Set<SlotState> states = new HashSet<SlotState>();
+        Set<SlotState> states = new HashSet<>();
         WorkflowID wf1 = new WorkflowID("workflow-1");
         WorkflowID wf2 = new WorkflowID("workflow-2");
         
