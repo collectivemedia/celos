@@ -1,12 +1,15 @@
 package com.collective.celos;
 
-import java.io.File;
-import java.io.IOException;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.FileUtils;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+
+import static java.nio.file.StandardCopyOption.ATOMIC_MOVE;
 
 /**
  * Brutally simple persistent implementation of StateDatabase
@@ -40,7 +43,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  */
 public class FileSystemStateDatabase implements StateDatabase {
 
-    private static final String CHARSET = "UTF-8";
+    private static final Charset CHARSET = Charset.forName("UTF-8");
 
     private final ObjectMapper mapper = new ObjectMapper();
     private final ScheduledTimeFormatter formatter = new ScheduledTimeFormatter();
@@ -63,16 +66,15 @@ public class FileSystemStateDatabase implements StateDatabase {
             return null;
         } else {
             String json = FileUtils.readFileToString(file, CHARSET);
-            return SlotState.fromJSONNode(id, (ObjectNode) mapper.readTree(json));
+            return SlotState.fromJSONNode(id, mapper.readTree(json));
         }
     }
 
     @Override
     public void putSlotState(SlotState state) throws Exception {
         String json = mapper.writeValueAsString(state.toJSONNode());
-        File file = getSlotFile(state.getSlotID());
-        FileUtils.forceMkdir(file.getParentFile());
-        FileUtils.write(file, json, CHARSET);
+        Path slotPath = getSlotFile(state.getSlotID()).toPath();
+        writeStringToFileAtomic(slotPath, json);
     }
 
     private File getSlotFile(SlotID slotID) {
@@ -93,6 +95,25 @@ public class FileSystemStateDatabase implements StateDatabase {
     
     private String getSlotFileName(SlotID slotID) {
         return formatter.formatTimestamp(slotID.getScheduledTime());
+    }
+
+
+    static final String TMP_PATH_PREFIX = "celos-";
+
+
+    public static void writeStringToFileAtomic(Path pDest, String json) throws IOException {
+        Path pTmp = null;
+        try {
+            pTmp = Files.createTempFile(TMP_PATH_PREFIX, null);
+
+            Files.createDirectories(pDest.getParent());
+            Files.write(pTmp, json.getBytes(CHARSET));
+            Files.move(pTmp, pDest, ATOMIC_MOVE);
+        } finally {
+            if (null != pTmp) {
+                Files.deleteIfExists(pTmp);
+            }
+        }
     }
 
 }
