@@ -20,7 +20,7 @@ public class FileSystemStateDatabaseTest {
     @Rule
     public TemporaryFolder tempFolder = new TemporaryFolder();
 
-    private final static String tmpFileName = "cellosState.txt";
+    private final static String tmpFileName = "celosState.txt";
 
     private final static String myJson = "{dsad: 14,\n dsad: 222}";
 

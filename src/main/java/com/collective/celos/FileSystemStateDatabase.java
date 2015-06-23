@@ -101,8 +101,7 @@ public class FileSystemStateDatabase implements StateDatabase {
     static final String TMP_PATH_PREFIX = "celos-";
 
 
-    public static void
-    writeStringToFileAtomic(Path pDest, String json) throws IOException {
+    public static void writeStringToFileAtomic(Path pDest, String json) throws IOException {
         Path pTmp = null;
         try {
             pTmp = Files.createTempFile(TMP_PATH_PREFIX, null);
