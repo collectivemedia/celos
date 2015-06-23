@@ -10,7 +10,7 @@ repositories {
     mavenCentral()
     maven { url "http://repo1.maven.org/maven2" }
     maven { url "https://repository.cloudera.com/artifactory/cloudera-repos" }
-    maven { url "http://nexus.collective-media.net/content/repositories/releases" }
+    maven { url "$System.env.NEXUS_MAVEN_REPO" }
 }
 
 configurations {

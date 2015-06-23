@@ -103,7 +103,7 @@ if (hasProperty('nexusPassword')) {
 uploadArchives.doFirst {
     repositories {
         mavenDeployer {
-            repository(url: "http://nexus.collective-media.net/content/repositories/releases") {
+            repository(url: System.getenv("NEXUS_MAVEN_REPO")) {
                 authentication(userName: repoUser, password: repoPw)
             }
             if (!System.getenv("BUILD_NUMBER")) throw new GradleException("BUILD_NUMBER env variable should be present")
