@@ -27,8 +27,6 @@ public class FileSystemStateDatabaseTest {
     @Test
     public void writeShouldBeAtomic() throws IOException {
 
-//        System.out.println("Temp folder: " + tempFolder.getRoot().toString());
-
         Path tmpPath0 = tempFolder.getRoot().toPath();
         Path myPath1 = tmpPath0.resolve("relativeDir1").resolve("relativeDir2").resolve(tmpFileName);
         Path myPath2 = tmpPath0.resolve(tmpFileName);
