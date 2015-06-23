@@ -9,10 +9,10 @@ import org.junit.rules.TemporaryFolder;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 public class FileSystemStateDatabaseTest {
@@ -39,9 +39,9 @@ public class FileSystemStateDatabaseTest {
         // check existing dir
         FileSystemStateDatabase.writeStringToFileAtomic(myPath2, myJson);
         org.junit.Assert.assertTrue(myPath2.toFile().isFile());
-        List<String> strings = Files.readAllLines(myPath1);
-        String writtenJson = String.join("\n", strings);
-        org.junit.Assert.assertEquals(writtenJson, myJson);
+        final byte[] strings = Files.readAllBytes(myPath1);
+        final byte[] res = myJson.getBytes(Charset.forName("UTF-8"));
+        org.junit.Assert.assertArrayEquals(strings, res);
 
     }
 
