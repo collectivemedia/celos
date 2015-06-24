@@ -91,14 +91,8 @@ dependencies {
     testCompile("org.mockito:mockito-all:1.9.5")
 }
 
-def repoUser = 'dummy';
-if (hasProperty('nexusUser')) {
-    repoUser = nexusUser
-}
-def repoPw = 'dummy';
-if (hasProperty('nexusPassword')) {
-    repoPw = nexusPassword
-}
+def repoUser = System.getenv("CELOS_NEXUS_USER");
+def repoPw = System.getenv("CELOS_NEXUS_PASS");
 
 uploadArchives.doFirst {
     repositories {
