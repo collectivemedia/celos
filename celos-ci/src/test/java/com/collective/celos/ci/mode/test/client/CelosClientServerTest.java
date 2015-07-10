@@ -31,14 +31,16 @@ public class CelosClientServerTest {
     public static final String WORKFLOWS_DIR = "workflows";
     public static final String DEFAULTS_DIR = "defaults";
     public static final String DB_DIR = "db";
+    public static final String RERUN_DIR = "rerun";
     public static final String UI_DIR = "ui";
-    public static final int SLOTS_IN_CELOS_SERVER_SLIDING_WINDOW = SchedulerConfiguration.SLIDING_WINDOW_DAYS * 24;
+    public static final int SLOTS_IN_CELOS_SERVER_SLIDING_WINDOW = Scheduler.DEFAULT_SLIDING_WINDOW_DAYS * 24;
 
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
 
     private File workflowsDir;
     private File slotDbDir;
+    private File slotRerunDir;
     private File uiDir;
     private CelosServer celosServer;
     private CelosClient celosClient;
@@ -49,14 +51,16 @@ public class CelosClientServerTest {
         this.workflowsDir = new File(tmpDir, WORKFLOWS_DIR);
         File defaultsDir = new File(tmpDir, DEFAULTS_DIR);
         this.slotDbDir = new File(tmpDir, DB_DIR);
+        this.slotRerunDir = new File(tmpDir, RERUN_DIR);
         this.uiDir = new File(tmpDir, UI_DIR);
         this.workflowsDir.mkdirs();
         defaultsDir.mkdirs();
         this.slotDbDir.mkdirs();
+        this.slotRerunDir.mkdirs();
         this.uiDir.mkdirs();
 
         this.celosServer = new CelosServer();
-        Integer port = celosServer.startServer(ImmutableMap.<String, String>of(), workflowsDir, defaultsDir, slotDbDir, uiDir);
+        Integer port = celosServer.startServer(ImmutableMap.<String, String>of(), workflowsDir, defaultsDir, slotDbDir, slotRerunDir, uiDir);
         this.celosClient = new CelosClient("http://localhost:" + port);
     }
     @After
@@ -318,7 +322,7 @@ public class CelosClientServerTest {
         Assert.assertTrue(slotStates.get(slotStates.size() - 1).getScheduledTime().getDateTime().isAfter(timeInPast.getDateTime().plusYears(1)));
 
         slotStates = celosClient.getWorkflowStatus(new WorkflowID("workflow-4"), timeInPast).getSlotStates();
-        Assert.assertEquals(slotStates.get(slotStates.size() - 1).getScheduledTime(), timeInPast.minusDays(SchedulerConfiguration.SLIDING_WINDOW_DAYS));
+        Assert.assertEquals(slotStates.get(slotStates.size() - 1).getScheduledTime(), timeInPast.minusDays(Scheduler.DEFAULT_SLIDING_WINDOW_DAYS));
         Assert.assertEquals(slotStates.get(0).getScheduledTime(), timeInPast.minusHours(1));
 
         slotStates = celosClient.getWorkflowStatus(new WorkflowID("workflow-4"), timeInPast.plusSeconds(1)).getSlotStates();
@@ -403,6 +407,7 @@ public class CelosClientServerTest {
 
         File src2 = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/server/slot-db-1").toURI());
         FileUtils.copyDirectory(src2, slotDbDir);
+        FileUtils.copyDirectory(src2, slotRerunDir);
 
         celosClient.getWorkflowStatus(new WorkflowID("workflow-1"), new ScheduledTime("2013-12-02T20:00Z"));
     }

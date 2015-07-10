@@ -1,14 +1,12 @@
 package com.collective.celos;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-import java.util.SortedSet;
-
 import org.apache.log4j.Logger;
 
+import java.util.*;
+
 public class Scheduler {
+
+    public static final int DEFAULT_SLIDING_WINDOW_DAYS = 7;
 
     private final int slidingWindowHours;
     private final WorkflowConfiguration configuration;
@@ -16,7 +14,10 @@ public class Scheduler {
 
     private static Logger LOGGER = Logger.getLogger(Scheduler.class);
 
-    public Scheduler(WorkflowConfiguration configuration, StateDatabase database, int slidingWindowHours) {
+    public Scheduler(WorkflowConfiguration configuration,
+                     StateDatabase database,
+                     RerunDatabase rerunDatabase,
+                     int slidingWindowHours) {
         if (slidingWindowHours <= 0) {
             throw new IllegalArgumentException("Sliding window hours must greater then zero.");
         }

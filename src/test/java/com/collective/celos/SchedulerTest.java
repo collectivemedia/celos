@@ -1,20 +1,16 @@
 package com.collective.celos;
 
-import static org.mockito.Matchers.anyListOf;
-import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
-
-import java.util.*;
-
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InOrder;
+
+import java.util.*;
+
+import static org.mockito.Matchers.anyListOf;
+import static org.mockito.Mockito.*;
 
 /**
  * TODO: test exception handling and logging
@@ -37,6 +33,7 @@ public class SchedulerTest {
     
     // Mocks
     private StateDatabase stateDatabase;
+    private RerunDatabase rerunDatabase;
     private Trigger trigger;
     private Schedule schedule;
     private SchedulingStrategy schedulingStrategy;
@@ -53,6 +50,7 @@ public class SchedulerTest {
     public void setUp() {
         // Mocks
         stateDatabase = mock(StateDatabase.class);
+        rerunDatabase = mock(RerunDatabase.class);
         trigger = mock(Trigger.class);
         schedule = mock(Schedule.class);
         schedulingStrategy = mock(SchedulingStrategy.class);
@@ -67,7 +65,7 @@ public class SchedulerTest {
         slotId = new SlotID(workflowId, scheduledTime);
 
         // The object under test
-        scheduler = new Scheduler(new WorkflowConfiguration(), stateDatabase, 1);
+        scheduler = new Scheduler(new WorkflowConfiguration(), stateDatabase, rerunDatabase, 1);
     }
     
     @Test
@@ -284,29 +282,29 @@ public class SchedulerTest {
 
     @Test(expected=IllegalArgumentException.class)
     public void slidingWindowHoursPositive1() {
-        new Scheduler(new WorkflowConfiguration(), new MemoryStateDatabase(), 0);
+        new Scheduler(new WorkflowConfiguration(), new MemoryStateDatabase(), new MemoryRerunDatabase(), 0);
     }
     
     @Test(expected=IllegalArgumentException.class)
     public void slidingWindowHoursPositive2() {
-        new Scheduler(new WorkflowConfiguration(), new MemoryStateDatabase(), -23);
+        new Scheduler(new WorkflowConfiguration(), new MemoryStateDatabase(), new MemoryRerunDatabase(), -23);
     }
 
     @Test(expected=NullPointerException.class)
     public void configurationCannotBeNull() {
-        new Scheduler(null, new MemoryStateDatabase(), 1);
+        new Scheduler(null, new MemoryStateDatabase(), new MemoryRerunDatabase(), 1);
     }
 
     @Test(expected=NullPointerException.class)
     public void databaseCannotBeNull() {
-        new Scheduler(new WorkflowConfiguration(), null, 1);
+        new Scheduler(new WorkflowConfiguration(), null, null, 1);
     }
     
     @Test
     public void slidingWindowSizeWorks() {
         ScheduledTime t = new ScheduledTime("2013-11-26T20:00Z");
         int hours = 5;
-        Scheduler scheduler = new Scheduler(new WorkflowConfiguration(), new MemoryStateDatabase(), hours);
+        Scheduler scheduler = new Scheduler(new WorkflowConfiguration(), new MemoryStateDatabase(), new MemoryRerunDatabase(), hours);
         Assert.assertEquals(scheduler.getSlidingWindowStartTime(t), new ScheduledTime("2013-11-26T15:00Z"));
     }
     
@@ -331,12 +329,13 @@ public class SchedulerTest {
         cfg.addWorkflow(wf1);
         
         MemoryStateDatabase db = new MemoryStateDatabase();
+        final MemoryRerunDatabase rerun = new MemoryRerunDatabase();
 
         int slidingWindowHours = 24;
         DateTime current = DateTime.parse("2013-11-27T15:01Z");
         DateTime currentFullHour = Util.toFullHour(current);
         
-        Scheduler sched = new Scheduler(cfg, db, slidingWindowHours);
+        Scheduler sched = new Scheduler(cfg, db, rerun, slidingWindowHours);
         sched.step(new ScheduledTime(current));
         
         Assert.assertEquals(slidingWindowHours, db.size());
@@ -374,11 +373,12 @@ public class SchedulerTest {
         cfg.addWorkflow(wf1);
         
         MemoryStateDatabase db = new MemoryStateDatabase();
+        final MemoryRerunDatabase rerun = new MemoryRerunDatabase();
 
         int slidingWindowHours = 24;
         DateTime current = DateTime.parse("2013-11-27T15:01Z");
         
-        Scheduler sched = new Scheduler(cfg, db, slidingWindowHours);
+        Scheduler sched = new Scheduler(cfg, db, rerun, slidingWindowHours);
         sched.step(new ScheduledTime(current));
         
         Assert.assertEquals(0, db.size());
@@ -399,14 +399,16 @@ public class SchedulerTest {
         cfg.addWorkflow(wf1);
         
         MemoryStateDatabase db = new MemoryStateDatabase();
-        
+        final MemoryRerunDatabase rerun = new MemoryRerunDatabase();
+
+
         SlotID id1 = new SlotID(wfID1, new ScheduledTime("2013-11-27T22:00:00Z"));
         SlotState slot1 = new SlotState(id1, SlotState.Status.WAITING);
         db.putSlotState(slot1);
 
         int slidingWindowHours = 24;
         
-        Scheduler sched = new Scheduler(cfg, db, slidingWindowHours);
+        Scheduler sched = new Scheduler(cfg, db, rerun, slidingWindowHours);
         
         sched.step(new ScheduledTime("2013-11-27T22:00:19Z"));
         Assert.assertEquals(SlotState.Status.WAITING, db.getSlotState(id1).getStatus());
@@ -462,6 +464,8 @@ public class SchedulerTest {
         cfg.addWorkflow(wf1);
         
         MemoryStateDatabase db = new MemoryStateDatabase();
+        final MemoryRerunDatabase rerun = new MemoryRerunDatabase();
+
 
         int slidingWindowHours = 24;
         DateTime current = DateTime.parse("2013-11-27T15:01Z");
@@ -473,7 +477,7 @@ public class SchedulerTest {
             db.putSlotState(state);
         }
         
-        Scheduler sched = new Scheduler(cfg, db, slidingWindowHours);
+        Scheduler sched = new Scheduler(cfg, db, rerun, slidingWindowHours);
         sched.step(new ScheduledTime(current));
         
         Assert.assertEquals(slidingWindowHours, db.size());
@@ -509,6 +513,8 @@ public class SchedulerTest {
         cfg.addWorkflow(wf1);
         
         MemoryStateDatabase db = new MemoryStateDatabase();
+        final MemoryRerunDatabase rerun = new MemoryRerunDatabase();
+
 
         int slidingWindowHours = 24;
         DateTime current = DateTime.parse("2013-11-27T15:01Z");
@@ -520,7 +526,7 @@ public class SchedulerTest {
             db.putSlotState(state);
         }
         
-        Scheduler sched = new Scheduler(cfg, db, slidingWindowHours);
+        Scheduler sched = new Scheduler(cfg, db, rerun, slidingWindowHours);
         sched.step(new ScheduledTime(current));
         
         Assert.assertEquals(slidingWindowHours, db.size());
@@ -569,6 +575,8 @@ public class SchedulerTest {
         cfg.addWorkflow(wf1);
         
         MemoryStateDatabase db = new MemoryStateDatabase();
+        final MemoryRerunDatabase rerun = new MemoryRerunDatabase();
+
 
         SlotID id1 = new SlotID(wfID1, new ScheduledTime("2013-11-27T20:00Z"));
         SlotID id2 = new SlotID(wfID1, new ScheduledTime("2013-11-27T21:00Z"));
@@ -585,7 +593,7 @@ public class SchedulerTest {
         int slidingWindowHours = 3;
         DateTime current = DateTime.parse("2013-11-27T22:01Z");
 
-        Scheduler sched = new Scheduler(cfg, db, slidingWindowHours);
+        Scheduler sched = new Scheduler(cfg, db, rerun, slidingWindowHours);
         sched.step(new ScheduledTime(current));
         
         SlotState slot1After = db.getSlotState(id1);
@@ -626,8 +634,10 @@ public class SchedulerTest {
         cfg.addWorkflow(wf1);
         
         MemoryStateDatabase db = new MemoryStateDatabase();
+        final MemoryRerunDatabase rerun = new MemoryRerunDatabase();
 
-        Scheduler sched = new Scheduler(cfg, db, 7 * 24);
+
+        Scheduler sched = new Scheduler(cfg, db, rerun, 7 * 24);
         sched.step(new ScheduledTime(currentDT));
         
         Assert.assertEquals(3 * 24, db.size());
@@ -653,8 +663,10 @@ public class SchedulerTest {
         cfg.addWorkflow(wf1);
         
         MemoryStateDatabase db = new MemoryStateDatabase();
+        final MemoryRerunDatabase rerun = new MemoryRerunDatabase();
 
-        Scheduler sched = new Scheduler(cfg, db, 7 * 24);
+
+        Scheduler sched = new Scheduler(cfg, db, rerun, 7 * 24);
         sched.step(new ScheduledTime(currentDT));
         
         Assert.assertEquals(7 * 24, db.size());
@@ -680,8 +692,10 @@ public class SchedulerTest {
         cfg.addWorkflow(wf1);
         
         MemoryStateDatabase db = new MemoryStateDatabase();
+        final MemoryRerunDatabase rerun = new MemoryRerunDatabase();
 
-        Scheduler sched = new Scheduler(cfg, db, 7 * 24);
+
+        Scheduler sched = new Scheduler(cfg, db, rerun, 7 * 24);
         sched.step(new ScheduledTime(currentDT));
         
         Assert.assertEquals(0, db.size());
@@ -753,6 +767,8 @@ public class SchedulerTest {
         cfg.addWorkflow(wf1);
         
         MemoryStateDatabase db = new MemoryStateDatabase();
+        final MemoryRerunDatabase rerun = new MemoryRerunDatabase();
+
 
         SlotID id1 = new SlotID(wfID1, new ScheduledTime("2013-11-27T20:00Z"));
         SlotState initial = new SlotState(id1, SlotState.Status.READY);
@@ -767,7 +783,7 @@ public class SchedulerTest {
         
         db.putSlotState(initial);
         
-        Scheduler sch = new Scheduler(cfg, db, 1);
+        Scheduler sch = new Scheduler(cfg, db, rerun, 1);
         sch.step(new ScheduledTime("2013-11-27T20:01Z"));
         Assert.assertEquals(running1, db.getSlotState(id1));
         sch.step(new ScheduledTime("2013-11-27T20:01Z"));
@@ -807,6 +823,8 @@ public class SchedulerTest {
         cfg.addWorkflow(wf1);
         
         MemoryStateDatabase db = new MemoryStateDatabase();
+        final MemoryRerunDatabase rerun = new MemoryRerunDatabase();
+
 
         SlotID id1 = new SlotID(wfID1, new ScheduledTime("2013-11-27T20:00Z"));
         SlotState initial = new SlotState(id1, SlotState.Status.READY);
@@ -821,7 +839,7 @@ public class SchedulerTest {
         
         db.putSlotState(initial);
         
-        Scheduler sch = new Scheduler(cfg, db, 1);
+        Scheduler sch = new Scheduler(cfg, db, rerun, 1);
         sch.step(new ScheduledTime("2013-11-27T20:01Z"));
         Assert.assertEquals(running1, db.getSlotState(id1));
         sch.step(new ScheduledTime("2013-11-27T20:01Z"));
@@ -862,6 +880,8 @@ public class SchedulerTest {
         cfg.addWorkflow(wf2);
         
         MemoryStateDatabase db = new MemoryStateDatabase();
+        final MemoryRerunDatabase rerun = new MemoryRerunDatabase();
+
 
         SlotID id1 = new SlotID(wfID1, new ScheduledTime("2013-11-27T20:00Z"));
         SlotID id2 = new SlotID(wfID2, new ScheduledTime("2013-11-27T20:00Z"));
@@ -878,7 +898,7 @@ public class SchedulerTest {
         int slidingWindowHours = 3;
         DateTime current = DateTime.parse("2013-11-27T22:01Z");
 
-        Scheduler sched = new Scheduler(cfg, db, slidingWindowHours);
+        Scheduler sched = new Scheduler(cfg, db, rerun, slidingWindowHours);
         sched.step(new ScheduledTime(current), subset);
         
         SlotState slot1After = db.getSlotState(id1);

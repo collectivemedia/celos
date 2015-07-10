@@ -1,12 +1,10 @@
 package com.collective.celos;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
 import java.io.File;
 import java.io.IOException;
-
-import org.apache.commons.io.FileUtils;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import java.nio.file.Path;
 
 /**
  * Brutally simple persistent implementation of StateDatabase
@@ -40,12 +38,10 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  */
 public class FileSystemStateDatabase implements StateDatabase {
 
-    private static final String CHARSET = "UTF-8";
+    private static final ScheduledTimeFormatter FORMATTER = new ScheduledTimeFormatter();
 
-    private final ObjectMapper mapper = new ObjectMapper();
-    private final ScheduledTimeFormatter formatter = new ScheduledTimeFormatter();
     private final File dir;
-    
+
     /**
      * Creates a new DB that stores data in the given directory, which must exist.
      */
@@ -62,17 +58,15 @@ public class FileSystemStateDatabase implements StateDatabase {
         if (!file.exists()) {
             return null;
         } else {
-            String json = FileUtils.readFileToString(file, CHARSET);
-            return SlotState.fromJSONNode(id, (ObjectNode) mapper.readTree(json));
+            JsonNode node = Util.readJsonFromPath(file.toPath());
+            return SlotState.fromJSONNode(id, node);
         }
     }
 
     @Override
     public void putSlotState(SlotState state) throws Exception {
-        String json = mapper.writeValueAsString(state.toJSONNode());
-        File file = getSlotFile(state.getSlotID());
-        FileUtils.forceMkdir(file.getParentFile());
-        FileUtils.write(file, json, CHARSET);
+        final Path file = getSlotFile(state.getSlotID()).toPath();
+        Util.writeJsonableToPath(state.toJSONNode(), file);
     }
 
     private File getSlotFile(SlotID slotID) {
@@ -82,7 +76,7 @@ public class FileSystemStateDatabase implements StateDatabase {
     /** Returns the directory containing a day's data inside the workflow dir. */
     private File getDayDir(SlotID slotID) {
         File workflowDir = getWorkflowDir(slotID);
-        File dayDir = new File(workflowDir, formatter.formatDatestamp(slotID.getScheduledTime()));
+        File dayDir = new File(workflowDir, FORMATTER.formatDatestamp(slotID.getScheduledTime()));
         return dayDir;
     }
 
@@ -92,7 +86,7 @@ public class FileSystemStateDatabase implements StateDatabase {
     }
     
     private String getSlotFileName(SlotID slotID) {
-        return formatter.formatTimestamp(slotID.getScheduledTime());
+        return FORMATTER.formatTimestamp(slotID.getScheduledTime());
     }
 
 }

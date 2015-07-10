@@ -1,16 +1,12 @@
 package com.collective.celos.servlet;
 
-import com.collective.celos.ScheduledTime;
-import com.collective.celos.Scheduler;
-import com.collective.celos.SchedulerConfiguration;
+import com.collective.celos.*;
 import com.google.common.collect.ImmutableMap;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
 import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -32,6 +28,7 @@ public abstract class AbstractServlet extends HttpServlet {
     public static final String WORKFLOW_CONFIGURATION_PATH_ATTR = "workflow.configuration.path";
     public static final String DEFAULTS_CONFIGURATION_PATH_ATTR = "defaults.configuration.path";
     public static final String STATE_DATABASE_PATH_ATTR = "state.database.path";
+    public static final String RERUN_DATABASE_PATH_ATTR = "rerun.database.path";
     public static final String UI_PATH_ATTR = "ui.configuration.path";
     public static final String ADDITIONAL_JS_VARIABLES = "additional.js.variables";
 
@@ -81,19 +78,33 @@ public abstract class AbstractServlet extends HttpServlet {
         String workflowConfigPath = getServletContext().getInitParameter(WORKFLOW_CONFIGURATION_PATH_ATTR);
         String defaultsConfigPath = getServletContext().getInitParameter(DEFAULTS_CONFIGURATION_PATH_ATTR);
         String stateDatabasePath = getServletContext().getInitParameter(STATE_DATABASE_PATH_ATTR);
-        String uiPath = getServletContext().getInitParameter(UI_PATH_ATTR);
+        String rerunDatabasePath = getServletContext().getInitParameter(RERUN_DATABASE_PATH_ATTR);
         Map<String, String> additionalVars = (Map<String, String>) getServletContext().getAttribute(ADDITIONAL_JS_VARIABLES);
         if (additionalVars == null) {
             additionalVars = ImmutableMap.of();
         }
 
-        Scheduler sch = new SchedulerConfiguration(
-                new File(workflowConfigPath), new File(defaultsConfigPath), new File(stateDatabasePath), new File(uiPath), additionalVars
-        ).makeDefaultScheduler();
+        Scheduler sch = makeDefaultScheduler(new File(workflowConfigPath),
+                new File(defaultsConfigPath), new File(stateDatabasePath),
+                new File(rerunDatabasePath), additionalVars);
 
         getServletContext().setAttribute(SCHEDULER_ATTR, sch);
         return sch;
     }
+
+    public Scheduler makeDefaultScheduler(File workflowConfigurationPath, File defaultsConfigurationPath,
+                                          File stateDatabasePath,
+                                          File rerunDatabasePath,
+                                          Map<String, String> additionalVars) throws Exception {
+        WorkflowConfiguration config = new WorkflowConfigurationParser(defaultsConfigurationPath, additionalVars).
+                parseConfiguration(workflowConfigurationPath).
+                getWorkflowConfiguration();
+        StateDatabase db = new FileSystemStateDatabase(stateDatabasePath);
+        RerunDatabase rerun = new FileSystemRerunDatabase(rerunDatabasePath.toPath());
+        int slidingWindowHours = 24 * Scheduler.DEFAULT_SLIDING_WINDOW_DAYS;
+        return new Scheduler(config, db, rerun, slidingWindowHours);
+    }
+
 
     protected Scheduler getOrCreateCachedScheduler() throws Exception {
         Scheduler sch = (Scheduler) getServletContext().getAttribute(SCHEDULER_ATTR);

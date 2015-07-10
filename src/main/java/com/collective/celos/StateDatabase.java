@@ -11,5 +11,8 @@ public interface StateDatabase {
      * Updates the state of the given slot.
      */
     public void putSlotState(SlotState state) throws Exception;
-    
+
+
+
+
 }
