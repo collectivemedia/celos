@@ -84,25 +84,12 @@ public abstract class AbstractServlet extends HttpServlet {
             additionalVars = ImmutableMap.of();
         }
 
-        Scheduler sch = makeDefaultScheduler(new File(workflowConfigPath),
+        Scheduler sch = SchedulerConfiguration.makeDefaultScheduler(new File(workflowConfigPath),
                 new File(defaultsConfigPath), new File(stateDatabasePath),
                 new File(rerunDatabasePath), additionalVars);
 
         getServletContext().setAttribute(SCHEDULER_ATTR, sch);
         return sch;
-    }
-
-    public Scheduler makeDefaultScheduler(File workflowConfigurationPath, File defaultsConfigurationPath,
-                                          File stateDatabasePath,
-                                          File rerunDatabasePath,
-                                          Map<String, String> additionalVars) throws Exception {
-        WorkflowConfiguration config = new WorkflowConfigurationParser(defaultsConfigurationPath, additionalVars).
-                parseConfiguration(workflowConfigurationPath).
-                getWorkflowConfiguration();
-        StateDatabase db = new FileSystemStateDatabase(stateDatabasePath);
-        RerunDatabase rerun = new FileSystemRerunDatabase(rerunDatabasePath.toPath());
-        int slidingWindowHours = 24 * Scheduler.DEFAULT_SLIDING_WINDOW_DAYS;
-        return new Scheduler(config, db, rerun, slidingWindowHours);
     }
 
 

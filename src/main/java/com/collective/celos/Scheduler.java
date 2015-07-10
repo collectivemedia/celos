@@ -6,8 +6,6 @@ import java.util.*;
 
 public class Scheduler {
 
-    public static final int DEFAULT_SLIDING_WINDOW_DAYS = 7;
-
     private final int slidingWindowHours;
     private final WorkflowConfiguration configuration;
     private final StateDatabase database;

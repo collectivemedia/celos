@@ -12,33 +12,33 @@ import java.util.List;
 
 public class FileSystemRerunDatabase implements RerunDatabase {
 
-    private final Path rerunDir;
+            private final Path rerunDir;
 
-    private static final ScheduledTimeFormatter FORMATTER = new ScheduledTimeFormatter();
+            private static final ScheduledTimeFormatter FORMATTER = new ScheduledTimeFormatter();
 
-    /**
-     * Creates a new DB that stores data in the given directory, which must exist.
-     */
-    public FileSystemRerunDatabase(Path rerunDir) throws IOException {
-        assert rerunDir != null;
-        assert Files.isDirectory(rerunDir); // Database rerun directory must exists.
-        this.rerunDir = rerunDir;
-    }
+            /**
+             * Creates a new DB that stores data in the given directory, which must exist.
+             */
+            public FileSystemRerunDatabase(Path rerunDir) throws IOException {
+                assert rerunDir != null;
+                assert Files.isDirectory(rerunDir); // Database rerun directory must exists.
+                this.rerunDir = rerunDir;
+            }
 
-    private static final Charset CHARSET = Charset.forName("UTF-8");
+            private static final Charset CHARSET = Charset.forName("UTF-8");
 
-    // Note a slot ID for rerun processing at the (current) wallclock time.
-    @Override
-    public void addSlotID(SlotID id, ScheduledTime current) throws Exception {
-        final Path slotFile = getSlotPath(id);
-        Files.createDirectories(slotFile.getParent());
-    }
+            // Note a slot ID for rerun processing at the (current) wallclock time.
+            @Override
+            public void addSlotID(SlotID id, ScheduledTime current) throws Exception {
+                final Path slotFile = getSlotPath(id);
+                Files.createDirectories(slotFile.getParent());
+            }
 
-    // Get all slot IDs of the workflow noted for rerun processing. Also garbage collect any too-old rerun notes.
-    @Override
-    public List<SlotID> getSlotIDs(WorkflowID wfId, ScheduledTime current) throws Exception {
-        List<SlotID> res = Collections.emptyList();
-        File wfPath = getWorkflowPath(wfId).toFile();
+            // Get all slot IDs of the workflow noted for rerun processing. Also garbage collect any too-old rerun notes.
+            @Override
+            public List<SlotID> getSlotIDs(WorkflowID wfId, ScheduledTime current) throws Exception {
+                List<SlotID> res = Collections.emptyList();
+                File wfPath = getWorkflowPath(wfId).toFile();
         File[] daysDir = wfPath.listFiles();
         assert daysDir != null;
         for (File slotsDir : daysDir) {

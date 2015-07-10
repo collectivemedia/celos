@@ -8,25 +8,29 @@ import java.util.Map;
  */
 public class SchedulerConfiguration {
 
-
-    private final File workflowConfigurationPath;
-    private final File defaultsConfigurationPath;
-    private final File stateDatabasePath;
-    private final File rerunDatabasePath;
-    private final File uiDir;
-    private final Map<String, String> additionalVars;
-
-    public SchedulerConfiguration(File workflowConfigurationPath, File defaultsConfigurationPath,
-                                  File stateDatabasePath,
-                                  File rerunDatabasePath,
-                                  File uiDir, Map<String, String> additionalVars) {
-        this.workflowConfigurationPath = workflowConfigurationPath;
-        this.defaultsConfigurationPath = defaultsConfigurationPath;
-        this.stateDatabasePath = stateDatabasePath;
-        this.rerunDatabasePath = rerunDatabasePath;
-        this.uiDir = uiDir;
-        this.additionalVars = additionalVars;
+    private SchedulerConfiguration() {
+        assert false;
     }
+
+
+    public static final int DEFAULT_SLIDING_WINDOW_DAYS = 7;
+
+
+    public static Scheduler makeDefaultScheduler(File workflowConfigurationPath, File defaultsConfigurationPath,
+                                          File stateDatabasePath,
+                                          File rerunDatabasePath,
+                                          Map<String, String> additionalVars) throws Exception {
+        WorkflowConfiguration config = new WorkflowConfigurationParser(defaultsConfigurationPath, additionalVars).
+                parseConfiguration(workflowConfigurationPath).
+                getWorkflowConfiguration();
+        StateDatabase db = new FileSystemStateDatabase(stateDatabasePath);
+        RerunDatabase rerun = new FileSystemRerunDatabase(rerunDatabasePath.toPath());
+        int slidingWindowHours = 24 * DEFAULT_SLIDING_WINDOW_DAYS;
+        return new Scheduler(config, db, rerun, slidingWindowHours);
+    }
+
+
+
 
 
 }

@@ -33,7 +33,7 @@ public class CelosClientServerTest {
     public static final String DB_DIR = "db";
     public static final String RERUN_DIR = "rerun";
     public static final String UI_DIR = "ui";
-    public static final int SLOTS_IN_CELOS_SERVER_SLIDING_WINDOW = Scheduler.DEFAULT_SLIDING_WINDOW_DAYS * 24;
+    public static final int SLOTS_IN_CELOS_SERVER_SLIDING_WINDOW = SchedulerConfiguration.DEFAULT_SLIDING_WINDOW_DAYS * 24;
 
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
@@ -322,7 +322,7 @@ public class CelosClientServerTest {
         Assert.assertTrue(slotStates.get(slotStates.size() - 1).getScheduledTime().getDateTime().isAfter(timeInPast.getDateTime().plusYears(1)));
 
         slotStates = celosClient.getWorkflowStatus(new WorkflowID("workflow-4"), timeInPast).getSlotStates();
-        Assert.assertEquals(slotStates.get(slotStates.size() - 1).getScheduledTime(), timeInPast.minusDays(Scheduler.DEFAULT_SLIDING_WINDOW_DAYS));
+        Assert.assertEquals(slotStates.get(slotStates.size() - 1).getScheduledTime(), timeInPast.minusDays(SchedulerConfiguration.DEFAULT_SLIDING_WINDOW_DAYS));
         Assert.assertEquals(slotStates.get(0).getScheduledTime(), timeInPast.minusHours(1));
 
         slotStates = celosClient.getWorkflowStatus(new WorkflowID("workflow-4"), timeInPast.plusSeconds(1)).getSlotStates();
