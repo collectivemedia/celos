@@ -15,7 +15,7 @@ public class MemoryRerunDatabase implements RerunDatabase {
 
     @Override
     public void addSlotID(SlotID id, ScheduledTime current) throws Exception {
-        idsMap.put(id, RerunState.fromTime(current));
+        idsMap.put(id, RerunState.fromTime(id.workflowID, id.getScheduledTime(), current));
     }
 
     @Override

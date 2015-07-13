@@ -4,13 +4,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.collective.celos.*;
 import org.apache.log4j.Logger;
-
-import com.collective.celos.ScheduledTime;
-import com.collective.celos.SlotID;
-import com.collective.celos.SlotState;
-import com.collective.celos.StateDatabase;
-import com.collective.celos.WorkflowID;
 
 /**
  * Posting to this servlet reruns the specified slot.

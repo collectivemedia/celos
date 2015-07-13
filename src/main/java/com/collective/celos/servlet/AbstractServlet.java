@@ -74,6 +74,24 @@ public abstract class AbstractServlet extends HttpServlet {
      * to reset the cache and force a reload of the configuration.
      */
 
+    public static final int SLIDING_WINDOW_DAYS = 7;
+
+    private static Scheduler makeDefaultScheduler(File workflowConfigurationPath,
+                                                  File defaultsConfigurationPath,
+                                                  File stateDatabasePath,
+                                                  File rerunDatabasePath,
+                                                  File uiDir, Map<String, String> additionalVars)
+            throws Exception {
+        WorkflowConfiguration config = new WorkflowConfigurationParser(defaultsConfigurationPath, additionalVars)
+                .parseConfiguration(workflowConfigurationPath)
+                .getWorkflowConfiguration();
+        StateDatabase db = new FileSystemStateDatabase(stateDatabasePath);
+        RerunDatabase rerun = new FileSystemRerunDatabase(rerunDatabasePath.toPath());
+        int slidingWindowHours = 24 * SLIDING_WINDOW_DAYS;
+        return new Scheduler(config, db, rerun, slidingWindowHours);
+    }
+
+
     protected Scheduler createAndCacheScheduler() throws Exception {
         String workflowConfigPath = getServletContext().getInitParameter(WORKFLOW_CONFIGURATION_PATH_ATTR);
         String defaultsConfigPath = getServletContext().getInitParameter(DEFAULTS_CONFIGURATION_PATH_ATTR);

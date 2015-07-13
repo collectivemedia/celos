@@ -10,9 +10,11 @@ import com.google.common.collect.Maps;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
+import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
@@ -171,5 +173,12 @@ public class Util {
         String jsonData = new String(Files.readAllBytes(path), CHARSET);
         return MAPPER.readTree(jsonData);
     }
+
+    public static boolean isDirectoryEmpty(final Path directory) throws IOException {
+        try(DirectoryStream<Path> dirStream = Files.newDirectoryStream(directory)) {
+            return !dirStream.iterator().hasNext();
+        }
+    }
+
 
 }
