@@ -85,10 +85,9 @@ public abstract class AbstractServlet extends HttpServlet {
         WorkflowConfiguration config = new WorkflowConfigurationParser(defaultsConfigurationPath, additionalVars)
                 .parseConfiguration(workflowConfigurationPath)
                 .getWorkflowConfiguration();
-        StateDatabase db = new FileSystemStateDatabase(stateDatabasePath);
-        RerunDatabase rerun = new FileSystemRerunDatabase(rerunDatabasePath.toPath());
+        StateDatabase db = new FileSystemStateDatabase(stateDatabasePath, rerunDatabasePath);
         int slidingWindowHours = 24 * SLIDING_WINDOW_DAYS;
-        return new Scheduler(config, db, rerun, slidingWindowHours);
+        return new Scheduler(config, db, slidingWindowHours);
     }
 
 

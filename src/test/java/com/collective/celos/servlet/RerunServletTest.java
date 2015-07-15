@@ -23,11 +23,12 @@ public class RerunServletTest {
     }
 
     private void failsOnWrongStatusTest(Status status) throws Exception {
+        ScheduledTime now = ScheduledTime.now();
         StateDatabase db = new MemoryStateDatabase();
         SlotID id = new SlotID(new WorkflowID("foo"), new ScheduledTime("2014-02-08T20:00Z"));
         SlotState state = new SlotState(id, status);
         db.putSlotState(state);
-        new RerunServlet().updateSlotToRerun(state, db);
+        db.updateSlotToRerun(id, now);
     }
 
     @Test
@@ -41,11 +42,12 @@ public class RerunServletTest {
     }
 
     private void succeedsOnRightStatusTest(Status status) throws Exception {
+        ScheduledTime now = ScheduledTime.now();
         StateDatabase db = new MemoryStateDatabase();
         SlotID id = new SlotID(new WorkflowID("foo"), new ScheduledTime("2014-02-08T20:00Z"));
         SlotState state = new SlotState(id, status);
         db.putSlotState(state);
-        new RerunServlet().updateSlotToRerun(state, db);
+        db.updateSlotToRerun(id, now);
         SlotState dbState = db.getSlotState(id);
         Assert.assertEquals(state.transitionToRerun(), dbState);
     }

@@ -1,15 +1,15 @@
 package com.collective.celos;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Simple implementation of StateDatabase that stores everything in a Map.
  */
 public class MemoryStateDatabase implements StateDatabase {
 
-    protected final Map<SlotID, SlotState> map = new HashMap<SlotID, SlotState>();
-    
+    protected final Map<SlotID, SlotState> map = new HashMap<>();
+    protected final Map<SlotID, RerunState> idsMap = new HashMap<>();
+
     @Override
     public SlotState getSlotState(SlotID id) throws Exception {
         return map.get(id);
@@ -22,6 +22,23 @@ public class MemoryStateDatabase implements StateDatabase {
     
     public int size() {
         return map.size();
+    }
+
+    @Override
+    public boolean updateSlotToRerun(SlotID id, ScheduledTime current) throws Exception {
+        if (!map.containsKey(id)) {
+            throw new IllegalStateException();
+        }
+        idsMap.put(id, RerunState.fromTime(id.workflowID, id.getScheduledTime(), current));
+        final SlotState.Status newStatus = getSlotState(id).transitionToRerun().getStatus();
+        map.put(id, new SlotState(id, newStatus));
+        return true;
+    }
+
+    @Override
+    public List<SlotID> getSlotIDs(WorkflowID wfid, ScheduledTime current) throws Exception {
+        final Set<SlotID> slotIds = idsMap.keySet();
+        return new ArrayList<>(slotIds);
     }
 
 }

@@ -14,9 +14,8 @@ public class DependentScheduleTest {
     public void throwsExceptionContainingWorkflowIDIfWorkflowNotFound() {
         WorkflowConfiguration emptyConf = new WorkflowConfiguration();
         StateDatabase emptyDB = new MemoryStateDatabase();
-        RerunDatabase emptyRerun = new MemoryRerunDatabase();
         int slidingWindowHours = 24;
-        Scheduler scheduler = new Scheduler(emptyConf, emptyDB, emptyRerun, slidingWindowHours);
+        Scheduler scheduler = new Scheduler(emptyConf, emptyDB, slidingWindowHours);
         String id = "nonexisting-workflow";
         DependentSchedule schedule = new DependentSchedule(new WorkflowID(id));
         try {
@@ -37,10 +36,9 @@ public class DependentScheduleTest {
 
         WorkflowConfiguration conf = new WorkflowConfiguration();
         StateDatabase emptyDB = new MemoryStateDatabase();
-        RerunDatabase emptyRerun = new MemoryRerunDatabase();
 
         int slidingWindowHours = 24;
-        Scheduler scheduler = new Scheduler(conf, emptyDB, emptyRerun, slidingWindowHours);
+        Scheduler scheduler = new Scheduler(conf, emptyDB, slidingWindowHours);
         String id = "other-workflow";
         Schedule otherSchedule = new HourlySchedule();
         

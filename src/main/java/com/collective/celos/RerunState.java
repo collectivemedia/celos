@@ -7,7 +7,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 public class RerunState extends ValueObject {
 
     private static final ObjectMapper MAPPER = new ObjectMapper();
-    private static final int GC_PERIOD_DAYS = 14;
+    protected static final int GC_PERIOD_DAYS = 14;
 
     private static final String RERUN_TIME_PROP = "rerunTime";
     private static final String SLOT_TIME_PROP = "scheduledTime";
@@ -47,7 +47,7 @@ public class RerunState extends ValueObject {
 
     public boolean isExpired(ScheduledTime time) {
         // rerunTime is before (time - GC_PERIOD_DAYS)
-        return rerunTime.compareTo(time.minusDays(GC_PERIOD_DAYS)) < 0;
+        return rerunTime.compareTo(time.minusDays(GC_PERIOD_DAYS)) <= 0;
     }
 
     public WorkflowID getWorkflowId() {

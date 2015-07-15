@@ -14,7 +14,6 @@ public class Scheduler {
 
     public Scheduler(WorkflowConfiguration configuration,
                      StateDatabase database,
-                     RerunDatabase rerunDatabase,
                      int slidingWindowHours) {
         if (slidingWindowHours <= 0) {
             throw new IllegalArgumentException("Sliding window hours must greater then zero.");
@@ -40,7 +39,7 @@ public class Scheduler {
     	// by default, schedule all workflows
     	step(current, Collections.<WorkflowID>emptySet());
     }
-    
+
     /**
      * If workflowIDs is empty, schedule all workflows.
      * 
