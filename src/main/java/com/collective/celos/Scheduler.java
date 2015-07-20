@@ -85,7 +85,13 @@ public class Scheduler {
      */
     public List<SlotState> getSlotStates(Workflow wf, ScheduledTime start, ScheduledTime end) throws Exception {
         SortedSet<ScheduledTime> scheduledTimes =  wf.getSchedule().getScheduledTimes(this, start, end);
-        List<SlotState> slotStates = new ArrayList<SlotState>(scheduledTimes.size());
+        final List<SlotID> rerunSlotIDs = database.getSlotIDs(wf.getID(), end);
+        final List<ScheduledTime> reruns = new ArrayList<>(rerunSlotIDs.size());
+        for (SlotID id : rerunSlotIDs) {
+            reruns.add(id.getScheduledTime());
+        }
+        scheduledTimes.addAll(reruns);
+        List<SlotState> slotStates = new ArrayList<>(scheduledTimes.size());
         for (ScheduledTime t : scheduledTimes) {
             SlotID slotID = new SlotID(wf.getID(), t);
             SlotState slotState = database.getSlotState(slotID);
