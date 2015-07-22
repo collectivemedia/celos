@@ -133,26 +133,21 @@ public class FileSystemStateDatabase implements StateDatabase {
             return res;
         }
         // else
-        try {
-            final File[] daysDir = wfPath.toFile().listFiles();
+        final File[] daysDir = wfPath.toFile().listFiles();
 
-            assert daysDir != null;
-            for (File slotsDir : daysDir) {
-                final Path slotsDirPath = slotsDir.toPath();
-                assert Files.isDirectory(slotsDirPath);
-                File[] listSlotFiles = slotsDir.listFiles();
-                assert listSlotFiles != null;
-                for (File file : listSlotFiles) {
-                    assert file != null;
-                    final JsonNode node = readJsonFromPath(file.toPath());
-                    final RerunState st = RerunState.fromJsonNode(node);
-                    final SlotID slotId = new SlotID(st.getWorkflowId(), st.getSlotTime());
-                    res.add(slotId);
-                }
+        assert daysDir != null;
+        for (File slotsDir : daysDir) {
+            final Path slotsDirPath = slotsDir.toPath();
+            assert Files.isDirectory(slotsDirPath);
+            File[] listSlotFiles = slotsDir.listFiles();
+            assert listSlotFiles != null;
+            for (File file : listSlotFiles) {
+                assert file != null;
+                final JsonNode node = readJsonFromPath(file.toPath());
+                final RerunState st = RerunState.fromJsonNode(node);
+                final SlotID slotId = new SlotID(st.getWorkflowId(), st.getSlotTime());
+                res.add(slotId);
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw e;
         }
         return res;
     }
