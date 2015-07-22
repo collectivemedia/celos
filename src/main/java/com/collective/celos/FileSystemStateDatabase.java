@@ -72,10 +72,11 @@ public class FileSystemStateDatabase implements StateDatabase {
 
     @Override
     public SlotState getSlotState(SlotID id) throws Exception {
-        File file = getSlotFile(id);
+        File file = getSlotFile(id).toFile();
         if (!file.exists()) {
             return null;
         } else {
+            // race
             JsonNode node = readJsonFromPath(file.toPath());
             return SlotState.fromJSONNode(id, node);
         }
@@ -83,13 +84,17 @@ public class FileSystemStateDatabase implements StateDatabase {
 
     @Override
     public void putSlotState(SlotState state) throws Exception {
-        final Path file = getSlotFile(state.getSlotID()).toPath();
+        final Path file = getSlotFile(state.getSlotID());
         writeJsonableToPath(state.toJSONNode(), file);
     }
 
+    /** Returns the directory containing all data for the slot's workflow. */
+    private Path getWorkflowDir(WorkflowID wfId) {
+        return dir.toPath().resolve(STATE_PATH).resolve(wfId.toString());
+    }
 
     private Path getRerunWorkflowPath(WorkflowID wfId) {
-        return dir.toPath().resolve(STATE_PATH).resolve(wfId.toString());
+        return dir.toPath().resolve(RERUN_PATH).resolve(wfId.toString());
     }
 
 
@@ -128,40 +133,42 @@ public class FileSystemStateDatabase implements StateDatabase {
             return res;
         }
         // else
-        final File[] daysDir = wfPath.toFile().listFiles();
-        assert daysDir != null;
-        for (File slotsDir : daysDir) {
-            final Path slotsDirPath = slotsDir.toPath();
-            assert Files.isDirectory(slotsDirPath);
-            File[] listSlotFiles = slotsDir.listFiles();
-            assert listSlotFiles != null;
-            for (File file : listSlotFiles) {
-                final JsonNode node = readJsonFromPath(file.toPath());
-                final RerunState st = RerunState.fromJsonNode(node);
-                final SlotID slotId = new SlotID(st.getWorkflowId(), st.getSlotTime());
-                res.add(slotId);
+        try {
+            final File[] daysDir = wfPath.toFile().listFiles();
+
+            assert daysDir != null;
+            for (File slotsDir : daysDir) {
+                final Path slotsDirPath = slotsDir.toPath();
+                assert Files.isDirectory(slotsDirPath);
+                File[] listSlotFiles = slotsDir.listFiles();
+                assert listSlotFiles != null;
+                for (File file : listSlotFiles) {
+                    assert file != null;
+                    final JsonNode node = readJsonFromPath(file.toPath());
+                    final RerunState st = RerunState.fromJsonNode(node);
+                    final SlotID slotId = new SlotID(st.getWorkflowId(), st.getSlotTime());
+                    res.add(slotId);
+                }
             }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
         }
         return res;
     }
 
 
-    private File getSlotFile(SlotID slotID) {
-        return new File(getDayDir(slotID), getSlotFileName(slotID));
+    private Path getSlotFile(SlotID slotID) {
+        return getDayDir(slotID).resolve(getSlotFileName(slotID));
     }
 
     /** Returns the directory containing a day's data inside the workflow dir. */
-    private File getDayDir(SlotID slotID) {
-        File workflowDir = getWorkflowDir(slotID);
-        File dayDir = new File(workflowDir, FORMATTER.formatDatestamp(slotID.getScheduledTime()));
+    private Path getDayDir(SlotID slotID) {
+        Path workflowDir = getWorkflowDir(slotID.getWorkflowID());
+        Path dayDir = workflowDir.resolve(FORMATTER.formatDatestamp(slotID.getScheduledTime()));
         return dayDir;
     }
 
-    /** Returns the directory containing all data for the slot's workflow. */
-    private File getWorkflowDir(SlotID slotID) {
-        return dir.toPath().resolve(STATE_PATH).resolve(slotID.getWorkflowID().toString()).toFile();
-    }
-    
     private String getSlotFileName(SlotID slotID) {
         return FORMATTER.formatTimestamp(slotID.getScheduledTime());
     }

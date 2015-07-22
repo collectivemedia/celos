@@ -118,7 +118,7 @@ public class TestRun {
 
     public void start() throws Exception {
 
-        System.out.println("Running test case " + testCase.getName());
+        System.out.println("Running test case UNSTABLE " + testCase.getName());
         System.out.println(testCase.getName() + ": temp dir for Celos is " + testCaseTempDir.getAbsolutePath().toString());
         System.out.println(testCase.getName() + ": HDFS prefix is: " + hdfsPrefix);
 
