@@ -1,17 +1,16 @@
 package com.collective.celos.servlet;
 
-import java.util.List;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import com.collective.celos.*;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.Lists;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
 /**
  * Returns information about the slot states of a single workflow as JSON.
@@ -71,7 +70,7 @@ public class JSONWorkflowSlotsServlet extends AbstractJSONServlet {
                 for (SlotState state : Lists.reverse(slotStates)) {
                     objectNodes.add(state.toJSONNode());
                 }
-                node.put(INFO_PARAM, mapper.valueToTree(wf.getWorkflowInfo()));
+                node.put(INFO_PARAM, mapper.<JsonNode>valueToTree(wf.getWorkflowInfo()));
                 node.putArray(SLOTS_PARAM).addAll(objectNodes);
                 writer.writeValue(res.getOutputStream(), node);
             }

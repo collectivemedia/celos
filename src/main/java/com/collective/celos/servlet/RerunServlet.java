@@ -1,16 +1,12 @@
 package com.collective.celos.servlet;
 
+import com.collective.celos.ScheduledTime;
+import com.collective.celos.SlotID;
+import com.collective.celos.WorkflowID;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.apache.log4j.Logger;
-
-import com.collective.celos.ScheduledTime;
-import com.collective.celos.SlotID;
-import com.collective.celos.SlotState;
-import com.collective.celos.StateDatabase;
-import com.collective.celos.WorkflowID;
 
 /**
  * Posting to this servlet reruns the specified slot.
@@ -24,35 +20,26 @@ import com.collective.celos.WorkflowID;
 @SuppressWarnings("serial")
 public class RerunServlet extends AbstractServlet {
     
-    private static Logger LOGGER = Logger.getLogger(RerunServlet.class);
-    
     private static final String ID_PARAM = "id";
 
     protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException {
         try {
-            ScheduledTime time = getRequestTime(req);
-            String id = req.getParameter(ID_PARAM);
-            if (id == null) {
+            final ScheduledTime time = getRequestTime(req);
+            final ScheduledTime current = ScheduledTime.now();
+            final String wfIdString = req.getParameter(ID_PARAM);
+            if (wfIdString == null) {
                 res.sendError(HttpServletResponse.SC_BAD_REQUEST, ID_PARAM + " parameter missing.");
                 return;
             }
-            SlotID slot = new SlotID(new WorkflowID(id), time);
-            StateDatabase db = getOrCreateCachedScheduler().getStateDatabase();
-            SlotState state = db.getSlotState(slot);
-            if (state == null) {
-                res.sendError(HttpServletResponse.SC_NOT_FOUND, "Slot not found: " + slot);
-                return;
+            final WorkflowID wf = new WorkflowID(wfIdString);
+            final SlotID id1 = new SlotID(wf, time);
+            final boolean status = getOrCreateCachedScheduler().getStateDatabase().updateSlotToRerun(id1, current);
+            if (!status) {
+                res.sendError(HttpServletResponse.SC_NOT_FOUND, "Slot not found: " + id1);
             }
-            updateSlotToRerun(state, db);
         } catch(Exception e) {
             throw new ServletException(e);
         }
-    }
-
-    void updateSlotToRerun(SlotState state, StateDatabase db) throws Exception {
-        LOGGER.info("Scheduling Slot for rerun: " + state.getSlotID());
-        SlotState newState = state.transitionToRerun();
-        db.putSlotState(newState);
     }
 
 }

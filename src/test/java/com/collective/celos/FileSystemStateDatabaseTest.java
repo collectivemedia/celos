@@ -1,24 +1,23 @@
 package com.collective.celos;
 
+import junit.framework.Assert;
+import org.apache.commons.io.IOUtils;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.HashSet;
 import java.util.Set;
 
-import junit.framework.Assert;
-
-import org.apache.commons.io.IOUtils;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
-
 public class FileSystemStateDatabaseTest {
 
     @Rule
     public TemporaryFolder tempFolder = new TemporaryFolder();
     
-    @Test(expected=IOException.class)
+    @Test(expected=AssertionError.class)
     public void directoryMustExist() throws IOException {
         File dir = getDatabaseDir();
         new FileSystemStateDatabase(dir);
@@ -72,6 +71,7 @@ public class FileSystemStateDatabaseTest {
         for(SlotState state : getStates()) {
             db.putSlotState(state);
         }
+
         if (diff(getDatabaseDir(), getResourceDir())) {
             throw new AssertionError("Database differs from resource database.");
         }
