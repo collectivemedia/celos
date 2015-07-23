@@ -17,7 +17,8 @@ public class CelosServer {
 
     private Server server = new Server();
 
-    public Integer startServer(Map<String, String> jsVariables, File workflowsDir, File defaultsDir, File stateDatabase, File uiDir) throws Exception {
+    public Integer startServer(Map<String, String> jsVariables, File workflowsDir, File defaultsDir,
+                               File stateDatabase, File rerunDatabase, File uiDir) throws Exception {
 
         validateDirExists(workflowsDir);
         validateDirExists(defaultsDir);
@@ -36,6 +37,7 @@ public class CelosServer {
         context.setAttribute(AbstractServlet.ADDITIONAL_JS_VARIABLES, jsVariables);
         context.setInitParameter(AbstractServlet.WORKFLOW_CONFIGURATION_PATH_ATTR, workflowsDir.getAbsolutePath());
         context.setInitParameter(AbstractServlet.DEFAULTS_CONFIGURATION_PATH_ATTR, defaultsDir.getAbsolutePath());
+        context.setInitParameter(AbstractServlet.RERUN_DATABASE_PATH_ATTR, rerunDatabase.getAbsolutePath());
         context.setInitParameter(AbstractServlet.STATE_DATABASE_PATH_ATTR, stateDatabase.getAbsolutePath());
         context.setInitParameter(AbstractServlet.UI_PATH_ATTR, uiDir.getAbsolutePath());
 

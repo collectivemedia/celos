@@ -1,13 +1,12 @@
 package com.collective.celos;
 
-import java.util.Collections;
-import java.util.SortedSet;
-
+import com.collective.celos.WorkflowInfo.ContactsInfo;
+import com.google.common.collect.Sets;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.collective.celos.WorkflowInfo.ContactsInfo;
-import com.google.common.collect.Sets;
+import java.util.Collections;
+import java.util.SortedSet;
 
 public class DependentScheduleTest {
 
@@ -37,6 +36,7 @@ public class DependentScheduleTest {
 
         WorkflowConfiguration conf = new WorkflowConfiguration();
         StateDatabase emptyDB = new MemoryStateDatabase();
+
         int slidingWindowHours = 24;
         Scheduler scheduler = new Scheduler(conf, emptyDB, slidingWindowHours);
         String id = "other-workflow";

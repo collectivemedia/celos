@@ -41,6 +41,7 @@ public class TestRun {
     private static final String WORKFLOW_DIR_CELOS_PATH = "workflows";
     private static final String DEFAULTS_DIR_CELOS_PATH = "defaults";
     private static final String DB_DIR_CELOS_PATH = "db";
+    private static final String RERUN_DIR_CELOS_PATH = "rerun";
     private static final String UI_DIR_CELOS_PATH = "ui";
 
     private final WorkflowFilesDeployer wfDeployer;
@@ -49,6 +50,7 @@ public class TestRun {
     private final File celosWorkflowDir;
     private final File celosDefaultsDir;
     private final File celosDbDir;
+    private final File celosRerunDir;
     private final File celosUiDir;
     private final File testCaseTempDir;
     private final String hdfsPrefix;
@@ -72,6 +74,7 @@ public class TestRun {
         this.celosWorkflowDir = new File(testCaseTempDir, WORKFLOW_DIR_CELOS_PATH);
         this.celosDefaultsDir = new File(testCaseTempDir, DEFAULTS_DIR_CELOS_PATH);
         this.celosDbDir = new File(testCaseTempDir, DB_DIR_CELOS_PATH);
+        this.celosRerunDir = new File(testCaseTempDir, RERUN_DIR_CELOS_PATH);
         this.celosUiDir = new File(testCaseTempDir, UI_DIR_CELOS_PATH);
 
         this.originalTarget = target;
@@ -118,7 +121,7 @@ public class TestRun {
 
     public void start() throws Exception {
 
-        System.out.println("Running test case " + testCase.getName());
+        System.out.println("Running test case UNSTABLE " + testCase.getName());
         System.out.println(testCase.getName() + ": temp dir for Celos is " + testCaseTempDir.getAbsolutePath().toString());
         System.out.println(testCase.getName() + ": HDFS prefix is: " + hdfsPrefix);
 
@@ -150,7 +153,7 @@ public class TestRun {
             wfDeployer.deploy();
             hdfsDeployer.deploy();
 
-            Integer port = celosServer.startServer(additionalJSParams, celosWorkflowDir, celosDefaultsDir, celosDbDir, celosUiDir);
+            Integer port = celosServer.startServer(additionalJSParams, celosWorkflowDir, celosDefaultsDir, celosDbDir, celosRerunDir, celosUiDir);
 
             for (FixtureDeployer fixtureDeployer : testCase.getInputs()) {
                 fixtureDeployer.deploy(this);

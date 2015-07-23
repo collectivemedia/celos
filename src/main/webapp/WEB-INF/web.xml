@@ -23,6 +23,11 @@
         <param-value>/var/lib/celos/db</param-value>
     </context-param>
 
+    <context-param>
+        <param-name>rerun.database.path</param-name>
+        <param-value>/var/lib/celos/rerun</param-value>
+    </context-param>
+
     <servlet>
         <servlet-name>SchedulerServlet</servlet-name>
         <servlet-class>com.collective.celos.servlet.SchedulerServlet</servlet-class>

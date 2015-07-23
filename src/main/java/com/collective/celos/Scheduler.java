@@ -1,12 +1,8 @@
 package com.collective.celos;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-import java.util.SortedSet;
-
 import org.apache.log4j.Logger;
+
+import java.util.*;
 
 public class Scheduler {
 
@@ -16,7 +12,9 @@ public class Scheduler {
 
     private static Logger LOGGER = Logger.getLogger(Scheduler.class);
 
-    public Scheduler(WorkflowConfiguration configuration, StateDatabase database, int slidingWindowHours) {
+    public Scheduler(WorkflowConfiguration configuration,
+                     StateDatabase database,
+                     int slidingWindowHours) {
         if (slidingWindowHours <= 0) {
             throw new IllegalArgumentException("Sliding window hours must greater then zero.");
         }
@@ -41,7 +39,7 @@ public class Scheduler {
     	// by default, schedule all workflows
     	step(current, Collections.<WorkflowID>emptySet());
     }
-    
+
     /**
      * If workflowIDs is empty, schedule all workflows.
      * 
@@ -87,7 +85,13 @@ public class Scheduler {
      */
     public List<SlotState> getSlotStates(Workflow wf, ScheduledTime start, ScheduledTime end) throws Exception {
         SortedSet<ScheduledTime> scheduledTimes =  wf.getSchedule().getScheduledTimes(this, start, end);
-        List<SlotState> slotStates = new ArrayList<SlotState>(scheduledTimes.size());
+        final List<SlotID> rerunSlotIDs = database.getRerunSlotIDs(wf.getID(), end);
+        final List<ScheduledTime> reruns = new ArrayList<>(rerunSlotIDs.size());
+        for (SlotID id : rerunSlotIDs) {
+            reruns.add(id.getScheduledTime());
+        }
+        scheduledTimes.addAll(reruns);
+        List<SlotState> slotStates = new ArrayList<>(scheduledTimes.size());
         for (ScheduledTime t : scheduledTimes) {
             SlotID slotID = new SlotID(wf.getID(), t);
             SlotState slotState = database.getSlotState(slotID);

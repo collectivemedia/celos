@@ -1,13 +1,13 @@
 package com.collective.celos;
 
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+import org.quartz.CronExpression;
+
 import java.text.ParseException;
 import java.util.Date;
 import java.util.SortedSet;
 import java.util.TreeSet;
-
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
-import org.quartz.CronExpression;
 
 public class CronSchedule implements Schedule {
 
@@ -29,7 +29,7 @@ public class CronSchedule implements Schedule {
 
     @Override
     public SortedSet<ScheduledTime> getScheduledTimes(Scheduler scheduler, ScheduledTime start, ScheduledTime end) {
-        SortedSet<ScheduledTime> scheduledTimes = new TreeSet<ScheduledTime>();
+        SortedSet<ScheduledTime> scheduledTimes = new TreeSet<>();
         DateTime startDT = start.getDateTime();
         DateTime endDT = end.getDateTime();
 
