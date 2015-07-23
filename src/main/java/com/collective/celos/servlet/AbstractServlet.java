@@ -79,13 +79,12 @@ public abstract class AbstractServlet extends HttpServlet {
     private static Scheduler makeDefaultScheduler(File workflowConfigurationPath,
                                                   File defaultsConfigurationPath,
                                                   File stateDatabasePath,
-                                                  File rerunDatabasePath,
                                                   File uiDir, Map<String, String> additionalVars)
             throws Exception {
         WorkflowConfiguration config = new WorkflowConfigurationParser(defaultsConfigurationPath, additionalVars)
                 .parseConfiguration(workflowConfigurationPath)
                 .getWorkflowConfiguration();
-        StateDatabase db = new FileSystemStateDatabase(stateDatabasePath, rerunDatabasePath);
+        StateDatabase db = new FileSystemStateDatabase(stateDatabasePath);
         int slidingWindowHours = 24 * SLIDING_WINDOW_DAYS;
         return new Scheduler(config, db, slidingWindowHours);
     }
@@ -102,8 +101,7 @@ public abstract class AbstractServlet extends HttpServlet {
         }
 
         Scheduler sch = SchedulerConfiguration.makeDefaultScheduler(new File(workflowConfigPath),
-                new File(defaultsConfigPath), new File(stateDatabasePath),
-                new File(rerunDatabasePath), additionalVars);
+                new File(defaultsConfigPath), new File(stateDatabasePath), additionalVars);
 
         getServletContext().setAttribute(SCHEDULER_ATTR, sch);
         return sch;

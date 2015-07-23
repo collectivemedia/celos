@@ -26,6 +26,6 @@ public interface StateDatabase {
      * Get all slot IDs of the workflow noted for rerun processing. Also garbage collect any too-old rerun notes.
      *  if rerunTime > GC_TIME then remove node
      */
-    public List<SlotID> getSlotIDs(WorkflowID wfId, ScheduledTime current) throws Exception;
+    public List<SlotID> getRerunSlotIDs(WorkflowID wfId, ScheduledTime current) throws Exception;
 
     }

@@ -27,11 +27,9 @@ public class FileSystemStateDatabaseTest {
     @Before
     public void setUp() {
         try {
-            File dir = getDatabaseDir();
-            Files.createDirectory(dir.toPath());
-            File rerun = getRerunDatabaseDir();
-            Files.createDirectory(rerun.toPath());
-            defaultDatabase = new FileSystemStateDatabase(dir, rerun);
+            Path dir = getDatabaseDir();
+            Files.createDirectory(dir);
+            defaultDatabase = new FileSystemStateDatabase(dir.toFile());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -39,25 +37,17 @@ public class FileSystemStateDatabaseTest {
 
     @Test(expected=AssertionError.class)
     public void directoryStateMustExist() throws IOException {
-        File dir = getDatabaseDir();
-        File rerun = getRerunDatabaseDir();
-        Files.deleteIfExists(rerun.toPath());
-        new FileSystemStateDatabase(dir, rerun);
+        Files.deleteIfExists(getStateDatabaseDir());
+        Files.deleteIfExists(getRerunDatabaseDir());
+        Path dir = getDatabaseDir();
+        Files.deleteIfExists(dir);
+        new FileSystemStateDatabase(dir.toFile());
     }
-
-    @Test(expected=AssertionError.class)
-    public void directorySetUp() throws IOException {
-        File dir = getDatabaseDir();
-        File rerun = getRerunDatabaseDir();
-        Files.deleteIfExists(dir.toPath());
-        new FileSystemStateDatabase(dir, rerun);
-    }
-
 
     @Test
     public void directoryRerunMustExist() throws IOException {
-        Assert.assertTrue(Files.isDirectory(getDatabaseDir().toPath()));
-        Assert.assertTrue(Files.isDirectory(getRerunDatabaseDir().toPath()));
+        Assert.assertTrue(Files.isDirectory(getDatabaseDir()));
+        Assert.assertTrue(Files.isDirectory(getRerunDatabaseDir()));
     }
 
     @Test
@@ -66,12 +56,16 @@ public class FileSystemStateDatabaseTest {
         Assert.assertNull(defaultDatabase.getSlotState(slot));
     }
 
-    private File getDatabaseDir() {
-        return new File(tempFolder.getRoot(), "db");
+    private Path getDatabaseDir() {
+        return tempFolder.getRoot().toPath().resolve("db");
     }
 
-    private File getRerunDatabaseDir() {
-        return new File(tempFolder.getRoot(), "rerun");
+    private Path getRerunDatabaseDir() {
+        return getDatabaseDir().resolve("rerun");
+    }
+
+    private Path getStateDatabaseDir() {
+        return getDatabaseDir().resolve("state");
     }
 
     /**
@@ -79,7 +73,7 @@ public class FileSystemStateDatabaseTest {
      */
     @Test
     public void canReadFromFileSystem1() throws Exception {
-        StateDatabase db = new FileSystemStateDatabase(getResourceDirNoTimestamp(), getRerunDatabaseDir());
+        StateDatabase db = new FileSystemStateDatabase(getResourceDirNoTimestamp());
         for(SlotState state : getStates()) {
             Assert.assertEquals(state, db.getSlotState(state.getSlotID()));
         }
@@ -90,7 +84,7 @@ public class FileSystemStateDatabaseTest {
      */
     @Test
     public void canReadFromFileSystem2() throws Exception {
-        StateDatabase db = new FileSystemStateDatabase(getResourceDir(), getRerunDatabaseDir());
+        StateDatabase db = new FileSystemStateDatabase(getResourceDir());
         for(SlotState state : getStates()) {
             Assert.assertEquals(state, db.getSlotState(state.getSlotID()));
         }
@@ -105,7 +99,8 @@ public class FileSystemStateDatabaseTest {
         for(SlotState state : getStates()) {
             defaultDatabase.putSlotState(state);
         }
-        if (diff(getDatabaseDir(), getResourceDir())) {
+
+        if (diff(getDatabaseDir().toFile(), getResourceDir())) {
             throw new AssertionError("Database differs from resource database.");
         }
     }
@@ -172,7 +167,7 @@ public class FileSystemStateDatabaseTest {
      */
     @Test
     public void testGetSortedListIDs() throws Exception {
-        StateDatabase db = new FileSystemStateDatabase(getRerunResourcesDir(), getRerunDatabaseDir());
+        StateDatabase db = new FileSystemStateDatabase(getRerunResourcesDir());
 
         ScheduledTime current = ScheduledTime.now();
         final List<SlotID> initIDs = new ArrayList<>();
@@ -184,8 +179,8 @@ public class FileSystemStateDatabaseTest {
         WorkflowID wf1 = new WorkflowID("wf1");
         WorkflowID wf2 = new WorkflowID("wf0");
         final List<SlotID> slotIDs = new ArrayList<>();
-        slotIDs.addAll(db.getSlotIDs(wf1, current));
-        slotIDs.addAll(db.getSlotIDs(wf2, current));
+        slotIDs.addAll(db.getRerunSlotIDs(wf1, current));
+        slotIDs.addAll(db.getRerunSlotIDs(wf2, current));
         org.junit.Assert.assertArrayEquals(initIDs.toArray(), slotIDs.toArray());
     }
 
@@ -202,7 +197,7 @@ public class FileSystemStateDatabaseTest {
         updateSlotToRerunAndCheck(id, current);
         final SlotState state = defaultDatabase.getSlotState(id);
         Assert.assertEquals(SlotState.Status.WAITING, state.getStatus());
-        final Path wfPath = getRerunDatabaseDir().toPath().resolve(wfString);
+        final Path wfPath = getRerunDatabaseDir().resolve(wfString);
         final boolean b = Files.isRegularFile(wfPath.resolve(days).resolve(time));
         Assert.assertTrue(b);
     }
@@ -212,7 +207,7 @@ public class FileSystemStateDatabaseTest {
     public void emptyRerunDb() throws Exception {
         ScheduledTime current = ScheduledTime.now();
         WorkflowID wf = new WorkflowID("workflow-0");
-        final List<SlotID> slotIDs2 = defaultDatabase.getSlotIDs(wf, current);
+        final List<SlotID> slotIDs2 = defaultDatabase.getRerunSlotIDs(wf, current);
         org.junit.Assert.assertEquals(0, slotIDs2.size());
     }
 
@@ -230,7 +225,7 @@ public class FileSystemStateDatabaseTest {
 
     @Test
     public void dbEmptyDirsCleaner() throws Exception {
-        final File databaseDir = getRerunDatabaseDir();
+        final Path databaseDir = getRerunDatabaseDir();
         WorkflowID wf = new WorkflowID("workflow-0");
         ScheduledTime gcTime = new ScheduledTime("2013-12-02T15:00Z");
         ScheduledTime current = gcTime.plusDays(RerunState.GC_PERIOD_DAYS);
@@ -238,14 +233,14 @@ public class FileSystemStateDatabaseTest {
         updateSlotToRerunAndCheck(id1, id1.getScheduledTime());
         final SlotID id2 = makeSlotAndPutToDatabase(wf, gcTime.plusDays(1));
         updateSlotToRerunAndCheck(id2, id2.getScheduledTime());
-        Path dayDir = databaseDir.toPath().resolve("workflow-0").resolve("2013-12-02");
+        Path dayDir = databaseDir.resolve("workflow-0").resolve("2013-12-02");
 
         org.junit.Assert.assertTrue(Files.isDirectory(dayDir));
         // get all ids
-        final List<SlotID> slotIDs1 = defaultDatabase.getSlotIDs(wf, gcTime);
+        final List<SlotID> slotIDs1 = defaultDatabase.getRerunSlotIDs(wf, gcTime);
         org.junit.Assert.assertEquals(2, slotIDs1.size());
         // clean db
-        final List<SlotID> slotIDs2 = defaultDatabase.getSlotIDs(wf, current);
+        final List<SlotID> slotIDs2 = defaultDatabase.getRerunSlotIDs(wf, current);
         org.junit.Assert.assertEquals(1, slotIDs2.size());
         // means that we do not collect empty day dirs
         org.junit.Assert.assertFalse(Files.isDirectory(dayDir));
@@ -277,11 +272,11 @@ public class FileSystemStateDatabaseTest {
         updateSlotToRerunAndCheck(id5, id5.getScheduledTime());
 
         // all ids shouldn't be not collected
-        final List<SlotID> slotIDs1 = defaultDatabase.getSlotIDs(wf, gcTime);
+        final List<SlotID> slotIDs1 = defaultDatabase.getRerunSlotIDs(wf, gcTime);
         System.out.println("slotIDs =");
         System.out.println(slotIDs1);
         org.junit.Assert.assertEquals(5, slotIDs1.size());
-        final List<SlotID> slotIDs2 = defaultDatabase.getSlotIDs(wf, current);
+        final List<SlotID> slotIDs2 = defaultDatabase.getRerunSlotIDs(wf, current);
         org.junit.Assert.assertEquals(3, slotIDs2.size());
     }
 
@@ -311,9 +306,6 @@ public class FileSystemStateDatabaseTest {
 
         return states;
     }
-
-
-
 
 
 

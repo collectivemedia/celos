@@ -18,12 +18,11 @@ public class SchedulerConfiguration {
 
     public static Scheduler makeDefaultScheduler(File workflowConfigurationPath, File defaultsConfigurationPath,
                                           File stateDatabasePath,
-                                          File rerunDatabasePath,
                                           Map<String, String> additionalVars) throws Exception {
         WorkflowConfiguration config = new WorkflowConfigurationParser(defaultsConfigurationPath, additionalVars).
                 parseConfiguration(workflowConfigurationPath).
                 getWorkflowConfiguration();
-        StateDatabase db = new FileSystemStateDatabase(stateDatabasePath, rerunDatabasePath);
+        StateDatabase db = new FileSystemStateDatabase(stateDatabasePath);
         int slidingWindowHours = 24 * DEFAULT_SLIDING_WINDOW_DAYS;
         return new Scheduler(config, db, slidingWindowHours);
     }

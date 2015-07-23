@@ -36,7 +36,7 @@ public class MemoryStateDatabase implements StateDatabase {
     }
 
     @Override
-    public List<SlotID> getSlotIDs(WorkflowID wfid, ScheduledTime current) throws Exception {
+    public List<SlotID> getRerunSlotIDs(WorkflowID wfid, ScheduledTime current) throws Exception {
         final Set<SlotID> slotIds = idsMap.keySet();
         return new ArrayList<>(slotIds);
     }
