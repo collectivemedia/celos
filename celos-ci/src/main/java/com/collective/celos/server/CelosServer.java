@@ -1,6 +1,6 @@
 package com.collective.celos.server;
 
-import com.collective.celos.servlet.*;
+import com.collective.celos.Constants;
 import org.apache.commons.httpclient.URI;
 import org.apache.commons.httpclient.URIException;
 import org.eclipse.jetty.server.Connector;
@@ -33,11 +33,11 @@ public class CelosServer {
         server.setConnectors(new Connector[]{connector});
         server.start();
 
-        context.setAttribute(AbstractServlet.ADDITIONAL_JS_VARIABLES, jsVariables);
-        context.setInitParameter(AbstractServlet.WORKFLOW_CONFIGURATION_PATH_ATTR, workflowsDir.getAbsolutePath());
-        context.setInitParameter(AbstractServlet.DEFAULTS_CONFIGURATION_PATH_ATTR, defaultsDir.getAbsolutePath());
-        context.setInitParameter(AbstractServlet.STATE_DATABASE_PATH_ATTR, stateDatabase.getAbsolutePath());
-        context.setInitParameter(AbstractServlet.UI_PATH_ATTR, uiDir.getAbsolutePath());
+        context.setAttribute(Constants.ADDITIONAL_JS_VARIABLES, jsVariables);
+        context.setInitParameter(Constants.WORKFLOW_CONFIGURATION_PATH_ATTR, workflowsDir.getAbsolutePath());
+        context.setInitParameter(Constants.DEFAULTS_CONFIGURATION_PATH_ATTR, defaultsDir.getAbsolutePath());
+        context.setInitParameter(Constants.STATE_DATABASE_PATH_ATTR, stateDatabase.getAbsolutePath());
+        context.setInitParameter(Constants.UI_PATH_ATTR, uiDir.getAbsolutePath());
 
         return connector.getLocalPort();
 

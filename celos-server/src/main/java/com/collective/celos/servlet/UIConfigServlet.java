@@ -1,5 +1,6 @@
 package com.collective.celos.servlet;
 
+import com.collective.celos.Constants;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 
@@ -15,7 +16,7 @@ public class UIConfigServlet extends AbstractJSONServlet {
 
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException {
         try {
-            String configPath = getServletContext().getInitParameter(UI_PATH_ATTR);
+            String configPath = getServletContext().getInitParameter(Constants.UI_PATH_ATTR);
             IOUtils.copy(FileUtils.openInputStream(new File(configPath, CONFIG_FILE)), res.getOutputStream());
         } catch (Exception e) {
             throw new ServletException(e);

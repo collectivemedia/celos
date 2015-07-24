@@ -1,5 +1,6 @@
 package com.collective.celos.servlet;
 
+import com.collective.celos.Constants;
 import com.collective.celos.ScheduledTime;
 import com.collective.celos.Scheduler;
 import com.collective.celos.SchedulerConfiguration;
@@ -28,12 +29,6 @@ public abstract class AbstractServlet extends HttpServlet {
 
     private static final String TIME_PARAM = "time";
     private static Logger LOGGER = Logger.getLogger(AbstractServlet.class);
-
-    public static final String WORKFLOW_CONFIGURATION_PATH_ATTR = "workflow.configuration.path";
-    public static final String DEFAULTS_CONFIGURATION_PATH_ATTR = "defaults.configuration.path";
-    public static final String STATE_DATABASE_PATH_ATTR = "state.database.path";
-    public static final String UI_PATH_ATTR = "ui.configuration.path";
-    public static final String ADDITIONAL_JS_VARIABLES = "additional.js.variables";
 
     private static final String SCHEDULER_ATTR = "celos.scheduler";
 
@@ -78,11 +73,11 @@ public abstract class AbstractServlet extends HttpServlet {
      */
 
     protected Scheduler createAndCacheScheduler() throws Exception {
-        String workflowConfigPath = getServletContext().getInitParameter(WORKFLOW_CONFIGURATION_PATH_ATTR);
-        String defaultsConfigPath = getServletContext().getInitParameter(DEFAULTS_CONFIGURATION_PATH_ATTR);
-        String stateDatabasePath = getServletContext().getInitParameter(STATE_DATABASE_PATH_ATTR);
-        String uiPath = getServletContext().getInitParameter(UI_PATH_ATTR);
-        Map<String, String> additionalVars = (Map<String, String>) getServletContext().getAttribute(ADDITIONAL_JS_VARIABLES);
+        String workflowConfigPath = getServletContext().getInitParameter(Constants.WORKFLOW_CONFIGURATION_PATH_ATTR);
+        String defaultsConfigPath = getServletContext().getInitParameter(Constants.DEFAULTS_CONFIGURATION_PATH_ATTR);
+        String stateDatabasePath = getServletContext().getInitParameter(Constants.STATE_DATABASE_PATH_ATTR);
+        String uiPath = getServletContext().getInitParameter(Constants.UI_PATH_ATTR);
+        Map<String, String> additionalVars = (Map<String, String>) getServletContext().getAttribute(Constants.ADDITIONAL_JS_VARIABLES);
         if (additionalVars == null) {
             additionalVars = ImmutableMap.of();
         }

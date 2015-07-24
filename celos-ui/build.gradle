@@ -1,0 +1,29 @@
+mainClassName = 'com.collective.celos.ui.CelosUIServer'
+version = '0.1'
+
+jar {
+    baseName "celos-ui"
+    manifest {
+        attributes("Main-Class": mainClassName)
+    }
+}
+
+sourceSets {
+    main {
+        java {
+            srcDir 'src/main/java'
+        }
+        resources {
+            srcDir 'src/main/resources'
+            srcDir 'src/main/webapp'
+        }
+    }
+}
+
+dependencies {
+    compile project(':celos-common')
+}
+
+jar {
+    from configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+}
