@@ -150,7 +150,7 @@ public class TestRun {
             wfDeployer.deploy();
             hdfsDeployer.deploy();
 
-            Integer port = celosServer.startServer(additionalJSParams, celosWorkflowDir, celosDefaultsDir, celosDbDir, celosUiDir);
+            Integer port = celosServer.startServer(null, additionalJSParams, celosWorkflowDir, celosDefaultsDir, celosDbDir, celosUiDir);
 
             for (FixtureDeployer fixtureDeployer : testCase.getInputs()) {
                 fixtureDeployer.deploy(this);

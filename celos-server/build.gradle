@@ -1,6 +1,6 @@
 apply plugin: 'maven'
 
-mainClassName = 'com.collective.celos.ci.CelosCi'
+mainClassName = 'com.collective.celos.server.Main'
 version = '0.1'
 
 sourceSets {
