@@ -56,7 +56,7 @@ public class CelosClientServerTest {
         this.uiDir.mkdirs();
 
         this.celosServer = new CelosServer();
-        Integer port = celosServer.startServer(ImmutableMap.<String, String>of(), workflowsDir, defaultsDir, slotDbDir, uiDir);
+        Integer port = celosServer.startServer(null, ImmutableMap.<String, String>of(), workflowsDir, defaultsDir, slotDbDir, uiDir);
         this.celosClient = new CelosClient("http://localhost:" + port);
     }
     @After
