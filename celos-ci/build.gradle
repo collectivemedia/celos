@@ -29,7 +29,3 @@ dependencies {
     }
     testCompile("org.mockito:mockito-all:1.9.5")
 }
-
-jar {
-    from configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
-}
