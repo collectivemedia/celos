@@ -1,4 +1,4 @@
-mainClassName = 'com.collective.celos.ui.CelosUIServer'
+mainClassName = 'com.collective.celos.ui.Main'
 version = '0.1'
 
 jar {

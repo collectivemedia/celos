@@ -1,11 +1,17 @@
 package com.collective.celos;
 
+import org.apache.http.client.utils.URIBuilder;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.webapp.WebAppContext;
 
+import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Map;
 
 public class JettyServer {
@@ -43,8 +49,11 @@ public class JettyServer {
     }
 
     private int createServer() throws Exception {
-        String webAppParent = Thread.currentThread().getContextClassLoader().getResource("WEB-INF").toURI().resolve(".").toString();
-        context = new WebAppContext(webAppParent.toString(), "/");
+        URL url = Thread.currentThread().getContextClassLoader().getResource("WEB-INF");
+        URIBuilder uriBuilder = new URIBuilder(url.toURI());
+        uriBuilder.setPath(Paths.get(url.getPath()).getParent().toString());
+
+        context = new WebAppContext(uriBuilder.toString() + "/", "/");
 
         server.setHandler(context);
 
