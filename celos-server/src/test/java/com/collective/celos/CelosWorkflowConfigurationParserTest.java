@@ -1,6 +1,5 @@
 package com.collective.celos;
 
-import com.collective.celos.ci.mode.test.TestRun;
 import com.google.common.collect.ImmutableMap;
 import org.junit.Assert;
 import org.junit.Test;
@@ -18,7 +17,7 @@ public class CelosWorkflowConfigurationParserTest {
         URL resource = Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/defaults-oozie-props");
         File defaults = new File(resource.toURI());
 
-        WorkflowConfigurationParser parser = new WorkflowConfigurationParser(defaults, ImmutableMap.of(TestRun.CELOS_USER_JS_VAR, "nameIsChanged"));
+        WorkflowConfigurationParser parser = new WorkflowConfigurationParser(defaults, ImmutableMap.of("CELOS_USER_JS_VAR", "nameIsChanged"));
 
         String func = "function (slotId) {" +
                 "        return {" +

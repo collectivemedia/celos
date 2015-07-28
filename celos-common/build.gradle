@@ -7,6 +7,7 @@ dependencies {
     compile("commons-lang:commons-lang:2.6")
     compile("commons-io:commons-io:2.4")
     compile("joda-time:joda-time:2.3")
+    compile('org.apache.httpcomponents:httpclient:4.2.5')
 
     compile("com.fasterxml.jackson.core:jackson-core:2.3.0")
     compile("com.fasterxml.jackson.core:jackson-databind:2.3.0")

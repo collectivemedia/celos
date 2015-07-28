@@ -28,7 +28,7 @@ addWorkflow({
 });
 
 function onDateTrigger(date) {
-    return new Packages.com.collective.celos.ci.mode.test.client.OnDateTrigger(date);
+    return new Packages.com.collective.celos.OnDateTrigger(date);
 }
 
 function mockExternalService() {

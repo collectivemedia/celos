@@ -1,4 +1,4 @@
-package com.collective.celos.ci.mode.test.client;
+package com.collective.celos;
 
 import com.collective.celos.ScheduledTime;
 import com.collective.celos.Scheduler;

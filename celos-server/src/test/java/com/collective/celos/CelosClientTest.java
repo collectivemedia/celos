@@ -1,4 +1,4 @@
-package com.collective.celos.ci.mode.test.client;
+package com.collective.celos;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;

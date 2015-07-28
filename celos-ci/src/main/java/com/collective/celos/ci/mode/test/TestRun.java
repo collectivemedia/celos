@@ -1,5 +1,6 @@
 package com.collective.celos.ci.mode.test;
 
+import com.collective.celos.CelosClient;
 import com.collective.celos.Util;
 import com.collective.celos.ci.config.CelosCiCommandLine;
 import com.collective.celos.ci.config.deploy.CelosCiContext;
@@ -7,7 +8,6 @@ import com.collective.celos.ci.config.deploy.CelosCiTarget;
 import com.collective.celos.ci.deploy.HdfsDeployer;
 import com.collective.celos.ci.deploy.JScpWorker;
 import com.collective.celos.ci.deploy.WorkflowFilesDeployer;
-import com.collective.celos.ci.mode.test.client.CelosClient;
 import com.collective.celos.ci.testing.fixtures.compare.FixObjectCompareResult;
 import com.collective.celos.ci.testing.fixtures.compare.FixtureComparer;
 import com.collective.celos.ci.testing.fixtures.deploy.FixtureDeployer;

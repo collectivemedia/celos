@@ -1,6 +1,5 @@
-package com.collective.celos.ci.mode.test.client;
+package com.collective.celos;
 
-import com.collective.celos.*;
 import com.collective.celos.server.CelosServer;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;

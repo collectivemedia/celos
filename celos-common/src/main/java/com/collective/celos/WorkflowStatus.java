@@ -1,7 +1,4 @@
-package com.collective.celos.ci.mode.test.client;
-
-import com.collective.celos.SlotState;
-import com.collective.celos.WorkflowInfo;
+package com.collective.celos;
 
 import java.util.List;
 

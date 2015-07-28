@@ -39,6 +39,7 @@ dependencies {
        exclude module: 'junit'
     }
     testCompile("org.mockito:mockito-all:1.9.5")
+    testCompile project(":celos-server")
 }
 
 jar {
