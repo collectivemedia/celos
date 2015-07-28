@@ -1,1 +1,3 @@
-./gradlew clean build --project-prop target_uri=sftp://celos001.ny7.collective-media.net/etc/celos/targets/main.json celos_ci --refresh-dependencies
+## ./gradlew clean build --project-prop target_uri=sftp://celos001.ny7.collective-media.net/etc/celos/targets/main.json celos_ci --refresh-dependencies
+
+./gradlew clean build --project-prop target_uri=file:///home/celos-ci/celos-settings/targets/test.json celos_ci --refresh-dependencies
