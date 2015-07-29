@@ -2,6 +2,9 @@ package com.collective.celos.server;
 
 import org.apache.commons.cli.*;
 
+import com.collective.celos.Constants;
+import com.sun.istack.logging.Logger;
+
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.security.SecureRandom;
@@ -14,6 +17,8 @@ public class ContextParser {
     private static final String CLI_UI_DIR = "uiDir";
     private static final String CLI_PORT = "port";
 
+    private static final Logger LOGGER = Logger.getLogger(ContextParser.class);
+    
     public CelosCommandLine parse(final String[] commandLineArguments) throws Exception {
 
         final CommandLineParser cmdLineGnuParser = new GnuParser();
@@ -22,24 +27,27 @@ public class ContextParser {
 
         if (!commandLine.hasOption(CLI_PORT)) {
             printHelp(80, 5, 3, true, System.out);
-            throw new RuntimeException("Missing --" + CLI_PORT + " argument");
+            throw new IllegalArgumentException("Missing --" + CLI_PORT + " argument");
         }
 
-        /** TODO: uncomment this when Celos Server should be configured from CL
-        String stateDbDir = commandLine.getOptionValue(CLI_STATE_DB_DIR);
-        String defaultsDir = commandLine.getOptionValue(CLI_DEFAULTS_DIR);
-        String uiDir = commandLine.getOptionValue(CLI_UI_DIR);
-        String workflowsDir = commandLine.getOptionValue(CLI_WF_DIR);
-         */
-
-        String stateDbDir = "/var/lib/celos/db";
-        String defaultsDir = "/etc/celos/defaults";
-        String uiDir = "/etc/celos/ui";
-        String workflowsDir = "/etc/celos/workflows";
+        String stateDbDir = getDefault(commandLine, CLI_STATE_DB_DIR, Constants.DEFAULT_DB_DIR);
+        String defaultsDir = getDefault(commandLine, CLI_DEFAULTS_DIR, Constants.DEFAULT_DEFAULTS_DIR);
+        String uiDir = getDefault(commandLine, CLI_UI_DIR, Constants.DEFAULT_UI_DIR);
+        String workflowsDir = getDefault(commandLine, CLI_WF_DIR, Constants.DEFAULT_WORKFLOWS_DIR);
 
         Integer port = Integer.valueOf(commandLine.getOptionValue(CLI_PORT));
 
         return new CelosCommandLine(workflowsDir, defaultsDir, stateDbDir, uiDir, port);
+    }
+
+    private String getDefault(CommandLine commandLine, String optionName, String defaultValue) {
+        String value = commandLine.getOptionValue(optionName);
+        if (value == null) {
+            LOGGER.info("--" + optionName + " not specified, using default value: " + defaultValue);
+            return defaultValue;
+        } else {
+            return value;
+        }
     }
 
     public Options constructOptions() {
