@@ -58,7 +58,7 @@ public class JettyServer {
         server.setHandler(context);
         Connector[] connectors = server.getConnectors();
         ServerConnector serverConnector;
-        if (connectors != null && connectors[0] instanceof ServerConnector) {
+        if (connectors != null && connectors.length > 0 && connectors[0] instanceof ServerConnector) {
             serverConnector = (ServerConnector) connectors[0];
         } else {
             serverConnector = new ServerConnector(server);
