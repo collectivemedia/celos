@@ -1,8 +1,9 @@
 version = '0.1'
 
 dependencies {
-
     compile("org.eclipse.jetty.aggregate:jetty-all:9.2.2.v20140723")
+    compile("javax.servlet:javax.servlet-api:3.1.0")
+
     compile("com.google.guava:guava:11.0.2")
     compile("commons-lang:commons-lang:2.6")
     compile("commons-io:commons-io:2.4")
