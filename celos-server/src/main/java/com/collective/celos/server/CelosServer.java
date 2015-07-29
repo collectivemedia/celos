@@ -36,7 +36,7 @@ public class CelosServer {
     }
 
     private void validateDirExists(File dir) {
-        if (!dir.isDirectory() || !dir.exists()) {
+        if (dir == null || !dir.isDirectory() || !dir.exists()) {
             throw new IllegalStateException("Cannot start server: " + dir + " doesnt exist");
         }
     }
