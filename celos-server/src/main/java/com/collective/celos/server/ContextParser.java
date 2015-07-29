@@ -1,13 +1,16 @@
 package com.collective.celos.server;
 
-import org.apache.commons.cli.*;
-
-import com.collective.celos.Constants;
-import com.sun.istack.logging.Logger;
-
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.security.SecureRandom;
+
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.GnuParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Options;
+import org.apache.log4j.Logger;
+
+import com.collective.celos.Constants;
 
 public class ContextParser {
 
