@@ -7,6 +7,7 @@ dependencies {
     compile("com.google.guava:guava:11.0.2")
     compile("commons-lang:commons-lang:2.6")
     compile("commons-io:commons-io:2.4")
+    compile("commons-cli:commons-cli:1.2")
     compile("joda-time:joda-time:2.3")
     compile('org.apache.httpcomponents:httpclient:4.2.5')
 
@@ -14,4 +15,6 @@ dependencies {
     compile("com.fasterxml.jackson.core:jackson-databind:2.3.0")
     compile("com.fasterxml.jackson.core:jackson-annotations:2.3.0")
     compile("org.mozilla:rhino:1.7R4")
+    compile("log4j:apache-log4j-extras:1.2.17")
+    compile("log4j:log4j:1.2.17")
 }

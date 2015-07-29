@@ -24,9 +24,9 @@ public class JettyServer {
         return createServer();
     }
 
-    public void start(int port) throws Exception {
+    public int start(int port) throws Exception {
         server = new Server(port);
-        createServer();
+        return createServer();
     }
 
     public void stop() throws Exception {
@@ -56,12 +56,17 @@ public class JettyServer {
         context = new WebAppContext(uriBuilder.toString() + "/", "/");
 
         server.setHandler(context);
+        Connector[] connectors = server.getConnectors();
+        ServerConnector serverConnector;
+        if (connectors != null && connectors[0] instanceof ServerConnector) {
+            serverConnector = (ServerConnector) connectors[0];
+        } else {
+            serverConnector = new ServerConnector(server);
+            server.setConnectors(new Connector[]{serverConnector});
+        }
 
-        ServerConnector connector = new ServerConnector(server);
-        server.setConnectors(new Connector[]{connector});
         server.start();
-
-        return connector.getLocalPort();
+        return serverConnector.getLocalPort();
     }
 
 
