@@ -22,7 +22,7 @@ public class ContextParser {
 
         if (!commandLine.hasOption(CLI_PORT)) {
             printHelp(80, 5, 3, true, System.out);
-            throw new RuntimeException("Wrong Celos Server configuration provided");
+            throw new RuntimeException("Missing --" + CLI_PORT + " argument");
         }
 
         /** TODO: uncomment this when Celos Server should be configured from CL
