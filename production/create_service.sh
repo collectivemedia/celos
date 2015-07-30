@@ -1,29 +1,52 @@
-#!/bin/bash
-
-SERVICE_NAME="celos"
-SERVICE_USER="plex"
-RUN_SCRIPT="/Users/obaskakov/celos.sh"
-
+#!/usr/bin/env bash
+set -x
 
 [[ -z ${SERVICE_NAME} ]] && exit 1
-[[ -z ${SERVICE_USER} ]] && exit 1
-[[ -z ${RUN_SCRIPT}   ]] && exit 1
 
-# TODO check /etc/sv exists
+SERVICE_HOME="/home/celos-ci"
+SERVICE_USER="celos-ci"
+SV_PATH0="runit-sv"
+SV_PATH="${SERVICE_HOME}/${SV_PATH0}"
 
-SERVICE_DIR="/etc/sv/${SERVICE_NAME}/"
+RUN_SCRIPT="${SERVICE_HOME}/local/bin/${SERVICE_NAME}"
+
+
+#[[ -z ${SERVICE_USER} ]] && exit 1
+#[[ -z ${RUN_SCRIPT}   ]] && exit 1
+#[[ -z ${SV_PATH}      ]] && exit 1
+
+
+SERVICE_DIR="${SV_PATH}/${SERVICE_NAME}"
+#SERVICE_LOGS="/var/log/${SERVICE_NAME}/runit"
+
+if [ -d ${SERVICE_DIR} ]
+then
+    echo service exists: ${SERVICE_DIR}
+    exit 1
+fi
+
+mkdir -p ${SV_PATH}
 
 # unlink runit before making changes
+sv stop ${SERVICE_NAME}
+sleep 1
+sv down ${SERVICE_NAME}
 rm -f /etc/service/${SERVICE_NAME}
 mkdir -p ${SERVICE_DIR}
-echo "#!/bin/bash" > ${SERVICE_DIR}/run
-echo "exec chpst -u ${SERVICE_USER} ${RUN_SCRIPT}" >> ${SERVICE_DIR}/run
 mkdir -p ${SERVICE_DIR}/log
-echo >  ${SERVICE_DIR}/log/run "#!/bin/bash"
-echo >> ${SERVICE_DIR}/log/run "exec chpst -u ${SERVICE_USER} svlogd -tt /var/log/${SERVICE_NAME}/runit"
+# process supervise
 mkdir -p ${SERVICE_DIR}/supervise
-chown -R root ${SERVICE_DIR}
-chown -R ${SERVICE_USER} ${SERVICE_DIR}/supervise
+chmod 755 ${SERVICE_DIR}/supervise
+mkfifo ${SERVICE_DIR}/supervise/ok
+mkfifo ${SERVICE_DIR}/supervise/control
+# process supervise
+echo >  ${SERVICE_DIR}/run "#!/usr/bin/env bash"
+echo >> ${SERVICE_DIR}/run "exec chpst -u ${SERVICE_USER} ${RUN_SCRIPT}"
+chmod a+x ${SERVICE_DIR}/run
+#mkdir -p ${SERVICE_LOGS}
+echo >  ${SERVICE_DIR}/log/run "#!/usr/bin/env bash"
+echo >> ${SERVICE_DIR}/log/run "exec chpst -u ${SERVICE_USER} svlogd -tt ${SERVICE_DIR}/log/"
+chmod a+x ${SERVICE_DIR}/log/run
 ln -s ${SERVICE_DIR} /etc/service/${SERVICE_NAME}
 
 echo "DONE"
