@@ -2,9 +2,9 @@
 set -x
 
 [[ -z ${SERVICE_NAME} ]] && exit 1
+[[ -z ${SERVICE_USER} ]] && exit 1
 
-SERVICE_HOME="/home/celos-ci"
-SERVICE_USER="celos-ci"
+SERVICE_HOME="/home/${SERVICE_USER}"
 SV_PATH0="runit-sv"
 SV_PATH="${SERVICE_HOME}/${SV_PATH0}"
 
@@ -19,18 +19,18 @@ RUN_SCRIPT="${SERVICE_HOME}/local/bin/${SERVICE_NAME}"
 SERVICE_DIR="${SV_PATH}/${SERVICE_NAME}"
 #SERVICE_LOGS="/var/log/${SERVICE_NAME}/runit"
 
-if [ -d ${SERVICE_DIR} ]
-then
-    echo service exists: ${SERVICE_DIR}
-    exit 1
-fi
+#if [ -d ${SERVICE_DIR} ]
+#then
+#    echo service exists: ${SERVICE_DIR}
+#    exit 1
+#fi
 
 mkdir -p ${SV_PATH}
 
 # unlink runit before making changes
-sv stop ${SERVICE_NAME}
+/sbin/sv stop ${SERVICE_NAME}
 sleep 1
-sv down ${SERVICE_NAME}
+/sbin/sv down ${SERVICE_NAME}
 rm -f /etc/service/${SERVICE_NAME}
 mkdir -p ${SERVICE_DIR}
 mkdir -p ${SERVICE_DIR}/log
@@ -48,5 +48,6 @@ echo >  ${SERVICE_DIR}/log/run "#!/usr/bin/env bash"
 echo >> ${SERVICE_DIR}/log/run "exec chpst -u ${SERVICE_USER} svlogd -tt ${SERVICE_DIR}/log/"
 chmod a+x ${SERVICE_DIR}/log/run
 ln -s ${SERVICE_DIR} /etc/service/${SERVICE_NAME}
+/sbin/sv start ${SERVICE_NAME}
 
 echo "DONE"
