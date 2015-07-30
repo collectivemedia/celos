@@ -16,7 +16,7 @@ mkdir -p ${DEST_ROOT}/bin
 echo >  ${DEST_ROOT}/bin/${SERVICE_NAME} "#!/usr/bin/env bash"
 echo >> ${DEST_ROOT}/bin/${SERVICE_NAME} "exec chpst -u ${SERVICE_USER} ${DEST_ROOT}/lib/${JAR_FILE}"
 
-mkdir -p ${DEST_PATH}
+mkdir -p ${DEST_ROOT}
 cp -f ${JAR_PATH} ${DEST_ROOT}/lib/
 /sbin/sv restart ${SERVICE_NAME}
 
