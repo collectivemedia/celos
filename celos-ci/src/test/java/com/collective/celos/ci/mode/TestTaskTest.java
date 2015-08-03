@@ -1,7 +1,7 @@
 package com.collective.celos.ci.mode;
 
 import com.collective.celos.ScheduledTime;
-import com.collective.celos.ci.config.CelosCiCommandLine;
+import com.collective.celos.ci.config.CiCommandLine;
 import com.collective.celos.ci.config.deploy.CelosCiTarget;
 import com.collective.celos.ci.config.deploy.CelosCiTargetParser;
 import com.collective.celos.ci.mode.test.TestCase;
@@ -75,7 +75,7 @@ public class TestTaskTest {
 
         String configJS = Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/ci/testing/config/test.js").getFile();
 
-        CelosCiCommandLine commandLine = new CelosCiCommandLine(targetFile.toURI().toString(), "DEPLOY", "deploydir", "workflow", "testDir", "uname", false);
+        CiCommandLine commandLine = new CiCommandLine(targetFile.toURI().toString(), "DEPLOY", "deploydir", "workflow", "testDir", "uname", false);
         TestTask testTask = new TestTask(commandLine, new File(configJS), tmpDir);
 
         String tempDirUri = tmpDir.toURI().toString();
@@ -124,7 +124,7 @@ public class TestTaskTest {
 
         private boolean finished;
 
-        public MockTestRun(CelosCiTarget target, CelosCiCommandLine commandLine, TestCase testCase) throws Exception {
+        public MockTestRun(CelosCiTarget target, CiCommandLine commandLine, TestCase testCase) throws Exception {
             super(target, commandLine, testCase, tempDir.newFolder());
         }
 
@@ -156,7 +156,7 @@ public class TestTaskTest {
         stream.write(targetFileStr.getBytes());
         stream.flush();
 
-        CelosCiCommandLine commandLine = new CelosCiCommandLine(targetFile.toURI().toString(), "DEPLOY", "deploydir", "workflow", "testDir", "uname", false);
+        CiCommandLine commandLine = new CiCommandLine(targetFile.toURI().toString(), "DEPLOY", "deploydir", "workflow", "testDir", "uname", false);
         String configJS = Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/ci/testing/config/test.js").getFile();
 
         TestConfigurationParser testConfigurationParser = mock(TestConfigurationParser.class);
@@ -187,7 +187,7 @@ public class TestTaskTest {
 
         private final String testRunFailedText;
 
-        public MockTestRunException(String testRunFailedText, CelosCiTarget target, CelosCiCommandLine commandLine, TestCase testCase) throws Exception {
+        public MockTestRunException(String testRunFailedText, CelosCiTarget target, CiCommandLine commandLine, TestCase testCase) throws Exception {
             super(target, commandLine, testCase, tempDir.newFolder());
             this.testRunFailedText = testRunFailedText;
         }
@@ -217,7 +217,7 @@ public class TestTaskTest {
         stream.write(targetFileStr.getBytes());
         stream.flush();
 
-        CelosCiCommandLine commandLine = new CelosCiCommandLine(targetFile.toURI().toString(), "DEPLOY", "deploydir", "workflow", "testDir", "uname", false);
+        CiCommandLine commandLine = new CiCommandLine(targetFile.toURI().toString(), "DEPLOY", "deploydir", "workflow", "testDir", "uname", false);
         String configJS = Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/ci/testing/config/test.js").getFile();
 
         TestConfigurationParser testConfigurationParser = mock(TestConfigurationParser.class);
@@ -254,7 +254,7 @@ public class TestTaskTest {
         stream.write(targetFileStr.getBytes());
         stream.flush();
 
-        CelosCiCommandLine commandLine = new CelosCiCommandLine(targetFile.toURI().toString(), "DEPLOY", "deploydir", "workflow", "testDir", "uname", false);
+        CiCommandLine commandLine = new CiCommandLine(targetFile.toURI().toString(), "DEPLOY", "deploydir", "workflow", "testDir", "uname", false);
         String configJS = Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/ci/testing/config/test.js").getFile();
 
         TestConfigurationParser testConfigurationParser = mock(TestConfigurationParser.class);

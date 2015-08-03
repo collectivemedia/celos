@@ -1,5 +1,7 @@
 package com.collective.celos.ui;
 
+import com.collective.celos.Util;
+
 import java.io.File;
 import java.net.URL;
 
@@ -9,10 +11,10 @@ import java.net.URL;
 public class UICommandLine {
 
     private final URL celosUrl;
-    private final Integer port;
+    private final int port;
 
-    public UICommandLine(URL celosUrl, Integer port) {
-        this.celosUrl = celosUrl;
+    public UICommandLine(URL celosUrl, int port) {
+        this.celosUrl =  Util.requireNonNull(celosUrl);
         this.port = port;
     }
 
@@ -20,7 +22,7 @@ public class UICommandLine {
         return celosUrl;
     }
 
-    public Integer getPort() {
+    public int getPort() {
         return port;
     }
 }

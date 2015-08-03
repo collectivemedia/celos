@@ -7,12 +7,12 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.URL;
 
-public class UIContextParser {
+public class UICommandLineParser {
 
     private static final String CLI_CELOS_ADDRESS = "celosAddr";
     private static final String CLI_PORT = "port";
 
-    private static final Logger LOGGER = Logger.getLogger(UIContextParser.class);
+    private static final Logger LOGGER = Logger.getLogger(UICommandLineParser.class);
     
     public UICommandLine parse(final String[] commandLineArguments) throws Exception {
 

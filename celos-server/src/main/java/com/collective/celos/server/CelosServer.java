@@ -11,19 +11,14 @@ public class CelosServer {
 
     private JettyServer server = new JettyServer();
 
-    public Integer startServer(Integer port, Map<String, String> jsVariables, File workflowsDir, File defaultsDir, File stateDatabase, File uiDir) throws Exception {
+    public void startServer(int port, Map<String, String> jsVariables, File workflowsDir, File defaultsDir, File stateDatabase, File uiDir) throws Exception {
 
         validateDirExists(workflowsDir);
         validateDirExists(defaultsDir);
         validateDirExists(stateDatabase);
         validateDirExists(uiDir);
 
-        if (port != null) {
-            server.start(port);
-        } else {
-            port = server.start();
-        }
-
+        server.start(port);
         Map<String, Object> attributes = ImmutableMap.<String, Object>of(Constants.ADDITIONAL_JS_VARIABLES, jsVariables);
         Map<String, String> initParams = ImmutableMap.of(Constants.WORKFLOW_CONFIGURATION_PATH_ATTR, workflowsDir.getAbsolutePath(),
                 Constants.DEFAULTS_CONFIGURATION_PATH_ATTR, defaultsDir.getAbsolutePath(),
@@ -31,8 +26,6 @@ public class CelosServer {
                 Constants.UI_PATH_ATTR, uiDir.getAbsolutePath());
 
         server.setupContext(attributes, initParams);
-
-        return port;
     }
 
     private void validateDirExists(File dir) {

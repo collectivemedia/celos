@@ -8,11 +8,11 @@ import com.collective.celos.JettyServer;
 public class Main {
 
     public static void main(String... args) throws Exception {
-        UIContextParser UIContextParser = new UIContextParser();
-        UICommandLine commandLine = UIContextParser.parse(args);
+        UICommandLineParser UICommandLineParser = new UICommandLineParser();
+        UICommandLine commandLine = UICommandLineParser.parse(args);
         JettyServer jettyServer = new JettyServer();
-        int port = jettyServer.start(commandLine.getPort());
+        jettyServer.start(commandLine.getPort());
 
-        System.out.println("Hello World Celos UI is started at    localhost:" + port);
+        System.out.println("Hello World Celos UI is started at    localhost:" + commandLine.getPort());
     }
 }

@@ -8,7 +8,7 @@ import java.net.URI;
 /**
  * Created by akonopko on 9/30/14.
  */
-public class CelosCiCommandLine {
+public class CiCommandLine {
 
     private final URI targetUri;
     private final CelosCiContext.Mode mode;
@@ -18,7 +18,7 @@ public class CelosCiCommandLine {
     private final String userName;
     private final boolean keepTempData;
 
-    public CelosCiCommandLine(String targetUri, String mode, String deployDir, String workflowName, String testCasesDir, String userName, boolean keepTempData) {
+    public CiCommandLine(String targetUri, String mode, String deployDir, String workflowName, String testCasesDir, String userName, boolean keepTempData) {
         this.userName = userName;
         this.keepTempData = keepTempData;
         this.targetUri = URI.create(targetUri);

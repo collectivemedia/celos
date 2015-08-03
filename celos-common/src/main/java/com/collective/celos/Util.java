@@ -9,6 +9,8 @@ import com.google.common.collect.Maps;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 
+import java.io.IOException;
+import java.net.ServerSocket;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Map;
@@ -151,4 +153,12 @@ public class Util {
         }
         return path;
     }
+
+    public static int getFreePort() throws IOException {
+        ServerSocket s = new ServerSocket(0);
+        int port = s.getLocalPort();
+        s.close();
+        return port;
+    }
+
 }

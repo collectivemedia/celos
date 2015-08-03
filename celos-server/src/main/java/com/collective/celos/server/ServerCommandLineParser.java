@@ -12,7 +12,7 @@ import org.apache.log4j.Logger;
 
 import com.collective.celos.Constants;
 
-public class ServerContextParser {
+public class ServerCommandLineParser {
 
     private static final String CLI_WF_DIR = "workflowsDir";
     private static final String CLI_DEFAULTS_DIR = "defaultsDir";
@@ -20,7 +20,7 @@ public class ServerContextParser {
     private static final String CLI_UI_DIR = "uiDir";
     private static final String CLI_PORT = "port";
 
-    private static final Logger LOGGER = Logger.getLogger(ServerContextParser.class);
+    private static final Logger LOGGER = Logger.getLogger(ServerCommandLineParser.class);
     
     public ServerCommandLine parse(final String[] commandLineArguments) throws Exception {
 
