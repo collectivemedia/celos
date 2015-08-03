@@ -1,5 +1,6 @@
 package com.collective.celos.ci.config;
 
+import com.collective.celos.Util;
 import com.collective.celos.ci.config.deploy.CelosCiContext;
 
 import java.io.File;
@@ -19,13 +20,13 @@ public class CiCommandLine {
     private final boolean keepTempData;
 
     public CiCommandLine(String targetUri, String mode, String deployDir, String workflowName, String testCasesDir, String userName, boolean keepTempData) {
-        this.userName = userName;
+        this.userName = Util.requireNonNull(userName);
         this.keepTempData = keepTempData;
-        this.targetUri = URI.create(targetUri);
-        this.mode = CelosCiContext.Mode.valueOf(mode);
-        this.deployDir = new File(deployDir);
-        this.workflowName = workflowName;
-        this.testCasesDir = new File(testCasesDir);
+        this.targetUri = URI.create(Util.requireNonNull(targetUri));
+        this.mode = CelosCiContext.Mode.valueOf(Util.requireNonNull(mode));
+        this.deployDir = new File(Util.requireNonNull(deployDir));
+        this.workflowName = Util.requireNonNull(workflowName);
+        this.testCasesDir = new File(Util.requireNonNull(testCasesDir));
     }
 
     public URI getTargetUri() {
