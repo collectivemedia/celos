@@ -12,7 +12,7 @@ import org.apache.log4j.Logger;
 
 import com.collective.celos.Constants;
 
-public class ContextParser {
+public class ServerContextParser {
 
     private static final String CLI_WF_DIR = "workflowsDir";
     private static final String CLI_DEFAULTS_DIR = "defaultsDir";
@@ -20,9 +20,9 @@ public class ContextParser {
     private static final String CLI_UI_DIR = "uiDir";
     private static final String CLI_PORT = "port";
 
-    private static final Logger LOGGER = Logger.getLogger(ContextParser.class);
+    private static final Logger LOGGER = Logger.getLogger(ServerContextParser.class);
     
-    public CelosCommandLine parse(final String[] commandLineArguments) throws Exception {
+    public ServerCommandLine parse(final String[] commandLineArguments) throws Exception {
 
         final CommandLineParser cmdLineGnuParser = new GnuParser();
         final Options gnuOptions = constructOptions();
@@ -40,7 +40,7 @@ public class ContextParser {
 
         Integer port = Integer.valueOf(commandLine.getOptionValue(CLI_PORT));
 
-        return new CelosCommandLine(workflowsDir, defaultsDir, stateDbDir, uiDir, port);
+        return new ServerCommandLine(workflowsDir, defaultsDir, stateDbDir, uiDir, port);
     }
 
     private String getDefault(CommandLine commandLine, String optionName, String defaultValue) {

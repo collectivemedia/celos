@@ -1,6 +1,5 @@
 package com.collective.celos.ui;
 
-import com.collective.celos.Constants;
 import org.apache.commons.cli.*;
 import org.apache.log4j.Logger;
 
@@ -8,14 +7,14 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.URL;
 
-public class ContextParser {
+public class UIContextParser {
 
     private static final String CLI_CELOS_ADDRESS = "celosAddr";
     private static final String CLI_PORT = "port";
 
-    private static final Logger LOGGER = Logger.getLogger(ContextParser.class);
+    private static final Logger LOGGER = Logger.getLogger(UIContextParser.class);
     
-    public CelosCommandLine parse(final String[] commandLineArguments) throws Exception {
+    public UICommandLine parse(final String[] commandLineArguments) throws Exception {
 
         final CommandLineParser cmdLineGnuParser = new GnuParser();
         final Options gnuOptions = constructOptions();
@@ -27,7 +26,7 @@ public class ContextParser {
         URL celosAddress = new URL(commandLine.getOptionValue(CLI_CELOS_ADDRESS));
         Integer port = Integer.valueOf(commandLine.getOptionValue(CLI_PORT));
 
-        return new CelosCommandLine(celosAddress, port);
+        return new UICommandLine(celosAddress, port);
     }
 
     private void validateHasOption(CommandLine commandLine, String option) {

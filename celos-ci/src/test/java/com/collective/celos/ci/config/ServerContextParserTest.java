@@ -18,7 +18,7 @@ import static org.mockito.Mockito.mock;
 /**
  * Created by akonopko on 10/1/14.
  */
-public class ContextParserTest {
+public class ServerContextParserTest {
 
     @Rule
     public TemporaryFolder tempDirRule = new TemporaryFolder();

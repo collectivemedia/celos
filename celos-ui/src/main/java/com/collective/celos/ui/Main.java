@@ -8,8 +8,8 @@ import com.collective.celos.JettyServer;
 public class Main {
 
     public static void main(String... args) throws Exception {
-        ContextParser contextParser = new ContextParser();
-        CelosCommandLine commandLine = contextParser.parse(args);
+        UIContextParser UIContextParser = new UIContextParser();
+        UICommandLine commandLine = UIContextParser.parse(args);
         JettyServer jettyServer = new JettyServer();
         int port = jettyServer.start(commandLine.getPort());
 

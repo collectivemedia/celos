@@ -5,8 +5,8 @@ import java.util.Collections;
 public class Main {
 
     public static void main(String... args) throws Exception {
-        ContextParser contextParser = new ContextParser();
-        CelosCommandLine commandLine = contextParser.parse(args);
+        ServerContextParser serverContextParser = new ServerContextParser();
+        ServerCommandLine commandLine = serverContextParser.parse(args);
         CelosServer celosServer = new CelosServer();
         celosServer.startServer(commandLine.getPort(),
                 Collections.<String, String>emptyMap(),
