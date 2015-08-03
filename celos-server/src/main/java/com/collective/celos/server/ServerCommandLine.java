@@ -2,6 +2,8 @@ package com.collective.celos.server;
 
 import java.io.File;
 
+import com.collective.celos.Util;
+
 /**
  * Created by akonopko on 9/30/14.
  */
@@ -14,11 +16,11 @@ public class ServerCommandLine {
     private final Integer port;
 
     public ServerCommandLine(String workflowsDir, String defaultsDir, String stateDatabase, String uiDir, Integer port) {
-        this.workflowsDir = new File(workflowsDir);
-        this.defaultsDir = new File(defaultsDir);
-        this.stateDatabase = new File(stateDatabase);
-        this.uiDir = new File(uiDir);
-        this.port = port;
+        this.workflowsDir = new File(Util.requireNonNull(workflowsDir));
+        this.defaultsDir = new File(Util.requireNonNull(defaultsDir));
+        this.stateDatabase = new File(Util.requireNonNull(stateDatabase));
+        this.uiDir = new File(Util.requireNonNull(uiDir));
+        this.port = Util.requireNonNull(port);
     }
 
     public File getWorkflowsDir() {
