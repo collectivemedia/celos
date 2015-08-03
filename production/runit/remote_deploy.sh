@@ -18,7 +18,7 @@ SERVICE_HOME="$(ssh ${SSH_NODE} echo ~${SERVICE_USER})"
 DEST_ROOT="${SERVICE_HOME}/local"
 
 # process jar
-#./gradlew ${SERVICE_NAME}:jar
+./gradlew clean ${SERVICE_NAME}:jar
 ssh ${SSH_NODE} "mkdir -p ${DEST_ROOT}/lib"
 scp "${JAR_PATH}" "${SSH_NODE}:${DEST_ROOT}/lib/"
 scp "./production/runit/${LOCAL_SCRIPT}" "${SSH_NODE}:${DEST_ROOT}/"
