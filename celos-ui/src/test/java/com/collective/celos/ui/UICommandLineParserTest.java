@@ -27,6 +27,22 @@ public class UICommandLineParserTest {
         Assert.assertEquals(commandLine.getPort(), 1234);
 
     }
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void testPortMissing() throws Exception {
+        UICommandLineParser parser = new UICommandLineParser();
+        String[] clParams = ("--celosAddr localhost:8888").split(" ");
+
+        parser.parse(clParams);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testCelosURLMissing() throws Exception {
+        UICommandLineParser parser = new UICommandLineParser();
+        String[] clParams = ("--port 8888").split(" ");
+
+        parser.parse(clParams);
+    }
 
     @Test(expected = MalformedURLException.class)
     public void testWrongAddress() throws Exception {
