@@ -18,6 +18,11 @@ sourceSets {
             srcDir 'src/main/webapp'
         }
     }
+    test {
+        java {
+            srcDir 'src/test/java'
+        }
+    }
 }
 
 dependencies {
