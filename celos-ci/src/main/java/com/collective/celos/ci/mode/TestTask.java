@@ -22,7 +22,7 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 
 import com.collective.celos.ci.CelosCi;
-import com.collective.celos.ci.config.CelosCiCommandLine;
+import com.collective.celos.ci.config.CiCommandLine;
 import com.collective.celos.ci.config.deploy.CelosCiTarget;
 import com.collective.celos.ci.config.deploy.CelosCiTargetParser;
 import com.collective.celos.ci.mode.test.TestCase;
@@ -42,11 +42,11 @@ public class TestTask extends CelosCi {
     private final List<TestRun> testRuns = Lists.newArrayList();
     private final File celosCiTempDir;
 
-    public TestTask(CelosCiCommandLine commandLine) throws Exception {
+    public TestTask(CiCommandLine commandLine) throws Exception {
         this(commandLine, getConfigJSFile(commandLine), getTempDir());
     }
 
-    TestTask(CelosCiCommandLine commandLine, File configJSFile, File tempDir) throws Exception {
+    TestTask(CiCommandLine commandLine, File configJSFile, File tempDir) throws Exception {
 
         this.celosCiTempDir = tempDir;
         substituteLoggers();
@@ -62,7 +62,7 @@ public class TestTask extends CelosCi {
         }
     }
 
-    private static File getConfigJSFile(CelosCiCommandLine commandLine) {
+    private static File getConfigJSFile(CiCommandLine commandLine) {
         return new File(commandLine.getTestCasesDir(), TEST_CONFIG_JS_FILE);
     }
 
