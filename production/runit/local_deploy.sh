@@ -4,9 +4,10 @@ set -e
 
 [[ -z ${SERVICE_NAME} ]] && echo pls set SERVICE_NAME && exit 1
 [[ -z ${SERVICE_USER} ]] && echo pls set SERVICE_USER && exit 1
+[[ -z ${DEPLOY_HOST} ]] && echo pls set DEPLOY_HOST && exit 1
 [[ -z ${DEPLOY_PORT} ]] && echo pls set DEPLOY_PORT && exit 1
 
-SV="/sbin/sv"
+SV="/usr/bin/sv"
 
 SERVICE_HOME="$(eval echo ~${SERVICE_USER})"
 

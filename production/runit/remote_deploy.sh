@@ -9,23 +9,22 @@ set -e
 
 
 SSH_NODE="${SERVICE_USER}@${DEPLOY_HOST}"
-LOCAL_SCRIPT="local_deploy.sh"
+LOCAL_SCRIPT="./production/runit/local_deploy.sh"
 
 JAR_FILE="${SERVICE_NAME}-0.1.jar"
 JAR_PATH="./${SERVICE_NAME}/build/libs/${JAR_FILE}"
 
-SERVICE_HOME="$(ssh ${SSH_NODE} echo ~${SERVICE_USER})"
+SERVICE_HOME="$(ssh ${SSH_NODE} exec echo ~${SERVICE_USER})"
 DEST_ROOT="${SERVICE_HOME}/local"
 
 # process jar
 ./gradlew clean ${SERVICE_NAME}:jar
 ssh ${SSH_NODE} "mkdir -p ${DEST_ROOT}/lib"
 scp "${JAR_PATH}" "${SSH_NODE}:${DEST_ROOT}/lib/"
-scp "./production/runit/${LOCAL_SCRIPT}" "${SSH_NODE}:${DEST_ROOT}/"
+#scp "./production/runit/${LOCAL_SCRIPT}" "${SSH_NODE}:${DEST_ROOT}/"
 # run local script
-ssh ${SSH_NODE} "DEPLOY_PORT=$DEPLOY_PORT SERVICE_NAME=$SERVICE_NAME SERVICE_USER=$SERVICE_USER\
-                 bash ${DEST_ROOT}/${LOCAL_SCRIPT}"
-
-
+ssh ${SSH_NODE} "DEPLOY_HOST=$DEPLOY_HOST DEPLOY_PORT=$DEPLOY_PORT \
+                 SERVICE_NAME=$SERVICE_NAME SERVICE_USER=$SERVICE_USER \
+                 bash -s" < ${LOCAL_SCRIPT}
 
 curl "http://${DEPLOY_HOST}:${DEPLOY_PORT}/ui" 2> /dev/null | diff - production/runit/hello-ui.txt
