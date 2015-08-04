@@ -3,13 +3,6 @@ apply plugin: 'maven'
 mainClassName = 'com.collective.celos.ci.CelosCi'
 version = '0.1'
 
-jar {
-    baseName "celos-ci"
-    manifest {
-        attributes("Main-Class": mainClassName)
-    }
-}
-
 dependencies {
     compile project(':celos-server')
     compile("com.jcraft:jsch:0.1.51")
@@ -28,4 +21,23 @@ dependencies {
        exclude module: 'junit'
     }
     testCompile("org.mockito:mockito-all:1.9.5")
+}
+
+task fatJar(type: Jar) {
+    from(sourceSets.main.output) {
+        include "**/**"
+    }
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it).matching { exclude 'META-INF/**' }}}
+    baseName "celos-ci-fat"
+    manifest {
+        attributes("Main-Class": mainClassName)
+    }
+    zip64 = true
+}
+
+jar {
+    baseName "celos-ci"
+    manifest {
+        attributes("Main-Class": mainClassName)
+    }
 }

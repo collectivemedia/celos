@@ -1,0 +1,4 @@
+./gradlew celos-ci:fatJar
+(cd samples/wordcount && ./gradlew prepareDeployDir)
+java -jar celos-ci/build/libs/celos-ci-fat-0.1.jar --deployDir samples/wordcount/build/celos_deploy --target target_uri --workflowName wordcount --mode TEST
+
