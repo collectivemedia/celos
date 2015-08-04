@@ -6,7 +6,7 @@ import java.io.File;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 
-public class ContextParser {
+public class CiCommandLineParser {
 
     private static final String CLI_TARGET = "target";
     private static final String CLI_MODE = "mode";
@@ -17,7 +17,7 @@ public class ContextParser {
     private static final String USERNAME_ENV_VAR = "CELOS_CI_USERNAME";
     private static final String KEEP_TEMP_DATA = "KEEP_TEMP_DATA";
 
-    public CelosCiCommandLine parse(final String[] commandLineArguments) throws Exception {
+    public CiCommandLine parse(final String[] commandLineArguments) throws Exception {
 
         final CommandLineParser cmdLineGnuParser = new GnuParser();
         final Options gnuOptions = constructOptions();
@@ -40,7 +40,7 @@ public class ContextParser {
             userName = System.getProperty("user.name");
         }
 
-        return new CelosCiCommandLine(targetUri, mode, deployDir, workflowName, testCasesDir, userName, keepTempData);
+        return new CiCommandLine(targetUri, mode, deployDir, workflowName, testCasesDir, userName, keepTempData);
     }
 
     String getTestCasesDir(CommandLine commandLine, String defaultTestCasesDir) {

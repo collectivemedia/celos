@@ -2,7 +2,7 @@ package com.collective.celos.ci.mode.test;
 
 import com.collective.celos.CelosClient;
 import com.collective.celos.Util;
-import com.collective.celos.ci.config.CelosCiCommandLine;
+import com.collective.celos.ci.config.CiCommandLine;
 import com.collective.celos.ci.config.deploy.CelosCiContext;
 import com.collective.celos.ci.config.deploy.CelosCiTarget;
 import com.collective.celos.ci.deploy.HdfsDeployer;
@@ -58,7 +58,7 @@ public class TestRun {
     private final CelosCiTarget originalTarget;
     private final boolean keepTempData;
 
-    public TestRun(CelosCiTarget target, CelosCiCommandLine commandLine, TestCase testCase, File celosCiTempDir) throws Exception {
+    public TestRun(CelosCiTarget target, CiCommandLine commandLine, TestCase testCase, File celosCiTempDir) throws Exception {
 
         this.testCase = testCase;
         this.testCasesDir = commandLine.getTestCasesDir();
@@ -150,7 +150,8 @@ public class TestRun {
             wfDeployer.deploy();
             hdfsDeployer.deploy();
 
-            Integer port = celosServer.startServer(null, additionalJSParams, celosWorkflowDir, celosDefaultsDir, celosDbDir, celosUiDir);
+            Integer port = Util.getFreePort();
+            celosServer.startServer(port, additionalJSParams, celosWorkflowDir, celosDefaultsDir, celosDbDir, celosUiDir);
 
             for (FixtureDeployer fixtureDeployer : testCase.getInputs()) {
                 fixtureDeployer.deploy(this);
@@ -173,6 +174,8 @@ public class TestRun {
             }
         }
     }
+
+
 
     private void logJsFileExists(String fileName) {
         File localFile = new File(ciContext.getDeployDir(), fileName);

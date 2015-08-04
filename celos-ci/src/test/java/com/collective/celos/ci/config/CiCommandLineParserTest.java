@@ -18,7 +18,7 @@ import static org.mockito.Mockito.mock;
 /**
  * Created by akonopko on 10/1/14.
  */
-public class ContextParserTest {
+public class CiCommandLineParserTest {
 
     @Rule
     public TemporaryFolder tempDirRule = new TemporaryFolder();
@@ -32,11 +32,11 @@ public class ContextParserTest {
 
     @Test
     public void testContextParserTest() throws Exception {
-        ContextParser contextParser = new ContextParser();
+        CiCommandLineParser contextParser = new CiCommandLineParser();
 
         String[] clParams = ("--testDir " + tmpDir.getAbsolutePath() + " --target target --mode TEST --deployDir deploydir --workflowName workflow").split(" ");
 
-        CelosCiCommandLine commandLine = contextParser.parse(clParams);
+        CiCommandLine commandLine = contextParser.parse(clParams);
 
         Assert.assertEquals(commandLine.getDeployDir(), new File("deploydir"));
         Assert.assertEquals(commandLine.getMode(), CelosCiContext.Mode.TEST);
@@ -47,10 +47,10 @@ public class ContextParserTest {
 
     @Test
     public void testContextParserDeploy() throws Exception {
-        ContextParser contextParser = new ContextParser();
+        CiCommandLineParser contextParser = new CiCommandLineParser();
         String[] clParams = ("--testDir " + tmpDir.getAbsolutePath() + " --target target --mode DEPLOY --deployDir deploydir --workflowName workflow").split(" ");
 
-        CelosCiCommandLine commandLine = contextParser.parse(clParams);
+        CiCommandLine commandLine = contextParser.parse(clParams);
 
         Assert.assertEquals(commandLine.getDeployDir(), new File("deploydir"));
         Assert.assertEquals(commandLine.getMode(), CelosCiContext.Mode.DEPLOY);
@@ -61,11 +61,11 @@ public class ContextParserTest {
 
     @Test
     public void testContextParserUndeploy() throws Exception {
-        ContextParser contextParser = new ContextParser();
+        CiCommandLineParser contextParser = new CiCommandLineParser();
 
         String[] clParams = ("--testDir " + tmpDir.getAbsolutePath() + " --target target --mode UNDEPLOY --deployDir deploydir --workflowName workflow").split(" ");
 
-        CelosCiCommandLine commandLine = contextParser.parse(clParams);
+        CiCommandLine commandLine = contextParser.parse(clParams);
 
         Assert.assertEquals(commandLine.getDeployDir(), new File("deploydir"));
         Assert.assertEquals(commandLine.getMode(), CelosCiContext.Mode.UNDEPLOY);
@@ -77,10 +77,10 @@ public class ContextParserTest {
 
     @Test(expected = RuntimeException.class)
     public void testContextParserTestFails() throws Exception {
-        ContextParser contextParser = new ContextParser();
+        CiCommandLineParser contextParser = new CiCommandLineParser();
         String[] clParams = "--target target --mode TEST --deployDir deploydir --workflowName workflow".split(" ");
 
-        CelosCiCommandLine commandLine = contextParser.parse(clParams);
+        CiCommandLine commandLine = contextParser.parse(clParams);
 
         Assert.assertEquals(commandLine.getDeployDir(), new File("deploydir"));
         Assert.assertEquals(commandLine.getMode(), CelosCiContext.Mode.TEST);
@@ -91,7 +91,7 @@ public class ContextParserTest {
 
     @Test
     public void testDirComesFromCLI() throws Exception {
-        ContextParser contextParser = new ContextParser();
+        CiCommandLineParser contextParser = new CiCommandLineParser();
 
         CommandLine commandLine = mock(CommandLine.class);
         doReturn("testCasesDir").when(commandLine).getOptionValue("testDir");
@@ -101,7 +101,7 @@ public class ContextParserTest {
 
     @Test
     public void testDirDefault() throws Exception {
-        ContextParser contextParser = new ContextParser();
+        CiCommandLineParser contextParser = new CiCommandLineParser();
 
         CommandLine commandLine = mock(CommandLine.class);
         String result = contextParser.getTestCasesDir(commandLine, tmpDir.getAbsolutePath());
@@ -110,7 +110,7 @@ public class ContextParserTest {
 
     @Test (expected = RuntimeException.class)
     public void testNoDirComes() throws Exception {
-        ContextParser contextParser = new ContextParser();
+        CiCommandLineParser contextParser = new CiCommandLineParser();
 
         CommandLine commandLine = mock(CommandLine.class);
         contextParser.getTestCasesDir(commandLine, "");

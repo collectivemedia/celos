@@ -1,18 +1,20 @@
 package com.collective.celos.ui;
 
+import com.collective.celos.Util;
+
 import java.io.File;
 import java.net.URL;
 
 /**
  * Created by akonopko on 9/30/14.
  */
-public class CelosCommandLine {
+public class UICommandLine {
 
     private final URL celosUrl;
-    private final Integer port;
+    private final int port;
 
-    public CelosCommandLine(URL celosUrl, Integer port) {
-        this.celosUrl = celosUrl;
+    public UICommandLine(URL celosUrl, int port) {
+        this.celosUrl =  Util.requireNonNull(celosUrl);
         this.port = port;
     }
 
@@ -20,7 +22,7 @@ public class CelosCommandLine {
         return celosUrl;
     }
 
-    public Integer getPort() {
+    public int getPort() {
         return port;
     }
 }

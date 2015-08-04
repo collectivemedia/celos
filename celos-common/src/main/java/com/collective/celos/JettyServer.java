@@ -1,16 +1,10 @@
 package com.collective.celos;
 
 import org.apache.http.client.utils.URIBuilder;
-import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.webapp.WebAppContext;
 
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Map;
 
@@ -19,14 +13,17 @@ public class JettyServer {
     private Server server;
     private WebAppContext context;
 
-    public int start() throws Exception {
-        server = new Server();
-        return createServer();
-    }
-
-    public int start(int port) throws Exception {
+    public void start(int port) throws Exception {
         server = new Server(port);
-        return createServer();
+
+        URL url = Thread.currentThread().getContextClassLoader().getResource("WEB-INF");
+        URIBuilder uriBuilder = new URIBuilder(url.toURI());
+        uriBuilder.setPath(Paths.get(url.getPath()).getParent().toString());
+
+        context = new WebAppContext(uriBuilder.toString() + "/", "/");
+
+        server.setHandler(context);
+        server.start();
     }
 
     public void stop() throws Exception {
@@ -46,27 +43,6 @@ public class JettyServer {
         for (Map.Entry<String, String> entry: initParam.entrySet()) {
             context.setInitParameter(entry.getKey(), entry.getValue());
         }
-    }
-
-    private int createServer() throws Exception {
-        URL url = Thread.currentThread().getContextClassLoader().getResource("WEB-INF");
-        URIBuilder uriBuilder = new URIBuilder(url.toURI());
-        uriBuilder.setPath(Paths.get(url.getPath()).getParent().toString());
-
-        context = new WebAppContext(uriBuilder.toString() + "/", "/");
-
-        server.setHandler(context);
-        Connector[] connectors = server.getConnectors();
-        ServerConnector serverConnector;
-        if (connectors != null && connectors.length > 0 && connectors[0] instanceof ServerConnector) {
-            serverConnector = (ServerConnector) connectors[0];
-        } else {
-            serverConnector = new ServerConnector(server);
-            server.setConnectors(new Connector[]{serverConnector});
-        }
-
-        server.start();
-        return serverConnector.getLocalPort();
     }
 
 
