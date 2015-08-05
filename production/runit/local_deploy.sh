@@ -9,6 +9,9 @@ set -e
 
 SV="/sbin/sv"
 
+DEV_NULL="/dev/null"
+
+
 SERVICE_HOME="$(eval echo ~${SERVICE_USER})"
 
 if [[ ! -d ${SERVICE_HOME} ]]
@@ -54,7 +57,7 @@ echo >>  ${SERVICE_DIR}/run "exec chpst -u ${SERVICE_USER} ${RUN_SCRIPT}"
 chmod a+x ${SERVICE_DIR}/run
 # process check script
 echo >  ${SERVICE_DIR}/check '#!/usr/bin/env bash'
-echo >>  ${SERVICE_DIR}/check "exec curl \"http://${DEPLOY_HOST}:${DEPLOY_PORT}\" &> /dev/null"
+echo >>  ${SERVICE_DIR}/check "exec curl \"http://${DEPLOY_HOST}:${DEPLOY_PORT}\" &> ${DEV_NULL}"
 chmod a+x ${SERVICE_DIR}/check
 # process logs
 mkdir -p ${SERVICE_DIR}/log
@@ -64,7 +67,6 @@ chmod a+x ${SERVICE_DIR}/log/run
 # process programm
 mkdir -p ${DEST_ROOT}/bin
 echo >  ${DEST_ROOT}/bin/${SERVICE_NAME} '#!/usr/bin/env bash'
-
 # FIXME dirty hack
 if [[ $SERVICE_NAME == "celos-server" ]]
 then
@@ -75,7 +77,7 @@ fi
 
 chmod a+x ${DEST_ROOT}/bin/${SERVICE_NAME}
 # restart service
-if ${SV} check ${SERVICE_NAME} 2> /dev/null ;
+if ${SV} check ${SERVICE_NAME} 2> ${DEV_NULL} ;
 then
     ln -sf ${SERVICE_DIR} /etc/service/${SERVICE_NAME}
     ${SV} restart ${SERVICE_NAME}
@@ -83,7 +85,13 @@ else
     # runsv starts new service with delay, so this fixes 'fail: $SERVICE_NAME: runsv not running'
     ln -sf ${SERVICE_DIR} /etc/service/${SERVICE_NAME}
     i=0
-    while (( i <= 7 )) && ! ${SV} check ${SERVICE_NAME} ; do (( i += 1 )) ; sleep 1 ; done
+    while (( i <= 7 )) && ! ${SV} check ${SERVICE_NAME} 2> ${DEV_NULL}
+    do
+        echo "runv isn't runnning, wait 1 sec"
+        (( i += 1 ))
+        sleep 1
+    done
     ${SV} start ${SERVICE_NAME}
 fi
+# need to deploy from different users
 chmod a+w /etc/service/${SERVICE_NAME}
