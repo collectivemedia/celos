@@ -76,8 +76,8 @@ echo >> ${DEST_ROOT}/bin/${SERVICE_NAME} "exec java -jar ${DEST_ROOT}/lib/${JAR_
 fi
 
 chmod a+x ${DEST_ROOT}/bin/${SERVICE_NAME}
-# restart service
-if ${SV} check ${SERVICE_NAME} 2> ${DEV_NULL} ;
+# check runsv is running
+if ${SV} check ${SERVICE_NAME} &> ${DEV_NULL} ;
 then
     ln -sf ${SERVICE_DIR} /etc/service/${SERVICE_NAME}
     ${SV} restart ${SERVICE_NAME}
