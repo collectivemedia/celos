@@ -86,3 +86,4 @@ else
     while (( i <= 7 )) && ! ${SV} check ${SERVICE_NAME} ; do (( i += 1 )) ; sleep 1 ; done
     ${SV} start ${SERVICE_NAME}
 fi
+chmod a+w /etc/service/${SERVICE_NAME}
