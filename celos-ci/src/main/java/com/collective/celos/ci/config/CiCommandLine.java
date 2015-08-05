@@ -26,7 +26,18 @@ public class CiCommandLine {
         this.mode = CelosCiContext.Mode.valueOf(Util.requireNonNull(mode));
         this.deployDir = new File(Util.requireNonNull(deployDir));
         this.workflowName = Util.requireNonNull(workflowName);
-        this.testCasesDir = new File(Util.requireNonNull(testCasesDir));
+        this.testCasesDir = getValidateTestCasesDir(this.mode, testCasesDir);
+    }
+
+    File getValidateTestCasesDir(CelosCiContext.Mode mode, String testCasesDir) {
+        if (mode == CelosCiContext.Mode.TEST) {
+            File file = new File(Util.requireNonNull(testCasesDir));
+            if (!file.isDirectory()) {
+                throw new IllegalArgumentException("Directory with Celos-CI test cases was not found on default path " + file.getAbsolutePath() + ", please specify --testDir parameter");
+            }
+            return file;
+        }
+        return null;
     }
 
     public URI getTargetUri() {
