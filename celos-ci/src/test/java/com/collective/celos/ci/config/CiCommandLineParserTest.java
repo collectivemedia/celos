@@ -2,7 +2,6 @@ package com.collective.celos.ci.config;
 
 import com.collective.celos.ci.config.deploy.CelosCiContext;
 import junit.framework.Assert;
-import org.apache.commons.cli.CommandLine;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -11,9 +10,6 @@ import org.junit.rules.TemporaryFolder;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
-
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
 
 /**
  * Created by akonopko on 10/1/14.
@@ -48,7 +44,7 @@ public class CiCommandLineParserTest {
     @Test
     public void testContextParserDeploy() throws Exception {
         CiCommandLineParser contextParser = new CiCommandLineParser();
-        String[] clParams = ("--testDir " + tmpDir.getAbsolutePath() + " --target target --mode DEPLOY --deployDir deploydir --workflowName workflow").split(" ");
+        String[] clParams = ("--target target --mode DEPLOY --deployDir deploydir --workflowName workflow").split(" ");
 
         CiCommandLine commandLine = contextParser.parse(clParams);
 
@@ -63,7 +59,7 @@ public class CiCommandLineParserTest {
     public void testContextParserUndeploy() throws Exception {
         CiCommandLineParser contextParser = new CiCommandLineParser();
 
-        String[] clParams = ("--testDir " + tmpDir.getAbsolutePath() + " --target target --mode UNDEPLOY --deployDir deploydir --workflowName workflow").split(" ");
+        String[] clParams = ("--target target --mode UNDEPLOY --deployDir deploydir --workflowName workflow").split(" ");
 
         CiCommandLine commandLine = contextParser.parse(clParams);
 
@@ -75,45 +71,42 @@ public class CiCommandLineParserTest {
     }
 
 
-    @Test(expected = RuntimeException.class)
-    public void testContextParserTestFails() throws Exception {
+    @Test(expected = IllegalArgumentException.class)
+    public void testContextParserTestFailsNoTestDir() throws Exception {
         CiCommandLineParser contextParser = new CiCommandLineParser();
         String[] clParams = "--target target --mode TEST --deployDir deploydir --workflowName workflow".split(" ");
 
-        CiCommandLine commandLine = contextParser.parse(clParams);
-
-        Assert.assertEquals(commandLine.getDeployDir(), new File("deploydir"));
-        Assert.assertEquals(commandLine.getMode(), CelosCiContext.Mode.TEST);
-        Assert.assertEquals(commandLine.getTargetUri(), URI.create("target"));
-        Assert.assertEquals(commandLine.getUserName(), System.getProperty("user.name"));
-        Assert.assertEquals(commandLine.getWorkflowName(), "workflow");
+        contextParser.parse(clParams);
     }
 
-    @Test
-    public void testDirComesFromCLI() throws Exception {
-        CiCommandLineParser contextParser = new CiCommandLineParser();
-
-        CommandLine commandLine = mock(CommandLine.class);
-        doReturn("testCasesDir").when(commandLine).getOptionValue("testDir");
-        String result = contextParser.getTestCasesDir(commandLine, null);
-        Assert.assertEquals(result, "testCasesDir");
-    }
-
-    @Test
-    public void testDirDefault() throws Exception {
-        CiCommandLineParser contextParser = new CiCommandLineParser();
-
-        CommandLine commandLine = mock(CommandLine.class);
-        String result = contextParser.getTestCasesDir(commandLine, tmpDir.getAbsolutePath());
-        Assert.assertEquals(result, tmpDir.getAbsolutePath());
-    }
-
-    @Test (expected = RuntimeException.class)
+    @Test (expected = IllegalArgumentException.class)
     public void testNoDirComes() throws Exception {
-        CiCommandLineParser contextParser = new CiCommandLineParser();
+        new CiCommandLine("target", "TEST", "deployDir", "workflowName", "testCasesDir", "userName", true);
+    }
 
-        CommandLine commandLine = mock(CommandLine.class);
-        contextParser.getTestCasesDir(commandLine, "");
+    @Test (expected = NullPointerException.class)
+    public void testNoDirComesNull() throws Exception {
+        new CiCommandLine("target", "TEST", "deployDir", "workflowName", null, "userName", true);
+    }
+
+    @Test
+    public void testDeployNoDirComes() throws Exception {
+        new CiCommandLine("target", "DEPLOY", "deployDir", "workflowName", "testCasesDir", "userName", true);
+    }
+
+    @Test
+    public void testDeployNoDirComesNull() throws Exception {
+        new CiCommandLine("target", "DEPLOY", "deployDir", "workflowName", null, "userName", true);
+    }
+
+    @Test
+    public void testUndeployNoDirComes() throws Exception {
+        new CiCommandLine("target", "UNDEPLOY", "deployDir", "workflowName", "testCasesDir", "userName", true);
+    }
+
+    @Test
+    public void testUndeployNoDirComesNull() throws Exception {
+        new CiCommandLine("target", "UNDEPLOY", "deployDir", "workflowName", null, "userName", true);
     }
 
 }
