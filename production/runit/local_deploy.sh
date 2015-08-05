@@ -77,17 +77,17 @@ fi
 
 chmod a+x ${DEST_ROOT}/bin/${SERVICE_NAME}
 # check runsv is running
-if ${SV} check ${SERVICE_NAME} &> ${DEV_NULL} ;
+if ${SV} check ${SERVICE_NAME} &> ${DEV_NULL}
 then
     ln -sf ${SERVICE_DIR} /etc/service/${SERVICE_NAME}
     ${SV} restart ${SERVICE_NAME}
 else
-    # runsv starts new service with delay, so this fixes 'fail: $SERVICE_NAME: runsv not running'
     ln -sf ${SERVICE_DIR} /etc/service/${SERVICE_NAME}
+    # runsv starts new service with delay,
+    # so this needs to fix 'fail: $SERVICE_NAME: runsv not running'
     i=0
     while (( i <= 7 )) && ! ${SV} check ${SERVICE_NAME} 2> ${DEV_NULL}
     do
-        echo "runv isn't runnning, wait 1 sec"
         (( i += 1 ))
         sleep 1
     done
