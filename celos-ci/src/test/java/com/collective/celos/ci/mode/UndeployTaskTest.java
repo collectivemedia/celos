@@ -1,6 +1,6 @@
 package com.collective.celos.ci.mode;
 
-import com.collective.celos.ci.config.CelosCiCommandLine;
+import com.collective.celos.ci.config.CiCommandLine;
 import com.collective.celos.ci.config.deploy.CelosCiContext;
 import com.google.common.collect.Sets;
 import org.junit.Assert;
@@ -42,7 +42,7 @@ public class UndeployTaskTest {
         stream.write(targetFileStr.getBytes());
         stream.flush();
 
-        CelosCiCommandLine commandLine = new CelosCiCommandLine(targetFile.toURI().toString(), "UNDEPLOY", "deploydir", "workflow", "testDir", "uname", false);
+        CiCommandLine commandLine = new CiCommandLine(targetFile.toURI().toString(), "UNDEPLOY", "deploydir", "workflow", "testDir", "uname", false);
         UndeployTask celosCiDeploy = new UndeployTask(commandLine);
 
         CelosCiContext context = celosCiDeploy.getCiContext();
@@ -82,7 +82,7 @@ public class UndeployTaskTest {
         stream.write(targetFileStr.getBytes());
         stream.flush();
 
-        CelosCiCommandLine commandLine = new CelosCiCommandLine(targetFile.toURI().toString(), "UNDEPLOY", deployDir.getAbsolutePath(), "workflow", "testDir", "uname", false);
+        CiCommandLine commandLine = new CiCommandLine(targetFile.toURI().toString(), "UNDEPLOY", deployDir.getAbsolutePath(), "workflow", "testDir", "uname", false);
 
         UndeployTask undeployTask = new UndeployTask(commandLine);
 

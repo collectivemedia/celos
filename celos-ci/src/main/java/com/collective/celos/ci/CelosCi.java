@@ -1,7 +1,7 @@
 package com.collective.celos.ci;
 
-import com.collective.celos.ci.config.CelosCiCommandLine;
-import com.collective.celos.ci.config.ContextParser;
+import com.collective.celos.ci.config.CiCommandLine;
+import com.collective.celos.ci.config.CiCommandLineParser;
 import com.collective.celos.ci.config.deploy.CelosCiContext;
 import com.collective.celos.ci.mode.DeployTask;
 import com.collective.celos.ci.mode.TestTask;
@@ -14,14 +14,14 @@ public abstract class CelosCi {
         //left here for convenience while debugging
         //args = "--testDir /home/akonopko/work/Pythia/harmony/src/test/celos-ci --deployDir /home/akonopko/work/Pythia/harmony/build/celos_deploy --target sftp://celos001/home/akonopko/testing.json --workflowName grand_central --mode TEST".split(" ");
 
-        ContextParser contextParser = new ContextParser();
-        CelosCiCommandLine commandLine = contextParser.parse(args);
+        CiCommandLineParser contextParser = new CiCommandLineParser();
+        CiCommandLine commandLine = contextParser.parse(args);
 
         CelosCi celosCi = createCelosCi(commandLine);
         celosCi.start();
     }
 
-    public static CelosCi createCelosCi(CelosCiCommandLine commandLine) throws Exception {
+    public static CelosCi createCelosCi(CiCommandLine commandLine) throws Exception {
 
         if (commandLine.getMode() == CelosCiContext.Mode.TEST) {
             return new TestTask(commandLine);

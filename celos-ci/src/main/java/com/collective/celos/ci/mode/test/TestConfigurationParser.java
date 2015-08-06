@@ -1,13 +1,9 @@
 package com.collective.celos.ci.mode.test;
 
 import com.collective.celos.JSConfigParser;
-import com.collective.celos.ci.CelosCi;
-import com.collective.celos.ci.config.CelosCiCommandLine;
-import com.collective.celos.ci.config.deploy.CelosCiContext;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.mozilla.javascript.Context;
-import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.tools.shell.Global;
 
 import java.io.*;

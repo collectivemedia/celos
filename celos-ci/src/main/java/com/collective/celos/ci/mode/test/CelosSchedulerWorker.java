@@ -1,9 +1,9 @@
 package com.collective.celos.ci.mode.test;
 
+import com.collective.celos.CelosClient;
 import com.collective.celos.ScheduledTime;
 import com.collective.celos.SlotState;
 import com.collective.celos.WorkflowID;
-import com.collective.celos.ci.mode.test.client.CelosClient;
 import com.google.common.collect.Sets;
 import org.apache.commons.lang.StringUtils;
 
