@@ -26,6 +26,8 @@ public class Main {
     }
 
     private static void setupLogging(File logDir) {
+        System.getProperties().setProperty("log4j.defaultInitOverride", "true");
+
         RollingFileAppender appender = new RollingFileAppender();
         appender.setFile(new File(logDir, "celos.log").getAbsolutePath());
         appender.setAppend(true);
