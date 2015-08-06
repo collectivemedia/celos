@@ -71,7 +71,7 @@ public class CelosUIServlet extends HttpServlet {
         STATUS_TO_SHORT_NAME.put(SlotState.Status.FAILURE, "fail");
         STATUS_TO_SHORT_NAME.put(SlotState.Status.READY, "rdy&nbsp;");
         STATUS_TO_SHORT_NAME.put(SlotState.Status.RUNNING, "run&nbsp;");
-        STATUS_TO_SHORT_NAME.put(SlotState.Status.SUCCESS, "&nbsp;&nbsp;&nbsp;&nbsp;");
+        STATUS_TO_SHORT_NAME.put(SlotState.Status.SUCCESS, "ok&nbsp;&nbsp;");
         STATUS_TO_SHORT_NAME.put(SlotState.Status.WAIT_TIMEOUT, "time");
         STATUS_TO_SHORT_NAME.put(SlotState.Status.WAITING, "wait");
         if (STATUS_TO_SHORT_NAME.size() != SlotState.Status.values().length) {
