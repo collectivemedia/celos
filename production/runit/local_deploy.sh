@@ -70,7 +70,7 @@ if [[ $SERVICE_NAME == "celos-server" ]]
 then
 echo >> ${DEST_ROOT}/bin/${SERVICE_NAME} "exec java -jar ${DEST_ROOT}/lib/${JAR_FILE} --port ${DEPLOY_PORT}"
 else
-echo >> ${DEST_ROOT}/bin/${SERVICE_NAME} "exec java -jar ${DEST_ROOT}/lib/${JAR_FILE} --port ${DEPLOY_PORT} --celosAddr http://localhost"
+echo >> ${DEST_ROOT}/bin/${SERVICE_NAME} "exec java -jar ${DEST_ROOT}/lib/${JAR_FILE} --port ${DEPLOY_PORT} --celosAddr ${CELOS_URL}"
 fi
 
 chmod a+x ${DEST_ROOT}/bin/${SERVICE_NAME}
