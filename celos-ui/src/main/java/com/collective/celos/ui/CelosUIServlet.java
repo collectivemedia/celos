@@ -106,7 +106,7 @@ public class CelosUIServlet extends HttpServlet {
         prefix.append(".hour { font-family: monospace; text-align: center; }\n");
         prefix.append(".firstHour { background-color: black; color: white; }\n");
         prefix.append(".currentDate { font-family: monospace; text-align: right; padding-right: 20px; font-weight: bold; }\n");
-        prefix.append(".tile { font-family: monospace; font-size: small; }\n");
+        prefix.append(".slot { font-family: monospace; font-size: small; }\n");
         prefix.append(".RUNNING, .READY { background-color: #ffc; }\n");
         prefix.append(".SUCCESS { background-color: #cfc; }\n");
         prefix.append(".WAITING { background-color: #ccf; }\n");
@@ -126,7 +126,7 @@ public class CelosUIServlet extends HttpServlet {
     }
 
     private void render(CelosClient client, int zoomLevelMinutes, PrintWriter w) throws Exception {
-        Set<WorkflowID> workflows = client.getWorkflowList();
+        Set<WorkflowID> workflows = ImmutableSet.<WorkflowID>of(new WorkflowID("flume-ready-dc3")); //client.getWorkflowList();
         ScheduledTime now = ScheduledTime.now();
         List<ScheduledTime> times = getDefaultTileTimes(now, zoomLevelMinutes);
         if (times.size() < 1) throw new Error("This shouldn't happen: times list is empty");
@@ -158,8 +158,20 @@ public class CelosUIServlet extends HttpServlet {
 
     private void writeGroup(WorkflowGroup g, List<ScheduledTime> times, Map<WorkflowID, Map<ScheduledTime, Set<SlotState>>> tiles, PrintWriter w) {
         w.println("<tr>");
-        w.println("<td class='workflowGroup'>" + g.getWorkflows().size() + "</td>");
-        w.println("</tr>");        
+        w.println("<td class='workflowGroup'>" + g.getName() + "</td>");
+        w.println("</tr>");
+        for (WorkflowID id : g.getWorkflows()) {
+            writeWorkflow(id, times, tiles, w);
+        }
+    }
+
+    private void writeWorkflow(WorkflowID id, List<ScheduledTime> times, Map<WorkflowID, Map<ScheduledTime, Set<SlotState>>> tiles, PrintWriter w) {
+        w.println("<tr>");
+        w.println("<td class='workflow'>" + id.toString() + "</td>");
+        for (ScheduledTime t : times) {
+            w.println("<td class='slot'>" + tiles.get(t).size() + "</td>");
+        }
+        w.println("</td>");
     }
 
     private Map<WorkflowID, Map<ScheduledTime, Set<SlotState>>> bucketByTime(Map<WorkflowID, WorkflowStatus> statuses, int zoomLevelMinutes) {
