@@ -102,8 +102,8 @@ public class CelosUIServlet extends HttpServlet {
         prefix.append("html { font-family: sans; background-color: #fff; }\n");
         prefix.append("a { text-decoration: none; }\n");
         prefix.append(".mainTable { table-layout: fixed; }\n");
-        prefix.append(".workflowGroup { text-align: right; font-size: large; padding-top: 1em; padding-right: 20px; }\n");
-        prefix.append(".workflow { text-align: right; padding-right: 20px; font-weight: normal; overflow: scroll; }\n");
+        prefix.append(".workflowGroup { text-align: right; font-size: large; font-weight: bold; padding-top: 1em; padding-right: 20px; }\n");
+        prefix.append(".workflow { text-align: right; padding-right: 20px; font-weight: normal; overflow: hidden; }\n");
         prefix.append(".hour, .day, .noDay, .dayHeader { font-family: monospace; text-align: center; }\n");
         prefix.append(".day { background-color: black; color: white; font-weight: bold; }\n");
         prefix.append(".currentDate { font-family: monospace; text-align: right; padding-right: 20px; font-weight: bold; }\n");
