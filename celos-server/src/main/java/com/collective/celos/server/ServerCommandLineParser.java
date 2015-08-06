@@ -61,7 +61,8 @@ public class ServerCommandLineParser {
                 .addOption(CLI_DEFAULTS_DIR, CLI_DEFAULTS_DIR, true, "Path to DEFAULTS dir")
                 .addOption(CLI_STATE_DB_DIR, CLI_STATE_DB_DIR, true, "Path to STATE DATABASE dir")
                 .addOption(CLI_UI_DIR, CLI_UI_DIR, true, "Path to UI dir")
-                .addOption(CLI_PORT, CLI_PORT, true, "Celos Server port");
+                .addOption(CLI_PORT, CLI_PORT, true, "Celos Server port")
+                .addOption(CLI_LOG_DIR, CLI_LOG_DIR, true, "Celos logs dir");
         return options;
     }
 
