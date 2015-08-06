@@ -103,7 +103,7 @@ public class CelosUIServlet extends HttpServlet {
         prefix.append("a { text-decoration: none; }\n");
         prefix.append(".mainTable { table-layout: fixed; }\n");
         prefix.append(".workflowGroup { text-align: right; font-size: large; padding-top: 1em; padding-right: 20px; }\n");
-        prefix.append(".workflow { text-align: right; padding-right: 20px; font-weight: normal; }\n");
+        prefix.append(".workflow { text-align: right; padding-right: 20px; font-weight: normal; overflow: scroll; }\n");
         prefix.append(".hour, .day, .dayHeader { font-family: monospace; text-align: center; }\n");
         prefix.append(".currentDate { font-family: monospace; text-align: right; padding-right: 20px; font-weight: bold; }\n");
         prefix.append(".slot { font-family: monospace; font-size: small; }\n");
@@ -158,7 +158,7 @@ public class CelosUIServlet extends HttpServlet {
         // Hack, but enables fast rendering via table-layout: fixed
         w.println("<td class='dayHeader'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>");
         for (ScheduledTime t : times) {
-            String label = Util.isFullHour(t.getDateTime())
+            String label = Util.isFullDay(t.getDateTime())
                     ? ("&nbsp;" + DAY_FORMAT.print(t.getDateTime()) + "&nbsp;")
                     : "&nbsp;&nbsp;&nbsp;&nbsp;";
             w.println("<td class='day'>" + label + "</td>");
@@ -189,17 +189,40 @@ public class CelosUIServlet extends HttpServlet {
         w.println("<td class='workflow'>" + id.toString() + "</td>");
         for (ScheduledTime t : times) {
             Set<SlotState> slots = tiles.get(t);
-            if (slots == null) {
-                w.println("<td class='slot'>&nbsp;&nbsp;&nbsp;&nbsp;</td>");
-            } else {
-                w.println("<td class='slot'>" + printTile(slots) + "</td>");
-            }
+            String slotClass = "slot " + printTileClass(slots);
+            w.println("<td class='" + slotClass + "'>" + printTile(slots) + "</td>");
         }
         w.println("</td>");
     }
 
-    private String printTile(Set<SlotState> slots) {
+    static String printTileClass(Set<SlotState> slots) {
         if (slots.size() == 1) {
+            return slots.iterator().next().getStatus().name();
+        } else {
+            return printMultiSlotClass(slots);
+        }
+    }
+
+    static String printMultiSlotClass(Set<SlotState> slots) {
+        boolean hasIndeterminate = false;
+        for (SlotState slot : slots) {
+            if (slot.getStatus().getType() == SlotState.StatusType.FAILURE) {
+                return SlotState.Status.FAILURE.name();
+            } else if (slot.getStatus().getType() == SlotState.StatusType.INDETERMINATE) {
+                hasIndeterminate = true;
+            }
+        }
+        if (hasIndeterminate) {
+            return SlotState.Status.WAITING.name();
+        } else {
+            return SlotState.Status.SUCCESS.name();
+        }
+    }
+
+    private String printTile(Set<SlotState> slots) {
+        if (slots == null) {
+            return "&nbsp;&nbsp;&nbsp;&nbsp;";
+        } else if (slots.size() == 1) {
             return printSingleSlot(slots.iterator().next());
         } else {
             return "....";

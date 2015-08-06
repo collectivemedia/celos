@@ -79,4 +79,22 @@ public class UIServletTest {
         Assert.assertEquals(CelosUIServlet.MIN_ZOOM_LEVEL_MINUTES, CelosUIServlet.getZoomLevel("-1"));
     }
     
+    @Test
+    public void testTileClass() {
+        WorkflowID id = new WorkflowID("foo");
+        SlotState succ = new SlotState(new SlotID(id, new ScheduledTime("2015-08-06T19:27Z")), SlotState.Status.SUCCESS);
+        SlotState fail = new SlotState(new SlotID(id, new ScheduledTime("2015-08-06T19:31Z")), SlotState.Status.FAILURE);
+        SlotState wait = new SlotState(new SlotID(id, new ScheduledTime("2015-08-06T19:35Z")), SlotState.Status.WAITING);
+
+        Assert.assertEquals("SUCCESS", CelosUIServlet.printTileClass(ImmutableSet.of(succ)));
+        Assert.assertEquals("SUCCESS", CelosUIServlet.printTileClass(ImmutableSet.of(succ, succ, succ)));
+        Assert.assertEquals("WAITING", CelosUIServlet.printTileClass(ImmutableSet.of(succ, wait, succ)));
+        Assert.assertEquals("WAITING", CelosUIServlet.printTileClass(ImmutableSet.of(wait)));
+        Assert.assertEquals("WAITING", CelosUIServlet.printTileClass(ImmutableSet.of(wait, wait, wait)));
+        Assert.assertEquals("FAILURE", CelosUIServlet.printTileClass(ImmutableSet.of(fail)));
+        Assert.assertEquals("FAILURE", CelosUIServlet.printTileClass(ImmutableSet.of(succ, fail)));
+        Assert.assertEquals("FAILURE", CelosUIServlet.printTileClass(ImmutableSet.of(succ, fail, wait)));
+        Assert.assertEquals("FAILURE", CelosUIServlet.printTileClass(ImmutableSet.of(wait, wait, fail, wait, succ)));
+    }
+    
 }
