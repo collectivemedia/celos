@@ -161,15 +161,20 @@ public class CelosUIServlet extends HttpServlet {
         w.println("<td class='workflowGroup'>" + g.getName() + "</td>");
         w.println("</tr>");
         for (WorkflowID id : g.getWorkflows()) {
-            writeWorkflow(id, times, tiles, w);
+            writeWorkflow(id, times, tiles.get(id), w);
         }
     }
 
-    private void writeWorkflow(WorkflowID id, List<ScheduledTime> times, Map<WorkflowID, Map<ScheduledTime, Set<SlotState>>> tiles, PrintWriter w) {
+    private void writeWorkflow(WorkflowID id, List<ScheduledTime> times, Map<ScheduledTime, Set<SlotState>> tiles, PrintWriter w) {
         w.println("<tr>");
         w.println("<td class='workflow'>" + id.toString() + "</td>");
         for (ScheduledTime t : times) {
-            w.println("<td class='slot'>" + tiles.get(t).size() + "</td>");
+            Set<SlotState> slots = tiles.get(t);
+            if (slots == null) {
+                w.println("<td class='slot'>????</td>");
+            } else {
+                w.println("<td class='slot'>" + slots.size() + "</td>");
+            }
         }
         w.println("</td>");
     }
