@@ -1,5 +1,7 @@
 package com.collective.celos.server;
 
+import com.collective.celos.Util;
+
 import java.util.Collections;
 
 public class Main {
@@ -14,6 +16,8 @@ public class Main {
                 commandLine.getDefaultsDir(),
                 commandLine.getStateDatabase(),
                 commandLine.getUiDir());
+
+        Util.setupLogging(commandLine.getLogDir());
     }
 
 }
