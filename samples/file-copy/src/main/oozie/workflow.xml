@@ -3,6 +3,7 @@
   <start to="main"/>
   <action name="main">
     <fs>
+      <mkdir path="${outputDir}"/>
       <move source="${inputDir}/${year}-${month}-${day}T${hour}00.txt"
             target="${outputDir}/${year}-${month}-${day}T${hour}00.txt"/>
     </fs>
