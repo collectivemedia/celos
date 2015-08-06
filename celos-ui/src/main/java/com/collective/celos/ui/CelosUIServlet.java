@@ -104,7 +104,7 @@ public class CelosUIServlet extends HttpServlet {
         prefix.append(".mainTable { table-layout: fixed; }\n");
         prefix.append(".workflowGroup { text-align: right; font-size: large; padding-top: 1em; padding-right: 20px; }\n");
         prefix.append(".workflow { text-align: right; padding-right: 20px; font-weight: normal; overflow: scroll; }\n");
-        prefix.append(".hour, .day, .dayHeader { font-family: monospace; text-align: center; }\n");
+        prefix.append(".hour, .day, .noDay, .dayHeader { font-family: monospace; text-align: center; }\n");
         prefix.append(".day { background-color: black; color: white; font-weight: bold; }\n");
         prefix.append(".currentDate { font-family: monospace; text-align: right; padding-right: 20px; font-weight: bold; }\n");
         prefix.append(".slot { font-family: monospace; font-size: small; }\n");
@@ -158,11 +158,16 @@ public class CelosUIServlet extends HttpServlet {
         // This establishes the width of the workflow IDs column
         // Hack, but enables fast rendering via table-layout: fixed
         w.println("<td class='dayHeader'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>");
+        String label, dayClass;
         for (ScheduledTime t : times) {
-            String label = Util.isFullDay(t.getDateTime())
-                    ? ("&nbsp;" + DAY_FORMAT.print(t.getDateTime()) + "&nbsp;")
-                    : "&nbsp;&nbsp;&nbsp;&nbsp;";
-            w.println("<td class='day'>" + label + "</td>");
+            if (Util.isFullDay(t.getDateTime())) {
+                label = ("&nbsp;" + DAY_FORMAT.print(t.getDateTime()) + "&nbsp;");
+                dayClass = "day";
+            } else {
+                label = "&nbsp;&nbsp;&nbsp;&nbsp;";
+                dayClass = "noDay";
+            }
+            w.println("<td class='" + dayClass + "'>" + label + "</td>");
         }
         w.println("</tr>");
     }
