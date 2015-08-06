@@ -187,7 +187,7 @@ public class CelosUIServlet extends HttpServlet {
     }
 
     private String printSingleSlot(SlotState next) {
-        return STATUS_TO_SHORT_NAME.get(next.getStatus().name());
+        return STATUS_TO_SHORT_NAME.get(next.getStatus());
     }
 
     private Map<WorkflowID, Map<ScheduledTime, Set<SlotState>>> bucketByTime(Map<WorkflowID, WorkflowStatus> statuses, int zoomLevelMinutes) {
