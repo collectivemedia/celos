@@ -40,6 +40,7 @@ public class Main {
         patternLayout.setConversionPattern("[%d{YYYY-MM-dd HH:mm:ss.SSS}] %-5p: %m%n");
         appender.setLayout(patternLayout);
 
+        appender.activateOptions();
         Logger.getRootLogger().addAppender(appender);
         Logger.getRootLogger().setLevel(Level.INFO);
     }
