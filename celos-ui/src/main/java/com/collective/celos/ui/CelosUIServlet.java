@@ -105,12 +105,13 @@ public class CelosUIServlet extends HttpServlet {
         prefix.append(".workflowGroup { text-align: right; font-size: large; padding-top: 1em; padding-right: 20px; }\n");
         prefix.append(".workflow { text-align: right; padding-right: 20px; font-weight: normal; overflow: scroll; }\n");
         prefix.append(".hour, .day, .dayHeader { font-family: monospace; text-align: center; }\n");
+        prefix.append(".day { background-color: black; color: white; font-weight: bold; }\n");
         prefix.append(".currentDate { font-family: monospace; text-align: right; padding-right: 20px; font-weight: bold; }\n");
         prefix.append(".slot { font-family: monospace; font-size: small; }\n");
         prefix.append(".RUNNING, .READY { background-color: #ffc; }\n");
-        prefix.append(".SUCCESS { background-color: #cfc; }\n");
+        prefix.append(".SUCCESS { color: #cfc; background-color: #cfc; }\n");
         prefix.append(".WAITING { background-color: #ccf; }\n");
-        prefix.append(".FAIL, .WAIT_TIMEOUT { background-color: #fcc; }\n");
+        prefix.append(".FAILURE, .WAIT_TIMEOUT { background-color: #fcc; }\n");
         prefix.append("</style>\n");
         prefix.append("</head>\n");
         prefix.append("<body>\n");
