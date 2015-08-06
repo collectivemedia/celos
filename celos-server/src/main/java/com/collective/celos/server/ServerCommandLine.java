@@ -13,14 +13,16 @@ public class ServerCommandLine {
     private final File defaultsDir;
     private final File stateDatabase;
     private final File uiDir;
+    private final File logDir;
     private final int port;
 
-    public ServerCommandLine(String workflowsDir, String defaultsDir, String stateDatabase, String uiDir, int port) {
+    public ServerCommandLine(String workflowsDir, String defaultsDir, String stateDatabase, String uiDir, String logDir, int port) {
         this.workflowsDir = new File(Util.requireNonNull(workflowsDir));
         this.defaultsDir = new File(Util.requireNonNull(defaultsDir));
         this.stateDatabase = new File(Util.requireNonNull(stateDatabase));
         this.uiDir = new File(Util.requireNonNull(uiDir));
         this.port = port;
+        this.logDir = new File(Util.requireNonNull(logDir));
     }
 
     public File getWorkflowsDir() {
@@ -41,5 +43,9 @@ public class ServerCommandLine {
 
     public int getPort() {
         return port;
+    }
+
+    public File getLogDir() {
+        return logDir;
     }
 }
