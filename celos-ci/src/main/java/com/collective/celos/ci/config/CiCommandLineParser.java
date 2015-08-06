@@ -32,7 +32,7 @@ public class CiCommandLineParser {
         String mode = commandLine.getOptionValue(CLI_MODE);
         String workflowName = commandLine.getOptionValue(CLI_WORKFLOW_NAME);
         String targetUri = commandLine.getOptionValue(CLI_TARGET);
-        String testCasesDir = getTestCasesDir(commandLine, DEFAULT_TEST_CASES_DIR);
+        String testCasesDir = commandLine.getOptionValue(CLI_TEST_CASES_DIR, DEFAULT_TEST_CASES_DIR);
 
         boolean keepTempData = Boolean.parseBoolean(System.getenv(KEEP_TEMP_DATA));
         String userName = System.getenv(USERNAME_ENV_VAR);
@@ -41,18 +41,6 @@ public class CiCommandLineParser {
         }
 
         return new CiCommandLine(targetUri, mode, deployDir, workflowName, testCasesDir, userName, keepTempData);
-    }
-
-    String getTestCasesDir(CommandLine commandLine, String defaultTestCasesDir) {
-        String testCasesDir = commandLine.getOptionValue(CLI_TEST_CASES_DIR);
-        if (testCasesDir == null) {
-            testCasesDir = defaultTestCasesDir;
-            File defTCDir = new File(testCasesDir);
-            if (!defTCDir.isDirectory()) {
-                throw new RuntimeException("Directory with Celos-CI test cases was not found on default path " + defTCDir.getAbsolutePath() + ", please specify --testDir parameter");
-            }
-        }
-        return testCasesDir;
     }
 
     public Options constructOptions() {
