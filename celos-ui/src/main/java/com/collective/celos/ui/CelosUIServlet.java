@@ -14,7 +14,8 @@ import java.io.IOException;
 public class CelosUIServlet extends HttpServlet {
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        IOUtils.write("Hello World Celos UI", resp.getOutputStream());
+    protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+        IOUtils.write(getServletContext().getAttribute(Main.CELOS_URL_ATTR).toString(), res.getOutputStream());
     }
+    
 }
