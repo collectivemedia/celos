@@ -196,7 +196,9 @@ public class CelosUIServlet extends HttpServlet {
     }
 
     static String printTileClass(Set<SlotState> slots) {
-        if (slots.size() == 1) {
+        if (slots == null) {
+            return "";
+        } else if (slots.size() == 1) {
             return slots.iterator().next().getStatus().name();
         } else {
             return printMultiSlotClass(slots);
