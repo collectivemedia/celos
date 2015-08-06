@@ -25,20 +25,34 @@ public class SlotState extends ValueObject {
     private static final String EXTERNAL_ID_PROP = "externalID";
     private static final String RETRY_COUNT_PROP = "retryCount";
     
+    public enum StatusType {
+        SUCCESS,
+        INDETERMINATE,
+        FAILURE
+    }
+    
     public enum Status {
         /** No data availability yet. */
-        WAITING,
+        WAITING(StatusType.INDETERMINATE),
         /** No data availability for too long. */
-        WAIT_TIMEOUT,
+        WAIT_TIMEOUT(StatusType.FAILURE),
         /** Data is available and the workflow will be run shortly. 
             Workflow will also enter this state when it is retried. */
-        READY,
+        READY(StatusType.INDETERMINATE),
         /** The workflow is currently running. */
-        RUNNING,
+        RUNNING(StatusType.INDETERMINATE),
         /** The workflow has succeeded. */
-        SUCCESS,
+        SUCCESS(StatusType.SUCCESS),
         /** The workflow has failed and will not be retried. */
-        FAILURE
+        FAILURE(StatusType.FAILURE);
+        
+        private final StatusType type;
+        Status(StatusType type) {
+            this.type = type;
+        }
+        public StatusType getType() {
+            return type;
+        }
     };
     
     public SlotState(SlotID slotID, Status status) {

@@ -44,15 +44,14 @@ public class CelosUIServlet extends HttpServlet {
             res.setStatus(HttpServletResponse.SC_OK);
             PrintWriter writer = res.getWriter();
             writer.append(PREFIX);
-            render(client, getZoomLevel(req), writer);
+            render(client, getZoomLevel(req.getParameter(ZOOM_PARAM)), writer);
             writer.append(POSTFIX);
         } catch (Exception e) {
             throw new ServletException(e);
         }
     }
     
-    private int getZoomLevel(HttpServletRequest req) {
-        String zoomStr = req.getParameter(ZOOM_PARAM);
+    static int getZoomLevel(String zoomStr) {
         if (zoomStr == null) {
             return DEFAULT_ZOOM_LEVEL_MINUTES;
         } else {
@@ -81,9 +80,9 @@ public class CelosUIServlet extends HttpServlet {
     }
     
     private static final int[] ZOOM_LEVEL_MINUTES = new int[]{1, 5, 15, 30, 60, 60*24};
-    private static int DEFAULT_ZOOM_LEVEL_MINUTES = 60;
-    private static int MIN_ZOOM_LEVEL_MINUTES = 1;
-    private static int MAX_ZOOM_LEVEL_MINUTES = 60*24; // Code won't work with higher level, because of toFullDay()
+    static int DEFAULT_ZOOM_LEVEL_MINUTES = 60;
+    static int MIN_ZOOM_LEVEL_MINUTES = 1;
+    static int MAX_ZOOM_LEVEL_MINUTES = 60*24; // Code won't work with higher level, because of toFullDay()
     
     // We never want to fetch more data than for a week from Celos so as not to overload the server
     private static int MAX_MINUTES_TO_FETCH = 7 * 60 * 24;
@@ -171,12 +170,24 @@ public class CelosUIServlet extends HttpServlet {
         for (ScheduledTime t : times) {
             Set<SlotState> slots = tiles.get(t);
             if (slots == null) {
-                w.println("<td class='slot'>????</td>");
+                w.println("<td class='slot'>&nbsp;&nbsp;&nbsp;&nbsp;</td>");
             } else {
-                w.println("<td class='slot'>" + slots.size() + "</td>");
+                w.println("<td class='slot'>" + printTile(slots) + "</td>");
             }
         }
         w.println("</td>");
+    }
+
+    private String printTile(Set<SlotState> slots) {
+        if (slots.size() == 1) {
+            return printSingleSlot(slots.iterator().next());
+        } else {
+            return "....";
+        }
+    }
+
+    private String printSingleSlot(SlotState next) {
+        return STATUS_TO_SHORT_NAME.get(next.getStatus().name());
     }
 
     private Map<WorkflowID, Map<ScheduledTime, Set<SlotState>>> bucketByTime(Map<WorkflowID, WorkflowStatus> statuses, int zoomLevelMinutes) {

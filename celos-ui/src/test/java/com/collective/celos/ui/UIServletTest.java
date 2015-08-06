@@ -71,4 +71,12 @@ public class UIServletTest {
         Assert.assertEquals(expected, CelosUIServlet.bucketSlotsByTime(states, 5));    
     }
     
+    @Test
+    public void testZoomLevelParam() {
+        Assert.assertEquals(CelosUIServlet.DEFAULT_ZOOM_LEVEL_MINUTES, CelosUIServlet.getZoomLevel(null));
+        Assert.assertEquals(12, CelosUIServlet.getZoomLevel("12"));
+        Assert.assertEquals(CelosUIServlet.MAX_ZOOM_LEVEL_MINUTES, CelosUIServlet.getZoomLevel("1000000"));
+        Assert.assertEquals(CelosUIServlet.MIN_ZOOM_LEVEL_MINUTES, CelosUIServlet.getZoomLevel("-1"));
+    }
+    
 }
