@@ -32,6 +32,7 @@ scp "${JAR_PATH}" "${SSH_NODE}:${DEST_ROOT}/lib/"
 # run local script
 ssh ${SSH_NODE} "DEPLOY_HOST=$DEPLOY_HOST DEPLOY_PORT=$DEPLOY_PORT \
                  SERVICE_NAME=$SERVICE_NAME SERVICE_USER=$SERVICE_USER \
+                 CELOS_URL=$CELOS_URL \
                  bash -s" -- < ${LOCAL_SCRIPT}
 
 # curl "http://${DEPLOY_HOST}:${DEPLOY_PORT}/ui" 2> /dev/null | diff - production/runit/hello-ui.txt
