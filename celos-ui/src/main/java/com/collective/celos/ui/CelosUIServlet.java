@@ -88,6 +88,7 @@ public class CelosUIServlet extends HttpServlet {
     private static int MAX_MINUTES_TO_FETCH = 7 * 60 * 24;
     private static int MAX_TILES_TO_DISPLAY = 48;
     
+    private static final DateTimeFormatter DAY_FORMAT = DateTimeFormat.forPattern("dd");
     private static final DateTimeFormatter HEADER_FORMAT = DateTimeFormat.forPattern("HHmm");
     private static final DateTimeFormatter FULL_FORMAT = DateTimeFormat.forPattern("YYYY-MM-dd HH:mm");
     
@@ -100,10 +101,10 @@ public class CelosUIServlet extends HttpServlet {
         prefix.append("<style type='text/css'>\n");
         prefix.append("html { font-family: sans; background-color: #fff; }\n");
         prefix.append("a { text-decoration: none; }\n");
+        prefix.append(".mainTable { table-layout: fixed; }\n");
         prefix.append(".workflowGroup { text-align: right; font-size: large; padding-top: 1em; padding-right: 20px; }\n");
         prefix.append(".workflow { text-align: right; padding-right: 20px; font-weight: normal; }\n");
-        prefix.append(".hour { font-family: monospace; text-align: center; }\n");
-        prefix.append(".firstHour { background-color: black; color: white; }\n");
+        prefix.append(".hour, .day, .dayHeader { font-family: monospace; text-align: center; }\n");
         prefix.append(".currentDate { font-family: monospace; text-align: right; padding-right: 20px; font-weight: bold; }\n");
         prefix.append(".slot { font-family: monospace; font-size: small; }\n");
         prefix.append(".RUNNING, .READY { background-color: #ffc; }\n");
@@ -138,7 +139,7 @@ public class CelosUIServlet extends HttpServlet {
     }
 
     private void writeTable(ScheduledTime now, List<WorkflowGroup> groups, List<ScheduledTime> times, Map<WorkflowID, Map<ScheduledTime, Set<SlotState>>> tiles, PrintWriter w) {
-        w.println("<table>");
+        w.println("<table class='mainTable'>");
         writeHeader(now, times, w);
         for (WorkflowGroup g : groups) {
             writeGroup(g, times, tiles, w);
@@ -147,6 +148,25 @@ public class CelosUIServlet extends HttpServlet {
     }
 
     private void writeHeader(ScheduledTime now, List<ScheduledTime> times, PrintWriter w) {
+        writeDayHeader(now, times, w);
+        writeTimeHeader(now, times, w);
+    }
+    
+    private void writeDayHeader(ScheduledTime now, List<ScheduledTime> times, PrintWriter w) {
+        w.println("<tr>");
+        // This establishes the width of the workflow IDs column
+        // Hack, but enables fast rendering via table-layout: fixed
+        w.println("<td class='dayHeader'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>");
+        for (ScheduledTime t : times) {
+            String label = Util.isFullHour(t.getDateTime())
+                    ? ("&nbsp;" + DAY_FORMAT.print(t.getDateTime()) + "&nbsp;")
+                    : "&nbsp;&nbsp;&nbsp;&nbsp;";
+            w.println("<td class='day'>" + label + "</td>");
+        }
+        w.println("</tr>");
+    }
+
+    private void writeTimeHeader(ScheduledTime now, List<ScheduledTime> times, PrintWriter w) {
         w.println("<tr>");
         w.println("<td class='currentDate'>" + FULL_FORMAT.print(now.getDateTime()) + " UTC</td>");
         for (ScheduledTime t : times) {
