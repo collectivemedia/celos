@@ -126,7 +126,7 @@ public class CelosUIServlet extends HttpServlet {
     }
 
     private void render(CelosClient client, int zoomLevelMinutes, PrintWriter w) throws Exception {
-        Set<WorkflowID> workflows = ImmutableSet.<WorkflowID>of(new WorkflowID("flume-ready-dc3")); //client.getWorkflowList();
+        Set<WorkflowID> workflows = client.getWorkflowList();
         ScheduledTime now = ScheduledTime.now();
         List<ScheduledTime> times = getDefaultTileTimes(now, zoomLevelMinutes);
         if (times.size() < 1) throw new Error("This shouldn't happen: times list is empty");
