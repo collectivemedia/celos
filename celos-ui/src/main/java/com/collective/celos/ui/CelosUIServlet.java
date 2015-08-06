@@ -18,7 +18,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
-import org.junit.Assert;
 
 import com.collective.celos.CelosClient;
 import com.collective.celos.ScheduledTime;
@@ -130,7 +129,7 @@ public class CelosUIServlet extends HttpServlet {
         Set<WorkflowID> workflows = client.getWorkflowList();
         ScheduledTime now = ScheduledTime.now();
         List<ScheduledTime> times = getDefaultTileTimes(now, zoomLevelMinutes);
-        Assert.assertTrue(times.size() >= 1);
+        if (times.size() < 1) throw new Error("This shouldn't happen: times list is empty");
         ScheduledTime end = times.get(0);
         // Go zoomLevelMinutes into the past to populate last tile
         ScheduledTime start = times.get(times.size() - 1).minusMinutes(zoomLevelMinutes);
