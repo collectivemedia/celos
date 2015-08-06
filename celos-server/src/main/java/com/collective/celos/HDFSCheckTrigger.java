@@ -29,12 +29,7 @@ public class HDFSCheckTrigger implements Trigger {
         if (cachedFSs.containsKey(fsString)) {
             this.fs = cachedFSs.get(fsString);
         } else {
-            Configuration conf = new Configuration();
-            //required due http://stackoverflow.com/questions/17265002/hadoop-no-filesystem-for-scheme-file
-            conf.set("fs.hdfs.impl", org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
-            conf.set("fs.file.impl", org.apache.hadoop.fs.LocalFileSystem.class.getName());
-
-            this.fs = FileSystem.get(new URI(fsString), conf);
+            this.fs = FileSystem.get(new URI(fsString), new Configuration());
             cachedFSs.put(fsString, this.fs);
         }
     }
