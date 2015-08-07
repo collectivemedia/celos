@@ -164,17 +164,35 @@ public class TestRun {
                 results.add(fixtureComparer.check(this));
             }
             return results;
+        } catch (Throwable t) {
+            t.printStackTrace(System.err);
+            throw t;
         } finally {
-            System.out.println(testCase.getName() + ": Stopping Celos");
-            System.out.flush();
-            celosServer.stopServer();
+            stopServer(celosServer);
+            cleanData();
+        }
+    }
+
+    private void cleanData() {
+        try {
             if (!keepTempData) {
                 doCleanup();
                 validateCleanState();
             }
+        } catch (Exception e) {
+            e.printStackTrace(System.err);
         }
     }
 
+    private void stopServer(CelosServer celosServer) {
+        try {
+            System.out.println(testCase.getName() + ": Stopping Celos");
+            System.out.flush();
+            celosServer.stopServer();
+        } catch (Exception e) {
+            e.printStackTrace(System.err);
+        }
+    }
 
 
     private void logJsFileExists(String fileName) {
