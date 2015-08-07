@@ -3,6 +3,7 @@ set -e
 set -x
 
 # Run integration tests against currently checkout local source on test cluster.
+pwd
 rm -fr ../celos_deploy
 mkdir -p ../celos_deploy/hdfs
 
