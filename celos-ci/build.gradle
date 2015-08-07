@@ -28,7 +28,7 @@ task fatJar(type: Jar) {
     from(sourceSets.main.output) {
         include "**/**"
     }
-    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it).matching { exclude 'META-INF/**' }}}
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }}
     baseName "celos-ci-fat"
     manifest {
         attributes("Main-Class": mainClassName)
