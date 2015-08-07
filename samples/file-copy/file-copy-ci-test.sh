@@ -9,6 +9,7 @@ mkdir -p celos_deploy/hdfs
 
 cp src/main/celos/* celos_deploy
 cp src/main/oozie/* celos_deploy/hdfs
-java -jar ../../celos-ci/build/libs/celos-ci-fat-0.1.jar --testDir src/test/celos-ci --deployDir celos_deploy --workflowName file-copy --mode TEST --target /home/akonopko/target.json
+
+java -jar ../../celos-ci/build/libs/celos-ci-fat-0.1.jar --testDir src/test/celos-ci --deployDir celos_deploy --workflowName file-copy --mode TEST --target file:///home/akonopko/target.json
 
 echo You win! All tests OK.
