@@ -71,7 +71,7 @@ public class CelosUIServlet extends HttpServlet {
         STATUS_TO_SHORT_NAME.put(SlotState.Status.FAILURE, "fail");
         STATUS_TO_SHORT_NAME.put(SlotState.Status.READY, "rdy&nbsp;");
         STATUS_TO_SHORT_NAME.put(SlotState.Status.RUNNING, "run&nbsp;");
-        STATUS_TO_SHORT_NAME.put(SlotState.Status.SUCCESS, "ok&nbsp;&nbsp;");
+        STATUS_TO_SHORT_NAME.put(SlotState.Status.SUCCESS, "&nbsp;&nbsp;&nbsp;&nbsp;");
         STATUS_TO_SHORT_NAME.put(SlotState.Status.WAIT_TIMEOUT, "time");
         STATUS_TO_SHORT_NAME.put(SlotState.Status.WAITING, "wait");
         if (STATUS_TO_SHORT_NAME.size() != SlotState.Status.values().length) {
@@ -109,7 +109,7 @@ public class CelosUIServlet extends HttpServlet {
         prefix.append(".currentDate { font-family: monospace; text-align: right; padding-right: 20px; font-weight: bold; }\n");
         prefix.append(".slot { font-family: monospace; font-size: small; }\n");
         prefix.append(".RUNNING, .READY { background-color: #ffc; }\n");
-        prefix.append(".SUCCESS { color: #cfc; background-color: #cfc; }\n");
+        prefix.append(".SUCCESS { background-color: #cfc; }\n");
         prefix.append(".WAITING { background-color: #ccf; }\n");
         prefix.append(".FAILURE, .WAIT_TIMEOUT { background-color: #fcc; }\n");
         prefix.append("</style>\n");
@@ -233,7 +233,16 @@ public class CelosUIServlet extends HttpServlet {
         } else if (slots.size() == 1) {
             return printSingleSlot(slots.iterator().next());
         } else {
-            return "....";
+            return printMultiSlot(slots.size());
+        }
+    }
+
+    static String printMultiSlot(int slotsCount) {
+        String num = Integer.toString(slotsCount);
+        if (num.length() > 4) {
+            return "999+";
+        } else {
+            return num;
         }
     }
 
