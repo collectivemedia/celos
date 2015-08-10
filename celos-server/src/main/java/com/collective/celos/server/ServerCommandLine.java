@@ -4,6 +4,9 @@ import com.collective.celos.Util;
 
 import java.io.File;
 
+/**
+ * Created by akonopko on 9/30/14.
+ */
 public class ServerCommandLine {
 
     private final File workflowsDir;
@@ -12,24 +15,14 @@ public class ServerCommandLine {
     private final File uiDir;
     private final File logDir;
     private final int port;
-    private final String version;
 
-
-    public ServerCommandLine(String workflowsDir, String defaultsDir,
-                             String stateDatabase, String uiDir, String logDir, String version, int port) {
-        assert version != null;
-        this.version = version;
-        assert workflowsDir != null;
+    public ServerCommandLine(String workflowsDir, String defaultsDir, String stateDatabase, String uiDir, String logDir, int port) {
         this.workflowsDir = new File(Util.requireNonNull(workflowsDir));
-        assert defaultsDir != null;
         this.defaultsDir = new File(Util.requireNonNull(defaultsDir));
-        assert stateDatabase != null;
-        this.stateDatabase = new File(stateDatabase);
-        assert uiDir != null;
-        this.uiDir = new File(uiDir);
+        this.stateDatabase = new File(Util.requireNonNull(stateDatabase));
+        this.uiDir = new File(Util.requireNonNull(uiDir));
         this.port = port;
-        assert logDir != null;
-        this.logDir = new File(logDir);
+        this.logDir = new File(Util.requireNonNull(logDir));
     }
 
     public File getWorkflowsDir() {
@@ -54,10 +47,5 @@ public class ServerCommandLine {
 
     public File getLogDir() {
         return logDir;
-    }
-
-
-    public String getVersion() {
-        return version;
     }
 }

@@ -87,15 +87,6 @@
     </servlet-mapping>
 
     <servlet>
-        <servlet-name>VersionNumberServlet</servlet-name>
-        <servlet-class>com.collective.celos.servlet.VersionServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>VersionNumberServlet</servlet-name>
-        <url-pattern>/version</url-pattern>
-    </servlet-mapping>
-
-    <servlet>
         <servlet-name>UIConfigServlet</servlet-name>
         <servlet-class>com.collective.celos.servlet.UIConfigServlet</servlet-class>
     </servlet>
@@ -103,7 +94,6 @@
         <servlet-name>UIConfigServlet</servlet-name>
         <url-pattern>/ui-config</url-pattern>
     </servlet-mapping>
-
 
     <servlet>
         <servlet-name>UIServlet</servlet-name>
