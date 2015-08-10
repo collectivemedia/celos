@@ -1,16 +1,11 @@
 package com.collective.celos.server;
 
-import java.io.OutputStream;
-import java.io.PrintWriter;
-
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.GnuParser;
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.Options;
+import com.collective.celos.Constants;
+import org.apache.commons.cli.*;
 import org.apache.log4j.Logger;
 
-import com.collective.celos.Constants;
+import java.io.OutputStream;
+import java.io.PrintWriter;
 
 public class ServerCommandLineParser {
 
@@ -20,6 +15,7 @@ public class ServerCommandLineParser {
     private static final String CLI_UI_DIR = "uiDir";
     private static final String CLI_LOG_DIR = "logDir";
     private static final String CLI_PORT = "port";
+    private static final String CLI_VERSION = "version";
 
     private static final Logger LOGGER = Logger.getLogger(ServerCommandLineParser.class);
     
@@ -39,10 +35,11 @@ public class ServerCommandLineParser {
         String uiDir = getDefault(commandLine, CLI_UI_DIR, Constants.DEFAULT_UI_DIR);
         String workflowsDir = getDefault(commandLine, CLI_WF_DIR, Constants.DEFAULT_WORKFLOWS_DIR);
         String logDir = getDefault(commandLine, CLI_LOG_DIR, Constants.DEFAULT_LOG_DIR);
+        String version = getDefault(commandLine, CLI_VERSION, Constants.DEFAULT_VERSION);
 
         Integer port = Integer.valueOf(commandLine.getOptionValue(CLI_PORT));
 
-        return new ServerCommandLine(workflowsDir, defaultsDir, stateDbDir, uiDir, logDir, port);
+        return new ServerCommandLine(workflowsDir, defaultsDir, stateDbDir, uiDir, logDir, version, port);
     }
 
     private String getDefault(CommandLine commandLine, String optionName, String defaultValue) {
@@ -56,14 +53,13 @@ public class ServerCommandLineParser {
     }
 
     public Options constructOptions() {
-        final Options options = new Options();
-        options.addOption(CLI_WF_DIR, CLI_WF_DIR, true, "Path to WORKFLOWS dir")
-                .addOption(CLI_DEFAULTS_DIR, CLI_DEFAULTS_DIR, true, "Path to DEFAULTS dir")
-                .addOption(CLI_STATE_DB_DIR, CLI_STATE_DB_DIR, true, "Path to STATE DATABASE dir")
-                .addOption(CLI_UI_DIR, CLI_UI_DIR, true, "Path to UI dir")
-                .addOption(CLI_PORT, CLI_PORT, true, "Celos Server port")
-                .addOption(CLI_LOG_DIR, CLI_LOG_DIR, true, "Celos logs dir");
-        return options;
+        return new Options().addOption(CLI_WF_DIR, CLI_WF_DIR, true, "Path to WORKFLOWS dir")
+                            .addOption(CLI_DEFAULTS_DIR, CLI_DEFAULTS_DIR, true, "Path to DEFAULTS dir")
+                            .addOption(CLI_STATE_DB_DIR, CLI_STATE_DB_DIR, true, "Path to STATE DATABASE dir")
+                            .addOption(CLI_UI_DIR, CLI_UI_DIR, true, "Path to UI dir")
+                            .addOption(CLI_PORT, CLI_PORT, true, "Celos Server port")
+                            .addOption(CLI_VERSION, CLI_VERSION, true, "Celos Server VERSION")
+                            .addOption(CLI_LOG_DIR, CLI_LOG_DIR, true, "Celos logs dir");
     }
 
 

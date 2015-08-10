@@ -16,7 +16,6 @@ import org.junit.rules.TemporaryFolder;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.ServerSocket;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -58,7 +57,7 @@ public class CelosClientServerTest {
         Integer port = Util.getFreePort();
 
         this.celosServer = new CelosServer();
-        celosServer.startServer(port, ImmutableMap.<String, String>of(), workflowsDir, defaultsDir, slotDbDir, uiDir);
+        celosServer.startServer(port, ImmutableMap.<String, String>of(), workflowsDir, defaultsDir, slotDbDir, uiDir, "undefined");
         this.celosClient = new CelosClient("http://localhost:" + port);
     }
 

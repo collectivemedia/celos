@@ -15,8 +15,8 @@ public class Main {
                 commandLine.getWorkflowsDir(),
                 commandLine.getDefaultsDir(),
                 commandLine.getStateDatabase(),
-                commandLine.getUiDir());
-
+                commandLine.getUiDir(),
+                commandLine.getVersion());
         Util.setupLogging(commandLine.getLogDir());
     }
 
