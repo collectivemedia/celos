@@ -1,0 +1,50 @@
+---
+# Playbook to perform integration testing on Celos
+#
+# Performs various tests against the servlets.
+
+# ansible-playbook -i ./scripts/test/inventory scripts/celos-deploy.yaml -v -e celos_version=12345
+
+- hosts: test-server
+  gather_facts: no
+  vars:
+    celos_port: 8124
+    celos_workflows_dir: ~/celos_wrk/workflows
+    celos_ui_dir: ~/celos_wrk/ui  
+    celos_db_dir: ~/celos_wrk/state  
+    celos_log_dir: ~/celos_wrk/logs  
+    celos_def_dir: ~/celos_wrk/defaults
+    JAR_PATH: ../{{SERVICE_NAME}}/build/libs/celos-0.1.jar
+    DEST_ROOT: ~{{SERVICE_USER}}/local
+
+  tasks:
+
+#  - name: process jar
+#    local_action: command ./gradlew {{SERVICE_NAME}}:jar
+#    args:
+#      chdir: ../..
+
+  - name: fasfsdaf
+    copy: src={{JAR_PATH}} dest={{DEST_ROOT}}/lib/
+
+  - name: zzz
+    script: ../production/runit/local_deploy.sh -n celos-server -u obaskakov -p {{celos_port}} -v {{celos_version}}
+
+  - name: aaa
+    shell: curl "http://localhost:{{celos_port}}/version" 2> /dev/null
+
+  - name: PLPLPLPL
+    action: command hostname
+
+
+
+
+
+#scp "./production/runit/${LOCAL_SCRIPT}" "${SSH_NODE}:${DEST_ROOT}/"
+# run local script
+#ssh ${SSH_NODE} "
+#                 bash -s" -- < ${LOCAL_SCRIPT}
+#
+## curl "http://${DEPLOY_HOST}:${DEPLOY_PORT}/ui" 2> /dev/null | diff - production/runit/hello-ui.txt
+#curl "http://${DEPLOY_HOST}:${DEPLOY_PORT}" &> /dev/null
+

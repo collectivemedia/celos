@@ -1,13 +1,49 @@
 #!/usr/bin/env bash
-set -x
 set -e
 
-[[ -z ${SERVICE_NAME} ]] && echo pls set SERVICE_NAME && exit 1
-[[ -z ${SERVICE_USER} ]] && echo pls set SERVICE_USER && exit 1
-[[ -z ${DEPLOY_HOST} ]] && echo pls set DEPLOY_HOST && exit 1
-[[ -z ${DEPLOY_PORT} ]] && echo pls set DEPLOY_PORT && exit 1
+while [[ $# > 1 ]]
+do
+key="$1"
 
-SV="/sbin/sv"
+case $key in
+    -n|--SERVICE_NAME)
+        SERVICE_NAME="$2"
+        shift # past argument
+    ;;
+    -u|--SERVICE_USER)
+        SERVICE_USER="$2"
+        shift # past argument
+    ;;
+    -p|--DEPLOY_PORT)
+        DEPLOY_PORT="$2"
+        shift # past argument
+    ;;
+    -v|--CELOS_VERSION)
+        CELOS_VERSION="$2"
+        shift # past argument
+    ;;
+    *)
+        echo usage: -n SERVICE_NAME -u SERVICE_USER -p DEPLOY_PORT
+        exit 1  # unknown option
+    ;;
+esac
+shift # past argument or value
+done
+
+[[ -z ${SERVICE_NAME} ]] && echo pls specify SERVICE_NAME && exit 1
+[[ -z ${SERVICE_USER} ]] && echo pls specify SERVICE_USER && exit 1
+[[ -z ${DEPLOY_PORT} ]] && echo pls specify DEPLOY_PORT && exit 1
+
+set -x
+
+if [ -e /sbin/sv ]
+then
+    SV=/sbin/sv
+else
+    SV=sv
+fi
+
+SV_TIMEOUT=22
 
 DEV_NULL="/dev/null"
 
@@ -57,7 +93,7 @@ echo >>  ${SERVICE_DIR}/run "exec chpst -u ${SERVICE_USER} ${RUN_SCRIPT}"
 chmod a+x ${SERVICE_DIR}/run
 # process check script
 echo >  ${SERVICE_DIR}/check '#!/usr/bin/env bash'
-echo >>  ${SERVICE_DIR}/check "exec curl \"http://${DEPLOY_HOST}:${DEPLOY_PORT}\" &> ${DEV_NULL}"
+echo >>  ${SERVICE_DIR}/check "exec curl \"http://localhost:${DEPLOY_PORT}\" &> ${DEV_NULL}"
 chmod a+x ${SERVICE_DIR}/check
 # process logs
 mkdir -p ${SERVICE_DIR}/log
@@ -70,28 +106,29 @@ echo >  ${DEST_ROOT}/bin/${SERVICE_NAME} '#!/usr/bin/env bash'
 # FIXME dirty hack
 if [[ $SERVICE_NAME == "celos-server" ]]
 then
-echo >> ${DEST_ROOT}/bin/${SERVICE_NAME} "exec java -jar ${DEST_ROOT}/lib/${JAR_FILE} --port ${DEPLOY_PORT}"
+echo >> ${DEST_ROOT}/bin/${SERVICE_NAME} "CELOS_VERSION=$CELOS_VERSION exec java -jar ${DEST_ROOT}/lib/${JAR_FILE} --port ${DEPLOY_PORT}"
 else
-echo >> ${DEST_ROOT}/bin/${SERVICE_NAME} "exec java -jar ${DEST_ROOT}/lib/${JAR_FILE} --port ${DEPLOY_PORT} --celosAddr http://localhost"
+echo >> ${DEST_ROOT}/bin/${SERVICE_NAME} "CELOS_VERSION=$CELOS_VERSION exec java -jar ${DEST_ROOT}/lib/${JAR_FILE} --port ${DEPLOY_PORT} --celosAddr http://localhost"
 fi
 
 chmod a+x ${DEST_ROOT}/bin/${SERVICE_NAME}
 # check runsv is running
-if ${SV} check ${SERVICE_NAME} &> ${DEV_NULL}
+if ${SV} status ${SERVICE_NAME} &> ${DEV_NULL}
 then
-    ln -sf ${SERVICE_DIR} /etc/service/${SERVICE_NAME}
-    ${SV} restart ${SERVICE_NAME}
+    ln -sf ${SERVICE_DIR} /etc/service/
+    ${SV} -w ${SV_TIMEOUT} restart ${SERVICE_NAME}
 else
-    ln -sf ${SERVICE_DIR} /etc/service/${SERVICE_NAME}
+    ln -sf ${SERVICE_DIR} /etc/service/
     # runsv starts new service with delay,
     # so this needs to fix 'fail: $SERVICE_NAME: runsv not running'
     i=0
-    while (( i <= 7 )) && ! ${SV} check ${SERVICE_NAME} 2> ${DEV_NULL}
+    while (( i <= 7 )) && ! ${SV} status ${SERVICE_NAME} 2> ${DEV_NULL}
     do
         (( i += 1 ))
         sleep 1
     done
-    ${SV} start ${SERVICE_NAME}
+    ${SV} -w ${SV_TIMEOUT} start ${SERVICE_NAME}
 fi
 # need to deploy from different users
 chmod a+w /etc/service/${SERVICE_NAME}
+curl "http://localhost:${DEPLOY_PORT}/version"
