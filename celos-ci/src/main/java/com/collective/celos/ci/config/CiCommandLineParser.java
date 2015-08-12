@@ -2,7 +2,6 @@ package com.collective.celos.ci.config;
 
 import org.apache.commons.cli.*;
 
-import java.io.File;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 
@@ -13,6 +12,7 @@ public class CiCommandLineParser {
     private static final String CLI_DEPLOY_DIR = "deployDir";
     private static final String CLI_WORKFLOW_NAME = "workflowName";
     private static final String CLI_TEST_CASES_DIR = "testDir";
+    private static final String CLI_CELOS_SERVER = "celosServer";
     private static final String DEFAULT_TEST_CASES_DIR = "src/test/celos-ci";
     private static final String USERNAME_ENV_VAR = "CELOS_CI_USERNAME";
     private static final String KEEP_TEMP_DATA = "KEEP_TEMP_DATA";
@@ -33,6 +33,7 @@ public class CiCommandLineParser {
         String workflowName = commandLine.getOptionValue(CLI_WORKFLOW_NAME);
         String targetUri = commandLine.getOptionValue(CLI_TARGET);
         String testCasesDir = commandLine.getOptionValue(CLI_TEST_CASES_DIR, DEFAULT_TEST_CASES_DIR);
+        String celosServerUri = commandLine.getOptionValue(CLI_TEST_CASES_DIR);
 
         boolean keepTempData = Boolean.parseBoolean(System.getenv(KEEP_TEMP_DATA));
         String userName = System.getenv(USERNAME_ENV_VAR);
@@ -40,7 +41,7 @@ public class CiCommandLineParser {
             userName = System.getProperty("user.name");
         }
 
-        return new CiCommandLine(targetUri, mode, deployDir, workflowName, testCasesDir, userName, keepTempData);
+        return new CiCommandLine(targetUri, mode, deployDir, workflowName, testCasesDir, userName, keepTempData, celosServerUri);
     }
 
     public Options constructOptions() {

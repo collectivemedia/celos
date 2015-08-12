@@ -2,6 +2,7 @@ package com.collective.celos;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.net.URI;
 import java.net.UnknownHostException;
 import java.util.List;
 import java.util.Set;
@@ -20,14 +21,9 @@ import com.google.common.collect.Sets;
  */
 public class CelosClientTest {
 
-    @Test (expected = IllegalArgumentException.class)
-    public void testCelosClientFailsAdressNotValid() throws IOException {
-        new CelosClient("stupid adress");
-    }
-
     @Test (expected = UnknownHostException.class)
     public void testCelosClientFailsNoServer() throws Exception {
-        CelosClient celosClient = new CelosClient("http://thereisnosuchhost:1234");
+        CelosClient celosClient = new CelosClient(URI.create("http://thereisnosuchhost:1234"));
         celosClient.getWorkflowList();
     }
 
@@ -55,7 +51,7 @@ public class CelosClientTest {
                 "}";
 
         WorkflowID workflowID = new WorkflowID("123");
-        List<SlotState> result = new CelosClient("localhost").parseWorkflowStatus(workflowID, new ByteArrayInputStream(str.getBytes())).getSlotStates();
+        List<SlotState> result = new CelosClient(URI.create("localhost")).parseWorkflowStatus(workflowID, new ByteArrayInputStream(str.getBytes())).getSlotStates();
         Assert.assertEquals(result.size(), 2);
 
         ScheduledTime time1 = new ScheduledTime("2014-10-27T14:00:00.000Z");
@@ -75,7 +71,7 @@ public class CelosClientTest {
                 "  \"ids\" : [ \"GC-export-profiles\", \"GrandCentral-01-harmony\"]" +
                 "}";
 
-        Set<WorkflowID> result = new CelosClient("localhost").parseWorkflowIdsList(new ByteArrayInputStream(str.getBytes()));
+        Set<WorkflowID> result = new CelosClient(URI.create("localhost")).parseWorkflowIdsList(new ByteArrayInputStream(str.getBytes()));
         Assert.assertEquals(result, Sets.newHashSet(new WorkflowID("GrandCentral-01-harmony"), new WorkflowID("GC-export-profiles")));
     }
 

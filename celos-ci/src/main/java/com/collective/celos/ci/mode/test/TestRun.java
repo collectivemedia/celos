@@ -23,6 +23,7 @@ import org.apache.commons.vfs2.Selectors;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Map;
@@ -33,11 +34,7 @@ import java.util.UUID;
  */
 public class TestRun {
 
-    public static final String CELOS_USER_JS_VAR = "CELOS_USER_JS_VAR";
-
     private static final String HDFS_PREFIX_PATTERN = "/user/%s/.celos-ci/%s/%s";
-    private static final String HDFS_PREFIX_JS_VAR = "HDFS_PREFIX_JS_VAR";
-    private static final String TEST_UUID_JS_VAR = "TEST_UUID_JS_VAR";
     private static final String WORKFLOW_DIR_CELOS_PATH = "workflows";
     private static final String DEFAULTS_DIR_CELOS_PATH = "defaults";
     private static final String DB_DIR_CELOS_PATH = "db";
@@ -55,8 +52,9 @@ public class TestRun {
     private final TestCase testCase;
     private final File testCasesDir;
     private final UUID testUUID;
-    private final CelosCiTarget originalTarget;
     private final boolean keepTempData;
+    private final CelosCiTarget originalTarget;
+    private final TestRunCelosServer celosServer;
 
     public TestRun(CelosCiTarget target, CiCommandLine commandLine, TestCase testCase, File celosCiTempDir) throws Exception {
 
@@ -82,6 +80,11 @@ public class TestRun {
         this.wfDeployer = new WorkflowFilesDeployer(ciContext);
         this.hdfsDeployer = new HdfsDeployer(ciContext);
         this.keepTempData = commandLine.isKeepTempData();
+        if (commandLine.getCelosServerUrl() != null) {
+            this.celosServer = new TestRunCelosServerProvided(commandLine.getCelosServerUrl());
+        } else {
+            this.celosServer = new TestRunCelosServerEmbedded(this);
+        }
     }
 
     public UUID getTestUUID() {
@@ -98,6 +101,10 @@ public class TestRun {
 
     public File getCelosDbDir() {
         return celosDbDir;
+    }
+
+    public File getCelosUiDir() {
+        return celosUiDir;
     }
 
     public File getTestCaseTempDir() {
@@ -134,29 +141,21 @@ public class TestRun {
 
     private List<FixObjectCompareResult> executeTestRun() throws Exception {
 
-        final CelosServer celosServer = new CelosServer();
-
         try {
-            Map additionalJSParams = ImmutableMap.of(
-                    HDFS_PREFIX_JS_VAR, hdfsPrefix,
-                    TEST_UUID_JS_VAR, testUUID,
-                    CELOS_USER_JS_VAR, ciContext.getUserName());
-
-            prepareCelosServerEnv();
+            URI address = celosServer.startServer();
 
             logJsFileExists(WorkflowFilesDeployer.WORKFLOW_FILENAME);
             logJsFileExists(WorkflowFilesDeployer.DEFAULTS_FILENAME);
 
+            copyRemoteDefaultsToLocal();
+
             wfDeployer.deploy();
             hdfsDeployer.deploy();
-
-            Integer port = Util.getFreePort();
-            celosServer.startServer(port, additionalJSParams, celosWorkflowDir, celosDefaultsDir, celosDbDir, celosUiDir);
 
             for (FixtureDeployer fixtureDeployer : testCase.getInputs()) {
                 fixtureDeployer.deploy(this);
             }
-            CelosClient client = new CelosClient("http://localhost:" + port);
+            CelosClient client = new CelosClient(address);
             new CelosSchedulerWorker(client).runCelosScheduler(testCase);
 
             List<FixObjectCompareResult> results = Lists.newArrayList();
@@ -168,7 +167,7 @@ public class TestRun {
             t.printStackTrace(System.err);
             throw t;
         } finally {
-            stopServer(celosServer);
+            celosServer.stopServer();
             cleanData();
         }
     }
@@ -183,17 +182,6 @@ public class TestRun {
             e.printStackTrace(System.err);
         }
     }
-
-    private void stopServer(CelosServer celosServer) {
-        try {
-            System.out.println(testCase.getName() + ": Stopping Celos");
-            System.out.flush();
-            celosServer.stopServer();
-        } catch (Exception e) {
-            e.printStackTrace(System.err);
-        }
-    }
-
 
     private void logJsFileExists(String fileName) {
         File localFile = new File(ciContext.getDeployDir(), fileName);
@@ -239,25 +227,17 @@ public class TestRun {
         return testCase;
     }
 
-    void prepareCelosServerEnv() throws IOException, URISyntaxException {
-
-        celosWorkflowDir.mkdirs();
-        celosDefaultsDir.mkdirs();
-        celosDbDir.mkdirs();
-        celosUiDir.mkdirs();
-
-        copyRemoteDefaultsToLocal();
-    }
-
-    private void copyRemoteDefaultsToLocal()
+    void copyRemoteDefaultsToLocal()
             throws URISyntaxException, FileSystemException {
-        JScpWorker worker = new JScpWorker(ciContext.getUserName());
+        JScpWorker worker = new JScpWorker(getCiContext().getUserName());
         if (originalTarget.getDefaultsDirUri() != null) {
             FileObject remoteDefaultsDir = worker.getFileObjectByUri(originalTarget.getDefaultsDirUri());
             if (remoteDefaultsDir.exists()) {
-                FileObject localDefaultsDir = worker.getFileObjectByUri(celosDefaultsDir.toURI());
+                FileObject localDefaultsDir = worker.getFileObjectByUri(getCelosDefaultsDir().toURI());
                 localDefaultsDir.copyFrom(remoteDefaultsDir, Selectors.SELECT_CHILDREN);
             }
         }
     }
+
+
 }

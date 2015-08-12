@@ -81,32 +81,32 @@ public class CiCommandLineParserTest {
 
     @Test (expected = IllegalArgumentException.class)
     public void testNoDirComes() throws Exception {
-        new CiCommandLine("target", "TEST", "deployDir", "workflowName", "testCasesDir", "userName", true);
+        new CiCommandLine("target", "TEST", "deployDir", "workflowName", "testCasesDir", "userName", true, null);
     }
 
     @Test (expected = NullPointerException.class)
     public void testNoDirComesNull() throws Exception {
-        new CiCommandLine("target", "TEST", "deployDir", "workflowName", null, "userName", true);
+        new CiCommandLine("target", "TEST", "deployDir", "workflowName", null, "userName", true, null);
     }
 
     @Test
     public void testDeployNoDirComes() throws Exception {
-        new CiCommandLine("target", "DEPLOY", "deployDir", "workflowName", "testCasesDir", "userName", true);
+        new CiCommandLine("target", "DEPLOY", "deployDir", "workflowName", "testCasesDir", "userName", true, null);
     }
 
     @Test
     public void testDeployNoDirComesNull() throws Exception {
-        new CiCommandLine("target", "DEPLOY", "deployDir", "workflowName", null, "userName", true);
+        new CiCommandLine("target", "DEPLOY", "deployDir", "workflowName", null, "userName", true, null);
     }
 
     @Test
     public void testUndeployNoDirComes() throws Exception {
-        new CiCommandLine("target", "UNDEPLOY", "deployDir", "workflowName", "testCasesDir", "userName", true);
+        new CiCommandLine("target", "UNDEPLOY", "deployDir", "workflowName", "testCasesDir", "userName", true, null);
     }
 
     @Test
     public void testUndeployNoDirComesNull() throws Exception {
-        new CiCommandLine("target", "UNDEPLOY", "deployDir", "workflowName", null, "userName", true);
+        new CiCommandLine("target", "UNDEPLOY", "deployDir", "workflowName", null, "userName", true, null);
     }
 
 }
