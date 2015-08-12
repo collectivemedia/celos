@@ -3,7 +3,8 @@
 #
 # Performs various tests against the servlets.
 
-# ansible-playbook -i ./scripts/test/inventory scripts/celos-deploy.yaml -v -e celos_version=12345
+# ansible-playbook -i ./scripts/test/inventory scripts/celos-deploy.yaml -v \
+# -e celos_version=12345 -e service_name=celos-server -e jar_path=../celos-server/build/libs/celos-0.1.jar
 
 - hosts: test-server
   gather_facts: no
@@ -11,10 +12,9 @@
     celos_port: 8124
     celos_workflows_dir: ~/celos_wrk/workflows
     celos_ui_dir: ~/celos_wrk/ui  
-    celos_db_dir: ~/celos_wrk/state  
+    celos_db_dir: ~/celos_wrk/db
     celos_log_dir: ~/celos_wrk/logs  
     celos_def_dir: ~/celos_wrk/defaults
-    JAR_PATH: ../{{SERVICE_NAME}}/build/libs/celos-0.1.jar
     DEST_ROOT: ~{{SERVICE_USER}}/local
 
   tasks:
