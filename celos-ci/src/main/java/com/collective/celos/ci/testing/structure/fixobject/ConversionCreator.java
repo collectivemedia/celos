@@ -22,7 +22,7 @@ public class ConversionCreator<S extends FixObject, T extends FixObject> impleme
     }
 
     @Override
-    public String getDescription(TestRun testRun) {
+    public String getDescription(TestRun testRun) throws Exception {
         return creator.getDescription(testRun);
     }
 
