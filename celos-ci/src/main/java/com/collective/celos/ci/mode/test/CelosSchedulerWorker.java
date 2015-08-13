@@ -33,12 +33,24 @@ public class CelosSchedulerWorker {
         ScheduledTime actualTime = startTime;
         ScheduledTime endTime = testCase.getSampleTimeEnd().plusSeconds(1);
 
+        if (!workflowList.isEmpty()) {
+            startScheduler(testCase, workflowList, actualTime, endTime);
+        } else {
+            System.out.println(testCase.getName() + ": there are no workflows to run");
+        }
+    }
+
+    private void startScheduler(TestCase testCase, Set<WorkflowID> workflowList, ScheduledTime actualTime, ScheduledTime endTime) throws Exception {
         System.out.println(testCase.getName() + ": Starting scheduler for: " + StringUtils.join(workflowList, ", "));
+        restartRerunnable(workflowList, actualTime);
+
         client.iterateScheduler(actualTime, testCase.getTargetWorkflows());
 
         while (!actualTime.getDateTime().isAfter(endTime.getDateTime())) {
             String workflowStatuses = StringUtils.join(getWorkflowStatusesInfo(workflowList, actualTime), " ");
-            System.out.println(testCase.getName() + ": Workflow statuses: " + workflowStatuses);
+            if (!workflowStatuses.trim().isEmpty()) {
+                System.out.println(testCase.getName() + ": Workflow statuses: " + workflowStatuses);
+            }
             if (!isThereAnyRunningWorkflows(workflowList, actualTime)) {
                 actualTime = new ScheduledTime(actualTime.getDateTime().plusHours(1));
             } else {
@@ -58,6 +70,17 @@ public class CelosSchedulerWorker {
             }
         }
         return false;
+    }
+
+    private void restartRerunnable(Set<WorkflowID> workflowList, ScheduledTime schedTime) throws Exception {
+        for (WorkflowID workflowID : workflowList) {
+            List<SlotState> slotStates = client.getWorkflowStatus(workflowID, schedTime).getSlotStates();
+            for (SlotState slotState : slotStates) {
+                if (slotState.isRerunnable()) {
+                    client.rerunSlot(slotState.getSlotID().getWorkflowID(), slotState.getSlotID().getScheduledTime());
+                }
+            }
+        }
     }
 
     Set<String> getWorkflowStatusesInfo(Set<WorkflowID> workflowList, ScheduledTime schedTime) throws Exception {

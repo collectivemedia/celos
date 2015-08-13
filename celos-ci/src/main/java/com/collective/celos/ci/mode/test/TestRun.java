@@ -1,32 +1,22 @@
 package com.collective.celos.ci.mode.test;
 
 import com.collective.celos.CelosClient;
-import com.collective.celos.Util;
 import com.collective.celos.ci.config.CiCommandLine;
 import com.collective.celos.ci.config.deploy.CelosCiContext;
 import com.collective.celos.ci.config.deploy.CelosCiTarget;
 import com.collective.celos.ci.deploy.HdfsDeployer;
-import com.collective.celos.ci.deploy.JScpWorker;
 import com.collective.celos.ci.deploy.WorkflowFilesDeployer;
 import com.collective.celos.ci.testing.fixtures.compare.FixObjectCompareResult;
 import com.collective.celos.ci.testing.fixtures.compare.FixtureComparer;
 import com.collective.celos.ci.testing.fixtures.deploy.FixtureDeployer;
-import com.collective.celos.server.CelosServer;
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.vfs2.FileObject;
-import org.apache.commons.vfs2.FileSystemException;
-import org.apache.commons.vfs2.Selectors;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -34,77 +24,42 @@ import java.util.UUID;
  */
 public class TestRun {
 
-    private static final String HDFS_PREFIX_PATTERN = "/user/%s/.celos-ci/%s/%s";
-    private static final String WORKFLOW_DIR_CELOS_PATH = "workflows";
-    private static final String DEFAULTS_DIR_CELOS_PATH = "defaults";
-    private static final String DB_DIR_CELOS_PATH = "db";
-    private static final String UI_DIR_CELOS_PATH = "ui";
-
     private final WorkflowFilesDeployer wfDeployer;
     private final HdfsDeployer hdfsDeployer;
     private final CelosCiContext ciContext;
-    private final File celosWorkflowDir;
-    private final File celosDefaultsDir;
-    private final File celosDbDir;
-    private final File celosUiDir;
     private final File testCaseTempDir;
-    private final String hdfsPrefix;
     private final TestCase testCase;
     private final File testCasesDir;
     private final UUID testUUID;
     private final boolean keepTempData;
     private final CelosCiTarget originalTarget;
-    private final TestRunCelosServer celosServer;
+    private final TestRunCelosServerMode celosServerMode;
 
     public TestRun(CelosCiTarget target, CiCommandLine commandLine, TestCase testCase, File celosCiTempDir) throws Exception {
 
         this.testCase = testCase;
         this.testCasesDir = commandLine.getTestCasesDir();
 
-        testUUID = UUID.randomUUID();
-        String hdfsPrefix = String.format(HDFS_PREFIX_PATTERN, commandLine.getUserName(), commandLine.getWorkflowName(), testUUID);
-
-        this.hdfsPrefix = Util.requireNonNull(hdfsPrefix);
+        this.testUUID = UUID.randomUUID();
         this.testCaseTempDir = new File(celosCiTempDir, testUUID.toString());
 
-        this.celosWorkflowDir = new File(testCaseTempDir, WORKFLOW_DIR_CELOS_PATH);
-        this.celosDefaultsDir = new File(testCaseTempDir, DEFAULTS_DIR_CELOS_PATH);
-        this.celosDbDir = new File(testCaseTempDir, DB_DIR_CELOS_PATH);
-        this.celosUiDir = new File(testCaseTempDir, UI_DIR_CELOS_PATH);
-
         this.originalTarget = target;
+        if (commandLine.getCelosServerUrl() != null) {
+            this.celosServerMode = new TestRunCelosServerModeProvided(commandLine, target);
+        } else {
+            this.celosServerMode = new TestRunCelosServerModeEmbedded(commandLine, testCaseTempDir, testUUID);
+        }
 
-        CelosCiTarget testTarget = new CelosCiTarget(target.getPathToHdfsSite(), target.getPathToCoreSite(), celosWorkflowDir.toURI(), celosDefaultsDir.toURI(), target.getHiveJdbc());
-        this.ciContext = new CelosCiContext(testTarget, commandLine.getUserName(), CelosCiContext.Mode.TEST, commandLine.getDeployDir(), commandLine.getWorkflowName(), hdfsPrefix);
+        CelosCiTarget testTarget = new CelosCiTarget(target.getPathToHdfsSite(), target.getPathToCoreSite(), celosServerMode.getCelosWorkflowDir(), celosServerMode.getCelosDefaultsDir(), target.getHiveJdbc());
+        this.ciContext = new CelosCiContext(testTarget, commandLine.getUserName(), CelosCiContext.Mode.TEST, commandLine.getDeployDir(), commandLine.getWorkflowName(), celosServerMode.getHdfsPrefix());
 
         this.wfDeployer = new WorkflowFilesDeployer(ciContext);
         this.hdfsDeployer = new HdfsDeployer(ciContext);
         this.keepTempData = commandLine.isKeepTempData();
-        if (commandLine.getCelosServerUrl() != null) {
-            this.celosServer = new TestRunCelosServerProvided(commandLine.getCelosServerUrl());
-        } else {
-            this.celosServer = new TestRunCelosServerEmbedded(this);
-        }
     }
 
     public UUID getTestUUID() {
         return testUUID;
-    }
-
-    public File getCelosWorkflowDir() {
-        return celosWorkflowDir;
-    }
-
-    public File getCelosDefaultsDir() {
-        return celosDefaultsDir;
-    }
-
-    public File getCelosDbDir() {
-        return celosDbDir;
-    }
-
-    public File getCelosUiDir() {
-        return celosUiDir;
     }
 
     public File getTestCaseTempDir() {
@@ -115,19 +70,11 @@ public class TestRun {
         return testCasesDir;
     }
 
-    public String getHdfsPrefix() {
-        return hdfsPrefix;
-    }
-
     public CelosCiContext getCiContext() {
         return ciContext;
     }
 
     public void start() throws Exception {
-
-        System.out.println("Running test case " + testCase.getName());
-        System.out.println(testCase.getName() + ": temp dir for Celos is " + testCaseTempDir.getAbsolutePath().toString());
-        System.out.println(testCase.getName() + ": HDFS prefix is: " + hdfsPrefix);
 
         List<FixObjectCompareResult> results = executeTestRun();
 
@@ -142,12 +89,13 @@ public class TestRun {
     private List<FixObjectCompareResult> executeTestRun() throws Exception {
 
         try {
-            URI address = celosServer.startServer();
+            URI address = celosServerMode.startServer(this);
 
-            logJsFileExists(WorkflowFilesDeployer.WORKFLOW_FILENAME);
-            logJsFileExists(WorkflowFilesDeployer.DEFAULTS_FILENAME);
-
-            copyRemoteDefaultsToLocal();
+            System.out.println("Running test case " + testCase.getName());
+            if (testCaseTempDir.exists()) {
+                System.out.println(testCase.getName() + ": temp dir for Celos is " + testCaseTempDir.getAbsolutePath().toString());
+            }
+            System.out.println(testCase.getName() + ": HDFS prefix is: " + celosServerMode.getHdfsPrefix());
 
             wfDeployer.deploy();
             hdfsDeployer.deploy();
@@ -167,7 +115,7 @@ public class TestRun {
             t.printStackTrace(System.err);
             throw t;
         } finally {
-            celosServer.stopServer();
+            celosServerMode.stopServer(this);
             cleanData();
         }
     }
@@ -180,13 +128,6 @@ public class TestRun {
             }
         } catch (Exception e) {
             e.printStackTrace(System.err);
-        }
-    }
-
-    private void logJsFileExists(String fileName) {
-        File localFile = new File(ciContext.getDeployDir(), fileName);
-        if (!localFile.exists()) {
-            System.out.println(testCase.getName() + ": " + localFile.getAbsolutePath() + " was not found, so not deploying it");
         }
     }
 
@@ -216,7 +157,9 @@ public class TestRun {
     }
 
     private void doCleanup() throws Exception {
-        FileUtils.forceDelete(testCaseTempDir);
+        if (testCaseTempDir.exists()) {
+            FileUtils.forceDelete(testCaseTempDir);
+        }
         for (FixtureDeployer fixtureDeployer : testCase.getInputs()) {
             fixtureDeployer.undeploy(this);
         }
@@ -227,17 +170,11 @@ public class TestRun {
         return testCase;
     }
 
-    void copyRemoteDefaultsToLocal()
-            throws URISyntaxException, FileSystemException {
-        JScpWorker worker = new JScpWorker(getCiContext().getUserName());
-        if (originalTarget.getDefaultsDirUri() != null) {
-            FileObject remoteDefaultsDir = worker.getFileObjectByUri(originalTarget.getDefaultsDirUri());
-            if (remoteDefaultsDir.exists()) {
-                FileObject localDefaultsDir = worker.getFileObjectByUri(getCelosDefaultsDir().toURI());
-                localDefaultsDir.copyFrom(remoteDefaultsDir, Selectors.SELECT_CHILDREN);
-            }
-        }
+    public CelosCiTarget getOriginalTarget() {
+        return originalTarget;
     }
 
-
+    public String getHdfsPrefix() {
+        return celosServerMode.getHdfsPrefix();
+    }
 }

@@ -142,6 +142,10 @@ public class Util {
 
     public static String augmentHdfsPath(String hdfsPrefix, String path) throws URISyntaxException {
 
+        if (hdfsPrefix.isEmpty()) {
+            return path;
+        }
+
         for (String ch : conversions.keySet()) {
             path = path.replace(ch.toString(), conversions.get(ch).toString());
         }
