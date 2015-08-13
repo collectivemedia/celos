@@ -13,5 +13,5 @@ public interface FixObjectCreator<T extends FixObject> {
 
     T create(TestRun testRun) throws Exception;
 
-    String getDescription(TestRun testRun) throws URISyntaxException;
+    String getDescription(TestRun testRun) throws Exception;
 }
