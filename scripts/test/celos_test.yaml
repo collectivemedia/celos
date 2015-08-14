@@ -3,7 +3,7 @@
 #
 # Performs various tests against the servlets.
 
-- hosts: admin1
+- hosts: test-server
   gather_facts: no
   vars:
     root: "../.."
@@ -13,16 +13,19 @@
   tasks:
 
   - name: Check servlet /version responds
-    uri:
+    local_action:
+      module: uri
       url: "{{service_url}}/version"
 
   - name: Check servlet /celos/scheduler responds to POST
-    uri:
+    local_action:
+      module: uri
       method: POST
       url: "{{service_url}}/scheduler"
 
   - name: Check servlet /celos/scheduler doesn't respond to GET
-    uri:
+    local_action:
+      module: uri
       url: "{{service_url}}/scheduler"
       status_code: 405
 
@@ -34,7 +37,8 @@
       delete: yes
 
   - name: Clear scheduler cache
-    uri:
+    local_action:
+      module: uri
       method: POST
       url: "{{service_url}}/clear-cache"
 
@@ -48,12 +52,12 @@
       dirs: yes
       delete: yes
 
-
   - name: Testing servlet /celos/workflow-list still returns empty configuration (before clearing cache)
     local_action: shell curl "{{service_url}}/workflow-list" | diff - test_files/empty_workflow_list.json
 
   - name: Clear scheduler cache
-    uri:
+    local_action:
+      module: uri
       method: POST
       url: "{{service_url}}/clear-cache"
 
@@ -62,7 +66,8 @@
 
 
   - name: Check servlet /celos/workflow fails when id parameter not set
-    uri:
+    local_action:
+      module: uri
       status_code: 400
       url: "{{service_url}}/workflow"
 
@@ -70,7 +75,8 @@
 #    shell: grep 'ERROR:.*id parameter missing' {{celos_log_dir}}/celos.log
 
   - name: Check servlet /celos/workflow returns 404 when id parameter specifies missing workflow
-    uri:
+    local_action:
+      module: uri
       status_code: 404
       url: "{{service_url}}/workflow?id=foobar"
 
@@ -96,13 +102,15 @@
     tags: slot-state
 
   - name: Check servlet /celos/slot-state returns 404 for slot not found
-    uri:
+    local_action:
+      module: uri
       status_code: 404
       url: "{{service_url}}/slot-state?id=workflow-1&time=1970-12-02T18:00Z"
     tags: slot-state
 
   - name: Check servlet /celos/slot-state returns 404 for slot not found / nonexisting workflow
-    uri:
+    local_action:
+      module: uri
       status_code: 404
       url: "{{service_url}}/slot-state?id=my-missing-workflow&time=1970-12-02T18:00Z"
     tags: slot-state
