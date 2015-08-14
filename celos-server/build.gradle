@@ -42,7 +42,7 @@ dependencies {
 }
 
 jar {
-    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it).matching { exclude 'META-INF/**' }}}
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }}
     baseName "celos"
     manifest {
         attributes("Main-Class": mainClassName)
