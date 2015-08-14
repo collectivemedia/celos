@@ -5,6 +5,9 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.log4j.Logger;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.HashMap;
@@ -35,18 +38,21 @@ public class HDFSCheckTrigger implements Trigger {
             conf.set("fs.hdfs.impl", org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
             conf.set("fs.file.impl", org.apache.hadoop.fs.LocalFileSystem.class.getName());
 
-            addFileToConfiguration(conf, "hdfs-site.xml");
-            addFileToConfiguration(conf, "core-site.xml");
+            addFileToConfiguration(conf, "hdfs-site.xml", "/etc/hadoop/conf");
+            addFileToConfiguration(conf, "core-site.xml", "/etc/hadoop/conf");
 
             this.fs = FileSystem.get(new URI(fsString), conf);
             cachedFSs.put(fsString, this.fs);
         }
     }
 
-    private void addFileToConfiguration(Configuration conf, String fileName) {
-        InputStream hdfsSiteStream = getClass().getClassLoader().getResourceAsStream(fileName);
-        if (hdfsSiteStream != null) {
-            conf.addResource(hdfsSiteStream);
+    private void addFileToConfiguration(Configuration conf, String fileName, String defaultConfDir) throws FileNotFoundException {
+        InputStream fileStream = getClass().getClassLoader().getResourceAsStream(fileName);
+        if (fileStream == null) {
+            fileStream = new FileInputStream(new File(defaultConfDir, fileName));
+        }
+        if (fileStream != null) {
+            conf.addResource(fileStream);
         }
     }
 
