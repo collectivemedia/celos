@@ -19,7 +19,7 @@
 
   - ping:
 
-  - local_action: command ./gradlew {{ service_name }}:jar
+  - local_action: command ./gradlew clean {{ service_name }}:jar
     args:
       chdir: "{{ root }}"
 
