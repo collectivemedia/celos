@@ -3,27 +3,34 @@ set -e
 
 while [[ $# > 1 ]]
 do
-key="$1"
-
-case $key in
+case $1 in
     -n|--SERVICE_NAME)
-        SERVICE_NAME="$2"
         shift # past argument
+        SERVICE_NAME="$1"
     ;;
     -u|--SERVICE_USER)
-        SERVICE_USER="$2"
         shift # past argument
+        SERVICE_USER="$1"
     ;;
-    -p|--DEPLOY_PORT)
-        DEPLOY_PORT="$2"
+    -p|--SERVICE_PORT)
         shift # past argument
+        SERVICE_PORT="$1"
     ;;
     -v|--CELOS_VERSION)
-        CELOS_VERSION="$2"
         shift # past argument
+        CELOS_VERSION="$1"
+    ;;
+    -j|--JAR_FILE)
+        shift # past argument
+        JAR_FILE="$1"
+    ;;
+    --)
+        shift # past argument
+        SERVICE_ARGS=$@
+        break
     ;;
     *)
-        echo usage: -n SERVICE_NAME -u SERVICE_USER -p DEPLOY_PORT
+        echo usage: -n SERVICE_NAME -u SERVICE_USER -p SERVICE_PORT -j JAR_FILE -v CELOS_VERSION
         exit 1  # unknown option
     ;;
 esac
@@ -32,7 +39,14 @@ done
 
 [[ -z ${SERVICE_NAME} ]] && echo pls specify SERVICE_NAME && exit 1
 [[ -z ${SERVICE_USER} ]] && echo pls specify SERVICE_USER && exit 1
-[[ -z ${DEPLOY_PORT} ]] && echo pls specify DEPLOY_PORT && exit 1
+[[ -z ${SERVICE_PORT} ]] && echo pls specify SERVICE_PORT && exit 1
+[[ -z ${JAR_FILE} ]] && echo pls specify JAR_FILE && exit 1
+
+CELOS_VERSION="${CELOS_VERSION:-undefined}"
+
+
+#echo $SERVICE_ARGS
+#exit 1
 
 set -x
 
@@ -43,11 +57,6 @@ else
     SV=sv
 fi
 
-SV_TIMEOUT=22
-
-DEV_NULL="/dev/null"
-
-
 SERVICE_HOME="$(eval echo ~${SERVICE_USER})"
 
 if [[ ! -d ${SERVICE_HOME} ]]
@@ -56,22 +65,14 @@ then
     exit 1
 fi
 
-SV_PATH0="runit-sv"
-SV_PATH="${SERVICE_HOME}/${SV_PATH0}"
+SV_TIMEOUT=22
+DEV_NULL="/dev/null"
+SV_PATH="${SERVICE_HOME}/runit-sv"
 SERVICE_DIR="${SV_PATH}/${SERVICE_NAME}"
-
-# FIXME dirty hack
-if [[ $SERVICE_NAME == "celos-server" ]]
-then
-JAR_FILE="celos-0.1.jar"
-else
-JAR_FILE="${SERVICE_NAME}-0.1.jar"
-fi
-
-JAR_PATH="./${SERVICE_NAME}/build/libs/${JAR_FILE}"
-
 DEST_ROOT="${SERVICE_HOME}/local"
 RUN_SCRIPT="${DEST_ROOT}/bin/${SERVICE_NAME}"
+JAR_PATH="${DEST_ROOT}/lib/${JAR_FILE}"
+
 
 mkdir -p ${SV_PATH}
 # process supervise
@@ -93,7 +94,7 @@ echo >>  ${SERVICE_DIR}/run "exec chpst -u ${SERVICE_USER} ${RUN_SCRIPT}"
 chmod a+x ${SERVICE_DIR}/run
 # process check script
 echo >  ${SERVICE_DIR}/check '#!/usr/bin/env bash'
-echo >>  ${SERVICE_DIR}/check "exec curl \"http://localhost:${DEPLOY_PORT}\" &> ${DEV_NULL}"
+echo >>  ${SERVICE_DIR}/check "exec curl --fail \"http://localhost:${SERVICE_PORT}\" &> ${DEV_NULL}"
 chmod a+x ${SERVICE_DIR}/check
 # process logs
 mkdir -p ${SERVICE_DIR}/log
@@ -103,13 +104,7 @@ chmod a+x ${SERVICE_DIR}/log/run
 # process programm
 mkdir -p ${DEST_ROOT}/bin
 echo >  ${DEST_ROOT}/bin/${SERVICE_NAME} '#!/usr/bin/env bash'
-# FIXME dirty hack
-if [[ $SERVICE_NAME == "celos-server" ]]
-then
-echo >> ${DEST_ROOT}/bin/${SERVICE_NAME} "CELOS_VERSION=$CELOS_VERSION exec java -jar ${DEST_ROOT}/lib/${JAR_FILE} --port ${DEPLOY_PORT}"
-else
-echo >> ${DEST_ROOT}/bin/${SERVICE_NAME} "CELOS_VERSION=$CELOS_VERSION exec java -jar ${DEST_ROOT}/lib/${JAR_FILE} --port ${DEPLOY_PORT} --celosAddr http://localhost"
-fi
+echo >> ${DEST_ROOT}/bin/${SERVICE_NAME} CELOS_VERSION=${CELOS_VERSION} exec java -jar ${JAR_PATH} --port ${SERVICE_PORT} ${SERVICE_ARGS}
 
 chmod a+x ${DEST_ROOT}/bin/${SERVICE_NAME}
 # check runsv is running
@@ -130,5 +125,6 @@ else
     ${SV} -w ${SV_TIMEOUT} start ${SERVICE_NAME}
 fi
 # need to deploy from different users
-chmod a+w /etc/service/${SERVICE_NAME}
-curl "http://localhost:${DEPLOY_PORT}/version"
+chmod a+w "/etc/service/${SERVICE_NAME}"
+curl "http://localhost:${SERVICE_PORT}/version"
+

@@ -6,70 +6,107 @@
 - hosts: admin1
   gather_facts: no
   vars:
-    celos_port: 8124
-    celos_workflows_dir: ~/celos_wrk/workflow  
-    celos_ui_dir: ~/celos_wrk/ui  
-    celos_db_dir: ~/celos_wrk/state  
-    celos_log_dir: ~/celos_wrk/logs  
-    celos_def_dir: ~/celos_wrk/defaults
+    root: "../.."
+    tests_dir: "{{root}}/celos-server/src/test/resources/com/collective/celos/workflow-configuration-test"
+    service_url: "http://{{inventory_hostname}}:{{service_port}}"
 
   tasks:
 
+  - name: Check servlet /version responds
+    uri:
+      url: "{{service_url}}/version"
+
   - name: Check servlet /celos/scheduler responds to POST
-    local_action: shell curl --fail -X POST {{inventory_hostname}}:{{celos_port}}/scheduler
+    uri:
+      method: POST
+      url: "{{service_url}}/scheduler"
 
   - name: Check servlet /celos/scheduler doesn't respond to GET
-    local_action: shell ! curl --fail {{inventory_hostname}}:{{celos_port}}/scheduler
+    uri:
+      url: "{{service_url}}/scheduler"
+      status_code: 405
 
-  - name: Testing servlet /celos/workflow-list with empty configuration
-    local_action: shell curl {{inventory_hostname}}:{{celos_port}}/workflow-list | diff - test_files/empty_workflow_list.json
-
-  - name: Upload sample workflow configuration files
-    local_action: command rsync -az -e ssh ../../celos-server/src/test/resources/com/collective/celos/workflow-configuration-test/json-workflow-list-servlet-test/ {{inventory_hostname}}:{{celos_workflows_dir}}
-
-  - name: Testing servlet /celos/workflow-list still returns empty configuration (before clearing cache)
-    local_action: shell curl {{inventory_hostname}}:{{celos_port}}/workflow-list | diff - test_files/empty_workflow_list.json
+  - name: Create workflow-list with empty configuration
+    synchronize:
+      src: "{{tests_dir}}/empty/"
+      dest: "{{celos_workflows_dir}}/"
+      recursive: yes
+      delete: yes
 
   - name: Clear scheduler cache
-    local_action: shell curl --fail -X POST {{inventory_hostname}}:{{celos_port}}/clear-cache
+    uri:
+      method: POST
+      url: "{{service_url}}/clear-cache"
+
+  - name: Testing servlet /celos/workflow-list with empty configuration
+    local_action: shell curl --fail "{{service_url}}/workflow-list" | diff - test_files/empty_workflow_list.json
+
+  - name: Upload sample workflow configuration files
+    synchronize:
+      src: "{{tests_dir}}/json-workflow-list-servlet-test/"
+      dest: "{{celos_workflows_dir}}/"
+      dirs: yes
+      delete: yes
+
+
+  - name: Testing servlet /celos/workflow-list still returns empty configuration (before clearing cache)
+    local_action: shell curl "{{service_url}}/workflow-list" | diff - test_files/empty_workflow_list.json
+
+  - name: Clear scheduler cache
+    uri:
+      method: POST
+      url: "{{service_url}}/clear-cache"
 
   - name: Testing servlet /celos/workflow-list with non-empty configuration
-    local_action: shell curl {{inventory_hostname}}:{{celos_port}}/workflow-list | diff - test_files/workflow_list.json
+    local_action: shell curl {{inventory_hostname}}:{{service_port}}/workflow-list | diff - test_files/workflow_list.json
+
 
   - name: Check servlet /celos/workflow fails when id parameter not set
-    local_action: shell ! curl --fail {{inventory_hostname}}:{{celos_port}}/workflow
+    uri:
+      status_code: 400
+      url: "{{service_url}}/workflow"
 
-  - name: Check log file contains error from calling workflow servlet without id parameter above
-    shell: grep 'ERROR:.*id parameter missing' /var/log/celos/celos.log
+#  - name: Check log file contains error from calling workflow servlet without id parameter above
+#    shell: grep 'ERROR:.*id parameter missing' {{celos_log_dir}}/celos.log
 
   - name: Check servlet /celos/workflow returns 404 when id parameter specifies missing workflow
-    local_action: shell curl -i {{inventory_hostname}}:{{celos_port}}/workflow?id=foobar | head -n 1 | grep "HTTP/1.1 404"
+    uri:
+      status_code: 404
+      url: "{{service_url}}/workflow?id=foobar"
 
   - name: Upload sample state database
-    local_action: command rsync -az -e ssh ../../celos-server/src/test/resources/com/collective/celos/state-database-test/db-1/ {{inventory_hostname}}:{{celos_db_dir}}
+    synchronize:
+      src: "{{root}}/celos-server/src/test/resources/com/collective/celos/state-database-test/db-1/"
+      dest: "{{celos_db_dir}}/"
+      recursive: yes
+      delete: yes
     tags: slot-state
 
   - name: Check servlet /celos/workflow returns correct JSON object for workflow-1
-    local_action: shell curl --fail "{{inventory_hostname}}:{{celos_port}}/workflow?id=workflow-1&time=2013-12-02T20:00Z" | diff - test_files/workflow_states_workflow_1.json
+    local_action: shell curl --fail "{{service_url}}/workflow?id=workflow-1&time=2013-12-02T20:00Z" | diff - test_files/workflow_states_workflow_1.json
 
   - name: Check servlet /celos/workflow returns correct JSON object for workflow-2
-    local_action: shell curl --fail "{{inventory_hostname}}:{{celos_port}}/workflow?id=workflow-2&time=2013-12-02T20:00Z" | diff - test_files/workflow_states_workflow_2.json
+    local_action: shell curl --fail "{{service_url}}/workflow?id=workflow-2&time=2013-12-02T20:00Z" | diff - test_files/workflow_states_workflow_2.json
 
   - name: Check servlet /celos/slot-state returns correct JSON for 1900
-    local_action: shell curl --fail "{{inventory_hostname}}:{{celos_port}}/slot-state?id=workflow-1&time=2013-12-02T19:00Z" | diff - test_files/slot_state_workflow_1_1900.json
+    local_action: shell curl --fail "{{service_url}}/slot-state?id=workflow-1&time=2013-12-02T19:00Z" | diff - test_files/slot_state_workflow_1_1900.json
 
   - name: Check servlet /celos/slot-state returns correct JSON for 1800
-    local_action: shell curl --fail "{{inventory_hostname}}:{{celos_port}}/slot-state?id=workflow-1&time=2013-12-02T18:00Z" | diff - test_files/slot_state_workflow_1_1800.json
+    local_action: shell curl --fail "{{service_url}}/slot-state?id=workflow-1&time=2013-12-02T18:00Z" | diff - test_files/slot_state_workflow_1_1800.json
     tags: slot-state
 
   - name: Check servlet /celos/slot-state returns 404 for slot not found
-    local_action: shell curl -i "{{inventory_hostname}}:{{celos_port}}/slot-state?id=workflow-1&time=1970-12-02T18:00Z" | head -n 1 | grep "HTTP/1.1 404"
+    uri:
+      status_code: 404
+      url: "{{service_url}}/slot-state?id=workflow-1&time=1970-12-02T18:00Z"
     tags: slot-state
 
   - name: Check servlet /celos/slot-state returns 404 for slot not found / nonexisting workflow
-    local_action: shell curl -i "{{inventory_hostname}}:{{celos_port}}/slot-state?id=my-missing-workflow&time=1970-12-02T18:00Z" | head -n 1 | grep "HTTP/1.1 404"
+    uri:
+      status_code: 404
+      url: "{{service_url}}/slot-state?id=my-missing-workflow&time=1970-12-02T18:00Z"
     tags: slot-state
 
-  - name: Check log file contains info about workflow-1 loaded above
-    shell: grep 'INFO :.*Loading file.*workflow-1.js' {{celos_log_dir}}/celos.log
+#  - name: Check log file contains info about workflow-1 loaded above
+#    shell: grep 'INFO :.*Loading file.*workflow-1.js' {{celos_log_dir}}/celos.log
 
