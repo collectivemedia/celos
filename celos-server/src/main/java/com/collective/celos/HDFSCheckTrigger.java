@@ -3,8 +3,13 @@ package com.collective.celos;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.security.UserGroupInformation;
 import org.apache.log4j.Logger;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
@@ -34,8 +39,18 @@ public class HDFSCheckTrigger implements Trigger {
             conf.set("fs.hdfs.impl", org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
             conf.set("fs.file.impl", org.apache.hadoop.fs.LocalFileSystem.class.getName());
 
+            addFileToConfiguration(conf, "hdfs-site.xml");
+            addFileToConfiguration(conf, "core-site.xml");
+
             this.fs = FileSystem.get(new URI(fsString), conf);
             cachedFSs.put(fsString, this.fs);
+        }
+    }
+
+    private void addFileToConfiguration(Configuration conf, String fileName) throws FileNotFoundException {
+        InputStream fileStream = getClass().getClassLoader().getResourceAsStream(fileName);
+        if (fileStream != null) {
+            conf.addResource(fileStream);
         }
     }
 
