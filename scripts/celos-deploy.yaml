@@ -10,7 +10,7 @@
   gather_facts: no
   vars:
     root: ".."
-    dest_root: ~{{ service_user }}/local
+    dest_root: "~{{ service_user }}/local"
     jar_path: "{{ root }}/{{ service_name }}/build/libs/{{ jar_file }}"
     local_deploy: "{{ root }}/production/runit/local_deploy.sh"
     version: "${CELOS_VERSION:-undefined}"

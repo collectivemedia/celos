@@ -9,7 +9,7 @@ test-ui
 test-server
 
 [test-cluster:vars]
-service_user=celos-ci
+service_user="{{ ansible_ssh_user }}"
 celos_workflows_dir=~{{ service_user }}/celos_wrk/workflows
 celos_defaults_dir=~{{ service_user }}/celos_wrk/defaults
 celos_ui_dir=~{{ service_user }}/celos_wrk/ui
