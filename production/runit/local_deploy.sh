@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -x
 set -e
 
 while [[ $# > 1 ]]
@@ -41,14 +42,6 @@ done
 [[ -z ${SERVICE_USER} ]] && echo pls specify SERVICE_USER && exit 1
 [[ -z ${SERVICE_PORT} ]] && echo pls specify SERVICE_PORT && exit 1
 [[ -z ${JAR_FILE} ]] && echo pls specify JAR_FILE && exit 1
-
-CELOS_VERSION="${CELOS_VERSION:-undefined}"
-
-
-#echo $SERVICE_ARGS
-#exit 1
-
-set -x
 
 if [ -e /sbin/sv ]
 then
@@ -117,7 +110,7 @@ else
     # runsv starts new service with delay,
     # so this needs to fix 'fail: $SERVICE_NAME: runsv not running'
     i=0
-    while (( i <= 7 )) && ! ${SV} status ${SERVICE_NAME} 2> ${DEV_NULL}
+    while (( i <= 20 )) && ! ${SV} status ${SERVICE_NAME} 2> ${DEV_NULL}
     do
         (( i += 1 ))
         sleep 1
