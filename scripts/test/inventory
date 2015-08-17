@@ -9,15 +9,11 @@ test-ui
 test-server
 
 [test-cluster:vars]
-service_user="{{ ansible_ssh_user }}"
-celos_workflows_dir=~{{ service_user }}/celos_wrk/workflows
-celos_defaults_dir=~{{ service_user }}/celos_wrk/defaults
-celos_ui_dir=~{{ service_user }}/celos_wrk/ui
-celos_db_dir=~{{ service_user }}/celos_wrk/db
-celos_log_dir=~{{ service_user }}/celos_wrk/logs
-
-[test-server:vars]
-service_name="celos-server"
-service_port=9002
-jar_file="celos-0.1.jar"
+celos_workflows_dir={{ celos_wrk_dir }}/workflows
+celos_defaults_dir={{ celos_wrk_dir }}/defaults
+celos_ui_dir={{ celos_wrk_dir }}/ui
+celos_db_dir={{ celos_wrk_dir }}/db
+celos_log_dir={{ celos_wrk_dir }}/logs
+service_user={{ ansible_ssh_user }}
 service_args="--workflowsDir {{ celos_workflows_dir }} --defaultsDir {{ celos_defaults_dir }} --stateDir {{ celos_db_dir }} --uiDir {{ celos_ui_dir }} --logDir {{ celos_log_dir }}"
+jar_path="../celos-server/build/libs/celos-0.1.jar"
