@@ -43,8 +43,6 @@ done
 [[ -z ${SERVICE_PORT} ]] && echo pls specify SERVICE_PORT && exit 1
 [[ -z ${JAR_FILE} ]] && echo pls specify JAR_FILE && exit 1
 
-CELOS_VERSION="${CELOS_VERSION:-undefined}"
-
 if [ -e /sbin/sv ]
 then
     SV=/sbin/sv
