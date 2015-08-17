@@ -28,7 +28,7 @@
   - file: dest={{ celos_ui_dir }} state=directory
   - file: dest={{ celos_db_dir }} state=directory
 
-  - copy: src=/home/celos-ci/celos-settings/celos/defaults/ dest={{ celos_defaults_dir }}
+  - shell: cp /home/celos-ci/celos-settings/celos/defaults/ {{ celos_defaults_dir }}
 
   - copy: src={{ jar_path }} dest={{ dest_root }}/lib/
 
