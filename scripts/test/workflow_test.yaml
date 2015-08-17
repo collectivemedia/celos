@@ -1,0 +1,46 @@
+---
+
+# Playbook for testing workflows. It starts workflow on Celos and compares workflow output with expected results.
+
+- hosts: test-server
+  gather_facts: no
+  remote_user: celos
+  vars:
+    local_root: ../..
+    remote_root: ~/workflow-test
+    sample_workflow: {{ remote_root }}/samples/{{ workflow }}/{{ workflow }}.js
+    sample_input: {{ remote_root }}/samples/{{ workflow }}/input
+    sample_oozie_workflow: {{ remote_root }}/samples/{{ workflow }}/workflow
+    service_url: "http://{{inventory_hostname}}:{{service_port}}"
+
+  tasks:
+
+  - name: Remove old files
+    shell: rm -rf {{remote_root}}/*
+
+  - name: Copy files
+    local_action: command rsync -az -e ssh {{local_root}}/scripts {{local_root}}/samples
+      {{ service_user }}@{{inventory_hostname}}:{{remote_root}}
+
+  - name: Copy workflow to configuration dir
+    shell: cp {{sample_workflow}} {{celos_workflows_dir}}
+
+  - name: Copy defaults 
+    shell: scp {{service_user}}@celos001.ny7.collective-media.net:/etc/celos/defaults/collective.js {{celos_defaults_dir}}
+
+  - name: Prepare HDFS dirs
+    shell: hadoop fs -rm -r -f /user/{{ service_user }}/samples/{{ workflow }}
+      && hadoop fs -mkdir -p /user/{{ service_user }}/samples/{{ workflow }}
+      && hadoop fs -mkdir -p /user/{{ service_user }}/samples/{{ workflow }}/output
+
+  - name: Copy inputs to HDFS
+    shell: hadoop fs -put {{sample_input}} hdfs:/user/{{ service_user }}/samples/{{ workflow }}/input
+
+  - name: Copy Oozie workflow to HDFS
+    shell: hadoop fs -put {{sample_oozie_workflow}} hdfs:/user/{{ service_user }}/samples/{{ workflow }}/workflow
+
+  - name: Run scheduler
+    shell: {{ remote_root }}/scripts/test/run-scheduler.sh {{ service_url }} {{ sample_time }} {{ workflow }}
+
+  - name: Verify produced outputs by comparing them against fixtures
+    shell: {{ remote_root }}/scripts/test/test-workflow-results.sh {{ workflow }}
