@@ -42,7 +42,7 @@ public class CelosSchedulerWorker {
 
     private void startScheduler(TestCase testCase, Set<WorkflowID> workflowList, ScheduledTime actualTime, ScheduledTime endTime) throws Exception {
         System.out.println(testCase.getName() + ": Starting scheduler for: " + StringUtils.join(workflowList, ", "));
-        restartRerunnable(workflowList, actualTime);
+        restartRerunnable(workflowList, endTime);
 
         client.iterateScheduler(actualTime, testCase.getTargetWorkflows());
 
