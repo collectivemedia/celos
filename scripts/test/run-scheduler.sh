@@ -10,7 +10,7 @@ TIME=$2
 WORKFLOW=$3
 
 schedule() {
-    curl --fail -X POST "${SERVICE_URL}/scheduler?time=$TIME"
+    curl --fail -X POST "${SERVICE_URL}/scheduler?time=$TIME&ids=$WORKFLOW"
 }
 
 running() {
