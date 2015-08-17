@@ -17,14 +17,24 @@
   - name: Remove old files
     shell: mkdir -p {{remote_root}} && rm -rf {{remote_root}}/*
 
-  - name: Copy files
-    local_action: command rsync -az -e ssh {{local_root}}/scripts {{local_root}}/samples
-      {{ service_user }}@{{inventory_hostname}}:{{remote_root}}
+  - name: Copy scripts
+    synchronize:
+      src: "{{local_root}}/scripts"
+      dest: "{{remote_root}}/scripts"
+      dirs: yes
+      delete: yes
+
+  - name: Copy samples
+    synchronize:
+      src: "{{local_root}}/samples"
+      dest: "{{remote_root}}/samples"
+      dirs: yes
+      delete: yes
 
   - name: Copy workflow to configuration dir
     shell: cp {{sample_workflow}} {{celos_workflows_dir}}
 
-  - name: Copy defaults 
+  - name: Copy defaults
     shell: scp {{service_user}}@celos001.ny7.collective-media.net:/etc/celos/defaults/collective.js {{celos_defaults_dir}}
 
   - name: Prepare HDFS dirs
