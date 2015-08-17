@@ -104,7 +104,7 @@ chmod a+x ${SERVICE_DIR}/log/run
 # process programm
 mkdir -p ${DEST_ROOT}/bin
 echo >  ${DEST_ROOT}/bin/${SERVICE_NAME} '#!/usr/bin/env bash'
-echo >> ${DEST_ROOT}/bin/${SERVICE_NAME} CELOS_VERSION=${CELOS_VERSION} exec java -cp ${JAR_PATH}:/etc/hadoop/conf com.collective.celos.server.Main --port ${SERVICE_PORT} ${SERVICE_ARGS}
+echo >> ${DEST_ROOT}/bin/${SERVICE_NAME} CELOS_VERSION=${CELOS_VERSION} exec java -agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5111 -cp ${JAR_PATH}:/etc/hadoop/conf com.collective.celos.server.Main --port ${SERVICE_PORT} ${SERVICE_ARGS}
 
 chmod a+x ${DEST_ROOT}/bin/${SERVICE_NAME}
 # check runsv is running
