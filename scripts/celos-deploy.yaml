@@ -34,16 +34,3 @@
   - script: "{{ local_deploy }} -n {{ service_name }} -u {{ service_user }} -p {{ service_port }} -j {{ jar_file }} -v {{ version }} -- {{ service_args }}"
 
   - shell: curl "http://localhost:{{ service_port }}/version" 2> /dev/null
-
-  - action: command hostname
-
-
-
-#scp "./production/runit/${LOCAL_SCRIPT}" "${SSH_NODE}:${DEST_ROOT}/"
-# run local script
-#ssh ${SSH_NODE} "
-#                 bash -s" -- < ${LOCAL_SCRIPT}
-#
-## curl "http://${DEPLOY_HOST}:${DEPLOY_PORT}/ui" 2> /dev/null | diff - production/runit/hello-ui.txt
-#curl "http://${DEPLOY_HOST}:${DEPLOY_PORT}" &> /dev/null
-
