@@ -113,6 +113,4 @@
         <url-pattern>/version</url-pattern>
     </servlet-mapping>
 
-
-
 </web-app>
