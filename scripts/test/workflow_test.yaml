@@ -1,0 +1,55 @@
+---
+
+# Playbook for testing workflows. It starts workflow on Celos and compares workflow output with expected results.
+
+- hosts: test-server
+  gather_facts: no
+  vars:
+    local_root: "../.."
+    remote_root: "~{{ service_user }}/workflow-test"
+    sample_workflow: "{{ remote_root }}/samples/{{ workflow }}/{{ workflow }}.js"
+    sample_input: "{{ remote_root }}/samples/{{ workflow }}/input"
+    sample_oozie_workflow: "{{ remote_root }}/samples/{{ workflow }}/workflow"
+    service_url: "http://{{inventory_hostname}}:{{service_port}}"
+
+  tasks:
+
+  - name: Remove old files
+    shell: mkdir -p {{remote_root}} && rm -rf {{remote_root}}/*
+
+  - name: Copy scripts
+    synchronize:
+      src: "{{local_root}}/scripts"
+      dest: "{{remote_root}}/"
+      dirs: yes
+      delete: yes
+
+  - name: Copy samples
+    synchronize:
+      src: "{{local_root}}/samples"
+      dest: "{{remote_root}}/"
+      dirs: yes
+      delete: yes
+
+  - name: Copy workflow to configuration dir
+    shell: cp {{sample_workflow}} {{celos_workflows_dir}}
+
+  - name: Copy defaults from celos-settings location
+    shell: cp /home/celos-ci/celos-settings/defaults/test/collective.js {{celos_defaults_dir}}
+
+  - name: Prepare HDFS dirs
+    shell: hadoop fs -rm -r -f /user/{{ service_user }}/samples/{{ workflow }}
+      && hadoop fs -mkdir -p /user/{{ service_user }}/samples/{{ workflow }}
+      && hadoop fs -mkdir -p /user/{{ service_user }}/samples/{{ workflow }}/output
+
+  - name: Copy inputs to HDFS
+    shell: hadoop fs -put {{sample_input}} hdfs:/user/{{ service_user }}/samples/{{ workflow }}/input
+
+  - name: Copy Oozie workflow to HDFS
+    shell: hadoop fs -put {{sample_oozie_workflow}} hdfs:/user/{{ service_user }}/samples/{{ workflow }}/workflow
+
+  - name: Run scheduler
+    shell: "{{ remote_root }}/scripts/test/run-scheduler.sh {{ service_url }} {{ sample_time }} {{ workflow }}"
+
+  - name: Verify produced outputs by comparing them against fixtures
+    shell: "{{ remote_root }}/scripts/test/test-workflow-results.sh {{ workflow }} {{ service_user }}"
