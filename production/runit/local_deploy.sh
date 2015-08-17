@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -x
 set -e
 
 while [[ $# > 1 ]]
@@ -43,12 +44,6 @@ done
 [[ -z ${JAR_FILE} ]] && echo pls specify JAR_FILE && exit 1
 
 CELOS_VERSION="${CELOS_VERSION:-undefined}"
-
-
-#echo $SERVICE_ARGS
-#exit 1
-
-set -x
 
 if [ -e /sbin/sv ]
 then
