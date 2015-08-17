@@ -117,7 +117,7 @@ else
     # runsv starts new service with delay,
     # so this needs to fix 'fail: $SERVICE_NAME: runsv not running'
     i=0
-    while (( i <= 7 )) && ! ${SV} status ${SERVICE_NAME} 2> ${DEV_NULL}
+    while (( i <= 20 )) && ! ${SV} status ${SERVICE_NAME} 2> ${DEV_NULL}
     do
         (( i += 1 ))
         sleep 1
