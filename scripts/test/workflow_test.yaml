@@ -52,4 +52,4 @@
     shell: "{{ remote_root }}/scripts/test/run-scheduler.sh {{ service_url }} {{ sample_time }} {{ workflow }}"
 
   - name: Verify produced outputs by comparing them against fixtures
-    shell: "{{ remote_root }}/scripts/test/test-workflow-results.sh {{ workflow }}"
+    shell: "{{ remote_root }}/scripts/test/test-workflow-results.sh {{ workflow }} {{ service_user }}"

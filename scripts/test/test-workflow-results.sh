@@ -4,6 +4,7 @@
 # workflow name should be passed as a parameter for a script. For instance, "file-copy"
 
 WORKFLOW=$1
+SERVICE_USER=$2
 
 exitStatus=0;
 declare -a hdfsResultFiles
@@ -11,11 +12,11 @@ declare -a hdfsResultFiles
 # for each file in Celos HDFS find corresponding file in local fs and make a diff
 # result is stored in exitStatus
 
-for f in $(hadoop fs -ls -R hdfs:///user/celos-ci/samples/$WORKFLOW/output | tr -s " " |  cut -d " " -f 8)
+for f in $(hadoop fs -ls -R hdfs:///user/${SERVICE_USER}/samples/${WORKFLOW}/output | tr -s " " |  cut -d " " -f 8)
 do
     if ! hadoop fs -test -d $f
     then
-        expectedFile=$HOME$(sed "s/hdfs:[/]\+user\/celos-ci/\/workflow-test/" <<< $f)
+        expectedFile=$HOME$(sed "s/hdfs:[/]\+user\/${SERVICE_USER}/\/workflow-test/" <<< $f)
         # echo "result file = $f    expectedFile = $expectedFile"
         hadoop fs -cat $f | diff - $expectedFile
         status=$?;
