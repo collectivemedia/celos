@@ -161,6 +161,6 @@
       url: "{{service_url}}/slot-state?id=my-missing-workflow&time=1970-12-02T18:00Z"
     tags: slot-state
 
-#  - name: Check log file contains info about workflow-1 loaded above
-#    shell: grep 'INFO :.*Loading file.*workflow-1.js' {{celos_log_dir}}/celos.log
+  - name: Check log file contains info about workflow-1 loaded above
+    shell: grep 'INFO :.*Loading file.*workflow-1.js' {{celos_log_dir}}/celos.log
 
