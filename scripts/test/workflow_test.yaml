@@ -4,7 +4,6 @@
 
 - hosts: test-server
   gather_facts: no
-  remote_user: celos
   vars:
     local_root: "../.."
     remote_root: "~{{ service_user }}/workflow-test"
