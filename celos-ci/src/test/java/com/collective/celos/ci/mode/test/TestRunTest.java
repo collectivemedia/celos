@@ -1,15 +1,17 @@
 package com.collective.celos.ci.mode.test;
 
-import com.collective.celos.ci.config.CelosCiCommandLine;
+import com.collective.celos.ci.config.CiCommandLine;
 import com.collective.celos.ci.config.deploy.CelosCiContext;
 import com.collective.celos.ci.config.deploy.CelosCiTarget;
 import org.apache.commons.lang.StringUtils;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URI;
 import java.util.Arrays;
 
@@ -21,6 +23,14 @@ public class TestRunTest {
     @Rule
     public TemporaryFolder tempDir = new TemporaryFolder();
 
+    public File tmpDirFile;
+
+    @Before
+    public void before() throws IOException {
+        tmpDirFile = tempDir.newFolder();
+    }
+
+
     @Test
     public void testCelosCiDeployContext() throws Exception {
 
@@ -28,7 +38,7 @@ public class TestRunTest {
         URI hadoopCoreUrl = Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/ci/testing/config/core-site.xml").toURI();
         URI hadoopHdfsUrl = Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/ci/testing/config/hdfs-site.xml").toURI();
 
-        CelosCiCommandLine commandLine = new CelosCiCommandLine("", "TEST", "deploydir", "workflow", "testDir", "uname", false);
+        CiCommandLine commandLine = new CiCommandLine("", "TEST", "deploydir", "workflow", tmpDirFile.getAbsolutePath(), "uname", false);
         CelosCiTarget target = new CelosCiTarget(hadoopHdfsUrl, hadoopCoreUrl, URI.create("celoswfdir"), URI.create("defdir"), URI.create(""));
         TestCase testCase = new TestCase("tc1", "2013-12-20T16:00Z", "2013-12-20T16:00Z");
         TestRun celosCiTest = new TestRun(target, commandLine, testCase, tempDir.newFolder());
@@ -74,7 +84,7 @@ public class TestRunTest {
         File otherDefFile2 = new File(remoteFolderDef, "some-defaults2.js");
         otherDefFile2.createNewFile();
 
-        CelosCiCommandLine commandLine = new CelosCiCommandLine("", "TEST", deployDir.getAbsolutePath(), "myworkflow", "testDir", "uname", false);
+        CiCommandLine commandLine = new CiCommandLine("", "TEST", deployDir.getAbsolutePath(), "myworkflow", tmpDirFile.getAbsolutePath(), "uname", false);
         CelosCiTarget target = new CelosCiTarget(hadoopHdfsUrl, hadoopCoreUrl, remoteFolderWf.toURI(), remoteFolderDef.toURI(), URI.create(""));
         TestCase testCase = new TestCase("tc1", "2013-12-20T16:00Z", "2013-12-20T16:00Z");
 
@@ -102,7 +112,7 @@ public class TestRunTest {
         File defFile = new File(deployDir, "defaults.js");
         defFile.createNewFile();
 
-        CelosCiCommandLine commandLine = new CelosCiCommandLine("", "TEST", deployDir.getAbsolutePath(), "myworkflow", "testDir", "uname", false);
+        CiCommandLine commandLine = new CiCommandLine("", "TEST", deployDir.getAbsolutePath(), "myworkflow", tmpDirFile.getAbsolutePath(), "uname", false);
         CelosCiTarget target = new CelosCiTarget(hadoopHdfsUrl, hadoopCoreUrl, emptyDir.toURI(), emptyDir.toURI(), URI.create(""));
 
         TestCase testCase = new TestCase("tc1", "2013-12-20T16:00Z", "2013-12-20T16:00Z");

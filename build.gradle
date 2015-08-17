@@ -1,108 +1,18 @@
-apply plugin: 'application'
-apply plugin: 'eclipse'
-apply plugin: 'idea'
-apply plugin: 'java'
-apply plugin: 'maven'
+allprojects {
 
-mainClassName = 'com.collective.celos.ci.CelosCi'
-group = 'com.collective'
-version = '0.1'
-sourceCompatibility = 1.7
+    apply plugin: 'application'
+    apply plugin: 'eclipse'
+    apply plugin: 'idea'
+    apply plugin: 'java'
 
-sourceSets {
-    main {
-        java {
-            srcDir 'src/main/java'
-            srcDir 'celos-ci/src/main/java'
-        }
-        resources {
-            srcDir 'src/main/resources'
-            srcDir 'celos-ci/src/main/resources'
-            srcDir 'src/main/webapp'
-        }
-    }
-    test {
-        java {
-            srcDir 'src/test/java'
-            srcDir 'celos-ci/src/test/java'
-        }
-        resources {
-            srcDir 'src/test/resources'
-            srcDir 'celos-ci/src/test/resources'
-        }
-    }
-}
+    group = 'com.collective'
+    sourceCompatibility = 1.7
 
-jar {
-    baseName "celos-ci"
-    manifest {
-        attributes("Main-Class": mainClassName)
-    }
-}
-
-repositories {
-    mavenLocal()
-    mavenCentral()
-    maven { url "http://repo1.maven.org/maven2" }
-    maven { url "https://repository.cloudera.com/artifactory/cloudera-repos" }
-}
-
-dependencies {
-    compile("com.fasterxml.jackson.core:jackson-annotations:2.3.0")
-    compile("com.fasterxml.jackson.core:jackson-core:2.3.0")
-    compile("com.fasterxml.jackson.core:jackson-databind:2.3.0")
-    compile("com.google.guava:guava:11.0.2")
-    compile("com.google.protobuf:protobuf-java:2.5.0")
-    compile("com.googlecode.json-simple:json-simple:1.1.1")
-    compile("com.jcraft:jsch:0.1.51")
-    compile("commons-cli:commons-cli:1.2")
-    compile("commons-codec:commons-codec:1.4")
-    compile("commons-collections:commons-collections:3.2.1")
-    compile("commons-configuration:commons-configuration:1.10")
-    compile("commons-io:commons-io:2.4")
-    compile("commons-lang:commons-lang:2.6")
-    compile("commons-logging:commons-logging:1.1.3")
-    compile("javax.servlet:javax.servlet-api:3.1.0")
-    compile("joda-time:joda-time:2.3")
-    compile("log4j:apache-log4j-extras:1.2.17")
-    compile("log4j:log4j:1.2.17")
-    compile("org.apache.commons:commons-vfs2:2.0")
-    compile("org.apache.hadoop:hadoop-auth:2.5.0-cdh5.3.1")
-    compile("org.apache.hadoop:hadoop-common:2.5.0-cdh5.3.1")
-    compile("org.apache.hadoop:hadoop-hdfs:2.5.0-cdh5.3.1")
-    compile("org.apache.oozie:oozie-client:4.0.0-cdh5.3.1")
-    compile("org.eclipse.jetty.aggregate:jetty-all:9.2.2.v20140723")
-    compile("org.mozilla:rhino:1.7R4")
-    compile("org.quartz-scheduler:quartz:2.1.1")
-    compile("org.slf4j:slf4j-api:1.7.5")
-    compile("org.slf4j:slf4j-log4j12:1.7.5")
-    compile("com.google.code.gson:gson:2.2.4")
-    compile("org.apache.hive:hive-jdbc:0.13.1-cdh5.3.1")
-    compile("org.apache.hadoop:hadoop-mapreduce-client-core:2.5.0-cdh5.3.1")
-    compile("net.sf.opencsv:opencsv:2.3")
-
-    testCompile("junit:junit:4.8.2")
-    testCompile("org.powermock:powermock-module-junit4:1.5.5") {
-       exclude module: 'junit'
-    }
-    testCompile("org.powermock:powermock-api-mockito:1.5.5") {
-       exclude module: 'junit'
-    }
-    testCompile("org.mockito:mockito-all:1.9.5")
-}
-
-def repoUser = System.getenv("CELOS_NEXUS_USER");
-def repoPw = System.getenv("CELOS_NEXUS_PASS");
-
-uploadArchives.doFirst {
     repositories {
-        mavenDeployer {
-            repository(url: System.getenv("NEXUS_MAVEN_REPO")) {
-                authentication(userName: repoUser, password: repoPw)
-            }
-            if (!System.getenv("BUILD_NUMBER")) throw new GradleException("BUILD_NUMBER env variable should be present")
-            pom.version = "2.0." + System.getenv("BUILD_NUMBER")
-            pom.groupId = "com.collective"
-        }
+        mavenLocal()
+        mavenCentral()
+        maven { url "http://repo1.maven.org/maven2" }
+        maven { url "https://repository.cloudera.com/artifactory/cloudera-repos" }
     }
+
 }

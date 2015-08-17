@@ -1,0 +1,36 @@
+---
+# Playbook to perform integration testing on Celos
+#
+# Performs various tests against the servlets.
+
+# ansible-playbook -i ./scripts/test/inventory scripts/celos-deploy.yaml -v \
+# -e celos_version=12345 -e service_name=celos-server -e jar_path=../celos-server/build/libs/celos-0.1.jar
+
+- hosts: test-server
+  gather_facts: no
+  vars:
+    root: ".."
+    dest_root: "~{{ service_user }}/local"
+    jar_path: "{{ root }}/{{ service_name }}/build/libs/{{ jar_file }}"
+    local_deploy: "{{ root }}/production/runit/local_deploy.sh"
+    version: "${CELOS_VERSION:-undefined}"
+
+  tasks:
+
+  - ping:
+
+  - local_action: command ./gradlew {{ service_name }}:jar
+    args:
+      chdir: "{{ root }}"
+
+  - file: dest={{ celos_defaults_dir }} state=directory
+  - file: dest={{ celos_workflows_dir }} state=directory
+  - file: dest={{ celos_ui_dir }} state=directory
+  - file: dest={{ celos_db_dir }} state=directory
+
+
+  - copy: src={{ jar_path }} dest={{ dest_root }}/lib/
+
+  - script: "{{ local_deploy }} -n {{ service_name }} -u {{ service_user }} -p {{ service_port }} -j {{ jar_file }} -v {{ version }} -- {{ service_args }}"
+
+  - shell: curl "http://localhost:{{ service_port }}/version" 2> /dev/null

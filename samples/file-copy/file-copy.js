@@ -11,15 +11,15 @@ addWorkflow({
     "schedulingStrategy": serialSchedulingStrategy(),
 
     "trigger": hdfsCheckTrigger(
-        "/user/celos/samples/file-copy/input/${year}-${month}-${day}T${hour}00.txt"
+        "/user/celos-ci/samples/file-copy/input/${year}-${month}-${day}T${hour}00.txt"
     ),
 
     "externalService": oozieExternalService(
         {
-            "user.name": "celos",
-            "oozie.wf.application.path": "/user/celos/samples/file-copy/workflow/workflow.xml",
-            "inputDir": "hdfs:/user/celos/samples/file-copy/input",
-            "outputDir": "hdfs:/user/celos/samples/file-copy/output"
+            "user.name": "celos-ci",
+            "oozie.wf.application.path": "/user/celos-ci/samples/file-copy/workflow/workflow.xml",
+            "inputDir": "hdfs:/user/celos-ci/samples/file-copy/input",
+            "outputDir": "hdfs:/user/celos-ci/samples/file-copy/output"
         }
     )
 

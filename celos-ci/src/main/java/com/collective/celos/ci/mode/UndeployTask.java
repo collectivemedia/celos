@@ -1,7 +1,7 @@
 package com.collective.celos.ci.mode;
 
 import com.collective.celos.ci.CelosCi;
-import com.collective.celos.ci.config.CelosCiCommandLine;
+import com.collective.celos.ci.config.CiCommandLine;
 import com.collective.celos.ci.config.deploy.CelosCiContext;
 import com.collective.celos.ci.config.deploy.CelosCiTarget;
 import com.collective.celos.ci.config.deploy.CelosCiTargetParser;
@@ -15,7 +15,7 @@ public class UndeployTask extends CelosCi {
 
     private final CelosCiContext ciContext;
 
-    public UndeployTask(CelosCiCommandLine commandLine) throws Exception {
+    public UndeployTask(CiCommandLine commandLine) throws Exception {
         CelosCiTargetParser parser = new CelosCiTargetParser(commandLine.getUserName());
         CelosCiTarget target = parser.parse(commandLine.getTargetUri());
         this.ciContext = new CelosCiContext(target, commandLine.getUserName(), commandLine.getMode(), commandLine.getDeployDir(), commandLine.getWorkflowName(), "");
