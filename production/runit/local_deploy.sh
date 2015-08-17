@@ -1,54 +1,55 @@
 #!/usr/bin/env bash
 set -e
 
-while [[ $# > 1 ]]
+for i in "$@"
 do
-case $1 in
-    -n|--SERVICE_NAME)
-        shift # past argument
-        SERVICE_NAME="$1"
+case $i in
+    n=*|--SERVICE_NAME=*)
+    SERVICE_NAME="${i#*=}"
+    shift # past argument=value
     ;;
-    -u|--SERVICE_USER)
-        shift # past argument
-        SERVICE_USER="$1"
+    u=*|--SERVICE_USER=*)
+    SERVICE_USER="${i#*=}"
+    shift # past argument=value
     ;;
-    -p|--SERVICE_PORT)
-        shift # past argument
-        SERVICE_PORT="$1"
+    p=*|--SERVICE_PORT=*)
+    SERVICE_PORT="${i#*=}"
+    shift # past argument=value
     ;;
-    -v|--CELOS_VERSION)
-        shift # past argument
-        CELOS_VERSION="$1"
+    v=*|--CELOS_VERSION=*)
+    CELOS_VERSION="${i#*=}"
+    shift # past argument=value
     ;;
-    -j|--JAR_FILE)
-        shift # past argument
-        JAR_FILE="$1"
+    j=*|--JAR_FILE=*)
+    JAR_FILE="${i#*=}"
+    shift # past argument=value
     ;;
-    --)
+    j=*|--JAR_FILE=*)
+    JAR_FILE="${i#*=}"
+    shift # past argument=value
+    ;;
+    e=*|extra=*)
         shift # past argument
         SERVICE_ARGS=$@
         break
     ;;
     *)
+        echo $i
         echo usage: -n SERVICE_NAME -u SERVICE_USER -p SERVICE_PORT -j JAR_FILE -v CELOS_VERSION
         exit 1  # unknown option
     ;;
 esac
-shift # past argument or value
 done
 
 [[ -z ${SERVICE_NAME} ]] && echo pls specify SERVICE_NAME && exit 1
 [[ -z ${SERVICE_USER} ]] && echo pls specify SERVICE_USER && exit 1
 [[ -z ${SERVICE_PORT} ]] && echo pls specify SERVICE_PORT && exit 1
 [[ -z ${JAR_FILE} ]] && echo pls specify JAR_FILE && exit 1
-
-CELOS_VERSION="${CELOS_VERSION:-undefined}"
-
-
-#echo $SERVICE_ARGS
-#exit 1
+[[ -z ${CELOS_VERSION} ]] && echo pls specify CELOS_VERSION && exit 1
 
 set -x
+
+echo ${SERVICE_NAME} .... ${SERVICE_ARGS}
 
 if [ -e /sbin/sv ]
 then
@@ -104,7 +105,7 @@ chmod a+x ${SERVICE_DIR}/log/run
 # process programm
 mkdir -p ${DEST_ROOT}/bin
 echo >  ${DEST_ROOT}/bin/${SERVICE_NAME} '#!/usr/bin/env bash'
-echo >> ${DEST_ROOT}/bin/${SERVICE_NAME} CELOS_VERSION=${CELOS_VERSION} exec java -jar ${JAR_PATH} --port ${SERVICE_PORT} ${SERVICE_ARGS}
+echo >> ${DEST_ROOT}/bin/${SERVICE_NAME} "CELOS_VERSION=${CELOS_VERSION} exec java -cp \"${JAR_PATH}:/etc/hadoop/conf\" com.collective.celos.server.Main --port ${SERVICE_PORT} ${SERVICE_ARGS}"
 
 chmod a+x ${DEST_ROOT}/bin/${SERVICE_NAME}
 # check runsv is running
@@ -126,5 +127,4 @@ else
 fi
 # need to deploy from different users
 chmod a+w "/etc/service/${SERVICE_NAME}"
-curl "http://localhost:${SERVICE_PORT}/version"
-
+curl --fail "http://localhost:${SERVICE_PORT}/version"
