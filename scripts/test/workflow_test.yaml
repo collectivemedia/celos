@@ -34,8 +34,8 @@
   - name: Copy workflow to configuration dir
     shell: cp {{sample_workflow}} {{celos_workflows_dir}}
 
-  - name: Copy defaults
-    shell: scp {{service_user}}@celos001.ny7.collective-media.net:/etc/celos/defaults/collective.js {{celos_defaults_dir}}
+  - name: Copy defaults from celos-settings location
+    shell: cp /home/celos-ci/celos-settings/defaults/test/collective.js {{celos_defaults_dir}}
 
   - name: Prepare HDFS dirs
     shell: hadoop fs -rm -r -f /user/{{ service_user }}/samples/{{ workflow }}
