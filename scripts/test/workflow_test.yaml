@@ -16,7 +16,7 @@
   tasks:
 
   - name: Remove old files
-    shell: rm -rf {{remote_root}}/*
+    shell: mkdir -p {{remote_root}} && rm -rf {{remote_root}}/*
 
   - name: Copy files
     local_action: command rsync -az -e ssh {{local_root}}/scripts {{local_root}}/samples
