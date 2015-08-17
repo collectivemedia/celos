@@ -20,14 +20,14 @@
   - name: Copy scripts
     synchronize:
       src: "{{local_root}}/scripts"
-      dest: "{{remote_root}}/scripts"
+      dest: "{{remote_root}}/"
       dirs: yes
       delete: yes
 
   - name: Copy samples
     synchronize:
       src: "{{local_root}}/samples"
-      dest: "{{remote_root}}/samples"
+      dest: "{{remote_root}}/"
       dirs: yes
       delete: yes
 
