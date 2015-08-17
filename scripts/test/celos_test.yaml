@@ -164,3 +164,5 @@
   - name: Check log file contains info about workflow-1 loaded above
     shell: grep 'INFO :.*Loading file.*workflow-1.js' {{celos_log_dir}}/celos.log
 
+  - name: Run file-copy CCI test
+    local_action: command {{ root }}/samples/file-copy-celos-provided/scripts/ci {{ service_url }} {{ root }}/samples/file-copy-celos-provided

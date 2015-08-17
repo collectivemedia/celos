@@ -28,6 +28,16 @@
   - file: dest={{ celos_ui_dir }} state=directory
   - file: dest={{ celos_db_dir }} state=directory
 
+  - name: create temp dir
+    local_action: command mkdir -p .ansible.tmp
+
+  - name: copy default files from original celos server to temp dir
+    local_action: command rsync -az -e ssh celos001:/etc/celos/defaults/ .ansible.tmp
+
+  - copy: src=.ansible.tmp/ dest={{ celos_defaults_dir }}
+
+  - name: remove temp dir
+    local_action: command rm -r -f .ansible.tmp
 
   - copy: src={{ jar_path }} dest={{ dest_root }}/lib/
 

@@ -1,8 +1,8 @@
 [test-server]
-admin1.lga2.collective-media.net
+oj001.ny7.collective-media.net
 
 [test-ui]
-admin1.lga2.collective-media.net
+oj001.ny7.collective-media.net
 
 [test-cluster:children]
 test-ui
