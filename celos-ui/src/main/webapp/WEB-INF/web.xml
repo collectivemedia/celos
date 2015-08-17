@@ -8,20 +8,19 @@
         <servlet-class>com.collective.celos.ui.CelosUIServlet</servlet-class>
     </servlet>
 
-    <servlet>
-        <servlet-name>VersionNumberServlet</servlet-name>
-        <servlet-class>com.collective.celos.servlet.VersionServlet</servlet-class>
-    </servlet>
-
     <servlet-mapping>
         <servlet-name>CelosUIServlet</servlet-name>
         <url-pattern>/ui</url-pattern>
     </servlet-mapping>
 
+    <servlet>
+        <servlet-name>VersionServlet</servlet-name>
+        <servlet-class>com.collective.celos.servlet.VersionServlet</servlet-class>
+    </servlet>
+
     <servlet-mapping>
-        <servlet-name>VersionNumberServlet</servlet-name>
+        <servlet-name>VersionServlet</servlet-name>
         <url-pattern>/version</url-pattern>
     </servlet-mapping>
-
 
 </web-app>
