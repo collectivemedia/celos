@@ -1,0 +1,166 @@
+---
+# Playbook to perform integration testing on Celos
+#
+# Performs various tests against the servlets.
+
+- hosts: test-server
+  gather_facts: no
+  vars:
+    root: "../.."
+    tests_dir: "{{root}}/celos-server/src/test/resources/com/collective/celos/workflow-configuration-test"
+    service_url: "http://{{inventory_hostname}}:{{service_port}}"
+
+  tasks:
+
+  - name: Check servlet /version responds
+    register: result
+    local_action:
+      module: uri
+      url: "{{service_url}}/version"
+      return_content: yes
+
+  - when: result.content != version
+    fail:
+
+  - name: Check servlet /celos/scheduler responds to POST
+    local_action:
+      module: uri
+      method: POST
+      url: "{{service_url}}/scheduler"
+
+  - name: Check servlet /celos/scheduler doesn't respond to GET
+    local_action:
+      module: uri
+      url: "{{service_url}}/scheduler"
+      status_code: 405
+
+  - name: Create workflow-list with empty configuration
+    synchronize:
+      src: "{{tests_dir}}/empty/"
+      dest: "{{celos_workflows_dir}}/"
+      recursive: yes
+      delete: yes
+
+  - name: Clear scheduler cache
+    local_action:
+      module: uri
+      method: POST
+      url: "{{service_url}}/clear-cache"
+
+  - name: Testing servlet /celos/workflow-list with empty configuration
+    register: result
+    local_action:
+      module: uri
+      url: "{{service_url}}/workflow-list"
+      return_content: yes
+  - when: result.content != lookup('file', 'test_files/empty_workflow_list.json')
+    fail:
+
+  - name: Upload sample workflow configuration files
+    synchronize:
+      src: "{{tests_dir}}/json-workflow-list-servlet-test/"
+      dest: "{{celos_workflows_dir}}/"
+      dirs: yes
+      delete: yes
+
+  - name: Testing servlet /celos/workflow-list still returns empty configuration (before clearing cache)
+    register: result
+    local_action:
+      module: uri
+      url: "{{service_url}}/workflow-list"
+      return_content: yes
+  - when: result.content != lookup('file', 'test_files/empty_workflow_list.json')
+    fail:
+
+  - name: Clear scheduler cache
+    local_action:
+      module: uri
+      method: POST
+      url: "{{service_url}}/clear-cache"
+
+  - name: Testing servlet /celos/workflow-list with non-empty configuration
+    register: result
+    local_action:
+      module: uri
+      url: "{{service_url}}/workflow-list"
+      return_content: yes
+  - when: result.content != lookup('file', 'test_files/workflow_list.json')
+    fail:
+
+  - name: Check servlet /celos/workflow fails when id parameter not set
+    local_action:
+      module: uri
+      status_code: 400
+      url: "{{service_url}}/workflow"
+
+#  - name: Check log file contains error from calling workflow servlet without id parameter above
+#    shell: grep 'ERROR:.*id parameter missing' {{celos_log_dir}}/celos.log
+
+  - name: Check servlet /celos/workflow returns 404 when id parameter specifies missing workflow
+    local_action:
+      module: uri
+      status_code: 404
+      url: "{{service_url}}/workflow?id=foobar"
+
+  - name: Upload sample state database
+    synchronize:
+      src: "{{root}}/celos-server/src/test/resources/com/collective/celos/state-database-test/db-1/"
+      dest: "{{celos_db_dir}}/"
+      recursive: yes
+      delete: yes
+    tags: slot-state
+
+  - name: Check servlet /celos/workflow returns correct JSON object for workflow-1
+    register: result
+    local_action:
+      module: uri
+      url: "{{service_url}}/workflow?id=workflow-1&time=2013-12-02T20:00Z"
+      return_content: yes
+  - when: result.content != lookup('file', 'test_files/workflow_states_workflow_1.json')
+    fail:
+
+  - name: Check servlet /celos/workflow returns correct JSON object for workflow-2
+    register: result
+    local_action:
+      module: uri
+      url: "{{service_url}}/workflow?id=workflow-2&time=2013-12-02T20:00Z"
+      return_content: yes
+  - when: result.content != lookup('file', 'test_files/workflow_states_workflow_2.json')
+    fail:
+
+  - name: Check servlet /celos/slot-state returns correct JSON for 1900
+    register: result
+    local_action:
+      module: uri
+      url: "{{service_url}}/slot-state?id=workflow-1&time=2013-12-02T19:00Z"
+      return_content: yes
+  - when: result.content != lookup('file', 'test_files/slot_state_workflow_1_1900.json')
+    fail:
+
+  - name: Check servlet /celos/slot-state returns correct JSON for 1800
+    register: result
+    local_action:
+      module: uri
+      url: "{{service_url}}/slot-state?id=workflow-1&time=2013-12-02T18:00Z"
+      return_content: yes
+  - when: result.content != lookup('file', 'test_files/slot_state_workflow_1_1800.json')
+    fail:
+
+
+  - name: Check servlet /celos/slot-state returns 404 for slot not found
+    local_action:
+      module: uri
+      status_code: 404
+      url: "{{service_url}}/slot-state?id=workflow-1&time=1970-12-02T18:00Z"
+    tags: slot-state
+
+  - name: Check servlet /celos/slot-state returns 404 for slot not found / nonexisting workflow
+    local_action:
+      module: uri
+      status_code: 404
+      url: "{{service_url}}/slot-state?id=my-missing-workflow&time=1970-12-02T18:00Z"
+    tags: slot-state
+
+  - name: Check log file contains info about workflow-1 loaded above
+    shell: grep 'INFO :.*Loading file.*workflow-1.js' {{celos_log_dir}}/celos.log
+

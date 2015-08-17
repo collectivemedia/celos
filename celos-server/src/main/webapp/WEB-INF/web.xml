@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE web-app PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.2//EN"
+        "http://java.sun.com/j2ee/dtds/web-app_2_2.dtd">
+<web-app>
+
+    <context-param>
+        <param-name>workflow.configuration.path</param-name>
+        <param-value>/etc/celos/workflows</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>defaults.configuration.path</param-name>
+        <param-value>/etc/celos/defaults</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>ui.configuration.path</param-name>
+        <param-value>/etc/celos/ui</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>state.database.path</param-name>
+        <param-value>/var/lib/celos/db</param-value>
+    </context-param>
+
+    <servlet>
+        <servlet-name>SchedulerServlet</servlet-name>
+        <servlet-class>com.collective.celos.servlet.SchedulerServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>SchedulerServlet</servlet-name>
+        <url-pattern>/scheduler</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>JSONWorkflowListServlet</servlet-name>
+        <servlet-class>com.collective.celos.servlet.JSONWorkflowListServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>JSONWorkflowListServlet</servlet-name>
+        <url-pattern>/workflow-list</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>JSONWorkflowServlet</servlet-name>
+        <servlet-class>com.collective.celos.servlet.JSONWorkflowServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>JSONWorkflowServlet</servlet-name>
+        <url-pattern>/workflow</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>JSONWorkflowSlotsServlet</servlet-name>
+        <servlet-class>com.collective.celos.servlet.JSONWorkflowSlotsServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>JSONWorkflowSlotsServlet</servlet-name>
+        <url-pattern>/workflow-slots</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>JSONSlotStateServlet</servlet-name>
+        <servlet-class>com.collective.celos.servlet.JSONSlotStateServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>JSONSlotStateServlet</servlet-name>
+        <url-pattern>/slot-state</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>RerunServlet</servlet-name>
+        <servlet-class>com.collective.celos.servlet.RerunServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>RerunServlet</servlet-name>
+        <url-pattern>/rerun</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>ClearCacheServlet</servlet-name>
+        <servlet-class>com.collective.celos.servlet.ClearCacheServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ClearCacheServlet</servlet-name>
+        <url-pattern>/clear-cache</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>UIConfigServlet</servlet-name>
+        <servlet-class>com.collective.celos.servlet.UIConfigServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>UIConfigServlet</servlet-name>
+        <url-pattern>/ui-config</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>UIServlet</servlet-name>
+        <servlet-class>com.collective.celos.servlet.UIServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>UIServlet</servlet-name>
+        <url-pattern>/ui</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>VersionServlet</servlet-name>
+        <servlet-class>com.collective.celos.servlet.VersionServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>VersionServlet</servlet-name>
+        <url-pattern>/version</url-pattern>
+    </servlet-mapping>
+
+</web-app>
