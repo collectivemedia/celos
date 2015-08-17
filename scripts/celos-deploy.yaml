@@ -32,7 +32,7 @@
     local_action: command mkdir -p .ansible.tmp
 
   - name: copy default files from original celos server to temp dir
-    local_action: command rsync -az -e ssh celos001:/etc/celos/defaults/ .ansible.tmp
+    local_action: command rsync -az -e ssh celos-ci@celos001:/etc/celos/defaults/ .ansible.tmp
 
   - copy: src=.ansible.tmp/ dest={{ celos_defaults_dir }}
 
