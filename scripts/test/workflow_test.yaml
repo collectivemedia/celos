@@ -7,7 +7,7 @@
   remote_user: celos
   vars:
     local_root: "../.."
-    remote_root: "~/workflow-test"
+    remote_root: "~{{ service_user }}/workflow-test"
     sample_workflow: "{{ remote_root }}/samples/{{ workflow }}/{{ workflow }}.js"
     sample_input: "{{ remote_root }}/samples/{{ workflow }}/input"
     sample_oozie_workflow: "{{ remote_root }}/samples/{{ workflow }}/workflow"
