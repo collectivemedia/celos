@@ -1,10 +1,7 @@
-[testing-celos-cluster:children]
-testing-celos-ui
-
-[testing-celos-ui]
+[host]
 admin1.lga2.collective-media.net
 
-[testing-celos-ui:vars]
+[host:vars]
 celos_server_host="admin1.lga2.collective-media.net"
 service_port={{ui_service_port}}
 service_name={{ui_service_name}}

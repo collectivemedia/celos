@@ -1,12 +1,7 @@
-[celos-cluster:children]
-prod-celos-server
-
-[prod-celos-server]
+[host]
 celos001.ny7.collective-media.net
 
-[prod-celos-server:vars]
-service_port={{server_service_port}}
-service_name={{server_service_name}}
+[host:vars]
 celos_workflows_dir={{ celos_wrk_dir }}/workflows
 celos_defaults_dir={{ celos_wrk_dir }}/defaults
 celos_ui_dir={{ celos_wrk_dir }}/ui
