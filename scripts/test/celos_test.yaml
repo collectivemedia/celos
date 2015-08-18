@@ -93,8 +93,8 @@
       status_code: 400
       url: "{{service_url}}/workflow"
 
-#  - name: Check log file contains error from calling workflow servlet without id parameter above
-#    shell: grep 'ERROR:.*id parameter missing' {{celos_log_dir}}/celos.log
+  - name: Check log file contains error from calling workflow servlet without id parameter above
+    shell: grep 'ERROR:.*id parameter missing' {{celos_log_dir}}/celos.log
 
   - name: Check servlet /celos/workflow returns 404 when id parameter specifies missing workflow
     local_action:
