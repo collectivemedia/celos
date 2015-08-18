@@ -23,20 +23,10 @@
     args:
       chdir: "{{ root }}"
 
-  - name: Prepare configuration dir
-    shell: rm -rf {{celos_workflows_dir}}/* && mkdir -p {{celos_workflows_dir}}
-
-  - name: Prepare database dir
-    shell: rm -rf {{celos_db_dir}}/* && mkdir -p {{celos_db_dir}}
-
-  - name: Prepare logs dir
-    shell: rm -rf {{celos_log_dir}}/* && mkdir -p {{celos_log_dir}}
-
-  - name: Prepare defaults dir
-    shell: rm -rf {{celos_defaults_dir}}/* && mkdir -p {{celos_defaults_dir}}
-
-  - name: Prepare UI dir
-    shell: rm -rf {{celos_ui_dir}}/* && mkdir -p {{celos_ui_dir}}
+  - file: dest={{ celos_defaults_dir }} state=directory
+  - file: dest={{ celos_workflows_dir }} state=directory
+  - file: dest={{ celos_ui_dir }} state=directory
+  - file: dest={{ celos_db_dir }} state=directory
 
   - shell: cp /home/celos-ci/celos-settings/defaults/* {{ celos_defaults_dir }}
 
