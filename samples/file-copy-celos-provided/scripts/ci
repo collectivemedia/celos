@@ -12,6 +12,6 @@ mkdir -p celos_deploy/hdfs
 
 cp src/main/celos/* celos_deploy
 cp src/main/oozie/* celos_deploy/hdfs
-java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5111 -jar ../../celos-ci/build/libs/celos-ci-fat-0.1.jar --testDir src/test/celos-ci --deployDir celos_deploy --workflowName file-copy --mode TEST --target file:///home/celos-ci/target_provided.json --celosServer $CELOS_SERVER
+java -agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5111 -jar ../../celos-ci/build/libs/celos-ci-fat-0.1.jar --testDir src/test/celos-ci --deployDir celos_deploy --workflowName file-copy --mode TEST --target file:///home/celos-ci/target_provided.json --celosServer $CELOS_SERVER
 
 echo You win! All tests OK.
