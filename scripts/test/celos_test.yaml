@@ -12,7 +12,11 @@
 
   tasks:
 
-  - register: result
+  - name: Copy defaults
+    shell: cp /home/celos-ci/celos-settings/defaults/* {{ celos_defaults_dir }}
+
+  - name: Check servlet /version responds
+    register: result
     local_action:
       module: uri
       url: "{{service_url}}/version"
