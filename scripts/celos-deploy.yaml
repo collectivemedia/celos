@@ -29,8 +29,6 @@
   - file: dest={{ celos_db_dir }} state=directory
   - file: dest={{ celos_log_dir }} state=directory
 
-  - shell: cp /home/celos-ci/celos-settings/defaults/* {{ celos_defaults_dir }}
-
   - copy: src={{ jar_path }} dest={{ dest_root }}/lib/
 
   - script: "{{ local_deploy }} -n {{ service_name }} -u {{ service_user }} -p {{ service_port }} -j {{ jar_file }} -v {{ version }} -- {{ service_args }}"
