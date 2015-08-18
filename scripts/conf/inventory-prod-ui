@@ -4,3 +4,5 @@ oj001.ny7.collective-media.net
 
 [host:vars]
 celos_server_host="celos001.ny7.collective-media.net"
+service_name={{ui_service_name}}
+service_port={{ui_service_port}}

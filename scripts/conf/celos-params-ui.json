@@ -1,5 +1,0 @@
-{
-  "ansible_ssh_user": "celos-ci",
-  "service_name": "celos-ui",
-  "service_port": 9092
-}

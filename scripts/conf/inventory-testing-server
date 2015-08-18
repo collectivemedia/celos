@@ -7,3 +7,5 @@ celos_defaults_dir={{ celos_wrk_dir }}/defaults
 celos_ui_dir={{ celos_wrk_dir }}/ui
 celos_db_dir={{ celos_wrk_dir }}/db
 celos_log_dir={{ celos_wrk_dir }}/logs
+service_name={{server_service_name}}
+service_port={{server_service_port}}

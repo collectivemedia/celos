@@ -10,7 +10,7 @@
     service_user: "{{ ansible_ssh_user }}"
     prefix: "/home/{{ service_user }}/local"
     service_dir: "{{ prefix }}/service/{{ service_name }}"
-    runit_restart: "{{ root }}/scripts/runit-restart.sh"
+    runit_restart: "{{ root }}/scripts/runit-restart-service.sh"
     start_script_path: "{{ prefix }}/bin/{{ service_name}}"
     dest_jar_path: "{{ prefix }}/lib/{{ service_name}}.jar"
     stdout_log_path: "{{ prefix }}/log/{{ service_name }}"
