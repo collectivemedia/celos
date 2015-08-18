@@ -7,6 +7,7 @@
   gather_facts: no
   vars:
     root: ".."
+    service_user: "{{ ansible_ssh_user }}"
     prefix: "/home/{{ service_user }}/local"
     service_dir: "{{ prefix }}/service/{{ service_name }}"
     runit_restart: "{{ root }}/scripts/runit-restart.sh"
@@ -26,10 +27,15 @@
     args:
       chdir: "{{ root }}"
 
-  - file: dest={{ celos_defaults_dir }} state=directory
-  - file: dest={{ celos_workflows_dir }} state=directory
-  - file: dest={{ celos_ui_dir }} state=directory
-  - file: dest={{ celos_db_dir }} state=directory
+  - when: celos_defaults_dir is defined
+    file: dest={{ celos_defaults_dir }} state=directory
+  - when: celos_workflows_dir is defined
+    file: dest={{ celos_workflows_dir }} state=directory
+  - when: celos_ui_dir is defined
+    file: dest={{ celos_ui_dir }} state=directory
+  - when: celos_db_dir is defined
+    file: dest={{ celos_db_dir }} state=directory
+
   - file: dest={{ service_dir }} state=directory
   - file: dest={{ service_dir }}/log state=directory
   - file: state=directory dest={{ stdout_log_path }}

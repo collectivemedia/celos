@@ -3,7 +3,7 @@
 #
 # Performs various tests against the servlets.
 
-- hosts: test-server
+- hosts: celos-cluster
   gather_facts: no
   vars:
     root: "../.."

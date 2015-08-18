@@ -1,8 +1,0 @@
-{
-  "server_jar_path": "../celos-server/build/libs/celos-0.1.jar",
-  "server_main_class": "com.collective.celos.server.Main",
-  "server_service_args": "--workflowsDir {{ celos_workflows_dir }} --defaultsDir {{ celos_defaults_dir }} --stateDir {{ celos_db_dir }} --uiDir {{ celos_ui_dir }} --logDir {{ celos_log_dir }}",
-  "ui_jar_path": "../celos-ui/build/libs/celos-ui-0.1.jar",
-  "ui_main_class": "com.collective.celos.ui.Main",
-  "ui_service_args": "--celosAddr http://{{ celos_server_host }}:{{ server_service_port }}"
-}

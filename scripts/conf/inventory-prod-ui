@@ -1,0 +1,11 @@
+[celos-cluster:children]
+prod-celos-ui
+
+[prod-celos-ui]
+oj001.ny7.collective-media.net
+
+
+[prod-celos-ui:vars]
+celos_server_host="celos001.ny7.collective-media.net"
+service_port={{ui_service_port}}
+service_name={{ui_service_name}}
