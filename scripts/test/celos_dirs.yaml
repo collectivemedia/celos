@@ -3,14 +3,8 @@
 #
 # Performs various tests against the servlets.
 
-- hosts: admin1
+- hosts: test-server
   gather_facts: no
-  vars:
-    celos_workflows_dir: ~/celos_wrk/workflow  
-    celos_ui_dir: ~/celos_wrk/ui  
-    celos_db_dir: ~/celos_wrk/state  
-    celos_log_dir: ~/celos_wrk/logs  
-    celos_def_dir: ~/celos_wrk/defaults
 
   tasks:
 
@@ -24,7 +18,7 @@
     shell: rm -rf {{celos_log_dir}}/* && mkdir -p {{celos_log_dir}}
 
   - name: Prepare defaults dir
-    shell: rm -rf {{celos_def_dir}}/* && mkdir -p {{celos_def_dir}}
+    shell: rm -rf {{celos_defaults_dir}}/* && mkdir -p {{celos_defaults_dir}}
 
   - name: Prepare UI dir
     shell: rm -rf {{celos_ui_dir}}/* && mkdir -p {{celos_ui_dir}}
