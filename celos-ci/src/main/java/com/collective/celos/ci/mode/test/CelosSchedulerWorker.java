@@ -23,6 +23,8 @@ public class CelosSchedulerWorker {
 
     public void runCelosScheduler(TestCase testCase) throws Exception {
         Set<WorkflowID> workflowList;
+        client.clearCache();
+
         if (testCase.getTargetWorkflows().isEmpty()) {
             workflowList = client.getWorkflowList();
         } else {
