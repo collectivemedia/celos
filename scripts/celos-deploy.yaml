@@ -3,25 +3,20 @@
 #
 # Performs various tests against the servlets.
 
-# ansible-playbook -i ./scripts/test/inventory scripts/celos-deploy.yaml \
-# -e celos_version=12345 -e service_name=celos-server -e jar_path=../celos-server/build/libs/celos-0.1.jar
-
-- hosts: test-server
+- hosts: celos-cluster
   gather_facts: no
   vars:
     root: ".."
     prefix: "/home/{{ service_user }}/local"
-    local_deploy: "{{ root }}/production/runit/local_deploy.sh"
     service_dir: "{{ prefix }}/service/{{ service_name }}"
+    runit_restart: "{{ root }}/scripts/runit-restart.sh"
     start_script_path: "{{ prefix }}/bin/{{ service_name}}"
     dest_jar_path: "{{ prefix }}/lib/{{ service_name}}.jar"
-    main_class: com.collective.celos.server.Main
     stdout_log_path: "{{ prefix }}/log/{{ service_name }}"
 
   tasks:
 
   - ping:
-
 
   - name: "assert version non empty"
     when: service_version == ""
@@ -57,7 +52,7 @@
   - shell: "[ -p {{ service_dir }}/log/supervise/ok ]      || mkfifo {{ service_dir }}/log/supervise/ok"
   - shell: "[ -p {{ service_dir }}/log/supervise/control ] || mkfifo {{ service_dir }}/log/supervise/control"
 
-  - script: "{{ local_deploy }} --SERVICE_NAME {{ service_name }} --SERVICE_DIR {{ service_dir }}"
+  - script: "{{ runit_restart }} --SERVICE_NAME {{ service_name }} --SERVICE_DIR {{ service_dir }}"
 
   - register: result
     local_action:

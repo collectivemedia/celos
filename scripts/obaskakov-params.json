@@ -1,6 +1,0 @@
-{
-  "ansible_ssh_user": "obaskakov",
-  "service_name": "obaskakov-delme",
-  "service_port": 12345,
-  "celos_wrk_dir": "/home/obaskakov/delme"
-}

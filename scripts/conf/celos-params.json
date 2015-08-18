@@ -1,0 +1,8 @@
+{
+  "ansible_ssh_user": "celos-ci",
+  "celos_wrk_dir": "/home/celos-ci/celos_wrk",
+  "server_service_name": "celos-server",
+  "server_service_port": 9091,
+  "ui_service_name": "celos-ui",
+  "ui_service_port": 9092
+}
