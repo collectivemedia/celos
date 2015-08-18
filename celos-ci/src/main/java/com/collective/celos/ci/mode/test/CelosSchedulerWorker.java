@@ -44,8 +44,6 @@ public class CelosSchedulerWorker {
 
     private void startScheduler(TestCase testCase, Set<WorkflowID> workflowList, ScheduledTime actualTime, ScheduledTime endTime) throws Exception {
         System.out.println(testCase.getName() + ": Starting scheduler for: " + StringUtils.join(workflowList, ", "));
-        restartRerunnable(workflowList, endTime);
-
         client.iterateScheduler(actualTime, testCase.getTargetWorkflows());
 
         while (!actualTime.getDateTime().isAfter(endTime.getDateTime())) {
@@ -72,17 +70,6 @@ public class CelosSchedulerWorker {
             }
         }
         return false;
-    }
-
-    private void restartRerunnable(Set<WorkflowID> workflowList, ScheduledTime schedTime) throws Exception {
-        for (WorkflowID workflowID : workflowList) {
-            List<SlotState> slotStates = client.getWorkflowStatus(workflowID, schedTime).getSlotStates();
-            for (SlotState slotState : slotStates) {
-                if (slotState.isRerunnable()) {
-                    client.rerunSlot(slotState.getSlotID().getWorkflowID(), slotState.getSlotID().getScheduledTime());
-                }
-            }
-        }
     }
 
     Set<String> getWorkflowStatusesInfo(Set<WorkflowID> workflowList, ScheduledTime schedTime) throws Exception {

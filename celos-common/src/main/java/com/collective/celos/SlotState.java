@@ -109,7 +109,7 @@ public class SlotState extends ValueObject {
         return new SlotState(slotID, Status.WAITING, null, 0); // reset retryCount to 0
     }
 
-    public boolean isRerunnable() {
+    private boolean isRerunnable() {
         return status.equals(Status.SUCCESS) || status.equals(Status.FAILURE) || status.equals(Status.WAIT_TIMEOUT);
     }
     

@@ -68,7 +68,7 @@ public class TestRunCelosServerModeEmbedded implements TestRunCelosServerMode {
         logJsFileExists(WorkflowFilesDeployer.WORKFLOW_FILENAME, testRun);
         logJsFileExists(WorkflowFilesDeployer.DEFAULTS_FILENAME, testRun);
 
-        copyRemoteDefaultsToLocal(testRun);
+        copyRemoteDefaultsToLocal(testRun.getCiContext().getUserName(), testRun.getOriginalTarget().getDefaultsDirUri());
 
         return URI.create("http://localhost:" + port);
     }
@@ -80,11 +80,11 @@ public class TestRunCelosServerModeEmbedded implements TestRunCelosServerMode {
         }
     }
 
-    public void copyRemoteDefaultsToLocal(TestRun testRun)
+    public void copyRemoteDefaultsToLocal(String username, URI defaultsDirUri)
             throws URISyntaxException, FileSystemException {
-        JScpWorker worker = new JScpWorker(testRun.getCiContext().getUserName());
-        if (testRun.getOriginalTarget().getDefaultsDirUri() != null) {
-            FileObject remoteDefaultsDir = worker.getFileObjectByUri(testRun.getOriginalTarget().getDefaultsDirUri());
+        JScpWorker worker = new JScpWorker(username);
+        if (defaultsDirUri != null) {
+            FileObject remoteDefaultsDir = worker.getFileObjectByUri(defaultsDirUri);
             if (remoteDefaultsDir.exists()) {
                 FileObject localDefaultsDir = worker.getFileObjectByUri(getCelosDefaultsDir());
                 localDefaultsDir.copyFrom(remoteDefaultsDir, Selectors.SELECT_CHILDREN);

@@ -13,7 +13,6 @@ public class CiCommandLineParser {
     private static final String CLI_WORKFLOW_NAME = "workflowName";
     private static final String CLI_TEST_CASES_DIR = "testDir";
     private static final String CLI_CELOS_SERVER = "celosServer";
-    private static final String CLI_HDFS_PREFIX = "hdfsPrefix";
     private static final String DEFAULT_TEST_CASES_DIR = "src/test/celos-ci";
     private static final String USERNAME_ENV_VAR = "CELOS_CI_USERNAME";
     private static final String KEEP_TEMP_DATA = "KEEP_TEMP_DATA";
@@ -51,8 +50,7 @@ public class CiCommandLineParser {
                 .addOption(CLI_DEPLOY_DIR, CLI_DEPLOY_DIR, true, "Deploy directory. Path to workflow you want to deploy")
                 .addOption(CLI_WORKFLOW_NAME, CLI_WORKFLOW_NAME, true, "Workflow JS file name")
                 .addOption(CLI_TEST_CASES_DIR, CLI_TEST_CASES_DIR, true, "Test cases dir")
-                .addOption(CLI_CELOS_SERVER, CLI_CELOS_SERVER, true, "Celos Server (for remote Celos mode)")
-                .addOption(CLI_HDFS_PREFIX, CLI_HDFS_PREFIX, true, "HDFS prefix (for remote Celos mode)");
+                .addOption(CLI_CELOS_SERVER, CLI_CELOS_SERVER, true, "Celos Server (for remote Celos mode)");
 
         return options;
     }
