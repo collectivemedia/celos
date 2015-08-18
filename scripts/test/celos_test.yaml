@@ -3,7 +3,7 @@
 #
 # Performs various tests against the servlets.
 
-- hosts: test-server
+- hosts: host
   gather_facts: no
   vars:
     root: "../.."
@@ -21,8 +21,8 @@
       module: uri
       url: "{{service_url}}/version"
       return_content: yes
-
-  - when: result.content != version
+  - name: Check servlet /version responds
+    when: result.content != service_version
     fail:
 
   - name: Check servlet /celos/scheduler responds to POST
@@ -50,13 +50,13 @@
       method: POST
       url: "{{service_url}}/clear-cache"
 
-  - name: Testing servlet /celos/workflow-list with empty configuration
-    register: result
+  - register: result
     local_action:
       module: uri
       url: "{{service_url}}/workflow-list"
       return_content: yes
-  - when: result.content != lookup('file', 'test_files/empty_workflow_list.json')
+  - name: Testing servlet /celos/workflow-list with empty configuration
+    when: result.content != lookup('file', 'test_files/empty_workflow_list.json')
     fail:
 
   - name: Upload sample workflow configuration files
@@ -66,13 +66,13 @@
       dirs: yes
       delete: yes
 
-  - name: Testing servlet /celos/workflow-list still returns empty configuration (before clearing cache)
-    register: result
+  - register: result
     local_action:
       module: uri
       url: "{{service_url}}/workflow-list"
       return_content: yes
-  - when: result.content != lookup('file', 'test_files/empty_workflow_list.json')
+  - name: Testing servlet /celos/workflow-list still returns empty configuration (before clearing cache)
+    when: result.content != lookup('file', 'test_files/empty_workflow_list.json')
     fail:
 
   - name: Clear scheduler cache
@@ -81,13 +81,13 @@
       method: POST
       url: "{{service_url}}/clear-cache"
 
-  - name: Testing servlet /celos/workflow-list with non-empty configuration
-    register: result
+  - register: result
     local_action:
       module: uri
       url: "{{service_url}}/workflow-list"
       return_content: yes
-  - when: result.content != lookup('file', 'test_files/workflow_list.json')
+  - name: Testing servlet /celos/workflow-list with non-empty configuration
+    when: result.content != lookup('file', 'test_files/workflow_list.json')
     fail:
 
   - name: Check servlet /celos/workflow fails when id parameter not set
@@ -110,42 +110,41 @@
       delete: yes
     tags: slot-state
 
-  - name: Check servlet /celos/workflow returns correct JSON object for workflow-1
-    register: result
+  - register: result
     local_action:
       module: uri
       url: "{{service_url}}/workflow?id=workflow-1&time=2013-12-02T20:00Z"
       return_content: yes
-  - when: result.content != lookup('file', 'test_files/workflow_states_workflow_1.json')
+  - name: Check servlet /celos/workflow returns correct JSON object for workflow-1
+    when: result.content != lookup('file', 'test_files/workflow_states_workflow_1.json')
     fail:
 
-  - name: Check servlet /celos/workflow returns correct JSON object for workflow-2
-    register: result
+  - register: result
     local_action:
       module: uri
       url: "{{service_url}}/workflow?id=workflow-2&time=2013-12-02T20:00Z"
       return_content: yes
-  - when: result.content != lookup('file', 'test_files/workflow_states_workflow_2.json')
+  - name: Check servlet /celos/workflow returns correct JSON object for workflow-2
+    when: result.content != lookup('file', 'test_files/workflow_states_workflow_2.json')
     fail:
 
-  - name: Check servlet /celos/slot-state returns correct JSON for 1900
-    register: result
+  - register: result
     local_action:
       module: uri
       url: "{{service_url}}/slot-state?id=workflow-1&time=2013-12-02T19:00Z"
       return_content: yes
-  - when: result.content != lookup('file', 'test_files/slot_state_workflow_1_1900.json')
+  - name: Check servlet /celos/slot-state returns correct JSON for 1900
+    when: result.content != lookup('file', 'test_files/slot_state_workflow_1_1900.json')
     fail:
 
-  - name: Check servlet /celos/slot-state returns correct JSON for 1800
-    register: result
+  - register: result
     local_action:
       module: uri
       url: "{{service_url}}/slot-state?id=workflow-1&time=2013-12-02T18:00Z"
       return_content: yes
-  - when: result.content != lookup('file', 'test_files/slot_state_workflow_1_1800.json')
+  - name: Check servlet /celos/slot-state returns correct JSON for 1800
+    when: result.content != lookup('file', 'test_files/slot_state_workflow_1_1800.json')
     fail:
-
 
   - name: Check servlet /celos/slot-state returns 404 for slot not found
     local_action:
