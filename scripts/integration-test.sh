@@ -5,4 +5,5 @@ set -e
 ansible-playbook scripts/celos-deploy.yaml -u celos-ci -i scripts/conf/inventory-testing-server -e service_version=${GIT_COMMIT} -e "@scripts/conf/testing-params.json" -e "@scripts/conf/common-params-server.json"
 ansible-playbook scripts/celos-deploy.yaml -u celos-ci -i scripts/conf/inventory-testing-ui -e service_version=${GIT_COMMIT} -e "@scripts/conf/testing-params.json" -e "@scripts/conf/common-params-ui.json"
 ansible-playbook scripts/test/celos_test.yaml -u celos-ci -i scripts/conf/inventory-testing-server -e service_version=${GIT_COMMIT} -e "@scripts/conf/testing-params.json" -e "@scripts/conf/common-params-server.json"
-ansible-playbook scripts/test/celos-purge.yaml -u celos-ci -i scripts/conf/inventory-testing-server -e service_version=${GIT_COMMIT} -e "@scripts/conf/testing-params.json" -e "@scripts/conf/common-params-server.json"
+ansible-playbook scripts/celos-purge.yaml -u celos-ci -i scripts/conf/inventory-testing-server -e "@scripts/conf/integration-params.json" -e "@scripts/conf/common-params-server.json"
+ansible-playbook scripts/celos-purge.yaml -u celos-ci -i scripts/conf/inventory-testing-ui -e "@scripts/conf/integration-params.json" -e "@scripts/conf/common-params-ui.json"
