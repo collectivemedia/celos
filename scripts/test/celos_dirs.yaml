@@ -1,0 +1,30 @@
+---
+# Playbook to perform integration testing on Celos
+#
+# Performs various tests against the servlets.
+
+- hosts: admin1
+  gather_facts: no
+  vars:
+    celos_workflows_dir: ~/celos_wrk/workflow  
+    celos_ui_dir: ~/celos_wrk/ui  
+    celos_db_dir: ~/celos_wrk/state  
+    celos_log_dir: ~/celos_wrk/logs  
+    celos_def_dir: ~/celos_wrk/defaults
+
+  tasks:
+
+  - name: Prepare configuration dir
+    shell: rm -rf {{celos_workflows_dir}}/* && mkdir -p {{celos_workflows_dir}}
+
+  - name: Prepare database dir
+    shell: rm -rf {{celos_db_dir}}/* && mkdir -p {{celos_db_dir}}
+
+  - name: Prepare logs dir
+    shell: rm -rf {{celos_log_dir}}/* && mkdir -p {{celos_log_dir}}
+
+  - name: Prepare defaults dir
+    shell: rm -rf {{celos_def_dir}}/* && mkdir -p {{celos_def_dir}}
+
+  - name: Prepare UI dir
+    shell: rm -rf {{celos_ui_dir}}/* && mkdir -p {{celos_ui_dir}}
