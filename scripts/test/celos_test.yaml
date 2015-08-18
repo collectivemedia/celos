@@ -165,18 +165,3 @@
 
   - name: Run file-copy CCI test
     local_action: command {{ root }}/samples/file-copy-celos-provided/scripts/ci {{ service_url }} {{ root }}/samples/file-copy-celos-provided
-
-  - name: Clean configuration dir
-    shell: rm -rf {{celos_workflows_dir}}/*
-
-  - name: Clean database dir
-    shell: rm -rf {{celos_db_dir}}/*
-
-  - name: Clean logs dir
-    shell: rm -rf {{celos_log_dir}}/*
-
-  - name: Clean defaults dir
-    shell: rm -rf {{celos_defaults_dir}}/*
-
-  - name: Clean UI dir
-    shell: rm -rf {{celos_ui_dir}}/*
