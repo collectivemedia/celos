@@ -6,9 +6,15 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.log4j.PatternLayout;
+import org.apache.log4j.rolling.RollingFileAppender;
+import org.apache.log4j.rolling.TimeBasedRollingPolicy;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.URI;
@@ -140,6 +146,10 @@ public class Util {
 
     public static String augmentHdfsPath(String hdfsPrefix, String path) throws URISyntaxException {
 
+        if (hdfsPrefix.isEmpty() || hdfsPrefix.equals("/")) {
+            return path;
+        }
+
         for (String ch : conversions.keySet()) {
             path = path.replace(ch.toString(), conversions.get(ch).toString());
         }
@@ -163,6 +173,26 @@ public class Util {
         int port = s.getLocalPort();
         s.close();
         return port;
+    }
+
+    public static void setupLogging(File logDir) {
+        System.getProperties().setProperty("log4j.defaultInitOverride", "true");
+
+        RollingFileAppender appender = new RollingFileAppender();
+        appender.setFile(new File(logDir, "celos.log").getAbsolutePath());
+        appender.setAppend(true);
+
+        TimeBasedRollingPolicy rollingPolicy = new TimeBasedRollingPolicy();
+        rollingPolicy.setFileNamePattern(new File(logDir, "celos-%d{yyyy-MM-dd}.log").getAbsolutePath());
+        appender.setRollingPolicy(rollingPolicy);
+
+        PatternLayout patternLayout = new PatternLayout();
+        patternLayout.setConversionPattern("[%d{YYYY-MM-dd HH:mm:ss.SSS}] %-5p: %m%n");
+        appender.setLayout(patternLayout);
+
+        appender.activateOptions();
+        Logger.getRootLogger().addAppender(appender);
+        Logger.getRootLogger().setLevel(Level.INFO);
     }
 
 }

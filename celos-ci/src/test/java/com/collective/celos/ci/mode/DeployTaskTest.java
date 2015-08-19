@@ -44,7 +44,7 @@ public class DeployTaskTest {
         stream.write(targetFileStr.getBytes());
         stream.flush();
 
-        CiCommandLine commandLine = new CiCommandLine(targetFile.toURI().toString(), "DEPLOY", "deploydir", "workflow", "testDir", "uname", false);
+        CiCommandLine commandLine = new CiCommandLine(targetFile.toURI().toString(), "DEPLOY", "deploydir", "workflow", "testDir", "uname", false, null);
         DeployTask deployTask = new DeployTask(commandLine);
 
         CelosCiContext context = deployTask.getCiContext();
@@ -84,7 +84,7 @@ public class DeployTaskTest {
         stream.write(targetFileStr.getBytes());
         stream.flush();
 
-        CiCommandLine commandLine = new CiCommandLine(targetFile.toURI().toString(), "DEPLOY", deployDir.getAbsolutePath(), "workflow", "testDir", "uname", false);
+        CiCommandLine commandLine = new CiCommandLine(targetFile.toURI().toString(), "DEPLOY", deployDir.getAbsolutePath(), "workflow", "testDir", "uname", false, null);
 
         DeployTask deployTask = new DeployTask(commandLine);
 

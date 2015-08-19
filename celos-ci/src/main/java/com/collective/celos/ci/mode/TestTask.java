@@ -15,6 +15,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import com.collective.celos.Util;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
@@ -37,7 +38,6 @@ public class TestTask extends CelosCi {
 
     private static final String CELOS_CI_DIR = ".celos-ci";
     private static final String TEST_CONFIG_JS_FILE = "test.js";
-    private static final String CELOS_LOG_FILE = "celos.log";
 
     private final List<TestRun> testRuns = Lists.newArrayList();
     private final File celosCiTempDir;
@@ -49,7 +49,7 @@ public class TestTask extends CelosCi {
     TestTask(CiCommandLine commandLine, File configJSFile, File tempDir) throws Exception {
 
         this.celosCiTempDir = tempDir;
-        substituteLoggers();
+        Util.setupLogging(tempDir);
 
         CelosCiTargetParser parser = new CelosCiTargetParser(commandLine.getUserName());
         CelosCiTarget target = parser.parse(commandLine.getTargetUri());
@@ -76,29 +76,13 @@ public class TestTask extends CelosCi {
         return PosixFilePermissions.asFileAttribute(PosixFilePermissions.fromString("rwxr-xr-x"));
     }
 
-    private void substituteLoggers() throws IOException {
-        //don't load configuration from log4j.xml -- we're doing this programmatically
-        System.getProperties().setProperty("log4j.defaultInitOverride", "true");
-
-        FileAppender fileAppender = new FileAppender();
-        fileAppender.setFile(new File(celosCiTempDir, CELOS_LOG_FILE).getAbsolutePath());
-
-        PatternLayout patternLayout = new PatternLayout();
-        patternLayout.setConversionPattern("[%d{YYYY-MM-dd HH:mm:ss.SSS}] [%t] %-5p: %m%n");
-        fileAppender.setLayout(patternLayout);
-        fileAppender.activateOptions();
-        Logger.getRootLogger().addAppender(fileAppender);
-        Logger.getRootLogger().setLevel(Level.INFO);
-    }
-
-
     @Override
     public void start() throws Throwable {
         try {
             List<Future> futures = submitTestRuns();
             waitForCompletion(futures);
         } finally {
-            if (allTestCasesDeletedTheirData()) {
+            if (celosCiTempDir.exists() && allTestCasesDeletedTheirData()) {
                 FileUtils.forceDelete(celosCiTempDir);
             }
         }

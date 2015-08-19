@@ -42,8 +42,8 @@ public class CelosClient {
     private final URI address;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public CelosClient(String address) {
-        this.address = URI.create(address);
+    public CelosClient(URI address) {
+        this.address = Util.requireNonNull(address);
         this.client = new DefaultHttpClient();
         this.timeFormatter = new ScheduledTimeFormatter();
     }

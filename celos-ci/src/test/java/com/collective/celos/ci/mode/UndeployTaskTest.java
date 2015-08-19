@@ -42,7 +42,7 @@ public class UndeployTaskTest {
         stream.write(targetFileStr.getBytes());
         stream.flush();
 
-        CiCommandLine commandLine = new CiCommandLine(targetFile.toURI().toString(), "UNDEPLOY", "deploydir", "workflow", "testDir", "uname", false);
+        CiCommandLine commandLine = new CiCommandLine(targetFile.toURI().toString(), "UNDEPLOY", "deploydir", "workflow", "testDir", "uname", false, null);
         UndeployTask celosCiDeploy = new UndeployTask(commandLine);
 
         CelosCiContext context = celosCiDeploy.getCiContext();
@@ -82,7 +82,7 @@ public class UndeployTaskTest {
         stream.write(targetFileStr.getBytes());
         stream.flush();
 
-        CiCommandLine commandLine = new CiCommandLine(targetFile.toURI().toString(), "UNDEPLOY", deployDir.getAbsolutePath(), "workflow", "testDir", "uname", false);
+        CiCommandLine commandLine = new CiCommandLine(targetFile.toURI().toString(), "UNDEPLOY", deployDir.getAbsolutePath(), "workflow", "testDir", "uname", false, null);
 
         UndeployTask undeployTask = new UndeployTask(commandLine);
 

@@ -1,0 +1,38 @@
+---
+# Playbook to perform integration testing on Celos
+#
+# Performs various tests against the servlets.
+
+- hosts: host
+  gather_facts: no
+  vars:
+    root: ".."
+    service_user: "{{ ansible_ssh_user }}"
+    prefix: "/home/{{ service_user }}/local"
+    service_dir: "{{ prefix }}/service/{{ service_name }}"
+    runit_restart: "{{ root }}/scripts/runit-restart-service.sh"
+    start_script_path: "{{ prefix }}/bin/{{ service_name}}"
+    dest_jar_path: "{{ prefix }}/lib/{{ service_name}}.jar"
+    stdout_log_path: "{{ prefix }}/log/{{ service_name }}"
+
+  tasks:
+
+  - ping:
+
+  - file: state=absent path="/etc/service/{{ service_name }}"
+
+  - when: celos_defaults_dir is defined
+    file: state=absent path={{ celos_defaults_dir }}
+  - when: celos_workflows_dir is defined
+    file: state=absent path={{ celos_workflows_dir }}
+  - when: celos_ui_dir is defined
+    file: state=absent path={{ celos_ui_dir }}
+  - when: celos_db_dir is defined
+    file: state=absent path={{ celos_db_dir }}
+
+  - when: celos_wrk_dir is defined
+    file: state=absent path={{ celos_wrk_dir }}
+
+  - file: state=absent path={{ start_script_path }}
+  - file: state=absent path={{ dest_jar_path }}
+  - file: state=absent path={{ stdout_log_path }}

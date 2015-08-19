@@ -45,7 +45,7 @@ public class FileFixTableCreator implements FixObjectCreator<FixTable> {
     }
 
     @Override
-    public String getDescription(TestRun testRun) {
+    public String getDescription(TestRun testRun) throws Exception {
         return "FixTable out of " + fileCreator.getDescription(testRun);
     }
 
