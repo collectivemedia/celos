@@ -481,6 +481,27 @@ public class CelosClientServerTest {
     }
 
     @Test
+    public void testWorksfor5Days() throws Exception {
+        File src = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/client/wf-list").toURI());
+        FileUtils.copyDirectory(src, workflowsDir);
+
+        ScheduledTime reqTimeEnd = new ScheduledTime("2013-12-07T20:00Z");
+        ScheduledTime reqTimeStart = new ScheduledTime("2013-12-02T10:00Z");
+        celosClient.getWorkflowStatus(new WorkflowID("workflow-1"), reqTimeStart, reqTimeEnd);
+    }
+
+    @Test (expected = IOException.class)
+    public void testNotWorksfor25Days() throws Exception {
+        File src = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/client/wf-list").toURI());
+        FileUtils.copyDirectory(src, workflowsDir);
+
+        ScheduledTime reqTimeEnd = new ScheduledTime("2013-12-27T20:00Z");
+        ScheduledTime reqTimeStart = new ScheduledTime("2013-12-02T10:00Z");
+        celosClient.getWorkflowStatus(new WorkflowID("workflow-1"), reqTimeStart, reqTimeEnd);
+    }
+
+
+    @Test
     public void testCorrectWorkflowStatesFromDbWf1StartTimeIsAfterEndTime() throws Exception {
 
         File src = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/client/wf-list").toURI());

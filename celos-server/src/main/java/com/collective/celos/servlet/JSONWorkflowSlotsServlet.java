@@ -12,6 +12,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.Lists;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
+import org.joda.time.Interval;
 
 /**
  * Returns information about the slot states of a single workflow as JSON.
@@ -60,21 +61,27 @@ public class JSONWorkflowSlotsServlet extends AbstractJSONServlet {
             Workflow wf = scheduler.getWorkflowConfiguration().findWorkflow(new WorkflowID(id));
             if (wf == null) {
                 res.sendError(HttpServletResponse.SC_NOT_FOUND, "Workflow not found: " + id);
-            } else {
-                ObjectNode node = mapper.createObjectNode();
-
-                ScheduledTime endTime = getTimeParam(req, END_TIME_PARAM, new ScheduledTime(DateTime.now(DateTimeZone.UTC)));
-                ScheduledTime startTime = getTimeParam(req, START_TIME_PARAM, scheduler.getWorkflowStartTime(wf, endTime));
-
-                List<SlotState> slotStates = scheduler.getSlotStates(wf, startTime, endTime);
-                List<JsonNode> objectNodes = Lists.newArrayList();
-                for (SlotState state : Lists.reverse(slotStates)) {
-                    objectNodes.add(state.toJSONNode());
-                }
-                node.put(INFO_PARAM, mapper.valueToTree(wf.getWorkflowInfo()));
-                node.putArray(SLOTS_PARAM).addAll(objectNodes);
-                writer.writeValue(res.getOutputStream(), node);
+                return;
             }
+
+            ScheduledTime endTime = getTimeParam(req, END_TIME_PARAM, new ScheduledTime(DateTime.now(DateTimeZone.UTC)));
+            ScheduledTime startTime = getTimeParam(req, START_TIME_PARAM, scheduler.getWorkflowStartTime(wf, endTime));
+
+            if (startTime.plusHours(scheduler.getSlidingWindowHours()).getDateTime().isBefore(endTime.getDateTime())) {
+                res.sendError(HttpServletResponse.SC_BAD_REQUEST, "Time interval between start and end is limited to: " + scheduler.getSlidingWindowHours() + " hours");
+                return;
+            }
+
+            List<SlotState> slotStates = scheduler.getSlotStates(wf, startTime, endTime);
+            List<JsonNode> objectNodes = Lists.newArrayList();
+            for (SlotState state : Lists.reverse(slotStates)) {
+                objectNodes.add(state.toJSONNode());
+            }
+
+            ObjectNode node = mapper.createObjectNode();
+            node.put(INFO_PARAM, mapper.valueToTree(wf.getWorkflowInfo()));
+            node.putArray(SLOTS_PARAM).addAll(objectNodes);
+            writer.writeValue(res.getOutputStream(), node);
         } catch (Exception e) {
             throw new ServletException(e);
         }
