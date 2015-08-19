@@ -12,6 +12,18 @@
 
   tasks:
 
+  - name: Prepare configuration dir
+    shell: rm -rf {{celos_workflows_dir}}/* && mkdir -p {{celos_workflows_dir}}
+
+  - name: Prepare database dir
+    shell: rm -rf {{celos_db_dir}}/* && mkdir -p {{celos_db_dir}}
+
+  - name: Prepare defaults dir
+    shell: rm -rf {{celos_defaults_dir}}/* && mkdir -p {{celos_def_dir}}
+
+  - name: Prepare UI dir
+    shell: rm -rf {{celos_ui_dir}}/* && mkdir -p {{celos_ui_dir}}
+
   - name: Copy defaults
     shell: cp /home/celos-ci/celos-settings/defaults/* {{ celos_defaults_dir }}
 
@@ -21,9 +33,9 @@
       url: "{{service_url}}/version"
       return_content: yes
 
-#  - name: Check servlet /version responds
-#    when: result.content != service_version
-#    fail:
+  - name: Check servlet /version responds
+    when: result.content != service_version
+    fail:
 
   - name: Check servlet /celos/scheduler responds to POST
     local_action:
@@ -165,3 +177,6 @@
 
   - name: Run file-copy CCI test
     local_action: command {{ root }}/samples/file-copy-celos-provided/scripts/ci {{ service_url }} {{ root }}
+
+  - name: Clean logs dir
+    shell: rm -rf {{celos_log_dir}}/*
