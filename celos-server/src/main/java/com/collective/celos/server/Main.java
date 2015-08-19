@@ -14,8 +14,7 @@ public class Main {
                 Collections.<String, String>emptyMap(),
                 commandLine.getWorkflowsDir(),
                 commandLine.getDefaultsDir(),
-                commandLine.getStateDatabase(),
-                commandLine.getUiDir());
+                commandLine.getStateDatabase());
 
         Util.setupLogging(commandLine.getLogDir());
     }

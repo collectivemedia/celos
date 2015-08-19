@@ -29,8 +29,6 @@
     file: state=absent path={{ celos_defaults_dir }}
   - when: celos_workflows_dir is defined
     file: state=absent path={{ celos_workflows_dir }}
-  - when: celos_ui_dir is defined
-    file: state=absent path={{ celos_ui_dir }}
   - when: celos_db_dir is defined
     file: state=absent path={{ celos_db_dir }}
 
