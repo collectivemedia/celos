@@ -55,7 +55,7 @@
   - shell: "[ -p {{ service_dir }}/log/supervise/control ] || mkfifo {{ service_dir }}/log/supervise/control"
 
   - shell: kinit -k -t /home/{{ service_user }}/{{ service_user }}.keytab {{ service_user }}
-    ignore_errors: yes
+#    ignore_errors: yes
 
   - script: "{{ runit_restart }} --SERVICE_NAME {{ service_name }} --SERVICE_DIR {{ service_dir }}"
 

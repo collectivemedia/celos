@@ -11,5 +11,3 @@
     service_url: "http://{{inventory_hostname}}:{{service_port}}"
 
   tasks:
-
-  - ping:
