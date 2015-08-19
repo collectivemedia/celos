@@ -54,7 +54,7 @@ public class CelosClient {
 
     public Set<WorkflowID> getWorkflowList() throws Exception {
         URIBuilder uriBuilder = new URIBuilder(address);
-        uriBuilder.setPath(WORKFLOW_LIST_PATH);
+        uriBuilder.setPath(uriBuilder.getPath() + WORKFLOW_LIST_PATH);
 
         HttpGet workflowListGet = new HttpGet(uriBuilder.build());
         HttpResponse getResponse = execute(workflowListGet);
@@ -65,7 +65,7 @@ public class CelosClient {
     public WorkflowStatus getWorkflowStatus(WorkflowID workflowID, ScheduledTime startTime, ScheduledTime endTime) throws Exception {
 
         URIBuilder uriBuilder = new URIBuilder(address);
-        uriBuilder.setPath(WORKFLOW_SLOTS_PATH);
+        uriBuilder.setPath(uriBuilder.getPath() + WORKFLOW_SLOTS_PATH);
         if (endTime != null) {
             uriBuilder.addParameter(END_TIME_PARAM, timeFormatter.formatPretty(endTime));
         }
@@ -95,7 +95,7 @@ public class CelosClient {
 
     public void iterateScheduler(ScheduledTime scheduledTime, Set<WorkflowID> workflowIDs) throws Exception {
         URIBuilder uriBuilder = new URIBuilder(address);
-        uriBuilder.setPath(SCHEDULER_PATH);
+        uriBuilder.setPath(uriBuilder.getPath() + SCHEDULER_PATH);
         if (!workflowIDs.isEmpty()) {
             uriBuilder.addParameter(IDS_PARAM, StringUtils.join(workflowIDs, ","));
         }
@@ -105,13 +105,13 @@ public class CelosClient {
 
     public void clearCache() throws Exception {
         URIBuilder uriBuilder = new URIBuilder(address);
-        uriBuilder.setPath(CLEAR_CACHE_PATH);
+        uriBuilder.setPath(uriBuilder.getPath() + CLEAR_CACHE_PATH);
         executePost(uriBuilder.build());
     }
 
     public SlotState getSlotState(WorkflowID workflowID, ScheduledTime scheduledTime) throws Exception {
         URIBuilder uriBuilder = new URIBuilder(address);
-        uriBuilder.setPath(SLOT_STATE_PATH);
+        uriBuilder.setPath(uriBuilder.getPath() + SLOT_STATE_PATH);
         uriBuilder.addParameter(ID_PARAM, workflowID.toString());
         uriBuilder.addParameter(TIME_PARAM, scheduledTime.toString());
 
@@ -123,7 +123,7 @@ public class CelosClient {
 
     public void rerunSlot(WorkflowID workflowID, ScheduledTime scheduledTime) throws Exception {
         URIBuilder uriBuilder = new URIBuilder(address);
-        uriBuilder.setPath(RERUN_PATH);
+        uriBuilder.setPath(uriBuilder.getPath() + RERUN_PATH);
         uriBuilder.addParameter(ID_PARAM, workflowID.toString());
         uriBuilder.addParameter(TIME_PARAM, scheduledTime.toString());
         executePost(uriBuilder.build());

@@ -3,7 +3,7 @@ package com.collective.celos;
 /**
  * Uniquely identifies a workflow.
  */
-public class WorkflowID extends ValueObject {
+public class WorkflowID extends ValueObject implements Comparable<WorkflowID> {
 
     protected final String id;
     
@@ -19,6 +19,11 @@ public class WorkflowID extends ValueObject {
 
     public String toString() {
         return id;
+    }
+
+    @Override
+    public int compareTo(WorkflowID o) {
+        return this.id.compareTo(o.id);
     }
     
 }
