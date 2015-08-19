@@ -1,0 +1,17 @@
+---
+# Playbook to perform integration testing on Celos
+#
+# Performs various tests against the servlets.
+
+- hosts: host
+  gather_facts: no
+  vars:
+    service_user: "{{ ansible_ssh_user }}"
+
+  tasks:
+
+  - ping:
+
+  - shell: kinit -k -t /home/{{service_user}}/{{service_user}}.keytab {{service_user}}
+
+  - shell: curl -X POST "http://localhost:{{service_port}}/scheduler"
