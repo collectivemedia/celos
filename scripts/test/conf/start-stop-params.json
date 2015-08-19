@@ -1,0 +1,7 @@
+{
+  "celos_wrk_dir": "/home/celos-ci/integration-ss",
+  "server_service_name": "ss-celos-server",
+  "server_service_port": 13091,
+  "ui_service_name": "ss-celos-ui",
+  "ui_service_port": 13092
+}

@@ -13,3 +13,16 @@
   tasks:
 
   - ping:
+
+  - shell: /sbin/sv start {{service_name}}
+
+  - shell: "curl -f http://{{inventory_hostname}}:{{service_port}}/version"
+
+  - shell: /sbin/sv stop {{service_name}}
+
+  - shell: "! curl -f http://{{inventory_hostname}}:{{service_port}}/version"
+
+  - shell: /sbin/sv start {{service_name}}
+
+  - shell: "curl -f http://{{inventory_hostname}}:{{service_port}}/version"
+
