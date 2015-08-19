@@ -21,6 +21,7 @@ public class JettyServer {
         uriBuilder.setPath(Paths.get(url.getPath()).getParent().toString());
 
         context = new WebAppContext(uriBuilder.toString() + "/", "/");
+        context.setInitParameter("org.eclipse.jetty.servlet.Default.dirAllowed", "false");
 
         server.setHandler(context);
         server.start();
