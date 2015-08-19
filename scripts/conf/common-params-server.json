@@ -1,0 +1,5 @@
+{
+  "service_args": "--workflowsDir {{ celos_workflows_dir }} --defaultsDir {{ celos_defaults_dir }} --stateDir {{ celos_db_dir }} --uiDir {{ celos_ui_dir }} --logDir {{ celos_log_dir }}",
+  "jar_path": "../celos-server/build/libs/celos-server.jar",
+  "main_class": "com.collective.celos.server.Main"
+}

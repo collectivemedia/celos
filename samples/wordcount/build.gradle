@@ -33,7 +33,7 @@ def celosCiTask(mode) {
     celos_ci_task.execute()
 }
 
-def prepareDeployDir() {
+task prepareDeployDir << {
     new File('build/celos_deploy').deleteDir()
     new File('build/celos_deploy/hdfs/lib').mkdirs()
     copy {
@@ -51,14 +51,14 @@ def prepareDeployDir() {
 }
 
 task celos_ci << {
-    prepareDeployDir()
     celosCiTask('TEST')
 }
+celos_ci.dependsOn prepareDeployDir
 
 task celos_ci_deploy << {
-    prepareDeployDir()
     celosCiTask('DEPLOY')
 }
+celos_ci_deploy.dependsOn prepareDeployDir
 
 task celos_ci_undeploy << {
     celosCiTask('UNDEPLOY')

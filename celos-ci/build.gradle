@@ -3,13 +3,6 @@ apply plugin: 'maven'
 mainClassName = 'com.collective.celos.ci.CelosCi'
 version = '0.1'
 
-jar {
-    baseName "celos-ci"
-    manifest {
-        attributes("Main-Class": mainClassName)
-    }
-}
-
 dependencies {
     compile project(':celos-server')
     compile("com.jcraft:jsch:0.1.51")
@@ -17,7 +10,8 @@ dependencies {
     compile("org.apache.commons:commons-vfs2:2.0")
     compile("com.google.code.gson:gson:2.2.4")
     compile("org.apache.hive:hive-jdbc:0.13.1-cdh5.3.1")
-    compile("org.apache.hadoop:hadoop-mapreduce-client-core:2.5.0-cdh5.3.1")
+//  this leads fatJar to auth fail, i am not sure why did i put it here, so disabling it   
+//  compile("org.apache.hadoop:hadoop-mapreduce-client-core:2.5.0-cdh5.3.1")
     compile("net.sf.opencsv:opencsv:2.3")
 
     testCompile("junit:junit:4.8.2")
@@ -28,4 +22,39 @@ dependencies {
        exclude module: 'junit'
     }
     testCompile("org.mockito:mockito-all:1.9.5")
+}
+
+task fatJar(type: Jar) {
+    from(sourceSets.main.output) {
+        include "**/**"
+    }
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }}
+    archiveName "celos-ci-fat.jar"
+    manifest {
+        attributes("Main-Class": mainClassName)
+    }
+    zip64 = true
+}
+
+jar {
+    baseName "celos-ci"
+    manifest {
+        attributes("Main-Class": mainClassName)
+    }
+}
+
+def repoUser = System.getenv("CELOS_NEXUS_USER");
+def repoPw = System.getenv("CELOS_NEXUS_PASS");
+
+uploadArchives.doFirst {
+    repositories {
+        mavenDeployer {
+            repository(url: System.getenv("NEXUS_MAVEN_REPO")) {
+                authentication(userName: repoUser, password: repoPw)
+            }
+            if (!System.getenv("BUILD_NUMBER")) throw new GradleException("BUILD_NUMBER env variable should be present")
+            pom.version = "2.0." + System.getenv("BUILD_NUMBER")
+            pom.groupId = "com.collective"
+        }
+    }
 }

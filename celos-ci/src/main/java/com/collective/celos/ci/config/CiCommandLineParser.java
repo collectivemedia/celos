@@ -2,7 +2,6 @@ package com.collective.celos.ci.config;
 
 import org.apache.commons.cli.*;
 
-import java.io.File;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 
@@ -13,8 +12,9 @@ public class CiCommandLineParser {
     private static final String CLI_DEPLOY_DIR = "deployDir";
     private static final String CLI_WORKFLOW_NAME = "workflowName";
     private static final String CLI_TEST_CASES_DIR = "testDir";
+    private static final String CLI_CELOS_SERVER = "celosServer";
     private static final String DEFAULT_TEST_CASES_DIR = "src/test/celos-ci";
-    private static final String USERNAME_ENV_VAR = "CELOS_CI_USERNAME";
+    protected static final String USERNAME_ENV_VAR = "CELOS_CI_USERNAME";
     private static final String KEEP_TEMP_DATA = "KEEP_TEMP_DATA";
 
     public CiCommandLine parse(final String[] commandLineArguments) throws Exception {
@@ -33,14 +33,14 @@ public class CiCommandLineParser {
         String workflowName = commandLine.getOptionValue(CLI_WORKFLOW_NAME);
         String targetUri = commandLine.getOptionValue(CLI_TARGET);
         String testCasesDir = commandLine.getOptionValue(CLI_TEST_CASES_DIR, DEFAULT_TEST_CASES_DIR);
+        String celosServerUri = commandLine.getOptionValue(CLI_CELOS_SERVER);
 
         boolean keepTempData = Boolean.parseBoolean(System.getenv(KEEP_TEMP_DATA));
         String userName = System.getenv(USERNAME_ENV_VAR);
         if (userName == null) {
             userName = System.getProperty("user.name");
         }
-
-        return new CiCommandLine(targetUri, mode, deployDir, workflowName, testCasesDir, userName, keepTempData);
+        return new CiCommandLine(targetUri, mode, deployDir, workflowName, testCasesDir, userName, keepTempData, celosServerUri);
     }
 
     public Options constructOptions() {
@@ -49,7 +49,9 @@ public class CiCommandLineParser {
                 .addOption(CLI_MODE, CLI_MODE, true, "Mode. Defaults to DEPLOY")
                 .addOption(CLI_DEPLOY_DIR, CLI_DEPLOY_DIR, true, "Deploy directory. Path to workflow you want to deploy")
                 .addOption(CLI_WORKFLOW_NAME, CLI_WORKFLOW_NAME, true, "Workflow JS file name")
-                .addOption(CLI_TEST_CASES_DIR, CLI_TEST_CASES_DIR, true, "Test cases dir");
+                .addOption(CLI_TEST_CASES_DIR, CLI_TEST_CASES_DIR, true, "Test cases dir")
+                .addOption(CLI_CELOS_SERVER, CLI_CELOS_SERVER, true, "Celos Server (for remote Celos mode)");
+
         return options;
     }
 
