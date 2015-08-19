@@ -21,9 +21,9 @@
       url: "{{service_url}}/version"
       return_content: yes
 
-  - name: Check servlet /version responds
-    when: result.content != service_version
-    fail:
+#  - name: Check servlet /version responds
+#    when: result.content != service_version
+#    fail:
 
   - name: Check servlet /celos/scheduler responds to POST
     local_action:
