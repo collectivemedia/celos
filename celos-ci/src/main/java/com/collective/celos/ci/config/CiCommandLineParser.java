@@ -14,7 +14,7 @@ public class CiCommandLineParser {
     private static final String CLI_TEST_CASES_DIR = "testDir";
     private static final String CLI_CELOS_SERVER = "celosServer";
     private static final String DEFAULT_TEST_CASES_DIR = "src/test/celos-ci";
-    private static final String USERNAME_ENV_VAR = "CELOS_CI_USERNAME";
+    protected static final String USERNAME_ENV_VAR = "CELOS_CI_USERNAME";
     private static final String KEEP_TEMP_DATA = "KEEP_TEMP_DATA";
 
     public CiCommandLine parse(final String[] commandLineArguments) throws Exception {
