@@ -19,7 +19,7 @@
     shell: rm -rf {{celos_db_dir}}/* && mkdir -p {{celos_db_dir}}
 
   - name: Prepare defaults dir
-    shell: rm -rf {{celos_defaults_dir}}/* && mkdir -p {{celos_def_dir}}
+    shell: rm -rf {{celos_defaults_dir}}/* && mkdir -p {{celos_defaults_dir}}
 
   - name: Prepare UI dir
     shell: rm -rf {{celos_ui_dir}}/* && mkdir -p {{celos_ui_dir}}
