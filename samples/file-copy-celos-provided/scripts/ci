@@ -2,8 +2,10 @@
 set -e
 set -x
 
-ROOT=$2
 CELOS_SERVER=$1
+cd $2
+
+ROOT=$(pwd)
 
 cd $ROOT/samples/file-copy-celos-provided
 # Run integration tests against currently checkout local source on test cluster.
