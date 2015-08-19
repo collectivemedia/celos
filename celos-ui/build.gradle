@@ -39,4 +39,5 @@ dependencies {
 
 jar {
     from configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+    archiveName "celos-ui.jar"
 }

@@ -43,7 +43,7 @@ dependencies {
 
 jar {
     from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }}
-    baseName "celos"
+    archiveName "celos-server.jar"
     manifest {
         attributes("Main-Class": mainClassName)
     }

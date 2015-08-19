@@ -29,7 +29,7 @@ task fatJar(type: Jar) {
         include "**/**"
     }
     from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }}
-    baseName "celos-ci-fat"
+    archiveName "celos-ci-fat.jar"
     manifest {
         attributes("Main-Class": mainClassName)
     }
