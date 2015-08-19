@@ -37,7 +37,6 @@ public class CiCommandLineParserTest {
         Assert.assertEquals(commandLine.getDeployDir(), new File("deploydir"));
         Assert.assertEquals(commandLine.getMode(), CelosCiContext.Mode.TEST);
         Assert.assertEquals(commandLine.getTargetUri(), URI.create("target"));
-        Assert.assertEquals(commandLine.getUserName(), System.getProperty("user.name"));
         Assert.assertEquals(commandLine.getWorkflowName(), "workflow");
     }
 
@@ -51,7 +50,6 @@ public class CiCommandLineParserTest {
         Assert.assertEquals(commandLine.getDeployDir(), new File("deploydir"));
         Assert.assertEquals(commandLine.getMode(), CelosCiContext.Mode.DEPLOY);
         Assert.assertEquals(commandLine.getTargetUri(), URI.create("target"));
-        Assert.assertEquals(commandLine.getUserName(), System.getProperty("user.name"));
         Assert.assertEquals(commandLine.getWorkflowName(), "workflow");
     }
 
@@ -66,7 +64,6 @@ public class CiCommandLineParserTest {
         Assert.assertEquals(commandLine.getDeployDir(), new File("deploydir"));
         Assert.assertEquals(commandLine.getMode(), CelosCiContext.Mode.UNDEPLOY);
         Assert.assertEquals(commandLine.getTargetUri(), URI.create("target"));
-        Assert.assertEquals(commandLine.getUserName(), System.getProperty("user.name"));
         Assert.assertEquals(commandLine.getWorkflowName(), "workflow");
     }
 
