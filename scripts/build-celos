@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 set -x
 set -e
-./gradlew clean test jar fatJar
+./gradlew clean test celos-server:jar celos-ci:fatJar
