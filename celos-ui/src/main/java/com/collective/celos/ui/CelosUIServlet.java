@@ -2,6 +2,7 @@ package com.collective.celos.ui;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.URI;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -26,7 +27,6 @@ import com.collective.celos.Util;
 import com.collective.celos.WorkflowID;
 import com.collective.celos.WorkflowStatus;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
 
 /**
  * Created by akonopko on 22.07.15.
@@ -39,7 +39,7 @@ public class CelosUIServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         try {
             String celosURL = Util.requireNonNull(getServletContext().getAttribute(Main.CELOS_URL_ATTR).toString());
-            CelosClient client = new CelosClient(celosURL);
+            CelosClient client = new CelosClient(new URI(celosURL));
             res.setContentType("text/html;charset=utf-8");
             res.setStatus(HttpServletResponse.SC_OK);
             PrintWriter writer = res.getWriter();
