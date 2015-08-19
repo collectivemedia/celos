@@ -14,14 +14,12 @@ public class SchedulerConfiguration {
     private final File workflowConfigurationPath;
     private final File defaultsConfigurationPath;
     private final File stateDatabasePath;
-    private final File uiDir;
     private final Map<String, String> additionalVars;
 
-    public SchedulerConfiguration(File workflowConfigurationPath, File defaultsConfigurationPath, File stateDatabasePath, File uiDir, Map<String, String> additionalVars) {
+    public SchedulerConfiguration(File workflowConfigurationPath, File defaultsConfigurationPath, File stateDatabasePath, Map<String, String> additionalVars) {
         this.workflowConfigurationPath = workflowConfigurationPath;
         this.defaultsConfigurationPath = defaultsConfigurationPath;
         this.stateDatabasePath = stateDatabasePath;
-        this.uiDir = uiDir;
         this.additionalVars = additionalVars;
     }
 
@@ -40,7 +38,4 @@ public class SchedulerConfiguration {
         return new FileSystemStateDatabase(stateDatabasePath);
     }
 
-    public File getUiDir() {
-        return uiDir;
-    }
 }

@@ -76,14 +76,13 @@ public abstract class AbstractServlet extends HttpServlet {
         String workflowConfigPath = getServletContext().getInitParameter(Constants.WORKFLOW_CONFIGURATION_PATH_ATTR);
         String defaultsConfigPath = getServletContext().getInitParameter(Constants.DEFAULTS_CONFIGURATION_PATH_ATTR);
         String stateDatabasePath = getServletContext().getInitParameter(Constants.STATE_DATABASE_PATH_ATTR);
-        String uiPath = getServletContext().getInitParameter(Constants.UI_PATH_ATTR);
         Map<String, String> additionalVars = (Map<String, String>) getServletContext().getAttribute(Constants.ADDITIONAL_JS_VARIABLES);
         if (additionalVars == null) {
             additionalVars = ImmutableMap.of();
         }
 
         Scheduler sch = new SchedulerConfiguration(
-                new File(workflowConfigPath), new File(defaultsConfigPath), new File(stateDatabasePath), new File(uiPath), additionalVars
+                new File(workflowConfigPath), new File(defaultsConfigPath), new File(stateDatabasePath), additionalVars
         ).makeDefaultScheduler();
 
         getServletContext().setAttribute(SCHEDULER_ATTR, sch);
