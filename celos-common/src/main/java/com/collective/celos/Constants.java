@@ -14,7 +14,6 @@ public class Constants {
     public static final String WORKFLOW_CONFIGURATION_PATH_ATTR = "workflow.configuration.path";
     public static final String DEFAULTS_CONFIGURATION_PATH_ATTR = "defaults.configuration.path";
     public static final String STATE_DATABASE_PATH_ATTR = "state.database.path";
-    public static final String UI_PATH_ATTR = "ui.configuration.path";
     public static final String ADDITIONAL_JS_VARIABLES = "additional.js.variables";
 
 }
