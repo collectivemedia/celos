@@ -23,10 +23,6 @@
     when: service_version == ""
     fail:
 
-  - local_action: command ./gradlew jar
-    args:
-      chdir: "{{ root }}"
-
   - when: celos_defaults_dir is defined
     file: dest={{ celos_defaults_dir }} state=directory
   - when: celos_workflows_dir is defined
