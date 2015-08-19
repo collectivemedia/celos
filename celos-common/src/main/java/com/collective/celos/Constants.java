@@ -6,7 +6,6 @@ package com.collective.celos;
 public class Constants {
     
     public static final String DEFAULT_WORKFLOWS_DIR = "/etc/celos/workflows";
-    public static final String DEFAULT_UI_DIR = "/etc/celos/ui";
     public static final String DEFAULT_DEFAULTS_DIR = "/etc/celos/defaults";
     public static final String DEFAULT_DB_DIR = "/var/lib/celos/db";
     public static final String DEFAULT_LOG_DIR = "/var/log/celos";

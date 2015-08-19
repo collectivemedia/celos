@@ -27,8 +27,6 @@
     file: dest={{ celos_defaults_dir }} state=directory
   - when: celos_workflows_dir is defined
     file: dest={{ celos_workflows_dir }} state=directory
-  - when: celos_ui_dir is defined
-    file: dest={{ celos_ui_dir }} state=directory
   - when: celos_db_dir is defined
     file: dest={{ celos_db_dir }} state=directory
 
