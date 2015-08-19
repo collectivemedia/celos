@@ -59,7 +59,7 @@ public class CelosClientServerTest {
 
         this.celosServer = new CelosServer();
         celosServer.startServer(port, ImmutableMap.<String, String>of(), workflowsDir, defaultsDir, slotDbDir, uiDir);
-        this.celosClient = new CelosClient("http://localhost:" + port);
+        this.celosClient = new CelosClient(URI.create("http://localhost:" + port));
     }
 
     @After
@@ -481,6 +481,27 @@ public class CelosClientServerTest {
     }
 
     @Test
+    public void testWorksfor5Days() throws Exception {
+        File src = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/client/wf-list").toURI());
+        FileUtils.copyDirectory(src, workflowsDir);
+
+        ScheduledTime reqTimeEnd = new ScheduledTime("2013-12-07T20:00Z");
+        ScheduledTime reqTimeStart = new ScheduledTime("2013-12-02T10:00Z");
+        celosClient.getWorkflowStatus(new WorkflowID("workflow-1"), reqTimeStart, reqTimeEnd);
+    }
+
+    @Test (expected = IOException.class)
+    public void testNotWorksfor25Days() throws Exception {
+        File src = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/client/wf-list").toURI());
+        FileUtils.copyDirectory(src, workflowsDir);
+
+        ScheduledTime reqTimeEnd = new ScheduledTime("2013-12-27T20:00Z");
+        ScheduledTime reqTimeStart = new ScheduledTime("2013-12-02T10:00Z");
+        celosClient.getWorkflowStatus(new WorkflowID("workflow-1"), reqTimeStart, reqTimeEnd);
+    }
+
+
+    @Test
     public void testCorrectWorkflowStatesFromDbWf1StartTimeIsAfterEndTime() throws Exception {
 
         File src = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/client/wf-list").toURI());
@@ -614,44 +635,6 @@ public class CelosClientServerTest {
 
         WorkflowID workflowID = new WorkflowID("unknown-workflow");
         celosClient.rerunSlot(workflowID, ScheduledTime.now());
-    }
-
-    @Test
-    public void testUIConfig() throws IOException, URISyntaxException, URISyntaxException {
-
-        String expectedConfig = "{\n" +
-                "  \"hueURL\": \"http://cldmgr001.ewr004.collective-media.net:8888/oozie/list_oozie_workflow/${EXTERNAL_ID}/\",\n" +
-                "  \"workflowToSlotMap\": [\n" +
-                "    {\n" +
-                "      \"name\": \"Flume\",\n" +
-                "      \"workflows\": [\n" +
-                "        \"flume-ready-dal\",\n" +
-                "        \"flume-ready-dc\",\n" +
-                "        \"flume-ready-dc3\",\n" +
-                "        \"flume-ready-lax1\",\n" +
-                "        \"flume-ready-nym1\",\n" +
-                "        \"flume-ready-sea\",\n" +
-                "        \"flume-ready-sv4\",\n" +
-                "        \"flume-tmp-file-closer\"\n" +
-                "      ]\n" +
-                "   },\n" +
-                "    {\n" +
-                "      \"name\": \"FTAS\",\n" +
-                "      \"workflows\": [\n" +
-                "        \"ftas-gc-aof\"\n" +
-                "      ]\n" +
-                "    }\n" +
-                "  ]\n" +
-                "}";
-
-        File src = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/ui/config.json").toURI());
-        FileUtils.copyFileToDirectory(src, uiDir);
-
-        HttpGet request = new HttpGet(celosClient.getAddress() + "/ui-config");
-        HttpResponse response = new DefaultHttpClient().execute(request);
-        String uiConfig = IOUtils.toString(response.getEntity().getContent());
-
-        Assert.assertEquals(uiConfig, expectedConfig);
     }
 
 }

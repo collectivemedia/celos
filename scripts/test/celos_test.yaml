@@ -12,11 +12,27 @@
 
   tasks:
 
+  - name: Prepare configuration dir
+    shell: rm -rf {{celos_workflows_dir}}/* && mkdir -p {{celos_workflows_dir}}
+
+  - name: Prepare database dir
+    shell: rm -rf {{celos_db_dir}}/* && mkdir -p {{celos_db_dir}}
+
+  - name: Prepare defaults dir
+    shell: rm -rf {{celos_defaults_dir}}/* && mkdir -p {{celos_defaults_dir}}
+
+  - name: Prepare UI dir
+    shell: rm -rf {{celos_ui_dir}}/* && mkdir -p {{celos_ui_dir}}
+
+  - name: Copy defaults
+    shell: cp /home/celos-ci/celos-settings/defaults/* {{ celos_defaults_dir }}
+
   - register: result
     local_action:
       module: uri
       url: "{{service_url}}/version"
       return_content: yes
+
   - name: Check servlet /version responds
     when: result.content != service_version
     fail:
@@ -92,9 +108,6 @@
       status_code: 400
       url: "{{service_url}}/workflow"
 
-#  - name: Check log file contains error from calling workflow servlet without id parameter above
-#    shell: grep 'ERROR:.*id parameter missing' {{celos_log_dir}}/celos.log
-
   - name: Check servlet /celos/workflow returns 404 when id parameter specifies missing workflow
     local_action:
       module: uri
@@ -162,3 +175,8 @@
   - name: Check log file contains info about workflow-1 loaded above
     shell: grep 'INFO :.*Loading file.*workflow-1.js' {{celos_log_dir}}/celos.log
 
+  - name: Run file-copy CCI test
+    local_action: command {{ root }}/samples/file-copy-celos-provided/scripts/ci {{ service_url }} {{ root }}
+
+  - name: Clean logs dir
+    shell: rm -rf {{celos_log_dir}}/*

@@ -82,7 +82,7 @@ public class TestTask extends CelosCi {
             List<Future> futures = submitTestRuns();
             waitForCompletion(futures);
         } finally {
-            if (allTestCasesDeletedTheirData()) {
+            if (celosCiTempDir.exists() && allTestCasesDeletedTheirData()) {
                 FileUtils.forceDelete(celosCiTempDir);
             }
         }

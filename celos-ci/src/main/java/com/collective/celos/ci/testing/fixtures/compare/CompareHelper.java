@@ -16,7 +16,7 @@ import java.util.Set;
  */
 public class CompareHelper {
 
-    public static <T> FixObjectCompareResult compareEntityNumber(TestRun testRun, FixObjectCreator actualDataCreator, FixObjectCreator expectedDataCreator, Map<T, Integer> expectedRes, Map<T, Integer> actualRes) {
+    public static <T> FixObjectCompareResult compareEntityNumber(TestRun testRun, FixObjectCreator actualDataCreator, FixObjectCreator expectedDataCreator, Map<T, Integer> expectedRes, Map<T, Integer> actualRes) throws Exception {
         Set<Map.Entry<T, Integer>> expectedDiffers = Sets.difference(expectedRes.entrySet(), actualRes.entrySet());
         Set<Map.Entry<T, Integer>> actualDiffers = Sets.difference(actualRes.entrySet(), expectedRes.entrySet());
 

@@ -18,8 +18,10 @@ public class CiCommandLine {
     private final File testCasesDir;
     private final String userName;
     private final boolean keepTempData;
+    private final URI celosServerUrl;
 
-    public CiCommandLine(String targetUri, String mode, String deployDir, String workflowName, String testCasesDir, String userName, boolean keepTempData) {
+    public CiCommandLine(String targetUri, String mode, String deployDir, String workflowName, String testCasesDir, String userName, boolean keepTempData, String celosServerUrl) {
+        this.celosServerUrl = celosServerUrl == null ? null : URI.create(celosServerUrl);
         this.userName = Util.requireNonNull(userName);
         this.keepTempData = keepTempData;
         this.targetUri = URI.create(Util.requireNonNull(targetUri));
@@ -66,5 +68,9 @@ public class CiCommandLine {
 
     public boolean isKeepTempData() {
         return keepTempData;
+    }
+
+    public URI getCelosServerUrl() {
+        return celosServerUrl;
     }
 }
