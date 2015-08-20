@@ -1,4 +1,4 @@
-package com.collective.celos.server;
+package com.collective.celosserver;
 
 import com.collective.celos.Constants;
 import com.collective.celos.JettyServer;

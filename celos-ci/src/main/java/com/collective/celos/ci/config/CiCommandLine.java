@@ -1,5 +1,6 @@
 package com.collective.celos.ci.config;
 
+
 import com.collective.celos.Util;
 import com.collective.celos.ci.config.deploy.CelosCiContext;
 
@@ -12,7 +13,7 @@ import java.net.URI;
 public class CiCommandLine {
 
     private final URI targetUri;
-    private final CelosCiContext.Mode mode;
+    private final com.collective.celos.ci.config.deploy.CelosCiContext.Mode mode;
     private final File deployDir;
     private final String workflowName;
     private final File testCasesDir;

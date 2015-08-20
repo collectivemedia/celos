@@ -91,7 +91,7 @@ celos.alwaysTrigger = function () {
 }
 
 celos.hdfsCheck = function (path, slotID, fs) {
-    var trigger = hdfsCheckTrigger(path, fs);
+    var trigger = celos.hdfsCheckTrigger(path, fs);
     var scheduledTime;
 
     if (!slotID) {
@@ -242,3 +242,5 @@ celos.databaseName = function (database) {
 celos.isRunningInTestMode = function() {
     return (typeof HDFS_PREFIX_JS_VAR !== "undefined");
 }
+
+var importDefaults = celos.importDefaults;

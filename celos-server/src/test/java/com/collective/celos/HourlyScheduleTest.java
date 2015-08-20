@@ -11,7 +11,7 @@ import org.junit.Test;
 public class HourlyScheduleTest {
 
     @Test
-    public void hourlyScheduleEmpty() {
+    public void addWorkflowhourlyScheduleEmpty() {
         Schedule sch = makeHourlySchedule();
         ScheduledTime t = new ScheduledTime("2013-11-25T20:00Z");
         Set<ScheduledTime> hours = sch.getScheduledTimes(null, t, t);
@@ -19,7 +19,7 @@ public class HourlyScheduleTest {
     }
 
     @Test
-    public void hourlyScheduleOneHour() {
+    public void addWorkflowhourlyScheduleOneHour() {
         Schedule sch = makeHourlySchedule();
         ScheduledTime t1 = new ScheduledTime("2013-11-25T20:00Z");
         ScheduledTime t2 = new ScheduledTime("2013-11-25T21:00Z");
@@ -28,7 +28,7 @@ public class HourlyScheduleTest {
     }
     
     @Test
-    public void hourlyScheduleOneHourWithMinutes() {
+    public void addWorkflowhourlyScheduleOneHourWithMinutes() {
         Schedule sch = makeHourlySchedule();
         ScheduledTime t1 = new ScheduledTime("2013-11-25T20:05Z");
         ScheduledTime t2 = new ScheduledTime("2013-11-25T21:00Z");
@@ -37,7 +37,7 @@ public class HourlyScheduleTest {
     }
 
     @Test
-    public void hourlyScheduleSomeHours() {
+    public void addWorkflowhourlyScheduleSomeHours() {
         Schedule sch = makeHourlySchedule();
         ScheduledTime t1 = new ScheduledTime("2013-11-25T20:05:12.00182Z");
         ScheduledTime t2 = new ScheduledTime("2013-11-25T23:05:56.2182Z");
@@ -50,7 +50,7 @@ public class HourlyScheduleTest {
     }
     
     @Test
-    public void hourlyScheduleSomeHoursWithStartingFullHour() {
+    public void addWorkflowhourlyScheduleSomeHoursWithStartingFullHour() {
         Schedule sch = makeHourlySchedule();
         ScheduledTime t1 = new ScheduledTime("2013-11-25T20:00Z");
         ScheduledTime t2 = new ScheduledTime("2013-11-25T23:05:56.2182Z");

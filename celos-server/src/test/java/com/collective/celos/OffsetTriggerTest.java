@@ -35,8 +35,8 @@ public class OffsetTriggerTest {
     public void testTriggerAddsSomething() throws Exception {
         Trigger dependent = new HDFSCheckTrigger(tempFolder.getRoot().getPath() + "/${year}-${month}-${day}/${hour}00/_READY",  "file:///");
 
-        Trigger offsetTriggerPlus = new OffsetTrigger(60*60, dependent);
-        assertTrue(offsetTriggerPlus.isDataAvailable(scheduler, ScheduledTime.now(), new ScheduledTime("2013-11-22T14:00Z")));
+        Trigger addWorkflowoffsetTriggerPlus = new OffsetTrigger(60*60, dependent);
+        assertTrue(addWorkflowoffsetTriggerPlus.isDataAvailable(scheduler, ScheduledTime.now(), new ScheduledTime("2013-11-22T14:00Z")));
 
     }
 
@@ -44,8 +44,8 @@ public class OffsetTriggerTest {
     public void testTriggerDoesNothing() throws Exception {
         Trigger dependent = new HDFSCheckTrigger(tempFolder.getRoot().getPath() + "/${year}-${month}-${day}/${hour}00/_READY",  "file:///");
 
-        Trigger offsetTriggerPlus = new OffsetTrigger(0, dependent);
-        assertTrue(offsetTriggerPlus.isDataAvailable(scheduler, ScheduledTime.now(), new ScheduledTime("2013-11-22T15:00Z")));
+        Trigger addWorkflowoffsetTriggerPlus = new OffsetTrigger(0, dependent);
+        assertTrue(addWorkflowoffsetTriggerPlus.isDataAvailable(scheduler, ScheduledTime.now(), new ScheduledTime("2013-11-22T15:00Z")));
 
     }
 
@@ -53,8 +53,8 @@ public class OffsetTriggerTest {
     public void testTriggerSubsSomething() throws Exception {
         Trigger dependent = new HDFSCheckTrigger(tempFolder.getRoot().getPath() + "/${year}-${month}-${day}/${hour}00/_READY",  "file:///");
 
-        Trigger offsetTriggerMinus = new OffsetTrigger(-60*60, dependent);
-        assertTrue(offsetTriggerMinus.isDataAvailable(scheduler, ScheduledTime.now(), new ScheduledTime("2013-11-22T16:00Z")));
+        Trigger addWorkflowoffsetTriggerMinus = new OffsetTrigger(-60*60, dependent);
+        assertTrue(addWorkflowoffsetTriggerMinus.isDataAvailable(scheduler, ScheduledTime.now(), new ScheduledTime("2013-11-22T16:00Z")));
 
     }
 

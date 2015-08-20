@@ -1,4 +1,4 @@
-package com.collective.celos.server;
+package com.collective.celosserver;
 
 import java.io.File;
 

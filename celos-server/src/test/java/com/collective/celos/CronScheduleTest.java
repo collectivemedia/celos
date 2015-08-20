@@ -11,7 +11,7 @@ import org.junit.Test;
 public class CronScheduleTest {
 
     @Test
-    public void cronScheduleEmpty() {
+    public void addWorkflowcronScheduleEmpty() {
         Schedule sch = makeCronSchedule("0 0 12 * * ?");
         ScheduledTime t = new ScheduledTime("2013-11-25T20:00Z");
         Set<ScheduledTime> times = sch.getScheduledTimes(null, t, t);
@@ -19,7 +19,7 @@ public class CronScheduleTest {
     }
 
     @Test
-    public void cronScheduleOneHourEmpty() {
+    public void addWorkflowcronScheduleOneHourEmpty() {
         Schedule sch = makeCronSchedule("0 0 12 * * ?");
         ScheduledTime t1 = new ScheduledTime("2013-11-25T20:00Z");
         ScheduledTime t2 = new ScheduledTime("2013-11-25T21:00Z");
@@ -28,7 +28,7 @@ public class CronScheduleTest {
     }
 
     @Test
-    public void cronScheduleOneHourBorderWrongBorderVals() {
+    public void addWorkflowcronScheduleOneHourBorderWrongBorderVals() {
         Schedule sch = makeCronSchedule("0 0 12 * * ?");
         ScheduledTime t1 = new ScheduledTime("2013-11-25T14:00Z");
         ScheduledTime t2 = new ScheduledTime("2013-11-25T11:00Z");
@@ -39,7 +39,7 @@ public class CronScheduleTest {
 
 
     @Test
-    public void cronScheduleOneHourBorderIncluded() {
+    public void addWorkflowcronScheduleOneHourBorderIncluded() {
         Schedule sch = makeCronSchedule("0 0 12 * * ?");
         ScheduledTime t1 = new ScheduledTime("2013-11-25T12:00Z");
         ScheduledTime t2 = new ScheduledTime("2013-11-25T13:00Z");
@@ -50,7 +50,7 @@ public class CronScheduleTest {
     }
 
     @Test
-    public void cronScheduleComplexStuff() {
+    public void addWorkflowcronScheduleComplexStuff() {
         //Fire every 5 minutes starting at 2:00 PM and ending at 2:55 PM, every day
         Schedule sch = makeCronSchedule("0 0/15 14 * * ?");
         ScheduledTime t1 = new ScheduledTime("2013-11-25T12:00Z");
@@ -68,7 +68,7 @@ public class CronScheduleTest {
 
 
     @Test
-    public void cronScheduleOneHourBorderExcludedEmpty() {
+    public void addWorkflowcronScheduleOneHourBorderExcludedEmpty() {
         Schedule sch = makeCronSchedule("0 0 12 * * ?");
         ScheduledTime t1 = new ScheduledTime("2013-11-25T11:00Z");
         ScheduledTime t2 = new ScheduledTime("2013-11-25T12:00Z");
@@ -77,7 +77,7 @@ public class CronScheduleTest {
     }
 
     @Test
-    public void cronScheduleInvalidConfig() {
+    public void addWorkflowcronScheduleInvalidConfig() {
 
         boolean failed = false;
         try {
@@ -90,7 +90,7 @@ public class CronScheduleTest {
 
 
     @Test
-    public void cronScheduleOneHour() {
+    public void addWorkflowcronScheduleOneHour() {
         Schedule sch = makeCronSchedule("0 0 12 * * ?");
         ScheduledTime t1 = new ScheduledTime("2013-11-25T11:30Z");
         ScheduledTime t2 = new ScheduledTime("2013-11-25T12:30Z");
@@ -103,7 +103,7 @@ public class CronScheduleTest {
     }
     
     @Test
-    public void hourlyScheduleEmpty() {
+    public void addWorkflowhourlyScheduleEmpty() {
         Schedule sch = makeHourlySchedule();
         ScheduledTime t = new ScheduledTime("2013-11-25T20:00Z");
         Set<ScheduledTime> hours = sch.getScheduledTimes(null, t, t);
@@ -111,7 +111,7 @@ public class CronScheduleTest {
     }
 
     @Test
-    public void hourlyScheduleOneHour() {
+    public void addWorkflowhourlyScheduleOneHour() {
         Schedule sch = makeHourlySchedule();
         ScheduledTime t1 = new ScheduledTime("2013-11-25T20:00Z");
         ScheduledTime t2 = new ScheduledTime("2013-11-25T21:00Z");
@@ -120,7 +120,7 @@ public class CronScheduleTest {
     }
     
     @Test
-    public void hourlyScheduleOneHourWithMinutes() {
+    public void addWorkflowhourlyScheduleOneHourWithMinutes() {
         Schedule sch = makeHourlySchedule();
         ScheduledTime t1 = new ScheduledTime("2013-11-25T20:05Z");
         ScheduledTime t2 = new ScheduledTime("2013-11-25T21:00Z");
@@ -129,7 +129,7 @@ public class CronScheduleTest {
     }
 
     @Test
-    public void hourlyScheduleSomeHours() {
+    public void addWorkflowhourlyScheduleSomeHours() {
         Schedule sch = makeHourlySchedule();
         ScheduledTime t1 = new ScheduledTime("2013-11-25T20:05:12.00182Z");
         ScheduledTime t2 = new ScheduledTime("2013-11-25T23:05:56.2182Z");
@@ -142,7 +142,7 @@ public class CronScheduleTest {
     }
     
     @Test
-    public void hourlyScheduleSomeHoursWithStartingFullHour() {
+    public void addWorkflowhourlyScheduleSomeHoursWithStartingFullHour() {
         Schedule sch = makeHourlySchedule();
         ScheduledTime t1 = new ScheduledTime("2013-11-25T20:00Z");
         ScheduledTime t2 = new ScheduledTime("2013-11-25T23:05:56.2182Z");
@@ -160,7 +160,7 @@ public class CronScheduleTest {
     }
     
     @Test
-    public void minutelyScheduleEmpty() {
+    public void addWorkflowminutelyScheduleEmpty() {
         // Start time equals end time
         // -> empty schedule
         Schedule sch = makeMinutelySchedule();
@@ -170,7 +170,7 @@ public class CronScheduleTest {
     }
 
     @Test
-    public void minutelyScheduleOneMinute() {
+    public void addWorkflowminutelyScheduleOneMinute() {
         // Start time is full minute, end time one minute later
         // -> start time is the single minute in schedule
         Schedule sch = makeMinutelySchedule();
@@ -181,7 +181,7 @@ public class CronScheduleTest {
     }
     
     @Test
-    public void minutelyScheduleOneMinuteWithSeconds() {
+    public void addWorkflowminutelyScheduleOneMinuteWithSeconds() {
         // Start time is non-full minute with some seconds,
         // end time one minute later
         // -> empty schedule
@@ -193,7 +193,7 @@ public class CronScheduleTest {
     }
 
     @Test
-    public void minutelyScheduleSomeMinutes() {
+    public void addWorkflowminutelyScheduleSomeMinutes() {
         // Start time is non-full minute
         // End time is a couple of minutes later
         // -> schedule contains all full minutes after start and before end
@@ -209,7 +209,7 @@ public class CronScheduleTest {
     }
     
     @Test
-    public void minutelyScheduleSomeMinutesWithStartingFullMinute() {
+    public void addWorkflowminutelyScheduleSomeMinutesWithStartingFullMinute() {
         // Start time is full minuteconfig
         // End time is a couple of minutes later
         // -> schedule contains all full minutes after (and including) start and before end

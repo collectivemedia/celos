@@ -14,7 +14,7 @@ import org.joda.time.DateTime;
  * the workflow's scheduled time.
  * 
  * var oneDay = 60 * 60 * 24;
- * andTrigger(delayTrigger(oneDay), hdfsCheckTrigger("/${year}/${month}/${day}/..."))
+ * celos.andTrigger(celos.delayTrigger(oneDay), celos.hdfsCheckTrigger("/${year}/${month}/${day}/..."))
 */
 public class DelayTrigger implements Trigger {
 

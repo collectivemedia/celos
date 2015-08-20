@@ -1,6 +1,6 @@
 package com.collective.celos;
 
-import com.collective.celos.server.CelosServer;
+import com.collective.celosserver.CelosServer;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;

@@ -203,8 +203,8 @@ ci.hiveInput = function (dbName, tableName, createScriptFile, fixTableCreator) {
 }
 
 ci.hiveTable = function (databaseName, tableName) {
-    if (!databaseName) {
-        throw "databaseName should be valid string";
+    if (!celos.databaseName) {
+        throw "celos.databaseName should be valid string";
     }
     if (!tableName) {
         throw "tableName should be valid string";
