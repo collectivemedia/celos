@@ -43,6 +43,10 @@ public class Util {
         return dt.withMillisOfSecond(0);
     }
 
+    public static boolean isFullDay(DateTime dt) {
+        return isFullHour(dt) && dt.getHourOfDay() == 0;
+    }
+    
     public static boolean isFullHour(DateTime dt) {
         return isFullMinute(dt) && dt.getMinuteOfHour() == 0;
     }
