@@ -31,6 +31,8 @@ public class CronSchedule implements Schedule {
     public SortedSet<ScheduledTime> getScheduledTimes(Scheduler scheduler, ScheduledTime start, ScheduledTime end) {
         SortedSet<ScheduledTime> scheduledTimes = new TreeSet<ScheduledTime>();
         DateTime startDT = start.getDateTime();
+        //we need withMillisOfSecond call cause cronExpression.isSatisfiedBy doesnt care about millis, while isBefore does.
+        //So we need endDT to be aligned to 0 ms in order to use isBefore successfully
         DateTime endDT = end.getDateTime().withMillisOfSecond(0);
 
         if (!startDT.isBefore(endDT)) {
