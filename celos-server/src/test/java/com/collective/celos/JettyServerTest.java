@@ -19,7 +19,7 @@ public class JettyServerTest {
         jettyServer.start(port);
 
         HttpClient httpClient = new DefaultHttpClient();
-        HttpGet workflowListGet = new HttpGet("http://localhost:" + port + "/version");
+        HttpGet workflowListGet = new HttpGet("http://localhost:" + port + "/workflow-list");
         HttpResponse response = httpClient.execute(workflowListGet);
         EntityUtils.consume(response.getEntity());
 
@@ -35,7 +35,7 @@ public class JettyServerTest {
         jettyServer.start(port);
 
         HttpClient httpClient = new DefaultHttpClient();
-        HttpGet workflowListGet = new HttpGet("http://localhost:" + port + "/version");
+        HttpGet workflowListGet = new HttpGet("http://localhost:" + port + "/workflow-list");
         HttpResponse response = httpClient.execute(workflowListGet);
 
         Assert.assertEquals(response.getStatusLine().getStatusCode(), 200);
