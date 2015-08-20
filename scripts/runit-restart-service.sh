@@ -37,11 +37,11 @@ fi
 SV_TIMEOUT=10
 
 ln -sf ${SERVICE_DIR} /etc/service/
-# need to deploy from different users
 chmod a+w "/etc/service/${SERVICE_NAME}"
 # check runsv is running
 if ${SV} status ${SERVICE_NAME} &> /dev/null
 then
+    ${SV} -w ${SV_TIMEOUT} restart ${SERVICE_NAME}/log
     ${SV} -w ${SV_TIMEOUT} restart ${SERVICE_NAME}
 else
     # runsv starts new service with delay,
@@ -52,5 +52,6 @@ else
         (( i += 1 ))
         sleep 1
     done
+    ${SV} -w ${SV_TIMEOUT} start ${SERVICE_NAME}/log
     ${SV} -w ${SV_TIMEOUT} start ${SERVICE_NAME}
 fi
