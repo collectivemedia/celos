@@ -11,12 +11,11 @@ public class CelosServer {
 
     private JettyServer server = new JettyServer();
 
-    public void startServer(int port, Map<String, String> jsVariables, File workflowsDir, File defaultsDir, File stateDatabase, File uiDir) throws Exception {
+    public void startServer(int port, Map<String, String> jsVariables, File workflowsDir, File defaultsDir, File stateDatabase) throws Exception {
 
         validateDirExists(workflowsDir);
         validateDirExists(defaultsDir);
         validateDirExists(stateDatabase);
-        validateDirExists(uiDir);
 
         server.start(port);
         Map<String, Object> attributes = ImmutableMap.<String, Object>of(Constants.ADDITIONAL_JS_VARIABLES, jsVariables);

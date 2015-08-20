@@ -21,9 +21,6 @@
   - name: Prepare defaults dir
     shell: rm -rf {{celos_defaults_dir}}/* && mkdir -p {{celos_defaults_dir}}
 
-  - name: Prepare UI dir
-    shell: rm -rf {{celos_ui_dir}}/* && mkdir -p {{celos_ui_dir}}
-
   - name: Copy defaults
     shell: cp /home/celos-ci/celos-settings/defaults/* {{ celos_defaults_dir }}
 
