@@ -9,9 +9,6 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 import org.junit.Test;
 
-/**
- * Created by akonopko on 22.12.14.
- */
 public class JettyServerTest {
 
     @Test
@@ -22,7 +19,7 @@ public class JettyServerTest {
         jettyServer.start(port);
 
         HttpClient httpClient = new DefaultHttpClient();
-        HttpGet workflowListGet = new HttpGet("http://localhost:" + port);
+        HttpGet workflowListGet = new HttpGet("http://localhost:" + port + "/version");
         HttpResponse response = httpClient.execute(workflowListGet);
         EntityUtils.consume(response.getEntity());
 
@@ -38,7 +35,7 @@ public class JettyServerTest {
         jettyServer.start(port);
 
         HttpClient httpClient = new DefaultHttpClient();
-        HttpGet workflowListGet = new HttpGet("http://localhost:" + port);
+        HttpGet workflowListGet = new HttpGet("http://localhost:" + port + "/version");
         HttpResponse response = httpClient.execute(workflowListGet);
 
         Assert.assertEquals(response.getStatusLine().getStatusCode(), 200);
