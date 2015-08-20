@@ -31,7 +31,7 @@ public class CronSchedule implements Schedule {
     public SortedSet<ScheduledTime> getScheduledTimes(Scheduler scheduler, ScheduledTime start, ScheduledTime end) {
         SortedSet<ScheduledTime> scheduledTimes = new TreeSet<ScheduledTime>();
         DateTime startDT = start.getDateTime();
-        DateTime endDT = end.getDateTime();
+        DateTime endDT = end.getDateTime().withMillisOfSecond(0);
 
         if (!startDT.isBefore(endDT)) {
             return scheduledTimes;
