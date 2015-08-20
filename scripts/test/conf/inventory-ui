@@ -2,6 +2,6 @@
 oj001.ny7.collective-media.net
 
 [host:vars]
-celos_server_host="admin1.lga2.collective-media.net"
+celos_server_host="oj001.ny7.collective-media.net"
 service_name={{ui_service_name}}
 service_port={{ui_service_port}}
