@@ -36,8 +36,6 @@ fi
 
 SV_TIMEOUT=10
 
-${SV} stop ${SERVICE_NAME}
-${SV} stop ${SERVICE_NAME}/log
 ln -sf ${SERVICE_DIR} /etc/service/
 chmod a+w "/etc/service/${SERVICE_NAME}"
 # check runsv is running

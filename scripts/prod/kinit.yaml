@@ -10,4 +10,4 @@
 
   tasks:
 
-  - shell: curl -X POST "http://localhost:{{service_port}}/scheduler"
+  - shell: kinit -k -t /home/{{service_user}}/{{service_user}}.keytab {{service_user}}
