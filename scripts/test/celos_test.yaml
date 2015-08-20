@@ -21,9 +21,6 @@
   - name: Prepare defaults dir
     shell: rm -rf {{celos_defaults_dir}}/* && mkdir -p {{celos_defaults_dir}}
 
-  - name: Prepare UI dir
-    shell: rm -rf {{celos_ui_dir}}/* && mkdir -p {{celos_ui_dir}}
-
   - name: Copy defaults
     shell: cp /home/celos-ci/celos-settings/defaults/* {{ celos_defaults_dir }}
 
@@ -32,10 +29,15 @@
       module: uri
       url: "{{service_url}}/version"
       return_content: yes
-
   - name: Check servlet /version responds
     when: result.content != service_version
     fail:
+
+  - name: Jetty default file listing servlet turned off
+    local_action:
+      module: uri
+      url: "{{service_url}}/"
+      status_code: 403
 
   - name: Check servlet /celos/scheduler responds to POST
     local_action:

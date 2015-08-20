@@ -28,21 +28,18 @@ public class TestRunCelosServerModeEmbedded implements TestRunCelosServerMode {
     private static final String WORKFLOW_DIR_CELOS_PATH = "workflows";
     private static final String DEFAULTS_DIR_CELOS_PATH = "defaults";
     private static final String DB_DIR_CELOS_PATH = "db";
-    private static final String UI_DIR_CELOS_PATH = "ui";
 
 
     private final CelosServer celosServer = new CelosServer();
     private final File workflowsDir;
     private final File defaultsDir;
     private final File stateDatabase;
-    private final File uiDir;
     private final String hdfsPrefix;
 
     public TestRunCelosServerModeEmbedded(CiCommandLine commandLine, File testCaseTempDir, UUID testUUID) {
         this.workflowsDir = new File(testCaseTempDir, WORKFLOW_DIR_CELOS_PATH);
         this.defaultsDir = new File(testCaseTempDir, DEFAULTS_DIR_CELOS_PATH);
         this.stateDatabase = new File(testCaseTempDir, DB_DIR_CELOS_PATH);
-        this.uiDir = new File(testCaseTempDir, UI_DIR_CELOS_PATH);
         this.hdfsPrefix = String.format(HDFS_PREFIX_PATTERN, commandLine.getUserName(), commandLine.getWorkflowName(), testUUID);
     }
 
@@ -59,11 +56,10 @@ public class TestRunCelosServerModeEmbedded implements TestRunCelosServerMode {
         workflowsDir.mkdirs();
         defaultsDir.mkdirs();
         stateDatabase.mkdirs();
-        uiDir.mkdirs();
 
         Integer port = Util.getFreePort();
 
-        celosServer.startServer(port, additionalJSParams, workflowsDir, defaultsDir, stateDatabase, uiDir);
+        celosServer.startServer(port, additionalJSParams, workflowsDir, defaultsDir, stateDatabase);
 
         logJsFileExists(WorkflowFilesDeployer.WORKFLOW_FILENAME, testRun);
         logJsFileExists(WorkflowFilesDeployer.DEFAULTS_FILENAME, testRun);

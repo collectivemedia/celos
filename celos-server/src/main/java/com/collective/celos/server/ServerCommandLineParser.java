@@ -17,7 +17,6 @@ public class ServerCommandLineParser {
     private static final String CLI_WF_DIR = "workflowsDir";
     private static final String CLI_DEFAULTS_DIR = "defaultsDir";
     private static final String CLI_STATE_DB_DIR = "stateDir";
-    private static final String CLI_UI_DIR = "uiDir";
     private static final String CLI_LOG_DIR = "logDir";
     private static final String CLI_PORT = "port";
 
@@ -36,13 +35,12 @@ public class ServerCommandLineParser {
 
         String stateDbDir = getDefault(commandLine, CLI_STATE_DB_DIR, Constants.DEFAULT_DB_DIR);
         String defaultsDir = getDefault(commandLine, CLI_DEFAULTS_DIR, Constants.DEFAULT_DEFAULTS_DIR);
-        String uiDir = getDefault(commandLine, CLI_UI_DIR, Constants.DEFAULT_UI_DIR);
         String workflowsDir = getDefault(commandLine, CLI_WF_DIR, Constants.DEFAULT_WORKFLOWS_DIR);
         String logDir = getDefault(commandLine, CLI_LOG_DIR, Constants.DEFAULT_LOG_DIR);
 
         Integer port = Integer.valueOf(commandLine.getOptionValue(CLI_PORT));
 
-        return new ServerCommandLine(workflowsDir, defaultsDir, stateDbDir, uiDir, logDir, port);
+        return new ServerCommandLine(workflowsDir, defaultsDir, stateDbDir, logDir, port);
     }
 
     private String getDefault(CommandLine commandLine, String optionName, String defaultValue) {
@@ -60,7 +58,6 @@ public class ServerCommandLineParser {
         options.addOption(CLI_WF_DIR, CLI_WF_DIR, true, "Path to WORKFLOWS dir")
                 .addOption(CLI_DEFAULTS_DIR, CLI_DEFAULTS_DIR, true, "Path to DEFAULTS dir")
                 .addOption(CLI_STATE_DB_DIR, CLI_STATE_DB_DIR, true, "Path to STATE DATABASE dir")
-                .addOption(CLI_UI_DIR, CLI_UI_DIR, true, "Path to UI dir")
                 .addOption(CLI_PORT, CLI_PORT, true, "Celos Server port")
                 .addOption(CLI_LOG_DIR, CLI_LOG_DIR, true, "Celos logs dir");
         return options;
