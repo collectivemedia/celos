@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
+SV_TIMEOUT=60
 
 while [[ $# > 1 ]]
 do
@@ -34,8 +35,6 @@ else
     SV=sv
 fi
 
-SV_TIMEOUT=120
-
 ln -sf ${SERVICE_DIR} /etc/service/
 chmod a+w "/etc/service/${SERVICE_NAME}"
 # check runsv is running
@@ -47,8 +46,9 @@ else
     # runsv starts new service with delay,
     # so this needs to fix 'fail: $SERVICE_NAME: runsv not running'
     i=0
-    while (( i <= 7 )) && ! ${SV} status ${SERVICE_NAME} 2> /dev/null
+    while (( i <= ${SV_TIMEOUT} )) && ! ${SV} status ${SERVICE_NAME} &> /dev/null
     do
+        : "wait 1 sec for runsv startup"
         (( i += 1 ))
         sleep 1
     done
