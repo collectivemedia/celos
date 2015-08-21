@@ -34,7 +34,7 @@ else
     SV=sv
 fi
 
-SV_TIMEOUT=10
+SV_TIMEOUT=120
 
 ln -sf ${SERVICE_DIR} /etc/service/
 chmod a+w "/etc/service/${SERVICE_NAME}"
