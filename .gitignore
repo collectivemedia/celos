@@ -3,4 +3,6 @@ target/
 provisioner/tmp/
 **/build/*
 **/bin/*
-.gradle
+.gradle/
+.idea/
+*.iml
