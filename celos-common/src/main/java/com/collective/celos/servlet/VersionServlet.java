@@ -13,6 +13,7 @@ public class VersionServlet extends HttpServlet {
             final String serviceVersion = System.getenv("CELOS_VERSION");
             if (serviceVersion != null) {
                 res.getOutputStream().write(serviceVersion.getBytes());
+                res.setStatus(200);
             } else {
                 throw new Exception("CELOS_VERSION is undefined");
             }
