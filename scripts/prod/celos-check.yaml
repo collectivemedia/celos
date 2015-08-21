@@ -5,9 +5,7 @@
 
 - hosts: host
   gather_facts: no
-  vars:
-    service_user: "{{ ansible_ssh_user }}"
 
   tasks:
 
-  - shell: curl -X POST "http://localhost:{{service_port}}/scheduler"
+  - shell: "/sbin/sv check {{service_name}}"

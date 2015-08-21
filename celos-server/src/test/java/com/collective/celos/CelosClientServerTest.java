@@ -5,7 +5,6 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
@@ -16,9 +15,7 @@ import org.junit.rules.TemporaryFolder;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.ServerSocket;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
 import java.util.Set;
@@ -31,7 +28,6 @@ public class CelosClientServerTest {
     public static final String WORKFLOWS_DIR = "workflows";
     public static final String DEFAULTS_DIR = "defaults";
     public static final String DB_DIR = "db";
-    public static final String UI_DIR = "ui";
     public static final int SLOTS_IN_CELOS_SERVER_SLIDING_WINDOW = SchedulerConfiguration.SLIDING_WINDOW_DAYS * 24;
 
     @Rule
@@ -39,7 +35,6 @@ public class CelosClientServerTest {
 
     private File workflowsDir;
     private File slotDbDir;
-    private File uiDir;
     private CelosServer celosServer;
     private CelosClient celosClient;
 
@@ -49,16 +44,14 @@ public class CelosClientServerTest {
         this.workflowsDir = new File(tmpDir, WORKFLOWS_DIR);
         File defaultsDir = new File(tmpDir, DEFAULTS_DIR);
         this.slotDbDir = new File(tmpDir, DB_DIR);
-        this.uiDir = new File(tmpDir, UI_DIR);
         this.workflowsDir.mkdirs();
         defaultsDir.mkdirs();
         this.slotDbDir.mkdirs();
-        this.uiDir.mkdirs();
 
         Integer port = Util.getFreePort();
 
         this.celosServer = new CelosServer();
-        celosServer.startServer(port, ImmutableMap.<String, String>of(), workflowsDir, defaultsDir, slotDbDir, uiDir);
+        celosServer.startServer(port, ImmutableMap.<String, String>of(), workflowsDir, defaultsDir, slotDbDir);
         this.celosClient = new CelosClient(URI.create("http://localhost:" + port));
     }
 
