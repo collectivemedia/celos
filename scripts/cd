@@ -1,5 +1,0 @@
-#!/usr/bin/env bash
-set -x
-set -e
-(cd production && ./deploy.sh)
-./scripts/celos-ci-jar-upload
