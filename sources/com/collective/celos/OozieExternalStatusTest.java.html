@@ -1,0 +1,59 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.OozieExternalStatusTest (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">OozieExternalStatusTest.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos;
+<A NAME="2"></A><FONT ID="Import">import</FONT> <FONT ID="Static">static</FONT> org.apache.oozie.client.WorkflowJob.Status.FAILED;
+<A NAME="3"></A><FONT ID="Import">import</FONT> <FONT ID="Static">static</FONT> org.apache.oozie.client.WorkflowJob.Status.KILLED;
+<A NAME="4"></A><FONT ID="Import">import</FONT> <FONT ID="Static">static</FONT> org.apache.oozie.client.WorkflowJob.Status.PREP;
+<A NAME="5"></A><FONT ID="Import">import</FONT> <FONT ID="Static">static</FONT> org.apache.oozie.client.WorkflowJob.Status.RUNNING;
+<A NAME="6"></A><FONT ID="Import">import</FONT> <FONT ID="Static">static</FONT> org.apache.oozie.client.WorkflowJob.Status.SUCCEEDED;
+<A NAME="7"></A><FONT ID="Import">import</FONT> <FONT ID="Static">static</FONT> org.apache.oozie.client.WorkflowJob.Status.SUSPENDED;
+<A NAME="8"></A>
+<A NAME="9"></A><FONT ID="Import">import</FONT> org.junit.Assert;
+<A NAME="10"></A><FONT ID="Import">import</FONT> org.junit.Test;
+<A NAME="11"></A>
+<A NAME="12"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> OozieExternalStatusTest {
+<A NAME="13"></A>
+<A NAME="14"></A>    @Test
+<A NAME="15"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testIsRunning() {
+<A NAME="16"></A>        Assert.assertEquals(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/OozieExternalStatus.java.html">OozieExternalStatus</A>(PREP.toString()).isRunning(), <FONT ID="True">true</FONT>);
+<A NAME="17"></A>        Assert.assertEquals(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/OozieExternalStatus.java.html">OozieExternalStatus</A>(RUNNING.toString()).isRunning(), <FONT ID="True">true</FONT>);
+<A NAME="18"></A>        Assert.assertEquals(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/OozieExternalStatus.java.html">OozieExternalStatus</A>(SUSPENDED.toString()).isRunning(), <FONT ID="False">false</FONT>);
+<A NAME="19"></A>        Assert.assertEquals(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/OozieExternalStatus.java.html">OozieExternalStatus</A>(SUCCEEDED.toString()).isRunning(), <FONT ID="False">false</FONT>);
+<A NAME="20"></A>        Assert.assertEquals(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/OozieExternalStatus.java.html">OozieExternalStatus</A>(KILLED.toString()).isRunning(), <FONT ID="False">false</FONT>);
+<A NAME="21"></A>        Assert.assertEquals(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/OozieExternalStatus.java.html">OozieExternalStatus</A>(FAILED.toString()).isRunning(), <FONT ID="False">false</FONT>);
+<A NAME="22"></A>    }
+<A NAME="23"></A>
+<A NAME="24"></A>    @Test
+<A NAME="25"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testIsSuccess() {
+<A NAME="26"></A>        Assert.assertEquals(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/OozieExternalStatus.java.html">OozieExternalStatus</A>(PREP.toString()).isSuccess(), <FONT ID="False">false</FONT>);
+<A NAME="27"></A>        Assert.assertEquals(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/OozieExternalStatus.java.html">OozieExternalStatus</A>(RUNNING.toString()).isSuccess(), <FONT ID="False">false</FONT>);
+<A NAME="28"></A>        Assert.assertEquals(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/OozieExternalStatus.java.html">OozieExternalStatus</A>(SUSPENDED.toString()).isSuccess(), <FONT ID="False">false</FONT>);
+<A NAME="29"></A>        Assert.assertEquals(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/OozieExternalStatus.java.html">OozieExternalStatus</A>(SUCCEEDED.toString()).isSuccess(), <FONT ID="True">true</FONT>);
+<A NAME="30"></A>        Assert.assertEquals(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/OozieExternalStatus.java.html">OozieExternalStatus</A>(KILLED.toString()).isSuccess(), <FONT ID="False">false</FONT>);
+<A NAME="31"></A>        Assert.assertEquals(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/OozieExternalStatus.java.html">OozieExternalStatus</A>(FAILED.toString()).isSuccess(), <FONT ID="False">false</FONT>);
+<A NAME="32"></A>    }
+<A NAME="33"></A>
+<A NAME="34"></A>    @Test(expected = IllegalArgumentException.<FONT ID="Class">class</FONT>)
+<A NAME="35"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testInvalidStatus() {
+<A NAME="36"></A>        <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/OozieExternalStatus.java.html">OozieExternalStatus</A>(<FONT ID="StringLiteral">"unexpected value"</FONT>);
+<A NAME="37"></A>    }
+<A NAME="38"></A>
+<A NAME="39"></A>}
+<A NAME="40"></A></pre>
+</BODY>
+</HTML>

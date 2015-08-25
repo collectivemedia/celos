@@ -1,0 +1,158 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../../../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.ci.testing.fixtures.compare.RecursiveFsObjectComparer (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">RecursiveFsObjectComparer.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos.ci.testing.fixtures.compare;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../../com/collective/celos/ci/mode/test/TestRun.java.html">com.collective.celos.ci.mode.test.TestRun</A>;
+<A NAME="4"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">com.collective.celos.ci.testing.fixtures.create.FixObjectCreator</A>;
+<A NAME="5"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFsObject.java.html">com.collective.celos.ci.testing.structure.fixobject.FixFsObject</A>;
+<A NAME="6"></A><FONT ID="Import">import</FONT> com.google.common.collect.Lists;
+<A NAME="7"></A><FONT ID="Import">import</FONT> com.google.common.collect.Maps;
+<A NAME="8"></A><FONT ID="Import">import</FONT> com.google.common.collect.Sets;
+<A NAME="9"></A><FONT ID="Import">import</FONT> org.apache.commons.lang.text.StrBuilder;
+<A NAME="10"></A>
+<A NAME="11"></A><FONT ID="Import">import</FONT> java.util.*;
+<A NAME="12"></A>
+<A NAME="13"></A><FONT ID="FormalComment">/**
+<A NAME="14"></A> * Created by akonopko on 10/7/14.
+<A NAME="15"></A> */</FONT>
+<A NAME="16"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> RecursiveFsObjectComparer <FONT ID="Implements">implements</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/compare/FixtureComparer.java.html">FixtureComparer</A> {
+<A NAME="17"></A>
+<A NAME="18"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">FixObjectCreator</A>&lt;? <FONT ID="Extends">extends</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFsObject.java.html">FixFsObject</A>&gt; expectedDataCreator;
+<A NAME="19"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">FixObjectCreator</A>&lt;? <FONT ID="Extends">extends</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFsObject.java.html">FixFsObject</A>&gt; actualDataCreator;
+<A NAME="20"></A>
+<A NAME="21"></A>    <FONT ID="Public">public</FONT> RecursiveFsObjectComparer(<A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">FixObjectCreator</A>&lt;? <FONT ID="Extends">extends</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFsObject.java.html">FixFsObject</A>&gt; expectedDataCreator, <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">FixObjectCreator</A>&lt;? <FONT ID="Extends">extends</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFsObject.java.html">FixFsObject</A>&gt; actualDataCreator) {
+<A NAME="22"></A>        <FONT ID="This">this</FONT>.expectedDataCreator = expectedDataCreator;
+<A NAME="23"></A>        <FONT ID="This">this</FONT>.actualDataCreator = actualDataCreator;
+<A NAME="24"></A>    }
+<A NAME="25"></A>
+<A NAME="26"></A>    <FONT ID="Public">public</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/compare/FixObjectCompareResult.java.html">FixObjectCompareResult</A> check(<A HREF="../../../../../../../com/collective/celos/ci/mode/test/TestRun.java.html">TestRun</A> testRun) <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="27"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFsObject.java.html">FixFsObject</A> expected = expectedDataCreator.create(testRun);
+<A NAME="28"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFsObject.java.html">FixFsObject</A> actual = actualDataCreator.create(testRun);
+<A NAME="29"></A>
+<A NAME="30"></A>        <FONT ID="If">if</FONT> (expected.isDir() &amp;&amp; actual.isDir()) {
+<A NAME="31"></A>            <FONT ID="Return">return</FONT> checkDir(testRun, expected, actual);
+<A NAME="32"></A>        } <FONT ID="Else">else</FONT> <FONT ID="If">if</FONT> (expected.isFile() &amp;&amp; actual.isFile()) {
+<A NAME="33"></A>            <FONT ID="Return">return</FONT> checkFile(testRun, expected, actual);
+<A NAME="34"></A>        } <FONT ID="Else">else</FONT> {
+<A NAME="35"></A>            <FONT ID="Return">return</FONT> FixObjectCompareResult.failed(getWrongTypeDesc(<FONT ID="StringLiteral">"RecursiveFsObjectComparer"</FONT>, expected, actual));
+<A NAME="36"></A>        }
+<A NAME="37"></A>
+<A NAME="38"></A>    }
+<A NAME="39"></A>
+<A NAME="40"></A>    <FONT ID="Public">public</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">FixObjectCreator</A>&lt;? <FONT ID="Extends">extends</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFsObject.java.html">FixFsObject</A>&gt; getExpectedDataCreator() {
+<A NAME="41"></A>        <FONT ID="Return">return</FONT> expectedDataCreator;
+<A NAME="42"></A>    }
+<A NAME="43"></A>
+<A NAME="44"></A>    <FONT ID="Public">public</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">FixObjectCreator</A>&lt;? <FONT ID="Extends">extends</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFsObject.java.html">FixFsObject</A>&gt; getActualDataCreator() {
+<A NAME="45"></A>        <FONT ID="Return">return</FONT> actualDataCreator;
+<A NAME="46"></A>    }
+<A NAME="47"></A>
+<A NAME="48"></A>    <FONT ID="Private">private</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/compare/FixObjectCompareResult.java.html">FixObjectCompareResult</A> checkFile(<A HREF="../../../../../../../com/collective/celos/ci/mode/test/TestRun.java.html">TestRun</A> testRun, <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFsObject.java.html">FixFsObject</A> expected, <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFsObject.java.html">FixFsObject</A> actual) <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="49"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/compare/PlainFileComparer.java.html">PlainFileComparer</A> fileComparer = <FONT ID="New">new</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/compare/PlainFileComparer.java.html">PlainFileComparer</A>(expected.asFile().getContent(), actual.asFile());
+<A NAME="50"></A>
+<A NAME="51"></A>        <FONT ID="Return">return</FONT> fileComparer.check(testRun);
+<A NAME="52"></A>    }
+<A NAME="53"></A>
+<A NAME="54"></A>    <FONT ID="Private">private</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/compare/FixObjectCompareResult.java.html">FixObjectCompareResult</A> checkDir(<A HREF="../../../../../../../com/collective/celos/ci/mode/test/TestRun.java.html">TestRun</A> testRun, <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFsObject.java.html">FixFsObject</A> expectedDirTree, <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFsObject.java.html">FixFsObject</A> actualDirTree) <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="55"></A>
+<A NAME="56"></A>        Map&lt;String, <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFsObject.java.html">FixFsObject</A>&gt; expectedChldrn = expectedDirTree.getChildren();
+<A NAME="57"></A>        Map&lt;String, <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFsObject.java.html">FixFsObject</A>&gt; actualChldrn = actualDirTree.getChildren();
+<A NAME="58"></A>
+<A NAME="59"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/compare/FixObjectCompareResult.java.html">FixObjectCompareResult</A> contentResult = checkDirFileList(expectedChldrn, actualChldrn);
+<A NAME="60"></A>        Map&lt;String, <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/compare/FixObjectCompareResult.java.html">FixObjectCompareResult</A>&gt; fails = checkDirChildren(testRun, expectedChldrn, actualChldrn);
+<A NAME="61"></A>
+<A NAME="62"></A>        <FONT ID="If">if</FONT> (!fails.isEmpty() || contentResult.getStatus() == FixObjectCompareResult.Status.FAIL) {
+<A NAME="63"></A>            <FONT ID="Return">return</FONT> FixObjectCompareResult.wrapFailed(fails, contentResult.getMessage());
+<A NAME="64"></A>        }
+<A NAME="65"></A>        <FONT ID="Return">return</FONT> FixObjectCompareResult.SUCCESS;
+<A NAME="66"></A>    }
+<A NAME="67"></A>
+<A NAME="68"></A>
+<A NAME="69"></A>
+<A NAME="70"></A>    <FONT ID="Private">private</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/compare/FixObjectCompareResult.java.html">FixObjectCompareResult</A> checkDirFileList(Map&lt;String, <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFsObject.java.html">FixFsObject</A>&gt; expectedChldrn, Map&lt;String, <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFsObject.java.html">FixFsObject</A>&gt; actualChldrn) {
+<A NAME="71"></A>        Set&lt;String&gt; expectedDiff = Sets.difference(expectedChldrn.keySet(), actualChldrn.keySet());
+<A NAME="72"></A>        Set&lt;String&gt; actualDiff = Sets.difference(actualChldrn.keySet(), expectedChldrn.keySet());
+<A NAME="73"></A>
+<A NAME="74"></A>        List&lt;String&gt; filesWithDifferentTypes = Lists.newArrayList();
+<A NAME="75"></A>        <FONT ID="For">for</FONT> (String key : Sets.intersection(expectedChldrn.keySet(), actualChldrn.keySet())) {
+<A NAME="76"></A>            <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFsObject.java.html">FixFsObject</A> expected = expectedChldrn.get(key);
+<A NAME="77"></A>            <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFsObject.java.html">FixFsObject</A> actual = actualChldrn.get(key);
+<A NAME="78"></A>            <FONT ID="If">if</FONT> (expected.isFile() != actual.isFile()) {
+<A NAME="79"></A>                String message = getWrongTypeDesc(key, expected, actual);
+<A NAME="80"></A>                filesWithDifferentTypes.add(message);
+<A NAME="81"></A>            }
+<A NAME="82"></A>        }
+<A NAME="83"></A>
+<A NAME="84"></A>        <FONT ID="If">if</FONT> (expectedDiff.isEmpty() &amp;&amp; actualDiff.isEmpty() &amp;&amp; filesWithDifferentTypes.isEmpty()) {
+<A NAME="85"></A>            <FONT ID="Return">return</FONT> FixObjectCompareResult.SUCCESS;
+<A NAME="86"></A>        } <FONT ID="Else">else</FONT> {
+<A NAME="87"></A>            StrBuilder strBuilder = <FONT ID="New">new</FONT> StrBuilder();
+<A NAME="88"></A>            appendMessages(expectedDiff, strBuilder, <FONT ID="StringLiteral">"Files found only in expected set: "</FONT>);
+<A NAME="89"></A>            appendMessages(actualDiff, strBuilder, <FONT ID="StringLiteral">"Files found only in result set: "</FONT>);
+<A NAME="90"></A>            appendMessages(filesWithDifferentTypes, strBuilder, <FONT ID="StringLiteral">"Files have different types: "</FONT>);
+<A NAME="91"></A>            <FONT ID="Return">return</FONT> FixObjectCompareResult.failed(strBuilder.toString());
+<A NAME="92"></A>        }
+<A NAME="93"></A>    }
+<A NAME="94"></A>
+<A NAME="95"></A>    <FONT ID="Private">private</FONT> String getWrongTypeDesc(String key, <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFsObject.java.html">FixFsObject</A> expected, <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFsObject.java.html">FixFsObject</A> actual) {
+<A NAME="96"></A>        <FONT ID="Return">return</FONT> key + <FONT ID="StringLiteral">": expected is ["</FONT> + getTypeDescr(expected) + <FONT ID="StringLiteral">"] and actual is ["</FONT> + getTypeDescr(actual) + <FONT ID="StringLiteral">"]"</FONT>;
+<A NAME="97"></A>    }
+<A NAME="98"></A>
+<A NAME="99"></A>
+<A NAME="100"></A>    <FONT ID="Private">private</FONT> Map&lt;String, <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/compare/FixObjectCompareResult.java.html">FixObjectCompareResult</A>&gt; checkDirChildren(<A HREF="../../../../../../../com/collective/celos/ci/mode/test/TestRun.java.html">TestRun</A> testRun, Map&lt;String, <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFsObject.java.html">FixFsObject</A>&gt; expectedChldrn, Map&lt;String, <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFsObject.java.html">FixFsObject</A>&gt; actualChldrn) <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="101"></A>        Map&lt;String, <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/compare/FixObjectCompareResult.java.html">FixObjectCompareResult</A>&gt; fails = Maps.newHashMap();
+<A NAME="102"></A>        <FONT ID="For">for</FONT> (Map.Entry&lt;String, <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFsObject.java.html">FixFsObject</A>&gt; entry : expectedChldrn.entrySet()) {
+<A NAME="103"></A>            <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFsObject.java.html">FixFsObject</A> other = actualChldrn.get(entry.getKey());
+<A NAME="104"></A>            <FONT ID="If">if</FONT> (other != <FONT ID="Null">null</FONT> &amp;&amp; other.isFile() == entry.getValue().isFile()) {
+<A NAME="105"></A>                <FONT ID="If">if</FONT> (entry.getValue().isFile()) {
+<A NAME="106"></A>
+<A NAME="107"></A>                    <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/compare/FixObjectCompareResult.java.html">FixObjectCompareResult</A> compareResult = checkFile(testRun, entry.getValue(), other);
+<A NAME="108"></A>                    <FONT ID="If">if</FONT> (compareResult.getStatus() == FixObjectCompareResult.Status.FAIL) {
+<A NAME="109"></A>                        fails.put(entry.getKey(), compareResult);
+<A NAME="110"></A>                    }
+<A NAME="111"></A>                } <FONT ID="Else">else</FONT> {
+<A NAME="112"></A>                    <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/compare/FixObjectCompareResult.java.html">FixObjectCompareResult</A> compareResult = checkDir(testRun, entry.getValue().asDir(), other.asDir());
+<A NAME="113"></A>                    <FONT ID="If">if</FONT> (compareResult.getStatus() == FixObjectCompareResult.Status.FAIL) {
+<A NAME="114"></A>                        fails.put(entry.getKey(), compareResult);
+<A NAME="115"></A>                    }
+<A NAME="116"></A>                }
+<A NAME="117"></A>            }
+<A NAME="118"></A>        }
+<A NAME="119"></A>        <FONT ID="Return">return</FONT> fails;
+<A NAME="120"></A>    }
+<A NAME="121"></A>
+<A NAME="122"></A>    <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> appendMessages(Collection&lt;String&gt; messages, StrBuilder strBuilder, String header) {
+<A NAME="123"></A>        <FONT ID="If">if</FONT> (messages.size() == <FONT ID="IntegerLiteral">0</FONT>) {
+<A NAME="124"></A>            <FONT ID="Return">return</FONT>;
+<A NAME="125"></A>        }
+<A NAME="126"></A>        <FONT ID="If">if</FONT> (!strBuilder.isEmpty()) {
+<A NAME="127"></A>            strBuilder.appendNewLine();
+<A NAME="128"></A>        }
+<A NAME="129"></A>        strBuilder.append(header);
+<A NAME="130"></A>        List&lt;String&gt; sortedMessages = Lists.newArrayList(messages);
+<A NAME="131"></A>        Collections.sort(sortedMessages);
+<A NAME="132"></A>        strBuilder.appendWithSeparators(sortedMessages, <FONT ID="StringLiteral">", "</FONT>);
+<A NAME="133"></A>    }
+<A NAME="134"></A>
+<A NAME="135"></A>    <FONT ID="Private">private</FONT> String getTypeDescr(<A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFsObject.java.html">FixFsObject</A> fo) {
+<A NAME="136"></A>        <FONT ID="Return">return</FONT> fo.isFile() ? <FONT ID="StringLiteral">"File"</FONT> : <FONT ID="StringLiteral">"Dir"</FONT>;
+<A NAME="137"></A>    }
+<A NAME="138"></A>}
+<A NAME="139"></A></pre>
+</BODY>
+</HTML>

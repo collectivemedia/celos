@@ -1,0 +1,166 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../../../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.ci.testing.fixtures.compare.FixTableComparer (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">FixTableComparer.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos.ci.testing.fixtures.compare;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../../com/collective/celos/ci/mode/test/TestRun.java.html">com.collective.celos.ci.mode.test.TestRun</A>;
+<A NAME="4"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">com.collective.celos.ci.testing.fixtures.create.FixObjectCreator</A>;
+<A NAME="5"></A><FONT ID="Import">import</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">com.collective.celos.ci.testing.structure.fixobject.FixTable</A>;
+<A NAME="6"></A><FONT ID="Import">import</FONT> com.google.common.collect.Lists;
+<A NAME="7"></A><FONT ID="Import">import</FONT> com.google.common.collect.Maps;
+<A NAME="8"></A><FONT ID="Import">import</FONT> com.google.common.collect.Sets;
+<A NAME="9"></A><FONT ID="Import">import</FONT> org.apache.commons.lang.StringUtils;
+<A NAME="10"></A>
+<A NAME="11"></A><FONT ID="Import">import</FONT> java.util.*;
+<A NAME="12"></A>
+<A NAME="13"></A><FONT ID="FormalComment">/**
+<A NAME="14"></A> * Created by akonopko on 13.02.15.
+<A NAME="15"></A> */</FONT>
+<A NAME="16"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> FixTableComparer <FONT ID="Implements">implements</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/compare/FixtureComparer.java.html">FixtureComparer</A> {
+<A NAME="17"></A>
+<A NAME="18"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">FixObjectCreator</A>&lt;<A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable</A>&gt; expectedDataCreator;
+<A NAME="19"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">FixObjectCreator</A>&lt;<A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable</A>&gt; actualDataCreator;
+<A NAME="20"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> <FONT ID="Boolean">boolean</FONT> columnNamesOrdered;
+<A NAME="21"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> <FONT ID="Boolean">boolean</FONT> respectRowOrder;
+<A NAME="22"></A>
+<A NAME="23"></A>    <FONT ID="Public">public</FONT> FixTableComparer(<A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">FixObjectCreator</A>&lt;<A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable</A>&gt; expectedDataCreator, <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">FixObjectCreator</A>&lt;<A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable</A>&gt; actualDataCreator, <FONT ID="Boolean">boolean</FONT> columnNamesOrdered, <FONT ID="Boolean">boolean</FONT> respectRowOrder) {
+<A NAME="24"></A>        <FONT ID="This">this</FONT>.expectedDataCreator = expectedDataCreator;
+<A NAME="25"></A>        <FONT ID="This">this</FONT>.actualDataCreator = actualDataCreator;
+<A NAME="26"></A>        <FONT ID="This">this</FONT>.columnNamesOrdered = columnNamesOrdered;
+<A NAME="27"></A>        <FONT ID="This">this</FONT>.respectRowOrder = respectRowOrder;
+<A NAME="28"></A>    }
+<A NAME="29"></A>
+<A NAME="30"></A>    <FONT ID="Public">public</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">FixObjectCreator</A>&lt;<A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable</A>&gt; getExpectedDataCreator() {
+<A NAME="31"></A>        <FONT ID="Return">return</FONT> expectedDataCreator;
+<A NAME="32"></A>    }
+<A NAME="33"></A>
+<A NAME="34"></A>    <FONT ID="Public">public</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">FixObjectCreator</A>&lt;<A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable</A>&gt; getActualDataCreator() {
+<A NAME="35"></A>        <FONT ID="Return">return</FONT> actualDataCreator;
+<A NAME="36"></A>    }
+<A NAME="37"></A>
+<A NAME="38"></A>    <FONT ID="Public">public</FONT> <FONT ID="Boolean">boolean</FONT> isColumnNamesOrdered() {
+<A NAME="39"></A>        <FONT ID="Return">return</FONT> columnNamesOrdered;
+<A NAME="40"></A>    }
+<A NAME="41"></A>
+<A NAME="42"></A>    <FONT ID="Public">public</FONT> <FONT ID="Boolean">boolean</FONT> isRespectRowOrder() {
+<A NAME="43"></A>        <FONT ID="Return">return</FONT> respectRowOrder;
+<A NAME="44"></A>    }
+<A NAME="45"></A>
+<A NAME="46"></A>    @Override
+<A NAME="47"></A>    <FONT ID="Public">public</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/compare/FixObjectCompareResult.java.html">FixObjectCompareResult</A> check(<A HREF="../../../../../../../com/collective/celos/ci/mode/test/TestRun.java.html">TestRun</A> testRun) <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="48"></A>        <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable</A> expected = expectedDataCreator.create(testRun);
+<A NAME="49"></A>        <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable</A> actual = actualDataCreator.create(testRun);
+<A NAME="50"></A>
+<A NAME="51"></A>        List&lt;String&gt; expectedColumns = expected.getColumnNames();
+<A NAME="52"></A>        List&lt;String&gt; actualColumns = actual.getColumnNames();
+<A NAME="53"></A>        <FONT ID="Boolean">boolean</FONT> wrongColNames = columnNamesOrdered &amp;&amp; !expectedColumns.equals(actualColumns);
+<A NAME="54"></A>        wrongColNames |= !columnNamesOrdered &amp;&amp; !equalsIgnoreOrder(expectedColumns, actualColumns);
+<A NAME="55"></A>
+<A NAME="56"></A>        <FONT ID="If">if</FONT> (wrongColNames) {
+<A NAME="57"></A>            String expectedColDesc = StringUtils.join(expectedColumns, <FONT ID="StringLiteral">", "</FONT>);
+<A NAME="58"></A>            String actualColDesc = StringUtils.join(actualColumns, <FONT ID="StringLiteral">", "</FONT>);
+<A NAME="59"></A>            <FONT ID="Return">return</FONT> FixObjectCompareResult.failed(
+<A NAME="60"></A>                    <FONT ID="StringLiteral">"Column Names for expected and actual data set differed: expected ["</FONT> +
+<A NAME="61"></A>                    expectedColDesc + <FONT ID="StringLiteral">"] but was ["</FONT> + actualColDesc + <FONT ID="StringLiteral">"]"</FONT>
+<A NAME="62"></A>            );
+<A NAME="63"></A>        }
+<A NAME="64"></A>
+<A NAME="65"></A>        <FONT ID="If">if</FONT> (expected.getRows().size() != actual.getRows().size()) {
+<A NAME="66"></A>            <FONT ID="Return">return</FONT> FixObjectCompareResult.failed(
+<A NAME="67"></A>                    <FONT ID="StringLiteral">"Data set size for expected and actual data set differed: expected has "</FONT> +
+<A NAME="68"></A>                            expected.getRows().size() + <FONT ID="StringLiteral">" while actual data has "</FONT> + actual.getRows().size() + <FONT ID="StringLiteral">" rows"</FONT>
+<A NAME="69"></A>            );
+<A NAME="70"></A>        }
+<A NAME="71"></A>
+<A NAME="72"></A>        <FONT ID="If">if</FONT> (respectRowOrder) {
+<A NAME="73"></A>            Map&lt;String, <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/compare/FixObjectCompareResult.java.html">FixObjectCompareResult</A>&gt; fails = compareRespectOrder(expected, actual);
+<A NAME="74"></A>            <FONT ID="If">if</FONT> (!fails.isEmpty()) {
+<A NAME="75"></A>                <FONT ID="Return">return</FONT> FixObjectCompareResult.wrapFailed(fails, <FONT ID="StringLiteral">""</FONT>);
+<A NAME="76"></A>            }
+<A NAME="77"></A>            <FONT ID="Return">return</FONT> FixObjectCompareResult.SUCCESS;
+<A NAME="78"></A>        } <FONT ID="Else">else</FONT> {
+<A NAME="79"></A>            Map&lt;<A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable.FixRow</A>, Integer&gt; expectedRes = countEntries(expected);
+<A NAME="80"></A>            Map&lt;<A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable.FixRow</A>, Integer&gt; actualRes = countEntries(actual);
+<A NAME="81"></A>
+<A NAME="82"></A>            <FONT ID="Return">return</FONT> CompareHelper.compareEntityNumber(testRun, actualDataCreator, expectedDataCreator, expectedRes, actualRes);
+<A NAME="83"></A>        }
+<A NAME="84"></A>
+<A NAME="85"></A>    }
+<A NAME="86"></A>
+<A NAME="87"></A>    <FONT ID="Private">private</FONT> Map&lt;<A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable.FixRow</A>, Integer&gt; countEntries(<A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable</A> expected) {
+<A NAME="88"></A>        Map&lt;<A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable.FixRow</A>, Integer&gt; expEntryCount = Maps.newHashMap();
+<A NAME="89"></A>
+<A NAME="90"></A>        <FONT ID="For">for</FONT> (<A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable.FixRow</A> row : expected.getRows()) {
+<A NAME="91"></A>            Integer count = expEntryCount.get(row);
+<A NAME="92"></A>            <FONT ID="If">if</FONT> (count == <FONT ID="Null">null</FONT>) {
+<A NAME="93"></A>                count = <FONT ID="IntegerLiteral">1</FONT>;
+<A NAME="94"></A>            } <FONT ID="Else">else</FONT> {
+<A NAME="95"></A>                count = count + <FONT ID="IntegerLiteral">1</FONT>;
+<A NAME="96"></A>            }
+<A NAME="97"></A>            expEntryCount.put(row, count);
+<A NAME="98"></A>        }
+<A NAME="99"></A>        <FONT ID="Return">return</FONT> expEntryCount;
+<A NAME="100"></A>    }
+<A NAME="101"></A>
+<A NAME="102"></A>    <FONT ID="Private">private</FONT> Map&lt;String, <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/compare/FixObjectCompareResult.java.html">FixObjectCompareResult</A>&gt; compareRespectOrder(<A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable</A> expected, <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable</A> actual) {
+<A NAME="103"></A>        Map&lt;String, <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/compare/FixObjectCompareResult.java.html">FixObjectCompareResult</A>&gt; fails = Maps.newLinkedHashMap();
+<A NAME="104"></A>        ListIterator&lt;<A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable.FixRow</A>&gt; expIter = expected.getRows().listIterator();
+<A NAME="105"></A>        ListIterator&lt;<A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable.FixRow</A>&gt; actIter = actual.getRows().listIterator();
+<A NAME="106"></A>        <FONT ID="While">while</FONT> (expIter.hasNext()) {
+<A NAME="107"></A>            <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable.FixRow</A> expRow = expIter.next();
+<A NAME="108"></A>            <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable.FixRow</A> actRow = actIter.next();
+<A NAME="109"></A>
+<A NAME="110"></A>            <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/compare/FixObjectCompareResult.java.html">FixObjectCompareResult</A> result = compareFixRows(expected.getColumnNames(), expRow, actRow);
+<A NAME="111"></A>            <FONT ID="If">if</FONT> (result.getStatus() == FixObjectCompareResult.Status.FAIL) {
+<A NAME="112"></A>                fails.put(<FONT ID="StringLiteral">"Row #"</FONT> + expIter.previousIndex(), result);
+<A NAME="113"></A>            }
+<A NAME="114"></A>        }
+<A NAME="115"></A>        <FONT ID="Return">return</FONT> fails;
+<A NAME="116"></A>    }
+<A NAME="117"></A>
+<A NAME="118"></A>    <FONT ID="Private">private</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/compare/FixObjectCompareResult.java.html">FixObjectCompareResult</A> compareFixRows(List&lt;String&gt; columnNames, <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable.FixRow</A> expRow, <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable.FixRow</A> actRow) {
+<A NAME="119"></A>        <FONT ID="If">if</FONT> (expRow.equals(actRow)) {
+<A NAME="120"></A>            <FONT ID="Return">return</FONT> FixObjectCompareResult.SUCCESS;
+<A NAME="121"></A>        }
+<A NAME="122"></A>
+<A NAME="123"></A>        List&lt;String&gt; expDesc = Lists.newArrayList();
+<A NAME="124"></A>        List&lt;String&gt; actDesc = Lists.newArrayList();
+<A NAME="125"></A>
+<A NAME="126"></A>        <FONT ID="For">for</FONT> (String key: columnNames) {
+<A NAME="127"></A>            String expValue = expRow.getCells().get(key);
+<A NAME="128"></A>            String actValue = actRow.getCells().get(key);
+<A NAME="129"></A>            <FONT ID="If">if</FONT> (!expValue.equals(actValue)) {
+<A NAME="130"></A>                expDesc.add(key + <FONT ID="StringLiteral">"="</FONT> + expValue);
+<A NAME="131"></A>                actDesc.add(key + <FONT ID="StringLiteral">"="</FONT> + actValue);
+<A NAME="132"></A>            }
+<A NAME="133"></A>        }
+<A NAME="134"></A>
+<A NAME="135"></A>        String differenctDescription =
+<A NAME="136"></A>                <FONT ID="StringLiteral">"Cells in expected data set: ["</FONT> + StringUtils.join(expDesc, <FONT ID="StringLiteral">", "</FONT>) + <FONT ID="StringLiteral">"], "</FONT> +
+<A NAME="137"></A>                <FONT ID="StringLiteral">"cells in actual data set: ["</FONT> + StringUtils.join(actDesc, <FONT ID="StringLiteral">", "</FONT>) + <FONT ID="StringLiteral">"]"</FONT>;
+<A NAME="138"></A>
+<A NAME="139"></A>        <FONT ID="Return">return</FONT> FixObjectCompareResult.failed(differenctDescription);
+<A NAME="140"></A>    }
+<A NAME="141"></A>
+<A NAME="142"></A>    <FONT ID="Private">private</FONT> <FONT ID="Boolean">boolean</FONT> equalsIgnoreOrder(Collection col1, Collection col2) {
+<A NAME="143"></A>        <FONT ID="Return">return</FONT> col1.containsAll(col2) &amp;&amp; col2.containsAll(col1);
+<A NAME="144"></A>    }
+<A NAME="145"></A>
+<A NAME="146"></A>}
+<A NAME="147"></A></pre>
+</BODY>
+</HTML>

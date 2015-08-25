@@ -1,0 +1,74 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.ci.Utils (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">Utils.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos.ci;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> <A HREF="../../../../com/collective/celos/ci/mode/test/TestRun.java.html">com.collective.celos.ci.mode.test.TestRun</A>;
+<A NAME="4"></A><FONT ID="Import">import</FONT> <A HREF="../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">com.collective.celos.ci.testing.fixtures.create.FixObjectCreator</A>;
+<A NAME="5"></A><FONT ID="Import">import</FONT> <A HREF="../../../../com/collective/celos/ci/testing/structure/fixobject/FixFsObject.java.html">com.collective.celos.ci.testing.structure.fixobject.FixFsObject</A>;
+<A NAME="6"></A><FONT ID="Import">import</FONT> com.google.common.collect.Maps;
+<A NAME="7"></A><FONT ID="Import">import</FONT> com.google.gson.JsonElement;
+<A NAME="8"></A><FONT ID="Import">import</FONT> com.google.gson.JsonParser;
+<A NAME="9"></A>
+<A NAME="10"></A><FONT ID="Import">import</FONT> java.io.BufferedReader;
+<A NAME="11"></A><FONT ID="Import">import</FONT> java.io.IOException;
+<A NAME="12"></A><FONT ID="Import">import</FONT> java.io.InputStream;
+<A NAME="13"></A><FONT ID="Import">import</FONT> java.io.InputStreamReader;
+<A NAME="14"></A><FONT ID="Import">import</FONT> java.util.Map;
+<A NAME="15"></A>
+<A NAME="16"></A><FONT ID="FormalComment">/**
+<A NAME="17"></A> * Created by akonopko on 07.12.14.
+<A NAME="18"></A> */</FONT>
+<A NAME="19"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> Utils {
+<A NAME="20"></A>
+<A NAME="21"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> &lt;T <FONT ID="Extends">extends</FONT> <A HREF="../../../../com/collective/celos/ci/testing/structure/fixobject/FixFsObject.java.html">FixFsObject</A>&gt; <A HREF="../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">FixObjectCreator</A>&lt;T&gt; wrap(<FONT ID="Final">final</FONT> T fixObj) {
+<A NAME="22"></A>        <FONT ID="Return">return</FONT> wrap(fixObj, <FONT ID="StringLiteral">""</FONT>);
+<A NAME="23"></A>    }
+<A NAME="24"></A>
+<A NAME="25"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> &lt;T <FONT ID="Extends">extends</FONT> <A HREF="../../../../com/collective/celos/ci/testing/structure/fixobject/FixFsObject.java.html">FixFsObject</A>&gt; <A HREF="../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">FixObjectCreator</A>&lt;T&gt; wrap(<FONT ID="Final">final</FONT> T fixObj, <FONT ID="Final">final</FONT> String desc) {
+<A NAME="26"></A>        <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> <A HREF="../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">FixObjectCreator</A>() {
+<A NAME="27"></A>            @Override
+<A NAME="28"></A>            <FONT ID="Public">public</FONT> <A HREF="../../../../com/collective/celos/ci/testing/structure/fixobject/FixFsObject.java.html">FixFsObject</A> create(<A HREF="../../../../com/collective/celos/ci/mode/test/TestRun.java.html">TestRun</A> testRun) <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="29"></A>                <FONT ID="Return">return</FONT> fixObj;
+<A NAME="30"></A>            }
+<A NAME="31"></A>
+<A NAME="32"></A>            @Override
+<A NAME="33"></A>            <FONT ID="Public">public</FONT> String getDescription(<A HREF="../../../../com/collective/celos/ci/mode/test/TestRun.java.html">TestRun</A> testRun) {
+<A NAME="34"></A>                <FONT ID="Return">return</FONT> desc;
+<A NAME="35"></A>            }
+<A NAME="36"></A>        };
+<A NAME="37"></A>    }
+<A NAME="38"></A>
+<A NAME="39"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> JsonParser jsonParser = <FONT ID="New">new</FONT> JsonParser();
+<A NAME="40"></A>
+<A NAME="41"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> Map&lt;JsonElement, Integer&gt; fillMapWithJsonFromIS(InputStream content) <FONT ID="Throws">throws</FONT> IOException {
+<A NAME="42"></A>        Map&lt;JsonElement, Integer&gt; jsonElems = Maps.newHashMap();
+<A NAME="43"></A>        BufferedReader reader = <FONT ID="New">new</FONT> BufferedReader(<FONT ID="New">new</FONT> InputStreamReader(content));
+<A NAME="44"></A>        String line;
+<A NAME="45"></A>        <FONT ID="While">while</FONT> ((line = reader.readLine()) != <FONT ID="Null">null</FONT>) {
+<A NAME="46"></A>            JsonElement entity = jsonParser.parse(line) ;
+<A NAME="47"></A>            Integer cnt = jsonElems.get(entity);
+<A NAME="48"></A>            jsonElems.put(entity, cnt == <FONT ID="Null">null</FONT> ? <FONT ID="IntegerLiteral">1</FONT> : cnt + <FONT ID="IntegerLiteral">1</FONT>);
+<A NAME="49"></A>        }
+<A NAME="50"></A>        <FONT ID="Return">return</FONT> jsonElems;
+<A NAME="51"></A>    }
+<A NAME="52"></A>
+<A NAME="53"></A>
+<A NAME="54"></A>}
+<A NAME="55"></A></pre>
+</BODY>
+</HTML>

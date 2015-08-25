@@ -1,0 +1,123 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../../../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.ci.testing.fixtures.create.OutputFixTableFromHiveCreatorTest (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">OutputFixTableFromHiveCreatorTest.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos.ci.testing.fixtures.create;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../../com/collective/celos/DatabaseName.java.html">com.collective.celos.DatabaseName</A>;
+<A NAME="4"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../../com/collective/celos/ci/mode/test/TestRun.java.html">com.collective.celos.ci.mode.test.TestRun</A>;
+<A NAME="5"></A><FONT ID="Import">import</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">com.collective.celos.ci.testing.structure.fixobject.FixTable</A>;
+<A NAME="6"></A><FONT ID="Import">import</FONT> com.google.common.collect.Maps;
+<A NAME="7"></A><FONT ID="Import">import</FONT> junit.framework.Assert;
+<A NAME="8"></A><FONT ID="Import">import</FONT> org.junit.Test;
+<A NAME="9"></A>
+<A NAME="10"></A><FONT ID="Import">import</FONT> java.sql.*;
+<A NAME="11"></A><FONT ID="Import">import</FONT> java.util.List;
+<A NAME="12"></A><FONT ID="Import">import</FONT> java.util.Map;
+<A NAME="13"></A><FONT ID="Import">import</FONT> java.util.UUID;
+<A NAME="14"></A>
+<A NAME="15"></A><FONT ID="Import">import</FONT> <FONT ID="Static">static</FONT> org.mockito.Mockito.*;
+<A NAME="16"></A>
+<A NAME="17"></A><FONT ID="FormalComment">/**
+<A NAME="18"></A> * Created by akonopko on 24.01.15.
+<A NAME="19"></A> */</FONT>
+<A NAME="20"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> OutputFixTableFromHiveCreatorTest {
+<A NAME="21"></A>
+<A NAME="22"></A>    @Test
+<A NAME="23"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testCreateFixTable() <FONT ID="Throws">throws</FONT> SQLException {
+<A NAME="24"></A>        <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/fixtures/create/OutputFixTableFromHiveCreator.html">OutputFixTableFromHiveCreator</A> creator = <FONT ID="New">new</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/fixtures/create/OutputFixTableFromHiveCreator.html">OutputFixTableFromHiveCreator</A>(<FONT ID="New">new</FONT> <A HREF="../../../../../../../com/collective/celos/DatabaseName.java.html">DatabaseName</A>(<FONT ID="StringLiteral">"db"</FONT>), <FONT ID="StringLiteral">"table"</FONT>);
+<A NAME="25"></A>
+<A NAME="26"></A>        Connection connection = mock(Connection.<FONT ID="Class">class</FONT>);
+<A NAME="27"></A>        Statement statement = mock(Statement.<FONT ID="Class">class</FONT>);
+<A NAME="28"></A>        <A HREF="../../../../../../../com/collective/celos/ci/mode/test/TestRun.java.html">TestRun</A> testRun = mock(<A HREF="../../../../../../../com/collective/celos/ci/mode/test/TestRun.java.html">TestRun</A>.<FONT ID="Class">class</FONT>);
+<A NAME="29"></A>        ResultSet resultSet = mock(ResultSet.<FONT ID="Class">class</FONT>);
+<A NAME="30"></A>
+<A NAME="31"></A>        doReturn(UUID.nameUUIDFromBytes(<FONT ID="StringLiteral">"123-234"</FONT>.getBytes())).when(testRun).getTestUUID();
+<A NAME="32"></A>        doReturn(statement).when(connection).createStatement();
+<A NAME="33"></A>
+<A NAME="34"></A>        String expectedQuery = <FONT ID="StringLiteral">"SELECT * FROM celosci_db_b8d5f366_fa8f_3997_94c0_6fe3346df766.table"</FONT>;
+<A NAME="35"></A>        doReturn(resultSet).when(statement).executeQuery(expectedQuery);
+<A NAME="36"></A>
+<A NAME="37"></A>        ResultSetMetaData metaData = mock(ResultSetMetaData.<FONT ID="Class">class</FONT>);
+<A NAME="38"></A>        doReturn(metaData).when(resultSet).getMetaData();
+<A NAME="39"></A>
+<A NAME="40"></A>        doReturn(<FONT ID="IntegerLiteral">3</FONT>).when(metaData).getColumnCount();
+<A NAME="41"></A>        doReturn(<FONT ID="StringLiteral">"col1"</FONT>).when(metaData).getColumnName(<FONT ID="IntegerLiteral">1</FONT>);
+<A NAME="42"></A>        doReturn(<FONT ID="StringLiteral">"col2"</FONT>).when(metaData).getColumnName(<FONT ID="IntegerLiteral">2</FONT>);
+<A NAME="43"></A>        doReturn(<FONT ID="StringLiteral">"col3"</FONT>).when(metaData).getColumnName(<FONT ID="IntegerLiteral">3</FONT>);
+<A NAME="44"></A>
+<A NAME="45"></A>        when(resultSet.next()).thenReturn(<FONT ID="True">true</FONT>).thenReturn(<FONT ID="True">true</FONT>).thenReturn(<FONT ID="False">false</FONT>);
+<A NAME="46"></A>        when(resultSet.getString(<FONT ID="StringLiteral">"col1"</FONT>)).thenReturn(<FONT ID="StringLiteral">"col1val1"</FONT>).thenReturn(<FONT ID="StringLiteral">"col1val2"</FONT>).thenReturn(<FONT ID="StringLiteral">"col1val3"</FONT>);
+<A NAME="47"></A>        when(resultSet.getString(<FONT ID="StringLiteral">"col2"</FONT>)).thenReturn(<FONT ID="StringLiteral">"col2val1"</FONT>).thenReturn(<FONT ID="StringLiteral">"col2val2"</FONT>).thenReturn(<FONT ID="StringLiteral">"col2val3"</FONT>);
+<A NAME="48"></A>        when(resultSet.getString(<FONT ID="StringLiteral">"col3"</FONT>)).thenReturn(<FONT ID="StringLiteral">"col3val1"</FONT>).thenReturn(<FONT ID="StringLiteral">"col3val2"</FONT>).thenReturn(<FONT ID="StringLiteral">"col3val3"</FONT>);
+<A NAME="49"></A>
+<A NAME="50"></A>        <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable</A> resultTable = creator.createFixTable(testRun, statement);
+<A NAME="51"></A>        List&lt;<A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable.FixRow</A>&gt; rowList = resultTable.getRows();
+<A NAME="52"></A>
+<A NAME="53"></A>        Assert.assertEquals(rowList.size(), <FONT ID="IntegerLiteral">2</FONT>);
+<A NAME="54"></A>        <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable.FixRow</A> row1 = rowList.get(<FONT ID="IntegerLiteral">0</FONT>);
+<A NAME="55"></A>        <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable.FixRow</A> row2 = rowList.get(<FONT ID="IntegerLiteral">1</FONT>);
+<A NAME="56"></A>
+<A NAME="57"></A>        Map&lt;String,String&gt; rowData1 = Maps.newHashMap();
+<A NAME="58"></A>        rowData1.put(<FONT ID="StringLiteral">"col1"</FONT>, <FONT ID="StringLiteral">"col1val1"</FONT>);
+<A NAME="59"></A>        rowData1.put(<FONT ID="StringLiteral">"col2"</FONT>, <FONT ID="StringLiteral">"col2val1"</FONT>);
+<A NAME="60"></A>        rowData1.put(<FONT ID="StringLiteral">"col3"</FONT>, <FONT ID="StringLiteral">"col3val1"</FONT>);
+<A NAME="61"></A>
+<A NAME="62"></A>        Map&lt;String,String&gt; rowData2 = Maps.newHashMap();
+<A NAME="63"></A>        rowData2.put(<FONT ID="StringLiteral">"col1"</FONT>, <FONT ID="StringLiteral">"col1val2"</FONT>);
+<A NAME="64"></A>        rowData2.put(<FONT ID="StringLiteral">"col2"</FONT>, <FONT ID="StringLiteral">"col2val2"</FONT>);
+<A NAME="65"></A>        rowData2.put(<FONT ID="StringLiteral">"col3"</FONT>, <FONT ID="StringLiteral">"col3val2"</FONT>);
+<A NAME="66"></A>
+<A NAME="67"></A>        Assert.assertEquals(rowData1, row1.getCells());
+<A NAME="68"></A>        Assert.assertEquals(rowData2, row2.getCells());
+<A NAME="69"></A>    }
+<A NAME="70"></A>
+<A NAME="71"></A>    @Test
+<A NAME="72"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testCreateFixTableNoData() <FONT ID="Throws">throws</FONT> SQLException {
+<A NAME="73"></A>        <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/fixtures/create/OutputFixTableFromHiveCreator.html">OutputFixTableFromHiveCreator</A> creator = <FONT ID="New">new</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/fixtures/create/OutputFixTableFromHiveCreator.html">OutputFixTableFromHiveCreator</A>(<FONT ID="New">new</FONT> <A HREF="../../../../../../../com/collective/celos/DatabaseName.java.html">DatabaseName</A>(<FONT ID="StringLiteral">"db"</FONT>), <FONT ID="StringLiteral">"table"</FONT>);
+<A NAME="74"></A>
+<A NAME="75"></A>        Connection connection = mock(Connection.<FONT ID="Class">class</FONT>);
+<A NAME="76"></A>        Statement statement = mock(Statement.<FONT ID="Class">class</FONT>);
+<A NAME="77"></A>        <A HREF="../../../../../../../com/collective/celos/ci/mode/test/TestRun.java.html">TestRun</A> testRun = mock(<A HREF="../../../../../../../com/collective/celos/ci/mode/test/TestRun.java.html">TestRun</A>.<FONT ID="Class">class</FONT>);
+<A NAME="78"></A>        ResultSet resultSet = mock(ResultSet.<FONT ID="Class">class</FONT>);
+<A NAME="79"></A>
+<A NAME="80"></A>        doReturn(UUID.nameUUIDFromBytes(<FONT ID="StringLiteral">"123-234"</FONT>.getBytes())).when(testRun).getTestUUID();
+<A NAME="81"></A>        doReturn(statement).when(connection).createStatement();
+<A NAME="82"></A>
+<A NAME="83"></A>        String expectedQuery = <FONT ID="StringLiteral">"SELECT * FROM celosci_db_b8d5f366_fa8f_3997_94c0_6fe3346df766.table"</FONT>;
+<A NAME="84"></A>        doReturn(resultSet).when(statement).executeQuery(expectedQuery);
+<A NAME="85"></A>
+<A NAME="86"></A>        ResultSetMetaData metaData = mock(ResultSetMetaData.<FONT ID="Class">class</FONT>);
+<A NAME="87"></A>        doReturn(metaData).when(resultSet).getMetaData();
+<A NAME="88"></A>
+<A NAME="89"></A>        doReturn(<FONT ID="IntegerLiteral">3</FONT>).when(metaData).getColumnCount();
+<A NAME="90"></A>        doReturn(<FONT ID="StringLiteral">"col1"</FONT>).when(metaData).getColumnName(<FONT ID="IntegerLiteral">1</FONT>);
+<A NAME="91"></A>        doReturn(<FONT ID="StringLiteral">"col2"</FONT>).when(metaData).getColumnName(<FONT ID="IntegerLiteral">2</FONT>);
+<A NAME="92"></A>        doReturn(<FONT ID="StringLiteral">"col3"</FONT>).when(metaData).getColumnName(<FONT ID="IntegerLiteral">3</FONT>);
+<A NAME="93"></A>
+<A NAME="94"></A>        when(resultSet.next()).thenReturn(<FONT ID="False">false</FONT>);
+<A NAME="95"></A>
+<A NAME="96"></A>        <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable</A> resultTable = creator.createFixTable(testRun, statement);
+<A NAME="97"></A>        List&lt;<A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable.FixRow</A>&gt; rowList = resultTable.getRows();
+<A NAME="98"></A>
+<A NAME="99"></A>        Assert.assertEquals(rowList.size(), <FONT ID="IntegerLiteral">0</FONT>);
+<A NAME="100"></A>    }
+<A NAME="101"></A>
+<A NAME="102"></A>
+<A NAME="103"></A>}
+<A NAME="104"></A></pre>
+</BODY>
+</HTML>

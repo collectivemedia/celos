@@ -1,0 +1,91 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../../../../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.ci.testing.fixtures.deploy.hive.HiveTableDeployerTest (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">HiveTableDeployerTest.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos.ci.testing.fixtures.deploy.hive;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> com.google.common.collect.Lists;
+<A NAME="4"></A><FONT ID="Import">import</FONT> org.junit.Assert;
+<A NAME="5"></A><FONT ID="Import">import</FONT> org.junit.Test;
+<A NAME="6"></A>
+<A NAME="7"></A><FONT ID="Import">import</FONT> java.sql.ResultSet;
+<A NAME="8"></A><FONT ID="Import">import</FONT> java.sql.Statement;
+<A NAME="9"></A><FONT ID="Import">import</FONT> java.util.List;
+<A NAME="10"></A>
+<A NAME="11"></A><FONT ID="Import">import</FONT> <FONT ID="Static">static</FONT> org.mockito.Mockito.*;
+<A NAME="12"></A>
+<A NAME="13"></A><FONT ID="FormalComment">/**
+<A NAME="14"></A> * Created by akonopko on 02.02.15.
+<A NAME="15"></A> */</FONT>
+<A NAME="16"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> HiveTableDeployerTest {
+<A NAME="17"></A>
+<A NAME="18"></A>    @Test
+<A NAME="19"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testHiveTableDeployer() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="20"></A>        <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/fixtures/deploy/hive/HiveTableDeployer.html">HiveTableDeployer</A> deployer = <FONT ID="New">new</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/fixtures/deploy/hive/HiveTableDeployer.html">HiveTableDeployer</A>(<FONT ID="Null">null</FONT>, <FONT ID="StringLiteral">"tableName"</FONT>, <FONT ID="Null">null</FONT>, <FONT ID="Null">null</FONT>);
+<A NAME="21"></A>        List&lt;String&gt; columns = Lists.newArrayList();
+<A NAME="22"></A>        List&lt;String&gt; partColumns = Lists.newArrayList();
+<A NAME="23"></A>        Statement statement = mock(Statement.<FONT ID="Class">class</FONT>);
+<A NAME="24"></A>
+<A NAME="25"></A>        ResultSet res = mock(ResultSet.<FONT ID="Class">class</FONT>);
+<A NAME="26"></A>        doReturn(res).when(statement).executeQuery(<FONT ID="StringLiteral">"DESCRIBE mockedDatabase.tableName"</FONT>);
+<A NAME="27"></A>
+<A NAME="28"></A>        String[] row1 = <FONT ID="New">new</FONT> String[] {<FONT ID="StringLiteral">"tstamp"</FONT>, <FONT ID="StringLiteral">"bigint"</FONT> };
+<A NAME="29"></A>        String[] row2 = <FONT ID="New">new</FONT> String[] {<FONT ID="StringLiteral">"language"</FONT>, <FONT ID="StringLiteral">"string"</FONT>};
+<A NAME="30"></A>        String[] row3 = <FONT ID="New">new</FONT> String[] {<FONT ID="StringLiteral">"year"</FONT>, <FONT ID="StringLiteral">"int"</FONT>};
+<A NAME="31"></A>        String[] row4 = <FONT ID="New">new</FONT> String[] {<FONT ID="Null">null</FONT>, <FONT ID="Null">null</FONT>};
+<A NAME="32"></A>        String[] row5 = <FONT ID="New">new</FONT> String[] {<FONT ID="StringLiteral">"# Partition Information"</FONT>, <FONT ID="Null">null</FONT>};
+<A NAME="33"></A>        String[] row6 = <FONT ID="New">new</FONT> String[] {<FONT ID="StringLiteral">"# col_name"</FONT>, <FONT ID="StringLiteral">"data_type"</FONT>};
+<A NAME="34"></A>        String[] row7 = <FONT ID="New">new</FONT> String[] {<FONT ID="Null">null</FONT>, <FONT ID="Null">null</FONT>};
+<A NAME="35"></A>        String[] row8 = <FONT ID="New">new</FONT> String[] {<FONT ID="StringLiteral">"year"</FONT>, <FONT ID="StringLiteral">"int"</FONT>};
+<A NAME="36"></A>
+<A NAME="37"></A>        when(res.getString(<FONT ID="IntegerLiteral">1</FONT>)).thenReturn(row1[<FONT ID="IntegerLiteral">0</FONT>]).thenReturn(row2[<FONT ID="IntegerLiteral">0</FONT>]).thenReturn(row3[<FONT ID="IntegerLiteral">0</FONT>]).thenReturn(row4[<FONT ID="IntegerLiteral">0</FONT>]).thenReturn(row5[<FONT ID="IntegerLiteral">0</FONT>]).thenReturn(row6[<FONT ID="IntegerLiteral">0</FONT>]).thenReturn(row7[<FONT ID="IntegerLiteral">0</FONT>]).thenReturn(row8[<FONT ID="IntegerLiteral">0</FONT>]).thenReturn(row1[<FONT ID="IntegerLiteral">0</FONT>]);
+<A NAME="38"></A>        when(res.getString(<FONT ID="IntegerLiteral">2</FONT>)).thenReturn(row1[<FONT ID="IntegerLiteral">1</FONT>]).thenReturn(row2[<FONT ID="IntegerLiteral">1</FONT>]).thenReturn(row3[<FONT ID="IntegerLiteral">1</FONT>]).thenReturn(row4[<FONT ID="IntegerLiteral">1</FONT>]).thenReturn(row5[<FONT ID="IntegerLiteral">1</FONT>]).thenReturn(row6[<FONT ID="IntegerLiteral">1</FONT>]).thenReturn(row7[<FONT ID="IntegerLiteral">1</FONT>]).thenReturn(row8[<FONT ID="IntegerLiteral">1</FONT>]).thenReturn(row1[<FONT ID="IntegerLiteral">1</FONT>]);
+<A NAME="39"></A>        when(res.next()).thenReturn(<FONT ID="True">true</FONT>, <FONT ID="True">true</FONT>, <FONT ID="True">true</FONT>, <FONT ID="True">true</FONT>, <FONT ID="True">true</FONT>, <FONT ID="True">true</FONT>, <FONT ID="True">true</FONT>, <FONT ID="True">true</FONT>, <FONT ID="False">false</FONT>);
+<A NAME="40"></A>
+<A NAME="41"></A>        deployer.parseTableDefinition(columns, partColumns, <FONT ID="StringLiteral">"mockedDatabase"</FONT>, statement);
+<A NAME="42"></A>
+<A NAME="43"></A>        Assert.assertEquals(Lists.newArrayList(<FONT ID="StringLiteral">"tstamp bigint"</FONT>, <FONT ID="StringLiteral">"language string"</FONT>, <FONT ID="StringLiteral">"year int"</FONT>), columns);
+<A NAME="44"></A>        Assert.assertEquals(Lists.newArrayList(<FONT ID="StringLiteral">"year"</FONT>), partColumns);
+<A NAME="45"></A>    }
+<A NAME="46"></A>
+<A NAME="47"></A>    @Test
+<A NAME="48"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testHiveTableDeployerNoPartitions() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="49"></A>        <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/fixtures/deploy/hive/HiveTableDeployer.html">HiveTableDeployer</A> deployer = <FONT ID="New">new</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/fixtures/deploy/hive/HiveTableDeployer.html">HiveTableDeployer</A>(<FONT ID="Null">null</FONT>, <FONT ID="StringLiteral">"tableName"</FONT>, <FONT ID="Null">null</FONT>, <FONT ID="Null">null</FONT>);
+<A NAME="50"></A>        List&lt;String&gt; columns = Lists.newArrayList();
+<A NAME="51"></A>        List&lt;String&gt; partColumns = Lists.newArrayList();
+<A NAME="52"></A>        Statement statement = mock(Statement.<FONT ID="Class">class</FONT>);
+<A NAME="53"></A>
+<A NAME="54"></A>        ResultSet res = mock(ResultSet.<FONT ID="Class">class</FONT>);
+<A NAME="55"></A>        doReturn(res).when(statement).executeQuery(<FONT ID="StringLiteral">"DESCRIBE mockedDatabase.tableName"</FONT>);
+<A NAME="56"></A>
+<A NAME="57"></A>        String[] row1 = <FONT ID="New">new</FONT> String[] {<FONT ID="StringLiteral">"tstamp"</FONT>, <FONT ID="StringLiteral">"bigint"</FONT> };
+<A NAME="58"></A>        String[] row2 = <FONT ID="New">new</FONT> String[] {<FONT ID="StringLiteral">"language"</FONT>, <FONT ID="StringLiteral">"string"</FONT>};
+<A NAME="59"></A>        String[] row3 = <FONT ID="New">new</FONT> String[] {<FONT ID="StringLiteral">"year"</FONT>, <FONT ID="StringLiteral">"int"</FONT>};
+<A NAME="60"></A>
+<A NAME="61"></A>        when(res.getString(<FONT ID="IntegerLiteral">1</FONT>)).thenReturn(row1[<FONT ID="IntegerLiteral">0</FONT>]).thenReturn(row2[<FONT ID="IntegerLiteral">0</FONT>]).thenReturn(row3[<FONT ID="IntegerLiteral">0</FONT>]);
+<A NAME="62"></A>        when(res.getString(<FONT ID="IntegerLiteral">2</FONT>)).thenReturn(row1[<FONT ID="IntegerLiteral">1</FONT>]).thenReturn(row2[<FONT ID="IntegerLiteral">1</FONT>]).thenReturn(row3[<FONT ID="IntegerLiteral">1</FONT>]);
+<A NAME="63"></A>        when(res.next()).thenReturn(<FONT ID="True">true</FONT>, <FONT ID="True">true</FONT>, <FONT ID="True">true</FONT>, <FONT ID="False">false</FONT>);
+<A NAME="64"></A>
+<A NAME="65"></A>        deployer.parseTableDefinition(columns, partColumns, <FONT ID="StringLiteral">"mockedDatabase"</FONT>, statement);
+<A NAME="66"></A>
+<A NAME="67"></A>        Assert.assertEquals(Lists.newArrayList(<FONT ID="StringLiteral">"tstamp bigint"</FONT>, <FONT ID="StringLiteral">"language string"</FONT>, <FONT ID="StringLiteral">"year int"</FONT>), columns);
+<A NAME="68"></A>        Assert.assertTrue(partColumns.isEmpty());
+<A NAME="69"></A>    }
+<A NAME="70"></A>
+<A NAME="71"></A>}
+<A NAME="72"></A></pre>
+</BODY>
+</HTML>

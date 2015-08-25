@@ -1,0 +1,107 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.SlotStateTest (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">SlotStateTest.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> org.junit.Assert;
+<A NAME="4"></A><FONT ID="Import">import</FONT> org.junit.Test;
+<A NAME="5"></A>
+<A NAME="6"></A><FONT ID="Import">import</FONT> com.fasterxml.jackson.databind.ObjectMapper;
+<A NAME="7"></A><FONT ID="Import">import</FONT> com.fasterxml.jackson.databind.node.ObjectNode;
+<A NAME="8"></A>
+<A NAME="9"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> SlotStateTest {
+<A NAME="10"></A>    
+<A NAME="11"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> <A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A> id = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A>(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"foo"</FONT>), <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-12-04T19:18Z"</FONT>));
+<A NAME="12"></A>    
+<A NAME="13"></A>    @Test
+<A NAME="14"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> transitionsWorkAsExpected() {
+<A NAME="15"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> waiting = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(id, SlotState.Status.WAITING);
+<A NAME="16"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> ready = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(id, SlotState.Status.READY);
+<A NAME="17"></A>        Assert.assertEquals(ready, waiting.transitionToReady());
+<A NAME="18"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> waitTimeout = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(id, SlotState.Status.WAIT_TIMEOUT);
+<A NAME="19"></A>        Assert.assertEquals(waitTimeout, waiting.transitionToWaitTimeout());
+<A NAME="20"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> running = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(id, SlotState.Status.RUNNING, <FONT ID="StringLiteral">"external"</FONT>, <FONT ID="IntegerLiteral">0</FONT>);
+<A NAME="21"></A>        Assert.assertEquals(running, ready.transitionToRunning(<FONT ID="StringLiteral">"external"</FONT>));
+<A NAME="22"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> success = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(id, SlotState.Status.SUCCESS, <FONT ID="StringLiteral">"external"</FONT>, <FONT ID="IntegerLiteral">0</FONT>);
+<A NAME="23"></A>        Assert.assertEquals(success, running.transitionToSuccess());        
+<A NAME="24"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> failure = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(id, SlotState.Status.FAILURE, <FONT ID="StringLiteral">"external"</FONT>, <FONT ID="IntegerLiteral">0</FONT>);
+<A NAME="25"></A>        Assert.assertEquals(failure, running.transitionToFailure());        
+<A NAME="26"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> retry = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(id, SlotState.Status.WAITING, <FONT ID="Null">null</FONT>, <FONT ID="IntegerLiteral">1</FONT>);
+<A NAME="27"></A>        Assert.assertEquals(retry, running.transitionToRetry());        
+<A NAME="28"></A>    }
+<A NAME="29"></A>    
+<A NAME="30"></A>    @Test(expected = IllegalStateException.<FONT ID="Class">class</FONT>)
+<A NAME="31"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> rerunFailsAsExpectedForWaiting() {
+<A NAME="32"></A>        <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(id, SlotState.Status.WAITING).transitionToRerun();
+<A NAME="33"></A>    }
+<A NAME="34"></A>    
+<A NAME="35"></A>    @Test(expected = IllegalStateException.<FONT ID="Class">class</FONT>)
+<A NAME="36"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> rerunFailsAsExpectedForReady() {
+<A NAME="37"></A>        <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(id, SlotState.Status.READY).transitionToRerun();
+<A NAME="38"></A>    }
+<A NAME="39"></A>    
+<A NAME="40"></A>    @Test(expected = IllegalStateException.<FONT ID="Class">class</FONT>)
+<A NAME="41"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> rerunFailsAsExpectedForRunning() {
+<A NAME="42"></A>        <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(id, SlotState.Status.RUNNING).transitionToRerun();
+<A NAME="43"></A>    }
+<A NAME="44"></A>    
+<A NAME="45"></A>    @Test
+<A NAME="46"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> rerunWorksAsExpectedForSuccess() {
+<A NAME="47"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> success = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(id, SlotState.Status.SUCCESS, <FONT ID="StringLiteral">"external-ID"</FONT>, <FONT ID="IntegerLiteral">14</FONT>);
+<A NAME="48"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> expected = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(id, SlotState.Status.WAITING);
+<A NAME="49"></A>        Assert.assertEquals(expected, success.transitionToRerun());        
+<A NAME="50"></A>    }
+<A NAME="51"></A>    
+<A NAME="52"></A>    @Test
+<A NAME="53"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> rerunWorksAsExpectedForWaitTimeout() {
+<A NAME="54"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> waitTimeout = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(id, SlotState.Status.WAIT_TIMEOUT, <FONT ID="StringLiteral">"external-ID"</FONT>, <FONT ID="IntegerLiteral">14</FONT>);
+<A NAME="55"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> expected = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(id, SlotState.Status.WAITING);
+<A NAME="56"></A>        Assert.assertEquals(expected, waitTimeout.transitionToRerun());        
+<A NAME="57"></A>    }
+<A NAME="58"></A>
+<A NAME="59"></A>    @Test
+<A NAME="60"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> rerunWorksAsExpectedForFailure() {
+<A NAME="61"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> failure = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(id, SlotState.Status.FAILURE, <FONT ID="StringLiteral">"external-ID"</FONT>, <FONT ID="IntegerLiteral">14</FONT>);
+<A NAME="62"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> expected = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(id, SlotState.Status.WAITING);
+<A NAME="63"></A>        Assert.assertEquals(expected, failure.transitionToRerun());        
+<A NAME="64"></A>    }
+<A NAME="65"></A>    
+<A NAME="66"></A>    @Test
+<A NAME="67"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> slotStateGetScheduledTimeWorks() {
+<A NAME="68"></A>        <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> t = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-11-26T13:00Z"</FONT>);
+<A NAME="69"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> slotState = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A>(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"foo"</FONT>), t), SlotState.Status.READY);
+<A NAME="70"></A>        Assert.assertEquals(t, slotState.getScheduledTime());
+<A NAME="71"></A>    }
+<A NAME="72"></A>    
+<A NAME="73"></A>    @Test
+<A NAME="74"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> canRoundtripToJSON() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="75"></A>        ObjectMapper mapper = <FONT ID="New">new</FONT> ObjectMapper();
+<A NAME="76"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> state1 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(id, SlotState.Status.WAITING);
+<A NAME="77"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> state2 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(id, SlotState.Status.READY).transitionToRunning(<FONT ID="StringLiteral">"foo-external-ID"</FONT>);
+<A NAME="78"></A>        String json1 = <FONT ID="StringLiteral">"{\"time\":\"2013-12-04T19:18:00.000Z\",\"status\":\"WAITING\",\"externalID\":null,\"retryCount\":0}"</FONT>;
+<A NAME="79"></A>        String json2 = <FONT ID="StringLiteral">"{\"time\":\"2013-12-04T19:18:00.000Z\",\"status\":\"RUNNING\",\"externalID\":\"foo-external-ID\",\"retryCount\":0}"</FONT>;
+<A NAME="80"></A>
+<A NAME="81"></A>        Assert.assertEquals(json1, mapper.writeValueAsString(state1.toJSONNode()));
+<A NAME="82"></A>        Assert.assertEquals(json2, mapper.writeValueAsString(state2.toJSONNode()));
+<A NAME="83"></A>        Assert.assertEquals(state1, SlotState.fromJSONNode(id.getWorkflowID(), (ObjectNode) mapper.readTree(json1)));
+<A NAME="84"></A>        Assert.assertEquals(state2, SlotState.fromJSONNode(id.getWorkflowID(), (ObjectNode) mapper.readTree(json2)));
+<A NAME="85"></A>    }
+<A NAME="86"></A>
+<A NAME="87"></A>}
+<A NAME="88"></A></pre>
+</BODY>
+</HTML>

@@ -1,0 +1,93 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.Workflow (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">Workflow.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> Workflow {
+<A NAME="4"></A>
+<A NAME="5"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> DEFAULT_START_TIME = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"1970-01-01T00:00:00.000Z"</FONT>);
+<A NAME="6"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> <FONT ID="Int">int</FONT> DEFAULT_WAIT_TIMEOUT_SECONDS = Integer.MAX_VALUE;
+<A NAME="7"></A>    
+<A NAME="8"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A> id;
+<A NAME="9"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> <A HREF="../../../com/collective/celos/Schedule.java.html">Schedule</A> schedule;
+<A NAME="10"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> <A HREF="../../../com/collective/celos/SchedulingStrategy.java.html">SchedulingStrategy</A> schedulingStrategy;
+<A NAME="11"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> <A HREF="../../../com/collective/celos/Trigger.java.html">Trigger</A> trigger;
+<A NAME="12"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> <A HREF="../../../com/collective/celos/ExternalService.java.html">ExternalService</A> externalService;
+<A NAME="13"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> <FONT ID="Int">int</FONT> maxRetryCount;
+<A NAME="14"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> startTime;
+<A NAME="15"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> <FONT ID="Int">int</FONT> waitTimeoutSeconds;
+<A NAME="16"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> <A HREF="../../../com/collective/celos/WorkflowInfo.java.html">WorkflowInfo</A> workflowInfo;
+<A NAME="17"></A>    
+<A NAME="18"></A>    <FONT ID="Public">public</FONT> Workflow(<A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A> id,
+<A NAME="19"></A>                    <A HREF="../../../com/collective/celos/Schedule.java.html">Schedule</A> schedule,
+<A NAME="20"></A>                    <A HREF="../../../com/collective/celos/SchedulingStrategy.java.html">SchedulingStrategy</A> strategy,
+<A NAME="21"></A>                    <A HREF="../../../com/collective/celos/Trigger.java.html">Trigger</A> trigger,
+<A NAME="22"></A>                    <A HREF="../../../com/collective/celos/ExternalService.java.html">ExternalService</A> service,
+<A NAME="23"></A>                    <FONT ID="Int">int</FONT> maxRetryCount,
+<A NAME="24"></A>                    <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> startTime,
+<A NAME="25"></A>                    <FONT ID="Int">int</FONT> waitTimeoutSeconds,
+<A NAME="26"></A>                    <A HREF="../../../com/collective/celos/WorkflowInfo.java.html">WorkflowInfo</A> workflowInfo) {
+<A NAME="27"></A>        <FONT ID="This">this</FONT>.id = Util.requireNonNull(id);
+<A NAME="28"></A>        <FONT ID="This">this</FONT>.schedule = Util.requireNonNull(schedule);
+<A NAME="29"></A>        <FONT ID="This">this</FONT>.schedulingStrategy = Util.requireNonNull(strategy);
+<A NAME="30"></A>        <FONT ID="This">this</FONT>.trigger = Util.requireNonNull(trigger);
+<A NAME="31"></A>        <FONT ID="This">this</FONT>.externalService = Util.requireNonNull(service);
+<A NAME="32"></A>        <FONT ID="This">this</FONT>.maxRetryCount = maxRetryCount;
+<A NAME="33"></A>        <FONT ID="This">this</FONT>.startTime = Util.requireNonNull(startTime);
+<A NAME="34"></A>        <FONT ID="This">this</FONT>.workflowInfo = Util.requireNonNull(workflowInfo);
+<A NAME="35"></A>        <FONT ID="This">this</FONT>.waitTimeoutSeconds = waitTimeoutSeconds;
+<A NAME="36"></A>    }
+<A NAME="37"></A>
+<A NAME="38"></A>    <FONT ID="Public">public</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A> getID() {
+<A NAME="39"></A>        <FONT ID="Return">return</FONT> id;
+<A NAME="40"></A>    }
+<A NAME="41"></A>
+<A NAME="42"></A>    <FONT ID="Public">public</FONT> <A HREF="../../../com/collective/celos/Schedule.java.html">Schedule</A> getSchedule() {
+<A NAME="43"></A>        <FONT ID="Return">return</FONT> schedule;
+<A NAME="44"></A>    }
+<A NAME="45"></A>
+<A NAME="46"></A>    <FONT ID="Public">public</FONT> <A HREF="../../../com/collective/celos/SchedulingStrategy.java.html">SchedulingStrategy</A> getSchedulingStrategy() {
+<A NAME="47"></A>        <FONT ID="Return">return</FONT> schedulingStrategy;
+<A NAME="48"></A>    }
+<A NAME="49"></A>
+<A NAME="50"></A>    <FONT ID="Public">public</FONT> <A HREF="../../../com/collective/celos/Trigger.java.html">Trigger</A> getTrigger() {
+<A NAME="51"></A>        <FONT ID="Return">return</FONT> trigger;
+<A NAME="52"></A>    }
+<A NAME="53"></A>    
+<A NAME="54"></A>    <FONT ID="Public">public</FONT> <A HREF="../../../com/collective/celos/ExternalService.java.html">ExternalService</A> getExternalService() {
+<A NAME="55"></A>        <FONT ID="Return">return</FONT> externalService;
+<A NAME="56"></A>    }
+<A NAME="57"></A>
+<A NAME="58"></A>    <FONT ID="Public">public</FONT> <FONT ID="Int">int</FONT> getMaxRetryCount() {
+<A NAME="59"></A>        <FONT ID="Return">return</FONT> maxRetryCount;
+<A NAME="60"></A>    }
+<A NAME="61"></A>
+<A NAME="62"></A>    <FONT ID="Public">public</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> getStartTime() {
+<A NAME="63"></A>        <FONT ID="Return">return</FONT> startTime;
+<A NAME="64"></A>    }
+<A NAME="65"></A>
+<A NAME="66"></A>    <FONT ID="Public">public</FONT> <A HREF="../../../com/collective/celos/WorkflowInfo.java.html">WorkflowInfo</A> getWorkflowInfo() {
+<A NAME="67"></A>        <FONT ID="Return">return</FONT> workflowInfo;
+<A NAME="68"></A>    }
+<A NAME="69"></A>
+<A NAME="70"></A>    <FONT ID="Public">public</FONT> <FONT ID="Int">int</FONT> getWaitTimeoutSeconds() {
+<A NAME="71"></A>        <FONT ID="Return">return</FONT> waitTimeoutSeconds;
+<A NAME="72"></A>    }
+<A NAME="73"></A>}
+<A NAME="74"></A></pre>
+</BODY>
+</HTML>

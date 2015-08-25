@@ -1,0 +1,57 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.DelayTrigger (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">DelayTrigger.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> org.joda.time.DateTime;
+<A NAME="4"></A>
+<A NAME="5"></A><FONT ID="FormalComment">/**
+<A NAME="6"></A> * A trigger that signals data availability for a given scheduled time
+<A NAME="7"></A> * only if it is a configurable number of seconds past the current time.
+<A NAME="8"></A> * 
+<A NAME="9"></A> * In combination with an AND trigger, this allows to delay the firing
+<A NAME="10"></A> * of another trigger, for example to clean up data after a day.
+<A NAME="11"></A> * 
+<A NAME="12"></A> * The following example shows a trigger that only fires if the given
+<A NAME="13"></A> * HDFS path is available, and the current time is one day after 
+<A NAME="14"></A> * the workflow's scheduled time.
+<A NAME="15"></A> * 
+<A NAME="16"></A> * var oneDay = 60 * 60 * 24;
+<A NAME="17"></A> * andTrigger(delayTrigger(oneDay), hdfsCheckTrigger("/${year}/${month}/${day}/..."))
+<A NAME="18"></A>*/</FONT>
+<A NAME="19"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> DelayTrigger <FONT ID="Implements">implements</FONT> <A HREF="../../../com/collective/celos/Trigger.java.html">Trigger</A> {
+<A NAME="20"></A>
+<A NAME="21"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> <FONT ID="Int">int</FONT> seconds;
+<A NAME="22"></A>    
+<A NAME="23"></A>    <FONT ID="Public">public</FONT> DelayTrigger(<FONT ID="Int">int</FONT> seconds) <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="24"></A>        <FONT ID="This">this</FONT>.seconds = seconds;
+<A NAME="25"></A>    }
+<A NAME="26"></A>    
+<A NAME="27"></A>    <FONT ID="Public">public</FONT> <FONT ID="Boolean">boolean</FONT> isDataAvailable(<A HREF="../../../com/collective/celos/Scheduler.java.html">Scheduler</A> scheduler, <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> now, <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> t) <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="28"></A>        DateTime nowDT = now.getDateTime();
+<A NAME="29"></A>        DateTime waitUntilDT = t.getDateTime().plusSeconds(getSeconds());
+<A NAME="30"></A>        <FONT ID="Return">return</FONT> nowDT.isAfter(waitUntilDT);
+<A NAME="31"></A>    }
+<A NAME="32"></A>
+<A NAME="33"></A>    <FONT ID="Public">public</FONT> <FONT ID="Int">int</FONT> getSeconds() {
+<A NAME="34"></A>        <FONT ID="Return">return</FONT> seconds;
+<A NAME="35"></A>    }
+<A NAME="36"></A>
+<A NAME="37"></A>}
+<A NAME="38"></A></pre>
+</BODY>
+</HTML>

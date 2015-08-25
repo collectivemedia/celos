@@ -1,0 +1,58 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.CelosWorkflowConfigurationParserTest (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">CelosWorkflowConfigurationParserTest.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> com.google.common.collect.ImmutableMap;
+<A NAME="4"></A><FONT ID="Import">import</FONT> org.junit.Assert;
+<A NAME="5"></A><FONT ID="Import">import</FONT> org.junit.Test;
+<A NAME="6"></A><FONT ID="Import">import</FONT> org.mozilla.javascript.NativeJavaObject;
+<A NAME="7"></A>
+<A NAME="8"></A><FONT ID="Import">import</FONT> java.io.File;
+<A NAME="9"></A><FONT ID="Import">import</FONT> java.io.StringReader;
+<A NAME="10"></A><FONT ID="Import">import</FONT> java.net.URL;
+<A NAME="11"></A>
+<A NAME="12"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> CelosWorkflowConfigurationParserTest {
+<A NAME="13"></A>
+<A NAME="14"></A>    @Test
+<A NAME="15"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testTakesChangesUsername() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="16"></A>
+<A NAME="17"></A>        URL resource = Thread.currentThread().getContextClassLoader().getResource(<FONT ID="StringLiteral">"com/collective/celos/defaults-oozie-props"</FONT>);
+<A NAME="18"></A>        File defaults = <FONT ID="New">new</FONT> File(resource.toURI());
+<A NAME="19"></A>
+<A NAME="20"></A>        <A HREF="../../../com/collective/celos/WorkflowConfigurationParser.java.html">WorkflowConfigurationParser</A> parser = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowConfigurationParser.java.html">WorkflowConfigurationParser</A>(defaults, ImmutableMap.of(<FONT ID="StringLiteral">"CELOS_USER_JS_VAR"</FONT>, <FONT ID="StringLiteral">"nameIsChanged"</FONT>));
+<A NAME="21"></A>
+<A NAME="22"></A>        String func = <FONT ID="StringLiteral">"function (slotId) {"</FONT> +
+<A NAME="23"></A>                <FONT ID="StringLiteral">"        return {"</FONT> +
+<A NAME="24"></A>                <FONT ID="StringLiteral">"            \"oozie.wf.application.path\": \"/workflow.xml\","</FONT> +
+<A NAME="25"></A>                <FONT ID="StringLiteral">"            \"inputDir\": \"/input\","</FONT> +
+<A NAME="26"></A>                <FONT ID="StringLiteral">"            \"outputDir\": \"/output\""</FONT> +
+<A NAME="27"></A>                <FONT ID="StringLiteral">"        }"</FONT> +
+<A NAME="28"></A>                <FONT ID="StringLiteral">"    }"</FONT>;
+<A NAME="29"></A>
+<A NAME="30"></A>        String str = <FONT ID="StringLiteral">"importDefaults(\"test\"); celos.makePropertiesGen("</FONT> + func + <FONT ID="StringLiteral">"); "</FONT>;
+<A NAME="31"></A>        NativeJavaObject jsResult = (NativeJavaObject) parser.evaluateReader(<FONT ID="New">new</FONT> StringReader(str), <FONT ID="StringLiteral">"string"</FONT>);
+<A NAME="32"></A>        <A HREF="../../../com/collective/celos/PropertiesGenerator.java.html">PropertiesGenerator</A> generator = (<A HREF="../../../com/collective/celos/PropertiesGenerator.java.html">PropertiesGenerator</A>) jsResult.unwrap();
+<A NAME="33"></A>        Assert.assertEquals(generator.getProperties(<FONT ID="Null">null</FONT>).get(<FONT ID="StringLiteral">"user.name"</FONT>).asText(), <FONT ID="StringLiteral">"nameIsChanged"</FONT>);
+<A NAME="34"></A>    }
+<A NAME="35"></A>
+<A NAME="36"></A>
+<A NAME="37"></A>
+<A NAME="38"></A>}
+<A NAME="39"></A></pre>
+</BODY>
+</HTML>

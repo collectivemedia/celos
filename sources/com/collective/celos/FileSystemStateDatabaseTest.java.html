@@ -1,0 +1,155 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.FileSystemStateDatabaseTest (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">FileSystemStateDatabaseTest.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> java.io.File;
+<A NAME="4"></A><FONT ID="Import">import</FONT> java.io.IOException;
+<A NAME="5"></A><FONT ID="Import">import</FONT> java.net.URISyntaxException;
+<A NAME="6"></A><FONT ID="Import">import</FONT> java.util.HashSet;
+<A NAME="7"></A><FONT ID="Import">import</FONT> java.util.Set;
+<A NAME="8"></A>
+<A NAME="9"></A><FONT ID="Import">import</FONT> junit.framework.Assert;
+<A NAME="10"></A>
+<A NAME="11"></A><FONT ID="Import">import</FONT> org.apache.commons.io.IOUtils;
+<A NAME="12"></A><FONT ID="Import">import</FONT> org.junit.Rule;
+<A NAME="13"></A><FONT ID="Import">import</FONT> org.junit.Test;
+<A NAME="14"></A><FONT ID="Import">import</FONT> org.junit.rules.TemporaryFolder;
+<A NAME="15"></A>
+<A NAME="16"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> FileSystemStateDatabaseTest {
+<A NAME="17"></A>
+<A NAME="18"></A>    @Rule
+<A NAME="19"></A>    <FONT ID="Public">public</FONT> TemporaryFolder tempFolder = <FONT ID="New">new</FONT> TemporaryFolder();
+<A NAME="20"></A>    
+<A NAME="21"></A>    @Test(expected=IOException.<FONT ID="Class">class</FONT>)
+<A NAME="22"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> directoryMustExist() <FONT ID="Throws">throws</FONT> IOException {
+<A NAME="23"></A>        File dir = getDatabaseDir();
+<A NAME="24"></A>        <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/FileSystemStateDatabase.java.html">FileSystemStateDatabase</A>(dir);
+<A NAME="25"></A>    }
+<A NAME="26"></A>
+<A NAME="27"></A>    @Test
+<A NAME="28"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> emptyDatabaseReturnsNull() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="29"></A>        <A HREF="../../../com/collective/celos/StateDatabase.java.html">StateDatabase</A> db = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/FileSystemStateDatabase.java.html">FileSystemStateDatabase</A>(makeDatabaseDir());
+<A NAME="30"></A>        Assert.assertNull(db.getSlotState(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A>(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"workflow-1"</FONT>), <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-12-02T13:37Z"</FONT>))));
+<A NAME="31"></A>    }
+<A NAME="32"></A>
+<A NAME="33"></A>    <FONT ID="Private">private</FONT> File makeDatabaseDir() {
+<A NAME="34"></A>        File dir = getDatabaseDir();
+<A NAME="35"></A>        dir.mkdir();
+<A NAME="36"></A>        <FONT ID="Return">return</FONT> dir;
+<A NAME="37"></A>    }
+<A NAME="38"></A>
+<A NAME="39"></A>    <FONT ID="Private">private</FONT> File getDatabaseDir() {
+<A NAME="40"></A>        <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> File(tempFolder.getRoot(), <FONT ID="StringLiteral">"db"</FONT>);
+<A NAME="41"></A>    }
+<A NAME="42"></A>    
+<A NAME="43"></A>    <FONT ID="FormalComment">/**
+<A NAME="44"></A>     * Compare slot states returned by getStates against those under src/test/resources.
+<A NAME="45"></A>     */</FONT>
+<A NAME="46"></A>    @Test
+<A NAME="47"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> canReadFromFileSystem1() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="48"></A>        <A HREF="../../../com/collective/celos/StateDatabase.java.html">StateDatabase</A> db = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/FileSystemStateDatabase.java.html">FileSystemStateDatabase</A>(getResourceDirNoTimestamp());
+<A NAME="49"></A>        <FONT ID="For">for</FONT>(<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> state : getStates()) {
+<A NAME="50"></A>            Assert.assertEquals(state, db.getSlotState(state.getSlotID()));
+<A NAME="51"></A>        }
+<A NAME="52"></A>    }
+<A NAME="53"></A>
+<A NAME="54"></A>    <FONT ID="FormalComment">/**
+<A NAME="55"></A>     * Compare slot states returned by getStates against those under src/test/resources.
+<A NAME="56"></A>     */</FONT>
+<A NAME="57"></A>    @Test
+<A NAME="58"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> canReadFromFileSystem2() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="59"></A>        <A HREF="../../../com/collective/celos/StateDatabase.java.html">StateDatabase</A> db = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/FileSystemStateDatabase.java.html">FileSystemStateDatabase</A>(getResourceDir());
+<A NAME="60"></A>        <FONT ID="For">for</FONT>(<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> state : getStates()) {
+<A NAME="61"></A>            Assert.assertEquals(state, db.getSlotState(state.getSlotID()));
+<A NAME="62"></A>        }
+<A NAME="63"></A>    }
+<A NAME="64"></A>
+<A NAME="65"></A>    <FONT ID="FormalComment">/**
+<A NAME="66"></A>     * Write slot states returned by getStates to file system and diff
+<A NAME="67"></A>     * the temporary dir against the src/test/resources one.
+<A NAME="68"></A>     */</FONT>
+<A NAME="69"></A>    @Test
+<A NAME="70"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> canWriteToFileSystem() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="71"></A>        <A HREF="../../../com/collective/celos/StateDatabase.java.html">StateDatabase</A> db = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/FileSystemStateDatabase.java.html">FileSystemStateDatabase</A>(makeDatabaseDir());
+<A NAME="72"></A>        <FONT ID="For">for</FONT>(<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> state : getStates()) {
+<A NAME="73"></A>            db.putSlotState(state);
+<A NAME="74"></A>        }
+<A NAME="75"></A>        <FONT ID="If">if</FONT> (diff(getDatabaseDir(), getResourceDir())) {
+<A NAME="76"></A>            <FONT ID="Throw">throw</FONT> <FONT ID="New">new</FONT> AssertionError(<FONT ID="StringLiteral">"Database differs from resource database."</FONT>);
+<A NAME="77"></A>        }
+<A NAME="78"></A>    }
+<A NAME="79"></A>
+<A NAME="80"></A>    <FONT ID="FormalComment">/**
+<A NAME="81"></A>     * Returns true if diff reports a difference between the two files/dirs.
+<A NAME="82"></A>     */</FONT>
+<A NAME="83"></A>    <FONT ID="Private">private</FONT> <FONT ID="Boolean">boolean</FONT> diff(File a, File b) <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="84"></A>        Process diff = <FONT ID="New">new</FONT> ProcessBuilder(<FONT ID="StringLiteral">"diff"</FONT>, <FONT ID="StringLiteral">"-r"</FONT>, a.getAbsolutePath(), b.getAbsolutePath()).start();
+<A NAME="85"></A>        <FONT ID="Int">int</FONT> exitValue = diff.waitFor();
+<A NAME="86"></A>        <FONT ID="If">if</FONT> (exitValue != <FONT ID="IntegerLiteral">0</FONT>) {
+<A NAME="87"></A>            String diffOut = IOUtils.toString(diff.getInputStream(), <FONT ID="StringLiteral">"UTF-8"</FONT>);
+<A NAME="88"></A>            System.err.print(diffOut);
+<A NAME="89"></A>        }
+<A NAME="90"></A>        <FONT ID="Return">return</FONT> (exitValue != <FONT ID="IntegerLiteral">0</FONT>);
+<A NAME="91"></A>    }
+<A NAME="92"></A>
+<A NAME="93"></A>    <FONT ID="FormalComment">/**
+<A NAME="94"></A>     * Returns dir of prepared database in src/test/resources (old format without timestamp)
+<A NAME="95"></A>     */</FONT>
+<A NAME="96"></A>    <FONT ID="Private">private</FONT> File getResourceDirNoTimestamp() <FONT ID="Throws">throws</FONT> URISyntaxException {
+<A NAME="97"></A>        String path = <FONT ID="StringLiteral">"com/collective/celos/state-database-test/db-1-old"</FONT>;
+<A NAME="98"></A>        <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> File(Thread.currentThread().getContextClassLoader().getResource(path).toURI());
+<A NAME="99"></A>    }
+<A NAME="100"></A>
+<A NAME="101"></A>    <FONT ID="FormalComment">/**
+<A NAME="102"></A>     * Returns dir of prepared database in src/test/resources
+<A NAME="103"></A>     */</FONT>
+<A NAME="104"></A>    <FONT ID="Private">private</FONT> File getResourceDir() <FONT ID="Throws">throws</FONT> URISyntaxException {
+<A NAME="105"></A>        String path = <FONT ID="StringLiteral">"com/collective/celos/state-database-test/db-1"</FONT>;
+<A NAME="106"></A>        <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> File(Thread.currentThread().getContextClassLoader().getResource(path).toURI());
+<A NAME="107"></A>    }
+<A NAME="108"></A>
+<A NAME="109"></A>    <FONT ID="FormalComment">/**
+<A NAME="110"></A>     * Create a bunch of slot states that mirror those under
+<A NAME="111"></A>     * src/test/resources/com/collective/celos/state-database-test/db-1
+<A NAME="112"></A>     */</FONT>
+<A NAME="113"></A>    <FONT ID="Private">private</FONT> Set&lt;<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>&gt; getStates() {
+<A NAME="114"></A>        Set&lt;<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>&gt; states = <FONT ID="New">new</FONT> HashSet&lt;<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>&gt;();
+<A NAME="115"></A>        <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A> wf1 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"workflow-1"</FONT>);
+<A NAME="116"></A>        <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A> wf2 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"workflow-2"</FONT>);
+<A NAME="117"></A>        
+<A NAME="118"></A>        states.add(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A>(wf1, <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-12-02T17:00Z"</FONT>)),
+<A NAME="119"></A>                SlotState.Status.WAITING));
+<A NAME="120"></A>        states.add(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A>(wf1, <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-12-02T18:00Z"</FONT>)),
+<A NAME="121"></A>                SlotState.Status.READY, <FONT ID="Null">null</FONT>, <FONT ID="IntegerLiteral">14</FONT>));
+<A NAME="122"></A>        states.add(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A>(wf1, <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-12-02T19:00Z"</FONT>)),
+<A NAME="123"></A>                SlotState.Status.READY).transitionToRunning(<FONT ID="StringLiteral">"foo-bar"</FONT>));
+<A NAME="124"></A>
+<A NAME="125"></A>        states.add(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A>(wf2, <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-12-02T17:00Z"</FONT>)),
+<A NAME="126"></A>                SlotState.Status.WAITING));
+<A NAME="127"></A>        states.add(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A>(wf2, <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-12-02T18:00Z"</FONT>)),
+<A NAME="128"></A>                SlotState.Status.READY));
+<A NAME="129"></A>        states.add(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A>(wf2, <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-12-02T19:00Z"</FONT>)),
+<A NAME="130"></A>                SlotState.Status.READY, <FONT ID="Null">null</FONT>, <FONT ID="IntegerLiteral">2</FONT>).transitionToRunning(<FONT ID="StringLiteral">"quux"</FONT>));
+<A NAME="131"></A>        
+<A NAME="132"></A>        <FONT ID="Return">return</FONT> states;
+<A NAME="133"></A>    }
+<A NAME="134"></A>    
+<A NAME="135"></A>}
+<A NAME="136"></A></pre>
+</BODY>
+</HTML>

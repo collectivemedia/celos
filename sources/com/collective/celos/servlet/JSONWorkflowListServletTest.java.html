@@ -1,0 +1,47 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.servlet.JSONWorkflowListServletTest (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">JSONWorkflowListServletTest.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos.servlet;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> org.junit.Assert;
+<A NAME="4"></A><FONT ID="Import">import</FONT> org.junit.Test;
+<A NAME="5"></A>
+<A NAME="6"></A><FONT ID="Import">import</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/WorkflowConfiguration.html">com.collective.celos.WorkflowConfiguration</A>;
+<A NAME="7"></A><FONT ID="Import">import</FONT> <A HREF="../../../../com/collective/celos/WorkflowConfigurationParserTest.java.html">com.collective.celos.WorkflowConfigurationParserTest</A>;
+<A NAME="8"></A><FONT ID="Import">import</FONT> com.fasterxml.jackson.databind.ObjectMapper;
+<A NAME="9"></A><FONT ID="Import">import</FONT> com.fasterxml.jackson.databind.node.ArrayNode;
+<A NAME="10"></A><FONT ID="Import">import</FONT> com.fasterxml.jackson.databind.node.ObjectNode;
+<A NAME="11"></A>
+<A NAME="12"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> JSONWorkflowListServletTest {
+<A NAME="13"></A>
+<A NAME="14"></A>    @Test
+<A NAME="15"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> jsonCorrectlyProduced() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="16"></A>        <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/WorkflowConfiguration.html">WorkflowConfiguration</A> cfg =
+<A NAME="17"></A>                WorkflowConfigurationParserTest.parseDir(<FONT ID="StringLiteral">"json-workflow-list-servlet-test"</FONT>);
+<A NAME="18"></A>        ObjectMapper mapper = <FONT ID="New">new</FONT> ObjectMapper();
+<A NAME="19"></A>        ArrayNode list = mapper.createArrayNode();
+<A NAME="20"></A>        list.add(<FONT ID="New">new</FONT> String(<FONT ID="StringLiteral">"workflow-1"</FONT>));
+<A NAME="21"></A>        list.add(<FONT ID="New">new</FONT> String(<FONT ID="StringLiteral">"workflow-2"</FONT>));
+<A NAME="22"></A>        ObjectNode obj = mapper.createObjectNode();
+<A NAME="23"></A>        obj.put(<FONT ID="StringLiteral">"ids"</FONT>, list);
+<A NAME="24"></A>        Assert.assertEquals(obj, <FONT ID="New">new</FONT> <A HREF="../../../../com/collective/celos/servlet/JSONWorkflowListServlet.java.html">JSONWorkflowListServlet</A>().createJSONObject(cfg));
+<A NAME="25"></A>    }
+<A NAME="26"></A>    
+<A NAME="27"></A>}
+<A NAME="28"></A></pre>
+</BODY>
+</HTML>

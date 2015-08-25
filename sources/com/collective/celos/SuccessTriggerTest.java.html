@@ -1,0 +1,105 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.SuccessTriggerTest (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">SuccessTriggerTest.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> org.joda.time.DateTime;
+<A NAME="4"></A><FONT ID="Import">import</FONT> org.joda.time.DateTimeZone;
+<A NAME="5"></A><FONT ID="Import">import</FONT> org.junit.Assert;
+<A NAME="6"></A><FONT ID="Import">import</FONT> org.junit.Test;
+<A NAME="7"></A><FONT ID="Import">import</FONT> org.mockito.Mockito;
+<A NAME="8"></A>
+<A NAME="9"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> SuccessTriggerTest {
+<A NAME="10"></A>
+<A NAME="11"></A>    @Test(expected=NullPointerException.<FONT ID="Class">class</FONT>)
+<A NAME="12"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testRequiresWorkflow() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="13"></A>        <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SuccessTrigger.java.html">SuccessTrigger</A>(<FONT ID="Null">null</FONT>);
+<A NAME="14"></A>    }
+<A NAME="15"></A>
+<A NAME="16"></A>    @Test
+<A NAME="17"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testSucessfullyCreates() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="18"></A>        <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SuccessTrigger.java.html">SuccessTrigger</A>(<FONT ID="StringLiteral">"foo"</FONT>);
+<A NAME="19"></A>    }
+<A NAME="20"></A>    
+<A NAME="21"></A>    @Test
+<A NAME="22"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testUsesWorkflowProvided() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="23"></A>        Assert.assertEquals(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"foo"</FONT>), <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SuccessTrigger.java.html">SuccessTrigger</A>(<FONT ID="StringLiteral">"foo"</FONT>).getTriggerWorkflowId());
+<A NAME="24"></A>    }
+<A NAME="25"></A>
+<A NAME="26"></A>    @Test(expected = IllegalArgumentException.<FONT ID="Class">class</FONT>)
+<A NAME="27"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testFailIsDataAvailableInternalTrigger() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="28"></A>        <A HREF="../../../com/collective/celos/SuccessTrigger.java.html">SuccessTrigger</A> trigger = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SuccessTrigger.java.html">SuccessTrigger</A>(<FONT ID="StringLiteral">"foo"</FONT>);
+<A NAME="29"></A>        <A HREF="../../../com/collective/celos/Scheduler.java.html">Scheduler</A> s = Mockito.mock(<A HREF="../../../com/collective/celos/Scheduler.java.html">Scheduler</A>.<FONT ID="Class">class</FONT>);
+<A NAME="30"></A>
+<A NAME="31"></A>        trigger.isDataAvailable(s, <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(DateTime.now()), <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(DateTime.now()));
+<A NAME="32"></A>    }
+<A NAME="33"></A>
+<A NAME="34"></A>    @Test
+<A NAME="35"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testIsDataAvailableSuccess() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="36"></A>        <A HREF="../../../com/collective/celos/SuccessTrigger.java.html">SuccessTrigger</A> trigger = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SuccessTrigger.java.html">SuccessTrigger</A>(<FONT ID="StringLiteral">"foo"</FONT>);
+<A NAME="37"></A>
+<A NAME="38"></A>        <A HREF="../../../com/collective/celos/Scheduler.java.html">Scheduler</A> s = Mockito.mock(<A HREF="../../../com/collective/celos/Scheduler.java.html">Scheduler</A>.<FONT ID="Class">class</FONT>);
+<A NAME="39"></A>        <A HREF="../../../com/collective/celos/MemoryStateDatabase.java.html">MemoryStateDatabase</A> msd = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/MemoryStateDatabase.java.html">MemoryStateDatabase</A>();
+<A NAME="40"></A>
+<A NAME="41"></A>        <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> scheduledTime = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(DateTime.now(DateTimeZone.UTC));
+<A NAME="42"></A>        <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> stNow = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(DateTime.now(DateTimeZone.UTC).plusMinutes(<FONT ID="IntegerLiteral">30</FONT>));
+<A NAME="43"></A>
+<A NAME="44"></A>        msd.putSlotState(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A>(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"foo"</FONT>), scheduledTime), SlotState.Status.SUCCESS));
+<A NAME="45"></A>
+<A NAME="46"></A>        Mockito.when(s.getStateDatabase()).thenReturn(msd);
+<A NAME="47"></A>
+<A NAME="48"></A>        Assert.assertTrue(trigger.isDataAvailable(s, stNow, scheduledTime));
+<A NAME="49"></A>    }
+<A NAME="50"></A>
+<A NAME="51"></A>    @Test
+<A NAME="52"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testIsDataAvailableWait() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="53"></A>        <A HREF="../../../com/collective/celos/SuccessTrigger.java.html">SuccessTrigger</A> trigger = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SuccessTrigger.java.html">SuccessTrigger</A>(<FONT ID="StringLiteral">"foo"</FONT>);
+<A NAME="54"></A>
+<A NAME="55"></A>        <A HREF="../../../com/collective/celos/Scheduler.java.html">Scheduler</A> s = Mockito.mock(<A HREF="../../../com/collective/celos/Scheduler.java.html">Scheduler</A>.<FONT ID="Class">class</FONT>);
+<A NAME="56"></A>        <A HREF="../../../com/collective/celos/MemoryStateDatabase.java.html">MemoryStateDatabase</A> msd = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/MemoryStateDatabase.java.html">MemoryStateDatabase</A>();
+<A NAME="57"></A>
+<A NAME="58"></A>        <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> scheduledTime = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(DateTime.now(DateTimeZone.UTC));
+<A NAME="59"></A>        <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> stNow = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(DateTime.now(DateTimeZone.UTC).plusMinutes(<FONT ID="IntegerLiteral">30</FONT>));
+<A NAME="60"></A>
+<A NAME="61"></A>        msd.putSlotState(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A>(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"foo"</FONT>), scheduledTime), SlotState.Status.WAITING));
+<A NAME="62"></A>
+<A NAME="63"></A>        Mockito.when(s.getStateDatabase()).thenReturn(msd);
+<A NAME="64"></A>
+<A NAME="65"></A>        Assert.assertFalse(trigger.isDataAvailable(s, stNow, scheduledTime));
+<A NAME="66"></A>    }
+<A NAME="67"></A>
+<A NAME="68"></A>    @Test
+<A NAME="69"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testIsDataAvailableNoData() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="70"></A>        <A HREF="../../../com/collective/celos/SuccessTrigger.java.html">SuccessTrigger</A> trigger = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SuccessTrigger.java.html">SuccessTrigger</A>(<FONT ID="StringLiteral">"foo"</FONT>);
+<A NAME="71"></A>
+<A NAME="72"></A>        <A HREF="../../../com/collective/celos/Scheduler.java.html">Scheduler</A> s = Mockito.mock(<A HREF="../../../com/collective/celos/Scheduler.java.html">Scheduler</A>.<FONT ID="Class">class</FONT>);
+<A NAME="73"></A>        <A HREF="../../../com/collective/celos/MemoryStateDatabase.java.html">MemoryStateDatabase</A> msd = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/MemoryStateDatabase.java.html">MemoryStateDatabase</A>();
+<A NAME="74"></A>
+<A NAME="75"></A>        <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> scheduledTime = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(DateTime.now(DateTimeZone.UTC));
+<A NAME="76"></A>        <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> stNow = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(DateTime.now(DateTimeZone.UTC).plusMinutes(<FONT ID="IntegerLiteral">30</FONT>));
+<A NAME="77"></A>
+<A NAME="78"></A>        msd.putSlotState(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A>(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"foo2"</FONT>), stNow), SlotState.Status.SUCCESS));
+<A NAME="79"></A>
+<A NAME="80"></A>        Mockito.when(s.getStateDatabase()).thenReturn(msd);
+<A NAME="81"></A>
+<A NAME="82"></A>        Assert.assertFalse(trigger.isDataAvailable(s, stNow, scheduledTime));
+<A NAME="83"></A>    }
+<A NAME="84"></A>
+<A NAME="85"></A>}
+<A NAME="86"></A></pre>
+</BODY>
+</HTML>

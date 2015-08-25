@@ -1,0 +1,66 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../../../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.ci.testing.fixtures.convert.FixTableToTSVFileConverterTest (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">FixTableToTSVFileConverterTest.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos.ci.testing.fixtures.convert;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> java.util.List;
+<A NAME="4"></A><FONT ID="Import">import</FONT> java.util.Map;
+<A NAME="5"></A>
+<A NAME="6"></A><FONT ID="Import">import</FONT> junit.framework.Assert;
+<A NAME="7"></A>
+<A NAME="8"></A><FONT ID="Import">import</FONT> org.apache.commons.io.IOUtils;
+<A NAME="9"></A><FONT ID="Import">import</FONT> org.junit.Test;
+<A NAME="10"></A>
+<A NAME="11"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFile.java.html">com.collective.celos.ci.testing.structure.fixobject.FixFile</A>;
+<A NAME="12"></A><FONT ID="Import">import</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">com.collective.celos.ci.testing.structure.fixobject.FixTable</A>;
+<A NAME="13"></A><FONT ID="Import">import</FONT> com.google.common.collect.Lists;
+<A NAME="14"></A><FONT ID="Import">import</FONT> com.google.common.collect.Maps;
+<A NAME="15"></A>
+<A NAME="16"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> FixTableToTSVFileConverterTest {
+<A NAME="17"></A>
+<A NAME="18"></A>    @Test
+<A NAME="19"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testFixTableToJsonFileConverter() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="20"></A>        <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/fixtures/convert/FixTableToTSVFileConverter.html">FixTableToTSVFileConverter</A> converter = <FONT ID="New">new</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/fixtures/convert/FixTableToTSVFileConverter.html">FixTableToTSVFileConverter</A>();
+<A NAME="21"></A>        List&lt;<A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable.FixRow</A>&gt; fixRows = Lists.newArrayList();
+<A NAME="22"></A>
+<A NAME="23"></A>        Map&lt;String, String&gt; map = Maps.newHashMap();
+<A NAME="24"></A>        map.put(<FONT ID="StringLiteral">"col1"</FONT>, <FONT ID="StringLiteral">"val1"</FONT>);
+<A NAME="25"></A>        map.put(<FONT ID="StringLiteral">"col2"</FONT>, <FONT ID="StringLiteral">"val2"</FONT>);
+<A NAME="26"></A>
+<A NAME="27"></A>        Map&lt;String, String&gt; map2 = Maps.newHashMap();
+<A NAME="28"></A>        map2.put(<FONT ID="StringLiteral">"col1"</FONT>, <FONT ID="StringLiteral">"val11"</FONT>);
+<A NAME="29"></A>        map2.put(<FONT ID="StringLiteral">"col2"</FONT>, <FONT ID="StringLiteral">"val22"</FONT>);
+<A NAME="30"></A>
+<A NAME="31"></A>        <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable.FixRow</A> row1 = <FONT ID="New">new</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable.FixRow</A>(map);
+<A NAME="32"></A>        <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable.FixRow</A> row2 = <FONT ID="New">new</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable.FixRow</A>(map2);
+<A NAME="33"></A>        fixRows.add(row1);
+<A NAME="34"></A>        fixRows.add(row2);
+<A NAME="35"></A>        <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable</A> fixTable = <FONT ID="New">new</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable</A>(Lists.newArrayList(<FONT ID="StringLiteral">"col1"</FONT>, <FONT ID="StringLiteral">"col2"</FONT>), fixRows);
+<A NAME="36"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFile.java.html">FixFile</A> fixFile = converter.convert(<FONT ID="Null">null</FONT>, fixTable);
+<A NAME="37"></A>
+<A NAME="38"></A>        String tableStr = IOUtils.toString(fixFile.getContent());
+<A NAME="39"></A>        String expectedStr =
+<A NAME="40"></A>                <FONT ID="StringLiteral">"val1\tval2\n"</FONT> +
+<A NAME="41"></A>                <FONT ID="StringLiteral">"val11\tval22\n"</FONT>;
+<A NAME="42"></A>
+<A NAME="43"></A>        Assert.assertEquals(expectedStr, tableStr);
+<A NAME="44"></A>    }
+<A NAME="45"></A>
+<A NAME="46"></A>}
+<A NAME="47"></A></pre>
+</BODY>
+</HTML>

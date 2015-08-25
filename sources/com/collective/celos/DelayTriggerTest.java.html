@@ -1,0 +1,48 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.DelayTriggerTest (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">DelayTriggerTest.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> org.junit.Assert;
+<A NAME="4"></A><FONT ID="Import">import</FONT> org.junit.Test;
+<A NAME="5"></A>
+<A NAME="6"></A><FONT ID="Import">import</FONT> <FONT ID="Static">static</FONT> org.mockito.Mockito.mock;
+<A NAME="7"></A>
+<A NAME="8"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> DelayTriggerTest {
+<A NAME="9"></A>    
+<A NAME="10"></A>    @Test
+<A NAME="11"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> canBeConfiguredFromJSON() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="12"></A>        Assert.assertEquals(<FONT ID="IntegerLiteral">12</FONT>, <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/DelayTrigger.java.html">DelayTrigger</A>(<FONT ID="IntegerLiteral">12</FONT>).getSeconds());
+<A NAME="13"></A>    }
+<A NAME="14"></A>    
+<A NAME="15"></A>    @Test
+<A NAME="16"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> works() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="17"></A>        <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> now = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2014-01-01T05:00:00Z"</FONT>);
+<A NAME="18"></A>        <A HREF="../../../com/collective/celos/Trigger.java.html">Trigger</A> t = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/DelayTrigger.java.html">DelayTrigger</A>(<FONT ID="IntegerLiteral">60</FONT> * <FONT ID="IntegerLiteral">60</FONT>);
+<A NAME="19"></A>        <A HREF="../../../com/collective/celos/Scheduler.java.html">Scheduler</A> scheduler = mock(<A HREF="../../../com/collective/celos/Scheduler.java.html">Scheduler</A>.<FONT ID="Class">class</FONT>);
+<A NAME="20"></A>        Assert.assertTrue(t.isDataAvailable(scheduler, now, <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"1980-01-01T03:59:00Z"</FONT>)));
+<A NAME="21"></A>        Assert.assertTrue(t.isDataAvailable(scheduler, now, <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2014-01-01T03:59:00Z"</FONT>)));
+<A NAME="22"></A>        Assert.assertTrue(t.isDataAvailable(scheduler, now, <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2014-01-01T03:59:59Z"</FONT>)));
+<A NAME="23"></A>        Assert.assertFalse(t.isDataAvailable(scheduler, now, <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2014-01-01T04:00:00Z"</FONT>)));
+<A NAME="24"></A>        Assert.assertFalse(t.isDataAvailable(scheduler, now, <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2014-01-01T05:00:00Z"</FONT>)));
+<A NAME="25"></A>        Assert.assertFalse(t.isDataAvailable(scheduler, now, <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2014-01-01T06:00:00Z"</FONT>)));
+<A NAME="26"></A>        Assert.assertFalse(t.isDataAvailable(scheduler, now, <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2080-01-01T06:00:00Z"</FONT>)));
+<A NAME="27"></A>    }
+<A NAME="28"></A>}
+<A NAME="29"></A></pre>
+</BODY>
+</HTML>

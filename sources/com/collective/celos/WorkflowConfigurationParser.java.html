@@ -1,0 +1,112 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.WorkflowConfigurationParser (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">WorkflowConfigurationParser.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> com.google.common.collect.Maps;
+<A NAME="4"></A><FONT ID="Import">import</FONT> org.apache.commons.io.FileUtils;
+<A NAME="5"></A><FONT ID="Import">import</FONT> org.apache.log4j.Logger;
+<A NAME="6"></A><FONT ID="Import">import</FONT> org.mozilla.javascript.Context;
+<A NAME="7"></A><FONT ID="Import">import</FONT> org.mozilla.javascript.tools.shell.Global;
+<A NAME="8"></A>
+<A NAME="9"></A><FONT ID="Import">import</FONT> java.io.*;
+<A NAME="10"></A><FONT ID="Import">import</FONT> java.util.Collection;
+<A NAME="11"></A><FONT ID="Import">import</FONT> java.util.Map;
+<A NAME="12"></A>
+<A NAME="13"></A><FONT ID="FormalComment">/**
+<A NAME="14"></A> * Reads a set of JS files from a directory and creates a WorkflowConfiguration.
+<A NAME="15"></A> * 
+<A NAME="16"></A> * The JS engine has one variable defined, celosWorkflowConfigurationParser, which
+<A NAME="17"></A> * points to the parser instance.
+<A NAME="18"></A> * 
+<A NAME="19"></A> * The helper script celos-scripts.js defines the utility function addWorkflow(object),
+<A NAME="20"></A> * which stringifies the input JS object, and passes the string to the parser's
+<A NAME="21"></A> * addWorkflowFromJSONString method.
+<A NAME="22"></A> */</FONT>
+<A NAME="23"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> WorkflowConfigurationParser {
+<A NAME="24"></A>
+<A NAME="25"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String WORKFLOW_FILE_EXTENSION = <FONT ID="StringLiteral">"js"</FONT>;
+<A NAME="26"></A>
+<A NAME="27"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> Logger LOGGER = Logger.getLogger(<A HREF="../../../com/collective/celos/WorkflowConfigurationParser.java.html">WorkflowConfigurationParser</A>.<FONT ID="Class">class</FONT>);
+<A NAME="28"></A>
+<A NAME="29"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/WorkflowConfiguration.html">WorkflowConfiguration</A> cfg = <FONT ID="New">new</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/WorkflowConfiguration.html">WorkflowConfiguration</A>();
+<A NAME="30"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> <A HREF="../../../com/collective/celos/JSConfigParser.java.html">JSConfigParser</A> jsConfigParser = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/JSConfigParser.java.html">JSConfigParser</A>();
+<A NAME="31"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> File defaultsDir;
+<A NAME="32"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> Map&lt;String, String&gt; additionalJsVariables;
+<A NAME="33"></A>
+<A NAME="34"></A>    <FONT ID="Public">public</FONT> WorkflowConfigurationParser(File defaultsDir, Map&lt;String, String&gt; additionalJsVariables) <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="35"></A>        <FONT ID="This">this</FONT>.defaultsDir = Util.requireNonNull(defaultsDir);
+<A NAME="36"></A>        <FONT ID="This">this</FONT>.additionalJsVariables = additionalJsVariables;
+<A NAME="37"></A>    }
+<A NAME="38"></A>
+<A NAME="39"></A>    <FONT ID="Public">public</FONT> <A HREF="../../../com/collective/celos/WorkflowConfigurationParser.java.html">WorkflowConfigurationParser</A> parseConfiguration(File workflowsDir) {
+<A NAME="40"></A>        LOGGER.info(<FONT ID="StringLiteral">"Using workflows directory: "</FONT> + workflowsDir);
+<A NAME="41"></A>        LOGGER.info(<FONT ID="StringLiteral">"Using defaults directory: "</FONT> + defaultsDir);
+<A NAME="42"></A>        Collection&lt;File&gt; files = FileUtils.listFiles(workflowsDir, <FONT ID="New">new</FONT> String[] { WORKFLOW_FILE_EXTENSION }, <FONT ID="False">false</FONT>);
+<A NAME="43"></A>        <FONT ID="For">for</FONT> (File f : files) {
+<A NAME="44"></A>            <FONT ID="Try">try</FONT> {
+<A NAME="45"></A>                parseFile(f);
+<A NAME="46"></A>            } <FONT ID="Catch">catch</FONT>(Exception e) {
+<A NAME="47"></A>                LOGGER.error(<FONT ID="StringLiteral">"Failed to load file: "</FONT> + f + <FONT ID="StringLiteral">": "</FONT> + e.getMessage(), e);
+<A NAME="48"></A>            }
+<A NAME="49"></A>        }
+<A NAME="50"></A>        <FONT ID="Return">return</FONT> <FONT ID="This">this</FONT>;
+<A NAME="51"></A>    }
+<A NAME="52"></A>
+<A NAME="53"></A>    <FONT ID="Void">void</FONT> parseFile(File f) <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="54"></A>        LOGGER.info(<FONT ID="StringLiteral">"Loading file: "</FONT> + f);
+<A NAME="55"></A>        FileReader fileReader = <FONT ID="New">new</FONT> FileReader(f);
+<A NAME="56"></A>        String fileName = f.toString();
+<A NAME="57"></A>        evaluateReader(fileReader, fileName);
+<A NAME="58"></A>    }
+<A NAME="59"></A>
+<A NAME="60"></A>    Object evaluateReader(Reader r, String fileName) <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="61"></A>
+<A NAME="62"></A>        Global scope = jsConfigParser.createGlobalScope();
+<A NAME="63"></A>
+<A NAME="64"></A>        Object wrappedThis = Context.javaToJS(<FONT ID="This">this</FONT>, scope);
+<A NAME="65"></A>        Map jsProperties = Maps.newHashMap(additionalJsVariables);
+<A NAME="66"></A>        jsProperties.put(<FONT ID="StringLiteral">"celosWorkflowConfigurationParser"</FONT>, wrappedThis);
+<A NAME="67"></A>
+<A NAME="68"></A>        jsConfigParser.putPropertiesInScope(jsProperties, scope);
+<A NAME="69"></A>
+<A NAME="70"></A>        InputStream scripts = <A HREF="../../../com/collective/celos/WorkflowConfigurationParser.java.html">WorkflowConfigurationParser</A>.<FONT ID="Class">class</FONT>.getResourceAsStream(<FONT ID="StringLiteral">"celos-scripts.js"</FONT>);
+<A NAME="71"></A>        jsConfigParser.evaluateReader(scope, <FONT ID="New">new</FONT> InputStreamReader(scripts), fileName);
+<A NAME="72"></A>
+<A NAME="73"></A>        <FONT ID="Return">return</FONT> jsConfigParser.evaluateReader(scope, r, fileName);
+<A NAME="74"></A>    }
+<A NAME="75"></A>
+<A NAME="76"></A>    <FONT ID="Public">public</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/WorkflowConfiguration.html">WorkflowConfiguration</A> getWorkflowConfiguration() {
+<A NAME="77"></A>        <FONT ID="Return">return</FONT> cfg;
+<A NAME="78"></A>    }
+<A NAME="79"></A>
+<A NAME="80"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> importDefaultsIntoScope(String label, Global scope) <FONT ID="Throws">throws</FONT> IOException {
+<A NAME="81"></A>        File defaultsFile = <FONT ID="New">new</FONT> File(defaultsDir, label + <FONT ID="StringLiteral">"."</FONT> + WORKFLOW_FILE_EXTENSION);
+<A NAME="82"></A>        LOGGER.info(<FONT ID="StringLiteral">"Loading defaults: "</FONT> + defaultsFile);
+<A NAME="83"></A>        FileReader fileReader = <FONT ID="New">new</FONT> FileReader(defaultsFile);
+<A NAME="84"></A>        String fileName = defaultsFile.toString();
+<A NAME="85"></A>        jsConfigParser.evaluateReader(scope, fileReader, fileName);
+<A NAME="86"></A>    }
+<A NAME="87"></A>
+<A NAME="88"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> addWorkflow(<A HREF="../../../com/collective/celos/Workflow.java.html">Workflow</A> wf) {
+<A NAME="89"></A>        cfg.addWorkflow(wf);
+<A NAME="90"></A>    }
+<A NAME="91"></A>
+<A NAME="92"></A>}
+<A NAME="93"></A></pre>
+</BODY>
+</HTML>

@@ -1,0 +1,43 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.NotTriggerTest (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">NotTriggerTest.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> junit.framework.Assert;
+<A NAME="4"></A>
+<A NAME="5"></A><FONT ID="Import">import</FONT> org.junit.Test;
+<A NAME="6"></A>
+<A NAME="7"></A><FONT ID="Import">import</FONT> <FONT ID="Static">static</FONT> org.mockito.Mockito.mock;
+<A NAME="8"></A>
+<A NAME="9"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> NotTriggerTest {
+<A NAME="10"></A>    
+<A NAME="11"></A>    @Test
+<A NAME="12"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> invertsTrue() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="13"></A>        <A HREF="../../../com/collective/celos/Scheduler.java.html">Scheduler</A> scheduler = mock(<A HREF="../../../com/collective/celos/Scheduler.java.html">Scheduler</A>.<FONT ID="Class">class</FONT>);
+<A NAME="14"></A>        Assert.assertFalse(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/NotTrigger.java.html">NotTrigger</A>(AndTriggerTest.createAlwaysTrigger()).isDataAvailable(scheduler, ScheduledTime.now(), ScheduledTime.now()));
+<A NAME="15"></A>    }
+<A NAME="16"></A>    
+<A NAME="17"></A>    @Test
+<A NAME="18"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> invertsFalse() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="19"></A>        <A HREF="../../../com/collective/celos/Scheduler.java.html">Scheduler</A> scheduler = mock(<A HREF="../../../com/collective/celos/Scheduler.java.html">Scheduler</A>.<FONT ID="Class">class</FONT>);
+<A NAME="20"></A>        Assert.assertTrue(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/NotTrigger.java.html">NotTrigger</A>(AndTriggerTest.createNeverTrigger()).isDataAvailable(scheduler, ScheduledTime.now(), ScheduledTime.now()));
+<A NAME="21"></A>    }
+<A NAME="22"></A>    
+<A NAME="23"></A>}
+<A NAME="24"></A></pre>
+</BODY>
+</HTML>

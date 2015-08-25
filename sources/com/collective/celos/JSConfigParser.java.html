@@ -1,0 +1,80 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.JSConfigParser (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">JSConfigParser.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> org.mozilla.javascript.Context;
+<A NAME="4"></A><FONT ID="Import">import</FONT> org.mozilla.javascript.Scriptable;
+<A NAME="5"></A><FONT ID="Import">import</FONT> org.mozilla.javascript.ScriptableObject;
+<A NAME="6"></A><FONT ID="Import">import</FONT> org.mozilla.javascript.WrapFactory;
+<A NAME="7"></A><FONT ID="Import">import</FONT> com.fasterxml.jackson.databind.ObjectMapper;
+<A NAME="8"></A><FONT ID="Import">import</FONT> org.mozilla.javascript.tools.shell.Global;
+<A NAME="9"></A>
+<A NAME="10"></A><FONT ID="Import">import</FONT> java.io.IOException;
+<A NAME="11"></A><FONT ID="Import">import</FONT> java.io.Reader;
+<A NAME="12"></A><FONT ID="Import">import</FONT> java.util.Map;
+<A NAME="13"></A>
+<A NAME="14"></A><FONT ID="FormalComment">/**
+<A NAME="15"></A> * Created by akonopko on 20.11.14.
+<A NAME="16"></A> */</FONT>
+<A NAME="17"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> JSConfigParser {
+<A NAME="18"></A>
+<A NAME="19"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> <FONT ID="Int">int</FONT> JS_PARSE_START_LINE = <FONT ID="IntegerLiteral">1</FONT>;
+<A NAME="20"></A>
+<A NAME="21"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> Context context;
+<A NAME="22"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> ObjectMapper mapper = <FONT ID="New">new</FONT> ObjectMapper();
+<A NAME="23"></A>
+<A NAME="24"></A>    <FONT ID="Public">public</FONT> JSConfigParser() {
+<A NAME="25"></A>        context = Context.enter();
+<A NAME="26"></A>        context.setLanguageVersion(<FONT ID="IntegerLiteral">170</FONT>);
+<A NAME="27"></A>
+<A NAME="28"></A>        <FONT ID="FormalComment">/**
+<A NAME="29"></A>         * Treat primitives like strings returned from Java methods
+<A NAME="30"></A>         * as native JS objects.
+<A NAME="31"></A>         */</FONT>
+<A NAME="32"></A>        WrapFactory wf = <FONT ID="New">new</FONT> WrapFactory();
+<A NAME="33"></A>        wf.setJavaPrimitiveWrap(<FONT ID="False">false</FONT>);
+<A NAME="34"></A>        context.setWrapFactory(wf);
+<A NAME="35"></A>    }
+<A NAME="36"></A>
+<A NAME="37"></A>    <FONT ID="Public">public</FONT> Global createGlobalScope() {
+<A NAME="38"></A>        Global scope = <FONT ID="New">new</FONT> Global();
+<A NAME="39"></A>        scope.initStandardObjects(context, <FONT ID="True">true</FONT>);
+<A NAME="40"></A>        Object wrappedMapper = Context.javaToJS(mapper, scope);
+<A NAME="41"></A>        ScriptableObject.putProperty(scope, <FONT ID="StringLiteral">"celosMapper"</FONT>, wrappedMapper);
+<A NAME="42"></A>        Object wrappedScope = Context.javaToJS(scope, scope);
+<A NAME="43"></A>        ScriptableObject.putProperty(scope, <FONT ID="StringLiteral">"celosScope"</FONT>, wrappedScope);
+<A NAME="44"></A>
+<A NAME="45"></A>        <FONT ID="Return">return</FONT> scope;
+<A NAME="46"></A>    }
+<A NAME="47"></A>
+<A NAME="48"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> putPropertiesInScope(Map&lt;String, Object&gt; jsParameters, Global scope) {
+<A NAME="49"></A>        <FONT ID="If">if</FONT> (jsParameters != <FONT ID="Null">null</FONT>) {
+<A NAME="50"></A>            <FONT ID="For">for</FONT> (String key : jsParameters.keySet()) {
+<A NAME="51"></A>                ScriptableObject.putProperty(scope, key, jsParameters.get(key));
+<A NAME="52"></A>            }
+<A NAME="53"></A>        }
+<A NAME="54"></A>    }
+<A NAME="55"></A>
+<A NAME="56"></A>    <FONT ID="Public">public</FONT> Object evaluateReader(Scriptable scope, Reader fileReader, String fileName) <FONT ID="Throws">throws</FONT> IOException {
+<A NAME="57"></A>        <FONT ID="Return">return</FONT> context.evaluateReader(scope, fileReader, fileName, JS_PARSE_START_LINE, <FONT ID="Null">null</FONT>);
+<A NAME="58"></A>    }
+<A NAME="59"></A>
+<A NAME="60"></A>}
+<A NAME="61"></A></pre>
+</BODY>
+</HTML>

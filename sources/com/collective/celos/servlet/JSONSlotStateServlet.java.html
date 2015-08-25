@@ -1,0 +1,59 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.servlet.JSONSlotStateServlet (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">JSONSlotStateServlet.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos.servlet;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> javax.servlet.ServletException;
+<A NAME="4"></A><FONT ID="Import">import</FONT> javax.servlet.http.HttpServletRequest;
+<A NAME="5"></A><FONT ID="Import">import</FONT> javax.servlet.http.HttpServletResponse;
+<A NAME="6"></A>
+<A NAME="7"></A><FONT ID="Import">import</FONT> <A HREF="../../../../com/collective/celos/Scheduler.java.html">com.collective.celos.Scheduler</A>;
+<A NAME="8"></A><FONT ID="Import">import</FONT> <A HREF="../../../../com/collective/celos/SlotID.java.html">com.collective.celos.SlotID</A>;
+<A NAME="9"></A><FONT ID="Import">import</FONT> <A HREF="../../../../com/collective/celos/SlotState.java.html">com.collective.celos.SlotState</A>;
+<A NAME="10"></A><FONT ID="Import">import</FONT> <A HREF="../../../../com/collective/celos/WorkflowID.java.html">com.collective.celos.WorkflowID</A>;
+<A NAME="11"></A><FONT ID="Import">import</FONT> com.fasterxml.jackson.databind.node.ObjectNode;
+<A NAME="12"></A>
+<A NAME="13"></A>@SuppressWarnings(<FONT ID="StringLiteral">"serial"</FONT>)
+<A NAME="14"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> JSONSlotStateServlet <FONT ID="Extends">extends</FONT> <A HREF="../../../../com/collective/celos/servlet/AbstractJSONServlet.java.html">AbstractJSONServlet</A> {
+<A NAME="15"></A>    
+<A NAME="16"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String ID_PARAM = <FONT ID="StringLiteral">"id"</FONT>;
+<A NAME="17"></A>
+<A NAME="18"></A>    <FONT ID="Protected">protected</FONT> <FONT ID="Void">void</FONT> doGet(HttpServletRequest req, HttpServletResponse res) <FONT ID="Throws">throws</FONT> ServletException {
+<A NAME="19"></A>        String id = req.getParameter(ID_PARAM);
+<A NAME="20"></A>        <FONT ID="Try">try</FONT> {
+<A NAME="21"></A>            <FONT ID="If">if</FONT> (id == <FONT ID="Null">null</FONT>) {
+<A NAME="22"></A>                res.sendError(HttpServletResponse.SC_BAD_REQUEST, ID_PARAM + <FONT ID="StringLiteral">" parameter missing."</FONT>);
+<A NAME="23"></A>                <FONT ID="Return">return</FONT>;
+<A NAME="24"></A>            }
+<A NAME="25"></A>            <A HREF="../../../../com/collective/celos/Scheduler.java.html">Scheduler</A> scheduler = getOrCreateCachedScheduler();
+<A NAME="26"></A>            <A HREF="../../../../com/collective/celos/SlotID.java.html">SlotID</A> slotID = <FONT ID="New">new</FONT> <A HREF="../../../../com/collective/celos/SlotID.java.html">SlotID</A>(<FONT ID="New">new</FONT> <A HREF="../../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(id), getRequestTime(req));
+<A NAME="27"></A>            <A HREF="../../../../com/collective/celos/SlotState.java.html">SlotState</A> slotState = scheduler.getStateDatabase().getSlotState(slotID);
+<A NAME="28"></A>            <FONT ID="If">if</FONT> (slotState == <FONT ID="Null">null</FONT>) {
+<A NAME="29"></A>                res.sendError(HttpServletResponse.SC_NOT_FOUND, <FONT ID="StringLiteral">"Slot not found: "</FONT> + id);
+<A NAME="30"></A>            } <FONT ID="Else">else</FONT> {
+<A NAME="31"></A>                ObjectNode object = slotState.toJSONNode();
+<A NAME="32"></A>                writer.writeValue(res.getOutputStream(), object);
+<A NAME="33"></A>            }
+<A NAME="34"></A>        } <FONT ID="Catch">catch</FONT> (Exception e) {
+<A NAME="35"></A>            <FONT ID="Throw">throw</FONT> <FONT ID="New">new</FONT> ServletException(e);
+<A NAME="36"></A>        }
+<A NAME="37"></A>    }
+<A NAME="38"></A>    
+<A NAME="39"></A>}
+<A NAME="40"></A></pre>
+</BODY>
+</HTML>

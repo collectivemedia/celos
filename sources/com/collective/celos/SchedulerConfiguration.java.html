@@ -1,0 +1,61 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.SchedulerConfiguration (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">SchedulerConfiguration.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> java.io.File;
+<A NAME="4"></A><FONT ID="Import">import</FONT> java.io.IOException;
+<A NAME="5"></A><FONT ID="Import">import</FONT> java.util.Map;
+<A NAME="6"></A>
+<A NAME="7"></A><FONT ID="FormalComment">/**
+<A NAME="8"></A> * Reads configuration and database from filesystem at well-known paths.
+<A NAME="9"></A> */</FONT>
+<A NAME="10"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> SchedulerConfiguration {
+<A NAME="11"></A>
+<A NAME="12"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> <FONT ID="Int">int</FONT> SLIDING_WINDOW_DAYS = <FONT ID="IntegerLiteral">7</FONT>;
+<A NAME="13"></A>
+<A NAME="14"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> File workflowConfigurationPath;
+<A NAME="15"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> File defaultsConfigurationPath;
+<A NAME="16"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> File stateDatabasePath;
+<A NAME="17"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> Map&lt;String, String&gt; additionalVars;
+<A NAME="18"></A>
+<A NAME="19"></A>    <FONT ID="Public">public</FONT> SchedulerConfiguration(File workflowConfigurationPath, File defaultsConfigurationPath, File stateDatabasePath, Map&lt;String, String&gt; additionalVars) {
+<A NAME="20"></A>        <FONT ID="This">this</FONT>.workflowConfigurationPath = workflowConfigurationPath;
+<A NAME="21"></A>        <FONT ID="This">this</FONT>.defaultsConfigurationPath = defaultsConfigurationPath;
+<A NAME="22"></A>        <FONT ID="This">this</FONT>.stateDatabasePath = stateDatabasePath;
+<A NAME="23"></A>        <FONT ID="This">this</FONT>.additionalVars = additionalVars;
+<A NAME="24"></A>    }
+<A NAME="25"></A>
+<A NAME="26"></A>    <FONT ID="Public">public</FONT> <A HREF="../../../com/collective/celos/Scheduler.java.html">Scheduler</A> makeDefaultScheduler() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="27"></A>        <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/WorkflowConfiguration.html">WorkflowConfiguration</A> config = getWorkflowConfigurationParser().getWorkflowConfiguration();
+<A NAME="28"></A>        <A HREF="../../../com/collective/celos/StateDatabase.java.html">StateDatabase</A> db = makeDefaultStateDatabase();
+<A NAME="29"></A>        <FONT ID="Int">int</FONT> slidingWindowHours = <FONT ID="IntegerLiteral">24</FONT> * SLIDING_WINDOW_DAYS;
+<A NAME="30"></A>        <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/Scheduler.java.html">Scheduler</A>(config, db, slidingWindowHours);
+<A NAME="31"></A>    }
+<A NAME="32"></A>
+<A NAME="33"></A>    <FONT ID="Private">private</FONT> <A HREF="../../../com/collective/celos/WorkflowConfigurationParser.java.html">WorkflowConfigurationParser</A> getWorkflowConfigurationParser() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="34"></A>        <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowConfigurationParser.java.html">WorkflowConfigurationParser</A>(defaultsConfigurationPath, additionalVars).parseConfiguration(workflowConfigurationPath);
+<A NAME="35"></A>    }
+<A NAME="36"></A>
+<A NAME="37"></A>    <FONT ID="Private">private</FONT> <A HREF="../../../com/collective/celos/StateDatabase.java.html">StateDatabase</A> makeDefaultStateDatabase() <FONT ID="Throws">throws</FONT> IOException {
+<A NAME="38"></A>        <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/FileSystemStateDatabase.java.html">FileSystemStateDatabase</A>(stateDatabasePath);
+<A NAME="39"></A>    }
+<A NAME="40"></A>
+<A NAME="41"></A>}
+<A NAME="42"></A></pre>
+</BODY>
+</HTML>

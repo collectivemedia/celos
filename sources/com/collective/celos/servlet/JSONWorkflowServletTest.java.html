@@ -1,0 +1,57 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.servlet.JSONWorkflowServletTest (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">JSONWorkflowServletTest.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos.servlet;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> java.util.LinkedList;
+<A NAME="4"></A><FONT ID="Import">import</FONT> java.util.List;
+<A NAME="5"></A>
+<A NAME="6"></A><FONT ID="Import">import</FONT> <A HREF="../../../../com/collective/celos/ScheduledTime.java.html">com.collective.celos.ScheduledTime</A>;
+<A NAME="7"></A><FONT ID="Import">import</FONT> org.junit.Assert;
+<A NAME="8"></A><FONT ID="Import">import</FONT> org.junit.Test;
+<A NAME="9"></A>
+<A NAME="10"></A><FONT ID="Import">import</FONT> <A HREF="../../../../com/collective/celos/SlotID.java.html">com.collective.celos.SlotID</A>;
+<A NAME="11"></A><FONT ID="Import">import</FONT> <A HREF="../../../../com/collective/celos/SlotState.java.html">com.collective.celos.SlotState</A>;
+<A NAME="12"></A><FONT ID="Import">import</FONT> <A HREF="../../../../com/collective/celos/WorkflowID.java.html">com.collective.celos.WorkflowID</A>;
+<A NAME="13"></A><FONT ID="Import">import</FONT> com.fasterxml.jackson.databind.ObjectMapper;
+<A NAME="14"></A><FONT ID="Import">import</FONT> com.fasterxml.jackson.databind.node.ObjectNode;
+<A NAME="15"></A>
+<A NAME="16"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> JSONWorkflowServletTest {
+<A NAME="17"></A>
+<A NAME="18"></A>    @Test
+<A NAME="19"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> jsonCorrectlyProduced() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="20"></A>        <A HREF="../../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> t1 = <FONT ID="New">new</FONT> <A HREF="../../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-12-20T20:00:00.000Z"</FONT>);
+<A NAME="21"></A>        <A HREF="../../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> t2 = <FONT ID="New">new</FONT> <A HREF="../../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-12-20T21:00:00.000Z"</FONT>);
+<A NAME="22"></A>        <A HREF="../../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A> wfID = <FONT ID="New">new</FONT> <A HREF="../../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"foobar"</FONT>);
+<A NAME="23"></A>        <A HREF="../../../../com/collective/celos/SlotState.java.html">SlotState</A> s1 = <FONT ID="New">new</FONT> <A HREF="../../../../com/collective/celos/SlotState.java.html">SlotState</A>(<FONT ID="New">new</FONT> <A HREF="../../../../com/collective/celos/SlotID.java.html">SlotID</A>(wfID, t1), SlotState.Status.READY);
+<A NAME="24"></A>        <A HREF="../../../../com/collective/celos/SlotState.java.html">SlotState</A> s2 = <FONT ID="New">new</FONT> <A HREF="../../../../com/collective/celos/SlotState.java.html">SlotState</A>(<FONT ID="New">new</FONT> <A HREF="../../../../com/collective/celos/SlotID.java.html">SlotID</A>(wfID, t2), SlotState.Status.RUNNING, <FONT ID="StringLiteral">"external-ID"</FONT>, <FONT ID="IntegerLiteral">4</FONT>);
+<A NAME="25"></A>        List&lt;<A HREF="../../../../com/collective/celos/SlotState.java.html">SlotState</A>&gt; states = <FONT ID="New">new</FONT> LinkedList&lt;<A HREF="../../../../com/collective/celos/SlotState.java.html">SlotState</A>&gt;();
+<A NAME="26"></A>        states.add(s1);
+<A NAME="27"></A>        states.add(s2);
+<A NAME="28"></A>        
+<A NAME="29"></A>        ObjectMapper mapper = <FONT ID="New">new</FONT> ObjectMapper();
+<A NAME="30"></A>        ObjectNode node = mapper.createObjectNode();
+<A NAME="31"></A>        node.put(t1.toString(), s1.toJSONNode());
+<A NAME="32"></A>        node.put(t2.toString(), s2.toJSONNode());
+<A NAME="33"></A>        
+<A NAME="34"></A>        Assert.assertEquals(node, <FONT ID="New">new</FONT> <A HREF="../../../../com/collective/celos/servlet/JSONWorkflowServlet.java.html">JSONWorkflowServlet</A>().createJSONObject(states));
+<A NAME="35"></A>    }
+<A NAME="36"></A>    
+<A NAME="37"></A>}
+<A NAME="38"></A></pre>
+</BODY>
+</HTML>

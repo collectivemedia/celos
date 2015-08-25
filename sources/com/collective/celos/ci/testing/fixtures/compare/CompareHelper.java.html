@@ -1,0 +1,66 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../../../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.ci.testing.fixtures.compare.CompareHelper (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">CompareHelper.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos.ci.testing.fixtures.compare;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../../com/collective/celos/ci/mode/test/TestRun.java.html">com.collective.celos.ci.mode.test.TestRun</A>;
+<A NAME="4"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">com.collective.celos.ci.testing.fixtures.create.FixObjectCreator</A>;
+<A NAME="5"></A><FONT ID="Import">import</FONT> com.google.common.collect.Lists;
+<A NAME="6"></A><FONT ID="Import">import</FONT> com.google.common.collect.Sets;
+<A NAME="7"></A><FONT ID="Import">import</FONT> org.apache.commons.lang.StringUtils;
+<A NAME="8"></A>
+<A NAME="9"></A><FONT ID="Import">import</FONT> java.util.Collections;
+<A NAME="10"></A><FONT ID="Import">import</FONT> java.util.List;
+<A NAME="11"></A><FONT ID="Import">import</FONT> java.util.Map;
+<A NAME="12"></A><FONT ID="Import">import</FONT> java.util.Set;
+<A NAME="13"></A>
+<A NAME="14"></A><FONT ID="FormalComment">/**
+<A NAME="15"></A> * Created by akonopko on 13.02.15.
+<A NAME="16"></A> */</FONT>
+<A NAME="17"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> CompareHelper {
+<A NAME="18"></A>
+<A NAME="19"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> &lt;T&gt; <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/compare/FixObjectCompareResult.java.html">FixObjectCompareResult</A> compareEntityNumber(<A HREF="../../../../../../../com/collective/celos/ci/mode/test/TestRun.java.html">TestRun</A> testRun, <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">FixObjectCreator</A> actualDataCreator, <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">FixObjectCreator</A> expectedDataCreator, Map&lt;T, Integer&gt; expectedRes, Map&lt;T, Integer&gt; actualRes) <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="20"></A>        Set&lt;Map.Entry&lt;T, Integer&gt;&gt; expectedDiffers = Sets.difference(expectedRes.entrySet(), actualRes.entrySet());
+<A NAME="21"></A>        Set&lt;Map.Entry&lt;T, Integer&gt;&gt; actualDiffers = Sets.difference(actualRes.entrySet(), expectedRes.entrySet());
+<A NAME="22"></A>
+<A NAME="23"></A>        <FONT ID="If">if</FONT> (actualDiffers.size() + expectedDiffers.size() &gt; <FONT ID="IntegerLiteral">0</FONT>) {
+<A NAME="24"></A>            String actualDir = getDifference(actualDiffers);
+<A NAME="25"></A>            String expectedDiff = getDifference(expectedDiffers);
+<A NAME="26"></A>            <FONT ID="Return">return</FONT> FixObjectCompareResult.failed(
+<A NAME="27"></A>                    <FONT ID="StringLiteral">"Diff:\n"</FONT> +
+<A NAME="28"></A>                            <FONT ID="StringLiteral">"Actual ["</FONT> + actualDataCreator.getDescription(testRun) + <FONT ID="StringLiteral">"]:\n"</FONT> +
+<A NAME="29"></A>                            actualDir + <FONT ID="StringLiteral">"\n"</FONT> +
+<A NAME="30"></A>                            <FONT ID="StringLiteral">"Expected ["</FONT> + expectedDataCreator.getDescription(testRun) + <FONT ID="StringLiteral">"]:\n"</FONT> +
+<A NAME="31"></A>                            expectedDiff);
+<A NAME="32"></A>
+<A NAME="33"></A>        }
+<A NAME="34"></A>        <FONT ID="Return">return</FONT> FixObjectCompareResult.SUCCESS;
+<A NAME="35"></A>    }
+<A NAME="36"></A>
+<A NAME="37"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> &lt;T&gt; String getDifference(Set&lt;Map.Entry&lt;T, Integer&gt;&gt; entrySet) {
+<A NAME="38"></A>        List&lt;String&gt; strs = Lists.newArrayList();
+<A NAME="39"></A>        <FONT ID="For">for</FONT> (Map.Entry&lt;T, Integer&gt; entry : entrySet) {
+<A NAME="40"></A>            strs.add(entry.getKey().toString() + <FONT ID="StringLiteral">" ["</FONT> + entry.getValue() + <FONT ID="StringLiteral">" times]"</FONT>);
+<A NAME="41"></A>        }
+<A NAME="42"></A>        Collections.sort(strs);
+<A NAME="43"></A>        <FONT ID="Return">return</FONT> StringUtils.join(strs, <FONT ID="StringLiteral">"\n"</FONT>);
+<A NAME="44"></A>    }
+<A NAME="45"></A>
+<A NAME="46"></A>}
+<A NAME="47"></A></pre>
+</BODY>
+</HTML>

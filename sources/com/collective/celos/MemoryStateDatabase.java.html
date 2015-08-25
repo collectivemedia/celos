@@ -1,0 +1,47 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.MemoryStateDatabase (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">MemoryStateDatabase.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> java.util.HashMap;
+<A NAME="4"></A><FONT ID="Import">import</FONT> java.util.Map;
+<A NAME="5"></A>
+<A NAME="6"></A><FONT ID="FormalComment">/**
+<A NAME="7"></A> * Simple implementation of StateDatabase that stores everything in a Map.
+<A NAME="8"></A> */</FONT>
+<A NAME="9"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> MemoryStateDatabase <FONT ID="Implements">implements</FONT> <A HREF="../../../com/collective/celos/StateDatabase.java.html">StateDatabase</A> {
+<A NAME="10"></A>
+<A NAME="11"></A>    <FONT ID="Protected">protected</FONT> <FONT ID="Final">final</FONT> Map&lt;<A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A>, <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>&gt; map = <FONT ID="New">new</FONT> HashMap&lt;<A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A>, <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>&gt;();
+<A NAME="12"></A>    
+<A NAME="13"></A>    @Override
+<A NAME="14"></A>    <FONT ID="Public">public</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> getSlotState(<A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A> id) <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="15"></A>        <FONT ID="Return">return</FONT> map.get(id);
+<A NAME="16"></A>    }
+<A NAME="17"></A>
+<A NAME="18"></A>    @Override
+<A NAME="19"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> putSlotState(<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> state) <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="20"></A>        map.put(state.getSlotID(), state);
+<A NAME="21"></A>    }
+<A NAME="22"></A>    
+<A NAME="23"></A>    <FONT ID="Public">public</FONT> <FONT ID="Int">int</FONT> size() {
+<A NAME="24"></A>        <FONT ID="Return">return</FONT> map.size();
+<A NAME="25"></A>    }
+<A NAME="26"></A>
+<A NAME="27"></A>}
+<A NAME="28"></A></pre>
+</BODY>
+</HTML>

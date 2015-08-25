@@ -1,0 +1,317 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.WorkflowConfigurationParserTest (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">WorkflowConfigurationParserTest.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> java.io.File;
+<A NAME="4"></A><FONT ID="Import">import</FONT> java.io.StringReader;
+<A NAME="5"></A><FONT ID="Import">import</FONT> java.net.URI;
+<A NAME="6"></A><FONT ID="Import">import</FONT> java.net.URISyntaxException;
+<A NAME="7"></A><FONT ID="Import">import</FONT> java.net.URL;
+<A NAME="8"></A><FONT ID="Import">import</FONT> java.util.List;
+<A NAME="9"></A><FONT ID="Import">import</FONT> java.util.SortedSet;
+<A NAME="10"></A>
+<A NAME="11"></A><FONT ID="Import">import</FONT> com.google.common.collect.ImmutableMap;
+<A NAME="12"></A><FONT ID="Import">import</FONT> org.junit.Assert;
+<A NAME="13"></A><FONT ID="Import">import</FONT> org.junit.Test;
+<A NAME="14"></A><FONT ID="Import">import</FONT> org.mozilla.javascript.NativeJavaObject;
+<A NAME="15"></A>
+<A NAME="16"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> WorkflowConfigurationParserTest {
+<A NAME="17"></A>
+<A NAME="18"></A>    @Test
+<A NAME="19"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> emptyDirCreatesEmptyWorkflowConfiguration() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="20"></A>        <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/WorkflowConfiguration.html">WorkflowConfiguration</A> cfg = parseDir(<FONT ID="StringLiteral">"empty"</FONT>);
+<A NAME="21"></A>        Assert.assertEquals(<FONT ID="IntegerLiteral">0</FONT>, cfg.getWorkflows().size());
+<A NAME="22"></A>    }
+<A NAME="23"></A>
+<A NAME="24"></A>    @Test
+<A NAME="25"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> failsOnIllFormattedFile() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="26"></A>        expectMessage(<FONT ID="StringLiteral">"ill-formatted"</FONT>, <FONT ID="StringLiteral">"missing ; before statement"</FONT>);
+<A NAME="27"></A>    }
+<A NAME="28"></A>
+<A NAME="29"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Class">class</FONT> TestSchedule <FONT ID="Implements">implements</FONT> <A HREF="../../../com/collective/celos/Schedule.java.html">Schedule</A> {
+<A NAME="30"></A>        @Override
+<A NAME="31"></A>        <FONT ID="Public">public</FONT> SortedSet&lt;<A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>&gt; getScheduledTimes(<A HREF="../../../com/collective/celos/Scheduler.java.html">Scheduler</A> scheduler, <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> start, <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> end) {
+<A NAME="32"></A>            <FONT ID="Return">return</FONT> <FONT ID="Null">null</FONT>;
+<A NAME="33"></A>        }
+<A NAME="34"></A>    }
+<A NAME="35"></A>    
+<A NAME="36"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Class">class</FONT> TestSchedulingStrategy <FONT ID="Implements">implements</FONT> <A HREF="../../../com/collective/celos/SchedulingStrategy.java.html">SchedulingStrategy</A> {
+<A NAME="37"></A>        @Override
+<A NAME="38"></A>        <FONT ID="Public">public</FONT> List&lt;<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>&gt; getSchedulingCandidates(List&lt;<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>&gt; states) {
+<A NAME="39"></A>            <FONT ID="Return">return</FONT> <FONT ID="Null">null</FONT>;
+<A NAME="40"></A>        }
+<A NAME="41"></A>    }
+<A NAME="42"></A>
+<A NAME="43"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Class">class</FONT> TestExternalService <FONT ID="Implements">implements</FONT> <A HREF="../../../com/collective/celos/ExternalService.java.html">ExternalService</A> {
+<A NAME="44"></A>        @Override
+<A NAME="45"></A>        <FONT ID="Public">public</FONT> String submit(<A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A> id) <FONT ID="Throws">throws</FONT> <A HREF="../../../com/collective/celos/ExternalServiceException.java.html">ExternalServiceException</A> {
+<A NAME="46"></A>            <FONT ID="Return">return</FONT> <FONT ID="Null">null</FONT>;
+<A NAME="47"></A>        }
+<A NAME="48"></A>        @Override
+<A NAME="49"></A>        <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> start(<A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A> id, String externalID) <FONT ID="Throws">throws</FONT> <A HREF="../../../com/collective/celos/ExternalServiceException.java.html">ExternalServiceException</A> {
+<A NAME="50"></A>        }
+<A NAME="51"></A>        @Override
+<A NAME="52"></A>        <FONT ID="Public">public</FONT> <A HREF="../../../com/collective/celos/ExternalStatus.java.html">ExternalStatus</A> getStatus(<A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A> slotId, String externalWorkflowID) <FONT ID="Throws">throws</FONT> <A HREF="../../../com/collective/celos/ExternalServiceException.java.html">ExternalServiceException</A> {
+<A NAME="53"></A>            <FONT ID="Return">return</FONT> <FONT ID="Null">null</FONT>;
+<A NAME="54"></A>        }
+<A NAME="55"></A>    }
+<A NAME="56"></A>        
+<A NAME="57"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Class">class</FONT> TestTrigger <FONT ID="Implements">implements</FONT> <A HREF="../../../com/collective/celos/Trigger.java.html">Trigger</A> {
+<A NAME="58"></A>        @Override
+<A NAME="59"></A>        <FONT ID="Public">public</FONT> <FONT ID="Boolean">boolean</FONT> isDataAvailable(<A HREF="../../../com/collective/celos/Scheduler.java.html">Scheduler</A> scheduler, <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> now, <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> t) <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="60"></A>            <FONT ID="Return">return</FONT> <FONT ID="False">false</FONT>;
+<A NAME="61"></A>        }
+<A NAME="62"></A>    }
+<A NAME="63"></A>
+<A NAME="64"></A>    @Test
+<A NAME="65"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> propertiesAreCorrectlySet() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="66"></A>        <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/WorkflowConfiguration.html">WorkflowConfiguration</A> cfg = parseFile(<FONT ID="StringLiteral">"properties-test"</FONT>);
+<A NAME="67"></A>        
+<A NAME="68"></A>        <A HREF="../../../com/collective/celos/Workflow.java.html">Workflow</A> wf1 = cfg.findWorkflow(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"workflow-1"</FONT>));
+<A NAME="69"></A>        Assert.assertEquals(<FONT ID="StringLiteral">"workflow-1"</FONT>, wf1.getID().toString());
+<A NAME="70"></A>        Assert.assertEquals(<FONT ID="IntegerLiteral">55</FONT>, wf1.getMaxRetryCount());
+<A NAME="71"></A>        Assert.assertEquals(Workflow.DEFAULT_START_TIME, wf1.getStartTime());
+<A NAME="72"></A>        Assert.assertEquals(Workflow.DEFAULT_WAIT_TIMEOUT_SECONDS, wf1.getWaitTimeoutSeconds());
+<A NAME="73"></A>        
+<A NAME="74"></A>        <A HREF="../../../com/collective/celos/Workflow.java.html">Workflow</A> wf2 = cfg.findWorkflow(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"workflow-2"</FONT>));
+<A NAME="75"></A>        Assert.assertEquals(<FONT ID="StringLiteral">"workflow-2"</FONT>, wf2.getID().toString());
+<A NAME="76"></A>        Assert.assertEquals(<FONT ID="IntegerLiteral">66</FONT>, wf2.getMaxRetryCount());
+<A NAME="77"></A>        Assert.assertEquals(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2014-03-10T12:34:56.789Z"</FONT>), wf2.getStartTime());
+<A NAME="78"></A>        Assert.assertEquals(<FONT ID="IntegerLiteral">23</FONT>, wf2.getWaitTimeoutSeconds());
+<A NAME="79"></A>    }
+<A NAME="80"></A>
+<A NAME="81"></A>    @Test
+<A NAME="82"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> workflowInfoWF1() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="83"></A>        <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/WorkflowConfiguration.html">WorkflowConfiguration</A> cfg = parseFile(<FONT ID="StringLiteral">"workflow-info-test"</FONT>);
+<A NAME="84"></A>        <A HREF="../../../com/collective/celos/WorkflowInfo.java.html">WorkflowInfo</A> workflowInfo = cfg.findWorkflow(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"workflow-1"</FONT>)).getWorkflowInfo();
+<A NAME="85"></A>
+<A NAME="86"></A>        Assert.assertNull(workflowInfo.getUrl());
+<A NAME="87"></A>        Assert.assertTrue(workflowInfo.getContacts().isEmpty());
+<A NAME="88"></A>    }
+<A NAME="89"></A>
+<A NAME="90"></A>    @Test
+<A NAME="91"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> workflowInfoWF2() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="92"></A>        <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/WorkflowConfiguration.html">WorkflowConfiguration</A> cfg = parseFile(<FONT ID="StringLiteral">"workflow-info-test"</FONT>);
+<A NAME="93"></A>
+<A NAME="94"></A>        <A HREF="../../../com/collective/celos/WorkflowInfo.java.html">WorkflowInfo</A> workflowInfo = cfg.findWorkflow(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"workflow-2"</FONT>)).getWorkflowInfo();
+<A NAME="95"></A>        Assert.assertEquals(<FONT ID="New">new</FONT> URL(<FONT ID="StringLiteral">"http://collective.com/workflow"</FONT>), workflowInfo.getUrl());
+<A NAME="96"></A>        Assert.assertEquals(<FONT ID="IntegerLiteral">1</FONT>, workflowInfo.getContacts().size());
+<A NAME="97"></A>        Assert.assertEquals(<FONT ID="StringLiteral">"John Doe"</FONT>, workflowInfo.getContacts().get(<FONT ID="IntegerLiteral">0</FONT>).getName());
+<A NAME="98"></A>        Assert.assertEquals(URI.create(<FONT ID="StringLiteral">"john.doe@collective.com"</FONT>), workflowInfo.getContacts().get(<FONT ID="IntegerLiteral">0</FONT>).getEmail());
+<A NAME="99"></A>    }
+<A NAME="100"></A>
+<A NAME="101"></A>    @Test
+<A NAME="102"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> workflowInfoWFNoName() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="103"></A>        <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/WorkflowConfiguration.html">WorkflowConfiguration</A> cfg = parseFile(<FONT ID="StringLiteral">"workflow-info-test"</FONT>);
+<A NAME="104"></A>
+<A NAME="105"></A>        <A HREF="../../../com/collective/celos/WorkflowInfo.java.html">WorkflowInfo</A> workflowInfo = cfg.findWorkflow(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"workflow-3"</FONT>)).getWorkflowInfo();
+<A NAME="106"></A>        Assert.assertEquals(<FONT ID="New">new</FONT> URL(<FONT ID="StringLiteral">"http://collective.com/workflow"</FONT>), workflowInfo.getUrl());
+<A NAME="107"></A>        Assert.assertEquals(<FONT ID="IntegerLiteral">1</FONT>, workflowInfo.getContacts().size());
+<A NAME="108"></A>        Assert.assertNull(workflowInfo.getContacts().get(<FONT ID="IntegerLiteral">0</FONT>).getName());
+<A NAME="109"></A>        Assert.assertEquals(URI.create(<FONT ID="StringLiteral">"john.doe@collective.com"</FONT>), workflowInfo.getContacts().get(<FONT ID="IntegerLiteral">0</FONT>).getEmail());
+<A NAME="110"></A>    }
+<A NAME="111"></A>
+<A NAME="112"></A>    @Test
+<A NAME="113"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> workflowInfoNoEmail() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="114"></A>        <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/WorkflowConfiguration.html">WorkflowConfiguration</A> cfg = parseFile(<FONT ID="StringLiteral">"workflow-info-test"</FONT>);
+<A NAME="115"></A>
+<A NAME="116"></A>        <A HREF="../../../com/collective/celos/WorkflowInfo.java.html">WorkflowInfo</A> workflowInfo = cfg.findWorkflow(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"workflow-4"</FONT>)).getWorkflowInfo();
+<A NAME="117"></A>        Assert.assertEquals(<FONT ID="New">new</FONT> URL(<FONT ID="StringLiteral">"http://collective.com/workflow"</FONT>), workflowInfo.getUrl());
+<A NAME="118"></A>        Assert.assertEquals(<FONT ID="IntegerLiteral">1</FONT>, workflowInfo.getContacts().size());
+<A NAME="119"></A>        Assert.assertEquals(<FONT ID="StringLiteral">"John Doe"</FONT>, workflowInfo.getContacts().get(<FONT ID="IntegerLiteral">0</FONT>).getName());
+<A NAME="120"></A>        Assert.assertNull(workflowInfo.getContacts().get(<FONT ID="IntegerLiteral">0</FONT>).getEmail());
+<A NAME="121"></A>    }
+<A NAME="122"></A>
+<A NAME="123"></A>    @Test
+<A NAME="124"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> workflowInfoNoContacts() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="125"></A>        <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/WorkflowConfiguration.html">WorkflowConfiguration</A> cfg = parseFile(<FONT ID="StringLiteral">"workflow-info-test"</FONT>);
+<A NAME="126"></A>
+<A NAME="127"></A>        <A HREF="../../../com/collective/celos/WorkflowInfo.java.html">WorkflowInfo</A> workflowInfo = cfg.findWorkflow(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"workflow-5"</FONT>)).getWorkflowInfo();
+<A NAME="128"></A>        Assert.assertEquals(<FONT ID="New">new</FONT> URL(<FONT ID="StringLiteral">"http://collective.com/workflow"</FONT>), workflowInfo.getUrl());
+<A NAME="129"></A>        Assert.assertTrue(workflowInfo.getContacts().isEmpty());
+<A NAME="130"></A>    }
+<A NAME="131"></A>
+<A NAME="132"></A>    @Test
+<A NAME="133"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> canFindWorkflow() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="134"></A>        <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/WorkflowConfiguration.html">WorkflowConfiguration</A> cfg = parseDir(<FONT ID="StringLiteral">"properties-test"</FONT>);
+<A NAME="135"></A>        <A HREF="../../../com/collective/celos/Workflow.java.html">Workflow</A> wf1 = cfg.findWorkflow(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"workflow-1"</FONT>));
+<A NAME="136"></A>        Assert.assertEquals(<FONT ID="IntegerLiteral">55</FONT>, wf1.getMaxRetryCount());
+<A NAME="137"></A>        Assert.assertNull(cfg.findWorkflow(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"foobar"</FONT>)));
+<A NAME="138"></A>    }
+<A NAME="139"></A>    
+<A NAME="140"></A>    @Test
+<A NAME="141"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> idMustExist() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="142"></A>        expectMessage(<FONT ID="StringLiteral">"id-missing"</FONT>, <FONT ID="StringLiteral">"Workflow ID must be a string"</FONT>);
+<A NAME="143"></A>    }
+<A NAME="144"></A>
+<A NAME="145"></A>    @Test
+<A NAME="146"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> idMustBeAString() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="147"></A>        expectMessage(<FONT ID="StringLiteral">"id-not-a-string"</FONT>, <FONT ID="StringLiteral">"Workflow ID must be a string"</FONT>);
+<A NAME="148"></A>    }
+<A NAME="149"></A>    
+<A NAME="150"></A>    @Test
+<A NAME="151"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> maxRetryCountUsesZeroIfNotSet() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="152"></A>        <A HREF="../../../com/collective/celos/Workflow.java.html">Workflow</A> wf = parseDir(<FONT ID="StringLiteral">"maxretrycount-missing"</FONT>).findWorkflow(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"workflow-1"</FONT>));
+<A NAME="153"></A>        Assert.assertEquals(<FONT ID="IntegerLiteral">0</FONT>, wf.getMaxRetryCount());
+<A NAME="154"></A>    }
+<A NAME="155"></A>    
+<A NAME="156"></A>    @Test
+<A NAME="157"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> maxRetryCountMustBeANumber() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="158"></A>        expectMessage(<FONT ID="StringLiteral">"maxretrycount-not-a-number"</FONT>, <FONT ID="StringLiteral">"Cannot convert foo to java.lang.Integer"</FONT>);
+<A NAME="159"></A>    }
+<A NAME="160"></A>    
+<A NAME="161"></A>    @Test
+<A NAME="162"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> doesntFailOnSingleWorkflowError() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="163"></A>        <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/WorkflowConfiguration.html">WorkflowConfiguration</A> cfg = parseDir(<FONT ID="StringLiteral">"single-error"</FONT>);
+<A NAME="164"></A>        Assert.assertEquals(<FONT ID="IntegerLiteral">2</FONT>, cfg.getWorkflows().size());
+<A NAME="165"></A>        Assert.assertNotNull(cfg.findWorkflow(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"workflow-1"</FONT>)));
+<A NAME="166"></A>        Assert.assertNotNull(cfg.findWorkflow(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"workflow-3"</FONT>)));
+<A NAME="167"></A>    }
+<A NAME="168"></A>    
+<A NAME="169"></A>    @Test
+<A NAME="170"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> doesntAllowDuplicateIDs() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="171"></A>        <FONT ID="SingleLineComment">// Directory contains 2 workflows, but one will be dropped because of duplicate ID.
+<A NAME="172"></A></FONT>        <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/WorkflowConfiguration.html">WorkflowConfiguration</A> cfg = parseFile(<FONT ID="StringLiteral">"duplicate-ids"</FONT>);
+<A NAME="173"></A>        Assert.assertEquals(<FONT ID="IntegerLiteral">1</FONT>, cfg.getWorkflows().size());
+<A NAME="174"></A>    }
+<A NAME="175"></A>    
+<A NAME="176"></A>    @Test
+<A NAME="177"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> scopesAreSeparate() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="178"></A>        parseNamedFile(<FONT ID="StringLiteral">"separate-scopes"</FONT>, <FONT ID="StringLiteral">"workflow-1"</FONT>);
+<A NAME="179"></A>        parseNamedFile(<FONT ID="StringLiteral">"separate-scopes"</FONT>, <FONT ID="StringLiteral">"workflow-2"</FONT>);
+<A NAME="180"></A>    }
+<A NAME="181"></A>    
+<A NAME="182"></A>    @Test
+<A NAME="183"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> defaultsWork() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="184"></A>        parseNamedFile(<FONT ID="StringLiteral">"uses-defaults"</FONT>, <FONT ID="StringLiteral">"workflow-1"</FONT>);
+<A NAME="185"></A>    }
+<A NAME="186"></A>
+<A NAME="187"></A>    @Test
+<A NAME="188"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> evaluatesAdditionalVar() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="189"></A>        <A HREF="../../../com/collective/celos/WorkflowConfigurationParser.java.html">WorkflowConfigurationParser</A> parser = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowConfigurationParser.java.html">WorkflowConfigurationParser</A>(<FONT ID="New">new</FONT> File(<FONT ID="StringLiteral">"unused"</FONT>), ImmutableMap.of(<FONT ID="StringLiteral">"var1"</FONT>, <FONT ID="StringLiteral">"val1"</FONT>));
+<A NAME="190"></A>        <FONT ID="SingleLineComment">// Evaluate JS function call
+<A NAME="191"></A></FONT>        Object jsResult = parser.evaluateReader(<FONT ID="New">new</FONT> StringReader(<FONT ID="StringLiteral">"var1"</FONT>), <FONT ID="StringLiteral">"string"</FONT>);
+<A NAME="192"></A>        Assert.assertEquals(jsResult, <FONT ID="StringLiteral">"val1"</FONT>);
+<A NAME="193"></A>    }
+<A NAME="194"></A>
+<A NAME="195"></A>    @Test
+<A NAME="196"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testTakesDefaultUsername() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="197"></A>
+<A NAME="198"></A>        URL resource = Thread.currentThread().getContextClassLoader().getResource(<FONT ID="StringLiteral">"com/collective/celos/defaults-oozie-props"</FONT>);
+<A NAME="199"></A>        File defaults = <FONT ID="New">new</FONT> File(resource.toURI());
+<A NAME="200"></A>
+<A NAME="201"></A>        <A HREF="../../../com/collective/celos/WorkflowConfigurationParser.java.html">WorkflowConfigurationParser</A> parser = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowConfigurationParser.java.html">WorkflowConfigurationParser</A>(defaults, ImmutableMap.of(<FONT ID="StringLiteral">"var1"</FONT>, <FONT ID="StringLiteral">"val1"</FONT>));
+<A NAME="202"></A>
+<A NAME="203"></A>        String func = <FONT ID="StringLiteral">"function (slotId) {"</FONT> +
+<A NAME="204"></A>                <FONT ID="StringLiteral">"        return {"</FONT> +
+<A NAME="205"></A>                <FONT ID="StringLiteral">"            \"oozie.wf.application.path\": \"/workflow.xml\","</FONT> +
+<A NAME="206"></A>                <FONT ID="StringLiteral">"            \"inputDir\": \"/input\","</FONT> +
+<A NAME="207"></A>                <FONT ID="StringLiteral">"            \"outputDir\": \"/output\""</FONT> +
+<A NAME="208"></A>                <FONT ID="StringLiteral">"        }"</FONT> +
+<A NAME="209"></A>                <FONT ID="StringLiteral">"    }"</FONT>;
+<A NAME="210"></A>
+<A NAME="211"></A>        String str = <FONT ID="StringLiteral">"importDefaults(\"test\"); celos.makePropertiesGen("</FONT> + func + <FONT ID="StringLiteral">"); "</FONT>;
+<A NAME="212"></A>        NativeJavaObject jsResult = (NativeJavaObject) parser.evaluateReader(<FONT ID="New">new</FONT> StringReader(str), <FONT ID="StringLiteral">"string"</FONT>);
+<A NAME="213"></A>        <A HREF="../../../com/collective/celos/PropertiesGenerator.java.html">PropertiesGenerator</A> generator = (<A HREF="../../../com/collective/celos/PropertiesGenerator.java.html">PropertiesGenerator</A>) jsResult.unwrap();
+<A NAME="214"></A>        Assert.assertEquals(generator.getProperties(<FONT ID="Null">null</FONT>).get(<FONT ID="StringLiteral">"user.name"</FONT>).asText(), <FONT ID="StringLiteral">"default"</FONT>);
+<A NAME="215"></A>    }
+<A NAME="216"></A>
+<A NAME="217"></A>    @Test
+<A NAME="218"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testTakesChangesUsername() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="219"></A>
+<A NAME="220"></A>        URL resource = Thread.currentThread().getContextClassLoader().getResource(<FONT ID="StringLiteral">"com/collective/celos/defaults-oozie-props"</FONT>);
+<A NAME="221"></A>        File defaults = <FONT ID="New">new</FONT> File(resource.toURI());
+<A NAME="222"></A>
+<A NAME="223"></A>        <A HREF="../../../com/collective/celos/WorkflowConfigurationParser.java.html">WorkflowConfigurationParser</A> parser = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowConfigurationParser.java.html">WorkflowConfigurationParser</A>(defaults, ImmutableMap.of(<FONT ID="StringLiteral">"CELOS_USER_JS_VAR"</FONT>, <FONT ID="StringLiteral">"nameIsChanged"</FONT>));
+<A NAME="224"></A>
+<A NAME="225"></A>        String func = <FONT ID="StringLiteral">"function (slotId) {"</FONT> +
+<A NAME="226"></A>                <FONT ID="StringLiteral">"        return {"</FONT> +
+<A NAME="227"></A>                <FONT ID="StringLiteral">"            \"oozie.wf.application.path\": \"/workflow.xml\","</FONT> +
+<A NAME="228"></A>                <FONT ID="StringLiteral">"            \"inputDir\": \"/input\","</FONT> +
+<A NAME="229"></A>                <FONT ID="StringLiteral">"            \"outputDir\": \"/output\""</FONT> +
+<A NAME="230"></A>                <FONT ID="StringLiteral">"        }"</FONT> +
+<A NAME="231"></A>                <FONT ID="StringLiteral">"    }"</FONT>;
+<A NAME="232"></A>
+<A NAME="233"></A>        String str = <FONT ID="StringLiteral">"importDefaults(\"test\"); celos.makePropertiesGen("</FONT> + func + <FONT ID="StringLiteral">"); "</FONT>;
+<A NAME="234"></A>        NativeJavaObject jsResult = (NativeJavaObject) parser.evaluateReader(<FONT ID="New">new</FONT> StringReader(str), <FONT ID="StringLiteral">"string"</FONT>);
+<A NAME="235"></A>        <A HREF="../../../com/collective/celos/PropertiesGenerator.java.html">PropertiesGenerator</A> generator = (<A HREF="../../../com/collective/celos/PropertiesGenerator.java.html">PropertiesGenerator</A>) jsResult.unwrap();
+<A NAME="236"></A>        Assert.assertEquals(generator.getProperties(<FONT ID="Null">null</FONT>).get(<FONT ID="StringLiteral">"user.name"</FONT>).asText(), <FONT ID="StringLiteral">"nameIsChanged"</FONT>);
+<A NAME="237"></A>    }
+<A NAME="238"></A>
+<A NAME="239"></A>
+<A NAME="240"></A>    @Test
+<A NAME="241"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> doesntEvaluateAdditionalVar() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="242"></A>        <A HREF="../../../com/collective/celos/WorkflowConfigurationParser.java.html">WorkflowConfigurationParser</A> parser = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowConfigurationParser.java.html">WorkflowConfigurationParser</A>(<FONT ID="New">new</FONT> File(<FONT ID="StringLiteral">"unused"</FONT>), ImmutableMap.&lt;String, String&gt;of());
+<A NAME="243"></A>        <FONT ID="Try">try</FONT> {
+<A NAME="244"></A>            parser.evaluateReader(<FONT ID="New">new</FONT> StringReader(<FONT ID="StringLiteral">"var1"</FONT>), <FONT ID="StringLiteral">"string"</FONT>);
+<A NAME="245"></A>        } <FONT ID="Catch">catch</FONT> (Exception e) {
+<A NAME="246"></A>            <FONT ID="If">if</FONT> (e.getMessage().contains(<FONT ID="StringLiteral">"\"var1\" is not defined"</FONT>)) {
+<A NAME="247"></A>                <FONT ID="Return">return</FONT>;
+<A NAME="248"></A>            }
+<A NAME="249"></A>        }
+<A NAME="250"></A>        Assert.fail();
+<A NAME="251"></A>    }
+<A NAME="252"></A>
+<A NAME="253"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/WorkflowConfiguration.html">WorkflowConfiguration</A> parseFile(String label) <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="254"></A>        <FONT ID="Return">return</FONT> parseNamedFile(label, <FONT ID="StringLiteral">"workflow-1"</FONT>);
+<A NAME="255"></A>    }
+<A NAME="256"></A>
+<A NAME="257"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/WorkflowConfiguration.html">WorkflowConfiguration</A> parseNamedFile(String label, String workflowName) <FONT ID="Throws">throws</FONT> URISyntaxException,
+<A NAME="258"></A>            Exception {
+<A NAME="259"></A>        File dir = getConfigurationDir(label);
+<A NAME="260"></A>        File defaults = getDefaultsDir();
+<A NAME="261"></A>        File workflow = <FONT ID="New">new</FONT> File(dir, workflowName + <FONT ID="StringLiteral">"."</FONT> + WorkflowConfigurationParser.WORKFLOW_FILE_EXTENSION);
+<A NAME="262"></A>        <A HREF="../../../com/collective/celos/WorkflowConfigurationParser.java.html">WorkflowConfigurationParser</A> workflowConfigurationParser = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowConfigurationParser.java.html">WorkflowConfigurationParser</A>(defaults, ImmutableMap.&lt;String, String&gt;of());
+<A NAME="263"></A>        workflowConfigurationParser.parseFile(workflow);
+<A NAME="264"></A>        <FONT ID="Return">return</FONT> workflowConfigurationParser.getWorkflowConfiguration();
+<A NAME="265"></A>    }
+<A NAME="266"></A>    
+<A NAME="267"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/WorkflowConfiguration.html">WorkflowConfiguration</A> parseDir(String label) <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="268"></A>        File dir = getConfigurationDir(label);
+<A NAME="269"></A>        File defaults = getDefaultsDir();
+<A NAME="270"></A>        <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowConfigurationParser.java.html">WorkflowConfigurationParser</A>(defaults, ImmutableMap.&lt;String, String&gt;of()).parseConfiguration(dir).getWorkflowConfiguration();
+<A NAME="271"></A>    }
+<A NAME="272"></A>
+<A NAME="273"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> File getConfigurationDir(String label) <FONT ID="Throws">throws</FONT> URISyntaxException {
+<A NAME="274"></A>        String path = <FONT ID="StringLiteral">"com/collective/celos/workflow-configuration-test/"</FONT> + label;
+<A NAME="275"></A>        URL resource = Thread.currentThread().getContextClassLoader().getResource(path);
+<A NAME="276"></A>        <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> File(resource.toURI());
+<A NAME="277"></A>    }
+<A NAME="278"></A>    
+<A NAME="279"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> File getDefaultsDir() <FONT ID="Throws">throws</FONT> URISyntaxException {
+<A NAME="280"></A>        String path = <FONT ID="StringLiteral">"com/collective/celos/defaults"</FONT>;
+<A NAME="281"></A>        URL resource = Thread.currentThread().getContextClassLoader().getResource(path);
+<A NAME="282"></A>        <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> File(resource.toURI());
+<A NAME="283"></A>    }
+<A NAME="284"></A>
+<A NAME="285"></A>    <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> expectMessage(String label, String message) <FONT ID="Throws">throws</FONT> AssertionError {
+<A NAME="286"></A>        <FONT ID="Try">try</FONT> {
+<A NAME="287"></A>            parseFile(label);
+<A NAME="288"></A>        } <FONT ID="Catch">catch</FONT>(Exception e) {
+<A NAME="289"></A>            <FONT ID="If">if</FONT> (e.getMessage().contains(message)) {
+<A NAME="290"></A>                <FONT ID="Return">return</FONT>;
+<A NAME="291"></A>            }
+<A NAME="292"></A>        }
+<A NAME="293"></A>        <FONT ID="Throw">throw</FONT> <FONT ID="New">new</FONT> AssertionError();
+<A NAME="294"></A>    }
+<A NAME="295"></A>    
+<A NAME="296"></A>
+<A NAME="297"></A>}
+<A NAME="298"></A></pre>
+</BODY>
+</HTML>

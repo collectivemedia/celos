@@ -1,0 +1,197 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.CelosClient (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">CelosClient.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> com.collective.celos.*;
+<A NAME="4"></A><FONT ID="Import">import</FONT> com.fasterxml.jackson.databind.node.ObjectNode;
+<A NAME="5"></A><FONT ID="Import">import</FONT> com.google.common.collect.Lists;
+<A NAME="6"></A><FONT ID="Import">import</FONT> org.apache.commons.lang.StringUtils;
+<A NAME="7"></A><FONT ID="Import">import</FONT> org.apache.http.HttpResponse;
+<A NAME="8"></A><FONT ID="Import">import</FONT> org.apache.http.client.HttpClient;
+<A NAME="9"></A><FONT ID="Import">import</FONT> org.apache.http.client.methods.HttpGet;
+<A NAME="10"></A><FONT ID="Import">import</FONT> org.apache.http.client.methods.HttpPost;
+<A NAME="11"></A><FONT ID="Import">import</FONT> org.apache.http.client.methods.HttpUriRequest;
+<A NAME="12"></A><FONT ID="Import">import</FONT> org.apache.http.client.utils.URIBuilder;
+<A NAME="13"></A><FONT ID="Import">import</FONT> org.apache.http.impl.client.DefaultHttpClient;
+<A NAME="14"></A><FONT ID="Import">import</FONT> org.apache.http.util.EntityUtils;
+<A NAME="15"></A><FONT ID="Import">import</FONT> com.fasterxml.jackson.databind.JsonNode;
+<A NAME="16"></A><FONT ID="Import">import</FONT> com.fasterxml.jackson.databind.ObjectMapper;
+<A NAME="17"></A>
+<A NAME="18"></A><FONT ID="Import">import</FONT> java.io.IOException;
+<A NAME="19"></A><FONT ID="Import">import</FONT> java.io.InputStream;
+<A NAME="20"></A><FONT ID="Import">import</FONT> java.net.URI;
+<A NAME="21"></A><FONT ID="Import">import</FONT> java.util.*;
+<A NAME="22"></A>
+<A NAME="23"></A><FONT ID="FormalComment">/**
+<A NAME="24"></A> * Created by akonopko on 10.12.14.
+<A NAME="25"></A> */</FONT>
+<A NAME="26"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> CelosClient {
+<A NAME="27"></A>
+<A NAME="28"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String SCHEDULER_PATH = <FONT ID="StringLiteral">"/scheduler"</FONT>;
+<A NAME="29"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String RERUN_PATH = <FONT ID="StringLiteral">"/rerun"</FONT>;
+<A NAME="30"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String SLOT_STATE_PATH = <FONT ID="StringLiteral">"/slot-state"</FONT>;
+<A NAME="31"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String CLEAR_CACHE_PATH = <FONT ID="StringLiteral">"/clear-cache"</FONT>;
+<A NAME="32"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String WORKFLOW_LIST_PATH = <FONT ID="StringLiteral">"/workflow-list"</FONT>;
+<A NAME="33"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String WORKFLOW_SLOTS_PATH = <FONT ID="StringLiteral">"/workflow-slots"</FONT>;
+<A NAME="34"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String START_TIME_PARAM = <FONT ID="StringLiteral">"start"</FONT>;
+<A NAME="35"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String END_TIME_PARAM = <FONT ID="StringLiteral">"end"</FONT>;
+<A NAME="36"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String TIME_PARAM = <FONT ID="StringLiteral">"time"</FONT>;
+<A NAME="37"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String ID_PARAM = <FONT ID="StringLiteral">"id"</FONT>;
+<A NAME="38"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String IDS_PARAM = <FONT ID="StringLiteral">"ids"</FONT>;
+<A NAME="39"></A>
+<A NAME="40"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> HttpClient client;
+<A NAME="41"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> <A HREF="../../../com/collective/celos/ScheduledTimeFormatter.java.html">ScheduledTimeFormatter</A> timeFormatter;
+<A NAME="42"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> URI address;
+<A NAME="43"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> ObjectMapper objectMapper = <FONT ID="New">new</FONT> ObjectMapper();
+<A NAME="44"></A>
+<A NAME="45"></A>    <FONT ID="Public">public</FONT> CelosClient(URI address) {
+<A NAME="46"></A>        <FONT ID="This">this</FONT>.address = Util.requireNonNull(address);
+<A NAME="47"></A>        <FONT ID="This">this</FONT>.client = <FONT ID="New">new</FONT> DefaultHttpClient();
+<A NAME="48"></A>        <FONT ID="This">this</FONT>.timeFormatter = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTimeFormatter.java.html">ScheduledTimeFormatter</A>();
+<A NAME="49"></A>    }
+<A NAME="50"></A>
+<A NAME="51"></A>    <FONT ID="Public">public</FONT> URI getAddress() {
+<A NAME="52"></A>        <FONT ID="Return">return</FONT> address;
+<A NAME="53"></A>    }
+<A NAME="54"></A>
+<A NAME="55"></A>    <FONT ID="Public">public</FONT> Set&lt;<A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>&gt; getWorkflowList() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="56"></A>        URIBuilder uriBuilder = <FONT ID="New">new</FONT> URIBuilder(address);
+<A NAME="57"></A>        uriBuilder.setPath(uriBuilder.getPath() + WORKFLOW_LIST_PATH);
+<A NAME="58"></A>
+<A NAME="59"></A>        HttpGet workflowListGet = <FONT ID="New">new</FONT> HttpGet(uriBuilder.build());
+<A NAME="60"></A>        HttpResponse getResponse = execute(workflowListGet);
+<A NAME="61"></A>        InputStream content = getResponse.getEntity().getContent();
+<A NAME="62"></A>        <FONT ID="Return">return</FONT> parseWorkflowIdsList(content);
+<A NAME="63"></A>    }
+<A NAME="64"></A>
+<A NAME="65"></A>    <FONT ID="Public">public</FONT> <A HREF="../../../com/collective/celos/WorkflowStatus.java.html">WorkflowStatus</A> getWorkflowStatus(<A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A> workflowID, <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> startTime, <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> endTime) <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="66"></A>
+<A NAME="67"></A>        URIBuilder uriBuilder = <FONT ID="New">new</FONT> URIBuilder(address);
+<A NAME="68"></A>        uriBuilder.setPath(uriBuilder.getPath() + WORKFLOW_SLOTS_PATH);
+<A NAME="69"></A>        <FONT ID="If">if</FONT> (endTime != <FONT ID="Null">null</FONT>) {
+<A NAME="70"></A>            uriBuilder.addParameter(END_TIME_PARAM, timeFormatter.formatPretty(endTime));
+<A NAME="71"></A>        }
+<A NAME="72"></A>        <FONT ID="If">if</FONT> (startTime != <FONT ID="Null">null</FONT>) {
+<A NAME="73"></A>            uriBuilder.addParameter(START_TIME_PARAM, timeFormatter.formatPretty(startTime));
+<A NAME="74"></A>        }
+<A NAME="75"></A>        uriBuilder.addParameter(ID_PARAM, workflowID.toString());
+<A NAME="76"></A>        URI uri = uriBuilder.build();
+<A NAME="77"></A>
+<A NAME="78"></A>        HttpGet workflowListGet = <FONT ID="New">new</FONT> HttpGet(uri);
+<A NAME="79"></A>        HttpResponse getResponse = execute(workflowListGet);
+<A NAME="80"></A>        InputStream content = getResponse.getEntity().getContent();
+<A NAME="81"></A>        <FONT ID="Return">return</FONT> parseWorkflowStatus(workflowID, content);
+<A NAME="82"></A>    }
+<A NAME="83"></A>
+<A NAME="84"></A>    <FONT ID="Public">public</FONT> <A HREF="../../../com/collective/celos/WorkflowStatus.java.html">WorkflowStatus</A> getWorkflowStatus(<A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A> workflowID, <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> endTime) <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="85"></A>        <FONT ID="Return">return</FONT> getWorkflowStatus(workflowID, <FONT ID="Null">null</FONT>, endTime);
+<A NAME="86"></A>    }
+<A NAME="87"></A>
+<A NAME="88"></A>    <FONT ID="Public">public</FONT> <A HREF="../../../com/collective/celos/WorkflowStatus.java.html">WorkflowStatus</A> getWorkflowStatus(<A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A> workflowID) <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="89"></A>        <FONT ID="Return">return</FONT> getWorkflowStatus(workflowID, <FONT ID="Null">null</FONT>, <FONT ID="Null">null</FONT>);
+<A NAME="90"></A>    }
+<A NAME="91"></A>
+<A NAME="92"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> iterateScheduler(<A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> scheduledTime) <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="93"></A>        iterateScheduler(scheduledTime, Collections.&lt;<A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>&gt;emptySet());
+<A NAME="94"></A>    }
+<A NAME="95"></A>
+<A NAME="96"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> iterateScheduler(<A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> scheduledTime, Set&lt;<A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>&gt; workflowIDs) <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="97"></A>        URIBuilder uriBuilder = <FONT ID="New">new</FONT> URIBuilder(address);
+<A NAME="98"></A>        uriBuilder.setPath(uriBuilder.getPath() + SCHEDULER_PATH);
+<A NAME="99"></A>        <FONT ID="If">if</FONT> (!workflowIDs.isEmpty()) {
+<A NAME="100"></A>            uriBuilder.addParameter(IDS_PARAM, StringUtils.join(workflowIDs, <FONT ID="StringLiteral">","</FONT>));
+<A NAME="101"></A>        }
+<A NAME="102"></A>        uriBuilder.addParameter(TIME_PARAM, timeFormatter.formatPretty(scheduledTime));
+<A NAME="103"></A>        executePost(uriBuilder.build());
+<A NAME="104"></A>    }
+<A NAME="105"></A>
+<A NAME="106"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> clearCache() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="107"></A>        URIBuilder uriBuilder = <FONT ID="New">new</FONT> URIBuilder(address);
+<A NAME="108"></A>        uriBuilder.setPath(uriBuilder.getPath() + CLEAR_CACHE_PATH);
+<A NAME="109"></A>        executePost(uriBuilder.build());
+<A NAME="110"></A>    }
+<A NAME="111"></A>
+<A NAME="112"></A>    <FONT ID="Public">public</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> getSlotState(<A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A> workflowID, <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> scheduledTime) <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="113"></A>        URIBuilder uriBuilder = <FONT ID="New">new</FONT> URIBuilder(address);
+<A NAME="114"></A>        uriBuilder.setPath(uriBuilder.getPath() + SLOT_STATE_PATH);
+<A NAME="115"></A>        uriBuilder.addParameter(ID_PARAM, workflowID.toString());
+<A NAME="116"></A>        uriBuilder.addParameter(TIME_PARAM, scheduledTime.toString());
+<A NAME="117"></A>
+<A NAME="118"></A>        HttpGet workflowListGet = <FONT ID="New">new</FONT> HttpGet(uriBuilder.build());
+<A NAME="119"></A>        HttpResponse getResponse = execute(workflowListGet);
+<A NAME="120"></A>        InputStream content = getResponse.getEntity().getContent();
+<A NAME="121"></A>        <FONT ID="Return">return</FONT> SlotState.fromJSONNode(workflowID, objectMapper.readValue(content, ObjectNode.<FONT ID="Class">class</FONT>));
+<A NAME="122"></A>    }
+<A NAME="123"></A>
+<A NAME="124"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> rerunSlot(<A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A> workflowID, <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> scheduledTime) <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="125"></A>        URIBuilder uriBuilder = <FONT ID="New">new</FONT> URIBuilder(address);
+<A NAME="126"></A>        uriBuilder.setPath(uriBuilder.getPath() + RERUN_PATH);
+<A NAME="127"></A>        uriBuilder.addParameter(ID_PARAM, workflowID.toString());
+<A NAME="128"></A>        uriBuilder.addParameter(TIME_PARAM, scheduledTime.toString());
+<A NAME="129"></A>        executePost(uriBuilder.build());
+<A NAME="130"></A>    }
+<A NAME="131"></A>
+<A NAME="132"></A>    <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> executePost(URI request) <FONT ID="Throws">throws</FONT> IOException {
+<A NAME="133"></A>        HttpPost post = <FONT ID="New">new</FONT> HttpPost(request);
+<A NAME="134"></A>        HttpResponse postResponse = execute(post);
+<A NAME="135"></A>        EntityUtils.consume(postResponse.getEntity());
+<A NAME="136"></A>    }
+<A NAME="137"></A>
+<A NAME="138"></A>    <FONT ID="Private">private</FONT> HttpResponse execute(HttpUriRequest request) <FONT ID="Throws">throws</FONT> IOException {
+<A NAME="139"></A>        HttpResponse getResponse = client.execute(request);
+<A NAME="140"></A>        <FONT ID="If">if</FONT> (errorResponse(getResponse)) {
+<A NAME="141"></A>            <FONT ID="Throw">throw</FONT> <FONT ID="New">new</FONT> IOException(getResponse.getStatusLine().toString());
+<A NAME="142"></A>        }
+<A NAME="143"></A>        <FONT ID="Return">return</FONT> getResponse;
+<A NAME="144"></A>    }
+<A NAME="145"></A>
+<A NAME="146"></A>    <FONT ID="Private">private</FONT> <FONT ID="Boolean">boolean</FONT> errorResponse(HttpResponse getResponse) {
+<A NAME="147"></A>        <FONT ID="Return">return</FONT> getResponse.getStatusLine() != <FONT ID="Null">null</FONT> &amp;&amp; getResponse.getStatusLine().getStatusCode() != <FONT ID="IntegerLiteral">200</FONT>;
+<A NAME="148"></A>    }
+<A NAME="149"></A>
+<A NAME="150"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Class">class</FONT> WorkflowList {
+<A NAME="151"></A>        <FONT ID="Private">private</FONT> Set&lt;<A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>&gt; ids;
+<A NAME="152"></A>
+<A NAME="153"></A>        <FONT ID="Public">public</FONT> Set&lt;<A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>&gt; getIds() {
+<A NAME="154"></A>            <FONT ID="Return">return</FONT> ids;
+<A NAME="155"></A>        }
+<A NAME="156"></A>    }
+<A NAME="157"></A>
+<A NAME="158"></A>    Set&lt;<A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>&gt; parseWorkflowIdsList(InputStream content) <FONT ID="Throws">throws</FONT> IOException {
+<A NAME="159"></A>        <FONT ID="Return">return</FONT> objectMapper.readValue(content, WorkflowList.<FONT ID="Class">class</FONT>).getIds();
+<A NAME="160"></A>    }
+<A NAME="161"></A>
+<A NAME="162"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String INFO_NODE = <FONT ID="StringLiteral">"info"</FONT>;
+<A NAME="163"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String SLOTS_NODE = <FONT ID="StringLiteral">"slots"</FONT>;
+<A NAME="164"></A>
+<A NAME="165"></A>    <A HREF="../../../com/collective/celos/WorkflowStatus.java.html">WorkflowStatus</A> parseWorkflowStatus(<A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A> workflowID, InputStream content) <FONT ID="Throws">throws</FONT> IOException {
+<A NAME="166"></A>        JsonNode node = objectMapper.readValue(content, JsonNode.<FONT ID="Class">class</FONT>);
+<A NAME="167"></A>        <A HREF="../../../com/collective/celos/WorkflowInfo.java.html">WorkflowInfo</A> info = objectMapper.treeToValue(node.get(INFO_NODE), <A HREF="../../../com/collective/celos/WorkflowInfo.java.html">WorkflowInfo</A>.<FONT ID="Class">class</FONT>);
+<A NAME="168"></A>
+<A NAME="169"></A>        Iterator&lt;JsonNode&gt; elems = node.get(SLOTS_NODE).elements();
+<A NAME="170"></A>        List&lt;<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>&gt; result = Lists.newArrayList();
+<A NAME="171"></A>        <FONT ID="While">while</FONT> (elems.hasNext()) {
+<A NAME="172"></A>            result.add(SlotState.fromJSONNode(workflowID, elems.next()));
+<A NAME="173"></A>        }
+<A NAME="174"></A>        <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowStatus.java.html">WorkflowStatus</A>(info, result);
+<A NAME="175"></A>    }
+<A NAME="176"></A>
+<A NAME="177"></A>}
+<A NAME="178"></A></pre>
+</BODY>
+</HTML>

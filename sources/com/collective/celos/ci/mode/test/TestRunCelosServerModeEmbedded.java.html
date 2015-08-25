@@ -1,0 +1,130 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.ci.mode.test.TestRunCelosServerModeEmbedded (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">TestRunCelosServerModeEmbedded.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos.ci.mode.test;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../com/collective/celos/Util.java.html">com.collective.celos.Util</A>;
+<A NAME="4"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../com/collective/celos/ci/config/CiCommandLine.java.html">com.collective.celos.ci.config.CiCommandLine</A>;
+<A NAME="5"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../com/collective/celos/ci/deploy/JScpWorker.java.html">com.collective.celos.ci.deploy.JScpWorker</A>;
+<A NAME="6"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../com/collective/celos/ci/deploy/WorkflowFilesDeployer.java.html">com.collective.celos.ci.deploy.WorkflowFilesDeployer</A>;
+<A NAME="7"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../com/collective/celos/server/CelosServer.java.html">com.collective.celos.server.CelosServer</A>;
+<A NAME="8"></A><FONT ID="Import">import</FONT> com.google.common.collect.ImmutableMap;
+<A NAME="9"></A><FONT ID="Import">import</FONT> org.apache.commons.vfs2.FileObject;
+<A NAME="10"></A><FONT ID="Import">import</FONT> org.apache.commons.vfs2.FileSystemException;
+<A NAME="11"></A><FONT ID="Import">import</FONT> org.apache.commons.vfs2.Selectors;
+<A NAME="12"></A>
+<A NAME="13"></A><FONT ID="Import">import</FONT> java.io.File;
+<A NAME="14"></A><FONT ID="Import">import</FONT> java.net.URI;
+<A NAME="15"></A><FONT ID="Import">import</FONT> java.net.URISyntaxException;
+<A NAME="16"></A><FONT ID="Import">import</FONT> java.util.Map;
+<A NAME="17"></A><FONT ID="Import">import</FONT> java.util.UUID;
+<A NAME="18"></A>
+<A NAME="19"></A><FONT ID="FormalComment">/**
+<A NAME="20"></A> * Created by akonopko on 10/1/14.
+<A NAME="21"></A> */</FONT>
+<A NAME="22"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> TestRunCelosServerModeEmbedded <FONT ID="Implements">implements</FONT> <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestRunCelosServerMode.java.html">TestRunCelosServerMode</A> {
+<A NAME="23"></A>
+<A NAME="24"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String HDFS_PREFIX_PATTERN = <FONT ID="StringLiteral">"/user/%s/.celos-ci/%s/%s"</FONT>;
+<A NAME="25"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String HDFS_PREFIX_JS_VAR = <FONT ID="StringLiteral">"HDFS_PREFIX_JS_VAR"</FONT>;
+<A NAME="26"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String TEST_UUID_JS_VAR = <FONT ID="StringLiteral">"TEST_UUID_JS_VAR"</FONT>;
+<A NAME="27"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String CELOS_USER_JS_VAR = <FONT ID="StringLiteral">"CELOS_USER_JS_VAR"</FONT>;
+<A NAME="28"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String WORKFLOW_DIR_CELOS_PATH = <FONT ID="StringLiteral">"workflows"</FONT>;
+<A NAME="29"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String DEFAULTS_DIR_CELOS_PATH = <FONT ID="StringLiteral">"defaults"</FONT>;
+<A NAME="30"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String DB_DIR_CELOS_PATH = <FONT ID="StringLiteral">"db"</FONT>;
+<A NAME="31"></A>
+<A NAME="32"></A>
+<A NAME="33"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> <A HREF="../../../../../../com/collective/celos/server/CelosServer.java.html">CelosServer</A> celosServer = <FONT ID="New">new</FONT> <A HREF="../../../../../../com/collective/celos/server/CelosServer.java.html">CelosServer</A>();
+<A NAME="34"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> File workflowsDir;
+<A NAME="35"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> File defaultsDir;
+<A NAME="36"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> File stateDatabase;
+<A NAME="37"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> String hdfsPrefix;
+<A NAME="38"></A>
+<A NAME="39"></A>    <FONT ID="Public">public</FONT> TestRunCelosServerModeEmbedded(<A HREF="../../../../../../com/collective/celos/ci/config/CiCommandLine.java.html">CiCommandLine</A> commandLine, File testCaseTempDir, UUID testUUID) {
+<A NAME="40"></A>        <FONT ID="This">this</FONT>.workflowsDir = <FONT ID="New">new</FONT> File(testCaseTempDir, WORKFLOW_DIR_CELOS_PATH);
+<A NAME="41"></A>        <FONT ID="This">this</FONT>.defaultsDir = <FONT ID="New">new</FONT> File(testCaseTempDir, DEFAULTS_DIR_CELOS_PATH);
+<A NAME="42"></A>        <FONT ID="This">this</FONT>.stateDatabase = <FONT ID="New">new</FONT> File(testCaseTempDir, DB_DIR_CELOS_PATH);
+<A NAME="43"></A>        <FONT ID="This">this</FONT>.hdfsPrefix = String.format(HDFS_PREFIX_PATTERN, commandLine.getUserName(), commandLine.getWorkflowName(), testUUID);
+<A NAME="44"></A>    }
+<A NAME="45"></A>
+<A NAME="46"></A>    <FONT ID="Public">public</FONT> String getHdfsPrefix() {
+<A NAME="47"></A>        <FONT ID="Return">return</FONT> <FONT ID="This">this</FONT>.hdfsPrefix;
+<A NAME="48"></A>    }
+<A NAME="49"></A>
+<A NAME="50"></A>    <FONT ID="Public">public</FONT> URI startServer(<A HREF="../../../../../../com/collective/celos/ci/mode/test/TestRun.java.html">TestRun</A> testRun) <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="51"></A>        Map additionalJSParams = ImmutableMap.of(
+<A NAME="52"></A>                HDFS_PREFIX_JS_VAR, hdfsPrefix,
+<A NAME="53"></A>                TEST_UUID_JS_VAR, testRun.getTestUUID(),
+<A NAME="54"></A>                CELOS_USER_JS_VAR, testRun.getCiContext().getUserName());
+<A NAME="55"></A>
+<A NAME="56"></A>        workflowsDir.mkdirs();
+<A NAME="57"></A>        defaultsDir.mkdirs();
+<A NAME="58"></A>        stateDatabase.mkdirs();
+<A NAME="59"></A>
+<A NAME="60"></A>        Integer port = Util.getFreePort();
+<A NAME="61"></A>
+<A NAME="62"></A>        celosServer.startServer(port, additionalJSParams, workflowsDir, defaultsDir, stateDatabase);
+<A NAME="63"></A>
+<A NAME="64"></A>        logJsFileExists(WorkflowFilesDeployer.WORKFLOW_FILENAME, testRun);
+<A NAME="65"></A>        logJsFileExists(WorkflowFilesDeployer.DEFAULTS_FILENAME, testRun);
+<A NAME="66"></A>
+<A NAME="67"></A>        copyRemoteDefaultsToLocal(testRun.getCiContext().getUserName(), testRun.getOriginalTarget().getDefaultsDirUri());
+<A NAME="68"></A>
+<A NAME="69"></A>        <FONT ID="Return">return</FONT> URI.create(<FONT ID="StringLiteral">"http://localhost:"</FONT> + port);
+<A NAME="70"></A>    }
+<A NAME="71"></A>
+<A NAME="72"></A>    <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> logJsFileExists(String fileName, <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestRun.java.html">TestRun</A> testRun) {
+<A NAME="73"></A>        File localFile = <FONT ID="New">new</FONT> File(testRun.getCiContext().getDeployDir(), fileName);
+<A NAME="74"></A>        <FONT ID="If">if</FONT> (!localFile.exists()) {
+<A NAME="75"></A>            System.out.println(testRun.getTestCase().getName() + <FONT ID="StringLiteral">": "</FONT> + localFile.getAbsolutePath() + <FONT ID="StringLiteral">" was not found, so not deploying it"</FONT>);
+<A NAME="76"></A>        }
+<A NAME="77"></A>    }
+<A NAME="78"></A>
+<A NAME="79"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> copyRemoteDefaultsToLocal(String username, URI defaultsDirUri)
+<A NAME="80"></A>            <FONT ID="Throws">throws</FONT> URISyntaxException, FileSystemException {
+<A NAME="81"></A>        <A HREF="../../../../../../com/collective/celos/ci/deploy/JScpWorker.java.html">JScpWorker</A> worker = <FONT ID="New">new</FONT> <A HREF="../../../../../../com/collective/celos/ci/deploy/JScpWorker.java.html">JScpWorker</A>(username);
+<A NAME="82"></A>        <FONT ID="If">if</FONT> (defaultsDirUri != <FONT ID="Null">null</FONT>) {
+<A NAME="83"></A>            FileObject remoteDefaultsDir = worker.getFileObjectByUri(defaultsDirUri);
+<A NAME="84"></A>            <FONT ID="If">if</FONT> (remoteDefaultsDir.exists()) {
+<A NAME="85"></A>                FileObject localDefaultsDir = worker.getFileObjectByUri(getCelosDefaultsDir());
+<A NAME="86"></A>                localDefaultsDir.copyFrom(remoteDefaultsDir, Selectors.SELECT_CHILDREN);
+<A NAME="87"></A>            }
+<A NAME="88"></A>        }
+<A NAME="89"></A>    }
+<A NAME="90"></A>
+<A NAME="91"></A>
+<A NAME="92"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> stopServer(<A HREF="../../../../../../com/collective/celos/ci/mode/test/TestRun.java.html">TestRun</A> testRun) {
+<A NAME="93"></A>        <FONT ID="Try">try</FONT> {
+<A NAME="94"></A>            System.out.println(testRun.getTestCase().getName() + <FONT ID="StringLiteral">": Stopping Celos"</FONT>);
+<A NAME="95"></A>            System.out.flush();
+<A NAME="96"></A>            celosServer.stopServer();
+<A NAME="97"></A>        } <FONT ID="Catch">catch</FONT> (Exception e) {
+<A NAME="98"></A>            e.printStackTrace(System.err);
+<A NAME="99"></A>        }
+<A NAME="100"></A>    }
+<A NAME="101"></A>
+<A NAME="102"></A>    <FONT ID="Public">public</FONT> URI getCelosWorkflowDir() {
+<A NAME="103"></A>        <FONT ID="Return">return</FONT> workflowsDir.toURI();
+<A NAME="104"></A>    }
+<A NAME="105"></A>
+<A NAME="106"></A>    <FONT ID="Public">public</FONT> URI getCelosDefaultsDir() {
+<A NAME="107"></A>        <FONT ID="Return">return</FONT> defaultsDir.toURI();
+<A NAME="108"></A>    }
+<A NAME="109"></A>
+<A NAME="110"></A>}
+<A NAME="111"></A></pre>
+</BODY>
+</HTML>

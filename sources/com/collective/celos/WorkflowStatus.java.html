@@ -1,0 +1,42 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.WorkflowStatus (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">WorkflowStatus.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> java.util.List;
+<A NAME="4"></A>
+<A NAME="5"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> WorkflowStatus {
+<A NAME="6"></A>
+<A NAME="7"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> <A HREF="../../../com/collective/celos/WorkflowInfo.java.html">WorkflowInfo</A> info;
+<A NAME="8"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> List&lt;<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>&gt; slotStates;
+<A NAME="9"></A>
+<A NAME="10"></A>    <FONT ID="Public">public</FONT> WorkflowStatus(<A HREF="../../../com/collective/celos/WorkflowInfo.java.html">WorkflowInfo</A> info, List&lt;<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>&gt; slotStates) {
+<A NAME="11"></A>        <FONT ID="This">this</FONT>.slotStates = slotStates;
+<A NAME="12"></A>        <FONT ID="This">this</FONT>.info = info;
+<A NAME="13"></A>    }
+<A NAME="14"></A>
+<A NAME="15"></A>    <FONT ID="Public">public</FONT> <A HREF="../../../com/collective/celos/WorkflowInfo.java.html">WorkflowInfo</A> getInfo() {
+<A NAME="16"></A>        <FONT ID="Return">return</FONT> info;
+<A NAME="17"></A>    }
+<A NAME="18"></A>
+<A NAME="19"></A>    <FONT ID="Public">public</FONT> List&lt;<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>&gt; getSlotStates() {
+<A NAME="20"></A>        <FONT ID="Return">return</FONT> slotStates;
+<A NAME="21"></A>    }
+<A NAME="22"></A>}
+<A NAME="23"></A></pre>
+</BODY>
+</HTML>

@@ -1,0 +1,73 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../../../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.ci.testing.fixtures.create.FixDirFromResourceCreator (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">FixDirFromResourceCreator.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos.ci.testing.fixtures.create;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../../com/collective/celos/ci/mode/test/TestRun.java.html">com.collective.celos.ci.mode.test.TestRun</A>;
+<A NAME="4"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixDir.java.html">com.collective.celos.ci.testing.structure.fixobject.FixDir</A>;
+<A NAME="5"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFile.java.html">com.collective.celos.ci.testing.structure.fixobject.FixFile</A>;
+<A NAME="6"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFsObject.java.html">com.collective.celos.ci.testing.structure.fixobject.FixFsObject</A>;
+<A NAME="7"></A><FONT ID="Import">import</FONT> com.google.common.collect.Maps;
+<A NAME="8"></A>
+<A NAME="9"></A><FONT ID="Import">import</FONT> java.io.File;
+<A NAME="10"></A><FONT ID="Import">import</FONT> java.io.FileInputStream;
+<A NAME="11"></A><FONT ID="Import">import</FONT> java.util.Map;
+<A NAME="12"></A>
+<A NAME="13"></A><FONT ID="FormalComment">/**
+<A NAME="14"></A> * Created by akonopko on 10/7/14.
+<A NAME="15"></A> */</FONT>
+<A NAME="16"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> FixDirFromResourceCreator <FONT ID="Implements">implements</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">FixObjectCreator</A>&lt;<A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixDir.java.html">FixDir</A>&gt; {
+<A NAME="17"></A>
+<A NAME="18"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> String relativePath;
+<A NAME="19"></A>
+<A NAME="20"></A>    <FONT ID="Public">public</FONT> FixDirFromResourceCreator(String path) {
+<A NAME="21"></A>        <FONT ID="This">this</FONT>.relativePath = path;
+<A NAME="22"></A>    }
+<A NAME="23"></A>
+<A NAME="24"></A>    <FONT ID="Public">public</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixDir.java.html">FixDir</A> create(<A HREF="../../../../../../../com/collective/celos/ci/mode/test/TestRun.java.html">TestRun</A> testRun) <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="25"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFile.java.html">File</A> path = getPath(testRun);
+<A NAME="26"></A>        <FONT ID="If">if</FONT> (!path.isDirectory()) {
+<A NAME="27"></A>            <FONT ID="Throw">throw</FONT> <FONT ID="New">new</FONT> IllegalStateException(<FONT ID="StringLiteral">"Cannot find directory: "</FONT> + path);
+<A NAME="28"></A>        }
+<A NAME="29"></A>        <FONT ID="Return">return</FONT> read(path).asDir();
+<A NAME="30"></A>    }
+<A NAME="31"></A>
+<A NAME="32"></A>    <FONT ID="Public">public</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFile.java.html">File</A> getPath(<A HREF="../../../../../../../com/collective/celos/ci/mode/test/TestRun.java.html">TestRun</A> testRun) {
+<A NAME="33"></A>        <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFile.java.html">File</A>(testRun.getTestCasesDir(), relativePath);
+<A NAME="34"></A>    }
+<A NAME="35"></A>
+<A NAME="36"></A>    @Override
+<A NAME="37"></A>    <FONT ID="Public">public</FONT> String getDescription(<A HREF="../../../../../../../com/collective/celos/ci/mode/test/TestRun.java.html">TestRun</A> testRun) {
+<A NAME="38"></A>        <FONT ID="Return">return</FONT> getPath(testRun).getAbsolutePath();
+<A NAME="39"></A>    }
+<A NAME="40"></A>
+<A NAME="41"></A>    <FONT ID="Private">private</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFsObject.java.html">FixFsObject</A> read(<A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFile.java.html">File</A> file) <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="42"></A>        <FONT ID="If">if</FONT> (file.isDirectory()) {
+<A NAME="43"></A>            Map&lt;String, <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFsObject.java.html">FixFsObject</A>&gt; content = Maps.newHashMap();
+<A NAME="44"></A>            <FONT ID="For">for</FONT> (<A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFile.java.html">File</A> f : file.listFiles()) {
+<A NAME="45"></A>                content.put(f.getName(), read(f));
+<A NAME="46"></A>            }
+<A NAME="47"></A>            <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixDir.java.html">FixDir</A>(content);
+<A NAME="48"></A>        } <FONT ID="Else">else</FONT> {
+<A NAME="49"></A>            <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFile.java.html">FixFile</A>(<FONT ID="New">new</FONT> FileInputStream(file));
+<A NAME="50"></A>        }
+<A NAME="51"></A>    }
+<A NAME="52"></A>
+<A NAME="53"></A>}
+<A NAME="54"></A></pre>
+</BODY>
+</HTML>

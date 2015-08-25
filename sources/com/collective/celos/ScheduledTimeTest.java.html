@@ -1,0 +1,146 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.ScheduledTimeTest (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">ScheduledTimeTest.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> <FONT ID="Static">static</FONT> org.junit.Assert.assertEquals;
+<A NAME="4"></A>
+<A NAME="5"></A><FONT ID="Import">import</FONT> org.junit.Assert;
+<A NAME="6"></A><FONT ID="Import">import</FONT> org.junit.Test;
+<A NAME="7"></A>
+<A NAME="8"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> ScheduledTimeTest {
+<A NAME="9"></A>    
+<A NAME="10"></A>    @Test
+<A NAME="11"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> scheduledTimeCompareToWorks() {
+<A NAME="12"></A>        <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> t1 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-11-26T13:00Z"</FONT>);
+<A NAME="13"></A>        <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> t2 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-11-26T13:01Z"</FONT>);
+<A NAME="14"></A>        Assert.assertEquals(-<FONT ID="IntegerLiteral">1</FONT>, t1.compareTo(t2));
+<A NAME="15"></A>        Assert.assertEquals(<FONT ID="IntegerLiteral">1</FONT>, t2.compareTo(t1));
+<A NAME="16"></A>        Assert.assertEquals(<FONT ID="IntegerLiteral">0</FONT>, t1.compareTo(t1));
+<A NAME="17"></A>        Assert.assertEquals(<FONT ID="IntegerLiteral">0</FONT>, t2.compareTo(t2));
+<A NAME="18"></A>    }
+<A NAME="19"></A>
+<A NAME="20"></A>    @Test
+<A NAME="21"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testMax() {
+<A NAME="22"></A>        <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> t1 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-11-26T13:00Z"</FONT>);
+<A NAME="23"></A>        <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> t2 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-11-26T13:01Z"</FONT>);
+<A NAME="24"></A>        Assert.assertEquals(t2, Util.max(t1, t2));
+<A NAME="25"></A>        Assert.assertEquals(t2, Util.max(t2, t1));
+<A NAME="26"></A>    }
+<A NAME="27"></A>    
+<A NAME="28"></A>    @Test
+<A NAME="29"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testGetYear() {
+<A NAME="30"></A>        <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> t = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-11-18T20:00Z"</FONT>);
+<A NAME="31"></A>        assertEquals(<FONT ID="IntegerLiteral">2013</FONT>, t.getYear());
+<A NAME="32"></A>    }
+<A NAME="33"></A>
+<A NAME="34"></A>    @Test
+<A NAME="35"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testGetMonth() {
+<A NAME="36"></A>        <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> t = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-11-18T20:00Z"</FONT>);
+<A NAME="37"></A>        assertEquals(<FONT ID="IntegerLiteral">11</FONT>, t.getMonth());
+<A NAME="38"></A>    }
+<A NAME="39"></A>
+<A NAME="40"></A>    @Test
+<A NAME="41"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testGetDay() {
+<A NAME="42"></A>        <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> t = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-11-18T20:00Z"</FONT>);
+<A NAME="43"></A>        assertEquals(<FONT ID="IntegerLiteral">18</FONT>, t.getDay());
+<A NAME="44"></A>    }
+<A NAME="45"></A>
+<A NAME="46"></A>    @Test
+<A NAME="47"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testGetHour() {
+<A NAME="48"></A>        <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> t = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-11-18T20:00Z"</FONT>);
+<A NAME="49"></A>        assertEquals(<FONT ID="IntegerLiteral">20</FONT>, t.getHour());
+<A NAME="50"></A>    }
+<A NAME="51"></A>
+<A NAME="52"></A>    @Test
+<A NAME="53"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testGetMinute() {
+<A NAME="54"></A>        <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> t = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-11-18T20:12Z"</FONT>);
+<A NAME="55"></A>        assertEquals(<FONT ID="IntegerLiteral">12</FONT>, t.getMinute());
+<A NAME="56"></A>    }
+<A NAME="57"></A>    
+<A NAME="58"></A>    @Test
+<A NAME="59"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testGetSecond() {
+<A NAME="60"></A>        <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> t = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-11-18T20:12:53Z"</FONT>);
+<A NAME="61"></A>        assertEquals(<FONT ID="IntegerLiteral">53</FONT>, t.getSecond());
+<A NAME="62"></A>    }
+<A NAME="63"></A>    
+<A NAME="64"></A>    @Test
+<A NAME="65"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testGetMillisecond() {
+<A NAME="66"></A>        <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> t = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-11-18T20:12:53.023Z"</FONT>);
+<A NAME="67"></A>        assertEquals(<FONT ID="IntegerLiteral">23</FONT>, t.getMillisecond());
+<A NAME="68"></A>    }
+<A NAME="69"></A>
+<A NAME="70"></A>    @Test
+<A NAME="71"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testChainSchedTimeModifications() {
+<A NAME="72"></A>        <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> t = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-11-18T20:12:53.023Z"</FONT>);
+<A NAME="73"></A>        <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> tNew = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2015-01-22T00:12:53.023Z"</FONT>);
+<A NAME="74"></A>
+<A NAME="75"></A>        <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> t2 = t.plusYears(<FONT ID="IntegerLiteral">1</FONT>).plusMonths(<FONT ID="IntegerLiteral">2</FONT>).plusDays(<FONT ID="IntegerLiteral">3</FONT>).plusHours(<FONT ID="IntegerLiteral">4</FONT>);
+<A NAME="76"></A>        assertEquals(t2, tNew);
+<A NAME="77"></A>
+<A NAME="78"></A>        <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> tOrig = tNew.minusYears(<FONT ID="IntegerLiteral">1</FONT>).minusMonths(<FONT ID="IntegerLiteral">2</FONT>).minusDays(<FONT ID="IntegerLiteral">3</FONT>).minusHours(<FONT ID="IntegerLiteral">4</FONT>);
+<A NAME="79"></A>        assertEquals(tOrig, t);
+<A NAME="80"></A>    }
+<A NAME="81"></A>
+<A NAME="82"></A>    @Test
+<A NAME="83"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testZeroPaddingStringFuncs() {
+<A NAME="84"></A>        <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> t = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-01-09T00:12:53.023Z"</FONT>);
+<A NAME="85"></A>        assertEquals(<FONT ID="StringLiteral">"2013"</FONT>, t.year());
+<A NAME="86"></A>        assertEquals(<FONT ID="StringLiteral">"01"</FONT>, t.month());
+<A NAME="87"></A>        assertEquals(<FONT ID="StringLiteral">"09"</FONT>, t.day());
+<A NAME="88"></A>        assertEquals(<FONT ID="StringLiteral">"00"</FONT>, t.hour());
+<A NAME="89"></A>        assertEquals(<FONT ID="StringLiteral">"12"</FONT>, t.minute());
+<A NAME="90"></A>        assertEquals(<FONT ID="StringLiteral">"53"</FONT>, t.second());
+<A NAME="91"></A>
+<A NAME="92"></A>        <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> t2 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-11-19T10:02:03.023Z"</FONT>);
+<A NAME="93"></A>        assertEquals(<FONT ID="StringLiteral">"2013"</FONT>, t2.year());
+<A NAME="94"></A>        assertEquals(<FONT ID="StringLiteral">"11"</FONT>, t2.month());
+<A NAME="95"></A>        assertEquals(<FONT ID="StringLiteral">"19"</FONT>, t2.day());
+<A NAME="96"></A>        assertEquals(<FONT ID="StringLiteral">"10"</FONT>, t2.hour());
+<A NAME="97"></A>        assertEquals(<FONT ID="StringLiteral">"02"</FONT>, t2.minute());
+<A NAME="98"></A>        assertEquals(<FONT ID="StringLiteral">"03"</FONT>, t2.second());
+<A NAME="99"></A>
+<A NAME="100"></A>    }
+<A NAME="101"></A>
+<A NAME="102"></A>    @Test
+<A NAME="103"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testChainSchedTimeModificationsOneByOne() {
+<A NAME="104"></A>
+<A NAME="105"></A>        <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> t = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-11-18T20:12:53.023Z"</FONT>);
+<A NAME="106"></A>
+<A NAME="107"></A>        assertEquals(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2014-11-18T20:12:53.023Z"</FONT>), t.plusYears(<FONT ID="IntegerLiteral">1</FONT>));
+<A NAME="108"></A>        assertEquals(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2012-11-18T20:12:53.023Z"</FONT>), t.minusYears(<FONT ID="IntegerLiteral">1</FONT>));
+<A NAME="109"></A>
+<A NAME="110"></A>        assertEquals(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-12-18T20:12:53.023Z"</FONT>), t.plusMonths(<FONT ID="IntegerLiteral">1</FONT>));
+<A NAME="111"></A>        assertEquals(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-10-18T20:12:53.023Z"</FONT>), t.minusMonths(<FONT ID="IntegerLiteral">1</FONT>));
+<A NAME="112"></A>
+<A NAME="113"></A>        assertEquals(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-11-19T20:12:53.023Z"</FONT>), t.plusDays(<FONT ID="IntegerLiteral">1</FONT>));
+<A NAME="114"></A>        assertEquals(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-11-17T20:12:53.023Z"</FONT>), t.minusDays(<FONT ID="IntegerLiteral">1</FONT>));
+<A NAME="115"></A>
+<A NAME="116"></A>        assertEquals(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-11-18T21:12:53.023Z"</FONT>), t.plusHours(<FONT ID="IntegerLiteral">1</FONT>));
+<A NAME="117"></A>        assertEquals(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-11-18T19:12:53.023Z"</FONT>), t.minusHours(<FONT ID="IntegerLiteral">1</FONT>));
+<A NAME="118"></A>
+<A NAME="119"></A>        assertEquals(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-11-18T20:13:53.023Z"</FONT>), t.plusMinutes(<FONT ID="IntegerLiteral">1</FONT>));
+<A NAME="120"></A>        assertEquals(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-11-18T20:11:53.023Z"</FONT>), t.minusMinutes(<FONT ID="IntegerLiteral">1</FONT>));
+<A NAME="121"></A>
+<A NAME="122"></A>        assertEquals(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-11-18T20:12:54.023Z"</FONT>), t.plusSeconds(<FONT ID="IntegerLiteral">1</FONT>));
+<A NAME="123"></A>        assertEquals(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-11-18T20:12:52.023Z"</FONT>), t.minusSeconds(<FONT ID="IntegerLiteral">1</FONT>));
+<A NAME="124"></A>    }
+<A NAME="125"></A>
+<A NAME="126"></A>}
+<A NAME="127"></A></pre>
+</BODY>
+</HTML>

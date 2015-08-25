@@ -1,0 +1,50 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.DependentSchedule (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">DependentSchedule.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> java.util.SortedSet;
+<A NAME="4"></A>
+<A NAME="5"></A><FONT ID="FormalComment">/**
+<A NAME="6"></A> * Makes a workflow use the same schedule as another workflow.
+<A NAME="7"></A> */</FONT>
+<A NAME="8"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> DependentSchedule <FONT ID="Implements">implements</FONT> <A HREF="../../../com/collective/celos/Schedule.java.html">Schedule</A> {
+<A NAME="9"></A>
+<A NAME="10"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A> otherWorkflowID;
+<A NAME="11"></A>
+<A NAME="12"></A>    <FONT ID="Public">public</FONT> DependentSchedule(<A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A> otherWorkflowID) {
+<A NAME="13"></A>        <FONT ID="This">this</FONT>.otherWorkflowID = Util.requireNonNull(otherWorkflowID);
+<A NAME="14"></A>    }
+<A NAME="15"></A>    
+<A NAME="16"></A>    @Override
+<A NAME="17"></A>    <FONT ID="Public">public</FONT> SortedSet&lt;<A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>&gt; getScheduledTimes(<A HREF="../../../com/collective/celos/Scheduler.java.html">Scheduler</A> scheduler, <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> start, <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> end) {
+<A NAME="18"></A>        <A HREF="../../../com/collective/celos/Workflow.java.html">Workflow</A> otherWorkflow = scheduler.getWorkflowConfiguration().findWorkflow(getOtherWorkflowID());
+<A NAME="19"></A>        <FONT ID="If">if</FONT> (otherWorkflow == <FONT ID="Null">null</FONT>) {
+<A NAME="20"></A>            <FONT ID="Throw">throw</FONT> <FONT ID="New">new</FONT> RuntimeException(<FONT ID="StringLiteral">"Workflow "</FONT> + getOtherWorkflowID() + <FONT ID="StringLiteral">" doesn't exist."</FONT>);
+<A NAME="21"></A>        }
+<A NAME="22"></A>        <A HREF="../../../com/collective/celos/Schedule.java.html">Schedule</A> otherSchedule = otherWorkflow.getSchedule();
+<A NAME="23"></A>        <FONT ID="Return">return</FONT> otherSchedule.getScheduledTimes(scheduler, start, end);
+<A NAME="24"></A>    }
+<A NAME="25"></A>
+<A NAME="26"></A>    <FONT ID="Public">public</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A> getOtherWorkflowID() {
+<A NAME="27"></A>        <FONT ID="Return">return</FONT> otherWorkflowID;
+<A NAME="28"></A>    }
+<A NAME="29"></A>
+<A NAME="30"></A>}
+<A NAME="31"></A></pre>
+</BODY>
+</HTML>

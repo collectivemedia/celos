@@ -1,0 +1,64 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../../../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.ci.testing.fixtures.create.FixFileFromResourceCreator (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">FixFileFromResourceCreator.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos.ci.testing.fixtures.create;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../../com/collective/celos/Util.java.html">com.collective.celos.Util</A>;
+<A NAME="4"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../../com/collective/celos/ci/mode/test/TestRun.java.html">com.collective.celos.ci.mode.test.TestRun</A>;
+<A NAME="5"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFile.java.html">com.collective.celos.ci.testing.structure.fixobject.FixFile</A>;
+<A NAME="6"></A>
+<A NAME="7"></A><FONT ID="Import">import</FONT> java.io.File;
+<A NAME="8"></A><FONT ID="Import">import</FONT> java.io.FileInputStream;
+<A NAME="9"></A><FONT ID="Import">import</FONT> java.nio.file.Path;
+<A NAME="10"></A><FONT ID="Import">import</FONT> java.nio.file.Paths;
+<A NAME="11"></A>
+<A NAME="12"></A><FONT ID="FormalComment">/**
+<A NAME="13"></A> * Created by akonopko on 10/7/14.
+<A NAME="14"></A> */</FONT>
+<A NAME="15"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> FixFileFromResourceCreator <FONT ID="Implements">implements</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">FixObjectCreator</A>&lt;<A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFile.java.html">FixFile</A>&gt; {
+<A NAME="16"></A>
+<A NAME="17"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> Path relativePath;
+<A NAME="18"></A>
+<A NAME="19"></A>    <FONT ID="Public">public</FONT> FixFileFromResourceCreator(Path path) {
+<A NAME="20"></A>        <FONT ID="This">this</FONT>.relativePath = Util.requireNonNull(path);
+<A NAME="21"></A>    }
+<A NAME="22"></A>    
+<A NAME="23"></A>    <FONT ID="Public">public</FONT> FixFileFromResourceCreator(String path) {
+<A NAME="24"></A>        <FONT ID="This">this</FONT>(Paths.get(path));
+<A NAME="25"></A>    }
+<A NAME="26"></A>
+<A NAME="27"></A>    <FONT ID="Public">public</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFile.java.html">FixFile</A> create(<A HREF="../../../../../../../com/collective/celos/ci/mode/test/TestRun.java.html">TestRun</A> testRun) <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="28"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFile.java.html">File</A> path = getPath(testRun);
+<A NAME="29"></A>        <FONT ID="If">if</FONT> (!path.isFile()) {
+<A NAME="30"></A>            <FONT ID="Throw">throw</FONT> <FONT ID="New">new</FONT> IllegalStateException(<FONT ID="StringLiteral">"Cannot find file: "</FONT> + path);
+<A NAME="31"></A>        }
+<A NAME="32"></A>        <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFile.java.html">FixFile</A>(<FONT ID="New">new</FONT> FileInputStream(path));
+<A NAME="33"></A>    }
+<A NAME="34"></A>
+<A NAME="35"></A>    <FONT ID="Public">public</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFile.java.html">File</A> getPath(<A HREF="../../../../../../../com/collective/celos/ci/mode/test/TestRun.java.html">TestRun</A> testRun) {
+<A NAME="36"></A>        <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFile.java.html">File</A>(testRun.getTestCasesDir(), relativePath.toString());
+<A NAME="37"></A>    }
+<A NAME="38"></A>
+<A NAME="39"></A>    @Override
+<A NAME="40"></A>    <FONT ID="Public">public</FONT> String getDescription(<A HREF="../../../../../../../com/collective/celos/ci/mode/test/TestRun.java.html">TestRun</A> testRun) {
+<A NAME="41"></A>        <FONT ID="Return">return</FONT> getPath(testRun).getAbsolutePath();
+<A NAME="42"></A>    }
+<A NAME="43"></A>
+<A NAME="44"></A>}
+<A NAME="45"></A></pre>
+</BODY>
+</HTML>

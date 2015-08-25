@@ -1,0 +1,83 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.servlet.JSONWorkflowServlet (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">JSONWorkflowServlet.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos.servlet;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> com.collective.celos.*;
+<A NAME="4"></A><FONT ID="Import">import</FONT> com.fasterxml.jackson.databind.node.ObjectNode;
+<A NAME="5"></A>
+<A NAME="6"></A><FONT ID="Import">import</FONT> javax.servlet.ServletException;
+<A NAME="7"></A><FONT ID="Import">import</FONT> javax.servlet.http.HttpServletRequest;
+<A NAME="8"></A><FONT ID="Import">import</FONT> javax.servlet.http.HttpServletResponse;
+<A NAME="9"></A><FONT ID="Import">import</FONT> java.util.List;
+<A NAME="10"></A>
+<A NAME="11"></A><FONT ID="FormalComment">/**
+<A NAME="12"></A> * Returns information about the slot states of a single workflow as JSON.
+<A NAME="13"></A> * 
+<A NAME="14"></A> * GET /workflow?id=workflow-1
+<A NAME="15"></A> * ----
+<A NAME="16"></A> * {
+<A NAME="17"></A> *   "slots": {
+<A NAME="18"></A> *     "2013-12-07T13:00:00.000Z": { "status": "RUNNING", "externalID": "237982137-371832798321-W", retryCount: 5 },
+<A NAME="19"></A> *     "2013-12-07T14:00:00.000Z": { "status": "READY", "externalID": null, retryCount: 0 },
+<A NAME="20"></A> *     ...
+<A NAME="21"></A> *   }
+<A NAME="22"></A> * }
+<A NAME="23"></A> * 
+<A NAME="24"></A> * If the "time" parameter is supplied, information is returned about 
+<A NAME="25"></A> * slot states up to that time.
+<A NAME="26"></A> */</FONT>
+<A NAME="27"></A>@SuppressWarnings(<FONT ID="StringLiteral">"serial"</FONT>)
+<A NAME="28"></A>@Deprecated
+<A NAME="29"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> JSONWorkflowServlet <FONT ID="Extends">extends</FONT> <A HREF="../../../../com/collective/celos/servlet/AbstractJSONServlet.java.html">AbstractJSONServlet</A> {
+<A NAME="30"></A>
+<A NAME="31"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String ID_PARAM = <FONT ID="StringLiteral">"id"</FONT>;
+<A NAME="32"></A>
+<A NAME="33"></A>    <FONT ID="Protected">protected</FONT> <FONT ID="Void">void</FONT> doGet(HttpServletRequest req, HttpServletResponse res) <FONT ID="Throws">throws</FONT> ServletException {
+<A NAME="34"></A>        String id = req.getParameter(ID_PARAM);
+<A NAME="35"></A>        <FONT ID="Try">try</FONT> {
+<A NAME="36"></A>            <FONT ID="If">if</FONT> (id == <FONT ID="Null">null</FONT>) {
+<A NAME="37"></A>                res.sendError(HttpServletResponse.SC_BAD_REQUEST, ID_PARAM + <FONT ID="StringLiteral">" parameter missing."</FONT>);
+<A NAME="38"></A>                <FONT ID="Return">return</FONT>;
+<A NAME="39"></A>            }
+<A NAME="40"></A>            Scheduler scheduler = getOrCreateCachedScheduler();
+<A NAME="41"></A>            Workflow wf = scheduler.getWorkflowConfiguration().findWorkflow(<FONT ID="New">new</FONT> WorkflowID(id));
+<A NAME="42"></A>            <FONT ID="If">if</FONT> (wf == <FONT ID="Null">null</FONT>) {
+<A NAME="43"></A>                res.sendError(HttpServletResponse.SC_NOT_FOUND, <FONT ID="StringLiteral">"Workflow not found: "</FONT> + id);
+<A NAME="44"></A>            } <FONT ID="Else">else</FONT> {
+<A NAME="45"></A>                ScheduledTime time = getRequestTime(req);
+<A NAME="46"></A>                List&lt;SlotState&gt; slotStates = scheduler.getSlotStates(wf, scheduler.getWorkflowStartTime(wf, time), time);
+<A NAME="47"></A>                ObjectNode object = createJSONObject(slotStates);
+<A NAME="48"></A>                writer.writeValue(res.getOutputStream(), object);
+<A NAME="49"></A>            }
+<A NAME="50"></A>        } <FONT ID="Catch">catch</FONT> (Exception e) {
+<A NAME="51"></A>            <FONT ID="Throw">throw</FONT> <FONT ID="New">new</FONT> ServletException(e);
+<A NAME="52"></A>        }
+<A NAME="53"></A>    }
+<A NAME="54"></A>
+<A NAME="55"></A>    ObjectNode createJSONObject(List&lt;SlotState&gt; slotStates) {
+<A NAME="56"></A>        ObjectNode node = mapper.createObjectNode();
+<A NAME="57"></A>        <FONT ID="For">for</FONT> (SlotState state : slotStates) {
+<A NAME="58"></A>            node.put(state.getScheduledTime().toString(), state.toJSONNode());
+<A NAME="59"></A>        }
+<A NAME="60"></A>        <FONT ID="Return">return</FONT> node;
+<A NAME="61"></A>    }
+<A NAME="62"></A>
+<A NAME="63"></A>}
+<A NAME="64"></A></pre>
+</BODY>
+</HTML>

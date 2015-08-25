@@ -1,0 +1,101 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.ci.config.CiCommandLineParser (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">CiCommandLineParser.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos.ci.config;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> org.apache.commons.cli.*;
+<A NAME="4"></A>
+<A NAME="5"></A><FONT ID="Import">import</FONT> java.io.OutputStream;
+<A NAME="6"></A><FONT ID="Import">import</FONT> java.io.PrintWriter;
+<A NAME="7"></A>
+<A NAME="8"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> CiCommandLineParser {
+<A NAME="9"></A>
+<A NAME="10"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String CLI_TARGET = <FONT ID="StringLiteral">"target"</FONT>;
+<A NAME="11"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String CLI_MODE = <FONT ID="StringLiteral">"mode"</FONT>;
+<A NAME="12"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String CLI_DEPLOY_DIR = <FONT ID="StringLiteral">"deployDir"</FONT>;
+<A NAME="13"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String CLI_WORKFLOW_NAME = <FONT ID="StringLiteral">"workflowName"</FONT>;
+<A NAME="14"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String CLI_TEST_CASES_DIR = <FONT ID="StringLiteral">"testDir"</FONT>;
+<A NAME="15"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String CLI_CELOS_SERVER = <FONT ID="StringLiteral">"celosServer"</FONT>;
+<A NAME="16"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String DEFAULT_TEST_CASES_DIR = <FONT ID="StringLiteral">"src/test/celos-ci"</FONT>;
+<A NAME="17"></A>    <FONT ID="Protected">protected</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String USERNAME_ENV_VAR = <FONT ID="StringLiteral">"CELOS_CI_USERNAME"</FONT>;
+<A NAME="18"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String KEEP_TEMP_DATA = <FONT ID="StringLiteral">"KEEP_TEMP_DATA"</FONT>;
+<A NAME="19"></A>
+<A NAME="20"></A>    <FONT ID="Public">public</FONT> <A HREF="../../../../../com/collective/celos/ci/config/CiCommandLine.java.html">CiCommandLine</A> parse(<FONT ID="Final">final</FONT> String[] commandLineArguments) <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="21"></A>
+<A NAME="22"></A>        <FONT ID="Final">final</FONT> CommandLineParser cmdLineGnuParser = <FONT ID="New">new</FONT> GnuParser();
+<A NAME="23"></A>        <FONT ID="Final">final</FONT> Options gnuOptions = constructOptions();
+<A NAME="24"></A>        CommandLine commandLine = cmdLineGnuParser.parse(gnuOptions, commandLineArguments);
+<A NAME="25"></A>
+<A NAME="26"></A>        <FONT ID="If">if</FONT> (!commandLine.hasOption(CLI_TARGET) || !commandLine.hasOption(CLI_MODE) || !commandLine.hasOption(CLI_WORKFLOW_NAME)) {
+<A NAME="27"></A>            printHelp(<FONT ID="IntegerLiteral">80</FONT>, <FONT ID="IntegerLiteral">5</FONT>, <FONT ID="IntegerLiteral">3</FONT>, <FONT ID="True">true</FONT>, System.out);
+<A NAME="28"></A>            <FONT ID="Throw">throw</FONT> <FONT ID="New">new</FONT> RuntimeException(<FONT ID="StringLiteral">"Wrong CelosCi configuration provided"</FONT>);
+<A NAME="29"></A>        }
+<A NAME="30"></A>
+<A NAME="31"></A>        String deployDir = commandLine.getOptionValue(CLI_DEPLOY_DIR);
+<A NAME="32"></A>        String mode = commandLine.getOptionValue(CLI_MODE);
+<A NAME="33"></A>        String workflowName = commandLine.getOptionValue(CLI_WORKFLOW_NAME);
+<A NAME="34"></A>        String targetUri = commandLine.getOptionValue(CLI_TARGET);
+<A NAME="35"></A>        String testCasesDir = commandLine.getOptionValue(CLI_TEST_CASES_DIR, DEFAULT_TEST_CASES_DIR);
+<A NAME="36"></A>        String celosServerUri = commandLine.getOptionValue(CLI_CELOS_SERVER);
+<A NAME="37"></A>
+<A NAME="38"></A>        <FONT ID="Boolean">boolean</FONT> keepTempData = Boolean.parseBoolean(System.getenv(KEEP_TEMP_DATA));
+<A NAME="39"></A>        String userName = System.getenv(USERNAME_ENV_VAR);
+<A NAME="40"></A>        <FONT ID="If">if</FONT> (userName == <FONT ID="Null">null</FONT>) {
+<A NAME="41"></A>            userName = System.getProperty(<FONT ID="StringLiteral">"user.name"</FONT>);
+<A NAME="42"></A>        }
+<A NAME="43"></A>        <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> <A HREF="../../../../../com/collective/celos/ci/config/CiCommandLine.java.html">CiCommandLine</A>(targetUri, mode, deployDir, workflowName, testCasesDir, userName, keepTempData, celosServerUri);
+<A NAME="44"></A>    }
+<A NAME="45"></A>
+<A NAME="46"></A>    <FONT ID="Public">public</FONT> Options constructOptions() {
+<A NAME="47"></A>        <FONT ID="Final">final</FONT> Options options = <FONT ID="New">new</FONT> Options();
+<A NAME="48"></A>        options.addOption(CLI_TARGET, CLI_TARGET, <FONT ID="True">true</FONT>, <FONT ID="StringLiteral">"Path to target JSON (alternative to command line)"</FONT>)
+<A NAME="49"></A>                .addOption(CLI_MODE, CLI_MODE, <FONT ID="True">true</FONT>, <FONT ID="StringLiteral">"Mode. Defaults to DEPLOY"</FONT>)
+<A NAME="50"></A>                .addOption(CLI_DEPLOY_DIR, CLI_DEPLOY_DIR, <FONT ID="True">true</FONT>, <FONT ID="StringLiteral">"Deploy directory. Path to workflow you want to deploy"</FONT>)
+<A NAME="51"></A>                .addOption(CLI_WORKFLOW_NAME, CLI_WORKFLOW_NAME, <FONT ID="True">true</FONT>, <FONT ID="StringLiteral">"Workflow JS file name"</FONT>)
+<A NAME="52"></A>                .addOption(CLI_TEST_CASES_DIR, CLI_TEST_CASES_DIR, <FONT ID="True">true</FONT>, <FONT ID="StringLiteral">"Test cases dir"</FONT>)
+<A NAME="53"></A>                .addOption(CLI_CELOS_SERVER, CLI_CELOS_SERVER, <FONT ID="True">true</FONT>, <FONT ID="StringLiteral">"Celos Server (for remote Celos mode)"</FONT>);
+<A NAME="54"></A>
+<A NAME="55"></A>        <FONT ID="Return">return</FONT> options;
+<A NAME="56"></A>    }
+<A NAME="57"></A>
+<A NAME="58"></A>
+<A NAME="59"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> printHelp(
+<A NAME="60"></A>            <FONT ID="Final">final</FONT> <FONT ID="Int">int</FONT> printedRowWidth,
+<A NAME="61"></A>            <FONT ID="Final">final</FONT> <FONT ID="Int">int</FONT> spacesBeforeOption,
+<A NAME="62"></A>            <FONT ID="Final">final</FONT> <FONT ID="Int">int</FONT> spacesBeforeOptionDescription,
+<A NAME="63"></A>            <FONT ID="Final">final</FONT> <FONT ID="Boolean">boolean</FONT> displayUsage,
+<A NAME="64"></A>            <FONT ID="Final">final</FONT> OutputStream out) {
+<A NAME="65"></A>        <FONT ID="Final">final</FONT> String commandLineSyntax = <FONT ID="StringLiteral">"hadoop jar &lt;celos cd jarname&gt;.jar"</FONT>;
+<A NAME="66"></A>        <FONT ID="Final">final</FONT> PrintWriter writer = <FONT ID="New">new</FONT> PrintWriter(out);
+<A NAME="67"></A>        <FONT ID="Final">final</FONT> HelpFormatter helpFormatter = <FONT ID="New">new</FONT> HelpFormatter();
+<A NAME="68"></A>        helpFormatter.printHelp(
+<A NAME="69"></A>                writer,
+<A NAME="70"></A>                printedRowWidth,
+<A NAME="71"></A>                commandLineSyntax,
+<A NAME="72"></A>                <FONT ID="Null">null</FONT>,
+<A NAME="73"></A>                constructOptions(),
+<A NAME="74"></A>                spacesBeforeOption,
+<A NAME="75"></A>                spacesBeforeOptionDescription,
+<A NAME="76"></A>                <FONT ID="Null">null</FONT>,
+<A NAME="77"></A>                displayUsage);
+<A NAME="78"></A>        writer.flush();
+<A NAME="79"></A>    }
+<A NAME="80"></A>
+<A NAME="81"></A>}
+<A NAME="82"></A></pre>
+</BODY>
+</HTML>

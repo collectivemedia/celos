@@ -1,0 +1,75 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.WorkflowInfo (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">WorkflowInfo.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> java.net.URI;
+<A NAME="4"></A><FONT ID="Import">import</FONT> java.net.URL;
+<A NAME="5"></A><FONT ID="Import">import</FONT> java.util.List;
+<A NAME="6"></A>
+<A NAME="7"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> WorkflowInfo {
+<A NAME="8"></A>
+<A NAME="9"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Class">class</FONT> ContactsInfo {
+<A NAME="10"></A>
+<A NAME="11"></A>        <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> URI email;
+<A NAME="12"></A>
+<A NAME="13"></A>        <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> String name;
+<A NAME="14"></A>
+<A NAME="15"></A>        <FONT ID="Private">private</FONT> ContactsInfo() {
+<A NAME="16"></A>            <FONT ID="This">this</FONT>.email = <FONT ID="Null">null</FONT>;
+<A NAME="17"></A>            <FONT ID="This">this</FONT>.name = <FONT ID="Null">null</FONT>;
+<A NAME="18"></A>        }
+<A NAME="19"></A>
+<A NAME="20"></A>        <FONT ID="Public">public</FONT> ContactsInfo(String name, String email) {
+<A NAME="21"></A>            <FONT ID="This">this</FONT>.email = email == <FONT ID="Null">null</FONT> ? <FONT ID="Null">null</FONT> : URI.create(email);
+<A NAME="22"></A>            <FONT ID="This">this</FONT>.name = name;
+<A NAME="23"></A>        }
+<A NAME="24"></A>
+<A NAME="25"></A>        <FONT ID="Public">public</FONT> URI getEmail() {
+<A NAME="26"></A>            <FONT ID="Return">return</FONT> email;
+<A NAME="27"></A>        }
+<A NAME="28"></A>
+<A NAME="29"></A>        <FONT ID="Public">public</FONT> String getName() {
+<A NAME="30"></A>            <FONT ID="Return">return</FONT> name;
+<A NAME="31"></A>        }
+<A NAME="32"></A>    }
+<A NAME="33"></A>
+<A NAME="34"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> URL url;
+<A NAME="35"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> List&lt;ContactsInfo&gt; contacts;
+<A NAME="36"></A>
+<A NAME="37"></A>    <FONT ID="Private">private</FONT> WorkflowInfo() {
+<A NAME="38"></A>        <FONT ID="This">this</FONT>.url = <FONT ID="Null">null</FONT>;
+<A NAME="39"></A>        <FONT ID="This">this</FONT>.contacts = <FONT ID="Null">null</FONT>;
+<A NAME="40"></A>    }
+<A NAME="41"></A>
+<A NAME="42"></A>    <FONT ID="Public">public</FONT> WorkflowInfo(URL url, List&lt;ContactsInfo&gt; contacts) {
+<A NAME="43"></A>        <FONT ID="This">this</FONT>.url = url;
+<A NAME="44"></A>        <FONT ID="This">this</FONT>.contacts = contacts;
+<A NAME="45"></A>    }
+<A NAME="46"></A>
+<A NAME="47"></A>    <FONT ID="Public">public</FONT> URL getUrl() {
+<A NAME="48"></A>        <FONT ID="Return">return</FONT> url;
+<A NAME="49"></A>    }
+<A NAME="50"></A>
+<A NAME="51"></A>    <FONT ID="Public">public</FONT> List&lt;ContactsInfo&gt; getContacts() {
+<A NAME="52"></A>        <FONT ID="Return">return</FONT> contacts;
+<A NAME="53"></A>    }
+<A NAME="54"></A>
+<A NAME="55"></A>}
+<A NAME="56"></A></pre>
+</BODY>
+</HTML>

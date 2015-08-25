@@ -1,0 +1,87 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.SerialSchedulingStrategy (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">SerialSchedulingStrategy.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> <FONT ID="Static">static</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/SlotState.Status.html">com.collective.celos.SlotState.Status.READY</A>;
+<A NAME="4"></A><FONT ID="Import">import</FONT> <FONT ID="Static">static</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/SlotState.Status.html">com.collective.celos.SlotState.Status.RUNNING</A>;
+<A NAME="5"></A>
+<A NAME="6"></A><FONT ID="Import">import</FONT> java.util.Collection;
+<A NAME="7"></A><FONT ID="Import">import</FONT> java.util.Collections;
+<A NAME="8"></A><FONT ID="Import">import</FONT> java.util.List;
+<A NAME="9"></A>
+<A NAME="10"></A><FONT ID="Import">import</FONT> org.apache.commons.collections.CollectionUtils;
+<A NAME="11"></A><FONT ID="Import">import</FONT> org.apache.commons.collections.Predicate;
+<A NAME="12"></A>
+<A NAME="13"></A><FONT ID="Import">import</FONT> com.google.common.collect.Lists;
+<A NAME="14"></A>
+<A NAME="15"></A><FONT ID="MultiLineComment">/*
+<A NAME="16"></A> * This SchedulingStrategy implementation will be used for Pythia. It runs jobs
+<A NAME="17"></A> * serially, and only ever runs a single job at a time.
+<A NAME="18"></A> * 
+<A NAME="19"></A> * - If there is a RUNNING slot, return an empty list (because a slot is already running).
+<A NAME="20"></A> * - Otherwise, find slots that are READY.
+<A NAME="21"></A> * - If any exist, return the first one, in a list.
+<A NAME="22"></A> * - Otherwise, return an empty list.
+<A NAME="23"></A> */</FONT>
+<A NAME="24"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> SerialSchedulingStrategy <FONT ID="Implements">implements</FONT> <A HREF="../../../com/collective/celos/SchedulingStrategy.java.html">SchedulingStrategy</A> {
+<A NAME="25"></A>
+<A NAME="26"></A>    <FONT ID="Private">private</FONT> <FONT ID="Int">int</FONT> concurrencyLevel;
+<A NAME="27"></A>
+<A NAME="28"></A>    <FONT ID="Public">public</FONT> SerialSchedulingStrategy(<FONT ID="Int">int</FONT> concurrencyLevel) {
+<A NAME="29"></A>        <FONT ID="This">this</FONT>.concurrencyLevel = concurrencyLevel;
+<A NAME="30"></A>    }
+<A NAME="31"></A>    
+<A NAME="32"></A>    <FONT ID="MultiLineComment">/*
+<A NAME="33"></A>     * Predicate for finding RUNNING slots.
+<A NAME="34"></A>     */</FONT>
+<A NAME="35"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> Predicate RUNNING_PREDICATE
+<A NAME="36"></A>            = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotStateStatusPredicate.java.html">SlotStateStatusPredicate</A>(RUNNING);
+<A NAME="37"></A>
+<A NAME="38"></A>    <FONT ID="MultiLineComment">/*
+<A NAME="39"></A>     * Candidates for submission are slots that are READY. We may want to
+<A NAME="40"></A>     * include WAITING jobs in the future, too.
+<A NAME="41"></A>     */</FONT>
+<A NAME="42"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> Predicate CANDIDATE_PREDICATE
+<A NAME="43"></A>            = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotStateStatusPredicate.java.html">SlotStateStatusPredicate</A>(READY <FONT ID="MultiLineComment">/* , WAITING */</FONT>);
+<A NAME="44"></A>
+<A NAME="45"></A>    @Override
+<A NAME="46"></A>    <FONT ID="Public">public</FONT> List&lt;<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>&gt; getSchedulingCandidates(List&lt;<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>&gt; states) {
+<A NAME="47"></A>
+<A NAME="48"></A>        <FONT ID="Int">int</FONT> slotsRunning = CollectionUtils.countMatches(states, RUNNING_PREDICATE);
+<A NAME="49"></A>        <FONT ID="If">if</FONT> (slotsRunning &gt;= concurrencyLevel) {
+<A NAME="50"></A>            <FONT ID="Return">return</FONT> Collections.emptyList();
+<A NAME="51"></A>        }
+<A NAME="52"></A>
+<A NAME="53"></A>        @SuppressWarnings(<FONT ID="StringLiteral">"unchecked"</FONT>)
+<A NAME="54"></A>        Collection&lt;<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>&gt; candidates = CollectionUtils.select(states, CANDIDATE_PREDICATE);
+<A NAME="55"></A>
+<A NAME="56"></A>        <FONT ID="If">if</FONT> (!candidates.isEmpty()) {
+<A NAME="57"></A>            <FONT ID="Int">int</FONT> elemsToGet = Math.min(candidates.size(), concurrencyLevel - slotsRunning);
+<A NAME="58"></A>            <FONT ID="Return">return</FONT> Lists.newArrayList(candidates).subList(<FONT ID="IntegerLiteral">0</FONT>, elemsToGet);
+<A NAME="59"></A>        }
+<A NAME="60"></A>
+<A NAME="61"></A>        <FONT ID="Return">return</FONT> Collections.emptyList();
+<A NAME="62"></A>    }
+<A NAME="63"></A>
+<A NAME="64"></A>    <FONT ID="Public">public</FONT> <FONT ID="Int">int</FONT> getConcurrencyLevel() {
+<A NAME="65"></A>        <FONT ID="Return">return</FONT> concurrencyLevel;
+<A NAME="66"></A>    }
+<A NAME="67"></A>}
+<A NAME="68"></A></pre>
+</BODY>
+</HTML>

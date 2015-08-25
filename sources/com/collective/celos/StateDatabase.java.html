@@ -1,0 +1,35 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.StateDatabase (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">StateDatabase.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Public">public</FONT> <FONT ID="Interface">interface</FONT> StateDatabase {
+<A NAME="4"></A>
+<A NAME="5"></A>    <FONT ID="FormalComment">/**
+<A NAME="6"></A>     * Returns the state of the given slot, or null if not found.
+<A NAME="7"></A>     */</FONT>
+<A NAME="8"></A>    <FONT ID="Public">public</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> getSlotState(<A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A> slot) <FONT ID="Throws">throws</FONT> Exception;
+<A NAME="9"></A>
+<A NAME="10"></A>    <FONT ID="FormalComment">/**
+<A NAME="11"></A>     * Updates the state of the given slot.
+<A NAME="12"></A>     */</FONT>
+<A NAME="13"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> putSlotState(<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> state) <FONT ID="Throws">throws</FONT> Exception;
+<A NAME="14"></A>    
+<A NAME="15"></A>}
+<A NAME="16"></A></pre>
+</BODY>
+</HTML>

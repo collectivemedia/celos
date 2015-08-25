@@ -1,0 +1,37 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.servlet.ClearCacheServlet (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">ClearCacheServlet.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos.servlet;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> javax.servlet.ServletException;
+<A NAME="4"></A><FONT ID="Import">import</FONT> javax.servlet.http.HttpServletRequest;
+<A NAME="5"></A><FONT ID="Import">import</FONT> javax.servlet.http.HttpServletResponse;
+<A NAME="6"></A>
+<A NAME="7"></A><FONT ID="FormalComment">/**
+<A NAME="8"></A> * Posting to this servlet clears the scheduler cache.
+<A NAME="9"></A> */</FONT>
+<A NAME="10"></A>@SuppressWarnings(<FONT ID="StringLiteral">"serial"</FONT>)
+<A NAME="11"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> ClearCacheServlet <FONT ID="Extends">extends</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/servlet/AbstractServlet.html">AbstractServlet</A> {
+<A NAME="12"></A>
+<A NAME="13"></A>    <FONT ID="Protected">protected</FONT> <FONT ID="Void">void</FONT> doPost(HttpServletRequest req, HttpServletResponse res) <FONT ID="Throws">throws</FONT> ServletException {
+<A NAME="14"></A>        clearSchedulerCache();
+<A NAME="15"></A>    }
+<A NAME="16"></A>
+<A NAME="17"></A>}
+<A NAME="18"></A></pre>
+</BODY>
+</HTML>

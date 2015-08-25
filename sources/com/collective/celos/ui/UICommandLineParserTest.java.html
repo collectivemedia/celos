@@ -1,0 +1,83 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.ui.UICommandLineParserTest (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">UICommandLineParserTest.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos.ui;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> junit.framework.Assert;
+<A NAME="4"></A><FONT ID="Import">import</FONT> org.apache.commons.cli.*;
+<A NAME="5"></A><FONT ID="Import">import</FONT> org.apache.log4j.Logger;
+<A NAME="6"></A><FONT ID="Import">import</FONT> org.junit.Before;
+<A NAME="7"></A><FONT ID="Import">import</FONT> org.junit.Rule;
+<A NAME="8"></A><FONT ID="Import">import</FONT> org.junit.Test;
+<A NAME="9"></A><FONT ID="Import">import</FONT> org.junit.rules.TemporaryFolder;
+<A NAME="10"></A>
+<A NAME="11"></A><FONT ID="Import">import</FONT> java.io.File;
+<A NAME="12"></A><FONT ID="Import">import</FONT> java.io.IOException;
+<A NAME="13"></A><FONT ID="Import">import</FONT> java.io.OutputStream;
+<A NAME="14"></A><FONT ID="Import">import</FONT> java.io.PrintWriter;
+<A NAME="15"></A><FONT ID="Import">import</FONT> java.net.MalformedURLException;
+<A NAME="16"></A><FONT ID="Import">import</FONT> java.net.URL;
+<A NAME="17"></A>
+<A NAME="18"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> UICommandLineParserTest {
+<A NAME="19"></A>
+<A NAME="20"></A>    @Test
+<A NAME="21"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testParsesOk() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="22"></A>        <A HREF="../../../../com/collective/celos/ui/UICommandLineParser.java.html">UICommandLineParser</A> parser = <FONT ID="New">new</FONT> <A HREF="../../../../com/collective/celos/ui/UICommandLineParser.java.html">UICommandLineParser</A>();
+<A NAME="23"></A>        String[] clParams = (<FONT ID="StringLiteral">"--celosAddr http://localhost:8888 --port 1234"</FONT>).split(<FONT ID="StringLiteral">" "</FONT>);
+<A NAME="24"></A>
+<A NAME="25"></A>        <A HREF="../../../../com/collective/celos/ui/UICommandLine.java.html">UICommandLine</A> commandLine = parser.parse(clParams);
+<A NAME="26"></A>        Assert.assertEquals(commandLine.getCelosUrl(), <FONT ID="New">new</FONT> URL(<FONT ID="StringLiteral">"http://localhost:8888"</FONT>));
+<A NAME="27"></A>        Assert.assertEquals(commandLine.getPort(), <FONT ID="IntegerLiteral">1234</FONT>);
+<A NAME="28"></A>
+<A NAME="29"></A>    }
+<A NAME="30"></A>    
+<A NAME="31"></A>    @Test(expected = IllegalArgumentException.<FONT ID="Class">class</FONT>)
+<A NAME="32"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testPortMissing() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="33"></A>        <A HREF="../../../../com/collective/celos/ui/UICommandLineParser.java.html">UICommandLineParser</A> parser = <FONT ID="New">new</FONT> <A HREF="../../../../com/collective/celos/ui/UICommandLineParser.java.html">UICommandLineParser</A>();
+<A NAME="34"></A>        String[] clParams = (<FONT ID="StringLiteral">"--celosAddr localhost:8888"</FONT>).split(<FONT ID="StringLiteral">" "</FONT>);
+<A NAME="35"></A>
+<A NAME="36"></A>        parser.parse(clParams);
+<A NAME="37"></A>    }
+<A NAME="38"></A>
+<A NAME="39"></A>    @Test(expected = IllegalArgumentException.<FONT ID="Class">class</FONT>)
+<A NAME="40"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testCelosURLMissing() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="41"></A>        <A HREF="../../../../com/collective/celos/ui/UICommandLineParser.java.html">UICommandLineParser</A> parser = <FONT ID="New">new</FONT> <A HREF="../../../../com/collective/celos/ui/UICommandLineParser.java.html">UICommandLineParser</A>();
+<A NAME="42"></A>        String[] clParams = (<FONT ID="StringLiteral">"--port 8888"</FONT>).split(<FONT ID="StringLiteral">" "</FONT>);
+<A NAME="43"></A>
+<A NAME="44"></A>        parser.parse(clParams);
+<A NAME="45"></A>    }
+<A NAME="46"></A>
+<A NAME="47"></A>    @Test(expected = MalformedURLException.<FONT ID="Class">class</FONT>)
+<A NAME="48"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testWrongAddress() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="49"></A>        <A HREF="../../../../com/collective/celos/ui/UICommandLineParser.java.html">UICommandLineParser</A> parser = <FONT ID="New">new</FONT> <A HREF="../../../../com/collective/celos/ui/UICommandLineParser.java.html">UICommandLineParser</A>();
+<A NAME="50"></A>        String[] clParams = (<FONT ID="StringLiteral">"--celosAddr localhost:8888 --port 1234"</FONT>).split(<FONT ID="StringLiteral">" "</FONT>);
+<A NAME="51"></A>
+<A NAME="52"></A>        parser.parse(clParams);
+<A NAME="53"></A>    }
+<A NAME="54"></A>
+<A NAME="55"></A>    @Test(expected = NumberFormatException.<FONT ID="Class">class</FONT>)
+<A NAME="56"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testWrongPort() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="57"></A>        <A HREF="../../../../com/collective/celos/ui/UICommandLineParser.java.html">UICommandLineParser</A> parser = <FONT ID="New">new</FONT> <A HREF="../../../../com/collective/celos/ui/UICommandLineParser.java.html">UICommandLineParser</A>();
+<A NAME="58"></A>        String[] clParams = (<FONT ID="StringLiteral">"--celosAddr http://localhost:8888 --port abc"</FONT>).split(<FONT ID="StringLiteral">" "</FONT>);
+<A NAME="59"></A>
+<A NAME="60"></A>        parser.parse(clParams);
+<A NAME="61"></A>    }
+<A NAME="62"></A>
+<A NAME="63"></A>}
+<A NAME="64"></A></pre>
+</BODY>
+</HTML>

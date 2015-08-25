@@ -1,0 +1,733 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.ci.mode.test.TestConfigurationParserTest (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">TestConfigurationParserTest.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos.ci.mode.test;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> <FONT ID="Static">static</FONT> org.mockito.Mockito.doReturn;
+<A NAME="4"></A><FONT ID="Import">import</FONT> <FONT ID="Static">static</FONT> org.mockito.Mockito.mock;
+<A NAME="5"></A>
+<A NAME="6"></A><FONT ID="Import">import</FONT> java.io.ByteArrayInputStream;
+<A NAME="7"></A><FONT ID="Import">import</FONT> java.io.File;
+<A NAME="8"></A><FONT ID="Import">import</FONT> java.io.IOException;
+<A NAME="9"></A><FONT ID="Import">import</FONT> java.io.StringReader;
+<A NAME="10"></A><FONT ID="Import">import</FONT> java.util.HashSet;
+<A NAME="11"></A><FONT ID="Import">import</FONT> java.util.UUID;
+<A NAME="12"></A>
+<A NAME="13"></A><FONT ID="Import">import</FONT> org.apache.commons.io.IOUtils;
+<A NAME="14"></A><FONT ID="Import">import</FONT> org.apache.hadoop.fs.Path;
+<A NAME="15"></A><FONT ID="Import">import</FONT> org.junit.Assert;
+<A NAME="16"></A><FONT ID="Import">import</FONT> org.junit.Before;
+<A NAME="17"></A><FONT ID="Import">import</FONT> org.junit.Test;
+<A NAME="18"></A><FONT ID="Import">import</FONT> org.mozilla.javascript.JavaScriptException;
+<A NAME="19"></A><FONT ID="Import">import</FONT> org.mozilla.javascript.NativeJavaObject;
+<A NAME="20"></A>
+<A NAME="21"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../com/collective/celos/DatabaseName.java.html">com.collective.celos.DatabaseName</A>;
+<A NAME="22"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../com/collective/celos/ScheduledTime.java.html">com.collective.celos.ScheduledTime</A>;
+<A NAME="23"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../com/collective/celos/WorkflowID.java.html">com.collective.celos.WorkflowID</A>;
+<A NAME="24"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../com/collective/celos/ci/testing/fixtures/compare/FixTableComparer.java.html">com.collective.celos.ci.testing.fixtures.compare.FixTableComparer</A>;
+<A NAME="25"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../com/collective/celos/ci/testing/fixtures/compare/RecursiveFsObjectComparer.java.html">com.collective.celos.ci.testing.fixtures.compare.RecursiveFsObjectComparer</A>;
+<A NAME="26"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../com/collective/celos/ci/testing/fixtures/compare/json/JsonContentsComparer.java.html">com.collective.celos.ci.testing.fixtures.compare.json.JsonContentsComparer</A>;
+<A NAME="27"></A><FONT ID="Import">import</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/fixtures/convert/AvroToJsonConverter.html">com.collective.celos.ci.testing.fixtures.convert.AvroToJsonConverter</A>;
+<A NAME="28"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../com/collective/celos/ci/testing/fixtures/convert/FixTableToJsonFileConverter.java.html">com.collective.celos.ci.testing.fixtures.convert.FixTableToJsonFileConverter</A>;
+<A NAME="29"></A><FONT ID="Import">import</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/fixtures/convert/FixTableToTSVFileConverter.html">com.collective.celos.ci.testing.fixtures.convert.FixTableToTSVFileConverter</A>;
+<A NAME="30"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../com/collective/celos/ci/testing/fixtures/convert/JsonExpandConverter.java.html">com.collective.celos.ci.testing.fixtures.convert.JsonExpandConverter</A>;
+<A NAME="31"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../com/collective/celos/ci/testing/fixtures/create/FixDirFromResourceCreator.java.html">com.collective.celos.ci.testing.fixtures.create.FixDirFromResourceCreator</A>;
+<A NAME="32"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../com/collective/celos/ci/testing/fixtures/create/FixDirHierarchyCreator.java.html">com.collective.celos.ci.testing.fixtures.create.FixDirHierarchyCreator</A>;
+<A NAME="33"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../com/collective/celos/ci/testing/fixtures/create/FixFileFromResourceCreator.java.html">com.collective.celos.ci.testing.fixtures.create.FixFileFromResourceCreator</A>;
+<A NAME="34"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../com/collective/celos/ci/testing/fixtures/create/OutputFixDirFromHdfsCreator.java.html">com.collective.celos.ci.testing.fixtures.create.OutputFixDirFromHdfsCreator</A>;
+<A NAME="35"></A><FONT ID="Import">import</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/fixtures/create/OutputFixTableFromHiveCreator.html">com.collective.celos.ci.testing.fixtures.create.OutputFixTableFromHiveCreator</A>;
+<A NAME="36"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../com/collective/celos/ci/testing/fixtures/deploy/HdfsInputDeployer.java.html">com.collective.celos.ci.testing.fixtures.deploy.HdfsInputDeployer</A>;
+<A NAME="37"></A><FONT ID="Import">import</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/fixtures/deploy/hive/FileFixTableCreator.html">com.collective.celos.ci.testing.fixtures.deploy.hive.FileFixTableCreator</A>;
+<A NAME="38"></A><FONT ID="Import">import</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/fixtures/deploy/hive/HiveTableDeployer.html">com.collective.celos.ci.testing.fixtures.deploy.hive.HiveTableDeployer</A>;
+<A NAME="39"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../com/collective/celos/ci/testing/fixtures/deploy/hive/StringArrayFixTableCreator.java.html">com.collective.celos.ci.testing.fixtures.deploy.hive.StringArrayFixTableCreator</A>;
+<A NAME="40"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../com/collective/celos/ci/testing/structure/fixobject/ConversionCreator.java.html">com.collective.celos.ci.testing.structure.fixobject.ConversionCreator</A>;
+<A NAME="41"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixDir.java.html">com.collective.celos.ci.testing.structure.fixobject.FixDir</A>;
+<A NAME="42"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixDirRecursiveConverter.java.html">com.collective.celos.ci.testing.structure.fixobject.FixDirRecursiveConverter</A>;
+<A NAME="43"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFile.java.html">com.collective.celos.ci.testing.structure.fixobject.FixFile</A>;
+<A NAME="44"></A><FONT ID="Import">import</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">com.collective.celos.ci.testing.structure.fixobject.FixTable</A>;
+<A NAME="45"></A><FONT ID="Import">import</FONT> com.google.common.collect.Lists;
+<A NAME="46"></A><FONT ID="Import">import</FONT> com.google.common.collect.Sets;
+<A NAME="47"></A>
+<A NAME="48"></A><FONT ID="FormalComment">/**
+<A NAME="49"></A> * Created by akonopko on 27.11.14.
+<A NAME="50"></A> */</FONT>
+<A NAME="51"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> TestConfigurationParserTest {
+<A NAME="52"></A>
+<A NAME="53"></A>    <FONT ID="Private">private</FONT> <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestRun.java.html">TestRun</A> testRun;
+<A NAME="54"></A>
+<A NAME="55"></A>    @Before
+<A NAME="56"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> setUp() {
+<A NAME="57"></A>        testRun = mock(<A HREF="../../../../../../com/collective/celos/ci/mode/test/TestRun.java.html">TestRun</A>.<FONT ID="Class">class</FONT>);
+<A NAME="58"></A>        doReturn(<FONT ID="New">new</FONT> File(<FONT ID="StringLiteral">"/"</FONT>)).when(testRun).getTestCasesDir();
+<A NAME="59"></A>    }
+<A NAME="60"></A>
+<A NAME="61"></A>    @Test
+<A NAME="62"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testConfigurationParserWorks() <FONT ID="Throws">throws</FONT> IOException {
+<A NAME="63"></A>        <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestConfigurationParser.java.html">TestConfigurationParser</A> parser = <FONT ID="New">new</FONT> <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestConfigurationParser.java.html">TestConfigurationParser</A>();
+<A NAME="64"></A>        String filePath = Thread.currentThread().getContextClassLoader().getResource(<FONT ID="StringLiteral">"com/collective/celos/defaults/test.js"</FONT>).getFile();
+<A NAME="65"></A>        parser.evaluateTestConfig(<FONT ID="New">new</FONT> File(filePath));
+<A NAME="66"></A>    }
+<A NAME="67"></A>
+<A NAME="68"></A>    @Test
+<A NAME="69"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> fixDirFromResource() <FONT ID="Throws">throws</FONT> IOException {
+<A NAME="70"></A>        <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestConfigurationParser.java.html">TestConfigurationParser</A> parser = <FONT ID="New">new</FONT> <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestConfigurationParser.java.html">TestConfigurationParser</A>();
+<A NAME="71"></A>
+<A NAME="72"></A>        NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(<FONT ID="New">new</FONT> StringReader(<FONT ID="StringLiteral">"ci.fixDirFromResource(\"stuff\")"</FONT>), <FONT ID="StringLiteral">"string"</FONT>);
+<A NAME="73"></A>        <A HREF="../../../../../../com/collective/celos/ci/testing/fixtures/create/FixDirFromResourceCreator.java.html">FixDirFromResourceCreator</A> creator = (<A HREF="../../../../../../com/collective/celos/ci/testing/fixtures/create/FixDirFromResourceCreator.java.html">FixDirFromResourceCreator</A>) creatorObj.unwrap();
+<A NAME="74"></A>        Assert.assertEquals(<FONT ID="New">new</FONT> File(<FONT ID="StringLiteral">"/stuff"</FONT>), creator.getPath(testRun));
+<A NAME="75"></A>    }
+<A NAME="76"></A>
+<A NAME="77"></A>    @Test(expected = JavaScriptException.<FONT ID="Class">class</FONT>)
+<A NAME="78"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> fixDirFromResourceFails() <FONT ID="Throws">throws</FONT> IOException {
+<A NAME="79"></A>        <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestConfigurationParser.java.html">TestConfigurationParser</A> parser = <FONT ID="New">new</FONT> <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestConfigurationParser.java.html">TestConfigurationParser</A>();
+<A NAME="80"></A>
+<A NAME="81"></A>        NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(<FONT ID="New">new</FONT> StringReader(<FONT ID="StringLiteral">"ci.fixDirFromResource()"</FONT>), <FONT ID="StringLiteral">"string"</FONT>);
+<A NAME="82"></A>        <A HREF="../../../../../../com/collective/celos/ci/testing/fixtures/create/FixDirFromResourceCreator.java.html">FixDirFromResourceCreator</A> creator = (<A HREF="../../../../../../com/collective/celos/ci/testing/fixtures/create/FixDirFromResourceCreator.java.html">FixDirFromResourceCreator</A>) creatorObj.unwrap();
+<A NAME="83"></A>        Assert.assertEquals(<FONT ID="New">new</FONT> File(<FONT ID="StringLiteral">"/stuff"</FONT>), creator.getPath(testRun));
+<A NAME="84"></A>    }
+<A NAME="85"></A>
+<A NAME="86"></A>
+<A NAME="87"></A>    @Test
+<A NAME="88"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> fixFileFromResource() <FONT ID="Throws">throws</FONT> IOException {
+<A NAME="89"></A>        <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestConfigurationParser.java.html">TestConfigurationParser</A> parser = <FONT ID="New">new</FONT> <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestConfigurationParser.java.html">TestConfigurationParser</A>();
+<A NAME="90"></A>
+<A NAME="91"></A>        NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(<FONT ID="New">new</FONT> StringReader(<FONT ID="StringLiteral">"ci.fixFileFromResource(\"stuff\")"</FONT>), <FONT ID="StringLiteral">"string"</FONT>);
+<A NAME="92"></A>        <A HREF="../../../../../../com/collective/celos/ci/testing/fixtures/create/FixFileFromResourceCreator.java.html">FixFileFromResourceCreator</A> creator = (<A HREF="../../../../../../com/collective/celos/ci/testing/fixtures/create/FixFileFromResourceCreator.java.html">FixFileFromResourceCreator</A>) creatorObj.unwrap();
+<A NAME="93"></A>        Assert.assertEquals(<FONT ID="New">new</FONT> File(<FONT ID="StringLiteral">"/stuff"</FONT>), creator.getPath(testRun));
+<A NAME="94"></A>    }
+<A NAME="95"></A>
+<A NAME="96"></A>    @Test(expected = JavaScriptException.<FONT ID="Class">class</FONT>)
+<A NAME="97"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> fixFileFromResourceFails() <FONT ID="Throws">throws</FONT> IOException {
+<A NAME="98"></A>        <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestConfigurationParser.java.html">TestConfigurationParser</A> parser = <FONT ID="New">new</FONT> <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestConfigurationParser.java.html">TestConfigurationParser</A>();
+<A NAME="99"></A>
+<A NAME="100"></A>        NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(<FONT ID="New">new</FONT> StringReader(<FONT ID="StringLiteral">"ci.fixFileFromResource()"</FONT>), <FONT ID="StringLiteral">"string"</FONT>);
+<A NAME="101"></A>        <A HREF="../../../../../../com/collective/celos/ci/testing/fixtures/create/FixFileFromResourceCreator.java.html">FixFileFromResourceCreator</A> creator = (<A HREF="../../../../../../com/collective/celos/ci/testing/fixtures/create/FixFileFromResourceCreator.java.html">FixFileFromResourceCreator</A>) creatorObj.unwrap();
+<A NAME="102"></A>        Assert.assertEquals(<FONT ID="New">new</FONT> File(<FONT ID="StringLiteral">"stuff"</FONT>), creator.getPath(testRun));
+<A NAME="103"></A>    }
+<A NAME="104"></A>
+<A NAME="105"></A>    @Test(expected = JavaScriptException.<FONT ID="Class">class</FONT>)
+<A NAME="106"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testHdfsInputDeployerCall1() <FONT ID="Throws">throws</FONT> IOException {
+<A NAME="107"></A>        <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestConfigurationParser.java.html">TestConfigurationParser</A> parser = <FONT ID="New">new</FONT> <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestConfigurationParser.java.html">TestConfigurationParser</A>();
+<A NAME="108"></A>
+<A NAME="109"></A>        NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(<FONT ID="New">new</FONT> StringReader(<FONT ID="StringLiteral">"ci.hdfsInput()"</FONT>), <FONT ID="StringLiteral">"string"</FONT>);
+<A NAME="110"></A>        <A HREF="../../../../../../com/collective/celos/ci/testing/fixtures/deploy/HdfsInputDeployer.java.html">HdfsInputDeployer</A> creator = (<A HREF="../../../../../../com/collective/celos/ci/testing/fixtures/deploy/HdfsInputDeployer.java.html">HdfsInputDeployer</A>) creatorObj.unwrap();
+<A NAME="111"></A>        Assert.assertEquals(<FONT ID="New">new</FONT> File(<FONT ID="StringLiteral">"stuff"</FONT>), creator.getPath());
+<A NAME="112"></A>    }
+<A NAME="113"></A>
+<A NAME="114"></A>    @Test
+<A NAME="115"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testHdfsInputDeployerCall2() <FONT ID="Throws">throws</FONT> IOException {
+<A NAME="116"></A>        <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestConfigurationParser.java.html">TestConfigurationParser</A> parser = <FONT ID="New">new</FONT> <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestConfigurationParser.java.html">TestConfigurationParser</A>();
+<A NAME="117"></A>
+<A NAME="118"></A>        NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(<FONT ID="New">new</FONT> StringReader(<FONT ID="StringLiteral">"ci.hdfsInput(ci.fixFileFromResource(\"stuff\"), \"here\")"</FONT>), <FONT ID="StringLiteral">"string"</FONT>);
+<A NAME="119"></A>        <A HREF="../../../../../../com/collective/celos/ci/testing/fixtures/deploy/HdfsInputDeployer.java.html">HdfsInputDeployer</A> creator = (<A HREF="../../../../../../com/collective/celos/ci/testing/fixtures/deploy/HdfsInputDeployer.java.html">HdfsInputDeployer</A>) creatorObj.unwrap();
+<A NAME="120"></A>        Assert.assertEquals(<FONT ID="New">new</FONT> Path(<FONT ID="StringLiteral">"here"</FONT>), creator.getPath());
+<A NAME="121"></A>    }
+<A NAME="122"></A>
+<A NAME="123"></A>    @Test(expected = JavaScriptException.<FONT ID="Class">class</FONT>)
+<A NAME="124"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testRecursiveFsObjectComparer1() <FONT ID="Throws">throws</FONT> IOException {
+<A NAME="125"></A>        <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestConfigurationParser.java.html">TestConfigurationParser</A> parser = <FONT ID="New">new</FONT> <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestConfigurationParser.java.html">TestConfigurationParser</A>();
+<A NAME="126"></A>
+<A NAME="127"></A>        NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(<FONT ID="New">new</FONT> StringReader(<FONT ID="StringLiteral">"ci.plainCompare()"</FONT>), <FONT ID="StringLiteral">"string"</FONT>);
+<A NAME="128"></A>        <A HREF="../../../../../../com/collective/celos/ci/testing/fixtures/compare/RecursiveFsObjectComparer.java.html">RecursiveFsObjectComparer</A> creator = (<A HREF="../../../../../../com/collective/celos/ci/testing/fixtures/compare/RecursiveFsObjectComparer.java.html">RecursiveFsObjectComparer</A>) creatorObj.unwrap();
+<A NAME="129"></A>    }
+<A NAME="130"></A>
+<A NAME="131"></A>    @Test
+<A NAME="132"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testRecursiveFsObjectComparer2() <FONT ID="Throws">throws</FONT> IOException {
+<A NAME="133"></A>        <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestConfigurationParser.java.html">TestConfigurationParser</A> parser = <FONT ID="New">new</FONT> <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestConfigurationParser.java.html">TestConfigurationParser</A>();
+<A NAME="134"></A>
+<A NAME="135"></A>        NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(<FONT ID="New">new</FONT> StringReader(<FONT ID="StringLiteral">"ci.plainCompare(ci.fixDirFromResource(\"stuff\"), \"here\")"</FONT>), <FONT ID="StringLiteral">"string"</FONT>);
+<A NAME="136"></A>
+<A NAME="137"></A>        <A HREF="../../../../../../com/collective/celos/ci/testing/fixtures/compare/RecursiveFsObjectComparer.java.html">RecursiveFsObjectComparer</A> comparer = (<A HREF="../../../../../../com/collective/celos/ci/testing/fixtures/compare/RecursiveFsObjectComparer.java.html">RecursiveFsObjectComparer</A>) creatorObj.unwrap();
+<A NAME="138"></A>
+<A NAME="139"></A>        <A HREF="../../../../../../com/collective/celos/ci/testing/fixtures/create/OutputFixDirFromHdfsCreator.java.html">OutputFixDirFromHdfsCreator</A> actualCreator = (<A HREF="../../../../../../com/collective/celos/ci/testing/fixtures/create/OutputFixDirFromHdfsCreator.java.html">OutputFixDirFromHdfsCreator</A>) comparer.getActualDataCreator();
+<A NAME="140"></A>        <A HREF="../../../../../../com/collective/celos/ci/testing/fixtures/create/FixDirFromResourceCreator.java.html">FixDirFromResourceCreator</A> expectedDataCreator = (<A HREF="../../../../../../com/collective/celos/ci/testing/fixtures/create/FixDirFromResourceCreator.java.html">FixDirFromResourceCreator</A>) comparer.getExpectedDataCreator();
+<A NAME="141"></A>        Assert.assertEquals(<FONT ID="New">new</FONT> Path(<FONT ID="StringLiteral">"here"</FONT>), actualCreator.getPath());
+<A NAME="142"></A>        Assert.assertEquals(<FONT ID="New">new</FONT> File(<FONT ID="StringLiteral">"/stuff"</FONT>), expectedDataCreator.getPath(testRun));
+<A NAME="143"></A>    }
+<A NAME="144"></A>
+<A NAME="145"></A>    @Test(expected = JavaScriptException.<FONT ID="Class">class</FONT>)
+<A NAME="146"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testRecursiveFsObjectComparer3() <FONT ID="Throws">throws</FONT> IOException {
+<A NAME="147"></A>        <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestConfigurationParser.java.html">TestConfigurationParser</A> parser = <FONT ID="New">new</FONT> <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestConfigurationParser.java.html">TestConfigurationParser</A>();
+<A NAME="148"></A>
+<A NAME="149"></A>        NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(<FONT ID="New">new</FONT> StringReader(<FONT ID="StringLiteral">"ci.plainCompare(ci.fixFileFromResource(\"stuff\"))"</FONT>), <FONT ID="StringLiteral">"string"</FONT>);
+<A NAME="150"></A>        <A HREF="../../../../../../com/collective/celos/ci/testing/fixtures/compare/RecursiveFsObjectComparer.java.html">RecursiveFsObjectComparer</A> creator = (<A HREF="../../../../../../com/collective/celos/ci/testing/fixtures/compare/RecursiveFsObjectComparer.java.html">RecursiveFsObjectComparer</A>) creatorObj.unwrap();
+<A NAME="151"></A>    }
+<A NAME="152"></A>
+<A NAME="153"></A>
+<A NAME="154"></A>    @Test
+<A NAME="155"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testAddTestCase() <FONT ID="Throws">throws</FONT> IOException {
+<A NAME="156"></A>
+<A NAME="157"></A>        String configJS = <FONT ID="StringLiteral">"ci.addTestCase({\n"</FONT> +
+<A NAME="158"></A>                <FONT ID="StringLiteral">"    name: \"wordcount test case 1\",\n"</FONT> +
+<A NAME="159"></A>                <FONT ID="StringLiteral">"    sampleTimeStart: \"2013-11-20T11:00Z\",\n"</FONT> +
+<A NAME="160"></A>                <FONT ID="StringLiteral">"    sampleTimeEnd: \"2013-11-20T18:00Z\",\n"</FONT> +
+<A NAME="161"></A>                <FONT ID="StringLiteral">"    workflows: [\"workflow1\", \"workflow2\"], \n"</FONT> +
+<A NAME="162"></A>                <FONT ID="StringLiteral">"    inputs: [\n"</FONT> +
+<A NAME="163"></A>                <FONT ID="StringLiteral">"        ci.hdfsInput(ci.fixDirFromResource(\"src/test/celos-ci/test-1/input/plain/input/wordcount1\"), \"input/wordcount1\"),\n"</FONT> +
+<A NAME="164"></A>                <FONT ID="StringLiteral">"        ci.hdfsInput(ci.fixDirFromResource(\"src/test/celos-ci/test-1/input/plain/input/wordcount11\"), \"input/wordcount11\")\n"</FONT> +
+<A NAME="165"></A>                <FONT ID="StringLiteral">"    ],\n"</FONT> +
+<A NAME="166"></A>                <FONT ID="StringLiteral">"    outputs: [\n"</FONT> +
+<A NAME="167"></A>                <FONT ID="StringLiteral">"        ci.plainCompare(ci.fixDirFromResource(\"src/test/celos-ci/test-1/output/plain/output/wordcount1\"), \"output/wordcount1\")\n"</FONT> +
+<A NAME="168"></A>                <FONT ID="StringLiteral">"    ]\n"</FONT> +
+<A NAME="169"></A>                <FONT ID="StringLiteral">"})\n"</FONT>;
+<A NAME="170"></A>
+<A NAME="171"></A>        <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestConfigurationParser.java.html">TestConfigurationParser</A> parser = <FONT ID="New">new</FONT> <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestConfigurationParser.java.html">TestConfigurationParser</A>();
+<A NAME="172"></A>        parser.evaluateTestConfig(<FONT ID="New">new</FONT> StringReader(configJS), <FONT ID="StringLiteral">"string"</FONT>);
+<A NAME="173"></A>
+<A NAME="174"></A>        Assert.assertEquals(parser.getTestCases().size(), <FONT ID="IntegerLiteral">1</FONT>);
+<A NAME="175"></A>        <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestCase.java.html">TestCase</A> testCase = parser.getTestCases().get(<FONT ID="IntegerLiteral">0</FONT>);
+<A NAME="176"></A>
+<A NAME="177"></A>        Assert.assertEquals(testCase.getName(), <FONT ID="StringLiteral">"wordcount test case 1"</FONT>);
+<A NAME="178"></A>        Assert.assertEquals(testCase.getSampleTimeStart(), <FONT ID="New">new</FONT> <A HREF="../../../../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-11-20T11:00Z"</FONT>));
+<A NAME="179"></A>        Assert.assertEquals(testCase.getSampleTimeEnd(), <FONT ID="New">new</FONT> <A HREF="../../../../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-11-20T18:00Z"</FONT>));
+<A NAME="180"></A>        Assert.assertEquals(testCase.getTargetWorkflows(), Sets.newHashSet(<FONT ID="New">new</FONT> <A HREF="../../../../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"workflow1"</FONT>), <FONT ID="New">new</FONT> <A HREF="../../../../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"workflow2"</FONT>)));
+<A NAME="181"></A>        Assert.assertEquals(testCase.getInputs().size(), <FONT ID="IntegerLiteral">2</FONT>);
+<A NAME="182"></A>        Assert.assertEquals(testCase.getInputs().get(<FONT ID="IntegerLiteral">0</FONT>).getClass(), <A HREF="../../../../../../com/collective/celos/ci/testing/fixtures/deploy/HdfsInputDeployer.java.html">HdfsInputDeployer</A>.<FONT ID="Class">class</FONT>);
+<A NAME="183"></A>        Assert.assertEquals(testCase.getInputs().get(<FONT ID="IntegerLiteral">1</FONT>).getClass(), <A HREF="../../../../../../com/collective/celos/ci/testing/fixtures/deploy/HdfsInputDeployer.java.html">HdfsInputDeployer</A>.<FONT ID="Class">class</FONT>);
+<A NAME="184"></A>        Assert.assertEquals(testCase.getOutputs().size(), <FONT ID="IntegerLiteral">1</FONT>);
+<A NAME="185"></A>        Assert.assertEquals(testCase.getOutputs().get(<FONT ID="IntegerLiteral">0</FONT>).getClass(), <A HREF="../../../../../../com/collective/celos/ci/testing/fixtures/compare/RecursiveFsObjectComparer.java.html">RecursiveFsObjectComparer</A>.<FONT ID="Class">class</FONT>);
+<A NAME="186"></A>    }
+<A NAME="187"></A>
+<A NAME="188"></A>    @Test(expected = JavaScriptException.<FONT ID="Class">class</FONT>)
+<A NAME="189"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testAddTestCaseNoOutput() <FONT ID="Throws">throws</FONT> IOException {
+<A NAME="190"></A>
+<A NAME="191"></A>        String configJS = <FONT ID="StringLiteral">"ci.addTestCase({\n"</FONT> +
+<A NAME="192"></A>                <FONT ID="StringLiteral">"    name: \"wordcount test case 1\",\n"</FONT> +
+<A NAME="193"></A>                <FONT ID="StringLiteral">"    sampleTimeStart: \"2013-11-20T11:00Z\",\n"</FONT> +
+<A NAME="194"></A>                <FONT ID="StringLiteral">"    sampleTimeEnd: \"2013-11-20T18:00Z\",\n"</FONT> +
+<A NAME="195"></A>                <FONT ID="StringLiteral">"    inputs: [\n"</FONT> +
+<A NAME="196"></A>                <FONT ID="StringLiteral">"        ci.hdfsInput(ci.fixDirFromResource(\"src/test/celos-ci/test-1/input/plain/input/wordcount1\"), \"input/wordcount1\"),\n"</FONT> +
+<A NAME="197"></A>                <FONT ID="StringLiteral">"        ci.hdfsInput(ci.fixDirFromResource(\"src/test/celos-ci/test-1/input/plain/input/wordcount11\"), \"input/wordcount11\")\n"</FONT> +
+<A NAME="198"></A>                <FONT ID="StringLiteral">"    ]\n"</FONT> +
+<A NAME="199"></A>                <FONT ID="StringLiteral">"})\n"</FONT>;
+<A NAME="200"></A>
+<A NAME="201"></A>        <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestConfigurationParser.java.html">TestConfigurationParser</A> parser = <FONT ID="New">new</FONT> <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestConfigurationParser.java.html">TestConfigurationParser</A>();
+<A NAME="202"></A>
+<A NAME="203"></A>        parser.evaluateTestConfig(<FONT ID="New">new</FONT> StringReader(configJS), <FONT ID="StringLiteral">"string"</FONT>);
+<A NAME="204"></A>
+<A NAME="205"></A>    }
+<A NAME="206"></A>
+<A NAME="207"></A>
+<A NAME="208"></A>    @Test(expected = JavaScriptException.<FONT ID="Class">class</FONT>)
+<A NAME="209"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testAddTestCaseNoInput() <FONT ID="Throws">throws</FONT> IOException {
+<A NAME="210"></A>
+<A NAME="211"></A>        String configJS = <FONT ID="StringLiteral">"ci.addTestCase({\n"</FONT> +
+<A NAME="212"></A>                <FONT ID="StringLiteral">"    name: \"wordcount test case 1\",\n"</FONT> +
+<A NAME="213"></A>                <FONT ID="StringLiteral">"    sampleTimeStart: \"2013-11-20T11:00Z\",\n"</FONT> +
+<A NAME="214"></A>                <FONT ID="StringLiteral">"    sampleTimeEnd: \"2013-11-20T18:00Z\",\n"</FONT> +
+<A NAME="215"></A>                <FONT ID="StringLiteral">"    outputs: [\n"</FONT> +
+<A NAME="216"></A>                <FONT ID="StringLiteral">"        ci.plainCompare(ci.fixDirFromResource(\"src/test/celos-ci/test-1/output/plain/output/wordcount1\"), \"output/wordcount1\")\n"</FONT> +
+<A NAME="217"></A>                <FONT ID="StringLiteral">"    ]\n"</FONT> +
+<A NAME="218"></A>                <FONT ID="StringLiteral">"})\n"</FONT>;
+<A NAME="219"></A>
+<A NAME="220"></A>        <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestConfigurationParser.java.html">TestConfigurationParser</A> parser = <FONT ID="New">new</FONT> <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestConfigurationParser.java.html">TestConfigurationParser</A>();
+<A NAME="221"></A>
+<A NAME="222"></A>        parser.evaluateTestConfig(<FONT ID="New">new</FONT> StringReader(configJS), <FONT ID="StringLiteral">"string"</FONT>);
+<A NAME="223"></A>
+<A NAME="224"></A>    }
+<A NAME="225"></A>
+<A NAME="226"></A>
+<A NAME="227"></A>    @Test(expected = JavaScriptException.<FONT ID="Class">class</FONT>)
+<A NAME="228"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testAddTestCaseNoSampleTimeStart() <FONT ID="Throws">throws</FONT> IOException {
+<A NAME="229"></A>
+<A NAME="230"></A>        String configJS = <FONT ID="StringLiteral">"ci.addTestCase({\n"</FONT> +
+<A NAME="231"></A>                <FONT ID="StringLiteral">"    name: \"wordcount test case 1\",\n"</FONT> +
+<A NAME="232"></A>                <FONT ID="StringLiteral">"    sampleTimeEnd: \"2013-11-20T18:00Z\",\n"</FONT> +
+<A NAME="233"></A>                <FONT ID="StringLiteral">"    inputs: [\n"</FONT> +
+<A NAME="234"></A>                <FONT ID="StringLiteral">"        ci.hdfsInput(ci.fixDirFromResource(\"src/test/celos-ci/test-1/input/plain/input/wordcount1\"), \"input/wordcount1\"),\n"</FONT> +
+<A NAME="235"></A>                <FONT ID="StringLiteral">"        ci.hdfsInput(ci.fixDirFromResource(\"src/test/celos-ci/test-1/input/plain/input/wordcount11\"), \"input/wordcount11\")\n"</FONT> +
+<A NAME="236"></A>                <FONT ID="StringLiteral">"    ],\n"</FONT> +
+<A NAME="237"></A>                <FONT ID="StringLiteral">"    outputs: [\n"</FONT> +
+<A NAME="238"></A>                <FONT ID="StringLiteral">"        ci.plainCompare(ci.fixDirFromResource(\"src/test/celos-ci/test-1/output/plain/output/wordcount1\"), \"output/wordcount1\")\n"</FONT> +
+<A NAME="239"></A>                <FONT ID="StringLiteral">"    ]\n"</FONT> +
+<A NAME="240"></A>                <FONT ID="StringLiteral">"})\n"</FONT>;
+<A NAME="241"></A>
+<A NAME="242"></A>        <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestConfigurationParser.java.html">TestConfigurationParser</A> parser = <FONT ID="New">new</FONT> <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestConfigurationParser.java.html">TestConfigurationParser</A>();
+<A NAME="243"></A>
+<A NAME="244"></A>        parser.evaluateTestConfig(<FONT ID="New">new</FONT> StringReader(configJS), <FONT ID="StringLiteral">"string"</FONT>);
+<A NAME="245"></A>    }
+<A NAME="246"></A>
+<A NAME="247"></A>    @Test(expected = JavaScriptException.<FONT ID="Class">class</FONT>)
+<A NAME="248"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testAddTestCaseNoSampleTimeEnd() <FONT ID="Throws">throws</FONT> IOException {
+<A NAME="249"></A>
+<A NAME="250"></A>        String configJS = <FONT ID="StringLiteral">"ci.addTestCase({\n"</FONT> +
+<A NAME="251"></A>                <FONT ID="StringLiteral">"    name: \"wordcount test case 1\",\n"</FONT> +
+<A NAME="252"></A>                <FONT ID="StringLiteral">"    sampleTimeStart: \"2013-11-20T18:00Z\",\n"</FONT> +
+<A NAME="253"></A>                <FONT ID="StringLiteral">"    inputs: [\n"</FONT> +
+<A NAME="254"></A>                <FONT ID="StringLiteral">"        ci.hdfsInput(ci.fixDirFromResource(\"src/test/celos-ci/test-1/input/plain/input/wordcount1\"), \"input/wordcount1\"),\n"</FONT> +
+<A NAME="255"></A>                <FONT ID="StringLiteral">"        ci.hdfsInput(ci.fixDirFromResource(\"src/test/celos-ci/test-1/input/plain/input/wordcount11\"), \"input/wordcount11\")\n"</FONT> +
+<A NAME="256"></A>                <FONT ID="StringLiteral">"    ],\n"</FONT> +
+<A NAME="257"></A>                <FONT ID="StringLiteral">"    outputs: [\n"</FONT> +
+<A NAME="258"></A>                <FONT ID="StringLiteral">"        ci.plainCompare(ci.fixDirFromResource(\"src/test/celos-ci/test-1/output/plain/output/wordcount1\"), \"output/wordcount1\")\n"</FONT> +
+<A NAME="259"></A>                <FONT ID="StringLiteral">"    ]\n"</FONT> +
+<A NAME="260"></A>                <FONT ID="StringLiteral">"})\n"</FONT>;
+<A NAME="261"></A>
+<A NAME="262"></A>        <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestConfigurationParser.java.html">TestConfigurationParser</A> parser = <FONT ID="New">new</FONT> <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestConfigurationParser.java.html">TestConfigurationParser</A>();
+<A NAME="263"></A>
+<A NAME="264"></A>        parser.evaluateTestConfig(<FONT ID="New">new</FONT> StringReader(configJS), <FONT ID="StringLiteral">"string"</FONT>);
+<A NAME="265"></A>    }
+<A NAME="266"></A>
+<A NAME="267"></A>    @Test(expected = JavaScriptException.<FONT ID="Class">class</FONT>)
+<A NAME="268"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testAvroToJsonFails() <FONT ID="Throws">throws</FONT> IOException {
+<A NAME="269"></A>        <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestConfigurationParser.java.html">TestConfigurationParser</A> parser = <FONT ID="New">new</FONT> <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestConfigurationParser.java.html">TestConfigurationParser</A>();
+<A NAME="270"></A>
+<A NAME="271"></A>        parser.evaluateTestConfig(<FONT ID="New">new</FONT> StringReader(<FONT ID="StringLiteral">"ci.avroToJson()"</FONT>), <FONT ID="StringLiteral">"string"</FONT>);
+<A NAME="272"></A>    }
+<A NAME="273"></A>
+<A NAME="274"></A>    @Test
+<A NAME="275"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testAvroToJson() <FONT ID="Throws">throws</FONT> IOException {
+<A NAME="276"></A>        <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestConfigurationParser.java.html">TestConfigurationParser</A> parser = <FONT ID="New">new</FONT> <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestConfigurationParser.java.html">TestConfigurationParser</A>();
+<A NAME="277"></A>
+<A NAME="278"></A>        NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(<FONT ID="New">new</FONT> StringReader(<FONT ID="StringLiteral">"ci.avroToJson(\"1\")"</FONT>), <FONT ID="StringLiteral">"string"</FONT>);
+<A NAME="279"></A>
+<A NAME="280"></A>        <A HREF="../../../../../../com/collective/celos/ci/testing/structure/fixobject/ConversionCreator.java.html">ConversionCreator</A> converter = (<A HREF="../../../../../../com/collective/celos/ci/testing/structure/fixobject/ConversionCreator.java.html">ConversionCreator</A>) creatorObj.unwrap();
+<A NAME="281"></A>
+<A NAME="282"></A>        Assert.assertTrue(converter.getFixObjectConverter() <FONT ID="InstanceOf">instanceof</FONT> <A HREF="../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixDirRecursiveConverter.java.html">FixDirRecursiveConverter</A>);
+<A NAME="283"></A>        <A HREF="../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixDirRecursiveConverter.java.html">FixDirRecursiveConverter</A> fixDirRecursiveConverter = (<A HREF="../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixDirRecursiveConverter.java.html">FixDirRecursiveConverter</A>) converter.getFixObjectConverter();
+<A NAME="284"></A>        Assert.assertTrue(fixDirRecursiveConverter.getFixFileConverter() <FONT ID="InstanceOf">instanceof</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/fixtures/convert/AvroToJsonConverter.html">AvroToJsonConverter</A>);
+<A NAME="285"></A>        Assert.assertTrue(converter.getCreator() <FONT ID="InstanceOf">instanceof</FONT> <A HREF="../../../../../../com/collective/celos/ci/testing/fixtures/create/OutputFixDirFromHdfsCreator.java.html">OutputFixDirFromHdfsCreator</A>);
+<A NAME="286"></A>    }
+<A NAME="287"></A>
+<A NAME="288"></A>    @Test
+<A NAME="289"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testJsonCompare() <FONT ID="Throws">throws</FONT> IOException {
+<A NAME="290"></A>        <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestConfigurationParser.java.html">TestConfigurationParser</A> parser = <FONT ID="New">new</FONT> <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestConfigurationParser.java.html">TestConfigurationParser</A>();
+<A NAME="291"></A>
+<A NAME="292"></A>        NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(<FONT ID="New">new</FONT> StringReader(<FONT ID="StringLiteral">"ci.jsonCompare(ci.fixDirFromResource(\"stuff\"), ci.fixDirFromResource(\"stuff\"))"</FONT>), <FONT ID="StringLiteral">"string"</FONT>);
+<A NAME="293"></A>
+<A NAME="294"></A>        <A HREF="../../../../../../com/collective/celos/ci/testing/fixtures/compare/json/JsonContentsComparer.java.html">JsonContentsComparer</A> comparer = (<A HREF="../../../../../../com/collective/celos/ci/testing/fixtures/compare/json/JsonContentsComparer.java.html">JsonContentsComparer</A>) creatorObj.unwrap();
+<A NAME="295"></A>        Assert.assertEquals(comparer.getIgnorePaths(), <FONT ID="New">new</FONT> HashSet&lt;String&gt;());
+<A NAME="296"></A>    }
+<A NAME="297"></A>
+<A NAME="298"></A>    @Test
+<A NAME="299"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testJsonCompare2() <FONT ID="Throws">throws</FONT> IOException {
+<A NAME="300"></A>        <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestConfigurationParser.java.html">TestConfigurationParser</A> parser = <FONT ID="New">new</FONT> <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestConfigurationParser.java.html">TestConfigurationParser</A>();
+<A NAME="301"></A>
+<A NAME="302"></A>        NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(<FONT ID="New">new</FONT> StringReader(<FONT ID="StringLiteral">"ci.jsonCompare(ci.fixDirFromResource(\"stuff\"), ci.fixDirFromResource(\"stuff\"), [\"path1\", \"path2\"])"</FONT>), <FONT ID="StringLiteral">"string"</FONT>);
+<A NAME="303"></A>
+<A NAME="304"></A>        <A HREF="../../../../../../com/collective/celos/ci/testing/fixtures/compare/json/JsonContentsComparer.java.html">JsonContentsComparer</A> comparer = (<A HREF="../../../../../../com/collective/celos/ci/testing/fixtures/compare/json/JsonContentsComparer.java.html">JsonContentsComparer</A>) creatorObj.unwrap();
+<A NAME="305"></A>        Assert.assertEquals(comparer.getIgnorePaths(), <FONT ID="New">new</FONT> HashSet(Lists.newArrayList(<FONT ID="StringLiteral">"path1"</FONT>, <FONT ID="StringLiteral">"path2"</FONT>)));
+<A NAME="306"></A>    }
+<A NAME="307"></A>
+<A NAME="308"></A>
+<A NAME="309"></A>    @Test(expected = JavaScriptException.<FONT ID="Class">class</FONT>)
+<A NAME="310"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testJsonCompareFails() <FONT ID="Throws">throws</FONT> IOException {
+<A NAME="311"></A>        <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestConfigurationParser.java.html">TestConfigurationParser</A> parser = <FONT ID="New">new</FONT> <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestConfigurationParser.java.html">TestConfigurationParser</A>();
+<A NAME="312"></A>
+<A NAME="313"></A>        NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(<FONT ID="New">new</FONT> StringReader(<FONT ID="StringLiteral">"ci.jsonCompare(ci.fixDirFromResource(\"stuff\"))"</FONT>), <FONT ID="StringLiteral">"string"</FONT>);
+<A NAME="314"></A>
+<A NAME="315"></A>        <A HREF="../../../../../../com/collective/celos/ci/testing/fixtures/compare/json/JsonContentsComparer.java.html">JsonContentsComparer</A> comparer = (<A HREF="../../../../../../com/collective/celos/ci/testing/fixtures/compare/json/JsonContentsComparer.java.html">JsonContentsComparer</A>) creatorObj.unwrap();
+<A NAME="316"></A>        Assert.assertEquals(comparer.getIgnorePaths(), <FONT ID="New">new</FONT> HashSet(Lists.newArrayList(<FONT ID="StringLiteral">"path1"</FONT>, <FONT ID="StringLiteral">"path2"</FONT>)));
+<A NAME="317"></A>    }
+<A NAME="318"></A>
+<A NAME="319"></A>    @Test
+<A NAME="320"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testFixDir() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="321"></A>        String js = <FONT ID="StringLiteral">""</FONT> +
+<A NAME="322"></A>                <FONT ID="StringLiteral">"ci.fixDir({"</FONT> +
+<A NAME="323"></A>                <FONT ID="StringLiteral">"   file1: ci.fixFile('123'),"</FONT> +
+<A NAME="324"></A>                <FONT ID="StringLiteral">"   file2: ci.fixFile('234')"</FONT> +
+<A NAME="325"></A>                <FONT ID="StringLiteral">"})"</FONT>;
+<A NAME="326"></A>
+<A NAME="327"></A>        <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestConfigurationParser.java.html">TestConfigurationParser</A> parser = <FONT ID="New">new</FONT> <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestConfigurationParser.java.html">TestConfigurationParser</A>();
+<A NAME="328"></A>        NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(<FONT ID="New">new</FONT> StringReader(js), <FONT ID="StringLiteral">"string"</FONT>);
+<A NAME="329"></A>        <A HREF="../../../../../../com/collective/celos/ci/testing/fixtures/create/FixDirHierarchyCreator.java.html">FixDirHierarchyCreator</A> creator = (<A HREF="../../../../../../com/collective/celos/ci/testing/fixtures/create/FixDirHierarchyCreator.java.html">FixDirHierarchyCreator</A>) creatorObj.unwrap();
+<A NAME="330"></A>        <A HREF="../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixDir.java.html">FixDir</A> fixDir = creator.create(<FONT ID="Null">null</FONT>);
+<A NAME="331"></A>
+<A NAME="332"></A>        Assert.assertEquals(fixDir.getChildren().size(), <FONT ID="IntegerLiteral">2</FONT>);
+<A NAME="333"></A>        Assert.assertTrue(IOUtils.contentEquals(fixDir.getChildren().get(<FONT ID="StringLiteral">"file1"</FONT>).asFile().getContent(), <FONT ID="New">new</FONT> ByteArrayInputStream(<FONT ID="StringLiteral">"123"</FONT>.getBytes())));
+<A NAME="334"></A>        Assert.assertTrue(IOUtils.contentEquals(fixDir.getChildren().get(<FONT ID="StringLiteral">"file2"</FONT>).asFile().getContent(), <FONT ID="New">new</FONT> ByteArrayInputStream(<FONT ID="StringLiteral">"234"</FONT>.getBytes())));
+<A NAME="335"></A>    }
+<A NAME="336"></A>
+<A NAME="337"></A>
+<A NAME="338"></A>    @Test
+<A NAME="339"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testFixDirWithFixDir() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="340"></A>        String js = <FONT ID="StringLiteral">""</FONT> +
+<A NAME="341"></A>                <FONT ID="StringLiteral">"ci.fixDir({"</FONT> +
+<A NAME="342"></A>                <FONT ID="StringLiteral">"    file0: ci.fixFile('012'),"</FONT> +
+<A NAME="343"></A>                <FONT ID="StringLiteral">"    dir1: ci.fixDir({"</FONT> +
+<A NAME="344"></A>                <FONT ID="StringLiteral">"        file1: ci.fixFile('123'),"</FONT> +
+<A NAME="345"></A>                <FONT ID="StringLiteral">"        file2: ci.fixFile('234')"</FONT> +
+<A NAME="346"></A>                <FONT ID="StringLiteral">"    })"</FONT> +
+<A NAME="347"></A>                <FONT ID="StringLiteral">"})"</FONT>;
+<A NAME="348"></A>
+<A NAME="349"></A>        <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestConfigurationParser.java.html">TestConfigurationParser</A> parser = <FONT ID="New">new</FONT> <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestConfigurationParser.java.html">TestConfigurationParser</A>();
+<A NAME="350"></A>        NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(<FONT ID="New">new</FONT> StringReader(js), <FONT ID="StringLiteral">"string"</FONT>);
+<A NAME="351"></A>        <A HREF="../../../../../../com/collective/celos/ci/testing/fixtures/create/FixDirHierarchyCreator.java.html">FixDirHierarchyCreator</A> creator = (<A HREF="../../../../../../com/collective/celos/ci/testing/fixtures/create/FixDirHierarchyCreator.java.html">FixDirHierarchyCreator</A>) creatorObj.unwrap();
+<A NAME="352"></A>        <A HREF="../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixDir.java.html">FixDir</A> fixDir = creator.create(<FONT ID="Null">null</FONT>);
+<A NAME="353"></A>
+<A NAME="354"></A>        Assert.assertEquals(fixDir.getChildren().size(), <FONT ID="IntegerLiteral">2</FONT>);
+<A NAME="355"></A>        Assert.assertTrue(IOUtils.contentEquals(fixDir.getChildren().get(<FONT ID="StringLiteral">"file0"</FONT>).asFile().getContent(), <FONT ID="New">new</FONT> ByteArrayInputStream(<FONT ID="StringLiteral">"012"</FONT>.getBytes())));
+<A NAME="356"></A>
+<A NAME="357"></A>        <A HREF="../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixDir.java.html">FixDir</A> fixDir2 = (<A HREF="../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixDir.java.html">FixDir</A>) fixDir.getChildren().get(<FONT ID="StringLiteral">"dir1"</FONT>);
+<A NAME="358"></A>        Assert.assertEquals(fixDir2.getChildren().size(), <FONT ID="IntegerLiteral">2</FONT>);
+<A NAME="359"></A>        Assert.assertTrue(IOUtils.contentEquals(fixDir2.getChildren().get(<FONT ID="StringLiteral">"file1"</FONT>).asFile().getContent(), <FONT ID="New">new</FONT> ByteArrayInputStream(<FONT ID="StringLiteral">"123"</FONT>.getBytes())));
+<A NAME="360"></A>        Assert.assertTrue(IOUtils.contentEquals(fixDir2.getChildren().get(<FONT ID="StringLiteral">"file2"</FONT>).asFile().getContent(), <FONT ID="New">new</FONT> ByteArrayInputStream(<FONT ID="StringLiteral">"234"</FONT>.getBytes())));
+<A NAME="361"></A>
+<A NAME="362"></A>    }
+<A NAME="363"></A>
+<A NAME="364"></A>    @Test
+<A NAME="365"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testJsonToAvro() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="366"></A>
+<A NAME="367"></A>        String jsonStr = <FONT ID="StringLiteral">"{\"visitor\":{\"com.collective.pythia.avro.Visitor\":{\"cookie_id\":\"133263e9e100000\",\"segments\":[],\"edges\":{},\"behaviors\":{},\"birthdate\":0,\"association_ids\":{}}},\"events\":[{\"cookie_id\":\"133263e9e100000\",\"tstamp\":1403721385042,\"edge\":\"batchimport\",\"changes\":{\"com.collective.pythia.avro.Command\":{\"operation\":\"REMOVE\",\"association_id\":null,\"network\":\"et\",\"segments\":[49118]}}},{\"cookie_id\":\"133263e9e100000\",\"tstamp\":1403721385042,\"edge\":\"batchimport\",\"changes\":{\"com.collective.pythia.avro.Command\":{\"operation\":\"ADD\",\"association_id\":null,\"network\":\"et\",\"segments\":[49117]}}}]}"</FONT>;
+<A NAME="368"></A>        String schemaStr = <FONT ID="StringLiteral">"{\"type\":\"record\",\"name\":\"ConsolidatedEvent\",\"namespace\":\"com.collective.pythia.avro\",\"fields\":[{\"name\":\"visitor\",\"type\":[\"null\",{\"type\":\"record\",\"name\":\"Visitor\",\"fields\":[{\"name\":\"cookie_id\",\"type\":\"string\"},{\"name\":\"segments\",\"type\":{\"type\":\"array\",\"items\":{\"type\":\"record\",\"name\":\"Segment\",\"fields\":[{\"name\":\"id\",\"type\":\"int\"},{\"name\":\"expiration\",\"type\":\"long\",\"default\":0}]}},\"default\":[]},{\"name\":\"edges\",\"type\":{\"type\":\"map\",\"values\":\"long\"},\"default\":{}},{\"name\":\"behaviors\",\"type\":{\"type\":\"map\",\"values\":{\"type\":\"map\",\"values\":\"int\"},\"default\":{}},\"doc\":\"Map of net.context to map of YYYYMMDD-&gt;number_of_hits\",\"default\":{}},{\"name\":\"birthdate\",\"type\":\"long\"},{\"name\":\"association_ids\",\"type\":{\"type\":\"map\",\"values\":\"string\"},\"default\":{}}]}],\"default\":null},{\"name\":\"events\",\"type\":{\"type\":\"array\",\"items\":{\"type\":\"record\",\"name\":\"ProfileEvent\",\"fields\":[{\"name\":\"cookie_id\",\"type\":\"string\"},{\"name\":\"tstamp\",\"type\":\"long\"},{\"name\":\"edge\",\"type\":\"string\"},{\"name\":\"changes\",\"type\":[{\"type\":\"record\",\"name\":\"Hit\",\"fields\":[{\"name\":\"daystamp\",\"type\":\"string\"},{\"name\":\"context\",\"type\":\"string\"},{\"name\":\"type\",\"type\":{\"type\":\"enum\",\"name\":\"HitType\",\"symbols\":[\"ADX\",\"RETARGET\"]}},{\"name\":\"count\",\"type\":\"int\",\"default\":1}]},{\"type\":\"record\",\"name\":\"Command\",\"fields\":[{\"name\":\"operation\",\"type\":{\"type\":\"enum\",\"name\":\"OperationType\",\"symbols\":[\"ADD\",\"REPLACE\",\"UPDATE\",\"REMOVE\"]}},{\"name\":\"association_id\",\"type\":[\"null\",\"string\"],\"default\":null},{\"name\":\"network\",\"type\":\"string\"},{\"name\":\"segments\",\"type\":{\"type\":\"array\",\"items\":\"int\"},\"default\":[]}]}]}]}},\"default\":[]}]}"</FONT>;
+<A NAME="369"></A>
+<A NAME="370"></A>        String js = <FONT ID="StringLiteral">""</FONT> +
+<A NAME="371"></A>                <FONT ID="StringLiteral">"ci.jsonToAvro("</FONT> +
+<A NAME="372"></A>                <FONT ID="StringLiteral">"    ci.fixDir({ avroFile1: ci.fixFile('"</FONT> + jsonStr + <FONT ID="StringLiteral">"'), avroFile2: ci.fixFile('"</FONT> + jsonStr + <FONT ID="StringLiteral">"')}),"</FONT> +
+<A NAME="373"></A>                <FONT ID="StringLiteral">"    ci.fixFile('"</FONT> + schemaStr + <FONT ID="StringLiteral">"')"</FONT> +
+<A NAME="374"></A>                <FONT ID="StringLiteral">");"</FONT>;
+<A NAME="375"></A>
+<A NAME="376"></A>        <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestConfigurationParser.java.html">TestConfigurationParser</A> parser = <FONT ID="New">new</FONT> <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestConfigurationParser.java.html">TestConfigurationParser</A>();
+<A NAME="377"></A>
+<A NAME="378"></A>        NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(<FONT ID="New">new</FONT> StringReader(js), <FONT ID="StringLiteral">"string"</FONT>);
+<A NAME="379"></A>        <A HREF="../../../../../../com/collective/celos/ci/testing/structure/fixobject/ConversionCreator.java.html">ConversionCreator</A>&lt;<A HREF="../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixDir.java.html">FixDir</A>, <A HREF="../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixDir.java.html">FixDir</A>&gt; converter = (<A HREF="../../../../../../com/collective/celos/ci/testing/structure/fixobject/ConversionCreator.java.html">ConversionCreator</A>) creatorObj.unwrap();
+<A NAME="380"></A>
+<A NAME="381"></A>        Assert.assertEquals(converter.getDescription(<FONT ID="Null">null</FONT>), <FONT ID="StringLiteral">"[avroFile1, avroFile2]"</FONT>);
+<A NAME="382"></A>        <A HREF="../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixDir.java.html">FixDir</A> fixDir = converter.create(<FONT ID="Null">null</FONT>);
+<A NAME="383"></A>
+<A NAME="384"></A>        Assert.assertEquals(fixDir.getChildren().size(), <FONT ID="IntegerLiteral">2</FONT>);
+<A NAME="385"></A>
+<A NAME="386"></A>        <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/fixtures/convert/AvroToJsonConverter.html">AvroToJsonConverter</A> avroToJsonConverter = <FONT ID="New">new</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/fixtures/convert/AvroToJsonConverter.html">AvroToJsonConverter</A>();
+<A NAME="387"></A>        <A HREF="../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFile.java.html">FixFile</A> jsonFF = avroToJsonConverter.convert(<FONT ID="Null">null</FONT>, <FONT ID="New">new</FONT> <A HREF="../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFile.java.html">FixFile</A>(fixDir.getChildren().get(<FONT ID="StringLiteral">"avroFile1"</FONT>).asFile().getContent()));
+<A NAME="388"></A>        String jsonIsBack = IOUtils.toString(jsonFF.getContent());
+<A NAME="389"></A>        Assert.assertEquals(jsonIsBack, jsonStr);
+<A NAME="390"></A>
+<A NAME="391"></A>
+<A NAME="392"></A>        <A HREF="../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFile.java.html">FixFile</A> jsonFF2 = avroToJsonConverter.convert(<FONT ID="Null">null</FONT>, <FONT ID="New">new</FONT> <A HREF="../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFile.java.html">FixFile</A>(fixDir.getChildren().get(<FONT ID="StringLiteral">"avroFile2"</FONT>).asFile().getContent()));
+<A NAME="393"></A>        String jsonIsBack2 = IOUtils.toString(jsonFF2.getContent());
+<A NAME="394"></A>        Assert.assertEquals(jsonIsBack2, jsonStr);
+<A NAME="395"></A>
+<A NAME="396"></A>    }
+<A NAME="397"></A>
+<A NAME="398"></A>    @Test
+<A NAME="399"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testFixTable() <FONT ID="Throws">throws</FONT> IOException {
+<A NAME="400"></A>
+<A NAME="401"></A>        String js = <FONT ID="StringLiteral">"ci.fixTable([\"col1\", \"col2\"], [[\"row1\", \"row2\"],[\"row11\", \"row22\"]])"</FONT>;
+<A NAME="402"></A>
+<A NAME="403"></A>        <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestConfigurationParser.java.html">TestConfigurationParser</A> parser = <FONT ID="New">new</FONT> <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestConfigurationParser.java.html">TestConfigurationParser</A>();
+<A NAME="404"></A>
+<A NAME="405"></A>        NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(<FONT ID="New">new</FONT> StringReader(js), <FONT ID="StringLiteral">"string"</FONT>);
+<A NAME="406"></A>        <A HREF="../../../../../../com/collective/celos/ci/testing/fixtures/deploy/hive/StringArrayFixTableCreator.java.html">StringArrayFixTableCreator</A> creator = (<A HREF="../../../../../../com/collective/celos/ci/testing/fixtures/deploy/hive/StringArrayFixTableCreator.java.html">StringArrayFixTableCreator</A>) creatorObj.unwrap();
+<A NAME="407"></A>
+<A NAME="408"></A>        Assert.assertArrayEquals(creator.getColumnNames(), <FONT ID="New">new</FONT> String[]{<FONT ID="StringLiteral">"col1"</FONT>, <FONT ID="StringLiteral">"col2"</FONT>});
+<A NAME="409"></A>        Assert.assertArrayEquals(creator.getData(), <FONT ID="New">new</FONT> String[][]{<FONT ID="New">new</FONT> String[]{<FONT ID="StringLiteral">"row1"</FONT>, <FONT ID="StringLiteral">"row2"</FONT>}, <FONT ID="New">new</FONT> String[]{<FONT ID="StringLiteral">"row11"</FONT>, <FONT ID="StringLiteral">"row22"</FONT>}});
+<A NAME="410"></A>
+<A NAME="411"></A>    }
+<A NAME="412"></A>
+<A NAME="413"></A>    @Test (expected = JavaScriptException.<FONT ID="Class">class</FONT>)
+<A NAME="414"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testFixTableNoRows() <FONT ID="Throws">throws</FONT> IOException {
+<A NAME="415"></A>
+<A NAME="416"></A>        String js = <FONT ID="StringLiteral">"ci.fixTable([\"col1\", \"col2\"])"</FONT>;
+<A NAME="417"></A>
+<A NAME="418"></A>        <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestConfigurationParser.java.html">TestConfigurationParser</A> parser = <FONT ID="New">new</FONT> <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestConfigurationParser.java.html">TestConfigurationParser</A>();
+<A NAME="419"></A>
+<A NAME="420"></A>        parser.evaluateTestConfig(<FONT ID="New">new</FONT> StringReader(js), <FONT ID="StringLiteral">"string"</FONT>);
+<A NAME="421"></A>    }
+<A NAME="422"></A>
+<A NAME="423"></A>    @Test
+<A NAME="424"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testFixTableFromTSV() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="425"></A>
+<A NAME="426"></A>        String js = <FONT ID="StringLiteral">"ci.fixTableFromTsv(ci.fixFile(\"A\\tB\\n1\\t2\\n11\\t22\"))"</FONT>;
+<A NAME="427"></A>
+<A NAME="428"></A>        <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestConfigurationParser.java.html">TestConfigurationParser</A> parser = <FONT ID="New">new</FONT> <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestConfigurationParser.java.html">TestConfigurationParser</A>();
+<A NAME="429"></A>
+<A NAME="430"></A>        NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(<FONT ID="New">new</FONT> StringReader(js), <FONT ID="StringLiteral">"string"</FONT>);
+<A NAME="431"></A>        <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/fixtures/deploy/hive/FileFixTableCreator.html">FileFixTableCreator</A> creator = (<A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/fixtures/deploy/hive/FileFixTableCreator.html">FileFixTableCreator</A>) creatorObj.unwrap();
+<A NAME="432"></A>        <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestRun.java.html">TestRun</A> testRun = mock(<A HREF="../../../../../../com/collective/celos/ci/mode/test/TestRun.java.html">TestRun</A>.<FONT ID="Class">class</FONT>);
+<A NAME="433"></A>
+<A NAME="434"></A>        <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable</A> t = creator.create(testRun);
+<A NAME="435"></A>        <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable.FixRow</A> r1 = t.getRows().get(<FONT ID="IntegerLiteral">0</FONT>);
+<A NAME="436"></A>        <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable.FixRow</A> r2 = t.getRows().get(<FONT ID="IntegerLiteral">1</FONT>);
+<A NAME="437"></A>        Assert.assertEquals(<FONT ID="StringLiteral">"1"</FONT>, r1.getCells().get(<FONT ID="StringLiteral">"A"</FONT>));
+<A NAME="438"></A>        Assert.assertEquals(<FONT ID="StringLiteral">"2"</FONT>, r1.getCells().get(<FONT ID="StringLiteral">"B"</FONT>));
+<A NAME="439"></A>        Assert.assertEquals(<FONT ID="StringLiteral">"11"</FONT>, r2.getCells().get(<FONT ID="StringLiteral">"A"</FONT>));
+<A NAME="440"></A>        Assert.assertEquals(<FONT ID="StringLiteral">"22"</FONT>, r2.getCells().get(<FONT ID="StringLiteral">"B"</FONT>));
+<A NAME="441"></A>    }
+<A NAME="442"></A>
+<A NAME="443"></A>    @Test(expected = JavaScriptException.<FONT ID="Class">class</FONT>)
+<A NAME="444"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testFixTableFromTSVError() <FONT ID="Throws">throws</FONT> IOException {
+<A NAME="445"></A>        String js = <FONT ID="StringLiteral">"ci.fixTableFromTsv()"</FONT>;
+<A NAME="446"></A>        <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestConfigurationParser.java.html">TestConfigurationParser</A> parser = <FONT ID="New">new</FONT> <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestConfigurationParser.java.html">TestConfigurationParser</A>();
+<A NAME="447"></A>        parser.evaluateTestConfig(<FONT ID="New">new</FONT> StringReader(js), <FONT ID="StringLiteral">"string"</FONT>);
+<A NAME="448"></A>    }
+<A NAME="449"></A>    
+<A NAME="450"></A>    @Test
+<A NAME="451"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testFixFileFromHDFS() <FONT ID="Throws">throws</FONT> IOException {
+<A NAME="452"></A>
+<A NAME="453"></A>        String js = <FONT ID="StringLiteral">"ci.fixFileFromHdfs(\"/foo\")"</FONT>;
+<A NAME="454"></A>
+<A NAME="455"></A>        <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestConfigurationParser.java.html">TestConfigurationParser</A> parser = <FONT ID="New">new</FONT> <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestConfigurationParser.java.html">TestConfigurationParser</A>();
+<A NAME="456"></A>
+<A NAME="457"></A>        NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(<FONT ID="New">new</FONT> StringReader(js), <FONT ID="StringLiteral">"string"</FONT>);
+<A NAME="458"></A>        <A HREF="../../../../../../com/collective/celos/ci/testing/fixtures/create/OutputFixDirFromHdfsCreator.java.html">OutputFixDirFromHdfsCreator</A> creator = (<A HREF="../../../../../../com/collective/celos/ci/testing/fixtures/create/OutputFixDirFromHdfsCreator.java.html">OutputFixDirFromHdfsCreator</A>) creatorObj.unwrap();
+<A NAME="459"></A>
+<A NAME="460"></A>        Assert.assertEquals(creator.getPath(), <FONT ID="New">new</FONT> Path(<FONT ID="StringLiteral">"/foo"</FONT>)); <FONT ID="SingleLineComment">// OutputFixDirFromHdfsCreator strips initial /
+<A NAME="461"></A></FONT>    }
+<A NAME="462"></A>
+<A NAME="463"></A>    @Test(expected = JavaScriptException.<FONT ID="Class">class</FONT>)
+<A NAME="464"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testFixFileFromHDFSError() <FONT ID="Throws">throws</FONT> IOException {
+<A NAME="465"></A>        String js = <FONT ID="StringLiteral">"ci.fixFileFromHdfs()"</FONT>;
+<A NAME="466"></A>        <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestConfigurationParser.java.html">TestConfigurationParser</A> parser = <FONT ID="New">new</FONT> <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestConfigurationParser.java.html">TestConfigurationParser</A>();
+<A NAME="467"></A>        parser.evaluateTestConfig(<FONT ID="New">new</FONT> StringReader(js), <FONT ID="StringLiteral">"string"</FONT>);
+<A NAME="468"></A>    }
+<A NAME="469"></A>        
+<A NAME="470"></A>    @Test(expected = JavaScriptException.<FONT ID="Class">class</FONT>)
+<A NAME="471"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testFixTableFromResourceError() <FONT ID="Throws">throws</FONT> IOException {
+<A NAME="472"></A>
+<A NAME="473"></A>        String js = <FONT ID="StringLiteral">"ci.fixTableFromResource()"</FONT>;
+<A NAME="474"></A>
+<A NAME="475"></A>        <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestConfigurationParser.java.html">TestConfigurationParser</A> parser = <FONT ID="New">new</FONT> <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestConfigurationParser.java.html">TestConfigurationParser</A>();
+<A NAME="476"></A>
+<A NAME="477"></A>        parser.evaluateTestConfig(<FONT ID="New">new</FONT> StringReader(js), <FONT ID="StringLiteral">"string"</FONT>);
+<A NAME="478"></A>    }
+<A NAME="479"></A>
+<A NAME="480"></A>
+<A NAME="481"></A>    @Test
+<A NAME="482"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testHiveInputOnlyDbName() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="483"></A>
+<A NAME="484"></A>        String js = <FONT ID="StringLiteral">"ci.hiveInput(\"dbname\")"</FONT>;
+<A NAME="485"></A>
+<A NAME="486"></A>        <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestConfigurationParser.java.html">TestConfigurationParser</A> parser = <FONT ID="New">new</FONT> <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestConfigurationParser.java.html">TestConfigurationParser</A>();
+<A NAME="487"></A>
+<A NAME="488"></A>        NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(<FONT ID="New">new</FONT> StringReader(js), <FONT ID="StringLiteral">"string"</FONT>);
+<A NAME="489"></A>        <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/fixtures/deploy/hive/HiveTableDeployer.html">HiveTableDeployer</A> hiveTableDeployer = (<A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/fixtures/deploy/hive/HiveTableDeployer.html">HiveTableDeployer</A>) creatorObj.unwrap();
+<A NAME="490"></A>
+<A NAME="491"></A>        Assert.assertEquals(hiveTableDeployer.getDatabaseName(), <FONT ID="New">new</FONT> <A HREF="../../../../../../com/collective/celos/DatabaseName.java.html">DatabaseName</A>(<FONT ID="StringLiteral">"dbname"</FONT>));
+<A NAME="492"></A>        Assert.assertNull(hiveTableDeployer.getTableName());
+<A NAME="493"></A>        Assert.assertNull(hiveTableDeployer.getTableCreationScriptFile());
+<A NAME="494"></A>        Assert.assertNull(hiveTableDeployer.getDataFileCreator());
+<A NAME="495"></A>    }
+<A NAME="496"></A>
+<A NAME="497"></A>    @Test
+<A NAME="498"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testHiveInput() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="499"></A>
+<A NAME="500"></A>        String tableCreationScript = <FONT ID="StringLiteral">"table creation script"</FONT>;
+<A NAME="501"></A>        String js = <FONT ID="StringLiteral">"ci.hiveInput(\"dbname\", \"tablename\", ci.fixFile(\""</FONT> + tableCreationScript + <FONT ID="StringLiteral">"\"))"</FONT>;
+<A NAME="502"></A>
+<A NAME="503"></A>        <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestConfigurationParser.java.html">TestConfigurationParser</A> parser = <FONT ID="New">new</FONT> <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestConfigurationParser.java.html">TestConfigurationParser</A>();
+<A NAME="504"></A>
+<A NAME="505"></A>        NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(<FONT ID="New">new</FONT> StringReader(js), <FONT ID="StringLiteral">"string"</FONT>);
+<A NAME="506"></A>        <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/fixtures/deploy/hive/HiveTableDeployer.html">HiveTableDeployer</A> hiveTableDeployer = (<A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/fixtures/deploy/hive/HiveTableDeployer.html">HiveTableDeployer</A>) creatorObj.unwrap();
+<A NAME="507"></A>
+<A NAME="508"></A>        <A HREF="../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFile.java.html">FixFile</A> tableCreationFile = hiveTableDeployer.getTableCreationScriptFile().create(<FONT ID="Null">null</FONT>);
+<A NAME="509"></A>
+<A NAME="510"></A>        Assert.assertEquals(hiveTableDeployer.getDatabaseName(), <FONT ID="New">new</FONT> <A HREF="../../../../../../com/collective/celos/DatabaseName.java.html">DatabaseName</A>(<FONT ID="StringLiteral">"dbname"</FONT>));
+<A NAME="511"></A>        Assert.assertEquals(hiveTableDeployer.getTableName(), <FONT ID="StringLiteral">"tablename"</FONT>);
+<A NAME="512"></A>        Assert.assertEquals(IOUtils.toString(tableCreationFile.getContent()), tableCreationScript);
+<A NAME="513"></A>        Assert.assertNull(hiveTableDeployer.getDataFileCreator());
+<A NAME="514"></A>    }
+<A NAME="515"></A>
+<A NAME="516"></A>    @Test
+<A NAME="517"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testHiveInputWithData() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="518"></A>
+<A NAME="519"></A>        String tableCreationScript = <FONT ID="StringLiteral">"table creation script"</FONT>;
+<A NAME="520"></A>        String js =
+<A NAME="521"></A>                <FONT ID="StringLiteral">"var table = ci.fixTable([\"col1\", \"col2\"], [[\"row1\", \"row2\"],[\"row11\", \"row22\"]]);"</FONT> +
+<A NAME="522"></A>                <FONT ID="StringLiteral">"ci.hiveInput(\"dbname\", \"tablename\", ci.fixFile(\""</FONT> + tableCreationScript + <FONT ID="StringLiteral">"\"), table)"</FONT>;
+<A NAME="523"></A>
+<A NAME="524"></A>        <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestConfigurationParser.java.html">TestConfigurationParser</A> parser = <FONT ID="New">new</FONT> <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestConfigurationParser.java.html">TestConfigurationParser</A>();
+<A NAME="525"></A>
+<A NAME="526"></A>        NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(<FONT ID="New">new</FONT> StringReader(js), <FONT ID="StringLiteral">"string"</FONT>);
+<A NAME="527"></A>        <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/fixtures/deploy/hive/HiveTableDeployer.html">HiveTableDeployer</A> hiveTableDeployer = (<A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/fixtures/deploy/hive/HiveTableDeployer.html">HiveTableDeployer</A>) creatorObj.unwrap();
+<A NAME="528"></A>
+<A NAME="529"></A>        Assert.assertEquals(hiveTableDeployer.getDatabaseName(), <FONT ID="New">new</FONT> <A HREF="../../../../../../com/collective/celos/DatabaseName.java.html">DatabaseName</A>(<FONT ID="StringLiteral">"dbname"</FONT>));
+<A NAME="530"></A>        Assert.assertEquals(hiveTableDeployer.getTableName(), <FONT ID="StringLiteral">"tablename"</FONT>);
+<A NAME="531"></A>
+<A NAME="532"></A>        <A HREF="../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFile.java.html">FixFile</A> tableCreationFile = hiveTableDeployer.getTableCreationScriptFile().create(<FONT ID="Null">null</FONT>);
+<A NAME="533"></A>        Assert.assertEquals(IOUtils.toString(tableCreationFile.getContent()), tableCreationScript);
+<A NAME="534"></A>        Assert.assertEquals(hiveTableDeployer.getDataFileCreator().getClass(), <A HREF="../../../../../../com/collective/celos/ci/testing/fixtures/deploy/hive/StringArrayFixTableCreator.java.html">StringArrayFixTableCreator</A>.<FONT ID="Class">class</FONT>);
+<A NAME="535"></A>    }
+<A NAME="536"></A>
+<A NAME="537"></A>
+<A NAME="538"></A>    @Test(expected = JavaScriptException.<FONT ID="Class">class</FONT>)
+<A NAME="539"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testHiveInputFails() <FONT ID="Throws">throws</FONT> IOException {
+<A NAME="540"></A>
+<A NAME="541"></A>        String js = <FONT ID="StringLiteral">"ci.hiveInput(\"tablename\", [[\"1\",\"2\",\"3\"],[\"11\",\"22\",\"33\"]])"</FONT>;
+<A NAME="542"></A>
+<A NAME="543"></A>        <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestConfigurationParser.java.html">TestConfigurationParser</A> parser = <FONT ID="New">new</FONT> <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestConfigurationParser.java.html">TestConfigurationParser</A>();
+<A NAME="544"></A>        parser.evaluateTestConfig(<FONT ID="New">new</FONT> StringReader(js), <FONT ID="StringLiteral">"string"</FONT>);
+<A NAME="545"></A>    }
+<A NAME="546"></A>
+<A NAME="547"></A>    @Test
+<A NAME="548"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testHiveInputNoData() <FONT ID="Throws">throws</FONT> IOException {
+<A NAME="549"></A>
+<A NAME="550"></A>        String js = <FONT ID="StringLiteral">"ci.hiveInput(\"dbname\", \"tablename\", ci.fixFile(\"create table blah\"))"</FONT>;
+<A NAME="551"></A>
+<A NAME="552"></A>        <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestConfigurationParser.java.html">TestConfigurationParser</A> parser = <FONT ID="New">new</FONT> <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestConfigurationParser.java.html">TestConfigurationParser</A>();
+<A NAME="553"></A>
+<A NAME="554"></A>        NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(<FONT ID="New">new</FONT> StringReader(js), <FONT ID="StringLiteral">"string"</FONT>);
+<A NAME="555"></A>        <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/fixtures/deploy/hive/HiveTableDeployer.html">HiveTableDeployer</A> hiveTableDeployer = (<A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/fixtures/deploy/hive/HiveTableDeployer.html">HiveTableDeployer</A>) creatorObj.unwrap();
+<A NAME="556"></A>
+<A NAME="557"></A>        Assert.assertEquals(hiveTableDeployer.getDatabaseName(), <FONT ID="New">new</FONT> <A HREF="../../../../../../com/collective/celos/DatabaseName.java.html">DatabaseName</A>(<FONT ID="StringLiteral">"dbname"</FONT>));
+<A NAME="558"></A>        Assert.assertEquals(hiveTableDeployer.getTableName(), <FONT ID="StringLiteral">"tablename"</FONT>);
+<A NAME="559"></A>
+<A NAME="560"></A>    }
+<A NAME="561"></A>    @Test
+<A NAME="562"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testHiveTable() <FONT ID="Throws">throws</FONT> IOException {
+<A NAME="563"></A>        String js = <FONT ID="StringLiteral">"ci.hiveTable(\"dbname\", \"tablename\")"</FONT>;
+<A NAME="564"></A>
+<A NAME="565"></A>        <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestConfigurationParser.java.html">TestConfigurationParser</A> parser = <FONT ID="New">new</FONT> <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestConfigurationParser.java.html">TestConfigurationParser</A>();
+<A NAME="566"></A>
+<A NAME="567"></A>        NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(<FONT ID="New">new</FONT> StringReader(js), <FONT ID="StringLiteral">"string"</FONT>);
+<A NAME="568"></A>        <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/fixtures/create/OutputFixTableFromHiveCreator.html">OutputFixTableFromHiveCreator</A> creator = (<A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/fixtures/create/OutputFixTableFromHiveCreator.html">OutputFixTableFromHiveCreator</A>) creatorObj.unwrap();
+<A NAME="569"></A>        <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestRun.java.html">TestRun</A> testRun = mock(<A HREF="../../../../../../com/collective/celos/ci/mode/test/TestRun.java.html">TestRun</A>.<FONT ID="Class">class</FONT>);
+<A NAME="570"></A>        doReturn(UUID.nameUUIDFromBytes(<FONT ID="StringLiteral">"fake"</FONT>.getBytes())).when(testRun).getTestUUID();
+<A NAME="571"></A>        Assert.assertEquals(<FONT ID="StringLiteral">"Hive table celosci_dbname_144c9def_ac04_369c_bbfa_d8efaa8ea194.tablename"</FONT>, creator.getDescription(testRun));
+<A NAME="572"></A>    }
+<A NAME="573"></A>
+<A NAME="574"></A>    @Test (expected = JavaScriptException.<FONT ID="Class">class</FONT>)
+<A NAME="575"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testHiveTableNoTable() <FONT ID="Throws">throws</FONT> IOException {
+<A NAME="576"></A>        String js = <FONT ID="StringLiteral">"ci.hiveTable(\"dbname\")"</FONT>;
+<A NAME="577"></A>
+<A NAME="578"></A>        <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestConfigurationParser.java.html">TestConfigurationParser</A> parser = <FONT ID="New">new</FONT> <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestConfigurationParser.java.html">TestConfigurationParser</A>();
+<A NAME="579"></A>        parser.evaluateTestConfig(<FONT ID="New">new</FONT> StringReader(js), <FONT ID="StringLiteral">"string"</FONT>);
+<A NAME="580"></A>    }
+<A NAME="581"></A>
+<A NAME="582"></A>    @Test (expected = JavaScriptException.<FONT ID="Class">class</FONT>)
+<A NAME="583"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testHiveTableNoDb() <FONT ID="Throws">throws</FONT> IOException {
+<A NAME="584"></A>        String js = <FONT ID="StringLiteral">"ci.hiveTable()"</FONT>;
+<A NAME="585"></A>
+<A NAME="586"></A>        <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestConfigurationParser.java.html">TestConfigurationParser</A> parser = <FONT ID="New">new</FONT> <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestConfigurationParser.java.html">TestConfigurationParser</A>();
+<A NAME="587"></A>        parser.evaluateTestConfig(<FONT ID="New">new</FONT> StringReader(js), <FONT ID="StringLiteral">"string"</FONT>);
+<A NAME="588"></A>    }
+<A NAME="589"></A>
+<A NAME="590"></A>    @Test
+<A NAME="591"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testTableToJson() <FONT ID="Throws">throws</FONT> IOException {
+<A NAME="592"></A>        String js = <FONT ID="StringLiteral">"ci.tableToJson(ci.hiveTable(\"dbname\", \"tablename\"))"</FONT>;
+<A NAME="593"></A>
+<A NAME="594"></A>        <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestConfigurationParser.java.html">TestConfigurationParser</A> parser = <FONT ID="New">new</FONT> <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestConfigurationParser.java.html">TestConfigurationParser</A>();
+<A NAME="595"></A>
+<A NAME="596"></A>        NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(<FONT ID="New">new</FONT> StringReader(js), <FONT ID="StringLiteral">"string"</FONT>);
+<A NAME="597"></A>        <A HREF="../../../../../../com/collective/celos/ci/testing/structure/fixobject/ConversionCreator.java.html">ConversionCreator</A> creator = (<A HREF="../../../../../../com/collective/celos/ci/testing/structure/fixobject/ConversionCreator.java.html">ConversionCreator</A>) creatorObj.unwrap();
+<A NAME="598"></A>
+<A NAME="599"></A>        Assert.assertEquals(<A HREF="../../../../../../com/collective/celos/ci/testing/fixtures/convert/FixTableToJsonFileConverter.java.html">FixTableToJsonFileConverter</A>.<FONT ID="Class">class</FONT>, creator.getFixObjectConverter().getClass());
+<A NAME="600"></A>
+<A NAME="601"></A>    }
+<A NAME="602"></A>
+<A NAME="603"></A>    @Test (expected = JavaScriptException.<FONT ID="Class">class</FONT>)
+<A NAME="604"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testTableToJsonNoCreator() <FONT ID="Throws">throws</FONT> IOException {
+<A NAME="605"></A>        String js = <FONT ID="StringLiteral">"ci.tableToJson()"</FONT>;
+<A NAME="606"></A>
+<A NAME="607"></A>        <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestConfigurationParser.java.html">TestConfigurationParser</A> parser = <FONT ID="New">new</FONT> <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestConfigurationParser.java.html">TestConfigurationParser</A>();
+<A NAME="608"></A>        parser.evaluateTestConfig(<FONT ID="New">new</FONT> StringReader(js), <FONT ID="StringLiteral">"string"</FONT>);
+<A NAME="609"></A>    }
+<A NAME="610"></A>    
+<A NAME="611"></A>    @Test
+<A NAME="612"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testTableToTSV() <FONT ID="Throws">throws</FONT> IOException {
+<A NAME="613"></A>        String js = <FONT ID="StringLiteral">"ci.tableToTSV(ci.hiveTable(\"dbname\", \"tablename\"))"</FONT>;
+<A NAME="614"></A>
+<A NAME="615"></A>        <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestConfigurationParser.java.html">TestConfigurationParser</A> parser = <FONT ID="New">new</FONT> <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestConfigurationParser.java.html">TestConfigurationParser</A>();
+<A NAME="616"></A>
+<A NAME="617"></A>        NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(<FONT ID="New">new</FONT> StringReader(js), <FONT ID="StringLiteral">"string"</FONT>);
+<A NAME="618"></A>        <A HREF="../../../../../../com/collective/celos/ci/testing/structure/fixobject/ConversionCreator.java.html">ConversionCreator</A> creator = (<A HREF="../../../../../../com/collective/celos/ci/testing/structure/fixobject/ConversionCreator.java.html">ConversionCreator</A>) creatorObj.unwrap();
+<A NAME="619"></A>
+<A NAME="620"></A>        Assert.assertEquals(<A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/fixtures/convert/FixTableToTSVFileConverter.html">FixTableToTSVFileConverter</A>.<FONT ID="Class">class</FONT>, creator.getFixObjectConverter().getClass());
+<A NAME="621"></A>
+<A NAME="622"></A>    }
+<A NAME="623"></A>
+<A NAME="624"></A>    @Test (expected = JavaScriptException.<FONT ID="Class">class</FONT>)
+<A NAME="625"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testTableToTSVNoCreator() <FONT ID="Throws">throws</FONT> IOException {
+<A NAME="626"></A>        String js = <FONT ID="StringLiteral">"ci.tableToTSV()"</FONT>;
+<A NAME="627"></A>
+<A NAME="628"></A>        <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestConfigurationParser.java.html">TestConfigurationParser</A> parser = <FONT ID="New">new</FONT> <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestConfigurationParser.java.html">TestConfigurationParser</A>();
+<A NAME="629"></A>        parser.evaluateTestConfig(<FONT ID="New">new</FONT> StringReader(js), <FONT ID="StringLiteral">"string"</FONT>);
+<A NAME="630"></A>    }
+<A NAME="631"></A>
+<A NAME="632"></A>
+<A NAME="633"></A>    @Test
+<A NAME="634"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testExpandJson() <FONT ID="Throws">throws</FONT> IOException {
+<A NAME="635"></A>        String js = <FONT ID="StringLiteral">"ci.expandJson(ci.tableToJson(ci.hiveTable(\"dbname\", \"tablename\")), [\"field1\", \"field2\"])"</FONT>;
+<A NAME="636"></A>
+<A NAME="637"></A>        <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestConfigurationParser.java.html">TestConfigurationParser</A> parser = <FONT ID="New">new</FONT> <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestConfigurationParser.java.html">TestConfigurationParser</A>();
+<A NAME="638"></A>
+<A NAME="639"></A>        NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(<FONT ID="New">new</FONT> StringReader(js), <FONT ID="StringLiteral">"string"</FONT>);
+<A NAME="640"></A>        <A HREF="../../../../../../com/collective/celos/ci/testing/structure/fixobject/ConversionCreator.java.html">ConversionCreator</A> creator = (<A HREF="../../../../../../com/collective/celos/ci/testing/structure/fixobject/ConversionCreator.java.html">ConversionCreator</A>) creatorObj.unwrap();
+<A NAME="641"></A>        Assert.assertEquals(<A HREF="../../../../../../com/collective/celos/ci/testing/fixtures/convert/JsonExpandConverter.java.html">JsonExpandConverter</A>.<FONT ID="Class">class</FONT>, creator.getFixObjectConverter().getClass());
+<A NAME="642"></A>    }
+<A NAME="643"></A>
+<A NAME="644"></A>
+<A NAME="645"></A>    @Test
+<A NAME="646"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testExpandJsonNoFields() <FONT ID="Throws">throws</FONT> IOException {
+<A NAME="647"></A>        String js = <FONT ID="StringLiteral">"ci.expandJson(ci.tableToJson(ci.hiveTable(\"dbname\", \"tablename\")))"</FONT>;
+<A NAME="648"></A>
+<A NAME="649"></A>        <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestConfigurationParser.java.html">TestConfigurationParser</A> parser = <FONT ID="New">new</FONT> <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestConfigurationParser.java.html">TestConfigurationParser</A>();
+<A NAME="650"></A>
+<A NAME="651"></A>        NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(<FONT ID="New">new</FONT> StringReader(js), <FONT ID="StringLiteral">"string"</FONT>);
+<A NAME="652"></A>        <A HREF="../../../../../../com/collective/celos/ci/testing/structure/fixobject/ConversionCreator.java.html">ConversionCreator</A> creator = (<A HREF="../../../../../../com/collective/celos/ci/testing/structure/fixobject/ConversionCreator.java.html">ConversionCreator</A>) creatorObj.unwrap();
+<A NAME="653"></A>        Assert.assertEquals(<A HREF="../../../../../../com/collective/celos/ci/testing/fixtures/convert/JsonExpandConverter.java.html">JsonExpandConverter</A>.<FONT ID="Class">class</FONT>, creator.getFixObjectConverter().getClass());
+<A NAME="654"></A>    }
+<A NAME="655"></A>
+<A NAME="656"></A>    @Test (expected = JavaScriptException.<FONT ID="Class">class</FONT>)
+<A NAME="657"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testExpandJsonNoParams() <FONT ID="Throws">throws</FONT> IOException {
+<A NAME="658"></A>        String js = <FONT ID="StringLiteral">"ci.expandJson()"</FONT>;
+<A NAME="659"></A>
+<A NAME="660"></A>        <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestConfigurationParser.java.html">TestConfigurationParser</A> parser = <FONT ID="New">new</FONT> <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestConfigurationParser.java.html">TestConfigurationParser</A>();
+<A NAME="661"></A>        parser.evaluateTestConfig(<FONT ID="New">new</FONT> StringReader(js), <FONT ID="StringLiteral">"string"</FONT>);
+<A NAME="662"></A>    }
+<A NAME="663"></A>
+<A NAME="664"></A>    @Test
+<A NAME="665"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testFixTableComparerNotOrdered() <FONT ID="Throws">throws</FONT> IOException {
+<A NAME="666"></A>        String js =
+<A NAME="667"></A>                <FONT ID="StringLiteral">"var table1 = ci.fixTable([\"col1\", \"col2\"], [[\"row1\", \"row2\"],[\"row11\", \"row22\"]]);"</FONT> +
+<A NAME="668"></A>                        <FONT ID="StringLiteral">"var table2 = ci.fixTable([\"col1\", \"col2\"], [[\"row1\", \"row2\"],[\"row11\", \"row22\"]]);"</FONT> +
+<A NAME="669"></A>                        <FONT ID="StringLiteral">"ci.fixTableCompare(table1, table2);"</FONT>;
+<A NAME="670"></A>
+<A NAME="671"></A>        <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestConfigurationParser.java.html">TestConfigurationParser</A> parser = <FONT ID="New">new</FONT> <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestConfigurationParser.java.html">TestConfigurationParser</A>();
+<A NAME="672"></A>
+<A NAME="673"></A>        NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(<FONT ID="New">new</FONT> StringReader(js), <FONT ID="StringLiteral">"string"</FONT>);
+<A NAME="674"></A>        <A HREF="../../../../../../com/collective/celos/ci/testing/fixtures/compare/FixTableComparer.java.html">FixTableComparer</A> comparer = (<A HREF="../../../../../../com/collective/celos/ci/testing/fixtures/compare/FixTableComparer.java.html">FixTableComparer</A>) creatorObj.unwrap();
+<A NAME="675"></A>        Assert.assertEquals(<FONT ID="False">false</FONT>, comparer.isColumnNamesOrdered());
+<A NAME="676"></A>        Assert.assertEquals(<FONT ID="False">false</FONT>, comparer.isRespectRowOrder());
+<A NAME="677"></A>    }
+<A NAME="678"></A>
+<A NAME="679"></A>    @Test
+<A NAME="680"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testFixTableComparerOrdered() <FONT ID="Throws">throws</FONT> IOException {
+<A NAME="681"></A>        String js =
+<A NAME="682"></A>                <FONT ID="StringLiteral">"var table1 = ci.fixTable([\"col1\", \"col2\"], [[\"row1\", \"row2\"],[\"row11\", \"row22\"]]);"</FONT> +
+<A NAME="683"></A>                        <FONT ID="StringLiteral">"var table2 = ci.fixTable([\"col1\", \"col2\"], [[\"row1\", \"row2\"],[\"row11\", \"row22\"]]);"</FONT> +
+<A NAME="684"></A>                        <FONT ID="StringLiteral">"ci.fixTableCompare(table1, table2, true, true);"</FONT>;
+<A NAME="685"></A>
+<A NAME="686"></A>        <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestConfigurationParser.java.html">TestConfigurationParser</A> parser = <FONT ID="New">new</FONT> <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestConfigurationParser.java.html">TestConfigurationParser</A>();
+<A NAME="687"></A>
+<A NAME="688"></A>        NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(<FONT ID="New">new</FONT> StringReader(js), <FONT ID="StringLiteral">"string"</FONT>);
+<A NAME="689"></A>        <A HREF="../../../../../../com/collective/celos/ci/testing/fixtures/compare/FixTableComparer.java.html">FixTableComparer</A> comparer = (<A HREF="../../../../../../com/collective/celos/ci/testing/fixtures/compare/FixTableComparer.java.html">FixTableComparer</A>) creatorObj.unwrap();
+<A NAME="690"></A>        Assert.assertEquals(<FONT ID="True">true</FONT>, comparer.isColumnNamesOrdered());
+<A NAME="691"></A>        Assert.assertEquals(<FONT ID="True">true</FONT>, comparer.isRespectRowOrder());
+<A NAME="692"></A>
+<A NAME="693"></A>    }
+<A NAME="694"></A>
+<A NAME="695"></A>    @Test (expected = JavaScriptException.<FONT ID="Class">class</FONT>)
+<A NAME="696"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testFixTableComparerFails1() <FONT ID="Throws">throws</FONT> IOException {
+<A NAME="697"></A>        String js =
+<A NAME="698"></A>                <FONT ID="StringLiteral">"var table1 = ci.fixTable([\"col1\", \"col2\"], [[\"row1\", \"row2\"],[\"row11\", \"row22\"]]);"</FONT> +
+<A NAME="699"></A>                <FONT ID="StringLiteral">"ci.fixTableCompare(table1);"</FONT>;
+<A NAME="700"></A>
+<A NAME="701"></A>        <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestConfigurationParser.java.html">TestConfigurationParser</A> parser = <FONT ID="New">new</FONT> <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestConfigurationParser.java.html">TestConfigurationParser</A>();
+<A NAME="702"></A>        parser.evaluateTestConfig(<FONT ID="New">new</FONT> StringReader(js), <FONT ID="StringLiteral">"string"</FONT>);
+<A NAME="703"></A>    }
+<A NAME="704"></A>
+<A NAME="705"></A>    @Test (expected = JavaScriptException.<FONT ID="Class">class</FONT>)
+<A NAME="706"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testFixTableComparerFails2() <FONT ID="Throws">throws</FONT> IOException {
+<A NAME="707"></A>        String js = <FONT ID="StringLiteral">"ci.fixTableCompare();"</FONT>;
+<A NAME="708"></A>
+<A NAME="709"></A>        <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestConfigurationParser.java.html">TestConfigurationParser</A> parser = <FONT ID="New">new</FONT> <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestConfigurationParser.java.html">TestConfigurationParser</A>();
+<A NAME="710"></A>        parser.evaluateTestConfig(<FONT ID="New">new</FONT> StringReader(js), <FONT ID="StringLiteral">"string"</FONT>);
+<A NAME="711"></A>    }
+<A NAME="712"></A>
+<A NAME="713"></A>}
+<A NAME="714"></A></pre>
+</BODY>
+</HTML>

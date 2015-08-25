@@ -1,0 +1,89 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.ui.UICommandLineParser (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">UICommandLineParser.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos.ui;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> org.apache.commons.cli.*;
+<A NAME="4"></A><FONT ID="Import">import</FONT> org.apache.log4j.Logger;
+<A NAME="5"></A>
+<A NAME="6"></A><FONT ID="Import">import</FONT> java.io.OutputStream;
+<A NAME="7"></A><FONT ID="Import">import</FONT> java.io.PrintWriter;
+<A NAME="8"></A><FONT ID="Import">import</FONT> java.net.URL;
+<A NAME="9"></A>
+<A NAME="10"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> UICommandLineParser {
+<A NAME="11"></A>
+<A NAME="12"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String CLI_CELOS_ADDRESS = <FONT ID="StringLiteral">"celosAddr"</FONT>;
+<A NAME="13"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String CLI_PORT = <FONT ID="StringLiteral">"port"</FONT>;
+<A NAME="14"></A>
+<A NAME="15"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> Logger LOGGER = Logger.getLogger(<A HREF="../../../../com/collective/celos/ui/UICommandLineParser.java.html">UICommandLineParser</A>.<FONT ID="Class">class</FONT>);
+<A NAME="16"></A>    
+<A NAME="17"></A>    <FONT ID="Public">public</FONT> <A HREF="../../../../com/collective/celos/ui/UICommandLine.java.html">UICommandLine</A> parse(<FONT ID="Final">final</FONT> String[] commandLineArguments) <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="18"></A>
+<A NAME="19"></A>        <FONT ID="Final">final</FONT> CommandLineParser cmdLineGnuParser = <FONT ID="New">new</FONT> GnuParser();
+<A NAME="20"></A>        <FONT ID="Final">final</FONT> Options gnuOptions = constructOptions();
+<A NAME="21"></A>        CommandLine commandLine = cmdLineGnuParser.parse(gnuOptions, commandLineArguments);
+<A NAME="22"></A>
+<A NAME="23"></A>        validateHasOption(commandLine, CLI_PORT);
+<A NAME="24"></A>        validateHasOption(commandLine, CLI_CELOS_ADDRESS);
+<A NAME="25"></A>
+<A NAME="26"></A>        URL celosAddress = <FONT ID="New">new</FONT> URL(commandLine.getOptionValue(CLI_CELOS_ADDRESS));
+<A NAME="27"></A>        Integer port = Integer.valueOf(commandLine.getOptionValue(CLI_PORT));
+<A NAME="28"></A>
+<A NAME="29"></A>        <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> <A HREF="../../../../com/collective/celos/ui/UICommandLine.java.html">UICommandLine</A>(celosAddress, port);
+<A NAME="30"></A>    }
+<A NAME="31"></A>
+<A NAME="32"></A>    <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> validateHasOption(CommandLine commandLine, String option) {
+<A NAME="33"></A>        <FONT ID="If">if</FONT> (!commandLine.hasOption(option)) {
+<A NAME="34"></A>            printHelp(<FONT ID="IntegerLiteral">80</FONT>, <FONT ID="IntegerLiteral">5</FONT>, <FONT ID="IntegerLiteral">3</FONT>, <FONT ID="True">true</FONT>, System.out);
+<A NAME="35"></A>            <FONT ID="Throw">throw</FONT> <FONT ID="New">new</FONT> IllegalArgumentException(<FONT ID="StringLiteral">"Missing --"</FONT> + option + <FONT ID="StringLiteral">" argument"</FONT>);
+<A NAME="36"></A>        }
+<A NAME="37"></A>    }
+<A NAME="38"></A>
+<A NAME="39"></A>    <FONT ID="Public">public</FONT> Options constructOptions() {
+<A NAME="40"></A>        <FONT ID="Final">final</FONT> Options options = <FONT ID="New">new</FONT> Options();
+<A NAME="41"></A>        options.addOption(CLI_CELOS_ADDRESS, CLI_CELOS_ADDRESS, <FONT ID="True">true</FONT>, <FONT ID="StringLiteral">"Celos Server URL"</FONT>)
+<A NAME="42"></A>               .addOption(CLI_PORT, CLI_PORT, <FONT ID="True">true</FONT>, <FONT ID="StringLiteral">"Celos UI server port"</FONT>);
+<A NAME="43"></A>        <FONT ID="Return">return</FONT> options;
+<A NAME="44"></A>    }
+<A NAME="45"></A>
+<A NAME="46"></A>
+<A NAME="47"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> printHelp(
+<A NAME="48"></A>            <FONT ID="Final">final</FONT> <FONT ID="Int">int</FONT> printedRowWidth,
+<A NAME="49"></A>            <FONT ID="Final">final</FONT> <FONT ID="Int">int</FONT> spacesBeforeOption,
+<A NAME="50"></A>            <FONT ID="Final">final</FONT> <FONT ID="Int">int</FONT> spacesBeforeOptionDescription,
+<A NAME="51"></A>            <FONT ID="Final">final</FONT> <FONT ID="Boolean">boolean</FONT> displayUsage,
+<A NAME="52"></A>            <FONT ID="Final">final</FONT> OutputStream out) {
+<A NAME="53"></A>        <FONT ID="Final">final</FONT> String commandLineSyntax = <FONT ID="StringLiteral">"java -jar &lt;celos-ui&gt;.jar --port &lt;port&gt; --celosAddr &lt;Celos Server URL&gt;"</FONT>;
+<A NAME="54"></A>        <FONT ID="Final">final</FONT> PrintWriter writer = <FONT ID="New">new</FONT> PrintWriter(out);
+<A NAME="55"></A>        <FONT ID="Final">final</FONT> HelpFormatter helpFormatter = <FONT ID="New">new</FONT> HelpFormatter();
+<A NAME="56"></A>        helpFormatter.printHelp(
+<A NAME="57"></A>                writer,
+<A NAME="58"></A>                printedRowWidth,
+<A NAME="59"></A>                commandLineSyntax,
+<A NAME="60"></A>                <FONT ID="Null">null</FONT>,
+<A NAME="61"></A>                constructOptions(),
+<A NAME="62"></A>                spacesBeforeOption,
+<A NAME="63"></A>                spacesBeforeOptionDescription,
+<A NAME="64"></A>                <FONT ID="Null">null</FONT>,
+<A NAME="65"></A>                displayUsage);
+<A NAME="66"></A>        writer.flush();
+<A NAME="67"></A>    }
+<A NAME="68"></A>
+<A NAME="69"></A>}
+<A NAME="70"></A></pre>
+</BODY>
+</HTML>

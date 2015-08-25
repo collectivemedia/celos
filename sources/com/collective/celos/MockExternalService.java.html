@@ -1,0 +1,104 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.MockExternalService (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">MockExternalService.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> java.util.HashMap;
+<A NAME="4"></A><FONT ID="Import">import</FONT> java.util.Map;
+<A NAME="5"></A>
+<A NAME="6"></A><FONT ID="FormalComment">/**
+<A NAME="7"></A> * Fake implementation of external service for testing.
+<A NAME="8"></A> * 
+<A NAME="9"></A> * Always returns the external status passed to its constructor.
+<A NAME="10"></A> * 
+<A NAME="11"></A> * Remembers scheduled times that have been submitted for running and their associated fake external IDs.
+<A NAME="12"></A> */</FONT>
+<A NAME="13"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> MockExternalService <FONT ID="Implements">implements</FONT> <A HREF="../../../com/collective/celos/ExternalService.java.html">ExternalService</A> {
+<A NAME="14"></A>
+<A NAME="15"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> <A HREF="../../../com/collective/celos/ExternalStatus.java.html">ExternalStatus</A> status;
+<A NAME="16"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> Map&lt;<A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A>, String&gt; slots2ExternalID = <FONT ID="New">new</FONT> HashMap&lt;<A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A>, String&gt;();
+<A NAME="17"></A>
+<A NAME="18"></A>    <FONT ID="Public">public</FONT> MockExternalService(<A HREF="../../../com/collective/celos/ExternalStatus.java.html">ExternalStatus</A> status) {
+<A NAME="19"></A>        <FONT ID="This">this</FONT>.status = Util.requireNonNull(status);
+<A NAME="20"></A>    }
+<A NAME="21"></A>    
+<A NAME="22"></A>    @Override
+<A NAME="23"></A>    <FONT ID="Public">public</FONT> String submit(<A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A> id) {
+<A NAME="24"></A>        String externalID = <FONT ID="StringLiteral">"mock-"</FONT> + Math.random();
+<A NAME="25"></A>        slots2ExternalID.put(id, externalID);
+<A NAME="26"></A>        <FONT ID="Return">return</FONT> externalID;
+<A NAME="27"></A>    }
+<A NAME="28"></A>    
+<A NAME="29"></A>    @Override
+<A NAME="30"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> start(<A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A> id, String externalID) <FONT ID="Throws">throws</FONT> <A HREF="../../../com/collective/celos/ExternalServiceException.java.html">ExternalServiceException</A> {
+<A NAME="31"></A>    }
+<A NAME="32"></A>
+<A NAME="33"></A>    @Override
+<A NAME="34"></A>    <FONT ID="Public">public</FONT> <A HREF="../../../com/collective/celos/ExternalStatus.java.html">ExternalStatus</A> getStatus(<A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A> id, String externalID) {
+<A NAME="35"></A>        <FONT ID="Return">return</FONT> status;
+<A NAME="36"></A>    }
+<A NAME="37"></A>    
+<A NAME="38"></A>    <FONT ID="Public">public</FONT> Map&lt;<A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A>, String&gt; getSlots2ExternalID() {
+<A NAME="39"></A>        <FONT ID="Return">return</FONT> slots2ExternalID;
+<A NAME="40"></A>    }
+<A NAME="41"></A>
+<A NAME="42"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Class">class</FONT> MockExternalStatusRunning <FONT ID="Implements">implements</FONT> <A HREF="../../../com/collective/celos/ExternalStatus.java.html">ExternalStatus</A> {
+<A NAME="43"></A>
+<A NAME="44"></A>        @Override
+<A NAME="45"></A>        <FONT ID="Public">public</FONT> <FONT ID="Boolean">boolean</FONT> isRunning() {
+<A NAME="46"></A>            <FONT ID="Return">return</FONT> <FONT ID="True">true</FONT>;
+<A NAME="47"></A>        }
+<A NAME="48"></A>
+<A NAME="49"></A>        @Override
+<A NAME="50"></A>        <FONT ID="Public">public</FONT> <FONT ID="Boolean">boolean</FONT> isSuccess() {
+<A NAME="51"></A>            <FONT ID="Throw">throw</FONT> <FONT ID="New">new</FONT> IllegalStateException(<FONT ID="StringLiteral">"Still running."</FONT>);
+<A NAME="52"></A>        }
+<A NAME="53"></A>        
+<A NAME="54"></A>    }
+<A NAME="55"></A>    
+<A NAME="56"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Class">class</FONT> MockExternalStatusSuccess <FONT ID="Implements">implements</FONT> <A HREF="../../../com/collective/celos/ExternalStatus.java.html">ExternalStatus</A> {
+<A NAME="57"></A>
+<A NAME="58"></A>        @Override
+<A NAME="59"></A>        <FONT ID="Public">public</FONT> <FONT ID="Boolean">boolean</FONT> isRunning() {
+<A NAME="60"></A>            <FONT ID="Return">return</FONT> <FONT ID="False">false</FONT>;
+<A NAME="61"></A>        }
+<A NAME="62"></A>
+<A NAME="63"></A>        @Override
+<A NAME="64"></A>        <FONT ID="Public">public</FONT> <FONT ID="Boolean">boolean</FONT> isSuccess() {
+<A NAME="65"></A>            <FONT ID="Return">return</FONT> <FONT ID="True">true</FONT>;
+<A NAME="66"></A>        }
+<A NAME="67"></A>        
+<A NAME="68"></A>    }
+<A NAME="69"></A>
+<A NAME="70"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Class">class</FONT> MockExternalStatusFailure <FONT ID="Implements">implements</FONT> <A HREF="../../../com/collective/celos/ExternalStatus.java.html">ExternalStatus</A> {
+<A NAME="71"></A>
+<A NAME="72"></A>        @Override
+<A NAME="73"></A>        <FONT ID="Public">public</FONT> <FONT ID="Boolean">boolean</FONT> isRunning() {
+<A NAME="74"></A>            <FONT ID="Return">return</FONT> <FONT ID="False">false</FONT>;
+<A NAME="75"></A>        }
+<A NAME="76"></A>
+<A NAME="77"></A>        @Override
+<A NAME="78"></A>        <FONT ID="Public">public</FONT> <FONT ID="Boolean">boolean</FONT> isSuccess() {
+<A NAME="79"></A>            <FONT ID="Return">return</FONT> <FONT ID="False">false</FONT>;
+<A NAME="80"></A>        }
+<A NAME="81"></A>        
+<A NAME="82"></A>    }
+<A NAME="83"></A>
+<A NAME="84"></A>}
+<A NAME="85"></A></pre>
+</BODY>
+</HTML>

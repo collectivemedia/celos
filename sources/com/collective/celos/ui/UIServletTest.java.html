@@ -1,0 +1,120 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.ui.UIServletTest (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">UIServletTest.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos.ui;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> java.util.List;
+<A NAME="4"></A><FONT ID="Import">import</FONT> java.util.Map;
+<A NAME="5"></A><FONT ID="Import">import</FONT> java.util.Set;
+<A NAME="6"></A>
+<A NAME="7"></A><FONT ID="Import">import</FONT> org.junit.Assert;
+<A NAME="8"></A><FONT ID="Import">import</FONT> org.junit.Test;
+<A NAME="9"></A>
+<A NAME="10"></A><FONT ID="Import">import</FONT> <A HREF="../../../../com/collective/celos/ScheduledTime.java.html">com.collective.celos.ScheduledTime</A>;
+<A NAME="11"></A><FONT ID="Import">import</FONT> <A HREF="../../../../com/collective/celos/SlotID.java.html">com.collective.celos.SlotID</A>;
+<A NAME="12"></A><FONT ID="Import">import</FONT> <A HREF="../../../../com/collective/celos/SlotState.java.html">com.collective.celos.SlotState</A>;
+<A NAME="13"></A><FONT ID="Import">import</FONT> <A HREF="../../../../com/collective/celos/WorkflowID.java.html">com.collective.celos.WorkflowID</A>;
+<A NAME="14"></A><FONT ID="Import">import</FONT> com.google.common.collect.ImmutableList;
+<A NAME="15"></A><FONT ID="Import">import</FONT> com.google.common.collect.ImmutableMap;
+<A NAME="16"></A><FONT ID="Import">import</FONT> com.google.common.collect.ImmutableSet;
+<A NAME="17"></A>
+<A NAME="18"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> UIServletTest {
+<A NAME="19"></A>
+<A NAME="20"></A>    @Test
+<A NAME="21"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testBucketTime() {
+<A NAME="22"></A>        <A HREF="../../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> now = <FONT ID="New">new</FONT> <A HREF="../../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2015-08-06T21:21:21Z"</FONT>);
+<A NAME="23"></A>        Assert.assertEquals(<FONT ID="New">new</FONT> <A HREF="../../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2015-08-07T00:00:00Z"</FONT>), CelosUIServlet.bucketTime(now, <FONT ID="IntegerLiteral">60</FONT>*<FONT ID="IntegerLiteral">24</FONT>));
+<A NAME="24"></A>        Assert.assertEquals(<FONT ID="New">new</FONT> <A HREF="../../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2015-08-06T22:00:00Z"</FONT>), CelosUIServlet.bucketTime(now, <FONT ID="IntegerLiteral">60</FONT>));
+<A NAME="25"></A>        Assert.assertEquals(<FONT ID="New">new</FONT> <A HREF="../../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2015-08-06T21:30:00Z"</FONT>), CelosUIServlet.bucketTime(now, <FONT ID="IntegerLiteral">30</FONT>));
+<A NAME="26"></A>        Assert.assertEquals(<FONT ID="New">new</FONT> <A HREF="../../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2015-08-06T21:30:00Z"</FONT>), CelosUIServlet.bucketTime(now, <FONT ID="IntegerLiteral">15</FONT>));
+<A NAME="27"></A>        Assert.assertEquals(<FONT ID="New">new</FONT> <A HREF="../../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2015-08-06T21:30:00Z"</FONT>), CelosUIServlet.bucketTime(now, <FONT ID="IntegerLiteral">10</FONT>));
+<A NAME="28"></A>        Assert.assertEquals(<FONT ID="New">new</FONT> <A HREF="../../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2015-08-06T21:25:00Z"</FONT>), CelosUIServlet.bucketTime(now, <FONT ID="IntegerLiteral">5</FONT>));
+<A NAME="29"></A>        Assert.assertEquals(<FONT ID="New">new</FONT> <A HREF="../../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2015-08-06T21:22:00Z"</FONT>), CelosUIServlet.bucketTime(now, <FONT ID="IntegerLiteral">1</FONT>));
+<A NAME="30"></A>        <FONT ID="SingleLineComment">// Test full minute
+<A NAME="31"></A></FONT>        Assert.assertEquals(<FONT ID="New">new</FONT> <A HREF="../../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2015-08-06T21:21:00Z"</FONT>), CelosUIServlet.bucketTime(<FONT ID="New">new</FONT> <A HREF="../../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2015-08-06T21:21:00Z"</FONT>), <FONT ID="IntegerLiteral">1</FONT>));
+<A NAME="32"></A>        <FONT ID="SingleLineComment">// Test full day
+<A NAME="33"></A></FONT>        Assert.assertEquals(<FONT ID="New">new</FONT> <A HREF="../../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2015-08-06T00:00:00Z"</FONT>), CelosUIServlet.bucketTime(<FONT ID="New">new</FONT> <A HREF="../../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2015-08-06T00:00:00Z"</FONT>), <FONT ID="IntegerLiteral">60</FONT>*<FONT ID="IntegerLiteral">24</FONT>));
+<A NAME="34"></A>    }
+<A NAME="35"></A>    
+<A NAME="36"></A>    @Test
+<A NAME="37"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testNumTiles() {
+<A NAME="38"></A>        <FONT ID="SingleLineComment">// At zoom level of 1 day, display at most 7 tiles
+<A NAME="39"></A></FONT>        Assert.assertEquals(<FONT ID="IntegerLiteral">7</FONT>, CelosUIServlet.getNumTiles(<FONT ID="IntegerLiteral">60</FONT>*<FONT ID="IntegerLiteral">24</FONT>, <FONT ID="IntegerLiteral">60</FONT>*<FONT ID="IntegerLiteral">24</FONT>*<FONT ID="IntegerLiteral">7</FONT>, <FONT ID="IntegerLiteral">48</FONT>));
+<A NAME="40"></A>        <FONT ID="SingleLineComment">// At zoom level of 1 hour, display at most 48 tiles
+<A NAME="41"></A></FONT>        Assert.assertEquals(<FONT ID="IntegerLiteral">48</FONT>, CelosUIServlet.getNumTiles(<FONT ID="IntegerLiteral">60</FONT>, <FONT ID="IntegerLiteral">60</FONT>*<FONT ID="IntegerLiteral">24</FONT>*<FONT ID="IntegerLiteral">7</FONT>, <FONT ID="IntegerLiteral">48</FONT>));
+<A NAME="42"></A>        <FONT ID="SingleLineComment">// At zoom level of 1 minute, display at most 48 tiles
+<A NAME="43"></A></FONT>        Assert.assertEquals(<FONT ID="IntegerLiteral">48</FONT>, CelosUIServlet.getNumTiles(<FONT ID="IntegerLiteral">1</FONT>, <FONT ID="IntegerLiteral">60</FONT>*<FONT ID="IntegerLiteral">24</FONT>*<FONT ID="IntegerLiteral">7</FONT>, <FONT ID="IntegerLiteral">48</FONT>));
+<A NAME="44"></A>    }
+<A NAME="45"></A>    
+<A NAME="46"></A>    @Test
+<A NAME="47"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testTileTimes1() {
+<A NAME="48"></A>        List&lt;<A HREF="../../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>&gt; expected = 
+<A NAME="49"></A>                ImmutableList.of(<FONT ID="New">new</FONT> <A HREF="../../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2015-08-06T20:00Z"</FONT>), <FONT ID="New">new</FONT> <A HREF="../../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2015-08-06T19:00Z"</FONT>), <FONT ID="New">new</FONT> <A HREF="../../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2015-08-06T18:00Z"</FONT>));
+<A NAME="50"></A>        Assert.assertEquals(expected, CelosUIServlet.getTileTimes(<FONT ID="New">new</FONT> <A HREF="../../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2015-08-06T19:31Z"</FONT>), <FONT ID="IntegerLiteral">60</FONT>, <FONT ID="IntegerLiteral">1000</FONT>, <FONT ID="IntegerLiteral">3</FONT>));
+<A NAME="51"></A>    }
+<A NAME="52"></A>    
+<A NAME="53"></A>    @Test
+<A NAME="54"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testTileTimes2() {
+<A NAME="55"></A>        List&lt;<A HREF="../../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>&gt; expected = 
+<A NAME="56"></A>                ImmutableList.of(<FONT ID="New">new</FONT> <A HREF="../../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2015-08-06T19:35Z"</FONT>), <FONT ID="New">new</FONT> <A HREF="../../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2015-08-06T19:30Z"</FONT>), <FONT ID="New">new</FONT> <A HREF="../../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2015-08-06T19:25Z"</FONT>));
+<A NAME="57"></A>        Assert.assertEquals(expected, CelosUIServlet.getTileTimes(<FONT ID="New">new</FONT> <A HREF="../../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2015-08-06T19:31Z"</FONT>), <FONT ID="IntegerLiteral">5</FONT>, <FONT ID="IntegerLiteral">1000</FONT>, <FONT ID="IntegerLiteral">3</FONT>));
+<A NAME="58"></A>    }
+<A NAME="59"></A>    
+<A NAME="60"></A>    @Test
+<A NAME="61"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testBucketSlotsByTime() {
+<A NAME="62"></A>        <A HREF="../../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A> id = <FONT ID="New">new</FONT> <A HREF="../../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"foo"</FONT>);
+<A NAME="63"></A>        <A HREF="../../../../com/collective/celos/SlotState.java.html">SlotState</A> s1 = <FONT ID="New">new</FONT> <A HREF="../../../../com/collective/celos/SlotState.java.html">SlotState</A>(<FONT ID="New">new</FONT> <A HREF="../../../../com/collective/celos/SlotID.java.html">SlotID</A>(id, <FONT ID="New">new</FONT> <A HREF="../../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2015-08-06T19:27Z"</FONT>)), SlotState.Status.SUCCESS);
+<A NAME="64"></A>        <A HREF="../../../../com/collective/celos/SlotState.java.html">SlotState</A> s2 = <FONT ID="New">new</FONT> <A HREF="../../../../com/collective/celos/SlotState.java.html">SlotState</A>(<FONT ID="New">new</FONT> <A HREF="../../../../com/collective/celos/SlotID.java.html">SlotID</A>(id, <FONT ID="New">new</FONT> <A HREF="../../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2015-08-06T19:31Z"</FONT>)), SlotState.Status.SUCCESS);
+<A NAME="65"></A>        <A HREF="../../../../com/collective/celos/SlotState.java.html">SlotState</A> s3 = <FONT ID="New">new</FONT> <A HREF="../../../../com/collective/celos/SlotState.java.html">SlotState</A>(<FONT ID="New">new</FONT> <A HREF="../../../../com/collective/celos/SlotID.java.html">SlotID</A>(id, <FONT ID="New">new</FONT> <A HREF="../../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2015-08-06T19:35Z"</FONT>)), SlotState.Status.SUCCESS);
+<A NAME="66"></A>        List&lt;<A HREF="../../../../com/collective/celos/SlotState.java.html">SlotState</A>&gt; states = ImmutableList.of(s1, s2, s3);
+<A NAME="67"></A>        Set&lt;<A HREF="../../../../com/collective/celos/SlotState.java.html">SlotState</A>&gt; bucket1 = ImmutableSet.of(s1);
+<A NAME="68"></A>        Set&lt;<A HREF="../../../../com/collective/celos/SlotState.java.html">SlotState</A>&gt; bucket2 = ImmutableSet.of(s2, s3);
+<A NAME="69"></A>        Map&lt;<A HREF="../../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>, Set&lt;<A HREF="../../../../com/collective/celos/SlotState.java.html">SlotState</A>&gt;&gt; expected =
+<A NAME="70"></A>            ImmutableMap.of(<FONT ID="New">new</FONT> <A HREF="../../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2015-08-06T19:30Z"</FONT>), bucket1, <FONT ID="New">new</FONT> <A HREF="../../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2015-08-06T19:35Z"</FONT>), bucket2);
+<A NAME="71"></A>        Assert.assertEquals(expected, CelosUIServlet.bucketSlotsByTime(states, <FONT ID="IntegerLiteral">5</FONT>));    
+<A NAME="72"></A>    }
+<A NAME="73"></A>    
+<A NAME="74"></A>    @Test
+<A NAME="75"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testZoomLevelParam() {
+<A NAME="76"></A>        Assert.assertEquals(CelosUIServlet.DEFAULT_ZOOM_LEVEL_MINUTES, CelosUIServlet.getZoomLevel(<FONT ID="Null">null</FONT>));
+<A NAME="77"></A>        Assert.assertEquals(<FONT ID="IntegerLiteral">12</FONT>, CelosUIServlet.getZoomLevel(<FONT ID="StringLiteral">"12"</FONT>));
+<A NAME="78"></A>        Assert.assertEquals(CelosUIServlet.MAX_ZOOM_LEVEL_MINUTES, CelosUIServlet.getZoomLevel(<FONT ID="StringLiteral">"1000000"</FONT>));
+<A NAME="79"></A>        Assert.assertEquals(CelosUIServlet.MIN_ZOOM_LEVEL_MINUTES, CelosUIServlet.getZoomLevel(<FONT ID="StringLiteral">"-1"</FONT>));
+<A NAME="80"></A>    }
+<A NAME="81"></A>    
+<A NAME="82"></A>    @Test
+<A NAME="83"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testTileClass() {
+<A NAME="84"></A>        <A HREF="../../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A> id = <FONT ID="New">new</FONT> <A HREF="../../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"foo"</FONT>);
+<A NAME="85"></A>        <A HREF="../../../../com/collective/celos/SlotState.java.html">SlotState</A> succ = <FONT ID="New">new</FONT> <A HREF="../../../../com/collective/celos/SlotState.java.html">SlotState</A>(<FONT ID="New">new</FONT> <A HREF="../../../../com/collective/celos/SlotID.java.html">SlotID</A>(id, <FONT ID="New">new</FONT> <A HREF="../../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2015-08-06T19:27Z"</FONT>)), SlotState.Status.SUCCESS);
+<A NAME="86"></A>        <A HREF="../../../../com/collective/celos/SlotState.java.html">SlotState</A> fail = <FONT ID="New">new</FONT> <A HREF="../../../../com/collective/celos/SlotState.java.html">SlotState</A>(<FONT ID="New">new</FONT> <A HREF="../../../../com/collective/celos/SlotID.java.html">SlotID</A>(id, <FONT ID="New">new</FONT> <A HREF="../../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2015-08-06T19:31Z"</FONT>)), SlotState.Status.FAILURE);
+<A NAME="87"></A>        <A HREF="../../../../com/collective/celos/SlotState.java.html">SlotState</A> wait = <FONT ID="New">new</FONT> <A HREF="../../../../com/collective/celos/SlotState.java.html">SlotState</A>(<FONT ID="New">new</FONT> <A HREF="../../../../com/collective/celos/SlotID.java.html">SlotID</A>(id, <FONT ID="New">new</FONT> <A HREF="../../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2015-08-06T19:35Z"</FONT>)), SlotState.Status.WAITING);
+<A NAME="88"></A>
+<A NAME="89"></A>        Assert.assertEquals(<FONT ID="StringLiteral">"SUCCESS"</FONT>, CelosUIServlet.printTileClass(ImmutableSet.of(succ)));
+<A NAME="90"></A>        Assert.assertEquals(<FONT ID="StringLiteral">"SUCCESS"</FONT>, CelosUIServlet.printTileClass(ImmutableSet.of(succ, succ, succ)));
+<A NAME="91"></A>        Assert.assertEquals(<FONT ID="StringLiteral">"WAITING"</FONT>, CelosUIServlet.printTileClass(ImmutableSet.of(succ, wait, succ)));
+<A NAME="92"></A>        Assert.assertEquals(<FONT ID="StringLiteral">"WAITING"</FONT>, CelosUIServlet.printTileClass(ImmutableSet.of(wait)));
+<A NAME="93"></A>        Assert.assertEquals(<FONT ID="StringLiteral">"WAITING"</FONT>, CelosUIServlet.printTileClass(ImmutableSet.of(wait, wait, wait)));
+<A NAME="94"></A>        Assert.assertEquals(<FONT ID="StringLiteral">"FAILURE"</FONT>, CelosUIServlet.printTileClass(ImmutableSet.of(fail)));
+<A NAME="95"></A>        Assert.assertEquals(<FONT ID="StringLiteral">"FAILURE"</FONT>, CelosUIServlet.printTileClass(ImmutableSet.of(succ, fail)));
+<A NAME="96"></A>        Assert.assertEquals(<FONT ID="StringLiteral">"FAILURE"</FONT>, CelosUIServlet.printTileClass(ImmutableSet.of(succ, fail, wait)));
+<A NAME="97"></A>        Assert.assertEquals(<FONT ID="StringLiteral">"FAILURE"</FONT>, CelosUIServlet.printTileClass(ImmutableSet.of(wait, wait, fail, wait, succ)));
+<A NAME="98"></A>    }
+<A NAME="99"></A>    
+<A NAME="100"></A>}
+<A NAME="101"></A></pre>
+</BODY>
+</HTML>

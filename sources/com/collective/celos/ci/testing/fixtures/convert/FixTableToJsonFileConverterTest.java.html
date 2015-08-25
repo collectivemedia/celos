@@ -1,0 +1,71 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../../../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.ci.testing.fixtures.convert.FixTableToJsonFileConverterTest (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">FixTableToJsonFileConverterTest.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos.ci.testing.fixtures.convert;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../../com/collective/celos/ci/Utils.java.html">com.collective.celos.ci.Utils</A>;
+<A NAME="4"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFile.java.html">com.collective.celos.ci.testing.structure.fixobject.FixFile</A>;
+<A NAME="5"></A><FONT ID="Import">import</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">com.collective.celos.ci.testing.structure.fixobject.FixTable</A>;
+<A NAME="6"></A><FONT ID="Import">import</FONT> com.google.common.collect.Lists;
+<A NAME="7"></A><FONT ID="Import">import</FONT> com.google.common.collect.Maps;
+<A NAME="8"></A><FONT ID="Import">import</FONT> com.google.gson.JsonElement;
+<A NAME="9"></A><FONT ID="Import">import</FONT> junit.framework.Assert;
+<A NAME="10"></A><FONT ID="Import">import</FONT> org.apache.commons.io.IOUtils;
+<A NAME="11"></A><FONT ID="Import">import</FONT> org.junit.Test;
+<A NAME="12"></A>
+<A NAME="13"></A><FONT ID="Import">import</FONT> java.util.List;
+<A NAME="14"></A><FONT ID="Import">import</FONT> java.util.Map;
+<A NAME="15"></A>
+<A NAME="16"></A><FONT ID="FormalComment">/**
+<A NAME="17"></A> * Created by akonopko on 25.01.15.
+<A NAME="18"></A> */</FONT>
+<A NAME="19"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> FixTableToJsonFileConverterTest {
+<A NAME="20"></A>
+<A NAME="21"></A>    @Test
+<A NAME="22"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testFixTableToJsonFileConverter() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="23"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/convert/FixTableToJsonFileConverter.java.html">FixTableToJsonFileConverter</A> converter = <FONT ID="New">new</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/convert/FixTableToJsonFileConverter.java.html">FixTableToJsonFileConverter</A>();
+<A NAME="24"></A>        List&lt;<A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable.FixRow</A>&gt; fixRows = Lists.newArrayList();
+<A NAME="25"></A>
+<A NAME="26"></A>        Map&lt;String, String&gt; map = Maps.newHashMap();
+<A NAME="27"></A>        map.put(<FONT ID="StringLiteral">"col1"</FONT>, <FONT ID="StringLiteral">"val1"</FONT>);
+<A NAME="28"></A>        map.put(<FONT ID="StringLiteral">"col2"</FONT>, <FONT ID="StringLiteral">"val2"</FONT>);
+<A NAME="29"></A>
+<A NAME="30"></A>        Map&lt;String, String&gt; map2 = Maps.newHashMap();
+<A NAME="31"></A>        map2.put(<FONT ID="StringLiteral">"col1"</FONT>, <FONT ID="StringLiteral">"val11"</FONT>);
+<A NAME="32"></A>        map2.put(<FONT ID="StringLiteral">"col2"</FONT>, <FONT ID="StringLiteral">"val22"</FONT>);
+<A NAME="33"></A>
+<A NAME="34"></A>        <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable.FixRow</A> row1 = <FONT ID="New">new</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable.FixRow</A>(map);
+<A NAME="35"></A>        <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable.FixRow</A> row2 = <FONT ID="New">new</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable.FixRow</A>(map2);
+<A NAME="36"></A>        fixRows.add(row1);
+<A NAME="37"></A>        fixRows.add(row2);
+<A NAME="38"></A>        <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable</A> fixTable = <FONT ID="New">new</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable</A>(Lists.newArrayList(<FONT ID="StringLiteral">"col1"</FONT>, <FONT ID="StringLiteral">"col2"</FONT>), fixRows);
+<A NAME="39"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFile.java.html">FixFile</A> fixFile = converter.convert(<FONT ID="Null">null</FONT>, fixTable);
+<A NAME="40"></A>
+<A NAME="41"></A>        String tableStr = IOUtils.toString(fixFile.getContent());
+<A NAME="42"></A>        String expectedStr =
+<A NAME="43"></A>                <FONT ID="StringLiteral">"{\"col1\":\"val1\",\"col2\":\"val2\"}\n"</FONT> +
+<A NAME="44"></A>                <FONT ID="StringLiteral">"{\"col1\":\"val11\",\"col2\":\"val22\"}"</FONT>;
+<A NAME="45"></A>
+<A NAME="46"></A>        Map&lt;JsonElement, Integer&gt; expected = Utils.fillMapWithJsonFromIS(IOUtils.toInputStream(expectedStr));
+<A NAME="47"></A>        Map&lt;JsonElement, Integer&gt; result = Utils.fillMapWithJsonFromIS(IOUtils.toInputStream(tableStr));
+<A NAME="48"></A>        Assert.assertEquals(expected, result);
+<A NAME="49"></A>    }
+<A NAME="50"></A>
+<A NAME="51"></A>}
+<A NAME="52"></A></pre>
+</BODY>
+</HTML>

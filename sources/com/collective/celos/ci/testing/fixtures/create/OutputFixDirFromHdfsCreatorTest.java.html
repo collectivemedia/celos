@@ -1,0 +1,85 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../../../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.ci.testing.fixtures.create.OutputFixDirFromHdfsCreatorTest (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">OutputFixDirFromHdfsCreatorTest.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos.ci.testing.fixtures.create;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../../com/collective/celos/ci/Utils.java.html">com.collective.celos.ci.Utils</A>;
+<A NAME="4"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../../com/collective/celos/ci/config/deploy/CelosCiContext.java.html">com.collective.celos.ci.config.deploy.CelosCiContext</A>;
+<A NAME="5"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../../com/collective/celos/ci/mode/test/TestRun.java.html">com.collective.celos.ci.mode.test.TestRun</A>;
+<A NAME="6"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/compare/FixObjectCompareResult.java.html">com.collective.celos.ci.testing.fixtures.compare.FixObjectCompareResult</A>;
+<A NAME="7"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/compare/RecursiveFsObjectComparer.java.html">com.collective.celos.ci.testing.fixtures.compare.RecursiveFsObjectComparer</A>;
+<A NAME="8"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixDir.java.html">com.collective.celos.ci.testing.structure.fixobject.FixDir</A>;
+<A NAME="9"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFile.java.html">com.collective.celos.ci.testing.structure.fixobject.FixFile</A>;
+<A NAME="10"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFsObject.java.html">com.collective.celos.ci.testing.structure.fixobject.FixFsObject</A>;
+<A NAME="11"></A><FONT ID="Import">import</FONT> com.google.common.collect.Maps;
+<A NAME="12"></A><FONT ID="Import">import</FONT> org.apache.commons.io.IOUtils;
+<A NAME="13"></A><FONT ID="Import">import</FONT> org.apache.hadoop.conf.Configuration;
+<A NAME="14"></A><FONT ID="Import">import</FONT> org.apache.hadoop.fs.LocalFileSystem;
+<A NAME="15"></A><FONT ID="Import">import</FONT> org.junit.Assert;
+<A NAME="16"></A><FONT ID="Import">import</FONT> org.junit.Test;
+<A NAME="17"></A>
+<A NAME="18"></A><FONT ID="Import">import</FONT> java.util.Map;
+<A NAME="19"></A>
+<A NAME="20"></A><FONT ID="Import">import</FONT> <FONT ID="Static">static</FONT> org.mockito.Mockito.doReturn;
+<A NAME="21"></A><FONT ID="Import">import</FONT> <FONT ID="Static">static</FONT> org.mockito.Mockito.mock;
+<A NAME="22"></A>
+<A NAME="23"></A><FONT ID="FormalComment">/**
+<A NAME="24"></A> * Created by akonopko on 10/9/14.
+<A NAME="25"></A> */</FONT>
+<A NAME="26"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> OutputFixDirFromHdfsCreatorTest {
+<A NAME="27"></A>
+<A NAME="28"></A>    @Test
+<A NAME="29"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testHdfsTreeFixObjectCreator() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="30"></A>        <A HREF="../../../../../../../com/collective/celos/ci/config/deploy/CelosCiContext.java.html">CelosCiContext</A> context = mock(<A HREF="../../../../../../../com/collective/celos/ci/config/deploy/CelosCiContext.java.html">CelosCiContext</A>.<FONT ID="Class">class</FONT>);
+<A NAME="31"></A>        String path = Thread.currentThread().getContextClassLoader().getResource(<FONT ID="StringLiteral">"com/collective/celos/ci/testing/create"</FONT>).toString();
+<A NAME="32"></A>
+<A NAME="33"></A>        doReturn(<FONT ID="StringLiteral">"/"</FONT>).when(context).getHdfsPrefix();
+<A NAME="34"></A>
+<A NAME="35"></A>        doReturn(LocalFileSystem.get(<FONT ID="New">new</FONT> Configuration())).when(context).getFileSystem();
+<A NAME="36"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/OutputFixDirFromHdfsCreator.java.html">OutputFixDirFromHdfsCreator</A> creator = <FONT ID="New">new</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/OutputFixDirFromHdfsCreator.java.html">OutputFixDirFromHdfsCreator</A>(path);
+<A NAME="37"></A>
+<A NAME="38"></A>        Map&lt;String, <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFsObject.java.html">FixFsObject</A>&gt; contentir2 = Maps.newHashMap();
+<A NAME="39"></A>        contentir2.put(<FONT ID="StringLiteral">"file2"</FONT>, createFile());
+<A NAME="40"></A>        contentir2.put(<FONT ID="StringLiteral">"file3"</FONT>, createFile());
+<A NAME="41"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixDir.java.html">FixDir</A> dir2 = <FONT ID="New">new</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixDir.java.html">FixDir</A>(contentir2);
+<A NAME="42"></A>
+<A NAME="43"></A>        Map&lt;String, <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFsObject.java.html">FixFsObject</A>&gt; contentir1 = Maps.newHashMap();
+<A NAME="44"></A>        contentir1.put(<FONT ID="StringLiteral">"dir2"</FONT>, dir2);
+<A NAME="45"></A>        contentir1.put(<FONT ID="StringLiteral">"file1"</FONT>, createFile());
+<A NAME="46"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixDir.java.html">FixDir</A> dir1 = <FONT ID="New">new</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixDir.java.html">FixDir</A>(contentir1);
+<A NAME="47"></A>
+<A NAME="48"></A>        Map&lt;String, <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFsObject.java.html">FixFsObject</A>&gt; contentRead = Maps.newHashMap();
+<A NAME="49"></A>        contentRead.put(<FONT ID="StringLiteral">"dir1"</FONT>, dir1);
+<A NAME="50"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixDir.java.html">FixDir</A> readDir = <FONT ID="New">new</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixDir.java.html">FixDir</A>(contentRead);
+<A NAME="51"></A>
+<A NAME="52"></A>        <A HREF="../../../../../../../com/collective/celos/ci/mode/test/TestRun.java.html">TestRun</A> testRun = mock(<A HREF="../../../../../../../com/collective/celos/ci/mode/test/TestRun.java.html">TestRun</A>.<FONT ID="Class">class</FONT>);
+<A NAME="53"></A>        doReturn(context).when(testRun).getCiContext();
+<A NAME="54"></A>
+<A NAME="55"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/compare/FixObjectCompareResult.java.html">FixObjectCompareResult</A> compareResult = <FONT ID="New">new</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/compare/RecursiveFsObjectComparer.java.html">RecursiveFsObjectComparer</A>(Utils.wrap(readDir), creator).check(testRun);
+<A NAME="56"></A>
+<A NAME="57"></A>        Assert.assertEquals(compareResult.getStatus(), FixObjectCompareResult.Status.SUCCESS);
+<A NAME="58"></A>    }
+<A NAME="59"></A>
+<A NAME="60"></A>    <FONT ID="Private">private</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFile.java.html">FixFile</A> createFile() {
+<A NAME="61"></A>        <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFile.java.html">FixFile</A>(IOUtils.toInputStream(<FONT ID="StringLiteral">"1"</FONT>));
+<A NAME="62"></A>    }
+<A NAME="63"></A>
+<A NAME="64"></A>
+<A NAME="65"></A>}
+<A NAME="66"></A></pre>
+</BODY>
+</HTML>

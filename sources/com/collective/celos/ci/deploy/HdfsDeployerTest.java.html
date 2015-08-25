@@ -1,0 +1,161 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.ci.deploy.HdfsDeployerTest (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">HdfsDeployerTest.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos.ci.deploy;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../com/collective/celos/ci/config/deploy/CelosCiContext.java.html">com.collective.celos.ci.config.deploy.CelosCiContext</A>;
+<A NAME="4"></A><FONT ID="Import">import</FONT> com.google.common.collect.Sets;
+<A NAME="5"></A><FONT ID="Import">import</FONT> org.apache.hadoop.conf.Configuration;
+<A NAME="6"></A><FONT ID="Import">import</FONT> org.apache.hadoop.fs.LocalFileSystem;
+<A NAME="7"></A><FONT ID="Import">import</FONT> org.apache.hadoop.fs.Path;
+<A NAME="8"></A><FONT ID="Import">import</FONT> org.junit.Assert;
+<A NAME="9"></A><FONT ID="Import">import</FONT> org.junit.Rule;
+<A NAME="10"></A><FONT ID="Import">import</FONT> org.junit.Test;
+<A NAME="11"></A><FONT ID="Import">import</FONT> org.junit.rules.TemporaryFolder;
+<A NAME="12"></A>
+<A NAME="13"></A><FONT ID="Import">import</FONT> java.io.File;
+<A NAME="14"></A><FONT ID="Import">import</FONT> java.util.Set;
+<A NAME="15"></A><FONT ID="Import">import</FONT> java.util.UUID;
+<A NAME="16"></A>
+<A NAME="17"></A><FONT ID="Import">import</FONT> <FONT ID="Static">static</FONT> org.mockito.Mockito.doReturn;
+<A NAME="18"></A><FONT ID="Import">import</FONT> <FONT ID="Static">static</FONT> org.mockito.Mockito.mock;
+<A NAME="19"></A><FONT ID="Import">import</FONT> <FONT ID="Static">static</FONT> org.mockito.Mockito.when;
+<A NAME="20"></A>
+<A NAME="21"></A><FONT ID="FormalComment">/**
+<A NAME="22"></A> * Created by akonopko on 10/1/14.
+<A NAME="23"></A> */</FONT>
+<A NAME="24"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> HdfsDeployerTest {
+<A NAME="25"></A>
+<A NAME="26"></A>    @Rule
+<A NAME="27"></A>    <FONT ID="Public">public</FONT> TemporaryFolder tempDir = <FONT ID="New">new</FONT> TemporaryFolder();
+<A NAME="28"></A>
+<A NAME="29"></A>    @Test(expected = IllegalStateException.<FONT ID="Class">class</FONT>)
+<A NAME="30"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testDeployThrowsExceptionNoDir() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="31"></A>        <A HREF="../../../../../com/collective/celos/ci/config/deploy/CelosCiContext.java.html">CelosCiContext</A> context = mock(<A HREF="../../../../../com/collective/celos/ci/config/deploy/CelosCiContext.java.html">CelosCiContext</A>.<FONT ID="Class">class</FONT>);
+<A NAME="32"></A>        <A HREF="../../../../../com/collective/celos/ci/deploy/HdfsDeployer.java.html">HdfsDeployer</A> deployer = <FONT ID="New">new</FONT> <A HREF="../../../../../com/collective/celos/ci/deploy/HdfsDeployer.java.html">HdfsDeployer</A>(context);
+<A NAME="33"></A>
+<A NAME="34"></A>        doReturn(LocalFileSystem.get(<FONT ID="New">new</FONT> Configuration())).when(context).getFileSystem();
+<A NAME="35"></A>        doReturn(<FONT ID="New">new</FONT> File(<FONT ID="StringLiteral">"nodir"</FONT> + UUID.randomUUID())).when(context).getDeployDir();
+<A NAME="36"></A>
+<A NAME="37"></A>        deployer.deploy();
+<A NAME="38"></A>    }
+<A NAME="39"></A>
+<A NAME="40"></A>
+<A NAME="41"></A>    @Test
+<A NAME="42"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testDeployRemoteDirNotExist() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="43"></A>        <A HREF="../../../../../com/collective/celos/ci/config/deploy/CelosCiContext.java.html">CelosCiContext</A> context = mock(<A HREF="../../../../../com/collective/celos/ci/config/deploy/CelosCiContext.java.html">CelosCiContext</A>.<FONT ID="Class">class</FONT>);
+<A NAME="44"></A>        <A HREF="../../../../../com/collective/celos/ci/deploy/HdfsDeployer.java.html">HdfsDeployer</A> deployer = <FONT ID="New">new</FONT> <A HREF="../../../../../com/collective/celos/ci/deploy/HdfsDeployer.java.html">HdfsDeployer</A>(context);
+<A NAME="45"></A>
+<A NAME="46"></A>        File localFolder = tempDir.newFolder();
+<A NAME="47"></A>        File remoteHdfsFolder = tempDir.newFolder();
+<A NAME="48"></A>
+<A NAME="49"></A>        File localHdfsFolder = <FONT ID="New">new</FONT> File(localFolder, <FONT ID="StringLiteral">"hdfs"</FONT>);
+<A NAME="50"></A>        localHdfsFolder.mkdirs();
+<A NAME="51"></A>        <FONT ID="New">new</FONT> File(localHdfsFolder, <FONT ID="StringLiteral">"file1"</FONT>).createNewFile();
+<A NAME="52"></A>        <FONT ID="New">new</FONT> File(localHdfsFolder, <FONT ID="StringLiteral">"file2"</FONT>).createNewFile();
+<A NAME="53"></A>
+<A NAME="54"></A>        doReturn(LocalFileSystem.get(<FONT ID="New">new</FONT> Configuration())).when(context).getFileSystem();
+<A NAME="55"></A>        doReturn(localFolder).when(context).getDeployDir();
+<A NAME="56"></A>        doReturn(remoteHdfsFolder.getAbsolutePath()).when(context).getHdfsPrefix();
+<A NAME="57"></A>        doReturn(<FONT ID="StringLiteral">"workflow"</FONT>).when(context).getWorkflowName();
+<A NAME="58"></A>
+<A NAME="59"></A>        File targetDir = <FONT ID="New">new</FONT> File(remoteHdfsFolder, <FONT ID="StringLiteral">"user/celos/app/workflow"</FONT>);
+<A NAME="60"></A>
+<A NAME="61"></A>        deployer.deploy();
+<A NAME="62"></A>
+<A NAME="63"></A>        Set&lt;String&gt; resultSet = getFilesWithoutCrc(targetDir);
+<A NAME="64"></A>        Assert.assertEquals(Sets.newHashSet(<FONT ID="StringLiteral">"file2"</FONT>, <FONT ID="StringLiteral">"file1"</FONT>), resultSet);
+<A NAME="65"></A>    }
+<A NAME="66"></A>
+<A NAME="67"></A>    @Test
+<A NAME="68"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testDeployRemoteDirExist() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="69"></A>        <A HREF="../../../../../com/collective/celos/ci/config/deploy/CelosCiContext.java.html">CelosCiContext</A> context = mock(<A HREF="../../../../../com/collective/celos/ci/config/deploy/CelosCiContext.java.html">CelosCiContext</A>.<FONT ID="Class">class</FONT>);
+<A NAME="70"></A>        <A HREF="../../../../../com/collective/celos/ci/deploy/HdfsDeployer.java.html">HdfsDeployer</A> deployer = <FONT ID="New">new</FONT> <A HREF="../../../../../com/collective/celos/ci/deploy/HdfsDeployer.java.html">HdfsDeployer</A>(context);
+<A NAME="71"></A>
+<A NAME="72"></A>        File localFolder = tempDir.newFolder();
+<A NAME="73"></A>        File remoteHdfsFolder = tempDir.newFolder();
+<A NAME="74"></A>
+<A NAME="75"></A>        File localHdfsFolder = <FONT ID="New">new</FONT> File(localFolder, <FONT ID="StringLiteral">"hdfs"</FONT>);
+<A NAME="76"></A>        localHdfsFolder.mkdirs();
+<A NAME="77"></A>        <FONT ID="New">new</FONT> File(localHdfsFolder, <FONT ID="StringLiteral">"file1"</FONT>).createNewFile();
+<A NAME="78"></A>        <FONT ID="New">new</FONT> File(localHdfsFolder, <FONT ID="StringLiteral">"file2"</FONT>).createNewFile();
+<A NAME="79"></A>
+<A NAME="80"></A>        doReturn(LocalFileSystem.get(<FONT ID="New">new</FONT> Configuration())).when(context).getFileSystem();
+<A NAME="81"></A>        doReturn(localFolder).when(context).getDeployDir();
+<A NAME="82"></A>        doReturn(remoteHdfsFolder.getAbsolutePath()).when(context).getHdfsPrefix();
+<A NAME="83"></A>        doReturn(<FONT ID="StringLiteral">"workflow"</FONT>).when(context).getWorkflowName();
+<A NAME="84"></A>
+<A NAME="85"></A>        File targetDir = <FONT ID="New">new</FONT> File(remoteHdfsFolder, <FONT ID="StringLiteral">"user/celos/app/workflow"</FONT>);
+<A NAME="86"></A>        targetDir.mkdirs();
+<A NAME="87"></A>        <FONT ID="New">new</FONT> File(targetDir, <FONT ID="StringLiteral">"file3"</FONT>).createNewFile();
+<A NAME="88"></A>        <FONT ID="New">new</FONT> File(targetDir, <FONT ID="StringLiteral">"file4"</FONT>).createNewFile();
+<A NAME="89"></A>
+<A NAME="90"></A>        Assert.assertEquals(Sets.newHashSet(<FONT ID="StringLiteral">"file3"</FONT>, <FONT ID="StringLiteral">"file4"</FONT>), getFilesWithoutCrc(targetDir));
+<A NAME="91"></A>
+<A NAME="92"></A>        deployer.deploy();
+<A NAME="93"></A>
+<A NAME="94"></A>        Assert.assertEquals(Sets.newHashSet(<FONT ID="StringLiteral">"file2"</FONT>, <FONT ID="StringLiteral">"file1"</FONT>), getFilesWithoutCrc(targetDir));
+<A NAME="95"></A>    }
+<A NAME="96"></A>
+<A NAME="97"></A>    <FONT ID="Private">private</FONT> Set&lt;String&gt; getFilesWithoutCrc(File targetDir) {
+<A NAME="98"></A>        <FONT ID="SingleLineComment">// LocalFileSystem is extends the CRCFileSysstem. so , we will get crc files at local.
+<A NAME="99"></A></FONT>        Set&lt;String&gt; resultSet = Sets.newHashSet();
+<A NAME="100"></A>        <FONT ID="For">for</FONT> (String str : targetDir.list()) {
+<A NAME="101"></A>            <FONT ID="If">if</FONT> (!str.endsWith(<FONT ID="StringLiteral">".crc"</FONT>)) {
+<A NAME="102"></A>                resultSet.add(str);
+<A NAME="103"></A>            }
+<A NAME="104"></A>        }
+<A NAME="105"></A>        <FONT ID="Return">return</FONT> resultSet;
+<A NAME="106"></A>    }
+<A NAME="107"></A>
+<A NAME="108"></A>    @Test
+<A NAME="109"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testGetDestinationHdfsPath() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="110"></A>        <A HREF="../../../../../com/collective/celos/ci/config/deploy/CelosCiContext.java.html">CelosCiContext</A> context = mock(<A HREF="../../../../../com/collective/celos/ci/config/deploy/CelosCiContext.java.html">CelosCiContext</A>.<FONT ID="Class">class</FONT>);
+<A NAME="111"></A>
+<A NAME="112"></A>        File remoteHdfsFolder = tempDir.newFolder();
+<A NAME="113"></A>        doReturn(remoteHdfsFolder.getAbsolutePath()).when(context).getHdfsPrefix();
+<A NAME="114"></A>        doReturn(<FONT ID="StringLiteral">"workflow"</FONT>).when(context).getWorkflowName();
+<A NAME="115"></A>
+<A NAME="116"></A>        <A HREF="../../../../../com/collective/celos/ci/deploy/HdfsDeployer.java.html">HdfsDeployer</A> deployer = <FONT ID="New">new</FONT> <A HREF="../../../../../com/collective/celos/ci/deploy/HdfsDeployer.java.html">HdfsDeployer</A>(context);
+<A NAME="117"></A>        Path path = deployer.getDestinationHdfsPath();
+<A NAME="118"></A>        Assert.assertEquals(path, <FONT ID="New">new</FONT> Path(<FONT ID="New">new</FONT> File(remoteHdfsFolder, <FONT ID="StringLiteral">"user/celos/app/workflow"</FONT>).getAbsolutePath()));
+<A NAME="119"></A>    }
+<A NAME="120"></A>
+<A NAME="121"></A>    @Test
+<A NAME="122"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testUndeploy() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="123"></A>        <A HREF="../../../../../com/collective/celos/ci/config/deploy/CelosCiContext.java.html">CelosCiContext</A> context = mock(<A HREF="../../../../../com/collective/celos/ci/config/deploy/CelosCiContext.java.html">CelosCiContext</A>.<FONT ID="Class">class</FONT>);
+<A NAME="124"></A>
+<A NAME="125"></A>        File remoteHdfsFolder = tempDir.newFolder();
+<A NAME="126"></A>
+<A NAME="127"></A>        doReturn(LocalFileSystem.get(<FONT ID="New">new</FONT> Configuration())).when(context).getFileSystem();
+<A NAME="128"></A>        doReturn(remoteHdfsFolder.getAbsolutePath()).when(context).getHdfsPrefix();
+<A NAME="129"></A>        doReturn(<FONT ID="StringLiteral">"workflow"</FONT>).when(context).getWorkflowName();
+<A NAME="130"></A>
+<A NAME="131"></A>        File remoteDir = <FONT ID="New">new</FONT> File(remoteHdfsFolder, <FONT ID="StringLiteral">"user/celos/app/workflow"</FONT>);
+<A NAME="132"></A>        remoteDir.mkdirs();
+<A NAME="133"></A>        <FONT ID="New">new</FONT> File(remoteDir, <FONT ID="StringLiteral">"file"</FONT>).createNewFile();
+<A NAME="134"></A>
+<A NAME="135"></A>        <A HREF="../../../../../com/collective/celos/ci/deploy/HdfsDeployer.java.html">HdfsDeployer</A> deployer = <FONT ID="New">new</FONT> <A HREF="../../../../../com/collective/celos/ci/deploy/HdfsDeployer.java.html">HdfsDeployer</A>(context);
+<A NAME="136"></A>        deployer.undeploy();
+<A NAME="137"></A>
+<A NAME="138"></A>        Assert.assertFalse(remoteDir.exists());
+<A NAME="139"></A>    }
+<A NAME="140"></A>
+<A NAME="141"></A>
+<A NAME="142"></A>}</pre>
+</BODY>
+</HTML>

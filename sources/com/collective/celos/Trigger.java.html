@@ -1,0 +1,36 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.Trigger (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">Trigger.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">com.collective.celos.ScheduledTime</A>;
+<A NAME="4"></A><FONT ID="Import">import</FONT> <A HREF="../../../com/collective/celos/Scheduler.java.html">com.collective.celos.Scheduler</A>;
+<A NAME="5"></A>
+<A NAME="6"></A><FONT ID="FormalComment">/**
+<A NAME="7"></A> * A trigger is called to determine data availability for a workflow.
+<A NAME="8"></A> */</FONT>
+<A NAME="9"></A><FONT ID="Public">public</FONT> <FONT ID="Interface">interface</FONT> Trigger {
+<A NAME="10"></A>    
+<A NAME="11"></A>    <FONT ID="FormalComment">/**
+<A NAME="12"></A>     * Returns true if data is available for the given scheduled time, false if not.
+<A NAME="13"></A>     */</FONT>
+<A NAME="14"></A>    <FONT ID="Public">public</FONT> <FONT ID="Boolean">boolean</FONT> isDataAvailable(<A HREF="../../../com/collective/celos/Scheduler.java.html">Scheduler</A> scheduler, <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> now, <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> scheduledTime) <FONT ID="Throws">throws</FONT> Exception;
+<A NAME="15"></A>
+<A NAME="16"></A>}
+<A NAME="17"></A></pre>
+</BODY>
+</HTML>

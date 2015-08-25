@@ -1,0 +1,110 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.ci.config.deploy.CelosCiContext (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">CelosCiContext.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos.ci.config.deploy;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../com/collective/celos/Util.java.html">com.collective.celos.Util</A>;
+<A NAME="4"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../com/collective/celos/ci/deploy/JScpWorker.java.html">com.collective.celos.ci.deploy.JScpWorker</A>;
+<A NAME="5"></A><FONT ID="Import">import</FONT> org.apache.hadoop.conf.Configuration;
+<A NAME="6"></A><FONT ID="Import">import</FONT> org.apache.hadoop.fs.FileSystem;
+<A NAME="7"></A><FONT ID="Import">import</FONT> org.apache.hadoop.security.UserGroupInformation;
+<A NAME="8"></A>
+<A NAME="9"></A><FONT ID="Import">import</FONT> java.io.File;
+<A NAME="10"></A>
+<A NAME="11"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> CelosCiContext {
+<A NAME="12"></A>
+<A NAME="13"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> enum Mode {
+<A NAME="14"></A>        DEPLOY, UNDEPLOY, TEST
+<A NAME="15"></A>    }
+<A NAME="16"></A>
+<A NAME="17"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> <A HREF="../../../../../../com/collective/celos/ci/config/deploy/CelosCiTarget.java.html">CelosCiTarget</A> target;
+<A NAME="18"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> String userName;
+<A NAME="19"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> Mode mode;
+<A NAME="20"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> File deployDir;
+<A NAME="21"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> String workflowName;
+<A NAME="22"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> FileSystem fileSystem;
+<A NAME="23"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> String hdfsPrefix;
+<A NAME="24"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> Configuration configuration;
+<A NAME="25"></A>
+<A NAME="26"></A>    <FONT ID="Public">public</FONT> CelosCiContext(<A HREF="../../../../../../com/collective/celos/ci/config/deploy/CelosCiTarget.java.html">CelosCiTarget</A> target,
+<A NAME="27"></A>                          String userName,
+<A NAME="28"></A>                          Mode mode,
+<A NAME="29"></A>                          File deployDir,
+<A NAME="30"></A>                          String workflowName,
+<A NAME="31"></A>                          String hdfsPrefix) <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="32"></A>        <FONT ID="This">this</FONT>.target = Util.requireNonNull(target);
+<A NAME="33"></A>        <FONT ID="This">this</FONT>.userName = Util.requireNonNull(userName);
+<A NAME="34"></A>        <FONT ID="This">this</FONT>.mode = Util.requireNonNull(mode);
+<A NAME="35"></A>        <FONT ID="This">this</FONT>.deployDir = Util.requireNonNull(deployDir);
+<A NAME="36"></A>        <FONT ID="This">this</FONT>.workflowName = Util.requireNonNull(workflowName);
+<A NAME="37"></A>        <FONT ID="This">this</FONT>.hdfsPrefix = Util.requireNonNull(hdfsPrefix);
+<A NAME="38"></A>        <FONT ID="This">this</FONT>.configuration = setupConfiguration(userName, target);
+<A NAME="39"></A>        <FONT ID="This">this</FONT>.fileSystem = FileSystem.get(<FONT ID="This">this</FONT>.configuration);
+<A NAME="40"></A>    }
+<A NAME="41"></A>
+<A NAME="42"></A>    <FONT ID="Private">private</FONT> Configuration setupConfiguration(String username, <A HREF="../../../../../../com/collective/celos/ci/config/deploy/CelosCiTarget.java.html">CelosCiTarget</A> target) <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="43"></A>        <A HREF="../../../../../../com/collective/celos/ci/deploy/JScpWorker.java.html">JScpWorker</A> jscpWorker = <FONT ID="New">new</FONT> <A HREF="../../../../../../com/collective/celos/ci/deploy/JScpWorker.java.html">JScpWorker</A>(username);
+<A NAME="44"></A>        Configuration conf = <FONT ID="New">new</FONT> Configuration();
+<A NAME="45"></A>
+<A NAME="46"></A>        conf.set(<FONT ID="StringLiteral">"fs.hdfs.impl"</FONT>, org.apache.hadoop.hdfs.DistributedFileSystem.<FONT ID="Class">class</FONT>.getName());
+<A NAME="47"></A>        conf.set(<FONT ID="StringLiteral">"fs.file.impl"</FONT>, org.apache.hadoop.fs.LocalFileSystem.<FONT ID="Class">class</FONT>.getName());
+<A NAME="48"></A>
+<A NAME="49"></A>        conf.addResource(jscpWorker.getFileObjectByUri(target.getPathToHdfsSite()).getContent().getInputStream());
+<A NAME="50"></A>        conf.addResource(jscpWorker.getFileObjectByUri(target.getPathToCoreSite()).getContent().getInputStream());
+<A NAME="51"></A>
+<A NAME="52"></A>        UserGroupInformation.setConfiguration(conf);
+<A NAME="53"></A>
+<A NAME="54"></A>        <FONT ID="Return">return</FONT> conf;
+<A NAME="55"></A>    }
+<A NAME="56"></A>
+<A NAME="57"></A>
+<A NAME="58"></A>    <FONT ID="Public">public</FONT> FileSystem getFileSystem() {
+<A NAME="59"></A>        <FONT ID="Return">return</FONT> fileSystem;
+<A NAME="60"></A>    }
+<A NAME="61"></A>
+<A NAME="62"></A>    <FONT ID="Public">public</FONT> String getUserName() {
+<A NAME="63"></A>        <FONT ID="Return">return</FONT> userName;
+<A NAME="64"></A>    }
+<A NAME="65"></A>
+<A NAME="66"></A>    <FONT ID="Public">public</FONT> Mode getMode() {
+<A NAME="67"></A>        <FONT ID="Return">return</FONT> mode;
+<A NAME="68"></A>    }
+<A NAME="69"></A>
+<A NAME="70"></A>    <FONT ID="Public">public</FONT> File getDeployDir() {
+<A NAME="71"></A>        <FONT ID="Return">return</FONT> deployDir;
+<A NAME="72"></A>    }
+<A NAME="73"></A>
+<A NAME="74"></A>    <FONT ID="Public">public</FONT> String getWorkflowName() {
+<A NAME="75"></A>        <FONT ID="Return">return</FONT> workflowName;
+<A NAME="76"></A>    }
+<A NAME="77"></A>
+<A NAME="78"></A>    <FONT ID="Public">public</FONT> <A HREF="../../../../../../com/collective/celos/ci/config/deploy/CelosCiTarget.java.html">CelosCiTarget</A> getTarget() {
+<A NAME="79"></A>        <FONT ID="Return">return</FONT> target;
+<A NAME="80"></A>    }
+<A NAME="81"></A>
+<A NAME="82"></A>    <FONT ID="Public">public</FONT> String getHdfsPrefix() {
+<A NAME="83"></A>        <FONT ID="Return">return</FONT> hdfsPrefix;
+<A NAME="84"></A>    }
+<A NAME="85"></A>
+<A NAME="86"></A>    <FONT ID="Public">public</FONT> Configuration getConfiguration() {
+<A NAME="87"></A>        <FONT ID="Return">return</FONT> configuration;
+<A NAME="88"></A>    }
+<A NAME="89"></A>
+<A NAME="90"></A>}
+<A NAME="91"></A></pre>
+</BODY>
+</HTML>

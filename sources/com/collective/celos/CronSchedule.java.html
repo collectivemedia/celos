@@ -1,0 +1,81 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.CronSchedule (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">CronSchedule.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> java.text.ParseException;
+<A NAME="4"></A><FONT ID="Import">import</FONT> java.util.Date;
+<A NAME="5"></A><FONT ID="Import">import</FONT> java.util.SortedSet;
+<A NAME="6"></A><FONT ID="Import">import</FONT> java.util.TreeSet;
+<A NAME="7"></A>
+<A NAME="8"></A><FONT ID="Import">import</FONT> org.joda.time.DateTime;
+<A NAME="9"></A><FONT ID="Import">import</FONT> org.joda.time.DateTimeZone;
+<A NAME="10"></A><FONT ID="Import">import</FONT> org.quartz.CronExpression;
+<A NAME="11"></A>
+<A NAME="12"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> CronSchedule <FONT ID="Implements">implements</FONT> <A HREF="../../../com/collective/celos/Schedule.java.html">Schedule</A> {
+<A NAME="13"></A>
+<A NAME="14"></A>    <FONT ID="Private">private</FONT> CronExpression cronExpression;
+<A NAME="15"></A>
+<A NAME="16"></A>    <FONT ID="Public">public</FONT> CronSchedule(String cronConfig) {
+<A NAME="17"></A>        <FONT ID="Try">try</FONT> {
+<A NAME="18"></A>            CronExpression.validateExpression(cronConfig);
+<A NAME="19"></A>            cronExpression = <FONT ID="New">new</FONT> CronExpression(cronConfig);
+<A NAME="20"></A>            cronExpression.setTimeZone(DateTimeZone.UTC.toTimeZone());
+<A NAME="21"></A>        } <FONT ID="Catch">catch</FONT> (ParseException e) {
+<A NAME="22"></A>            <FONT ID="Throw">throw</FONT> <FONT ID="New">new</FONT> IllegalArgumentException(<FONT ID="StringLiteral">"Error in cron expression"</FONT>, e);
+<A NAME="23"></A>        }
+<A NAME="24"></A>    }
+<A NAME="25"></A>
+<A NAME="26"></A>    <FONT ID="Public">public</FONT> String getCronExpression() {
+<A NAME="27"></A>        <FONT ID="Return">return</FONT> cronExpression.getCronExpression();
+<A NAME="28"></A>    }
+<A NAME="29"></A>
+<A NAME="30"></A>    @Override
+<A NAME="31"></A>    <FONT ID="Public">public</FONT> SortedSet&lt;<A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>&gt; getScheduledTimes(<A HREF="../../../com/collective/celos/Scheduler.java.html">Scheduler</A> scheduler, <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> start, <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> end) {
+<A NAME="32"></A>        SortedSet&lt;<A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>&gt; scheduledTimes = <FONT ID="New">new</FONT> TreeSet&lt;<A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>&gt;();
+<A NAME="33"></A>        DateTime startDT = start.getDateTime();
+<A NAME="34"></A>        DateTime endDT = end.getDateTime();
+<A NAME="35"></A>
+<A NAME="36"></A>        <FONT ID="If">if</FONT> (!startDT.isBefore(endDT)) {
+<A NAME="37"></A>            <FONT ID="Return">return</FONT> scheduledTimes;
+<A NAME="38"></A>        }
+<A NAME="39"></A>        
+<A NAME="40"></A>        <FONT ID="If">if</FONT> (cronExpression.isSatisfiedBy(startDT.toDate())) {
+<A NAME="41"></A>            scheduledTimes.add(start);
+<A NAME="42"></A>        }
+<A NAME="43"></A>
+<A NAME="44"></A>        DateTime candidate = startDT;
+<A NAME="45"></A>        <FONT ID="While">while</FONT>((candidate = getNextDateTime(candidate)) != <FONT ID="Null">null</FONT> &amp;&amp; candidate.isBefore(endDT)) {
+<A NAME="46"></A>            scheduledTimes.add(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(candidate));
+<A NAME="47"></A>        }
+<A NAME="48"></A>        
+<A NAME="49"></A>        <FONT ID="Return">return</FONT> scheduledTimes;
+<A NAME="50"></A>    }
+<A NAME="51"></A>
+<A NAME="52"></A>    <FONT ID="Private">private</FONT> DateTime getNextDateTime(DateTime candidate) {
+<A NAME="53"></A>        Date date = cronExpression.getNextValidTimeAfter(candidate.toDate());
+<A NAME="54"></A>        <FONT ID="If">if</FONT> (date != <FONT ID="Null">null</FONT>) {
+<A NAME="55"></A>            <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> DateTime(date, DateTimeZone.UTC);
+<A NAME="56"></A>        } <FONT ID="Else">else</FONT> {
+<A NAME="57"></A>            <FONT ID="Return">return</FONT> <FONT ID="Null">null</FONT>;
+<A NAME="58"></A>        }
+<A NAME="59"></A>    }
+<A NAME="60"></A>
+<A NAME="61"></A>}
+<A NAME="62"></A></pre>
+</BODY>
+</HTML>

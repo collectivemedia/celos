@@ -1,0 +1,140 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.ci.config.CiCommandLineParserTest (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">CiCommandLineParserTest.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos.ci.config;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../com/collective/celos/ci/config/deploy/CelosCiContext.java.html">com.collective.celos.ci.config.deploy.CelosCiContext</A>;
+<A NAME="4"></A><FONT ID="Import">import</FONT> junit.framework.Assert;
+<A NAME="5"></A><FONT ID="Import">import</FONT> org.junit.Before;
+<A NAME="6"></A><FONT ID="Import">import</FONT> org.junit.Rule;
+<A NAME="7"></A><FONT ID="Import">import</FONT> org.junit.Test;
+<A NAME="8"></A><FONT ID="Import">import</FONT> org.junit.rules.TemporaryFolder;
+<A NAME="9"></A>
+<A NAME="10"></A><FONT ID="Import">import</FONT> java.io.File;
+<A NAME="11"></A><FONT ID="Import">import</FONT> java.io.IOException;
+<A NAME="12"></A><FONT ID="Import">import</FONT> java.net.URI;
+<A NAME="13"></A>
+<A NAME="14"></A><FONT ID="FormalComment">/**
+<A NAME="15"></A> * Created by akonopko on 10/1/14.
+<A NAME="16"></A> */</FONT>
+<A NAME="17"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> CiCommandLineParserTest {
+<A NAME="18"></A>
+<A NAME="19"></A>    @Rule
+<A NAME="20"></A>    <FONT ID="Public">public</FONT> TemporaryFolder tempDirRule = <FONT ID="New">new</FONT> TemporaryFolder();
+<A NAME="21"></A>    <FONT ID="Private">private</FONT> File tmpDir;
+<A NAME="22"></A>
+<A NAME="23"></A>    @Before
+<A NAME="24"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> setUp() <FONT ID="Throws">throws</FONT> IOException {
+<A NAME="25"></A>        tmpDir = tempDirRule.newFolder();
+<A NAME="26"></A>        tmpDir.mkdir();
+<A NAME="27"></A>    }
+<A NAME="28"></A>
+<A NAME="29"></A>    @Test
+<A NAME="30"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testContextParserTest() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="31"></A>        <A HREF="../../../../../com/collective/celos/ci/config/CiCommandLineParser.java.html">CiCommandLineParser</A> contextParser = <FONT ID="New">new</FONT> <A HREF="../../../../../com/collective/celos/ci/config/CiCommandLineParser.java.html">CiCommandLineParser</A>();
+<A NAME="32"></A>
+<A NAME="33"></A>        String[] clParams = (<FONT ID="StringLiteral">"--testDir "</FONT> + tmpDir.getAbsolutePath() + <FONT ID="StringLiteral">" --target target --mode TEST --deployDir deploydir --workflowName workflow"</FONT>).split(<FONT ID="StringLiteral">" "</FONT>);
+<A NAME="34"></A>
+<A NAME="35"></A>        <A HREF="../../../../../com/collective/celos/ci/config/CiCommandLine.java.html">CiCommandLine</A> commandLine = contextParser.parse(clParams);
+<A NAME="36"></A>
+<A NAME="37"></A>        Assert.assertEquals(commandLine.getDeployDir(), <FONT ID="New">new</FONT> File(<FONT ID="StringLiteral">"deploydir"</FONT>));
+<A NAME="38"></A>        Assert.assertEquals(commandLine.getMode(), CelosCiContext.Mode.TEST);
+<A NAME="39"></A>        Assert.assertEquals(commandLine.getTargetUri(), URI.create(<FONT ID="StringLiteral">"target"</FONT>));
+<A NAME="40"></A>        Assert.assertEquals(commandLine.getUserName(), getUsername());
+<A NAME="41"></A>        Assert.assertEquals(commandLine.getWorkflowName(), <FONT ID="StringLiteral">"workflow"</FONT>);
+<A NAME="42"></A>    }
+<A NAME="43"></A>
+<A NAME="44"></A>    <FONT ID="Private">private</FONT> String getUsername() {
+<A NAME="45"></A>        String userName = System.getenv(CiCommandLineParser.USERNAME_ENV_VAR);
+<A NAME="46"></A>        <FONT ID="If">if</FONT> (userName == <FONT ID="Null">null</FONT>) {
+<A NAME="47"></A>            userName = System.getProperty(<FONT ID="StringLiteral">"user.name"</FONT>);
+<A NAME="48"></A>        }
+<A NAME="49"></A>        <FONT ID="Return">return</FONT> userName;
+<A NAME="50"></A>    }
+<A NAME="51"></A>
+<A NAME="52"></A>    @Test
+<A NAME="53"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testContextParserDeploy() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="54"></A>        <A HREF="../../../../../com/collective/celos/ci/config/CiCommandLineParser.java.html">CiCommandLineParser</A> contextParser = <FONT ID="New">new</FONT> <A HREF="../../../../../com/collective/celos/ci/config/CiCommandLineParser.java.html">CiCommandLineParser</A>();
+<A NAME="55"></A>        String[] clParams = (<FONT ID="StringLiteral">"--target target --mode DEPLOY --deployDir deploydir --workflowName workflow"</FONT>).split(<FONT ID="StringLiteral">" "</FONT>);
+<A NAME="56"></A>
+<A NAME="57"></A>        <A HREF="../../../../../com/collective/celos/ci/config/CiCommandLine.java.html">CiCommandLine</A> commandLine = contextParser.parse(clParams);
+<A NAME="58"></A>
+<A NAME="59"></A>        Assert.assertEquals(commandLine.getDeployDir(), <FONT ID="New">new</FONT> File(<FONT ID="StringLiteral">"deploydir"</FONT>));
+<A NAME="60"></A>        Assert.assertEquals(commandLine.getMode(), CelosCiContext.Mode.DEPLOY);
+<A NAME="61"></A>        Assert.assertEquals(commandLine.getTargetUri(), URI.create(<FONT ID="StringLiteral">"target"</FONT>));
+<A NAME="62"></A>        Assert.assertEquals(commandLine.getUserName(), getUsername());
+<A NAME="63"></A>        Assert.assertEquals(commandLine.getWorkflowName(), <FONT ID="StringLiteral">"workflow"</FONT>);
+<A NAME="64"></A>    }
+<A NAME="65"></A>
+<A NAME="66"></A>    @Test
+<A NAME="67"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testContextParserUndeploy() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="68"></A>        <A HREF="../../../../../com/collective/celos/ci/config/CiCommandLineParser.java.html">CiCommandLineParser</A> contextParser = <FONT ID="New">new</FONT> <A HREF="../../../../../com/collective/celos/ci/config/CiCommandLineParser.java.html">CiCommandLineParser</A>();
+<A NAME="69"></A>
+<A NAME="70"></A>        String[] clParams = (<FONT ID="StringLiteral">"--target target --mode UNDEPLOY --deployDir deploydir --workflowName workflow"</FONT>).split(<FONT ID="StringLiteral">" "</FONT>);
+<A NAME="71"></A>
+<A NAME="72"></A>        <A HREF="../../../../../com/collective/celos/ci/config/CiCommandLine.java.html">CiCommandLine</A> commandLine = contextParser.parse(clParams);
+<A NAME="73"></A>
+<A NAME="74"></A>        Assert.assertEquals(commandLine.getDeployDir(), <FONT ID="New">new</FONT> File(<FONT ID="StringLiteral">"deploydir"</FONT>));
+<A NAME="75"></A>        Assert.assertEquals(commandLine.getMode(), CelosCiContext.Mode.UNDEPLOY);
+<A NAME="76"></A>        Assert.assertEquals(commandLine.getTargetUri(), URI.create(<FONT ID="StringLiteral">"target"</FONT>));
+<A NAME="77"></A>        Assert.assertEquals(commandLine.getUserName(), getUsername());
+<A NAME="78"></A>        Assert.assertEquals(commandLine.getWorkflowName(), <FONT ID="StringLiteral">"workflow"</FONT>);
+<A NAME="79"></A>    }
+<A NAME="80"></A>
+<A NAME="81"></A>
+<A NAME="82"></A>    @Test(expected = IllegalArgumentException.<FONT ID="Class">class</FONT>)
+<A NAME="83"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testContextParserTestFailsNoTestDir() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="84"></A>        <A HREF="../../../../../com/collective/celos/ci/config/CiCommandLineParser.java.html">CiCommandLineParser</A> contextParser = <FONT ID="New">new</FONT> <A HREF="../../../../../com/collective/celos/ci/config/CiCommandLineParser.java.html">CiCommandLineParser</A>();
+<A NAME="85"></A>        String[] clParams = <FONT ID="StringLiteral">"--target target --mode TEST --deployDir deploydir --workflowName workflow"</FONT>.split(<FONT ID="StringLiteral">" "</FONT>);
+<A NAME="86"></A>
+<A NAME="87"></A>        contextParser.parse(clParams);
+<A NAME="88"></A>    }
+<A NAME="89"></A>
+<A NAME="90"></A>    @Test (expected = IllegalArgumentException.<FONT ID="Class">class</FONT>)
+<A NAME="91"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testNoDirComes() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="92"></A>        <FONT ID="New">new</FONT> <A HREF="../../../../../com/collective/celos/ci/config/CiCommandLine.java.html">CiCommandLine</A>(<FONT ID="StringLiteral">"target"</FONT>, <FONT ID="StringLiteral">"TEST"</FONT>, <FONT ID="StringLiteral">"deployDir"</FONT>, <FONT ID="StringLiteral">"workflowName"</FONT>, <FONT ID="StringLiteral">"testCasesDir"</FONT>, <FONT ID="StringLiteral">"userName"</FONT>, <FONT ID="True">true</FONT>, <FONT ID="Null">null</FONT>);
+<A NAME="93"></A>    }
+<A NAME="94"></A>
+<A NAME="95"></A>    @Test (expected = NullPointerException.<FONT ID="Class">class</FONT>)
+<A NAME="96"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testNoDirComesNull() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="97"></A>        <FONT ID="New">new</FONT> <A HREF="../../../../../com/collective/celos/ci/config/CiCommandLine.java.html">CiCommandLine</A>(<FONT ID="StringLiteral">"target"</FONT>, <FONT ID="StringLiteral">"TEST"</FONT>, <FONT ID="StringLiteral">"deployDir"</FONT>, <FONT ID="StringLiteral">"workflowName"</FONT>, <FONT ID="Null">null</FONT>, <FONT ID="StringLiteral">"userName"</FONT>, <FONT ID="True">true</FONT>, <FONT ID="Null">null</FONT>);
+<A NAME="98"></A>    }
+<A NAME="99"></A>
+<A NAME="100"></A>    @Test
+<A NAME="101"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testDeployNoDirComes() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="102"></A>        <FONT ID="New">new</FONT> <A HREF="../../../../../com/collective/celos/ci/config/CiCommandLine.java.html">CiCommandLine</A>(<FONT ID="StringLiteral">"target"</FONT>, <FONT ID="StringLiteral">"DEPLOY"</FONT>, <FONT ID="StringLiteral">"deployDir"</FONT>, <FONT ID="StringLiteral">"workflowName"</FONT>, <FONT ID="StringLiteral">"testCasesDir"</FONT>, <FONT ID="StringLiteral">"userName"</FONT>, <FONT ID="True">true</FONT>, <FONT ID="Null">null</FONT>);
+<A NAME="103"></A>    }
+<A NAME="104"></A>
+<A NAME="105"></A>    @Test
+<A NAME="106"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testDeployNoDirComesNull() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="107"></A>        <FONT ID="New">new</FONT> <A HREF="../../../../../com/collective/celos/ci/config/CiCommandLine.java.html">CiCommandLine</A>(<FONT ID="StringLiteral">"target"</FONT>, <FONT ID="StringLiteral">"DEPLOY"</FONT>, <FONT ID="StringLiteral">"deployDir"</FONT>, <FONT ID="StringLiteral">"workflowName"</FONT>, <FONT ID="Null">null</FONT>, <FONT ID="StringLiteral">"userName"</FONT>, <FONT ID="True">true</FONT>, <FONT ID="Null">null</FONT>);
+<A NAME="108"></A>    }
+<A NAME="109"></A>
+<A NAME="110"></A>    @Test
+<A NAME="111"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testUndeployNoDirComes() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="112"></A>        <FONT ID="New">new</FONT> <A HREF="../../../../../com/collective/celos/ci/config/CiCommandLine.java.html">CiCommandLine</A>(<FONT ID="StringLiteral">"target"</FONT>, <FONT ID="StringLiteral">"UNDEPLOY"</FONT>, <FONT ID="StringLiteral">"deployDir"</FONT>, <FONT ID="StringLiteral">"workflowName"</FONT>, <FONT ID="StringLiteral">"testCasesDir"</FONT>, <FONT ID="StringLiteral">"userName"</FONT>, <FONT ID="True">true</FONT>, <FONT ID="Null">null</FONT>);
+<A NAME="113"></A>    }
+<A NAME="114"></A>
+<A NAME="115"></A>    @Test
+<A NAME="116"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testUndeployNoDirComesNull() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="117"></A>        <FONT ID="New">new</FONT> <A HREF="../../../../../com/collective/celos/ci/config/CiCommandLine.java.html">CiCommandLine</A>(<FONT ID="StringLiteral">"target"</FONT>, <FONT ID="StringLiteral">"UNDEPLOY"</FONT>, <FONT ID="StringLiteral">"deployDir"</FONT>, <FONT ID="StringLiteral">"workflowName"</FONT>, <FONT ID="Null">null</FONT>, <FONT ID="StringLiteral">"userName"</FONT>, <FONT ID="True">true</FONT>, <FONT ID="Null">null</FONT>);
+<A NAME="118"></A>    }
+<A NAME="119"></A>
+<A NAME="120"></A>}
+<A NAME="121"></A></pre>
+</BODY>
+</HTML>

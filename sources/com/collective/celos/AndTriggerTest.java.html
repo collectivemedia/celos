@@ -1,0 +1,69 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.AndTriggerTest (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">AndTriggerTest.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> java.util.Arrays;
+<A NAME="4"></A><FONT ID="Import">import</FONT> java.util.Collections;
+<A NAME="5"></A>
+<A NAME="6"></A><FONT ID="Import">import</FONT> org.junit.Assert;
+<A NAME="7"></A><FONT ID="Import">import</FONT> org.junit.Test;
+<A NAME="8"></A>
+<A NAME="9"></A><FONT ID="Import">import</FONT> <FONT ID="Static">static</FONT> org.mockito.Mockito.mock;
+<A NAME="10"></A>
+<A NAME="11"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> AndTriggerTest {
+<A NAME="12"></A>    
+<A NAME="13"></A>    @Test
+<A NAME="14"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> returnsTrueWhenAllSubTriggersReturnTrue() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="15"></A>        <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/AndTrigger.html">AndTrigger</A> trigger = <FONT ID="New">new</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/AndTrigger.html">AndTrigger</A>(Arrays.asList(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/Trigger.java.html">Trigger</A>[] { createAlwaysTrigger(), createAlwaysTrigger(), createAlwaysTrigger() }));
+<A NAME="16"></A>        <A HREF="../../../com/collective/celos/Scheduler.java.html">Scheduler</A> scheduler = mock(<A HREF="../../../com/collective/celos/Scheduler.java.html">Scheduler</A>.<FONT ID="Class">class</FONT>);
+<A NAME="17"></A>        Assert.assertTrue(trigger.isDataAvailable(scheduler, ScheduledTime.now(), <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2014-02-26T16:13:00Z"</FONT>)));
+<A NAME="18"></A>    }
+<A NAME="19"></A>    
+<A NAME="20"></A>    @Test
+<A NAME="21"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> returnsFalseWhenOnlyOneSubTriggerReturnsTrue() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="22"></A>        <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/AndTrigger.html">AndTrigger</A> trigger = <FONT ID="New">new</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/AndTrigger.html">AndTrigger</A>(Arrays.asList(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/Trigger.java.html">Trigger</A>[] { createAlwaysTrigger(), createNeverTrigger(), createAlwaysTrigger() }));
+<A NAME="23"></A>        <A HREF="../../../com/collective/celos/Scheduler.java.html">Scheduler</A> scheduler = mock(<A HREF="../../../com/collective/celos/Scheduler.java.html">Scheduler</A>.<FONT ID="Class">class</FONT>);
+<A NAME="24"></A>        Assert.assertFalse(trigger.isDataAvailable(scheduler, ScheduledTime.now(), <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2014-02-26T16:13:00Z"</FONT>)));
+<A NAME="25"></A>    }
+<A NAME="26"></A>
+<A NAME="27"></A>    @Test
+<A NAME="28"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> returnsFalseWhenNoSubTriggersReturnsTrue() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="29"></A>        <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/AndTrigger.html">AndTrigger</A> trigger = <FONT ID="New">new</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/AndTrigger.html">AndTrigger</A>(Arrays.asList(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/Trigger.java.html">Trigger</A>[] { createNeverTrigger(), createNeverTrigger(), createNeverTrigger() }));
+<A NAME="30"></A>        <A HREF="../../../com/collective/celos/Scheduler.java.html">Scheduler</A> scheduler = mock(<A HREF="../../../com/collective/celos/Scheduler.java.html">Scheduler</A>.<FONT ID="Class">class</FONT>);
+<A NAME="31"></A>        Assert.assertFalse(trigger.isDataAvailable(scheduler, ScheduledTime.now(), <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2014-02-26T16:13:00Z"</FONT>)));
+<A NAME="32"></A>    }
+<A NAME="33"></A>    
+<A NAME="34"></A>    @Test
+<A NAME="35"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> returnsTrueWhenThereAreNoSubTriggers() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="36"></A>        <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/AndTrigger.html">AndTrigger</A> trigger = <FONT ID="New">new</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/AndTrigger.html">AndTrigger</A>(Collections.&lt;<A HREF="../../../com/collective/celos/Trigger.java.html">Trigger</A>&gt;emptyList());
+<A NAME="37"></A>        <A HREF="../../../com/collective/celos/Scheduler.java.html">Scheduler</A> scheduler = mock(<A HREF="../../../com/collective/celos/Scheduler.java.html">Scheduler</A>.<FONT ID="Class">class</FONT>);
+<A NAME="38"></A>        Assert.assertTrue(trigger.isDataAvailable(scheduler, ScheduledTime.now(), <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2014-02-26T16:13:00Z"</FONT>)));
+<A NAME="39"></A>    }
+<A NAME="40"></A>    
+<A NAME="41"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <A HREF="../../../com/collective/celos/Trigger.java.html">Trigger</A> createAlwaysTrigger() {
+<A NAME="42"></A>        <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/AlwaysTrigger.java.html">AlwaysTrigger</A>();
+<A NAME="43"></A>    }
+<A NAME="44"></A>    
+<A NAME="45"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <A HREF="../../../com/collective/celos/Trigger.java.html">Trigger</A> createNeverTrigger() {
+<A NAME="46"></A>        <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/NeverTrigger.java.html">NeverTrigger</A>();
+<A NAME="47"></A>    }
+<A NAME="48"></A>    
+<A NAME="49"></A>}
+<A NAME="50"></A></pre>
+</BODY>
+</HTML>

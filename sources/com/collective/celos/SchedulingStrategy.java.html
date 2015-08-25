@@ -1,0 +1,50 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.SchedulingStrategy (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">SchedulingStrategy.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> java.util.List;
+<A NAME="4"></A>
+<A NAME="5"></A><FONT ID="FormalComment">/**
+<A NAME="6"></A> * A scheduling strategy determines the order in which slots of a workflow are executed.
+<A NAME="7"></A> *
+<A NAME="8"></A> * Scheduling strategies are configured on a per-workflow basis.
+<A NAME="9"></A> * 
+<A NAME="10"></A> * On each scheduler cycle, a workflow's scheduling strategy is asked
+<A NAME="11"></A> * which workflow instances (slots) should be executed.
+<A NAME="12"></A> * 
+<A NAME="13"></A> * As input for making this decision, the scheduling strategy receives
+<A NAME="14"></A> * all slot states of the given workflow within the sliding window.  
+<A NAME="15"></A> * 
+<A NAME="16"></A> * There's no guarantee that all slots returned by a strategy will be executed.
+<A NAME="17"></A> */</FONT>
+<A NAME="18"></A><FONT ID="Public">public</FONT> <FONT ID="Interface">interface</FONT> SchedulingStrategy {
+<A NAME="19"></A>
+<A NAME="20"></A>    <FONT ID="FormalComment">/**
+<A NAME="21"></A>     * Returns the slots that this strategy wishes to execute.
+<A NAME="22"></A>     * 
+<A NAME="23"></A>     * Only slots in READY state must be returned.
+<A NAME="24"></A>     * 
+<A NAME="25"></A>     * @param states The states of all slots within sliding window for this workflow, with oldest ones first.
+<A NAME="26"></A>     * @return List of slots this strategy wishes to execute - the first in the list will be executed first.
+<A NAME="27"></A>     */</FONT>
+<A NAME="28"></A>    <FONT ID="Public">public</FONT> List&lt;<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>&gt; getSchedulingCandidates(List&lt;<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>&gt; states);
+<A NAME="29"></A>
+<A NAME="30"></A>}
+<A NAME="31"></A></pre>
+</BODY>
+</HTML>

@@ -1,0 +1,165 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.ScheduledTime (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">ScheduledTime.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> org.apache.commons.lang.builder.CompareToBuilder;
+<A NAME="4"></A><FONT ID="Import">import</FONT> org.joda.time.DateTime;
+<A NAME="5"></A><FONT ID="Import">import</FONT> org.joda.time.DateTimeZone;
+<A NAME="6"></A>
+<A NAME="7"></A><FONT ID="FormalComment">/**
+<A NAME="8"></A> * Scheduled time of a workflow run in UTC.
+<A NAME="9"></A> */</FONT>
+<A NAME="10"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> ScheduledTime <FONT ID="Extends">extends</FONT> <A HREF="../../../com/collective/celos/ValueObject.java.html">com.collective.celos.ValueObject</A> <FONT ID="Implements">implements</FONT> Comparable&lt;<A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>&gt; {
+<A NAME="11"></A>
+<A NAME="12"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> <A HREF="../../../com/collective/celos/ScheduledTimeFormatter.java.html">ScheduledTimeFormatter</A> FORMATTER = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTimeFormatter.java.html">ScheduledTimeFormatter</A>();
+<A NAME="13"></A>    <FONT ID="Protected">protected</FONT> <FONT ID="Final">final</FONT> DateTime dateTime;
+<A NAME="14"></A>
+<A NAME="15"></A>    <FONT ID="Public">public</FONT> ScheduledTime(String formattedDate) {
+<A NAME="16"></A>        <FONT ID="This">this</FONT>(DateTime.parse(formattedDate));
+<A NAME="17"></A>    }
+<A NAME="18"></A>
+<A NAME="19"></A>    <FONT ID="Public">public</FONT> ScheduledTime(DateTime dateTime) {
+<A NAME="20"></A>        <FONT ID="This">this</FONT>.dateTime = Util.requireNonNull(dateTime);
+<A NAME="21"></A>        <FONT ID="If">if</FONT> (!dateTime.getZone().equals(DateTimeZone.UTC)) {
+<A NAME="22"></A>            <FONT ID="Throw">throw</FONT> <FONT ID="New">new</FONT> IllegalArgumentException(
+<A NAME="23"></A>                    <FONT ID="StringLiteral">"Scheduled time must be in UTC, but isn't: "</FONT> + dateTime);
+<A NAME="24"></A>        }
+<A NAME="25"></A>    }
+<A NAME="26"></A>
+<A NAME="27"></A>    <FONT ID="Public">public</FONT> DateTime getDateTime() {
+<A NAME="28"></A>        <FONT ID="Return">return</FONT> dateTime;
+<A NAME="29"></A>    }
+<A NAME="30"></A>
+<A NAME="31"></A>    @Override
+<A NAME="32"></A>    <FONT ID="Public">public</FONT> <FONT ID="Int">int</FONT> compareTo(<A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> t) {
+<A NAME="33"></A>        <FONT ID="Return">return</FONT> CompareToBuilder.reflectionCompare(<FONT ID="This">this</FONT>, t);
+<A NAME="34"></A>    }
+<A NAME="35"></A>
+<A NAME="36"></A>    <FONT ID="Public">public</FONT> <FONT ID="Int">int</FONT> getYear() {
+<A NAME="37"></A>        <FONT ID="Return">return</FONT> dateTime.getYear();
+<A NAME="38"></A>    }
+<A NAME="39"></A>
+<A NAME="40"></A>    <FONT ID="Public">public</FONT> <FONT ID="Int">int</FONT> getMonth() {
+<A NAME="41"></A>        <FONT ID="Return">return</FONT> dateTime.getMonthOfYear();
+<A NAME="42"></A>    }
+<A NAME="43"></A>
+<A NAME="44"></A>    <FONT ID="Public">public</FONT> <FONT ID="Int">int</FONT> getDay() {
+<A NAME="45"></A>        <FONT ID="Return">return</FONT> dateTime.getDayOfMonth();
+<A NAME="46"></A>    }
+<A NAME="47"></A>
+<A NAME="48"></A>    <FONT ID="Public">public</FONT> <FONT ID="Int">int</FONT> getHour() {
+<A NAME="49"></A>        <FONT ID="Return">return</FONT> dateTime.getHourOfDay();
+<A NAME="50"></A>    }
+<A NAME="51"></A>
+<A NAME="52"></A>    <FONT ID="Public">public</FONT> <FONT ID="Int">int</FONT> getMinute() {
+<A NAME="53"></A>        <FONT ID="Return">return</FONT> dateTime.getMinuteOfHour();
+<A NAME="54"></A>    }
+<A NAME="55"></A>
+<A NAME="56"></A>    <FONT ID="Public">public</FONT> <FONT ID="Int">int</FONT> getSecond() {
+<A NAME="57"></A>        <FONT ID="Return">return</FONT> dateTime.getSecondOfMinute();
+<A NAME="58"></A>    }
+<A NAME="59"></A>
+<A NAME="60"></A>    <FONT ID="Public">public</FONT> <FONT ID="Int">int</FONT> getMillisecond() {
+<A NAME="61"></A>        <FONT ID="Return">return</FONT> dateTime.getMillisOfSecond();
+<A NAME="62"></A>    }
+<A NAME="63"></A>
+<A NAME="64"></A>    <FONT ID="Public">public</FONT> String toString() {
+<A NAME="65"></A>        <FONT ID="Return">return</FONT> dateTime.toString();
+<A NAME="66"></A>    }
+<A NAME="67"></A>
+<A NAME="68"></A>    <FONT ID="Public">public</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> minusYears(<FONT ID="Int">int</FONT> i) {
+<A NAME="69"></A>        <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(getDateTime().minusYears(i));
+<A NAME="70"></A>    }
+<A NAME="71"></A>
+<A NAME="72"></A>    <FONT ID="Public">public</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> plusYears(<FONT ID="Int">int</FONT> i) {
+<A NAME="73"></A>        <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(getDateTime().plusYears(i));
+<A NAME="74"></A>    }
+<A NAME="75"></A>
+<A NAME="76"></A>    <FONT ID="Public">public</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> minusMonths(<FONT ID="Int">int</FONT> i) {
+<A NAME="77"></A>        <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(getDateTime().minusMonths(i));
+<A NAME="78"></A>    }
+<A NAME="79"></A>
+<A NAME="80"></A>    <FONT ID="Public">public</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> plusMonths(<FONT ID="Int">int</FONT> i) {
+<A NAME="81"></A>        <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(getDateTime().plusMonths(i));
+<A NAME="82"></A>    }
+<A NAME="83"></A>
+<A NAME="84"></A>    <FONT ID="Public">public</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> minusDays(<FONT ID="Int">int</FONT> i) {
+<A NAME="85"></A>        <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(getDateTime().minusDays(i));
+<A NAME="86"></A>    }
+<A NAME="87"></A>
+<A NAME="88"></A>    <FONT ID="Public">public</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> plusDays(<FONT ID="Int">int</FONT> i) {
+<A NAME="89"></A>        <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(getDateTime().plusDays(i));
+<A NAME="90"></A>    }
+<A NAME="91"></A>
+<A NAME="92"></A>    <FONT ID="Public">public</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> minusHours(<FONT ID="Int">int</FONT> i) {
+<A NAME="93"></A>        <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(getDateTime().minusHours(i));
+<A NAME="94"></A>    }
+<A NAME="95"></A>
+<A NAME="96"></A>    <FONT ID="Public">public</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> plusHours(<FONT ID="Int">int</FONT> i) {
+<A NAME="97"></A>        <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(getDateTime().plusHours(i));
+<A NAME="98"></A>    }
+<A NAME="99"></A>
+<A NAME="100"></A>    <FONT ID="Public">public</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> minusMinutes(<FONT ID="Int">int</FONT> i) {
+<A NAME="101"></A>        <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(getDateTime().minusMinutes(i));
+<A NAME="102"></A>    }
+<A NAME="103"></A>
+<A NAME="104"></A>    <FONT ID="Public">public</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> plusMinutes(<FONT ID="Int">int</FONT> i) {
+<A NAME="105"></A>        <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(getDateTime().plusMinutes(i));
+<A NAME="106"></A>    }
+<A NAME="107"></A>
+<A NAME="108"></A>
+<A NAME="109"></A>    <FONT ID="Public">public</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> minusSeconds(<FONT ID="Int">int</FONT> i) {
+<A NAME="110"></A>        <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(getDateTime().minusSeconds(i));
+<A NAME="111"></A>    }
+<A NAME="112"></A>
+<A NAME="113"></A>    <FONT ID="Public">public</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> plusSeconds(<FONT ID="Int">int</FONT> i) {
+<A NAME="114"></A>        <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(getDateTime().plusSeconds(i));
+<A NAME="115"></A>    }
+<A NAME="116"></A>
+<A NAME="117"></A>    <FONT ID="Public">public</FONT> String year() {
+<A NAME="118"></A>        <FONT ID="Return">return</FONT> FORMATTER.formatYear(<FONT ID="This">this</FONT>);
+<A NAME="119"></A>    }
+<A NAME="120"></A>
+<A NAME="121"></A>    <FONT ID="Public">public</FONT> String month() {
+<A NAME="122"></A>        <FONT ID="Return">return</FONT> FORMATTER.formatMonth(<FONT ID="This">this</FONT>);
+<A NAME="123"></A>    }
+<A NAME="124"></A>
+<A NAME="125"></A>    <FONT ID="Public">public</FONT> String day() {
+<A NAME="126"></A>        <FONT ID="Return">return</FONT> FORMATTER.formatDay(<FONT ID="This">this</FONT>);
+<A NAME="127"></A>    }
+<A NAME="128"></A>
+<A NAME="129"></A>    <FONT ID="Public">public</FONT> String hour() {
+<A NAME="130"></A>        <FONT ID="Return">return</FONT> FORMATTER.formatHour(<FONT ID="This">this</FONT>);
+<A NAME="131"></A>    }
+<A NAME="132"></A>
+<A NAME="133"></A>    <FONT ID="Public">public</FONT> String minute() {
+<A NAME="134"></A>        <FONT ID="Return">return</FONT> FORMATTER.formatMinute(<FONT ID="This">this</FONT>);
+<A NAME="135"></A>    }
+<A NAME="136"></A>
+<A NAME="137"></A>    <FONT ID="Public">public</FONT> String second() {
+<A NAME="138"></A>        <FONT ID="Return">return</FONT> FORMATTER.formatSecond(<FONT ID="This">this</FONT>);
+<A NAME="139"></A>    }
+<A NAME="140"></A>
+<A NAME="141"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> now() {
+<A NAME="142"></A>        <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(DateTime.now(DateTimeZone.UTC));
+<A NAME="143"></A>    }
+<A NAME="144"></A>
+<A NAME="145"></A>}
+<A NAME="146"></A></pre>
+</BODY>
+</HTML>

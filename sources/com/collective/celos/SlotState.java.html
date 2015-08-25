@@ -1,0 +1,177 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.SlotState (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">SlotState.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> com.fasterxml.jackson.databind.JsonNode;
+<A NAME="4"></A><FONT ID="Import">import</FONT> com.fasterxml.jackson.databind.ObjectMapper;
+<A NAME="5"></A><FONT ID="Import">import</FONT> com.fasterxml.jackson.databind.node.ObjectNode;
+<A NAME="6"></A>
+<A NAME="7"></A><FONT ID="FormalComment">/**
+<A NAME="8"></A> * The execution status of a slot.
+<A NAME="9"></A> */</FONT>
+<A NAME="10"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> SlotState <FONT ID="Extends">extends</FONT> <A HREF="../../../com/collective/celos/ValueObject.java.html">ValueObject</A> {
+<A NAME="11"></A>    
+<A NAME="12"></A>    <FONT ID="FormalComment">/** Never null. */</FONT>
+<A NAME="13"></A>    <FONT ID="Protected">protected</FONT> <FONT ID="Final">final</FONT> <A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A> slotID;
+<A NAME="14"></A>    <FONT ID="FormalComment">/** Never null. */</FONT>
+<A NAME="15"></A>    <FONT ID="Protected">protected</FONT> <FONT ID="Final">final</FONT> Status status;
+<A NAME="16"></A>    <FONT ID="FormalComment">/** Only set in RUNNING, SUCCESS, FAILURE states; null otherwise. */</FONT>
+<A NAME="17"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> String externalID;
+<A NAME="18"></A>    <FONT ID="FormalComment">/** Initially zero, increased every time the slot is rerun. */</FONT>
+<A NAME="19"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> <FONT ID="Int">int</FONT> retryCount;
+<A NAME="20"></A>    
+<A NAME="21"></A>    <FONT ID="SingleLineComment">// JSON support
+<A NAME="22"></A></FONT>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> ObjectMapper MAPPER = <FONT ID="New">new</FONT> ObjectMapper();
+<A NAME="23"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String TIME_PROP = <FONT ID="StringLiteral">"time"</FONT>;
+<A NAME="24"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String STATUS_PROP = <FONT ID="StringLiteral">"status"</FONT>;
+<A NAME="25"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String EXTERNAL_ID_PROP = <FONT ID="StringLiteral">"externalID"</FONT>;
+<A NAME="26"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String RETRY_COUNT_PROP = <FONT ID="StringLiteral">"retryCount"</FONT>;
+<A NAME="27"></A>    
+<A NAME="28"></A>    <FONT ID="Public">public</FONT> enum StatusType {
+<A NAME="29"></A>        SUCCESS,
+<A NAME="30"></A>        INDETERMINATE,
+<A NAME="31"></A>        FAILURE
+<A NAME="32"></A>    }
+<A NAME="33"></A>    
+<A NAME="34"></A>    <FONT ID="Public">public</FONT> enum Status {
+<A NAME="35"></A>        <FONT ID="FormalComment">/** No data availability yet. */</FONT>
+<A NAME="36"></A>        WAITING(StatusType.INDETERMINATE),
+<A NAME="37"></A>        <FONT ID="FormalComment">/** No data availability for too long. */</FONT>
+<A NAME="38"></A>        WAIT_TIMEOUT(StatusType.FAILURE),
+<A NAME="39"></A>        <FONT ID="FormalComment">/** Data is available and the workflow will be run shortly. 
+<A NAME="40"></A>            Workflow will also enter this state when it is retried. */</FONT>
+<A NAME="41"></A>        READY(StatusType.INDETERMINATE),
+<A NAME="42"></A>        <FONT ID="FormalComment">/** The workflow is currently running. */</FONT>
+<A NAME="43"></A>        RUNNING(StatusType.INDETERMINATE),
+<A NAME="44"></A>        <FONT ID="FormalComment">/** The workflow has succeeded. */</FONT>
+<A NAME="45"></A>        SUCCESS(StatusType.SUCCESS),
+<A NAME="46"></A>        <FONT ID="FormalComment">/** The workflow has failed and will not be retried. */</FONT>
+<A NAME="47"></A>        FAILURE(StatusType.FAILURE);
+<A NAME="48"></A>        
+<A NAME="49"></A>        <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> StatusType type;
+<A NAME="50"></A>        Status(StatusType type) {
+<A NAME="51"></A>            <FONT ID="This">this</FONT>.type = type;
+<A NAME="52"></A>        }
+<A NAME="53"></A>        <FONT ID="Public">public</FONT> StatusType getType() {
+<A NAME="54"></A>            <FONT ID="Return">return</FONT> type;
+<A NAME="55"></A>        }
+<A NAME="56"></A>    };
+<A NAME="57"></A>    
+<A NAME="58"></A>    <FONT ID="Public">public</FONT> SlotState(<A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A> slotID, Status status) {
+<A NAME="59"></A>        <FONT ID="This">this</FONT>(slotID, status, <FONT ID="Null">null</FONT>, <FONT ID="IntegerLiteral">0</FONT>);
+<A NAME="60"></A>    }
+<A NAME="61"></A>
+<A NAME="62"></A>    <FONT ID="Public">public</FONT> SlotState(<A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A> slotID, Status status, String externalID, <FONT ID="Int">int</FONT> retryCount) {
+<A NAME="63"></A>        <FONT ID="This">this</FONT>.slotID = Util.requireNonNull(slotID);
+<A NAME="64"></A>        <FONT ID="This">this</FONT>.status = Util.requireNonNull(status);
+<A NAME="65"></A>        <FONT ID="This">this</FONT>.externalID = externalID;
+<A NAME="66"></A>        <FONT ID="This">this</FONT>.retryCount = retryCount;
+<A NAME="67"></A>    }
+<A NAME="68"></A>    
+<A NAME="69"></A>    <FONT ID="Public">public</FONT> <A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A> getSlotID() {
+<A NAME="70"></A>        <FONT ID="Return">return</FONT> slotID;
+<A NAME="71"></A>    }
+<A NAME="72"></A>    
+<A NAME="73"></A>    <FONT ID="Public">public</FONT> Status getStatus() {
+<A NAME="74"></A>        <FONT ID="Return">return</FONT> status;
+<A NAME="75"></A>    }
+<A NAME="76"></A>    
+<A NAME="77"></A>    <FONT ID="Public">public</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> getScheduledTime() {
+<A NAME="78"></A>        <FONT ID="Return">return</FONT> slotID.getScheduledTime();
+<A NAME="79"></A>    }
+<A NAME="80"></A>
+<A NAME="81"></A>    <FONT ID="Public">public</FONT> String getExternalID() {
+<A NAME="82"></A>        <FONT ID="Return">return</FONT> externalID;
+<A NAME="83"></A>    }
+<A NAME="84"></A>    
+<A NAME="85"></A>    <FONT ID="Public">public</FONT> <FONT ID="Int">int</FONT> getRetryCount() {
+<A NAME="86"></A>        <FONT ID="Return">return</FONT> retryCount;
+<A NAME="87"></A>    }
+<A NAME="88"></A>    
+<A NAME="89"></A>    <FONT ID="Public">public</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> transitionToReady() {
+<A NAME="90"></A>        assertStatus(Status.WAITING);
+<A NAME="91"></A>        <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(slotID, Status.READY, <FONT ID="Null">null</FONT>, retryCount);
+<A NAME="92"></A>    }
+<A NAME="93"></A>
+<A NAME="94"></A>    <FONT ID="Public">public</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> transitionToWaitTimeout() {
+<A NAME="95"></A>        assertStatus(Status.WAITING);
+<A NAME="96"></A>        <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(slotID, Status.WAIT_TIMEOUT, <FONT ID="Null">null</FONT>, retryCount);
+<A NAME="97"></A>    }
+<A NAME="98"></A>
+<A NAME="99"></A>    <FONT ID="Public">public</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> transitionToRunning(String externalID) {
+<A NAME="100"></A>        assertStatus(Status.READY);
+<A NAME="101"></A>        <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(slotID, Status.RUNNING, externalID, retryCount);
+<A NAME="102"></A>    }
+<A NAME="103"></A>
+<A NAME="104"></A>    <FONT ID="Public">public</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> transitionToSuccess() {
+<A NAME="105"></A>        assertStatus(Status.RUNNING);
+<A NAME="106"></A>        <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(slotID, Status.SUCCESS, externalID, retryCount);
+<A NAME="107"></A>    }
+<A NAME="108"></A>
+<A NAME="109"></A>    <FONT ID="Public">public</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> transitionToFailure() {
+<A NAME="110"></A>        assertStatus(Status.RUNNING);
+<A NAME="111"></A>        <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(slotID, Status.FAILURE, externalID, retryCount);
+<A NAME="112"></A>    }
+<A NAME="113"></A>
+<A NAME="114"></A>    <FONT ID="Public">public</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> transitionToRetry() {
+<A NAME="115"></A>        assertStatus(Status.RUNNING);
+<A NAME="116"></A>        <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(slotID, Status.WAITING, <FONT ID="Null">null</FONT>, retryCount + <FONT ID="IntegerLiteral">1</FONT>);
+<A NAME="117"></A>    }
+<A NAME="118"></A>
+<A NAME="119"></A>    <FONT ID="Public">public</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> transitionToRerun() {
+<A NAME="120"></A>        <FONT ID="If">if</FONT> (!isRerunnable()) {
+<A NAME="121"></A>            <FONT ID="Throw">throw</FONT> <FONT ID="New">new</FONT> IllegalStateException(<FONT ID="StringLiteral">"Slot must be successful or failed, but is: "</FONT> + status);
+<A NAME="122"></A>        }
+<A NAME="123"></A>        <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(slotID, Status.WAITING, <FONT ID="Null">null</FONT>, <FONT ID="IntegerLiteral">0</FONT>); <FONT ID="SingleLineComment">// reset retryCount to 0
+<A NAME="124"></A></FONT>    }
+<A NAME="125"></A>
+<A NAME="126"></A>    <FONT ID="Private">private</FONT> <FONT ID="Boolean">boolean</FONT> isRerunnable() {
+<A NAME="127"></A>        <FONT ID="Return">return</FONT> status.equals(Status.SUCCESS) || status.equals(Status.FAILURE) || status.equals(Status.WAIT_TIMEOUT);
+<A NAME="128"></A>    }
+<A NAME="129"></A>    
+<A NAME="130"></A>    <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> assertStatus(Status st) {
+<A NAME="131"></A>        <FONT ID="If">if</FONT> (!status.equals(st)) {
+<A NAME="132"></A>            <FONT ID="Throw">throw</FONT> <FONT ID="New">new</FONT> IllegalStateException(<FONT ID="StringLiteral">"Expected status "</FONT> + st + <FONT ID="StringLiteral">" but was "</FONT> + status + <FONT ID="StringLiteral">" (slot: "</FONT> + <FONT ID="This">this</FONT> + <FONT ID="StringLiteral">")"</FONT>);
+<A NAME="133"></A>        }
+<A NAME="134"></A>    }
+<A NAME="135"></A>
+<A NAME="136"></A>    <FONT ID="Public">public</FONT> ObjectNode toJSONNode() {
+<A NAME="137"></A>        ObjectNode node = MAPPER.createObjectNode();
+<A NAME="138"></A>        node.put(TIME_PROP, <FONT ID="This">this</FONT>.getScheduledTime().toString());
+<A NAME="139"></A>        node.put(STATUS_PROP, <FONT ID="This">this</FONT>.getStatus().toString());
+<A NAME="140"></A>        node.put(EXTERNAL_ID_PROP, <FONT ID="This">this</FONT>.getExternalID());
+<A NAME="141"></A>        node.put(RETRY_COUNT_PROP, <FONT ID="This">this</FONT>.getRetryCount());
+<A NAME="142"></A>        <FONT ID="Return">return</FONT> node;
+<A NAME="143"></A>    }
+<A NAME="144"></A>
+<A NAME="145"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> fromJSONNode(<A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A> id, JsonNode node) {
+<A NAME="146"></A>        <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> time = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(node.get(TIME_PROP).textValue());
+<A NAME="147"></A>        <FONT ID="Return">return</FONT> fromJSONNode(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A>(id, time), node);
+<A NAME="148"></A>    }
+<A NAME="149"></A>
+<A NAME="150"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> fromJSONNode(<A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A> id, JsonNode node) {
+<A NAME="151"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState.Status</A> status = SlotState.Status.valueOf(node.get(STATUS_PROP).textValue());
+<A NAME="152"></A>        String externalID = node.get(EXTERNAL_ID_PROP).textValue();
+<A NAME="153"></A>        <FONT ID="Int">int</FONT> retryCount = node.get(RETRY_COUNT_PROP).intValue();
+<A NAME="154"></A>        <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(id, status, externalID, retryCount);
+<A NAME="155"></A>    }
+<A NAME="156"></A>
+<A NAME="157"></A>}
+<A NAME="158"></A></pre>
+</BODY>
+</HTML>

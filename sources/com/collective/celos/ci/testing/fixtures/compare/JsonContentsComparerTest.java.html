@@ -1,0 +1,165 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../../../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.ci.testing.fixtures.compare.JsonContentsComparerTest (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">JsonContentsComparerTest.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos.ci.testing.fixtures.compare;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../../com/collective/celos/ci/Utils.java.html">com.collective.celos.ci.Utils</A>;
+<A NAME="4"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../../com/collective/celos/ci/mode/test/TestRun.java.html">com.collective.celos.ci.mode.test.TestRun</A>;
+<A NAME="5"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/compare/json/JsonContentsComparer.java.html">com.collective.celos.ci.testing.fixtures.compare.json.JsonContentsComparer</A>;
+<A NAME="6"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixDirFromResourceCreator.java.html">com.collective.celos.ci.testing.fixtures.create.FixDirFromResourceCreator</A>;
+<A NAME="7"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixDir.java.html">com.collective.celos.ci.testing.structure.fixobject.FixDir</A>;
+<A NAME="8"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFile.java.html">com.collective.celos.ci.testing.structure.fixobject.FixFile</A>;
+<A NAME="9"></A><FONT ID="Import">import</FONT> com.google.common.collect.Sets;
+<A NAME="10"></A><FONT ID="Import">import</FONT> junit.framework.Assert;
+<A NAME="11"></A><FONT ID="Import">import</FONT> org.junit.Before;
+<A NAME="12"></A><FONT ID="Import">import</FONT> org.junit.Test;
+<A NAME="13"></A>
+<A NAME="14"></A><FONT ID="Import">import</FONT> java.io.File;
+<A NAME="15"></A><FONT ID="Import">import</FONT> java.io.InputStream;
+<A NAME="16"></A><FONT ID="Import">import</FONT> java.util.Collections;
+<A NAME="17"></A><FONT ID="Import">import</FONT> java.util.Set;
+<A NAME="18"></A>
+<A NAME="19"></A><FONT ID="Import">import</FONT> <FONT ID="Static">static</FONT> org.mockito.Mockito.doReturn;
+<A NAME="20"></A><FONT ID="Import">import</FONT> <FONT ID="Static">static</FONT> org.mockito.Mockito.mock;
+<A NAME="21"></A>
+<A NAME="22"></A><FONT ID="FormalComment">/**
+<A NAME="23"></A> * Created by akonopko on 10/9/14.
+<A NAME="24"></A> */</FONT>
+<A NAME="25"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> JsonContentsComparerTest {
+<A NAME="26"></A>
+<A NAME="27"></A>    <FONT ID="Private">private</FONT> <A HREF="../../../../../../../com/collective/celos/ci/mode/test/TestRun.java.html">TestRun</A> testRun;
+<A NAME="28"></A>
+<A NAME="29"></A>    @Before
+<A NAME="30"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> setUp() {
+<A NAME="31"></A>        testRun = mock(<A HREF="../../../../../../../com/collective/celos/ci/mode/test/TestRun.java.html">TestRun</A>.<FONT ID="Class">class</FONT>);
+<A NAME="32"></A>        doReturn(<FONT ID="New">new</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFile.java.html">File</A>(<FONT ID="StringLiteral">"/"</FONT>)).when(testRun).getTestCasesDir();
+<A NAME="33"></A>    }
+<A NAME="34"></A>
+<A NAME="35"></A>    @Test
+<A NAME="36"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testJsonContentsDirComparerOK() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="37"></A>
+<A NAME="38"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFile.java.html">File</A> dir1= <FONT ID="New">new</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFile.java.html">File</A>(Thread.currentThread().getContextClassLoader().getResource(<FONT ID="StringLiteral">"com/collective/celos/ci/fixtures/jsoncompare/1"</FONT>).toURI());
+<A NAME="39"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixDirFromResourceCreator.java.html">FixDirFromResourceCreator</A> creator = <FONT ID="New">new</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixDirFromResourceCreator.java.html">FixDirFromResourceCreator</A>(dir1.getAbsolutePath());
+<A NAME="40"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixDir.java.html">FixDir</A> fixDir1 = creator.create(testRun).asDir();
+<A NAME="41"></A>
+<A NAME="42"></A>        InputStream content = Thread.currentThread().getContextClassLoader().getResourceAsStream(<FONT ID="StringLiteral">"com/collective/celos/ci/fixtures/jsoncompare/2/content"</FONT>);
+<A NAME="43"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/compare/json/JsonContentsComparer.java.html">JsonContentsComparer</A> dirComparer = <FONT ID="New">new</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/compare/json/JsonContentsComparer.java.html">JsonContentsComparer</A>(Collections.EMPTY_SET, Utils.wrap(<FONT ID="New">new</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFile.java.html">FixFile</A>(content)), Utils.wrap(fixDir1));
+<A NAME="44"></A>
+<A NAME="45"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/compare/FixObjectCompareResult.java.html">FixObjectCompareResult</A> compareResult = dirComparer.check(<FONT ID="Null">null</FONT>);
+<A NAME="46"></A>        Assert.assertEquals(compareResult.getStatus(), FixObjectCompareResult.Status.SUCCESS);
+<A NAME="47"></A>    }
+<A NAME="48"></A>
+<A NAME="49"></A>    @Test
+<A NAME="50"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testJsonContentsFileComparerOK() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="51"></A>
+<A NAME="52"></A>        InputStream content1 = Thread.currentThread().getContextClassLoader().getResourceAsStream(<FONT ID="StringLiteral">"com/collective/celos/ci/fixtures/jsoncompare/2/content"</FONT>);
+<A NAME="53"></A>        InputStream content2 = Thread.currentThread().getContextClassLoader().getResourceAsStream(<FONT ID="StringLiteral">"com/collective/celos/ci/fixtures/jsoncompare/2/content"</FONT>);
+<A NAME="54"></A>
+<A NAME="55"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/compare/json/JsonContentsComparer.java.html">JsonContentsComparer</A> dirComparer = <FONT ID="New">new</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/compare/json/JsonContentsComparer.java.html">JsonContentsComparer</A>(Collections.EMPTY_SET, Utils.wrap(<FONT ID="New">new</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFile.java.html">FixFile</A>(content1)), Utils.wrap(<FONT ID="New">new</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFile.java.html">FixFile</A>(content2)));
+<A NAME="56"></A>
+<A NAME="57"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/compare/FixObjectCompareResult.java.html">FixObjectCompareResult</A> compareResult = dirComparer.check(<FONT ID="Null">null</FONT>);
+<A NAME="58"></A>        Assert.assertEquals(compareResult.getStatus(), FixObjectCompareResult.Status.SUCCESS);
+<A NAME="59"></A>    }
+<A NAME="60"></A>
+<A NAME="61"></A>
+<A NAME="62"></A>    @Test
+<A NAME="63"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testJsonContentsDirComparerOKIgnorePaths() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="64"></A>
+<A NAME="65"></A>        InputStream content = Thread.currentThread().getContextClassLoader().getResourceAsStream(<FONT ID="StringLiteral">"com/collective/celos/ci/fixtures/jsoncompare/5/content"</FONT>);
+<A NAME="66"></A>        Set&lt;String&gt; ignorePaths = Sets.newHashSet(<FONT ID="StringLiteral">"root/events/tstamp"</FONT>);
+<A NAME="67"></A>
+<A NAME="68"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFile.java.html">File</A> dir1= <FONT ID="New">new</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFile.java.html">File</A>(Thread.currentThread().getContextClassLoader().getResource(<FONT ID="StringLiteral">"com/collective/celos/ci/fixtures/jsoncompare/1"</FONT>).toURI());
+<A NAME="69"></A>
+<A NAME="70"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixDirFromResourceCreator.java.html">FixDirFromResourceCreator</A> creator = <FONT ID="New">new</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixDirFromResourceCreator.java.html">FixDirFromResourceCreator</A>(dir1.getAbsolutePath());
+<A NAME="71"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixDir.java.html">FixDir</A> fixDir1 = creator.create(testRun).asDir();
+<A NAME="72"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/compare/json/JsonContentsComparer.java.html">JsonContentsComparer</A> dirComparer = <FONT ID="New">new</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/compare/json/JsonContentsComparer.java.html">JsonContentsComparer</A>(ignorePaths, Utils.wrap(<FONT ID="New">new</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFile.java.html">FixFile</A>(content)), Utils.wrap(fixDir1));
+<A NAME="73"></A>
+<A NAME="74"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/compare/FixObjectCompareResult.java.html">FixObjectCompareResult</A> compareResult = dirComparer.check(<FONT ID="Null">null</FONT>);
+<A NAME="75"></A>        Assert.assertEquals(compareResult.getStatus(), FixObjectCompareResult.Status.SUCCESS);
+<A NAME="76"></A>    }
+<A NAME="77"></A>
+<A NAME="78"></A>    @Test
+<A NAME="79"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testJsonContentsDirComparerOKIgnorePathsFails() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="80"></A>
+<A NAME="81"></A>        InputStream content = Thread.currentThread().getContextClassLoader().getResourceAsStream(<FONT ID="StringLiteral">"com/collective/celos/ci/fixtures/jsoncompare/5/content"</FONT>);
+<A NAME="82"></A>
+<A NAME="83"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFile.java.html">File</A> dir1= <FONT ID="New">new</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFile.java.html">File</A>(Thread.currentThread().getContextClassLoader().getResource(<FONT ID="StringLiteral">"com/collective/celos/ci/fixtures/jsoncompare/1"</FONT>).toURI());
+<A NAME="84"></A>
+<A NAME="85"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixDirFromResourceCreator.java.html">FixDirFromResourceCreator</A> creator = <FONT ID="New">new</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixDirFromResourceCreator.java.html">FixDirFromResourceCreator</A>(dir1.getAbsolutePath());
+<A NAME="86"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixDir.java.html">FixDir</A> fixDir1 = creator.create(testRun).asDir();
+<A NAME="87"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/compare/json/JsonContentsComparer.java.html">JsonContentsComparer</A> dirComparer = <FONT ID="New">new</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/compare/json/JsonContentsComparer.java.html">JsonContentsComparer</A>(Collections.EMPTY_SET, Utils.wrap(<FONT ID="New">new</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFile.java.html">FixFile</A>(content), <FONT ID="StringLiteral">"desc1"</FONT>), Utils.wrap(fixDir1, <FONT ID="StringLiteral">"desc2"</FONT>));
+<A NAME="88"></A>
+<A NAME="89"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/compare/FixObjectCompareResult.java.html">FixObjectCompareResult</A> compareResult = dirComparer.check(<FONT ID="Null">null</FONT>);
+<A NAME="90"></A>        Assert.assertEquals(compareResult.getStatus(), FixObjectCompareResult.Status.FAIL);
+<A NAME="91"></A>        Assert.assertEquals(compareResult.generateDescription(), <FONT ID="StringLiteral">"Diff:\n"</FONT> +
+<A NAME="92"></A>                <FONT ID="StringLiteral">"Actual [desc2]:\n"</FONT> +
+<A NAME="93"></A>                <FONT ID="StringLiteral">"{\"visitor\":{\"com.collective.pythia.avro.Visitor\":{\"cookie_id\":\"12bd0b8c6201000\",\"segments\":[],\"edges\":{},\"behaviors\":{},\"birthdate\":0,\"association_ids\":{}}},\"events\":[{\"cookie_id\":\"12bd0b8c6201000\",\"tstamp\":1403721384549,\"edge\":\"batchimport\",\"changes\":{\"com.collective.pythia.avro.Command\":{\"operation\":\"ADD\",\"association_id\":null,\"network\":\"et\",\"segments\":[49118]}}}]} [1 times]\n"</FONT> +
+<A NAME="94"></A>                <FONT ID="StringLiteral">"Expected [desc1]:\n"</FONT> +
+<A NAME="95"></A>                <FONT ID="StringLiteral">"{\"visitor\":{\"com.collective.pythia.avro.Visitor\":{\"cookie_id\":\"12bd0b8c6201000\",\"segments\":[],\"edges\":{},\"behaviors\":{},\"birthdate\":0,\"association_ids\":{}}},\"events\":[{\"cookie_id\":\"12bd0b8c6201000\",\"tstamp\":1403721231239,\"edge\":\"batchimport\",\"changes\":{\"com.collective.pythia.avro.Command\":{\"operation\":\"ADD\",\"association_id\":null,\"network\":\"et\",\"segments\":[49118]}}}]} [1 times]\n"</FONT>);
+<A NAME="96"></A>    }
+<A NAME="97"></A>
+<A NAME="98"></A>    @Test
+<A NAME="99"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testJsonContentsDirComparerFailContent() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="100"></A>        InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(<FONT ID="StringLiteral">"com/collective/celos/ci/fixtures/jsoncompare/4/content"</FONT>);
+<A NAME="101"></A>
+<A NAME="102"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFile.java.html">File</A> dir1= <FONT ID="New">new</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFile.java.html">File</A>(Thread.currentThread().getContextClassLoader().getResource(<FONT ID="StringLiteral">"com/collective/celos/ci/fixtures/jsoncompare/1"</FONT>).toURI());
+<A NAME="103"></A>
+<A NAME="104"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixDirFromResourceCreator.java.html">FixDirFromResourceCreator</A> creator = <FONT ID="New">new</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixDirFromResourceCreator.java.html">FixDirFromResourceCreator</A>(dir1.getAbsolutePath());
+<A NAME="105"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixDir.java.html">FixDir</A> fixDir1 = creator.create(testRun).asDir();
+<A NAME="106"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/compare/json/JsonContentsComparer.java.html">JsonContentsComparer</A> dirComparer = <FONT ID="New">new</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/compare/json/JsonContentsComparer.java.html">JsonContentsComparer</A>(Collections.EMPTY_SET, Utils.wrap(<FONT ID="New">new</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFile.java.html">FixFile</A>(is)), Utils.wrap(fixDir1));
+<A NAME="107"></A>
+<A NAME="108"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/compare/FixObjectCompareResult.java.html">FixObjectCompareResult</A> compareResult = dirComparer.check(<FONT ID="Null">null</FONT>);
+<A NAME="109"></A>        Assert.assertEquals(compareResult.getStatus(), FixObjectCompareResult.Status.FAIL);
+<A NAME="110"></A>
+<A NAME="111"></A>        Assert.assertEquals(compareResult.generateDescription(), <FONT ID="StringLiteral">"Diff:\n"</FONT> +
+<A NAME="112"></A>                <FONT ID="StringLiteral">"Actual []:\n"</FONT> +
+<A NAME="113"></A>                <FONT ID="StringLiteral">"{\"visitor\":{\"com.collective.pythia.avro.Visitor\":{\"cookie_id\":\"1317beb84b00000\",\"segments\":[],\"edges\":{},\"behaviors\":{},\"birthdate\":0,\"association_ids\":{}}},\"events\":[{\"cookie_id\":\"1317beb84b00000\",\"tstamp\":1403721380452,\"edge\":\"batchimport\",\"changes\":{\"com.collective.pythia.avro.Command\":{\"operation\":\"ADD\",\"association_id\":null,\"network\":\"et\",\"segments\":[49118]}}}]} [2 times]\n"</FONT> +
+<A NAME="114"></A>                <FONT ID="StringLiteral">"Expected []:\n"</FONT> +
+<A NAME="115"></A>                <FONT ID="StringLiteral">"{\"visitor\":{\"com.collective.pythia.avro.Visitor\":{\"cookie_id\":\"1317beb84b00000\",\"segments\":[],\"edges\":{},\"behaviors\":{},\"birthdate\":0,\"association_ids\":{}}},\"events\":[{\"cookie_id\":\"1317beb84b00000\",\"tstamp\":1403721380452,\"edge\":\"batchimport\",\"changes\":{\"com.collective.pythia.avro.Command\":{\"operation\":\"ADD\",\"association_id\":null,\"network\":\"et\",\"segments\":[49118]}}}]} [1 times]\n"</FONT> +
+<A NAME="116"></A>                <FONT ID="StringLiteral">"{\"visitor\":{\"com.collective.pythia.avro.Visitor\":{\"cookie_id\":\"1317beb84b0zzzz\",\"segments\":[],\"edges\":{},\"behaviors\":{},\"birthdate\":0,\"association_ids\":{}}},\"events\":[{\"cookie_id\":\"1317beb84b00000\",\"tstamp\":1403721380452,\"edge\":\"batchimport\",\"changes\":{\"com.collective.pythia.avro.Command\":{\"operation\":\"ADD\",\"association_id\":null,\"network\":\"et\",\"segments\":[49118]}}}]} [1 times]\n"</FONT>);
+<A NAME="117"></A>    }
+<A NAME="118"></A>
+<A NAME="119"></A>    @Test
+<A NAME="120"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testJsonContentsDirComparerFailCount() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="121"></A>        InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(<FONT ID="StringLiteral">"com/collective/celos/ci/fixtures/jsoncompare/3/content"</FONT>);
+<A NAME="122"></A>
+<A NAME="123"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFile.java.html">File</A> dir1= <FONT ID="New">new</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFile.java.html">File</A>(Thread.currentThread().getContextClassLoader().getResource(<FONT ID="StringLiteral">"com/collective/celos/ci/fixtures/jsoncompare/1"</FONT>).toURI());
+<A NAME="124"></A>
+<A NAME="125"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixDirFromResourceCreator.java.html">FixDirFromResourceCreator</A> creator = <FONT ID="New">new</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixDirFromResourceCreator.java.html">FixDirFromResourceCreator</A>(dir1.getAbsolutePath());
+<A NAME="126"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixDir.java.html">FixDir</A> fixDir1 = creator.create(testRun).asDir();
+<A NAME="127"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/compare/json/JsonContentsComparer.java.html">JsonContentsComparer</A> dirComparer = <FONT ID="New">new</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/compare/json/JsonContentsComparer.java.html">JsonContentsComparer</A>(Collections.EMPTY_SET, Utils.wrap(<FONT ID="New">new</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFile.java.html">FixFile</A>(is), <FONT ID="StringLiteral">"desc1"</FONT>), Utils.wrap(fixDir1, <FONT ID="StringLiteral">"desc2"</FONT>));
+<A NAME="128"></A>
+<A NAME="129"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/compare/FixObjectCompareResult.java.html">FixObjectCompareResult</A> compareResult = dirComparer.check(<FONT ID="Null">null</FONT>);
+<A NAME="130"></A>        Assert.assertEquals(compareResult.getStatus(), FixObjectCompareResult.Status.FAIL);
+<A NAME="131"></A>        Assert.assertEquals(compareResult.generateDescription(), <FONT ID="StringLiteral">"Diff:\n"</FONT> +
+<A NAME="132"></A>                <FONT ID="StringLiteral">"Actual [desc2]:\n"</FONT> +
+<A NAME="133"></A>                <FONT ID="StringLiteral">"{\"visitor\":{\"com.collective.pythia.avro.Visitor\":{\"cookie_id\":\"12b811f59080000\",\"segments\":[],\"edges\":{},\"behaviors\":{},\"birthdate\":0,\"association_ids\":{}}},\"events\":[{\"cookie_id\":\"12b811f59080000\",\"tstamp\":1403721375367,\"edge\":\"batchimport\",\"changes\":{\"com.collective.pythia.avro.Command\":{\"operation\":\"ADD\",\"association_id\":null,\"network\":\"et\",\"segments\":[49118]}}}]} [2 times]\n"</FONT> +
+<A NAME="134"></A>                <FONT ID="StringLiteral">"{\"visitor\":{\"com.collective.pythia.avro.Visitor\":{\"cookie_id\":\"1317beb84b00000\",\"segments\":[],\"edges\":{},\"behaviors\":{},\"birthdate\":0,\"association_ids\":{}}},\"events\":[{\"cookie_id\":\"1317beb84b00000\",\"tstamp\":1403721380452,\"edge\":\"batchimport\",\"changes\":{\"com.collective.pythia.avro.Command\":{\"operation\":\"ADD\",\"association_id\":null,\"network\":\"et\",\"segments\":[49118]}}}]} [2 times]\n"</FONT> +
+<A NAME="135"></A>                <FONT ID="StringLiteral">"{\"visitor\":{\"com.collective.pythia.avro.Visitor\":{\"cookie_id\":\"133263e9e100000\",\"segments\":[],\"edges\":{},\"behaviors\":{},\"birthdate\":0,\"association_ids\":{}}},\"events\":[{\"cookie_id\":\"133263e9e100000\",\"tstamp\":1403721385042,\"edge\":\"batchimport\",\"changes\":{\"com.collective.pythia.avro.Command\":{\"operation\":\"REMOVE\",\"association_id\":null,\"network\":\"et\",\"segments\":[49118]}}},{\"cookie_id\":\"133263e9e100000\",\"tstamp\":1403721385042,\"edge\":\"batchimport\",\"changes\":{\"com.collective.pythia.avro.Command\":{\"operation\":\"ADD\",\"association_id\":null,\"network\":\"et\",\"segments\":[49117]}}}]} [2 times]\n"</FONT> +
+<A NAME="136"></A>                <FONT ID="StringLiteral">"{\"visitor\":{\"com.collective.pythia.avro.Visitor\":{\"cookie_id\":\"134adb391b00000\",\"segments\":[],\"edges\":{},\"behaviors\":{},\"birthdate\":0,\"association_ids\":{}}},\"events\":[{\"cookie_id\":\"134adb391b00000\",\"tstamp\":1403721376988,\"edge\":\"batchimport\",\"changes\":{\"com.collective.pythia.avro.Command\":{\"operation\":\"ADD\",\"association_id\":null,\"network\":\"et\",\"segments\":[49118]}}}]} [2 times]\n"</FONT> +
+<A NAME="137"></A>                <FONT ID="StringLiteral">"Expected [desc1]:\n"</FONT> +
+<A NAME="138"></A>                <FONT ID="StringLiteral">"{\"visitor\":{\"com.collective.pythia.avro.Visitor\":{\"cookie_id\":\"12b811f59080000\",\"segments\":[],\"edges\":{},\"behaviors\":{},\"birthdate\":0,\"association_ids\":{}}},\"events\":[{\"cookie_id\":\"12b811f59080000\",\"tstamp\":1403721375367,\"edge\":\"batchimport\",\"changes\":{\"com.collective.pythia.avro.Command\":{\"operation\":\"ADD\",\"association_id\":null,\"network\":\"et\",\"segments\":[49118]}}}]} [1 times]\n"</FONT> +
+<A NAME="139"></A>                <FONT ID="StringLiteral">"{\"visitor\":{\"com.collective.pythia.avro.Visitor\":{\"cookie_id\":\"1317beb84b00000\",\"segments\":[],\"edges\":{},\"behaviors\":{},\"birthdate\":0,\"association_ids\":{}}},\"events\":[{\"cookie_id\":\"1317beb84b00000\",\"tstamp\":1403721380452,\"edge\":\"batchimport\",\"changes\":{\"com.collective.pythia.avro.Command\":{\"operation\":\"ADD\",\"association_id\":null,\"network\":\"et\",\"segments\":[49118]}}}]} [1 times]\n"</FONT> +
+<A NAME="140"></A>                <FONT ID="StringLiteral">"{\"visitor\":{\"com.collective.pythia.avro.Visitor\":{\"cookie_id\":\"133263e9e100000\",\"segments\":[],\"edges\":{},\"behaviors\":{},\"birthdate\":0,\"association_ids\":{}}},\"events\":[{\"cookie_id\":\"133263e9e100000\",\"tstamp\":1403721385042,\"edge\":\"batchimport\",\"changes\":{\"com.collective.pythia.avro.Command\":{\"operation\":\"REMOVE\",\"association_id\":null,\"network\":\"et\",\"segments\":[49118]}}},{\"cookie_id\":\"133263e9e100000\",\"tstamp\":1403721385042,\"edge\":\"batchimport\",\"changes\":{\"com.collective.pythia.avro.Command\":{\"operation\":\"ADD\",\"association_id\":null,\"network\":\"et\",\"segments\":[49117]}}}]} [1 times]\n"</FONT> +
+<A NAME="141"></A>                <FONT ID="StringLiteral">"{\"visitor\":{\"com.collective.pythia.avro.Visitor\":{\"cookie_id\":\"134adb391b00000\",\"segments\":[],\"edges\":{},\"behaviors\":{},\"birthdate\":0,\"association_ids\":{}}},\"events\":[{\"cookie_id\":\"134adb391b00000\",\"tstamp\":1403721376988,\"edge\":\"batchimport\",\"changes\":{\"com.collective.pythia.avro.Command\":{\"operation\":\"ADD\",\"association_id\":null,\"network\":\"et\",\"segments\":[49118]}}}]} [1 times]\n"</FONT>);
+<A NAME="142"></A>    }
+<A NAME="143"></A>
+<A NAME="144"></A>
+<A NAME="145"></A>}
+<A NAME="146"></A></pre>
+</BODY>
+</HTML>

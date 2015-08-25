@@ -1,0 +1,69 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.SlotStateStatusPredicateTest (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">SlotStateStatusPredicateTest.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> <FONT ID="Static">static</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/SlotState.Status.html">com.collective.celos.SlotState.Status.FAILURE</A>;
+<A NAME="4"></A><FONT ID="Import">import</FONT> <FONT ID="Static">static</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/SlotState.Status.html">com.collective.celos.SlotState.Status.READY</A>;
+<A NAME="5"></A><FONT ID="Import">import</FONT> <FONT ID="Static">static</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/SlotState.Status.html">com.collective.celos.SlotState.Status.RUNNING</A>;
+<A NAME="6"></A><FONT ID="Import">import</FONT> <FONT ID="Static">static</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/SlotState.Status.html">com.collective.celos.SlotState.Status.SUCCESS</A>;
+<A NAME="7"></A><FONT ID="Import">import</FONT> <FONT ID="Static">static</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/SlotState.Status.html">com.collective.celos.SlotState.Status.WAITING</A>;
+<A NAME="8"></A><FONT ID="Import">import</FONT> <FONT ID="Static">static</FONT> org.junit.Assert.assertFalse;
+<A NAME="9"></A><FONT ID="Import">import</FONT> <FONT ID="Static">static</FONT> org.junit.Assert.assertTrue;
+<A NAME="10"></A>
+<A NAME="11"></A><FONT ID="Import">import</FONT> org.junit.Test;
+<A NAME="12"></A>
+<A NAME="13"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> SlotStateStatusPredicateTest {
+<A NAME="14"></A>
+<A NAME="15"></A>    @Test(expected = IllegalArgumentException.<FONT ID="Class">class</FONT>)
+<A NAME="16"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testNoValues() {
+<A NAME="17"></A>        <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotStateStatusPredicate.java.html">SlotStateStatusPredicate</A>();
+<A NAME="18"></A>    }
+<A NAME="19"></A>
+<A NAME="20"></A>    @Test
+<A NAME="21"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testSingleValue() {
+<A NAME="22"></A>        <A HREF="../../../com/collective/celos/SlotStateStatusPredicate.java.html">SlotStateStatusPredicate</A> predicate = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotStateStatusPredicate.java.html">SlotStateStatusPredicate</A>(READY);
+<A NAME="23"></A>        <A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A> id = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A>(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"x"</FONT>), <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(
+<A NAME="24"></A>                <FONT ID="StringLiteral">"2013-11-18T20:00Z"</FONT>));
+<A NAME="25"></A>
+<A NAME="26"></A>        assertTrue(predicate.evaluate(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(id, READY)));
+<A NAME="27"></A>
+<A NAME="28"></A>        assertFalse(predicate.evaluate(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(id, WAITING)));
+<A NAME="29"></A>        assertFalse(predicate.evaluate(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(id, RUNNING)));
+<A NAME="30"></A>        assertFalse(predicate.evaluate(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(id, SUCCESS)));
+<A NAME="31"></A>        assertFalse(predicate.evaluate(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(id, FAILURE)));
+<A NAME="32"></A>    }
+<A NAME="33"></A>
+<A NAME="34"></A>    @Test
+<A NAME="35"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testMultipleValues() {
+<A NAME="36"></A>        <A HREF="../../../com/collective/celos/SlotStateStatusPredicate.java.html">SlotStateStatusPredicate</A> predicate = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotStateStatusPredicate.java.html">SlotStateStatusPredicate</A>(
+<A NAME="37"></A>                WAITING, FAILURE);
+<A NAME="38"></A>        <A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A> id = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A>(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"x"</FONT>), <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(
+<A NAME="39"></A>                <FONT ID="StringLiteral">"2013-11-18T20:00Z"</FONT>));
+<A NAME="40"></A>
+<A NAME="41"></A>        assertTrue(predicate.evaluate(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(id, WAITING)));
+<A NAME="42"></A>        assertTrue(predicate.evaluate(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(id, FAILURE)));
+<A NAME="43"></A>
+<A NAME="44"></A>        assertFalse(predicate.evaluate(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(id, READY)));
+<A NAME="45"></A>        assertFalse(predicate.evaluate(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(id, RUNNING)));
+<A NAME="46"></A>        assertFalse(predicate.evaluate(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(id, SUCCESS)));
+<A NAME="47"></A>    }
+<A NAME="48"></A>
+<A NAME="49"></A>}
+<A NAME="50"></A></pre>
+</BODY>
+</HTML>

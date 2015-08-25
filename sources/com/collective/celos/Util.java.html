@@ -1,0 +1,218 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.Util (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">Util.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> com.fasterxml.jackson.databind.JsonNode;
+<A NAME="4"></A><FONT ID="Import">import</FONT> com.fasterxml.jackson.databind.node.ArrayNode;
+<A NAME="5"></A><FONT ID="Import">import</FONT> com.fasterxml.jackson.databind.node.JsonNodeFactory;
+<A NAME="6"></A><FONT ID="Import">import</FONT> com.fasterxml.jackson.databind.node.ObjectNode;
+<A NAME="7"></A><FONT ID="Import">import</FONT> com.google.common.collect.ImmutableMap;
+<A NAME="8"></A><FONT ID="Import">import</FONT> com.google.common.collect.Maps;
+<A NAME="9"></A><FONT ID="Import">import</FONT> org.apache.log4j.Level;
+<A NAME="10"></A><FONT ID="Import">import</FONT> org.apache.log4j.Logger;
+<A NAME="11"></A><FONT ID="Import">import</FONT> org.apache.log4j.PatternLayout;
+<A NAME="12"></A><FONT ID="Import">import</FONT> org.apache.log4j.rolling.RollingFileAppender;
+<A NAME="13"></A><FONT ID="Import">import</FONT> org.apache.log4j.rolling.TimeBasedRollingPolicy;
+<A NAME="14"></A><FONT ID="Import">import</FONT> org.joda.time.DateTime;
+<A NAME="15"></A><FONT ID="Import">import</FONT> org.joda.time.format.DateTimeFormat;
+<A NAME="16"></A>
+<A NAME="17"></A><FONT ID="Import">import</FONT> java.io.File;
+<A NAME="18"></A><FONT ID="Import">import</FONT> java.io.IOException;
+<A NAME="19"></A><FONT ID="Import">import</FONT> java.net.ServerSocket;
+<A NAME="20"></A><FONT ID="Import">import</FONT> java.net.URI;
+<A NAME="21"></A><FONT ID="Import">import</FONT> java.net.URISyntaxException;
+<A NAME="22"></A><FONT ID="Import">import</FONT> java.util.Map;
+<A NAME="23"></A><FONT ID="Import">import</FONT> java.util.UUID;
+<A NAME="24"></A>
+<A NAME="25"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> Util {
+<A NAME="26"></A>
+<A NAME="27"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> &lt;T&gt; T requireNonNull(T object) {
+<A NAME="28"></A>        <FONT ID="If">if</FONT> (object == <FONT ID="Null">null</FONT>) <FONT ID="Throw">throw</FONT> <FONT ID="New">new</FONT> NullPointerException();
+<A NAME="29"></A>        <FONT ID="Else">else</FONT> <FONT ID="Return">return</FONT> object;
+<A NAME="30"></A>    }
+<A NAME="31"></A>
+<A NAME="32"></A>    <FONT ID="SingleLineComment">// DATETIME UTILITIES
+<A NAME="33"></A></FONT>    
+<A NAME="34"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> DateTime toFullHour(DateTime dt) {
+<A NAME="35"></A>        <FONT ID="Return">return</FONT> toFullMinute(dt).withMinuteOfHour(<FONT ID="IntegerLiteral">0</FONT>);
+<A NAME="36"></A>    }
+<A NAME="37"></A>
+<A NAME="38"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> DateTime toFullMinute(DateTime dt) {
+<A NAME="39"></A>        <FONT ID="Return">return</FONT> toFullSecond(dt).withSecondOfMinute(<FONT ID="IntegerLiteral">0</FONT>);
+<A NAME="40"></A>    }
+<A NAME="41"></A>    
+<A NAME="42"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> DateTime toFullSecond(DateTime dt) {
+<A NAME="43"></A>        <FONT ID="Return">return</FONT> dt.withMillisOfSecond(<FONT ID="IntegerLiteral">0</FONT>);
+<A NAME="44"></A>    }
+<A NAME="45"></A>
+<A NAME="46"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Boolean">boolean</FONT> isFullDay(DateTime dt) {
+<A NAME="47"></A>        <FONT ID="Return">return</FONT> isFullHour(dt) &amp;&amp; dt.getHourOfDay() == <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="48"></A>    }
+<A NAME="49"></A>    
+<A NAME="50"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Boolean">boolean</FONT> isFullHour(DateTime dt) {
+<A NAME="51"></A>        <FONT ID="Return">return</FONT> isFullMinute(dt) &amp;&amp; dt.getMinuteOfHour() == <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="52"></A>    }
+<A NAME="53"></A>    
+<A NAME="54"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Boolean">boolean</FONT> isFullMinute(DateTime dt) {
+<A NAME="55"></A>        <FONT ID="Return">return</FONT> isFullSecond(dt) &amp;&amp; dt.getSecondOfMinute() == <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="56"></A>    }
+<A NAME="57"></A>    
+<A NAME="58"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Boolean">boolean</FONT> isFullSecond(DateTime dt) {
+<A NAME="59"></A>        <FONT ID="Return">return</FONT> dt.getMillisOfSecond() == <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="60"></A>    }
+<A NAME="61"></A>
+<A NAME="62"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> String toNominalTimeFormat(DateTime dt) {
+<A NAME="63"></A>        <FONT ID="Return">return</FONT> dt.toString(DateTimeFormat.forPattern(<FONT ID="StringLiteral">"YYYY-MM-dd'T'HH:mm'Z"</FONT>));
+<A NAME="64"></A>    }
+<A NAME="65"></A>
+<A NAME="66"></A>    <FONT ID="SingleLineComment">// JSON UTILITIES
+<A NAME="67"></A></FONT>    
+<A NAME="68"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> ObjectNode newObjectNode() {
+<A NAME="69"></A>        <FONT ID="Return">return</FONT> JsonNodeFactory.instance.objectNode();
+<A NAME="70"></A>    }
+<A NAME="71"></A>    
+<A NAME="72"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> ArrayNode newArrayNode() {
+<A NAME="73"></A>        <FONT ID="Return">return</FONT> JsonNodeFactory.instance.arrayNode();
+<A NAME="74"></A>    }
+<A NAME="75"></A>
+<A NAME="76"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> String getStringProperty(ObjectNode properties, String name) {
+<A NAME="77"></A>        JsonNode node = properties.get(name);
+<A NAME="78"></A>        <FONT ID="If">if</FONT> (node == <FONT ID="Null">null</FONT>) {
+<A NAME="79"></A>            <FONT ID="Throw">throw</FONT> <FONT ID="New">new</FONT> IllegalArgumentException(<FONT ID="StringLiteral">"Property "</FONT> + name + <FONT ID="StringLiteral">" not set."</FONT>);
+<A NAME="80"></A>        } <FONT ID="Else">else</FONT> <FONT ID="If">if</FONT> (!node.isTextual()) {
+<A NAME="81"></A>            <FONT ID="Throw">throw</FONT> <FONT ID="New">new</FONT> IllegalArgumentException(<FONT ID="StringLiteral">"Property "</FONT> + name + <FONT ID="StringLiteral">" is not a string, but "</FONT> + node);
+<A NAME="82"></A>        } <FONT ID="Else">else</FONT> {
+<A NAME="83"></A>            <FONT ID="Return">return</FONT> node.textValue();
+<A NAME="84"></A>        }
+<A NAME="85"></A>    }
+<A NAME="86"></A>    
+<A NAME="87"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Int">int</FONT> getIntProperty(ObjectNode properties, String name) {
+<A NAME="88"></A>        JsonNode node = properties.get(name);
+<A NAME="89"></A>        <FONT ID="If">if</FONT> (node == <FONT ID="Null">null</FONT>) {
+<A NAME="90"></A>            <FONT ID="Throw">throw</FONT> <FONT ID="New">new</FONT> IllegalArgumentException(<FONT ID="StringLiteral">"Property "</FONT> + name + <FONT ID="StringLiteral">" not set."</FONT>);
+<A NAME="91"></A>        } <FONT ID="Else">else</FONT> <FONT ID="If">if</FONT> (!node.isInt()) {
+<A NAME="92"></A>            <FONT ID="Throw">throw</FONT> <FONT ID="New">new</FONT> IllegalArgumentException(<FONT ID="StringLiteral">"Property "</FONT> + name + <FONT ID="StringLiteral">" is not an integer, but "</FONT> + node);
+<A NAME="93"></A>        } <FONT ID="Else">else</FONT> {
+<A NAME="94"></A>            <FONT ID="Return">return</FONT> node.intValue();
+<A NAME="95"></A>        }
+<A NAME="96"></A>    }
+<A NAME="97"></A>    
+<A NAME="98"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> ArrayNode getArrayProperty(ObjectNode properties, String name) {
+<A NAME="99"></A>        JsonNode node = properties.get(name);
+<A NAME="100"></A>        <FONT ID="If">if</FONT> (node == <FONT ID="Null">null</FONT>) {
+<A NAME="101"></A>            <FONT ID="Throw">throw</FONT> <FONT ID="New">new</FONT> IllegalArgumentException(<FONT ID="StringLiteral">"Property "</FONT> + name + <FONT ID="StringLiteral">" not set."</FONT>);
+<A NAME="102"></A>        } <FONT ID="Else">else</FONT> <FONT ID="If">if</FONT> (!node.isArray()) {
+<A NAME="103"></A>            <FONT ID="Throw">throw</FONT> <FONT ID="New">new</FONT> IllegalArgumentException(<FONT ID="StringLiteral">"Property "</FONT> + name + <FONT ID="StringLiteral">" is not an array, but "</FONT> + node);
+<A NAME="104"></A>        } <FONT ID="Else">else</FONT> {
+<A NAME="105"></A>            <FONT ID="Return">return</FONT> (ArrayNode) node;
+<A NAME="106"></A>        }
+<A NAME="107"></A>    }
+<A NAME="108"></A>
+<A NAME="109"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> ObjectNode getObjectProperty(ObjectNode properties, String name) {
+<A NAME="110"></A>        JsonNode node = properties.get(name);
+<A NAME="111"></A>        <FONT ID="If">if</FONT> (node == <FONT ID="Null">null</FONT>) {
+<A NAME="112"></A>            <FONT ID="Throw">throw</FONT> <FONT ID="New">new</FONT> IllegalArgumentException(<FONT ID="StringLiteral">"Property "</FONT> + name + <FONT ID="StringLiteral">" not set."</FONT>);
+<A NAME="113"></A>        } <FONT ID="Else">else</FONT> <FONT ID="If">if</FONT> (!node.isObject()) {
+<A NAME="114"></A>            <FONT ID="Throw">throw</FONT> <FONT ID="New">new</FONT> IllegalArgumentException(<FONT ID="StringLiteral">"Property "</FONT> + name + <FONT ID="StringLiteral">" is not an object, but "</FONT> + node);
+<A NAME="115"></A>        } <FONT ID="Else">else</FONT> {
+<A NAME="116"></A>            <FONT ID="Return">return</FONT> (ObjectNode) node;
+<A NAME="117"></A>        }
+<A NAME="118"></A>    }
+<A NAME="119"></A>
+<A NAME="120"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> max(<A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> a, <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> b) {
+<A NAME="121"></A>        requireNonNull(a);
+<A NAME="122"></A>        requireNonNull(b);
+<A NAME="123"></A>        <FONT ID="If">if</FONT> (a.compareTo(b) &lt;= <FONT ID="IntegerLiteral">0</FONT>) {
+<A NAME="124"></A>            <FONT ID="Return">return</FONT> b;
+<A NAME="125"></A>        } <FONT ID="Else">else</FONT> {
+<A NAME="126"></A>            <FONT ID="Return">return</FONT> a;
+<A NAME="127"></A>        }
+<A NAME="128"></A>    }
+<A NAME="129"></A>
+<A NAME="130"></A>    <FONT ID="FormalComment">/**
+<A NAME="131"></A>     * we need those conversions to be able to parse hdfs URI strings which contain '$', '{' and '}' symbols
+<A NAME="132"></A>     */</FONT>
+<A NAME="133"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> Map&lt;String, String&gt; conversions = ImmutableMap.of(
+<A NAME="134"></A>            <FONT ID="StringLiteral">"$"</FONT>, Character.toString((<FONT ID="Char">char</FONT>) <FONT ID="IntegerLiteral">0xE000</FONT>),
+<A NAME="135"></A>            <FONT ID="StringLiteral">"{"</FONT>, Character.toString((<FONT ID="Char">char</FONT>) <FONT ID="IntegerLiteral">0xE001</FONT>),
+<A NAME="136"></A>            <FONT ID="StringLiteral">"}"</FONT>, Character.toString((<FONT ID="Char">char</FONT>) <FONT ID="IntegerLiteral">0xE002</FONT>));
+<A NAME="137"></A>
+<A NAME="138"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> Map&lt;String, String&gt; backConversions;
+<A NAME="139"></A>
+<A NAME="140"></A>    <FONT ID="Static">static</FONT> {
+<A NAME="141"></A>        backConversions = Maps.newHashMap();
+<A NAME="142"></A>        <FONT ID="For">for</FONT> (Map.Entry&lt;String, String&gt; entry : conversions.entrySet()) {
+<A NAME="143"></A>            backConversions.put(entry.getValue(), entry.getKey());
+<A NAME="144"></A>        }
+<A NAME="145"></A>    }
+<A NAME="146"></A>
+<A NAME="147"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> String augmentHdfsPath(String hdfsPrefix, String path) <FONT ID="Throws">throws</FONT> URISyntaxException {
+<A NAME="148"></A>
+<A NAME="149"></A>        <FONT ID="If">if</FONT> (hdfsPrefix.isEmpty() || hdfsPrefix.equals(<FONT ID="StringLiteral">"/"</FONT>)) {
+<A NAME="150"></A>            <FONT ID="Return">return</FONT> path;
+<A NAME="151"></A>        }
+<A NAME="152"></A>
+<A NAME="153"></A>        <FONT ID="For">for</FONT> (String ch : conversions.keySet()) {
+<A NAME="154"></A>            path = path.replace(ch.toString(), conversions.get(ch).toString());
+<A NAME="155"></A>        }
+<A NAME="156"></A>        URI oldUri = URI.create(path);
+<A NAME="157"></A>
+<A NAME="158"></A>        String host = oldUri.getHost();
+<A NAME="159"></A>        <FONT ID="If">if</FONT> (oldUri.getRawSchemeSpecificPart().startsWith(<FONT ID="StringLiteral">"///"</FONT>) &amp;&amp; host == <FONT ID="Null">null</FONT>) {
+<A NAME="160"></A>            host = <FONT ID="StringLiteral">""</FONT>;
+<A NAME="161"></A>        }
+<A NAME="162"></A>
+<A NAME="163"></A>        URI newUri = <FONT ID="New">new</FONT> URI(oldUri.getScheme(), oldUri.getUserInfo(), host, oldUri.getPort(), hdfsPrefix + oldUri.getPath(), oldUri.getQuery(), oldUri.getFragment());
+<A NAME="164"></A>        path = newUri.toString();
+<A NAME="165"></A>        <FONT ID="For">for</FONT> (String ch : backConversions.keySet()) {
+<A NAME="166"></A>            path = path.replace(ch.toString(), backConversions.get(ch).toString());
+<A NAME="167"></A>        }
+<A NAME="168"></A>        <FONT ID="Return">return</FONT> path;
+<A NAME="169"></A>    }
+<A NAME="170"></A>
+<A NAME="171"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Int">int</FONT> getFreePort() <FONT ID="Throws">throws</FONT> IOException {
+<A NAME="172"></A>        ServerSocket s = <FONT ID="New">new</FONT> ServerSocket(<FONT ID="IntegerLiteral">0</FONT>);
+<A NAME="173"></A>        <FONT ID="Int">int</FONT> port = s.getLocalPort();
+<A NAME="174"></A>        s.close();
+<A NAME="175"></A>        <FONT ID="Return">return</FONT> port;
+<A NAME="176"></A>    }
+<A NAME="177"></A>
+<A NAME="178"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Void">void</FONT> setupLogging(File logDir) {
+<A NAME="179"></A>        System.getProperties().setProperty(<FONT ID="StringLiteral">"log4j.defaultInitOverride"</FONT>, <FONT ID="StringLiteral">"true"</FONT>);
+<A NAME="180"></A>
+<A NAME="181"></A>        RollingFileAppender appender = <FONT ID="New">new</FONT> RollingFileAppender();
+<A NAME="182"></A>        appender.setFile(<FONT ID="New">new</FONT> File(logDir, <FONT ID="StringLiteral">"celos.log"</FONT>).getAbsolutePath());
+<A NAME="183"></A>        appender.setAppend(<FONT ID="True">true</FONT>);
+<A NAME="184"></A>
+<A NAME="185"></A>        TimeBasedRollingPolicy rollingPolicy = <FONT ID="New">new</FONT> TimeBasedRollingPolicy();
+<A NAME="186"></A>        rollingPolicy.setFileNamePattern(<FONT ID="New">new</FONT> File(logDir, <FONT ID="StringLiteral">"celos-%d{yyyy-MM-dd}.log"</FONT>).getAbsolutePath());
+<A NAME="187"></A>        appender.setRollingPolicy(rollingPolicy);
+<A NAME="188"></A>
+<A NAME="189"></A>        PatternLayout patternLayout = <FONT ID="New">new</FONT> PatternLayout();
+<A NAME="190"></A>        patternLayout.setConversionPattern(<FONT ID="StringLiteral">"[%d{YYYY-MM-dd HH:mm:ss.SSS}] %-5p: %m%n"</FONT>);
+<A NAME="191"></A>        appender.setLayout(patternLayout);
+<A NAME="192"></A>
+<A NAME="193"></A>        appender.activateOptions();
+<A NAME="194"></A>        Logger.getRootLogger().addAppender(appender);
+<A NAME="195"></A>        Logger.getRootLogger().setLevel(Level.INFO);
+<A NAME="196"></A>    }
+<A NAME="197"></A>
+<A NAME="198"></A>}
+<A NAME="199"></A></pre>
+</BODY>
+</HTML>

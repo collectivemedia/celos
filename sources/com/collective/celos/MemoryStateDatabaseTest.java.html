@@ -1,0 +1,40 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.MemoryStateDatabaseTest (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">MemoryStateDatabaseTest.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> junit.framework.Assert;
+<A NAME="4"></A>
+<A NAME="5"></A><FONT ID="Import">import</FONT> org.junit.Test;
+<A NAME="6"></A>
+<A NAME="7"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> MemoryStateDatabaseTest {
+<A NAME="8"></A>
+<A NAME="9"></A>    @Test
+<A NAME="10"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> getAndPutWorks() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="11"></A>        <A HREF="../../../com/collective/celos/MemoryStateDatabase.java.html">MemoryStateDatabase</A> db = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/MemoryStateDatabase.java.html">MemoryStateDatabase</A>();
+<A NAME="12"></A>        <A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A> slotID = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A>(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"foo"</FONT>), <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-11-27T14:50Z"</FONT>));
+<A NAME="13"></A>        Assert.assertEquals(<FONT ID="Null">null</FONT>, db.getSlotState(slotID));
+<A NAME="14"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> state = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(slotID, SlotState.Status.READY);
+<A NAME="15"></A>        db.putSlotState(state);
+<A NAME="16"></A>        Assert.assertEquals(state, db.getSlotState(slotID));
+<A NAME="17"></A>        Assert.assertEquals(<FONT ID="Null">null</FONT>, db.getSlotState(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A>(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"bar"</FONT>), <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-11-27T14:50Z"</FONT>))));
+<A NAME="18"></A>    }
+<A NAME="19"></A>    
+<A NAME="20"></A>}
+<A NAME="21"></A></pre>
+</BODY>
+</HTML>

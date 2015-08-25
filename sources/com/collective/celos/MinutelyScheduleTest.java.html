@@ -1,0 +1,103 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.MinutelyScheduleTest (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">MinutelyScheduleTest.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> java.util.Arrays;
+<A NAME="4"></A><FONT ID="Import">import</FONT> java.util.List;
+<A NAME="5"></A><FONT ID="Import">import</FONT> java.util.Set;
+<A NAME="6"></A><FONT ID="Import">import</FONT> java.util.TreeSet;
+<A NAME="7"></A>
+<A NAME="8"></A><FONT ID="Import">import</FONT> org.junit.Assert;
+<A NAME="9"></A><FONT ID="Import">import</FONT> org.junit.Test;
+<A NAME="10"></A>
+<A NAME="11"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> MinutelyScheduleTest {
+<A NAME="12"></A>
+<A NAME="13"></A>    @Test
+<A NAME="14"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> minutelyScheduleEmpty() {
+<A NAME="15"></A>        <FONT ID="SingleLineComment">// Start time equals end time
+<A NAME="16"></A></FONT>        <FONT ID="SingleLineComment">// -&gt; empty schedule
+<A NAME="17"></A></FONT>        <A HREF="../../../com/collective/celos/Schedule.java.html">Schedule</A> sch = makeMinutelySchedule();
+<A NAME="18"></A>        <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> t = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-11-25T20:00Z"</FONT>);
+<A NAME="19"></A>        Set&lt;<A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>&gt; minutes = sch.getScheduledTimes(<FONT ID="Null">null</FONT>, t, t);
+<A NAME="20"></A>        Assert.assertEquals(<FONT ID="IntegerLiteral">0</FONT>, minutes.size());
+<A NAME="21"></A>    }
+<A NAME="22"></A>
+<A NAME="23"></A>    @Test
+<A NAME="24"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> minutelyScheduleOneMinute() {
+<A NAME="25"></A>        <FONT ID="SingleLineComment">// Start time is full minute, end time one minute later
+<A NAME="26"></A></FONT>        <FONT ID="SingleLineComment">// -&gt; start time is the single minute in schedule
+<A NAME="27"></A></FONT>        <A HREF="../../../com/collective/celos/Schedule.java.html">Schedule</A> sch = makeMinutelySchedule();
+<A NAME="28"></A>        <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> t1 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-11-25T20:00Z"</FONT>);
+<A NAME="29"></A>        <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> t2 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-11-25T20:01Z"</FONT>);
+<A NAME="30"></A>        Set&lt;<A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>&gt; minutes = sch.getScheduledTimes(<FONT ID="Null">null</FONT>, t1, t2);
+<A NAME="31"></A>        Assert.assertEquals(<FONT ID="New">new</FONT> TreeSet&lt;<A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>&gt;(Arrays.asList(t1)), minutes);
+<A NAME="32"></A>    }
+<A NAME="33"></A>    
+<A NAME="34"></A>    @Test
+<A NAME="35"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> minutelyScheduleOneMinuteWithSeconds() {
+<A NAME="36"></A>        <FONT ID="SingleLineComment">// Start time is non-full minute with some seconds,
+<A NAME="37"></A></FONT>        <FONT ID="SingleLineComment">// end time one minute later
+<A NAME="38"></A></FONT>        <FONT ID="SingleLineComment">// -&gt; empty schedule
+<A NAME="39"></A></FONT>        <A HREF="../../../com/collective/celos/Schedule.java.html">Schedule</A> sch = makeMinutelySchedule();
+<A NAME="40"></A>        <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> t1 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-11-25T20:01:05Z"</FONT>);
+<A NAME="41"></A>        <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> t2 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-11-25T20:02:00Z"</FONT>);
+<A NAME="42"></A>        Set&lt;<A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>&gt; minutes = sch.getScheduledTimes(<FONT ID="Null">null</FONT>, t1, t2);
+<A NAME="43"></A>        Assert.assertEquals(<FONT ID="IntegerLiteral">0</FONT>, minutes.size());
+<A NAME="44"></A>    }
+<A NAME="45"></A>
+<A NAME="46"></A>    @Test
+<A NAME="47"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> minutelyScheduleSomeMinutes() {
+<A NAME="48"></A>        <FONT ID="SingleLineComment">// Start time is non-full minute
+<A NAME="49"></A></FONT>        <FONT ID="SingleLineComment">// End time is a couple of minutes later
+<A NAME="50"></A></FONT>        <FONT ID="SingleLineComment">// -&gt; schedule contains all full minutes after start and before end
+<A NAME="51"></A></FONT>        <A HREF="../../../com/collective/celos/Schedule.java.html">Schedule</A> sch = makeMinutelySchedule();
+<A NAME="52"></A>        <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> t1 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-11-25T20:05:12.00182Z"</FONT>);
+<A NAME="53"></A>        <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> t2 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-11-25T20:08:56.2182Z"</FONT>);
+<A NAME="54"></A>        Set&lt;<A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>&gt; minutes = sch.getScheduledTimes(<FONT ID="Null">null</FONT>, t1, t2);
+<A NAME="55"></A>        List&lt;<A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>&gt; expectedMinutes =
+<A NAME="56"></A>                Arrays.asList(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-11-25T20:06Z"</FONT>),
+<A NAME="57"></A>                              <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-11-25T20:07Z"</FONT>),
+<A NAME="58"></A>                              <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-11-25T20:08Z"</FONT>));
+<A NAME="59"></A>        Assert.assertEquals(<FONT ID="New">new</FONT> TreeSet&lt;<A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>&gt;(expectedMinutes), minutes);
+<A NAME="60"></A>    }
+<A NAME="61"></A>    
+<A NAME="62"></A>    @Test
+<A NAME="63"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> minutelyScheduleSomeMinutesWithStartingFullMinute() {
+<A NAME="64"></A>        <FONT ID="SingleLineComment">// Start time is full minute
+<A NAME="65"></A></FONT>        <FONT ID="SingleLineComment">// End time is a couple of minutes later
+<A NAME="66"></A></FONT>        <FONT ID="SingleLineComment">// -&gt; schedule contains all full minutes after (and including) start and before end
+<A NAME="67"></A></FONT>        <A HREF="../../../com/collective/celos/Schedule.java.html">Schedule</A> sch = makeMinutelySchedule();
+<A NAME="68"></A>        <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> t1 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-11-25T20:00Z"</FONT>);
+<A NAME="69"></A>        <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> t2 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-11-25T20:03:56.2182Z"</FONT>);
+<A NAME="70"></A>        Set&lt;<A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>&gt; minutes = sch.getScheduledTimes(<FONT ID="Null">null</FONT>, t1, t2);
+<A NAME="71"></A>        List&lt;<A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>&gt; expectedMinutes =
+<A NAME="72"></A>                Arrays.asList(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-11-25T20:00Z"</FONT>),
+<A NAME="73"></A>                              <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-11-25T20:01Z"</FONT>),
+<A NAME="74"></A>                              <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-11-25T20:02Z"</FONT>),
+<A NAME="75"></A>                              <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-11-25T20:03Z"</FONT>));
+<A NAME="76"></A>        Assert.assertEquals(<FONT ID="New">new</FONT> TreeSet&lt;<A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>&gt;(expectedMinutes), minutes);
+<A NAME="77"></A>    }
+<A NAME="78"></A>
+<A NAME="79"></A>    <FONT ID="Private">private</FONT> <A HREF="../../../com/collective/celos/MinutelySchedule.java.html">MinutelySchedule</A> makeMinutelySchedule() {
+<A NAME="80"></A>        <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/MinutelySchedule.java.html">MinutelySchedule</A>();
+<A NAME="81"></A>    }
+<A NAME="82"></A>    
+<A NAME="83"></A>}
+<A NAME="84"></A></pre>
+</BODY>
+</HTML>

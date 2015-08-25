@@ -1,0 +1,65 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.server.ServerCommandLine (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">ServerCommandLine.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos.server;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> <A HREF="../../../../com/collective/celos/Util.java.html">com.collective.celos.Util</A>;
+<A NAME="4"></A>
+<A NAME="5"></A><FONT ID="Import">import</FONT> java.io.File;
+<A NAME="6"></A>
+<A NAME="7"></A><FONT ID="FormalComment">/**
+<A NAME="8"></A> * Created by akonopko on 9/30/14.
+<A NAME="9"></A> */</FONT>
+<A NAME="10"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> ServerCommandLine {
+<A NAME="11"></A>
+<A NAME="12"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> File workflowsDir;
+<A NAME="13"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> File defaultsDir;
+<A NAME="14"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> File stateDatabase;
+<A NAME="15"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> File logDir;
+<A NAME="16"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> <FONT ID="Int">int</FONT> port;
+<A NAME="17"></A>
+<A NAME="18"></A>    <FONT ID="Public">public</FONT> ServerCommandLine(String workflowsDir, String defaultsDir, String stateDatabase, String logDir, <FONT ID="Int">int</FONT> port) {
+<A NAME="19"></A>        <FONT ID="This">this</FONT>.workflowsDir = <FONT ID="New">new</FONT> File(Util.requireNonNull(workflowsDir));
+<A NAME="20"></A>        <FONT ID="This">this</FONT>.defaultsDir = <FONT ID="New">new</FONT> File(Util.requireNonNull(defaultsDir));
+<A NAME="21"></A>        <FONT ID="This">this</FONT>.stateDatabase = <FONT ID="New">new</FONT> File(Util.requireNonNull(stateDatabase));
+<A NAME="22"></A>        <FONT ID="This">this</FONT>.port = port;
+<A NAME="23"></A>        <FONT ID="This">this</FONT>.logDir = <FONT ID="New">new</FONT> File(Util.requireNonNull(logDir));
+<A NAME="24"></A>    }
+<A NAME="25"></A>
+<A NAME="26"></A>    <FONT ID="Public">public</FONT> File getWorkflowsDir() {
+<A NAME="27"></A>        <FONT ID="Return">return</FONT> workflowsDir;
+<A NAME="28"></A>    }
+<A NAME="29"></A>
+<A NAME="30"></A>    <FONT ID="Public">public</FONT> File getDefaultsDir() {
+<A NAME="31"></A>        <FONT ID="Return">return</FONT> defaultsDir;
+<A NAME="32"></A>    }
+<A NAME="33"></A>
+<A NAME="34"></A>    <FONT ID="Public">public</FONT> File getStateDatabase() {
+<A NAME="35"></A>        <FONT ID="Return">return</FONT> stateDatabase;
+<A NAME="36"></A>    }
+<A NAME="37"></A>
+<A NAME="38"></A>    <FONT ID="Public">public</FONT> <FONT ID="Int">int</FONT> getPort() {
+<A NAME="39"></A>        <FONT ID="Return">return</FONT> port;
+<A NAME="40"></A>    }
+<A NAME="41"></A>
+<A NAME="42"></A>    <FONT ID="Public">public</FONT> File getLogDir() {
+<A NAME="43"></A>        <FONT ID="Return">return</FONT> logDir;
+<A NAME="44"></A>    }
+<A NAME="45"></A>}
+<A NAME="46"></A></pre>
+</BODY>
+</HTML>

@@ -1,0 +1,75 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.ci.config.deploy.CelosCiTargetParser (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">CelosCiTargetParser.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos.ci.config.deploy;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../com/collective/celos/ci/deploy/JScpWorker.java.html">com.collective.celos.ci.deploy.JScpWorker</A>;
+<A NAME="4"></A><FONT ID="Import">import</FONT> org.apache.commons.vfs2.FileObject;
+<A NAME="5"></A><FONT ID="Import">import</FONT> org.apache.commons.vfs2.FileSystemException;
+<A NAME="6"></A><FONT ID="Import">import</FONT> org.codehaus.jackson.map.ObjectMapper;
+<A NAME="7"></A>
+<A NAME="8"></A><FONT ID="Import">import</FONT> java.io.InputStream;
+<A NAME="9"></A><FONT ID="Import">import</FONT> java.net.URI;
+<A NAME="10"></A><FONT ID="Import">import</FONT> java.util.HashMap;
+<A NAME="11"></A>
+<A NAME="12"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> CelosCiTargetParser {
+<A NAME="13"></A>
+<A NAME="14"></A>    <FONT ID="FormalComment">/**
+<A NAME="15"></A>     * Mandatory target properties
+<A NAME="16"></A>     */</FONT>
+<A NAME="17"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String WORKFLOWS_DIR_URI = <FONT ID="StringLiteral">"workflows.dir.uri"</FONT>;
+<A NAME="18"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String HADOOP_HDFS_SITE_XML = <FONT ID="StringLiteral">"hadoop.hdfs-site.xml"</FONT>;
+<A NAME="19"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String HADOOP_CORE_SITE_XML = <FONT ID="StringLiteral">"hadoop.core-site.xml"</FONT>;
+<A NAME="20"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String DEFAULTS_DIR_URI = <FONT ID="StringLiteral">"defaults.dir.uri"</FONT>;
+<A NAME="21"></A>    <FONT ID="FormalComment">/**
+<A NAME="22"></A>     * Optional target properties
+<A NAME="23"></A>     */</FONT>
+<A NAME="24"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String HIVE_JDBC_URL = <FONT ID="StringLiteral">"hive.jdbc.url"</FONT>;
+<A NAME="25"></A>
+<A NAME="26"></A>    <FONT ID="Private">private</FONT> <A HREF="../../../../../../com/collective/celos/ci/deploy/JScpWorker.java.html">JScpWorker</A> worker;
+<A NAME="27"></A>
+<A NAME="28"></A>    <FONT ID="Public">public</FONT> CelosCiTargetParser(String userName) <FONT ID="Throws">throws</FONT> FileSystemException {
+<A NAME="29"></A>        <FONT ID="This">this</FONT>.worker = <FONT ID="New">new</FONT> <A HREF="../../../../../../com/collective/celos/ci/deploy/JScpWorker.java.html">JScpWorker</A>(userName);
+<A NAME="30"></A>    }
+<A NAME="31"></A>
+<A NAME="32"></A>    <FONT ID="Private">private</FONT> String getNotNull(HashMap&lt;String, String&gt; map, String key) {
+<A NAME="33"></A>        String result = map.get(key);
+<A NAME="34"></A>        <FONT ID="If">if</FONT> (result == <FONT ID="Null">null</FONT>) {
+<A NAME="35"></A>            <FONT ID="Throw">throw</FONT> <FONT ID="New">new</FONT> IllegalStateException(key + <FONT ID="StringLiteral">" was not specified in the target file"</FONT>);
+<A NAME="36"></A>        }
+<A NAME="37"></A>        <FONT ID="Return">return</FONT> result;
+<A NAME="38"></A>    }
+<A NAME="39"></A>
+<A NAME="40"></A>    <FONT ID="Public">public</FONT> <A HREF="../../../../../../com/collective/celos/ci/config/deploy/CelosCiTarget.java.html">CelosCiTarget</A> parse(URI targetFileUri) <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="41"></A>        FileObject file = worker.getFileObjectByUri(targetFileUri);
+<A NAME="42"></A>        InputStream is = file.getContent().getInputStream();
+<A NAME="43"></A>        HashMap&lt;String, String&gt; result = <FONT ID="New">new</FONT> ObjectMapper().readValue(is, HashMap.<FONT ID="Class">class</FONT>);
+<A NAME="44"></A>
+<A NAME="45"></A>        URI hdfsSiteXml = URI.create(getNotNull(result, HADOOP_HDFS_SITE_XML));
+<A NAME="46"></A>        URI hdfsCoreXml = URI.create(getNotNull(result, HADOOP_CORE_SITE_XML));
+<A NAME="47"></A>        URI workflowDir = URI.create(getNotNull(result, WORKFLOWS_DIR_URI));
+<A NAME="48"></A>        URI defaultsFile = URI.create(getNotNull(result, DEFAULTS_DIR_URI));
+<A NAME="49"></A>
+<A NAME="50"></A>        URI hiveJdbc = result.get(HIVE_JDBC_URL) != <FONT ID="Null">null</FONT> ? URI.create(result.get(HIVE_JDBC_URL)) : <FONT ID="Null">null</FONT>;
+<A NAME="51"></A>
+<A NAME="52"></A>        <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> <A HREF="../../../../../../com/collective/celos/ci/config/deploy/CelosCiTarget.java.html">CelosCiTarget</A>(hdfsSiteXml, hdfsCoreXml, workflowDir, defaultsFile, hiveJdbc);
+<A NAME="53"></A>    }
+<A NAME="54"></A>
+<A NAME="55"></A>}
+<A NAME="56"></A></pre>
+</BODY>
+</HTML>

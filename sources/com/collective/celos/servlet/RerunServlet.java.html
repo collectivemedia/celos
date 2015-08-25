@@ -1,0 +1,78 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.servlet.RerunServlet (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">RerunServlet.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos.servlet;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> javax.servlet.ServletException;
+<A NAME="4"></A><FONT ID="Import">import</FONT> javax.servlet.http.HttpServletRequest;
+<A NAME="5"></A><FONT ID="Import">import</FONT> javax.servlet.http.HttpServletResponse;
+<A NAME="6"></A>
+<A NAME="7"></A><FONT ID="Import">import</FONT> org.apache.log4j.Logger;
+<A NAME="8"></A>
+<A NAME="9"></A><FONT ID="Import">import</FONT> <A HREF="../../../../com/collective/celos/ScheduledTime.java.html">com.collective.celos.ScheduledTime</A>;
+<A NAME="10"></A><FONT ID="Import">import</FONT> <A HREF="../../../../com/collective/celos/SlotID.java.html">com.collective.celos.SlotID</A>;
+<A NAME="11"></A><FONT ID="Import">import</FONT> <A HREF="../../../../com/collective/celos/SlotState.java.html">com.collective.celos.SlotState</A>;
+<A NAME="12"></A><FONT ID="Import">import</FONT> <A HREF="../../../../com/collective/celos/StateDatabase.java.html">com.collective.celos.StateDatabase</A>;
+<A NAME="13"></A><FONT ID="Import">import</FONT> <A HREF="../../../../com/collective/celos/WorkflowID.java.html">com.collective.celos.WorkflowID</A>;
+<A NAME="14"></A>
+<A NAME="15"></A><FONT ID="FormalComment">/**
+<A NAME="16"></A> * Posting to this servlet reruns the specified slot.
+<A NAME="17"></A> * 
+<A NAME="18"></A> * Parameters:
+<A NAME="19"></A> * 
+<A NAME="20"></A> * id -- workflow ID
+<A NAME="21"></A> * 
+<A NAME="22"></A> * time -- scheduled time of slot
+<A NAME="23"></A> */</FONT>
+<A NAME="24"></A>@SuppressWarnings(<FONT ID="StringLiteral">"serial"</FONT>)
+<A NAME="25"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> RerunServlet <FONT ID="Extends">extends</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/servlet/AbstractServlet.html">AbstractServlet</A> {
+<A NAME="26"></A>    
+<A NAME="27"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> Logger LOGGER = Logger.getLogger(<A HREF="../../../../com/collective/celos/servlet/RerunServlet.java.html">RerunServlet</A>.<FONT ID="Class">class</FONT>);
+<A NAME="28"></A>    
+<A NAME="29"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String ID_PARAM = <FONT ID="StringLiteral">"id"</FONT>;
+<A NAME="30"></A>
+<A NAME="31"></A>    <FONT ID="Protected">protected</FONT> <FONT ID="Void">void</FONT> doPost(HttpServletRequest req, HttpServletResponse res) <FONT ID="Throws">throws</FONT> ServletException {
+<A NAME="32"></A>        <FONT ID="Try">try</FONT> {
+<A NAME="33"></A>            <A HREF="../../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> time = getRequestTime(req);
+<A NAME="34"></A>            String id = req.getParameter(ID_PARAM);
+<A NAME="35"></A>            <FONT ID="If">if</FONT> (id == <FONT ID="Null">null</FONT>) {
+<A NAME="36"></A>                res.sendError(HttpServletResponse.SC_BAD_REQUEST, ID_PARAM + <FONT ID="StringLiteral">" parameter missing."</FONT>);
+<A NAME="37"></A>                <FONT ID="Return">return</FONT>;
+<A NAME="38"></A>            }
+<A NAME="39"></A>            <A HREF="../../../../com/collective/celos/SlotID.java.html">SlotID</A> slot = <FONT ID="New">new</FONT> <A HREF="../../../../com/collective/celos/SlotID.java.html">SlotID</A>(<FONT ID="New">new</FONT> <A HREF="../../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(id), time);
+<A NAME="40"></A>            <A HREF="../../../../com/collective/celos/StateDatabase.java.html">StateDatabase</A> db = getOrCreateCachedScheduler().getStateDatabase();
+<A NAME="41"></A>            <A HREF="../../../../com/collective/celos/SlotState.java.html">SlotState</A> state = db.getSlotState(slot);
+<A NAME="42"></A>            <FONT ID="If">if</FONT> (state == <FONT ID="Null">null</FONT>) {
+<A NAME="43"></A>                res.sendError(HttpServletResponse.SC_NOT_FOUND, <FONT ID="StringLiteral">"Slot not found: "</FONT> + slot);
+<A NAME="44"></A>                <FONT ID="Return">return</FONT>;
+<A NAME="45"></A>            }
+<A NAME="46"></A>            updateSlotToRerun(state, db);
+<A NAME="47"></A>        } <FONT ID="Catch">catch</FONT>(Exception e) {
+<A NAME="48"></A>            <FONT ID="Throw">throw</FONT> <FONT ID="New">new</FONT> ServletException(e);
+<A NAME="49"></A>        }
+<A NAME="50"></A>    }
+<A NAME="51"></A>
+<A NAME="52"></A>    <FONT ID="Void">void</FONT> updateSlotToRerun(<A HREF="../../../../com/collective/celos/SlotState.java.html">SlotState</A> state, <A HREF="../../../../com/collective/celos/StateDatabase.java.html">StateDatabase</A> db) <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="53"></A>        LOGGER.info(<FONT ID="StringLiteral">"Scheduling Slot for rerun: "</FONT> + state.getSlotID());
+<A NAME="54"></A>        <A HREF="../../../../com/collective/celos/SlotState.java.html">SlotState</A> newState = state.transitionToRerun();
+<A NAME="55"></A>        db.putSlotState(newState);
+<A NAME="56"></A>    }
+<A NAME="57"></A>
+<A NAME="58"></A>}
+<A NAME="59"></A></pre>
+</BODY>
+</HTML>

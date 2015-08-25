@@ -1,0 +1,61 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../../../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.ci.testing.fixtures.convert.ConversionCreatorTest (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">ConversionCreatorTest.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos.ci.testing.fixtures.convert;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../../com/collective/celos/ci/Utils.java.html">com.collective.celos.ci.Utils</A>;
+<A NAME="4"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">com.collective.celos.ci.testing.fixtures.create.FixObjectCreator</A>;
+<A NAME="5"></A><FONT ID="Import">import</FONT> com.collective.celos.ci.testing.structure.fixobject.*;
+<A NAME="6"></A><FONT ID="Import">import</FONT> com.google.common.collect.Maps;
+<A NAME="7"></A><FONT ID="Import">import</FONT> junit.framework.Assert;
+<A NAME="8"></A><FONT ID="Import">import</FONT> org.apache.commons.io.IOUtils;
+<A NAME="9"></A><FONT ID="Import">import</FONT> org.junit.Test;
+<A NAME="10"></A>
+<A NAME="11"></A><FONT ID="Import">import</FONT> java.util.Map;
+<A NAME="12"></A>
+<A NAME="13"></A><FONT ID="FormalComment">/**
+<A NAME="14"></A> * Created by akonopko on 25.01.15.
+<A NAME="15"></A> */</FONT>
+<A NAME="16"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> ConversionCreatorTest {
+<A NAME="17"></A>
+<A NAME="18"></A>    @Test
+<A NAME="19"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testConversionCreatorForFile() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="20"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">FixObjectCreator</A>&lt;FixFile&gt; creator = Utils.wrap(<FONT ID="New">new</FONT> FixFile(IOUtils.toInputStream(<FONT ID="StringLiteral">"lowercase"</FONT>)));
+<A NAME="21"></A>        AbstractFixObjectConverter&lt;FixFile, FixFile&gt; fixObjectConverter = <FONT ID="New">new</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/convert/UpperCaseStringFixFileConverter.java.html">UpperCaseStringFixFileConverter</A>();
+<A NAME="22"></A>        ConversionCreator&lt;FixFile, FixFile&gt; conversionCreator = <FONT ID="New">new</FONT> ConversionCreator(creator, fixObjectConverter);
+<A NAME="23"></A>
+<A NAME="24"></A>        FixFile result = conversionCreator.create(<FONT ID="Null">null</FONT>);
+<A NAME="25"></A>        Assert.assertEquals(<FONT ID="StringLiteral">"LOWERCASE"</FONT>, IOUtils.toString(result.getContent()));
+<A NAME="26"></A>    }
+<A NAME="27"></A>
+<A NAME="28"></A>    @Test
+<A NAME="29"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testConversionCreatorForDir() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="30"></A>        FixFile fixFile = <FONT ID="New">new</FONT> FixFile(IOUtils.toInputStream(<FONT ID="StringLiteral">"lowercase"</FONT>));
+<A NAME="31"></A>        Map&lt;String, FixFsObject&gt; map = Maps.newHashMap();
+<A NAME="32"></A>        map.put(<FONT ID="StringLiteral">"file"</FONT>, fixFile);
+<A NAME="33"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">FixObjectCreator</A>&lt;FixDir&gt; creator = Utils.wrap(<FONT ID="New">new</FONT> FixDir(map));
+<A NAME="34"></A>        AbstractFixObjectConverter&lt;FixDir, FixDir&gt; fixObjectConverter = <FONT ID="New">new</FONT> FixDirRecursiveConverter(<FONT ID="New">new</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/convert/UpperCaseStringFixFileConverter.java.html">UpperCaseStringFixFileConverter</A>());
+<A NAME="35"></A>        ConversionCreator&lt;FixDir, FixDir&gt; conversionCreator = <FONT ID="New">new</FONT> ConversionCreator(creator, fixObjectConverter);
+<A NAME="36"></A>
+<A NAME="37"></A>        FixDir result = conversionCreator.create(<FONT ID="Null">null</FONT>);
+<A NAME="38"></A>        Assert.assertEquals(<FONT ID="StringLiteral">"LOWERCASE"</FONT>, IOUtils.toString(result.getChildren().get(<FONT ID="StringLiteral">"file"</FONT>).asFile().getContent()));
+<A NAME="39"></A>    }
+<A NAME="40"></A>
+<A NAME="41"></A>}
+<A NAME="42"></A></pre>
+</BODY>
+</HTML>

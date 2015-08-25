@@ -1,0 +1,54 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.SlotStateStatusPredicate (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">SlotStateStatusPredicate.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> java.util.Arrays;
+<A NAME="4"></A><FONT ID="Import">import</FONT> java.util.HashSet;
+<A NAME="5"></A><FONT ID="Import">import</FONT> java.util.Set;
+<A NAME="6"></A>
+<A NAME="7"></A><FONT ID="Import">import</FONT> org.apache.commons.collections.Predicate;
+<A NAME="8"></A>
+<A NAME="9"></A><FONT ID="Import">import</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/SlotState.Status.html">com.collective.celos.SlotState.Status</A>;
+<A NAME="10"></A>
+<A NAME="11"></A><FONT ID="MultiLineComment">/*
+<A NAME="12"></A> * Predicate that compares the status of a SlotState object to a set of target
+<A NAME="13"></A> * values.
+<A NAME="14"></A> * 
+<A NAME="15"></A> * Instances of this predicate are for use with CollectionUtils methods.
+<A NAME="16"></A> */</FONT>
+<A NAME="17"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> SlotStateStatusPredicate <FONT ID="Implements">implements</FONT> Predicate {
+<A NAME="18"></A>    
+<A NAME="19"></A>    <FONT ID="Private">private</FONT> Set&lt;<A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/SlotState.Status.html">Status</A>&gt; targetValues;
+<A NAME="20"></A>
+<A NAME="21"></A>    <FONT ID="Public">public</FONT> SlotStateStatusPredicate(<A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/SlotState.Status.html">Status</A>... targetValues) {
+<A NAME="22"></A>        <FONT ID="This">this</FONT>.targetValues = <FONT ID="New">new</FONT> HashSet&lt;<A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/SlotState.Status.html">Status</A>&gt;(Arrays.asList(targetValues));
+<A NAME="23"></A>        <FONT ID="If">if</FONT> (<FONT ID="This">this</FONT>.targetValues.isEmpty()) {
+<A NAME="24"></A>            <FONT ID="Throw">throw</FONT> <FONT ID="New">new</FONT> IllegalArgumentException(<FONT ID="StringLiteral">"please specify some status values"</FONT>);
+<A NAME="25"></A>        }
+<A NAME="26"></A>    }
+<A NAME="27"></A>
+<A NAME="28"></A>    @Override
+<A NAME="29"></A>    <FONT ID="Public">public</FONT> <FONT ID="Boolean">boolean</FONT> evaluate(Object object) {
+<A NAME="30"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> state = (<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>) object;
+<A NAME="31"></A>        <FONT ID="Return">return</FONT> targetValues.contains(state.status);
+<A NAME="32"></A>    }
+<A NAME="33"></A>
+<A NAME="34"></A>}
+<A NAME="35"></A></pre>
+</BODY>
+</HTML>

@@ -1,0 +1,76 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../../../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.ci.testing.fixtures.convert.JsonExpandConverter (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">JsonExpandConverter.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos.ci.testing.fixtures.convert;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../../com/collective/celos/ci/mode/test/TestRun.java.html">com.collective.celos.ci.mode.test.TestRun</A>;
+<A NAME="4"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/AbstractFixObjectConverter.java.html">com.collective.celos.ci.testing.structure.fixobject.AbstractFixObjectConverter</A>;
+<A NAME="5"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFile.java.html">com.collective.celos.ci.testing.structure.fixobject.FixFile</A>;
+<A NAME="6"></A><FONT ID="Import">import</FONT> com.google.common.collect.Lists;
+<A NAME="7"></A><FONT ID="Import">import</FONT> com.google.gson.Gson;
+<A NAME="8"></A><FONT ID="Import">import</FONT> com.google.gson.GsonBuilder;
+<A NAME="9"></A><FONT ID="Import">import</FONT> com.google.gson.JsonElement;
+<A NAME="10"></A><FONT ID="Import">import</FONT> com.google.gson.JsonParser;
+<A NAME="11"></A><FONT ID="Import">import</FONT> org.apache.commons.io.IOUtils;
+<A NAME="12"></A><FONT ID="Import">import</FONT> org.apache.commons.lang.StringUtils;
+<A NAME="13"></A><FONT ID="Import">import</FONT> org.apache.commons.lang.text.StrBuilder;
+<A NAME="14"></A>
+<A NAME="15"></A><FONT ID="Import">import</FONT> java.io.BufferedReader;
+<A NAME="16"></A><FONT ID="Import">import</FONT> java.io.InputStreamReader;
+<A NAME="17"></A><FONT ID="Import">import</FONT> java.util.List;
+<A NAME="18"></A><FONT ID="Import">import</FONT> java.util.Set;
+<A NAME="19"></A>
+<A NAME="20"></A><FONT ID="FormalComment">/**
+<A NAME="21"></A> * Created by akonopko on 23.01.15.
+<A NAME="22"></A> */</FONT>
+<A NAME="23"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> JsonExpandConverter <FONT ID="Extends">extends</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/AbstractFixObjectConverter.java.html">AbstractFixObjectConverter</A>&lt;<A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFile.java.html">FixFile</A>, <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFile.java.html">FixFile</A>&gt; {
+<A NAME="24"></A>
+<A NAME="25"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> JsonParser jsonParser = <FONT ID="New">new</FONT> JsonParser();
+<A NAME="26"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> Gson gson = <FONT ID="New">new</FONT> GsonBuilder().create();
+<A NAME="27"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> Set&lt;String&gt; expandFields;
+<A NAME="28"></A>
+<A NAME="29"></A>    <FONT ID="Public">public</FONT> JsonExpandConverter(Set&lt;String&gt; expandFields) {
+<A NAME="30"></A>        <FONT ID="This">this</FONT>.expandFields = expandFields;
+<A NAME="31"></A>    }
+<A NAME="32"></A>
+<A NAME="33"></A>    @Override
+<A NAME="34"></A>    <FONT ID="Public">public</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFile.java.html">FixFile</A> convert(<A HREF="../../../../../../../com/collective/celos/ci/mode/test/TestRun.java.html">TestRun</A> tr, <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFile.java.html">FixFile</A> ff) <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="35"></A>
+<A NAME="36"></A>        List&lt;String&gt; stringList = Lists.newArrayList();
+<A NAME="37"></A>
+<A NAME="38"></A>        BufferedReader reader = <FONT ID="New">new</FONT> BufferedReader(<FONT ID="New">new</FONT> InputStreamReader(ff.getContent()));
+<A NAME="39"></A>        String line;
+<A NAME="40"></A>        <FONT ID="While">while</FONT> ((line = reader.readLine()) != <FONT ID="Null">null</FONT>) {
+<A NAME="41"></A>            JsonElement jsonElement = jsonParser.parse(line);
+<A NAME="42"></A>            <FONT ID="For">for</FONT> (String field : expandFields) {
+<A NAME="43"></A>                <FONT ID="Try">try</FONT> {
+<A NAME="44"></A>                    String strField = jsonElement.getAsJsonObject().get(field).getAsString();
+<A NAME="45"></A>                    JsonElement fieldElem = jsonParser.parse(strField);
+<A NAME="46"></A>                    jsonElement.getAsJsonObject().add(field, fieldElem);
+<A NAME="47"></A>                } <FONT ID="Catch">catch</FONT>(Exception e) {
+<A NAME="48"></A>                    <FONT ID="Throw">throw</FONT> <FONT ID="New">new</FONT> Exception(<FONT ID="StringLiteral">"Error caused in line: "</FONT> + line + <FONT ID="StringLiteral">" trying to expand field: "</FONT> + field, e); 
+<A NAME="49"></A>                }
+<A NAME="50"></A>            }
+<A NAME="51"></A>            stringList.add(gson.toJson(jsonElement));
+<A NAME="52"></A>        }
+<A NAME="53"></A>
+<A NAME="54"></A>        <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFile.java.html">FixFile</A>(IOUtils.toInputStream(StringUtils.join(stringList,<FONT ID="StringLiteral">"\n"</FONT>)));
+<A NAME="55"></A>    }
+<A NAME="56"></A>}
+<A NAME="57"></A></pre>
+</BODY>
+</HTML>

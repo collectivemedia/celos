@@ -1,0 +1,74 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../../../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.ci.testing.fixtures.convert.JsonExpandConverterTest (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">JsonExpandConverterTest.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos.ci.testing.fixtures.convert;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../../com/collective/celos/ci/Utils.java.html">com.collective.celos.ci.Utils</A>;
+<A NAME="4"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFile.java.html">com.collective.celos.ci.testing.structure.fixobject.FixFile</A>;
+<A NAME="5"></A><FONT ID="Import">import</FONT> com.google.common.collect.Sets;
+<A NAME="6"></A><FONT ID="Import">import</FONT> com.google.gson.JsonElement;
+<A NAME="7"></A><FONT ID="Import">import</FONT> junit.framework.Assert;
+<A NAME="8"></A><FONT ID="Import">import</FONT> org.apache.commons.io.IOUtils;
+<A NAME="9"></A><FONT ID="Import">import</FONT> org.junit.Test;
+<A NAME="10"></A>
+<A NAME="11"></A><FONT ID="Import">import</FONT> java.io.InputStream;
+<A NAME="12"></A><FONT ID="Import">import</FONT> java.util.Map;
+<A NAME="13"></A>
+<A NAME="14"></A><FONT ID="FormalComment">/**
+<A NAME="15"></A> * Created by akonopko on 24.01.15.
+<A NAME="16"></A> */</FONT>
+<A NAME="17"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> JsonExpandConverterTest {
+<A NAME="18"></A>
+<A NAME="19"></A>    @Test
+<A NAME="20"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testJsonExpandConverterNoConversion() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="21"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/convert/JsonExpandConverter.java.html">JsonExpandConverter</A> converter = <FONT ID="New">new</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/convert/JsonExpandConverter.java.html">JsonExpandConverter</A>(Sets.&lt;String&gt;newHashSet());
+<A NAME="22"></A>        String jsonExample =
+<A NAME="23"></A>                <FONT ID="StringLiteral">"{\"id\":\"134f50faa804d30\",\"change\":\"{\\\"daystamp\\\":\\\"20140901\\\",\\\"context\\\":\\\"none\\\"}\",\"origin\":\"dc\"}\n"</FONT> +
+<A NAME="24"></A>                <FONT ID="StringLiteral">"{\"id\":\"134f50faa804d31\",\"change\":\"{\\\"daystamp\\\":\\\"20140902\\\",\\\"context\\\":\\\"none\\\"}\",\"origin\":\"dc\"}"</FONT>;
+<A NAME="25"></A>
+<A NAME="26"></A>        InputStream inputStream = IOUtils.toInputStream(jsonExample);
+<A NAME="27"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFile.java.html">FixFile</A> expanded = converter.convert(<FONT ID="Null">null</FONT>, <FONT ID="New">new</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFile.java.html">FixFile</A>(inputStream));
+<A NAME="28"></A>        String expandedStr = IOUtils.toString(expanded.getContent());
+<A NAME="29"></A>
+<A NAME="30"></A>        Assert.assertEquals(jsonExample, expandedStr);
+<A NAME="31"></A>    }
+<A NAME="32"></A>
+<A NAME="33"></A>    @Test
+<A NAME="34"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testJsonExpandConverter() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="35"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/convert/JsonExpandConverter.java.html">JsonExpandConverter</A> converter = <FONT ID="New">new</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/convert/JsonExpandConverter.java.html">JsonExpandConverter</A>(Sets.newHashSet(<FONT ID="StringLiteral">"change"</FONT>));
+<A NAME="36"></A>        String jsonExample =
+<A NAME="37"></A>                <FONT ID="StringLiteral">"{\"id\":\"134f50faa804d30\",\"change\":\"{\\\"daystamp\\\":\\\"20140901\\\",\\\"context\\\":\\\"none\\\"}\",\"origin\":\"dc\"}\n"</FONT> +
+<A NAME="38"></A>                <FONT ID="StringLiteral">"{\"id\":\"134f50faa804d31\",\"change\":\"{\\\"daystamp\\\":\\\"20140902\\\",\\\"context\\\":\\\"none\\\"}\",\"origin\":\"dc\"}"</FONT>;
+<A NAME="39"></A>
+<A NAME="40"></A>        InputStream inputStream = IOUtils.toInputStream(jsonExample);
+<A NAME="41"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFile.java.html">FixFile</A> expanded = converter.convert(<FONT ID="Null">null</FONT>, <FONT ID="New">new</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFile.java.html">FixFile</A>(inputStream));
+<A NAME="42"></A>        String expandedStr = IOUtils.toString(expanded.getContent());
+<A NAME="43"></A>
+<A NAME="44"></A>        String expectedStr =
+<A NAME="45"></A>                <FONT ID="StringLiteral">"{\"id\":\"134f50faa804d30\",\"change\":{\"daystamp\":\"20140901\",\"context\":\"none\"},\"origin\":\"dc\"}\n"</FONT> +
+<A NAME="46"></A>                <FONT ID="StringLiteral">"{\"id\":\"134f50faa804d31\",\"change\":{\"daystamp\":\"20140902\",\"context\":\"none\"},\"origin\":\"dc\"}"</FONT>;
+<A NAME="47"></A>
+<A NAME="48"></A>        Map&lt;JsonElement, Integer&gt; expected = Utils.fillMapWithJsonFromIS(IOUtils.toInputStream(expectedStr));
+<A NAME="49"></A>        Map&lt;JsonElement, Integer&gt; result = Utils.fillMapWithJsonFromIS(IOUtils.toInputStream(expandedStr));
+<A NAME="50"></A>        Assert.assertEquals(expected, result);
+<A NAME="51"></A>
+<A NAME="52"></A>    }
+<A NAME="53"></A>
+<A NAME="54"></A>}
+<A NAME="55"></A></pre>
+</BODY>
+</HTML>

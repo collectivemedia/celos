@@ -1,0 +1,66 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.ci.mode.test.TestConfigurationParser (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">TestConfigurationParser.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos.ci.mode.test;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../com/collective/celos/JSConfigParser.java.html">com.collective.celos.JSConfigParser</A>;
+<A NAME="4"></A><FONT ID="Import">import</FONT> com.google.common.collect.Lists;
+<A NAME="5"></A><FONT ID="Import">import</FONT> com.google.common.collect.Maps;
+<A NAME="6"></A><FONT ID="Import">import</FONT> org.mozilla.javascript.Context;
+<A NAME="7"></A><FONT ID="Import">import</FONT> org.mozilla.javascript.tools.shell.Global;
+<A NAME="8"></A>
+<A NAME="9"></A><FONT ID="Import">import</FONT> java.io.*;
+<A NAME="10"></A><FONT ID="Import">import</FONT> java.util.List;
+<A NAME="11"></A><FONT ID="Import">import</FONT> java.util.Map;
+<A NAME="12"></A>
+<A NAME="13"></A><FONT ID="FormalComment">/**
+<A NAME="14"></A> * Created by akonopko on 21.11.14.
+<A NAME="15"></A> */</FONT>
+<A NAME="16"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> TestConfigurationParser {
+<A NAME="17"></A>
+<A NAME="18"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> List&lt;<A HREF="../../../../../../com/collective/celos/ci/mode/test/TestCase.java.html">TestCase</A>&gt; testCases = Lists.newArrayList();
+<A NAME="19"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> <A HREF="../../../../../../com/collective/celos/JSConfigParser.java.html">JSConfigParser</A> jsConfigParser = <FONT ID="New">new</FONT> <A HREF="../../../../../../com/collective/celos/JSConfigParser.java.html">JSConfigParser</A>();
+<A NAME="20"></A>
+<A NAME="21"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> evaluateTestConfig(File testCaseFile) <FONT ID="Throws">throws</FONT> IOException {
+<A NAME="22"></A>        evaluateTestConfig(<FONT ID="New">new</FONT> FileReader(testCaseFile), testCaseFile.getName());
+<A NAME="23"></A>    }
+<A NAME="24"></A>
+<A NAME="25"></A>    Object evaluateTestConfig(Reader reader, String desc) <FONT ID="Throws">throws</FONT> IOException {
+<A NAME="26"></A>        Global scope = jsConfigParser.createGlobalScope();
+<A NAME="27"></A>
+<A NAME="28"></A>        Object wrappedContext = Context.javaToJS(<FONT ID="This">this</FONT>, scope);
+<A NAME="29"></A>        Map jsProperties = Maps.newHashMap();
+<A NAME="30"></A>        jsProperties.put(<FONT ID="StringLiteral">"testConfigurationParser"</FONT>, wrappedContext);
+<A NAME="31"></A>        jsConfigParser.putPropertiesInScope(jsProperties, scope);
+<A NAME="32"></A>
+<A NAME="33"></A>        InputStream scripts = getClass().getResourceAsStream(<FONT ID="StringLiteral">"celos-ci-scripts.js"</FONT>);
+<A NAME="34"></A>        jsConfigParser.evaluateReader(scope, <FONT ID="New">new</FONT> InputStreamReader(scripts), <FONT ID="StringLiteral">"celos-ci-scripts.js"</FONT>);
+<A NAME="35"></A>        <FONT ID="Return">return</FONT> jsConfigParser.evaluateReader(scope, reader, desc);
+<A NAME="36"></A>    }
+<A NAME="37"></A>
+<A NAME="38"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> addTestCase(<A HREF="../../../../../../com/collective/celos/ci/mode/test/TestCase.java.html">TestCase</A> testCase) {
+<A NAME="39"></A>        testCases.add(testCase);
+<A NAME="40"></A>    }
+<A NAME="41"></A>
+<A NAME="42"></A>    <FONT ID="Public">public</FONT> List&lt;<A HREF="../../../../../../com/collective/celos/ci/mode/test/TestCase.java.html">TestCase</A>&gt; getTestCases() {
+<A NAME="43"></A>        <FONT ID="Return">return</FONT> testCases;
+<A NAME="44"></A>    }
+<A NAME="45"></A>
+<A NAME="46"></A>}
+<A NAME="47"></A></pre>
+</BODY>
+</HTML>

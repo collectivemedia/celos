@@ -1,0 +1,98 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../../../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.ci.testing.fixtures.compare.FixObjectCompareResult (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">FixObjectCompareResult.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos.ci.testing.fixtures.compare;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/tree/TreeObjectProcessor.java.html">com.collective.celos.ci.testing.structure.tree.TreeObjectProcessor</A>;
+<A NAME="4"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/tree/TreeObject.java.html">com.collective.celos.ci.testing.structure.tree.TreeObject</A>;
+<A NAME="5"></A><FONT ID="Import">import</FONT> com.google.common.collect.Maps;
+<A NAME="6"></A><FONT ID="Import">import</FONT> org.apache.commons.lang.StringUtils;
+<A NAME="7"></A><FONT ID="Import">import</FONT> org.apache.commons.lang.text.StrBuilder;
+<A NAME="8"></A>
+<A NAME="9"></A><FONT ID="Import">import</FONT> java.io.IOException;
+<A NAME="10"></A><FONT ID="Import">import</FONT> java.nio.file.Path;
+<A NAME="11"></A><FONT ID="Import">import</FONT> java.util.Collections;
+<A NAME="12"></A><FONT ID="Import">import</FONT> java.util.Map;
+<A NAME="13"></A>
+<A NAME="14"></A><FONT ID="FormalComment">/**
+<A NAME="15"></A> * Created by akonopko on 10/8/14.
+<A NAME="16"></A> */</FONT>
+<A NAME="17"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> FixObjectCompareResult <FONT ID="Implements">implements</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/tree/TreeObject.java.html">TreeObject</A>&lt;<A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/compare/FixObjectCompareResult.java.html">FixObjectCompareResult</A>&gt; {
+<A NAME="18"></A>
+<A NAME="19"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/compare/FixObjectCompareResult.java.html">FixObjectCompareResult</A> SUCCESS = <FONT ID="New">new</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/compare/FixObjectCompareResult.java.html">FixObjectCompareResult</A>(Collections.EMPTY_MAP, <FONT ID="StringLiteral">""</FONT>, Status.SUCCESS);
+<A NAME="20"></A>
+<A NAME="21"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> Map&lt;String, <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/compare/FixObjectCompareResult.java.html">FixObjectCompareResult</A>&gt; children;
+<A NAME="22"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> String message;
+<A NAME="23"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> Status status;
+<A NAME="24"></A>
+<A NAME="25"></A>    <FONT ID="Public">public</FONT> enum Status {
+<A NAME="26"></A>        FAIL, SUCCESS
+<A NAME="27"></A>    }
+<A NAME="28"></A>
+<A NAME="29"></A>    <FONT ID="Public">public</FONT> FixObjectCompareResult(Map&lt;String, <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/compare/FixObjectCompareResult.java.html">FixObjectCompareResult</A>&gt; children, String message, Status status) {
+<A NAME="30"></A>        <FONT ID="This">this</FONT>.children = children;
+<A NAME="31"></A>        <FONT ID="This">this</FONT>.message = message;
+<A NAME="32"></A>        <FONT ID="This">this</FONT>.status = status;
+<A NAME="33"></A>    }
+<A NAME="34"></A>
+<A NAME="35"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/compare/FixObjectCompareResult.java.html">FixObjectCompareResult</A> failed(String message) {
+<A NAME="36"></A>        <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/compare/FixObjectCompareResult.java.html">FixObjectCompareResult</A>(Collections.EMPTY_MAP, message, Status.FAIL);
+<A NAME="37"></A>    }
+<A NAME="38"></A>
+<A NAME="39"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/compare/FixObjectCompareResult.java.html">FixObjectCompareResult</A> wrapFailed(Map&lt;String, <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/compare/FixObjectCompareResult.java.html">FixObjectCompareResult</A>&gt; child, String message) {
+<A NAME="40"></A>        <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/compare/FixObjectCompareResult.java.html">FixObjectCompareResult</A>(child, message, Status.FAIL);
+<A NAME="41"></A>    }
+<A NAME="42"></A>
+<A NAME="43"></A>    <FONT ID="Public">public</FONT> Map&lt;String, <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/compare/FixObjectCompareResult.java.html">FixObjectCompareResult</A>&gt; getChildren() {
+<A NAME="44"></A>        <FONT ID="Return">return</FONT> children;
+<A NAME="45"></A>    }
+<A NAME="46"></A>
+<A NAME="47"></A>    <FONT ID="Public">public</FONT> Status getStatus() {
+<A NAME="48"></A>        <FONT ID="Return">return</FONT> status;
+<A NAME="49"></A>    }
+<A NAME="50"></A>
+<A NAME="51"></A>    <FONT ID="Public">public</FONT> String getMessage() {
+<A NAME="52"></A>        <FONT ID="Return">return</FONT> message;
+<A NAME="53"></A>    }
+<A NAME="54"></A>
+<A NAME="55"></A>    <FONT ID="Public">public</FONT> String generateDescription() <FONT ID="Throws">throws</FONT> IOException {
+<A NAME="56"></A>        StrBuilder strBuilder = <FONT ID="New">new</FONT> StrBuilder();
+<A NAME="57"></A>        PathToMessageProcessor pathToMessage = <FONT ID="New">new</FONT> PathToMessageProcessor();
+<A NAME="58"></A>        TreeObjectProcessor.process(<FONT ID="This">this</FONT>, pathToMessage);
+<A NAME="59"></A>        <FONT ID="For">for</FONT> (Map.Entry&lt;Path, String&gt; pathMessage : pathToMessage.messages.entrySet()) {
+<A NAME="60"></A>            String keyText = StringUtils.isEmpty(pathMessage.getKey().toString()) ? <FONT ID="StringLiteral">""</FONT> : pathMessage.getKey() + <FONT ID="StringLiteral">" : "</FONT> ;
+<A NAME="61"></A>            strBuilder.appendln(keyText + pathMessage.getValue());
+<A NAME="62"></A>        }
+<A NAME="63"></A>        <FONT ID="Return">return</FONT> strBuilder.toString();
+<A NAME="64"></A>    }
+<A NAME="65"></A>
+<A NAME="66"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Class">class</FONT> PathToMessageProcessor <FONT ID="Extends">extends</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/tree/TreeObjectProcessor.java.html">TreeObjectProcessor</A>&lt;<A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/compare/FixObjectCompareResult.java.html">FixObjectCompareResult</A>&gt; {
+<A NAME="67"></A>
+<A NAME="68"></A>        <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> Map&lt;Path, String&gt; messages = Maps.newLinkedHashMap();
+<A NAME="69"></A>
+<A NAME="70"></A>        @Override
+<A NAME="71"></A>        <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> process(Path path, <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/compare/FixObjectCompareResult.java.html">FixObjectCompareResult</A> ff) <FONT ID="Throws">throws</FONT> IOException {
+<A NAME="72"></A>            <FONT ID="If">if</FONT> (StringUtils.isNotEmpty(ff.message)) {
+<A NAME="73"></A>                messages.put(path, ff.message);
+<A NAME="74"></A>            }
+<A NAME="75"></A>        }
+<A NAME="76"></A>    }
+<A NAME="77"></A>
+<A NAME="78"></A>}
+<A NAME="79"></A></pre>
+</BODY>
+</HTML>

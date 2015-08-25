@@ -1,0 +1,96 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.ci.config.CiCommandLine (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">CiCommandLine.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos.ci.config;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../com/collective/celos/Util.java.html">com.collective.celos.Util</A>;
+<A NAME="4"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../com/collective/celos/ci/config/deploy/CelosCiContext.java.html">com.collective.celos.ci.config.deploy.CelosCiContext</A>;
+<A NAME="5"></A>
+<A NAME="6"></A><FONT ID="Import">import</FONT> java.io.File;
+<A NAME="7"></A><FONT ID="Import">import</FONT> java.net.URI;
+<A NAME="8"></A>
+<A NAME="9"></A><FONT ID="FormalComment">/**
+<A NAME="10"></A> * Created by akonopko on 9/30/14.
+<A NAME="11"></A> */</FONT>
+<A NAME="12"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> CiCommandLine {
+<A NAME="13"></A>
+<A NAME="14"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> URI targetUri;
+<A NAME="15"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> <A HREF="../../../../../com/collective/celos/ci/config/deploy/CelosCiContext.java.html">CelosCiContext.Mode</A> mode;
+<A NAME="16"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> File deployDir;
+<A NAME="17"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> String workflowName;
+<A NAME="18"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> File testCasesDir;
+<A NAME="19"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> String userName;
+<A NAME="20"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> <FONT ID="Boolean">boolean</FONT> keepTempData;
+<A NAME="21"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> URI celosServerUrl;
+<A NAME="22"></A>
+<A NAME="23"></A>    <FONT ID="Public">public</FONT> CiCommandLine(String targetUri, String mode, String deployDir, String workflowName, String testCasesDir, String userName, <FONT ID="Boolean">boolean</FONT> keepTempData, String celosServerUrl) {
+<A NAME="24"></A>        <FONT ID="This">this</FONT>.celosServerUrl = celosServerUrl == <FONT ID="Null">null</FONT> ? <FONT ID="Null">null</FONT> : URI.create(celosServerUrl);
+<A NAME="25"></A>        <FONT ID="This">this</FONT>.userName = Util.requireNonNull(userName);
+<A NAME="26"></A>        <FONT ID="This">this</FONT>.keepTempData = keepTempData;
+<A NAME="27"></A>        <FONT ID="This">this</FONT>.targetUri = URI.create(Util.requireNonNull(targetUri));
+<A NAME="28"></A>        <FONT ID="This">this</FONT>.mode = CelosCiContext.Mode.valueOf(Util.requireNonNull(mode));
+<A NAME="29"></A>        <FONT ID="This">this</FONT>.deployDir = <FONT ID="New">new</FONT> File(Util.requireNonNull(deployDir));
+<A NAME="30"></A>        <FONT ID="This">this</FONT>.workflowName = Util.requireNonNull(workflowName);
+<A NAME="31"></A>        <FONT ID="This">this</FONT>.testCasesDir = getValidateTestCasesDir(<FONT ID="This">this</FONT>.mode, testCasesDir);
+<A NAME="32"></A>    }
+<A NAME="33"></A>
+<A NAME="34"></A>    File getValidateTestCasesDir(<A HREF="../../../../../com/collective/celos/ci/config/deploy/CelosCiContext.java.html">CelosCiContext.Mode</A> mode, String testCasesDir) {
+<A NAME="35"></A>        <FONT ID="If">if</FONT> (mode == CelosCiContext.Mode.TEST) {
+<A NAME="36"></A>            File file = <FONT ID="New">new</FONT> File(Util.requireNonNull(testCasesDir));
+<A NAME="37"></A>            <FONT ID="If">if</FONT> (!file.isDirectory()) {
+<A NAME="38"></A>                <FONT ID="Throw">throw</FONT> <FONT ID="New">new</FONT> IllegalArgumentException(<FONT ID="StringLiteral">"Directory with Celos-CI test cases was not found on default path "</FONT> + file.getAbsolutePath() + <FONT ID="StringLiteral">", please specify --testDir parameter"</FONT>);
+<A NAME="39"></A>            }
+<A NAME="40"></A>            <FONT ID="Return">return</FONT> file;
+<A NAME="41"></A>        }
+<A NAME="42"></A>        <FONT ID="Return">return</FONT> <FONT ID="Null">null</FONT>;
+<A NAME="43"></A>    }
+<A NAME="44"></A>
+<A NAME="45"></A>    <FONT ID="Public">public</FONT> URI getTargetUri() {
+<A NAME="46"></A>        <FONT ID="Return">return</FONT> targetUri;
+<A NAME="47"></A>    }
+<A NAME="48"></A>
+<A NAME="49"></A>    <FONT ID="Public">public</FONT> <A HREF="../../../../../com/collective/celos/ci/config/deploy/CelosCiContext.java.html">CelosCiContext.Mode</A> getMode() {
+<A NAME="50"></A>        <FONT ID="Return">return</FONT> mode;
+<A NAME="51"></A>    }
+<A NAME="52"></A>
+<A NAME="53"></A>    <FONT ID="Public">public</FONT> File getDeployDir() {
+<A NAME="54"></A>        <FONT ID="Return">return</FONT> deployDir;
+<A NAME="55"></A>    }
+<A NAME="56"></A>
+<A NAME="57"></A>    <FONT ID="Public">public</FONT> String getWorkflowName() {
+<A NAME="58"></A>        <FONT ID="Return">return</FONT> workflowName;
+<A NAME="59"></A>    }
+<A NAME="60"></A>
+<A NAME="61"></A>    <FONT ID="Public">public</FONT> File getTestCasesDir() {
+<A NAME="62"></A>        <FONT ID="Return">return</FONT> testCasesDir;
+<A NAME="63"></A>    }
+<A NAME="64"></A>
+<A NAME="65"></A>    <FONT ID="Public">public</FONT> String getUserName() {
+<A NAME="66"></A>        <FONT ID="Return">return</FONT> userName;
+<A NAME="67"></A>    }
+<A NAME="68"></A>
+<A NAME="69"></A>    <FONT ID="Public">public</FONT> <FONT ID="Boolean">boolean</FONT> isKeepTempData() {
+<A NAME="70"></A>        <FONT ID="Return">return</FONT> keepTempData;
+<A NAME="71"></A>    }
+<A NAME="72"></A>
+<A NAME="73"></A>    <FONT ID="Public">public</FONT> URI getCelosServerUrl() {
+<A NAME="74"></A>        <FONT ID="Return">return</FONT> celosServerUrl;
+<A NAME="75"></A>    }
+<A NAME="76"></A>}
+<A NAME="77"></A></pre>
+</BODY>
+</HTML>

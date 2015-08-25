@@ -1,0 +1,73 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.servlet.JSONWorkflowListServlet (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">JSONWorkflowListServlet.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos.servlet;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> <A HREF="../../../../com/collective/celos/Scheduler.java.html">com.collective.celos.Scheduler</A>;
+<A NAME="4"></A><FONT ID="Import">import</FONT> <A HREF="../../../../com/collective/celos/Workflow.java.html">com.collective.celos.Workflow</A>;
+<A NAME="5"></A><FONT ID="Import">import</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/WorkflowConfiguration.html">com.collective.celos.WorkflowConfiguration</A>;
+<A NAME="6"></A><FONT ID="Import">import</FONT> com.fasterxml.jackson.databind.node.ArrayNode;
+<A NAME="7"></A><FONT ID="Import">import</FONT> com.fasterxml.jackson.databind.node.ObjectNode;
+<A NAME="8"></A>
+<A NAME="9"></A><FONT ID="Import">import</FONT> javax.servlet.ServletException;
+<A NAME="10"></A><FONT ID="Import">import</FONT> javax.servlet.http.HttpServletRequest;
+<A NAME="11"></A><FONT ID="Import">import</FONT> javax.servlet.http.HttpServletResponse;
+<A NAME="12"></A><FONT ID="Import">import</FONT> java.util.SortedSet;
+<A NAME="13"></A><FONT ID="Import">import</FONT> java.util.TreeSet;
+<A NAME="14"></A>
+<A NAME="15"></A><FONT ID="FormalComment">/**
+<A NAME="16"></A> * Returns list of IDs of configured workflows as JSON.
+<A NAME="17"></A> *
+<A NAME="18"></A> * GET /workflow-list
+<A NAME="19"></A> * ----
+<A NAME="20"></A> * {
+<A NAME="21"></A> *   "ids": [ "workflow-1", "workflow-2" ]
+<A NAME="22"></A> * }
+<A NAME="23"></A> */</FONT>
+<A NAME="24"></A>@SuppressWarnings(<FONT ID="StringLiteral">"serial"</FONT>)
+<A NAME="25"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> JSONWorkflowListServlet <FONT ID="Extends">extends</FONT> <A HREF="../../../../com/collective/celos/servlet/AbstractJSONServlet.java.html">AbstractJSONServlet</A> {
+<A NAME="26"></A>
+<A NAME="27"></A>    <FONT ID="Protected">protected</FONT> <FONT ID="Void">void</FONT> doGet(HttpServletRequest req, HttpServletResponse res) <FONT ID="Throws">throws</FONT> ServletException {
+<A NAME="28"></A>        <FONT ID="Try">try</FONT> {
+<A NAME="29"></A>            <A HREF="../../../../com/collective/celos/Scheduler.java.html">Scheduler</A> sch = getOrCreateCachedScheduler();
+<A NAME="30"></A>            <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/WorkflowConfiguration.html">WorkflowConfiguration</A> cfg = sch.getWorkflowConfiguration();
+<A NAME="31"></A>            ObjectNode object = createJSONObject(cfg);
+<A NAME="32"></A>            writer.writeValue(res.getOutputStream(), object);
+<A NAME="33"></A>        } <FONT ID="Catch">catch</FONT>(Exception e) {
+<A NAME="34"></A>            <FONT ID="Throw">throw</FONT> <FONT ID="New">new</FONT> ServletException(e);
+<A NAME="35"></A>        }
+<A NAME="36"></A>    }
+<A NAME="37"></A>
+<A NAME="38"></A>    ObjectNode createJSONObject(<A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/WorkflowConfiguration.html">WorkflowConfiguration</A> cfg) {
+<A NAME="39"></A>        <FONT ID="SingleLineComment">// Make sure the IDs are sorted
+<A NAME="40"></A></FONT>        SortedSet&lt;String&gt; ids = <FONT ID="New">new</FONT> TreeSet&lt;String&gt;();
+<A NAME="41"></A>        <FONT ID="For">for</FONT> (<A HREF="../../../../com/collective/celos/Workflow.java.html">Workflow</A> wf : cfg.getWorkflows()) {
+<A NAME="42"></A>            ids.add(wf.getID().toString());
+<A NAME="43"></A>        }
+<A NAME="44"></A>        ArrayNode list = mapper.createArrayNode();
+<A NAME="45"></A>        <FONT ID="For">for</FONT> (String id : ids) {
+<A NAME="46"></A>            list.add(id);
+<A NAME="47"></A>        }
+<A NAME="48"></A>        ObjectNode object = mapper.createObjectNode();
+<A NAME="49"></A>        object.put(<FONT ID="StringLiteral">"ids"</FONT>, list);
+<A NAME="50"></A>        <FONT ID="Return">return</FONT> object;
+<A NAME="51"></A>    }
+<A NAME="52"></A>
+<A NAME="53"></A>}
+<A NAME="54"></A></pre>
+</BODY>
+</HTML>

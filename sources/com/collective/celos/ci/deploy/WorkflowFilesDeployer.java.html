@@ -1,0 +1,85 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.ci.deploy.WorkflowFilesDeployer (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">WorkflowFilesDeployer.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos.ci.deploy;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../com/collective/celos/Util.java.html">com.collective.celos.Util</A>;
+<A NAME="4"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../com/collective/celos/ci/config/deploy/CelosCiContext.java.html">com.collective.celos.ci.config.deploy.CelosCiContext</A>;
+<A NAME="5"></A>
+<A NAME="6"></A><FONT ID="Import">import</FONT> org.apache.commons.vfs2.FileObject;
+<A NAME="7"></A><FONT ID="Import">import</FONT> org.apache.commons.vfs2.FileSystemException;
+<A NAME="8"></A><FONT ID="Import">import</FONT> org.apache.commons.vfs2.Selectors;
+<A NAME="9"></A>
+<A NAME="10"></A><FONT ID="Import">import</FONT> java.io.File;
+<A NAME="11"></A><FONT ID="Import">import</FONT> java.net.URI;
+<A NAME="12"></A><FONT ID="Import">import</FONT> java.net.URISyntaxException;
+<A NAME="13"></A>
+<A NAME="14"></A>
+<A NAME="15"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> WorkflowFilesDeployer {
+<A NAME="16"></A>
+<A NAME="17"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String WORKFLOW_FILENAME = <FONT ID="StringLiteral">"workflow.js"</FONT>;
+<A NAME="18"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String DEFAULTS_FILENAME = <FONT ID="StringLiteral">"defaults.js"</FONT>;
+<A NAME="19"></A>
+<A NAME="20"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> <A HREF="../../../../../com/collective/celos/ci/deploy/JScpWorker.java.html">JScpWorker</A> jScpWorker;
+<A NAME="21"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> <A HREF="../../../../../com/collective/celos/ci/config/deploy/CelosCiContext.java.html">CelosCiContext</A> config;
+<A NAME="22"></A>
+<A NAME="23"></A>    <FONT ID="Public">public</FONT> WorkflowFilesDeployer(<A HREF="../../../../../com/collective/celos/ci/config/deploy/CelosCiContext.java.html">CelosCiContext</A> context) <FONT ID="Throws">throws</FONT> FileSystemException {
+<A NAME="24"></A>        <FONT ID="This">this</FONT>.config = Util.requireNonNull(context);
+<A NAME="25"></A>        <FONT ID="This">this</FONT>.jScpWorker = <FONT ID="New">new</FONT> <A HREF="../../../../../com/collective/celos/ci/deploy/JScpWorker.java.html">JScpWorker</A>(context.getUserName());
+<A NAME="26"></A>    }
+<A NAME="27"></A>
+<A NAME="28"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> undeploy() <FONT ID="Throws">throws</FONT> FileSystemException, URISyntaxException {
+<A NAME="29"></A>        undeployJSFile(config.getTarget().getWorkflowsDirUri());
+<A NAME="30"></A>        undeployJSFile(config.getTarget().getDefaultsDirUri());
+<A NAME="31"></A>    }
+<A NAME="32"></A>
+<A NAME="33"></A>    <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> undeployJSFile(URI dirUri) <FONT ID="Throws">throws</FONT> URISyntaxException, FileSystemException {
+<A NAME="34"></A>        <FONT ID="If">if</FONT> (dirUri != <FONT ID="Null">null</FONT>) {
+<A NAME="35"></A>            FileObject file = jScpWorker.getFileObjectByUri(getTargetJsFileUri(dirUri));
+<A NAME="36"></A>            file.delete();
+<A NAME="37"></A>        }
+<A NAME="38"></A>    }
+<A NAME="39"></A>
+<A NAME="40"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> deploy() <FONT ID="Throws">throws</FONT> FileSystemException, URISyntaxException {
+<A NAME="41"></A>        undeploy();
+<A NAME="42"></A>        deployJSFile(config.getTarget().getWorkflowsDirUri(), WORKFLOW_FILENAME);
+<A NAME="43"></A>        deployJSFile(config.getTarget().getDefaultsDirUri(), DEFAULTS_FILENAME);
+<A NAME="44"></A>    }
+<A NAME="45"></A>
+<A NAME="46"></A>    <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> deployJSFile(URI dirUri, String fileName) <FONT ID="Throws">throws</FONT> URISyntaxException, FileSystemException {
+<A NAME="47"></A>        <FONT ID="If">if</FONT> (dirUri != <FONT ID="Null">null</FONT>) {
+<A NAME="48"></A>            URI fileUri = getTargetJsFileUri(dirUri);
+<A NAME="49"></A>            File localFile = <FONT ID="New">new</FONT> File(config.getDeployDir(), fileName);
+<A NAME="50"></A>            <FONT ID="If">if</FONT> (localFile.exists()) {
+<A NAME="51"></A>                FileObject sftpFile = jScpWorker.getFileObjectByUri(fileUri);
+<A NAME="52"></A>                FileObject localFileObject = jScpWorker.getFileObjectByUri(localFile.getAbsolutePath());
+<A NAME="53"></A>                sftpFile.copyFrom(localFileObject, Selectors.SELECT_SELF);
+<A NAME="54"></A>            }
+<A NAME="55"></A>        }
+<A NAME="56"></A>    }
+<A NAME="57"></A>
+<A NAME="58"></A>    URI getTargetJsFileUri(URI uri) <FONT ID="Throws">throws</FONT> URISyntaxException {
+<A NAME="59"></A>        String path = uri.getPath() + File.separator + config.getWorkflowName() + <FONT ID="StringLiteral">".js"</FONT>;
+<A NAME="60"></A>        <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> URI(uri.getScheme(), uri.getUserInfo(), uri.getHost(),
+<A NAME="61"></A>                uri.getPort(), path, uri.getQuery(), uri.getFragment());
+<A NAME="62"></A>    }
+<A NAME="63"></A>
+<A NAME="64"></A>
+<A NAME="65"></A>}
+<A NAME="66"></A></pre>
+</BODY>
+</HTML>

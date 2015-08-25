@@ -1,0 +1,121 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.OozieExternalService (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">OozieExternalService.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> java.util.Iterator;
+<A NAME="4"></A><FONT ID="Import">import</FONT> java.util.Properties;
+<A NAME="5"></A>
+<A NAME="6"></A><FONT ID="Import">import</FONT> org.apache.oozie.client.AuthOozieClient;
+<A NAME="7"></A><FONT ID="Import">import</FONT> org.apache.oozie.client.OozieClient;
+<A NAME="8"></A><FONT ID="Import">import</FONT> org.apache.oozie.client.OozieClientException;
+<A NAME="9"></A><FONT ID="Import">import</FONT> org.apache.oozie.client.WorkflowJob;
+<A NAME="10"></A>
+<A NAME="11"></A><FONT ID="Import">import</FONT> com.fasterxml.jackson.databind.node.ObjectNode;
+<A NAME="12"></A>
+<A NAME="13"></A><FONT ID="SingleLineComment">// TODO: mock AuthOozieClient and check that its methods are called with the right args
+<A NAME="14"></A></FONT><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> OozieExternalService <FONT ID="Implements">implements</FONT> <A HREF="../../../com/collective/celos/ExternalService.java.html">ExternalService</A> {
+<A NAME="15"></A>    
+<A NAME="16"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String YEAR_PROP = <FONT ID="StringLiteral">"year"</FONT>;
+<A NAME="17"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String MONTH_PROP = <FONT ID="StringLiteral">"month"</FONT>;
+<A NAME="18"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String DAY_PROP = <FONT ID="StringLiteral">"day"</FONT>;
+<A NAME="19"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String HOUR_PROP = <FONT ID="StringLiteral">"hour"</FONT>;
+<A NAME="20"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String MINUTE_PROP = <FONT ID="StringLiteral">"minute"</FONT>;
+<A NAME="21"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String SECOND_PROP = <FONT ID="StringLiteral">"second"</FONT>;
+<A NAME="22"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String WORKFLOW_NAME_PROP = <FONT ID="StringLiteral">"celosWorkflowName"</FONT>;
+<A NAME="23"></A>    
+<A NAME="24"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> OozieClient client;
+<A NAME="25"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> String oozieURL;
+<A NAME="26"></A>    <FONT ID="Private">private</FONT> <A HREF="../../../com/collective/celos/PropertiesGenerator.java.html">PropertiesGenerator</A> gen;
+<A NAME="27"></A>
+<A NAME="28"></A>    <FONT ID="Public">public</FONT> OozieExternalService(String oozieURL, <A HREF="../../../com/collective/celos/PropertiesGenerator.java.html">PropertiesGenerator</A> gen) {
+<A NAME="29"></A>        <FONT ID="This">this</FONT>.oozieURL = Util.requireNonNull(oozieURL);
+<A NAME="30"></A>        <FONT ID="This">this</FONT>.gen = Util.requireNonNull(gen);
+<A NAME="31"></A>        <FONT ID="This">this</FONT>.client = <FONT ID="New">new</FONT> AuthOozieClient(oozieURL);
+<A NAME="32"></A>    }
+<A NAME="33"></A>    
+<A NAME="34"></A>    @Override
+<A NAME="35"></A>    <FONT ID="Public">public</FONT> String submit(<A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A> id) <FONT ID="Throws">throws</FONT> <A HREF="../../../com/collective/celos/ExternalServiceException.java.html">ExternalServiceException</A> {
+<A NAME="36"></A>        <FONT ID="Try">try</FONT> {
+<A NAME="37"></A>            Properties runProperties = setupRunProperties(getProperties(id), id);
+<A NAME="38"></A>            <FONT ID="Return">return</FONT> client.submit(runProperties);
+<A NAME="39"></A>        } <FONT ID="Catch">catch</FONT> (Exception e) {
+<A NAME="40"></A>            <FONT ID="Throw">throw</FONT> <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ExternalServiceException.java.html">ExternalServiceException</A>(e);
+<A NAME="41"></A>        }
+<A NAME="42"></A>    }
+<A NAME="43"></A>
+<A NAME="44"></A>    <FONT ID="Public">public</FONT> ObjectNode getProperties(<A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A> id) {
+<A NAME="45"></A>        <FONT ID="Return">return</FONT> gen.getProperties(id);
+<A NAME="46"></A>    }
+<A NAME="47"></A>    
+<A NAME="48"></A>    @Override
+<A NAME="49"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> start(<A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A> unused, String externalID) <FONT ID="Throws">throws</FONT> <A HREF="../../../com/collective/celos/ExternalServiceException.java.html">ExternalServiceException</A> {
+<A NAME="50"></A>        <FONT ID="Try">try</FONT> {
+<A NAME="51"></A>            client.start(externalID);
+<A NAME="52"></A>        } <FONT ID="Catch">catch</FONT> (OozieClientException e) {
+<A NAME="53"></A>            <FONT ID="Throw">throw</FONT> <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ExternalServiceException.java.html">ExternalServiceException</A>(e);
+<A NAME="54"></A>        }
+<A NAME="55"></A>    }
+<A NAME="56"></A>
+<A NAME="57"></A>    Properties setupRunProperties(ObjectNode defaults, <A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A> id) {
+<A NAME="58"></A>        <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> t = id.getScheduledTime();
+<A NAME="59"></A>        Properties runProperties = setupDefaultProperties(defaults, t);
+<A NAME="60"></A>        <A HREF="../../../com/collective/celos/ScheduledTimeFormatter.java.html">ScheduledTimeFormatter</A> formatter = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTimeFormatter.java.html">ScheduledTimeFormatter</A>();
+<A NAME="61"></A>        runProperties.setProperty(YEAR_PROP, formatter.formatYear(t));
+<A NAME="62"></A>        runProperties.setProperty(MONTH_PROP, formatter.formatMonth(t));
+<A NAME="63"></A>        runProperties.setProperty(DAY_PROP, formatter.formatDay(t));
+<A NAME="64"></A>        runProperties.setProperty(HOUR_PROP, formatter.formatHour(t));
+<A NAME="65"></A>        runProperties.setProperty(MINUTE_PROP, formatter.formatMinute(t));
+<A NAME="66"></A>        runProperties.setProperty(SECOND_PROP, formatter.formatSecond(t));
+<A NAME="67"></A>        runProperties.setProperty(WORKFLOW_NAME_PROP, getWorkflowName(id, formatter));
+<A NAME="68"></A>        <FONT ID="Return">return</FONT> runProperties;
+<A NAME="69"></A>    }
+<A NAME="70"></A>
+<A NAME="71"></A>    String getWorkflowName(<A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A> id, <A HREF="../../../com/collective/celos/ScheduledTimeFormatter.java.html">ScheduledTimeFormatter</A> formatter) {
+<A NAME="72"></A>        <FONT ID="Return">return</FONT> id.getWorkflowID() + <FONT ID="StringLiteral">"@"</FONT> + formatter.formatPretty(id.getScheduledTime());
+<A NAME="73"></A>    }
+<A NAME="74"></A>
+<A NAME="75"></A>    Properties setupDefaultProperties(ObjectNode defaults, <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> t) {
+<A NAME="76"></A>        Properties props = <FONT ID="New">new</FONT> Properties();
+<A NAME="77"></A>        <A HREF="../../../com/collective/celos/ScheduledTimeFormatter.java.html">ScheduledTimeFormatter</A> formatter = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTimeFormatter.java.html">ScheduledTimeFormatter</A>();
+<A NAME="78"></A>        <FONT ID="For">for</FONT> (Iterator&lt;String&gt; names = defaults.fieldNames(); names.hasNext();) {
+<A NAME="79"></A>            String name = names.next();
+<A NAME="80"></A>            String value = defaults.get(name).textValue();
+<A NAME="81"></A>            props.setProperty(name, formatter.replaceTimeTokens(value, t));
+<A NAME="82"></A>        }
+<A NAME="83"></A>        <FONT ID="Return">return</FONT> props;
+<A NAME="84"></A>    }
+<A NAME="85"></A>
+<A NAME="86"></A>    @Override
+<A NAME="87"></A>    <FONT ID="Public">public</FONT> <A HREF="../../../com/collective/celos/ExternalStatus.java.html">ExternalStatus</A> getStatus(<A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A> unused, String jobId) <FONT ID="Throws">throws</FONT> <A HREF="../../../com/collective/celos/ExternalServiceException.java.html">ExternalServiceException</A> {
+<A NAME="88"></A>        <FONT ID="Try">try</FONT> {
+<A NAME="89"></A>            WorkflowJob jobInfo = client.getJobInfo(jobId);
+<A NAME="90"></A>            String status = jobInfo.getStatus().toString();
+<A NAME="91"></A>            <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/OozieExternalStatus.java.html">OozieExternalStatus</A>(status);
+<A NAME="92"></A>        } <FONT ID="Catch">catch</FONT> (OozieClientException e) {
+<A NAME="93"></A>            <FONT ID="Throw">throw</FONT> <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ExternalServiceException.java.html">ExternalServiceException</A>(e);
+<A NAME="94"></A>        }
+<A NAME="95"></A>    }
+<A NAME="96"></A>
+<A NAME="97"></A>    <FONT ID="Public">public</FONT> String getOozieURL() {
+<A NAME="98"></A>        <FONT ID="Return">return</FONT> oozieURL;
+<A NAME="99"></A>    }
+<A NAME="100"></A>
+<A NAME="101"></A>}
+<A NAME="102"></A></pre>
+</BODY>
+</HTML>

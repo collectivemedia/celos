@@ -1,0 +1,41 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.server.Main (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">Main.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos.server;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> <A HREF="../../../../com/collective/celos/Util.java.html">com.collective.celos.Util</A>;
+<A NAME="4"></A>
+<A NAME="5"></A><FONT ID="Import">import</FONT> java.util.Collections;
+<A NAME="6"></A>
+<A NAME="7"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> Main {
+<A NAME="8"></A>
+<A NAME="9"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Void">void</FONT> main(String... args) <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="10"></A>        <A HREF="../../../../com/collective/celos/server/ServerCommandLineParser.java.html">ServerCommandLineParser</A> serverCommandLineParser = <FONT ID="New">new</FONT> <A HREF="../../../../com/collective/celos/server/ServerCommandLineParser.java.html">ServerCommandLineParser</A>();
+<A NAME="11"></A>        <A HREF="../../../../com/collective/celos/server/ServerCommandLine.java.html">ServerCommandLine</A> commandLine = serverCommandLineParser.parse(args);
+<A NAME="12"></A>        <A HREF="../../../../com/collective/celos/server/CelosServer.java.html">CelosServer</A> celosServer = <FONT ID="New">new</FONT> <A HREF="../../../../com/collective/celos/server/CelosServer.java.html">CelosServer</A>();
+<A NAME="13"></A>        celosServer.startServer(commandLine.getPort(),
+<A NAME="14"></A>                Collections.&lt;String, String&gt;emptyMap(),
+<A NAME="15"></A>                commandLine.getWorkflowsDir(),
+<A NAME="16"></A>                commandLine.getDefaultsDir(),
+<A NAME="17"></A>                commandLine.getStateDatabase());
+<A NAME="18"></A>
+<A NAME="19"></A>        Util.setupLogging(commandLine.getLogDir());
+<A NAME="20"></A>    }
+<A NAME="21"></A>
+<A NAME="22"></A>}</pre>
+</BODY>
+</HTML>

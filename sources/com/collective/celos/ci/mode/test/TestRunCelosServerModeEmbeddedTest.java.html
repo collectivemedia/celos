@@ -1,0 +1,108 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.ci.mode.test.TestRunCelosServerModeEmbeddedTest (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">TestRunCelosServerModeEmbeddedTest.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos.ci.mode.test;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../com/collective/celos/ci/config/CiCommandLine.java.html">com.collective.celos.ci.config.CiCommandLine</A>;
+<A NAME="4"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../com/collective/celos/ci/config/deploy/CelosCiTarget.java.html">com.collective.celos.ci.config.deploy.CelosCiTarget</A>;
+<A NAME="5"></A><FONT ID="Import">import</FONT> org.junit.Assert;
+<A NAME="6"></A><FONT ID="Import">import</FONT> org.junit.Before;
+<A NAME="7"></A><FONT ID="Import">import</FONT> org.junit.Rule;
+<A NAME="8"></A><FONT ID="Import">import</FONT> org.junit.Test;
+<A NAME="9"></A><FONT ID="Import">import</FONT> org.junit.rules.TemporaryFolder;
+<A NAME="10"></A>
+<A NAME="11"></A><FONT ID="Import">import</FONT> java.io.File;
+<A NAME="12"></A><FONT ID="Import">import</FONT> java.io.IOException;
+<A NAME="13"></A><FONT ID="Import">import</FONT> java.net.URI;
+<A NAME="14"></A><FONT ID="Import">import</FONT> java.util.Arrays;
+<A NAME="15"></A><FONT ID="Import">import</FONT> java.util.UUID;
+<A NAME="16"></A>
+<A NAME="17"></A><FONT ID="FormalComment">/**
+<A NAME="18"></A> * Created by akonopko on 19.08.15.
+<A NAME="19"></A> */</FONT>
+<A NAME="20"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> TestRunCelosServerModeEmbeddedTest {
+<A NAME="21"></A>
+<A NAME="22"></A>    @Rule
+<A NAME="23"></A>    <FONT ID="Public">public</FONT> TemporaryFolder tempDir = <FONT ID="New">new</FONT> TemporaryFolder();
+<A NAME="24"></A>
+<A NAME="25"></A>    <FONT ID="Public">public</FONT> File tmpDirFile;
+<A NAME="26"></A>
+<A NAME="27"></A>    @Before
+<A NAME="28"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> before() <FONT ID="Throws">throws</FONT> IOException {
+<A NAME="29"></A>        tmpDirFile = tempDir.newFolder();
+<A NAME="30"></A>    }
+<A NAME="31"></A>
+<A NAME="32"></A>
+<A NAME="33"></A>    @Test
+<A NAME="34"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testCopyRemoteDefaults() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="35"></A>
+<A NAME="36"></A>        File deployDir = tempDir.newFolder();
+<A NAME="37"></A>        deployDir.mkdirs();
+<A NAME="38"></A>        File defFile = <FONT ID="New">new</FONT> File(deployDir, <FONT ID="StringLiteral">"defaults.js"</FONT>);
+<A NAME="39"></A>        defFile.createNewFile();
+<A NAME="40"></A>
+<A NAME="41"></A>        File remoteFolderWf = tempDir.newFolder();
+<A NAME="42"></A>        remoteFolderWf.mkdirs();
+<A NAME="43"></A>
+<A NAME="44"></A>        File remoteFolderDef = tempDir.newFolder();
+<A NAME="45"></A>        remoteFolderDef.mkdirs();
+<A NAME="46"></A>        File otherDefFile1 = <FONT ID="New">new</FONT> File(remoteFolderDef, <FONT ID="StringLiteral">"some-defaults1.js"</FONT>);
+<A NAME="47"></A>        otherDefFile1.createNewFile();
+<A NAME="48"></A>        File otherDefFile2 = <FONT ID="New">new</FONT> File(remoteFolderDef, <FONT ID="StringLiteral">"some-defaults2.js"</FONT>);
+<A NAME="49"></A>        otherDefFile2.createNewFile();
+<A NAME="50"></A>
+<A NAME="51"></A>        <A HREF="../../../../../../com/collective/celos/ci/config/CiCommandLine.java.html">CiCommandLine</A> commandLine = <FONT ID="New">new</FONT> <A HREF="../../../../../../com/collective/celos/ci/config/CiCommandLine.java.html">CiCommandLine</A>(<FONT ID="StringLiteral">""</FONT>, <FONT ID="StringLiteral">"TEST"</FONT>, deployDir.getAbsolutePath(), <FONT ID="StringLiteral">"myworkflow"</FONT>, tmpDirFile.getAbsolutePath(), <FONT ID="StringLiteral">"uname"</FONT>, <FONT ID="False">false</FONT>, <FONT ID="Null">null</FONT>);
+<A NAME="52"></A>
+<A NAME="53"></A>        <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestRunCelosServerModeEmbedded.java.html">TestRunCelosServerModeEmbedded</A> modeEmbedded = <FONT ID="New">new</FONT> <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestRunCelosServerModeEmbedded.java.html">TestRunCelosServerModeEmbedded</A>(commandLine, tmpDirFile, UUID.randomUUID());
+<A NAME="54"></A>
+<A NAME="55"></A>        modeEmbedded.copyRemoteDefaultsToLocal(<FONT ID="StringLiteral">"uname"</FONT>, remoteFolderDef.toURI());
+<A NAME="56"></A>
+<A NAME="57"></A>        String[] fileNames = <FONT ID="New">new</FONT> File(modeEmbedded.getCelosDefaultsDir()).list();
+<A NAME="58"></A>        Arrays.sort(fileNames);
+<A NAME="59"></A>
+<A NAME="60"></A>        Assert.assertArrayEquals(fileNames, <FONT ID="New">new</FONT> String[]{<FONT ID="StringLiteral">"some-defaults1.js"</FONT>, <FONT ID="StringLiteral">"some-defaults2.js"</FONT>});
+<A NAME="61"></A>    }
+<A NAME="62"></A>
+<A NAME="63"></A>    @Test
+<A NAME="64"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testCopyRemoteNoDefaults() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="65"></A>
+<A NAME="66"></A>        File deployDir = tempDir.newFolder();
+<A NAME="67"></A>        deployDir.mkdirs();
+<A NAME="68"></A>        File defFile = <FONT ID="New">new</FONT> File(deployDir, <FONT ID="StringLiteral">"defaults.js"</FONT>);
+<A NAME="69"></A>        defFile.createNewFile();
+<A NAME="70"></A>
+<A NAME="71"></A>        File remoteFolderWf = tempDir.newFolder();
+<A NAME="72"></A>        remoteFolderWf.mkdirs();
+<A NAME="73"></A>
+<A NAME="74"></A>        File remoteFolderDef = tempDir.newFolder();
+<A NAME="75"></A>        remoteFolderDef.mkdirs();
+<A NAME="76"></A>
+<A NAME="77"></A>        <A HREF="../../../../../../com/collective/celos/ci/config/CiCommandLine.java.html">CiCommandLine</A> commandLine = <FONT ID="New">new</FONT> <A HREF="../../../../../../com/collective/celos/ci/config/CiCommandLine.java.html">CiCommandLine</A>(<FONT ID="StringLiteral">""</FONT>, <FONT ID="StringLiteral">"TEST"</FONT>, deployDir.getAbsolutePath(), <FONT ID="StringLiteral">"myworkflow"</FONT>, tmpDirFile.getAbsolutePath(), <FONT ID="StringLiteral">"uname"</FONT>, <FONT ID="False">false</FONT>, <FONT ID="Null">null</FONT>);
+<A NAME="78"></A>
+<A NAME="79"></A>        <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestRunCelosServerModeEmbedded.java.html">TestRunCelosServerModeEmbedded</A> modeEmbedded = <FONT ID="New">new</FONT> <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestRunCelosServerModeEmbedded.java.html">TestRunCelosServerModeEmbedded</A>(commandLine, tmpDirFile, UUID.randomUUID());
+<A NAME="80"></A>
+<A NAME="81"></A>        modeEmbedded.copyRemoteDefaultsToLocal(<FONT ID="StringLiteral">"uname"</FONT>, remoteFolderDef.toURI());
+<A NAME="82"></A>
+<A NAME="83"></A>        String[] fileNames = <FONT ID="New">new</FONT> File(modeEmbedded.getCelosDefaultsDir()).list();
+<A NAME="84"></A>
+<A NAME="85"></A>        Assert.assertNull(fileNames);
+<A NAME="86"></A>    }
+<A NAME="87"></A>
+<A NAME="88"></A>}
+<A NAME="89"></A></pre>
+</BODY>
+</HTML>

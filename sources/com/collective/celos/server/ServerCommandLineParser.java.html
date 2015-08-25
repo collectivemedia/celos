@@ -1,0 +1,109 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.server.ServerCommandLineParser (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">ServerCommandLineParser.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos.server;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> java.io.OutputStream;
+<A NAME="4"></A><FONT ID="Import">import</FONT> java.io.PrintWriter;
+<A NAME="5"></A>
+<A NAME="6"></A><FONT ID="Import">import</FONT> org.apache.commons.cli.CommandLine;
+<A NAME="7"></A><FONT ID="Import">import</FONT> org.apache.commons.cli.CommandLineParser;
+<A NAME="8"></A><FONT ID="Import">import</FONT> org.apache.commons.cli.GnuParser;
+<A NAME="9"></A><FONT ID="Import">import</FONT> org.apache.commons.cli.HelpFormatter;
+<A NAME="10"></A><FONT ID="Import">import</FONT> org.apache.commons.cli.Options;
+<A NAME="11"></A><FONT ID="Import">import</FONT> org.apache.log4j.Logger;
+<A NAME="12"></A>
+<A NAME="13"></A><FONT ID="Import">import</FONT> <A HREF="../../../../com/collective/celos/Constants.java.html">com.collective.celos.Constants</A>;
+<A NAME="14"></A>
+<A NAME="15"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> ServerCommandLineParser {
+<A NAME="16"></A>
+<A NAME="17"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String CLI_WF_DIR = <FONT ID="StringLiteral">"workflowsDir"</FONT>;
+<A NAME="18"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String CLI_DEFAULTS_DIR = <FONT ID="StringLiteral">"defaultsDir"</FONT>;
+<A NAME="19"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String CLI_STATE_DB_DIR = <FONT ID="StringLiteral">"stateDir"</FONT>;
+<A NAME="20"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String CLI_LOG_DIR = <FONT ID="StringLiteral">"logDir"</FONT>;
+<A NAME="21"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String CLI_PORT = <FONT ID="StringLiteral">"port"</FONT>;
+<A NAME="22"></A>
+<A NAME="23"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> Logger LOGGER = Logger.getLogger(<A HREF="../../../../com/collective/celos/server/ServerCommandLineParser.java.html">ServerCommandLineParser</A>.<FONT ID="Class">class</FONT>);
+<A NAME="24"></A>    
+<A NAME="25"></A>    <FONT ID="Public">public</FONT> <A HREF="../../../../com/collective/celos/server/ServerCommandLine.java.html">ServerCommandLine</A> parse(<FONT ID="Final">final</FONT> String[] commandLineArguments) <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="26"></A>
+<A NAME="27"></A>        <FONT ID="Final">final</FONT> CommandLineParser cmdLineGnuParser = <FONT ID="New">new</FONT> GnuParser();
+<A NAME="28"></A>        <FONT ID="Final">final</FONT> Options gnuOptions = constructOptions();
+<A NAME="29"></A>        CommandLine commandLine = cmdLineGnuParser.parse(gnuOptions, commandLineArguments);
+<A NAME="30"></A>
+<A NAME="31"></A>        <FONT ID="If">if</FONT> (!commandLine.hasOption(CLI_PORT)) {
+<A NAME="32"></A>            printHelp(<FONT ID="IntegerLiteral">80</FONT>, <FONT ID="IntegerLiteral">5</FONT>, <FONT ID="IntegerLiteral">3</FONT>, <FONT ID="True">true</FONT>, System.out);
+<A NAME="33"></A>            <FONT ID="Throw">throw</FONT> <FONT ID="New">new</FONT> IllegalArgumentException(<FONT ID="StringLiteral">"Missing --"</FONT> + CLI_PORT + <FONT ID="StringLiteral">" argument"</FONT>);
+<A NAME="34"></A>        }
+<A NAME="35"></A>
+<A NAME="36"></A>        String stateDbDir = getDefault(commandLine, CLI_STATE_DB_DIR, Constants.DEFAULT_DB_DIR);
+<A NAME="37"></A>        String defaultsDir = getDefault(commandLine, CLI_DEFAULTS_DIR, Constants.DEFAULT_DEFAULTS_DIR);
+<A NAME="38"></A>        String workflowsDir = getDefault(commandLine, CLI_WF_DIR, Constants.DEFAULT_WORKFLOWS_DIR);
+<A NAME="39"></A>        String logDir = getDefault(commandLine, CLI_LOG_DIR, Constants.DEFAULT_LOG_DIR);
+<A NAME="40"></A>
+<A NAME="41"></A>        Integer port = Integer.valueOf(commandLine.getOptionValue(CLI_PORT));
+<A NAME="42"></A>
+<A NAME="43"></A>        <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> <A HREF="../../../../com/collective/celos/server/ServerCommandLine.java.html">ServerCommandLine</A>(workflowsDir, defaultsDir, stateDbDir, logDir, port);
+<A NAME="44"></A>    }
+<A NAME="45"></A>
+<A NAME="46"></A>    <FONT ID="Private">private</FONT> String getDefault(CommandLine commandLine, String optionName, String defaultValue) {
+<A NAME="47"></A>        String value = commandLine.getOptionValue(optionName);
+<A NAME="48"></A>        <FONT ID="If">if</FONT> (value == <FONT ID="Null">null</FONT>) {
+<A NAME="49"></A>            LOGGER.info(<FONT ID="StringLiteral">"--"</FONT> + optionName + <FONT ID="StringLiteral">" not specified, using default value: "</FONT> + defaultValue);
+<A NAME="50"></A>            <FONT ID="Return">return</FONT> defaultValue;
+<A NAME="51"></A>        } <FONT ID="Else">else</FONT> {
+<A NAME="52"></A>            <FONT ID="Return">return</FONT> value;
+<A NAME="53"></A>        }
+<A NAME="54"></A>    }
+<A NAME="55"></A>
+<A NAME="56"></A>    <FONT ID="Public">public</FONT> Options constructOptions() {
+<A NAME="57"></A>        <FONT ID="Final">final</FONT> Options options = <FONT ID="New">new</FONT> Options();
+<A NAME="58"></A>        options.addOption(CLI_WF_DIR, CLI_WF_DIR, <FONT ID="True">true</FONT>, <FONT ID="StringLiteral">"Path to WORKFLOWS dir"</FONT>)
+<A NAME="59"></A>                .addOption(CLI_DEFAULTS_DIR, CLI_DEFAULTS_DIR, <FONT ID="True">true</FONT>, <FONT ID="StringLiteral">"Path to DEFAULTS dir"</FONT>)
+<A NAME="60"></A>                .addOption(CLI_STATE_DB_DIR, CLI_STATE_DB_DIR, <FONT ID="True">true</FONT>, <FONT ID="StringLiteral">"Path to STATE DATABASE dir"</FONT>)
+<A NAME="61"></A>                .addOption(CLI_PORT, CLI_PORT, <FONT ID="True">true</FONT>, <FONT ID="StringLiteral">"Celos Server port"</FONT>)
+<A NAME="62"></A>                .addOption(CLI_LOG_DIR, CLI_LOG_DIR, <FONT ID="True">true</FONT>, <FONT ID="StringLiteral">"Celos logs dir"</FONT>);
+<A NAME="63"></A>        <FONT ID="Return">return</FONT> options;
+<A NAME="64"></A>    }
+<A NAME="65"></A>
+<A NAME="66"></A>
+<A NAME="67"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> printHelp(
+<A NAME="68"></A>            <FONT ID="Final">final</FONT> <FONT ID="Int">int</FONT> printedRowWidth,
+<A NAME="69"></A>            <FONT ID="Final">final</FONT> <FONT ID="Int">int</FONT> spacesBeforeOption,
+<A NAME="70"></A>            <FONT ID="Final">final</FONT> <FONT ID="Int">int</FONT> spacesBeforeOptionDescription,
+<A NAME="71"></A>            <FONT ID="Final">final</FONT> <FONT ID="Boolean">boolean</FONT> displayUsage,
+<A NAME="72"></A>            <FONT ID="Final">final</FONT> OutputStream out) {
+<A NAME="73"></A>        <FONT ID="Final">final</FONT> String commandLineSyntax = <FONT ID="StringLiteral">"java -jar &lt;celos&gt;.jar"</FONT>;
+<A NAME="74"></A>        <FONT ID="Final">final</FONT> PrintWriter writer = <FONT ID="New">new</FONT> PrintWriter(out);
+<A NAME="75"></A>        <FONT ID="Final">final</FONT> HelpFormatter helpFormatter = <FONT ID="New">new</FONT> HelpFormatter();
+<A NAME="76"></A>        helpFormatter.printHelp(
+<A NAME="77"></A>                writer,
+<A NAME="78"></A>                printedRowWidth,
+<A NAME="79"></A>                commandLineSyntax,
+<A NAME="80"></A>                <FONT ID="Null">null</FONT>,
+<A NAME="81"></A>                constructOptions(),
+<A NAME="82"></A>                spacesBeforeOption,
+<A NAME="83"></A>                spacesBeforeOptionDescription,
+<A NAME="84"></A>                <FONT ID="Null">null</FONT>,
+<A NAME="85"></A>                displayUsage);
+<A NAME="86"></A>        writer.flush();
+<A NAME="87"></A>    }
+<A NAME="88"></A>
+<A NAME="89"></A>}
+<A NAME="90"></A></pre>
+</BODY>
+</HTML>

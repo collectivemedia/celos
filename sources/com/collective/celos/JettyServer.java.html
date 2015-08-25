@@ -1,0 +1,68 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.JettyServer (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">JettyServer.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> org.apache.http.client.utils.URIBuilder;
+<A NAME="4"></A><FONT ID="Import">import</FONT> org.eclipse.jetty.server.Server;
+<A NAME="5"></A><FONT ID="Import">import</FONT> org.eclipse.jetty.webapp.WebAppContext;
+<A NAME="6"></A>
+<A NAME="7"></A><FONT ID="Import">import</FONT> java.net.URL;
+<A NAME="8"></A><FONT ID="Import">import</FONT> java.nio.file.Paths;
+<A NAME="9"></A><FONT ID="Import">import</FONT> java.util.Map;
+<A NAME="10"></A>
+<A NAME="11"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> JettyServer {
+<A NAME="12"></A>
+<A NAME="13"></A>    <FONT ID="Private">private</FONT> Server server;
+<A NAME="14"></A>    <FONT ID="Private">private</FONT> WebAppContext context;
+<A NAME="15"></A>
+<A NAME="16"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> start(<FONT ID="Int">int</FONT> port) <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="17"></A>        server = <FONT ID="New">new</FONT> Server(port);
+<A NAME="18"></A>
+<A NAME="19"></A>        URL url = Thread.currentThread().getContextClassLoader().getResource(<FONT ID="StringLiteral">"WEB-INF"</FONT>);
+<A NAME="20"></A>        URIBuilder uriBuilder = <FONT ID="New">new</FONT> URIBuilder(url.toURI());
+<A NAME="21"></A>        uriBuilder.setPath(Paths.get(url.getPath()).getParent().toString());
+<A NAME="22"></A>
+<A NAME="23"></A>        context = <FONT ID="New">new</FONT> WebAppContext(uriBuilder.toString() + <FONT ID="StringLiteral">"/"</FONT>, <FONT ID="StringLiteral">"/"</FONT>);
+<A NAME="24"></A>
+<A NAME="25"></A>        server.setHandler(context);
+<A NAME="26"></A>        server.start();
+<A NAME="27"></A>    }
+<A NAME="28"></A>
+<A NAME="29"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> stop() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="30"></A>        <FONT ID="If">if</FONT> (server == <FONT ID="Null">null</FONT>) {
+<A NAME="31"></A>            <FONT ID="Throw">throw</FONT> <FONT ID="New">new</FONT> IllegalStateException(<FONT ID="StringLiteral">"JettyServer was not started"</FONT>);
+<A NAME="32"></A>        }
+<A NAME="33"></A>        server.stop();
+<A NAME="34"></A>        server.destroy();
+<A NAME="35"></A>        server.join();
+<A NAME="36"></A>    }
+<A NAME="37"></A>
+<A NAME="38"></A>
+<A NAME="39"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> setupContext(Map&lt;String, Object&gt; attributes, Map&lt;String, String&gt; initParam) {
+<A NAME="40"></A>        <FONT ID="For">for</FONT> (Map.Entry&lt;String, Object&gt; entry: attributes.entrySet()) {
+<A NAME="41"></A>            context.setAttribute(entry.getKey(), entry.getValue());
+<A NAME="42"></A>        }
+<A NAME="43"></A>        <FONT ID="For">for</FONT> (Map.Entry&lt;String, String&gt; entry: initParam.entrySet()) {
+<A NAME="44"></A>            context.setInitParameter(entry.getKey(), entry.getValue());
+<A NAME="45"></A>        }
+<A NAME="46"></A>    }
+<A NAME="47"></A>
+<A NAME="48"></A>
+<A NAME="49"></A>}</pre>
+</BODY>
+</HTML>

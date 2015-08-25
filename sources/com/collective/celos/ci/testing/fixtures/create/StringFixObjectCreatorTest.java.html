@@ -1,0 +1,42 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../../../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.ci.testing.fixtures.create.StringFixObjectCreatorTest (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">StringFixObjectCreatorTest.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos.ci.testing.fixtures.create;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFile.java.html">com.collective.celos.ci.testing.structure.fixobject.FixFile</A>;
+<A NAME="4"></A><FONT ID="Import">import</FONT> junit.framework.Assert;
+<A NAME="5"></A><FONT ID="Import">import</FONT> org.apache.commons.io.IOUtils;
+<A NAME="6"></A><FONT ID="Import">import</FONT> org.junit.Test;
+<A NAME="7"></A>
+<A NAME="8"></A><FONT ID="FormalComment">/**
+<A NAME="9"></A> * Created by akonopko on 10/7/14.
+<A NAME="10"></A> */</FONT>
+<A NAME="11"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> StringFixObjectCreatorTest {
+<A NAME="12"></A>
+<A NAME="13"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String SOME_TEXT = <FONT ID="StringLiteral">"some test"</FONT>;
+<A NAME="14"></A>
+<A NAME="15"></A>    @Test
+<A NAME="16"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testStringFixObjectCreator() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="17"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixFileFromStringCreator.java.html">FixFileFromStringCreator</A> creator = <FONT ID="New">new</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixFileFromStringCreator.java.html">FixFileFromStringCreator</A>(SOME_TEXT);
+<A NAME="18"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFile.java.html">FixFile</A> fixFile = creator.create(<FONT ID="Null">null</FONT>);
+<A NAME="19"></A>        Assert.assertEquals(SOME_TEXT, IOUtils.toString(fixFile.getContent()));
+<A NAME="20"></A>    }
+<A NAME="21"></A>
+<A NAME="22"></A>}
+<A NAME="23"></A></pre>
+</BODY>
+</HTML>

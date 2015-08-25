@@ -1,0 +1,58 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.ci.CelosCi (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">CelosCi.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos.ci;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> <A HREF="../../../../com/collective/celos/ci/config/CiCommandLine.java.html">com.collective.celos.ci.config.CiCommandLine</A>;
+<A NAME="4"></A><FONT ID="Import">import</FONT> <A HREF="../../../../com/collective/celos/ci/config/CiCommandLineParser.java.html">com.collective.celos.ci.config.CiCommandLineParser</A>;
+<A NAME="5"></A><FONT ID="Import">import</FONT> <A HREF="../../../../com/collective/celos/ci/config/deploy/CelosCiContext.java.html">com.collective.celos.ci.config.deploy.CelosCiContext</A>;
+<A NAME="6"></A><FONT ID="Import">import</FONT> <A HREF="../../../../com/collective/celos/ci/mode/DeployTask.java.html">com.collective.celos.ci.mode.DeployTask</A>;
+<A NAME="7"></A><FONT ID="Import">import</FONT> <A HREF="../../../../com/collective/celos/ci/mode/TestTask.java.html">com.collective.celos.ci.mode.TestTask</A>;
+<A NAME="8"></A><FONT ID="Import">import</FONT> <A HREF="../../../../com/collective/celos/ci/mode/UndeployTask.java.html">com.collective.celos.ci.mode.UndeployTask</A>;
+<A NAME="9"></A>
+<A NAME="10"></A><FONT ID="Public">public</FONT> <FONT ID="Abstract">abstract</FONT> <FONT ID="Class">class</FONT> CelosCi {
+<A NAME="11"></A>
+<A NAME="12"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Void">void</FONT> main(String... args) <FONT ID="Throws">throws</FONT> Throwable {
+<A NAME="13"></A>
+<A NAME="14"></A>        <FONT ID="SingleLineComment">//left here for convenience while debugging
+<A NAME="15"></A></FONT>        <FONT ID="SingleLineComment">//args = "--testDir /home/akonopko/work/Pythia/harmony/src/test/celos-ci --deployDir /home/akonopko/work/Pythia/harmony/build/celos_deploy --target sftp://celos001/home/akonopko/testing.json --workflowName grand_central --mode TEST".split(" ");
+<A NAME="16"></A></FONT>
+<A NAME="17"></A>        <A HREF="../../../../com/collective/celos/ci/config/CiCommandLineParser.java.html">CiCommandLineParser</A> contextParser = <FONT ID="New">new</FONT> <A HREF="../../../../com/collective/celos/ci/config/CiCommandLineParser.java.html">CiCommandLineParser</A>();
+<A NAME="18"></A>        <A HREF="../../../../com/collective/celos/ci/config/CiCommandLine.java.html">CiCommandLine</A> commandLine = contextParser.parse(args);
+<A NAME="19"></A>
+<A NAME="20"></A>        <A HREF="../../../../com/collective/celos/ci/CelosCi.java.html">CelosCi</A> celosCi = createCelosCi(commandLine);
+<A NAME="21"></A>        celosCi.start();
+<A NAME="22"></A>    }
+<A NAME="23"></A>
+<A NAME="24"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <A HREF="../../../../com/collective/celos/ci/CelosCi.java.html">CelosCi</A> createCelosCi(<A HREF="../../../../com/collective/celos/ci/config/CiCommandLine.java.html">CiCommandLine</A> commandLine) <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="25"></A>
+<A NAME="26"></A>        <FONT ID="If">if</FONT> (commandLine.getMode() == CelosCiContext.Mode.TEST) {
+<A NAME="27"></A>            <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> <A HREF="../../../../com/collective/celos/ci/mode/TestTask.java.html">TestTask</A>(commandLine);
+<A NAME="28"></A>        } <FONT ID="Else">else</FONT> <FONT ID="If">if</FONT> (commandLine.getMode() == CelosCiContext.Mode.DEPLOY) {
+<A NAME="29"></A>            <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> <A HREF="../../../../com/collective/celos/ci/mode/DeployTask.java.html">DeployTask</A>(commandLine);
+<A NAME="30"></A>        } <FONT ID="Else">else</FONT> <FONT ID="If">if</FONT> (commandLine.getMode() == CelosCiContext.Mode.UNDEPLOY) {
+<A NAME="31"></A>            <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> <A HREF="../../../../com/collective/celos/ci/mode/UndeployTask.java.html">UndeployTask</A>(commandLine);
+<A NAME="32"></A>        }
+<A NAME="33"></A>        <FONT ID="Throw">throw</FONT> <FONT ID="New">new</FONT> IllegalStateException(<FONT ID="StringLiteral">"Unknown mode "</FONT> + commandLine.getMode());
+<A NAME="34"></A>    }
+<A NAME="35"></A>
+<A NAME="36"></A>    <FONT ID="Public">public</FONT> <FONT ID="Abstract">abstract</FONT> <FONT ID="Void">void</FONT> start() <FONT ID="Throws">throws</FONT> Throwable;
+<A NAME="37"></A>
+<A NAME="38"></A>}
+<A NAME="39"></A></pre>
+</BODY>
+</HTML>

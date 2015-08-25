@@ -1,0 +1,126 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.MiscTests (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">MiscTests.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> java.util.HashMap;
+<A NAME="4"></A>
+<A NAME="5"></A><FONT ID="Import">import</FONT> org.junit.Assert;
+<A NAME="6"></A><FONT ID="Import">import</FONT> org.junit.Test;
+<A NAME="7"></A>
+<A NAME="8"></A><FONT ID="Import">import</FONT> <FONT ID="Static">static</FONT> org.mockito.Mockito.mock;
+<A NAME="9"></A>
+<A NAME="10"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> MiscTests {
+<A NAME="11"></A>
+<A NAME="12"></A>    <FONT ID="SingleLineComment">// EQUALS
+<A NAME="13"></A></FONT>    
+<A NAME="14"></A>    @Test
+<A NAME="15"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> scheduledTimeEqualsWorks() {
+<A NAME="16"></A>        Assert.assertEquals(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-11-18T20:00Z"</FONT>), <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-11-18T20:00Z"</FONT>));
+<A NAME="17"></A>        Assert.assertNotSame(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2014-11-18T20:00Z"</FONT>), <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-11-18T20:00Z"</FONT>));
+<A NAME="18"></A>    }
+<A NAME="19"></A>    
+<A NAME="20"></A>    @Test
+<A NAME="21"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> slotIDEqualsWorks() {    
+<A NAME="22"></A>        Assert.assertEquals(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A>(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"foo"</FONT>), <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-11-18T20:00Z"</FONT>)),
+<A NAME="23"></A>                            <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A>(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"foo"</FONT>), <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-11-18T20:00Z"</FONT>)));
+<A NAME="24"></A>        Assert.assertNotSame(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A>(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"bar"</FONT>), <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-11-18T20:00Z"</FONT>)),
+<A NAME="25"></A>                             <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A>(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"foo"</FONT>), <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-11-18T20:00Z"</FONT>)));
+<A NAME="26"></A>        Assert.assertNotSame(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A>(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"foo"</FONT>), <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2014-11-18T20:00Z"</FONT>)),
+<A NAME="27"></A>                             <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A>(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"foo"</FONT>), <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-11-18T20:00Z"</FONT>)));
+<A NAME="28"></A>    }        
+<A NAME="29"></A>        
+<A NAME="30"></A>    @Test
+<A NAME="31"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> slotStateEqualsWorks() {
+<A NAME="32"></A>        <A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A> slotID1 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A>(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"foo"</FONT>), <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-11-18T20:00Z"</FONT>));
+<A NAME="33"></A>        <A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A> slotID2= <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A>(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"bar"</FONT>), <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-11-18T20:00Z"</FONT>));
+<A NAME="34"></A>
+<A NAME="35"></A>        Assert.assertEquals(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(slotID1, SlotState.Status.READY),
+<A NAME="36"></A>                            <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(slotID1, SlotState.Status.READY));
+<A NAME="37"></A>        Assert.assertNotSame(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(slotID1, SlotState.Status.READY),
+<A NAME="38"></A>                             <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(slotID1, SlotState.Status.WAITING));
+<A NAME="39"></A>        Assert.assertNotSame(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(slotID1, SlotState.Status.READY),
+<A NAME="40"></A>                             <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(slotID2, SlotState.Status.READY));   
+<A NAME="41"></A>    }
+<A NAME="42"></A>    
+<A NAME="43"></A>    @Test
+<A NAME="44"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> workflowIDEqualsWorks() {
+<A NAME="45"></A>        Assert.assertEquals(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"foo"</FONT>), <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"foo"</FONT>));
+<A NAME="46"></A>        Assert.assertNotSame(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"bar"</FONT>), <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"foo"</FONT>));
+<A NAME="47"></A>    }
+<A NAME="48"></A>    
+<A NAME="49"></A>    <FONT ID="SingleLineComment">// HASHCODE
+<A NAME="50"></A></FONT>    
+<A NAME="51"></A>    <FONT ID="MultiLineComment">/* Tests that objects of a type work correctly as HashMap keys. */</FONT>
+<A NAME="52"></A>    <FONT ID="Private">private</FONT> &lt;T&gt; <FONT ID="Void">void</FONT> hashCodeTest(T a, T b) {
+<A NAME="53"></A>        HashMap&lt;T, String&gt; map = <FONT ID="New">new</FONT> HashMap&lt;T, String&gt;();
+<A NAME="54"></A>        map.put(a, <FONT ID="StringLiteral">"foo"</FONT>);
+<A NAME="55"></A>        map.put(b, <FONT ID="StringLiteral">"bar"</FONT>);
+<A NAME="56"></A>        Assert.assertEquals(map.get(a), <FONT ID="StringLiteral">"foo"</FONT>);
+<A NAME="57"></A>        Assert.assertEquals(map.get(b), <FONT ID="StringLiteral">"bar"</FONT>);
+<A NAME="58"></A>    }
+<A NAME="59"></A>    
+<A NAME="60"></A>    @Test
+<A NAME="61"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> scheduledTimeHashCodeWorks() {
+<A NAME="62"></A>        hashCodeTest(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-11-18T20:00Z"</FONT>), <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-11-19T20:00Z"</FONT>));
+<A NAME="63"></A>    }
+<A NAME="64"></A>    
+<A NAME="65"></A>    @Test
+<A NAME="66"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> slotIDHashCodeWorks() {
+<A NAME="67"></A>        hashCodeTest(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A>(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"foo"</FONT>), <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-11-18T20:00Z"</FONT>)),
+<A NAME="68"></A>                     <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A>(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"bar"</FONT>), <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-11-18T20:00Z"</FONT>)));
+<A NAME="69"></A>    }
+<A NAME="70"></A>    
+<A NAME="71"></A>    @Test
+<A NAME="72"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> slotStateHashCodeWorks() {
+<A NAME="73"></A>        <A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A> slotID = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A>(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"foo"</FONT>), <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-11-18T20:00Z"</FONT>));
+<A NAME="74"></A>        hashCodeTest(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(slotID, SlotState.Status.READY),
+<A NAME="75"></A>                     <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(slotID, SlotState.Status.WAITING));
+<A NAME="76"></A>    }
+<A NAME="77"></A>    
+<A NAME="78"></A>    @Test
+<A NAME="79"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> workflowIDHashCodeWorks() {
+<A NAME="80"></A>        hashCodeTest(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"foo"</FONT>), <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"bar"</FONT>));
+<A NAME="81"></A>    }
+<A NAME="82"></A>    
+<A NAME="83"></A>    <FONT ID="SingleLineComment">// OTHER
+<A NAME="84"></A></FONT>    
+<A NAME="85"></A>    @Test(expected=IllegalArgumentException.<FONT ID="Class">class</FONT>)
+<A NAME="86"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> cannotCreateWorkflowWithWhitespaceID() {
+<A NAME="87"></A>        <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"   \n \t"</FONT>);
+<A NAME="88"></A>    }
+<A NAME="89"></A>    
+<A NAME="90"></A>    @Test(expected=IllegalArgumentException.<FONT ID="Class">class</FONT>)
+<A NAME="91"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> cannotCreateWorkflowWithIDContainingSlash() {
+<A NAME="92"></A>        <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"workflow/1"</FONT>);
+<A NAME="93"></A>    }
+<A NAME="94"></A>
+<A NAME="95"></A>    @Test(expected=IllegalArgumentException.<FONT ID="Class">class</FONT>)
+<A NAME="96"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> scheduledTimeMustBeUTC() {
+<A NAME="97"></A>        <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-11-12T20:00"</FONT>);
+<A NAME="98"></A>    }
+<A NAME="99"></A>    
+<A NAME="100"></A>    @Test
+<A NAME="101"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> tooTrivialButStill_alwaysTriggerAlwaysTriggers() {
+<A NAME="102"></A>        <A HREF="../../../com/collective/celos/Scheduler.java.html">Scheduler</A> scheduler = mock(<A HREF="../../../com/collective/celos/Scheduler.java.html">Scheduler</A>.<FONT ID="Class">class</FONT>);
+<A NAME="103"></A>        Assert.assertTrue(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/AlwaysTrigger.java.html">AlwaysTrigger</A>().isDataAvailable(scheduler, ScheduledTime.now(), <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-11-21T20:00Z"</FONT>)));
+<A NAME="104"></A>    }
+<A NAME="105"></A>        
+<A NAME="106"></A>}
+<A NAME="107"></A></pre>
+</BODY>
+</HTML>

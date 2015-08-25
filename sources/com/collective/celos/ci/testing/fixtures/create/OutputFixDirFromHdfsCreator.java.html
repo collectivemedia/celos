@@ -1,0 +1,82 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../../../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.ci.testing.fixtures.create.OutputFixDirFromHdfsCreator (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">OutputFixDirFromHdfsCreator.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos.ci.testing.fixtures.create;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../../com/collective/celos/Util.java.html">com.collective.celos.Util</A>;
+<A NAME="4"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../../com/collective/celos/ci/config/deploy/CelosCiContext.java.html">com.collective.celos.ci.config.deploy.CelosCiContext</A>;
+<A NAME="5"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../../com/collective/celos/ci/mode/test/TestRun.java.html">com.collective.celos.ci.mode.test.TestRun</A>;
+<A NAME="6"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixDir.java.html">com.collective.celos.ci.testing.structure.fixobject.FixDir</A>;
+<A NAME="7"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFile.java.html">com.collective.celos.ci.testing.structure.fixobject.FixFile</A>;
+<A NAME="8"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFsObject.java.html">com.collective.celos.ci.testing.structure.fixobject.FixFsObject</A>;
+<A NAME="9"></A><FONT ID="Import">import</FONT> com.google.common.collect.Maps;
+<A NAME="10"></A><FONT ID="Import">import</FONT> org.apache.commons.lang.StringUtils;
+<A NAME="11"></A><FONT ID="Import">import</FONT> org.apache.hadoop.fs.FileStatus;
+<A NAME="12"></A><FONT ID="Import">import</FONT> org.apache.hadoop.fs.Path;
+<A NAME="13"></A>
+<A NAME="14"></A><FONT ID="Import">import</FONT> java.net.URISyntaxException;
+<A NAME="15"></A><FONT ID="Import">import</FONT> java.util.Map;
+<A NAME="16"></A>
+<A NAME="17"></A><FONT ID="FormalComment">/**
+<A NAME="18"></A> * Created by akonopko on 10/7/14.
+<A NAME="19"></A> */</FONT>
+<A NAME="20"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> OutputFixDirFromHdfsCreator <FONT ID="Implements">implements</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">FixObjectCreator</A>&lt;<A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixDir.java.html">FixDir</A>&gt; {
+<A NAME="21"></A>
+<A NAME="22"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> Path path;
+<A NAME="23"></A>
+<A NAME="24"></A>    <FONT ID="Public">public</FONT> OutputFixDirFromHdfsCreator(String path) {
+<A NAME="25"></A>        <FONT ID="This">this</FONT>(<FONT ID="New">new</FONT> Path(path));
+<A NAME="26"></A>    }
+<A NAME="27"></A>
+<A NAME="28"></A>    <FONT ID="Public">public</FONT> OutputFixDirFromHdfsCreator(Path path) {
+<A NAME="29"></A>        <FONT ID="This">this</FONT>.path = path;
+<A NAME="30"></A>    }
+<A NAME="31"></A>
+<A NAME="32"></A>    <FONT ID="Public">public</FONT> Path getPath() {
+<A NAME="33"></A>        <FONT ID="Return">return</FONT> path;
+<A NAME="34"></A>    }
+<A NAME="35"></A>
+<A NAME="36"></A>    <FONT ID="Public">public</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixDir.java.html">FixDir</A> create(<A HREF="../../../../../../../com/collective/celos/ci/mode/test/TestRun.java.html">TestRun</A> testRun) <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="37"></A>        Path fullPath = <FONT ID="New">new</FONT> Path(Util.augmentHdfsPath(testRun.getCiContext().getHdfsPrefix(), path.toString()));
+<A NAME="38"></A>        <FONT ID="Return">return</FONT> read(fullPath, testRun.getCiContext()).asDir();
+<A NAME="39"></A>    }
+<A NAME="40"></A>
+<A NAME="41"></A>    @Override
+<A NAME="42"></A>    <FONT ID="Public">public</FONT> String getDescription(<A HREF="../../../../../../../com/collective/celos/ci/mode/test/TestRun.java.html">TestRun</A> testRun) <FONT ID="Throws">throws</FONT> URISyntaxException {
+<A NAME="43"></A>        <FONT ID="Return">return</FONT> Util.augmentHdfsPath(testRun.getCiContext().getHdfsPrefix(), path.toString());
+<A NAME="44"></A>    }
+<A NAME="45"></A>
+<A NAME="46"></A>    <FONT ID="Private">private</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFsObject.java.html">FixFsObject</A> read(Path path, <A HREF="../../../../../../../com/collective/celos/ci/config/deploy/CelosCiContext.java.html">CelosCiContext</A> context) <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="47"></A>        FileStatus fileStatus = context.getFileSystem().getFileStatus(path);
+<A NAME="48"></A>        <FONT ID="If">if</FONT> (fileStatus.isDirectory()) {
+<A NAME="49"></A>            Map&lt;String, <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFsObject.java.html">FixFsObject</A>&gt; content = Maps.newHashMap();
+<A NAME="50"></A>            FileStatus[] statuses = context.getFileSystem().listStatus(fileStatus.getPath());
+<A NAME="51"></A>            <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> i=<FONT ID="IntegerLiteral">0</FONT>; i &lt; statuses.length; i++) {
+<A NAME="52"></A>                FileStatus childStatus = statuses[i];
+<A NAME="53"></A>                <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFsObject.java.html">FixFsObject</A> fixObject = read(childStatus.getPath(), context);
+<A NAME="54"></A>                content.put(childStatus.getPath().getName(), fixObject);
+<A NAME="55"></A>            }
+<A NAME="56"></A>            <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixDir.java.html">FixDir</A>(content);
+<A NAME="57"></A>        } <FONT ID="Else">else</FONT> {
+<A NAME="58"></A>            <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFile.java.html">FixFile</A>(context.getFileSystem().open(fileStatus.getPath()));
+<A NAME="59"></A>        }
+<A NAME="60"></A>    }
+<A NAME="61"></A>
+<A NAME="62"></A>}
+<A NAME="63"></A></pre>
+</BODY>
+</HTML>

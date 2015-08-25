@@ -1,0 +1,91 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.ci.mode.test.TestCase (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">TestCase.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos.ci.mode.test;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../com/collective/celos/ScheduledTime.java.html">com.collective.celos.ScheduledTime</A>;
+<A NAME="4"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../com/collective/celos/Util.java.html">com.collective.celos.Util</A>;
+<A NAME="5"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../com/collective/celos/WorkflowID.java.html">com.collective.celos.WorkflowID</A>;
+<A NAME="6"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../com/collective/celos/ci/testing/fixtures/compare/FixtureComparer.java.html">com.collective.celos.ci.testing.fixtures.compare.FixtureComparer</A>;
+<A NAME="7"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../com/collective/celos/ci/testing/fixtures/deploy/FixtureDeployer.java.html">com.collective.celos.ci.testing.fixtures.deploy.FixtureDeployer</A>;
+<A NAME="8"></A><FONT ID="Import">import</FONT> com.google.common.collect.Lists;
+<A NAME="9"></A><FONT ID="Import">import</FONT> com.google.common.collect.Sets;
+<A NAME="10"></A>
+<A NAME="11"></A><FONT ID="Import">import</FONT> java.util.List;
+<A NAME="12"></A><FONT ID="Import">import</FONT> java.util.Set;
+<A NAME="13"></A>
+<A NAME="14"></A><FONT ID="FormalComment">/**
+<A NAME="15"></A> * Created by akonopko on 21.11.14.
+<A NAME="16"></A> */</FONT>
+<A NAME="17"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> TestCase {
+<A NAME="18"></A>
+<A NAME="19"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> String name;
+<A NAME="20"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> <A HREF="../../../../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> sampleTimeStart;
+<A NAME="21"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> <A HREF="../../../../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> sampleTimeEnd;
+<A NAME="22"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> List&lt;<A HREF="../../../../../../com/collective/celos/ci/testing/fixtures/deploy/FixtureDeployer.java.html">FixtureDeployer</A>&gt; inputs = Lists.newArrayList();
+<A NAME="23"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> List&lt;<A HREF="../../../../../../com/collective/celos/ci/testing/fixtures/compare/FixtureComparer.java.html">FixtureComparer</A>&gt; outputs = Lists.newArrayList();
+<A NAME="24"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> Set&lt;<A HREF="../../../../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>&gt; targetWorkflowIDs = Sets.newHashSet();
+<A NAME="25"></A>
+<A NAME="26"></A>    <FONT ID="Public">public</FONT> TestCase(String name, String sampleTimeStart, String sampleTimeEnd) {
+<A NAME="27"></A>        <FONT ID="This">this</FONT>(name, <FONT ID="New">new</FONT> <A HREF="../../../../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(sampleTimeStart), <FONT ID="New">new</FONT> <A HREF="../../../../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(sampleTimeEnd));
+<A NAME="28"></A>    }
+<A NAME="29"></A>
+<A NAME="30"></A>    <FONT ID="Public">public</FONT> TestCase(String name, <A HREF="../../../../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> sampleTimeStart, <A HREF="../../../../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> sampleTimeEnd) {
+<A NAME="31"></A>        <FONT ID="This">this</FONT>.name = name;
+<A NAME="32"></A>        <FONT ID="This">this</FONT>.sampleTimeStart = Util.requireNonNull(sampleTimeStart);
+<A NAME="33"></A>        <FONT ID="This">this</FONT>.sampleTimeEnd = Util.requireNonNull(sampleTimeEnd);
+<A NAME="34"></A>    }
+<A NAME="35"></A>
+<A NAME="36"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> addInput(<A HREF="../../../../../../com/collective/celos/ci/testing/fixtures/deploy/FixtureDeployer.java.html">FixtureDeployer</A> fixtureDeployer) {
+<A NAME="37"></A>        inputs.add(fixtureDeployer);
+<A NAME="38"></A>    }
+<A NAME="39"></A>
+<A NAME="40"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> addOutput(<A HREF="../../../../../../com/collective/celos/ci/testing/fixtures/compare/FixtureComparer.java.html">FixtureComparer</A> fixtureComparer) {
+<A NAME="41"></A>        outputs.add(fixtureComparer);
+<A NAME="42"></A>    }
+<A NAME="43"></A>
+<A NAME="44"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> addTargetWorkflow(<A HREF="../../../../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A> workflowID) {
+<A NAME="45"></A>        <FONT ID="This">this</FONT>.targetWorkflowIDs.add(workflowID);
+<A NAME="46"></A>    }
+<A NAME="47"></A>
+<A NAME="48"></A>    <FONT ID="Public">public</FONT> String getName() {
+<A NAME="49"></A>        <FONT ID="Return">return</FONT> name;
+<A NAME="50"></A>    }
+<A NAME="51"></A>
+<A NAME="52"></A>    <FONT ID="Public">public</FONT> <A HREF="../../../../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> getSampleTimeStart() {
+<A NAME="53"></A>        <FONT ID="Return">return</FONT> sampleTimeStart;
+<A NAME="54"></A>    }
+<A NAME="55"></A>
+<A NAME="56"></A>    <FONT ID="Public">public</FONT> <A HREF="../../../../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> getSampleTimeEnd() {
+<A NAME="57"></A>        <FONT ID="Return">return</FONT> sampleTimeEnd;
+<A NAME="58"></A>    }
+<A NAME="59"></A>
+<A NAME="60"></A>    <FONT ID="Public">public</FONT> List&lt;<A HREF="../../../../../../com/collective/celos/ci/testing/fixtures/deploy/FixtureDeployer.java.html">FixtureDeployer</A>&gt; getInputs() {
+<A NAME="61"></A>        <FONT ID="Return">return</FONT> inputs;
+<A NAME="62"></A>    }
+<A NAME="63"></A>
+<A NAME="64"></A>    <FONT ID="Public">public</FONT> List&lt;<A HREF="../../../../../../com/collective/celos/ci/testing/fixtures/compare/FixtureComparer.java.html">FixtureComparer</A>&gt; getOutputs() {
+<A NAME="65"></A>        <FONT ID="Return">return</FONT> outputs;
+<A NAME="66"></A>    }
+<A NAME="67"></A>
+<A NAME="68"></A>    <FONT ID="Public">public</FONT> Set&lt;<A HREF="../../../../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>&gt; getTargetWorkflows() {
+<A NAME="69"></A>        <FONT ID="Return">return</FONT> targetWorkflowIDs;
+<A NAME="70"></A>    }
+<A NAME="71"></A>}
+<A NAME="72"></A></pre>
+</BODY>
+</HTML>

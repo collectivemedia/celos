@@ -1,0 +1,48 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.AugmentedHdfsPathTest (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">AugmentedHdfsPathTest.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> junit.framework.Assert;
+<A NAME="4"></A><FONT ID="Import">import</FONT> org.junit.Test;
+<A NAME="5"></A>
+<A NAME="6"></A><FONT ID="Import">import</FONT> java.net.URISyntaxException;
+<A NAME="7"></A>
+<A NAME="8"></A><FONT ID="FormalComment">/**
+<A NAME="9"></A> * Created by akonopko on 09.12.14.
+<A NAME="10"></A> */</FONT>
+<A NAME="11"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> AugmentedHdfsPathTest {
+<A NAME="12"></A>
+<A NAME="13"></A>    @Test
+<A NAME="14"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testAugmentedHdfsPath() <FONT ID="Throws">throws</FONT> URISyntaxException {
+<A NAME="15"></A>        Assert.assertEquals(Util.augmentHdfsPath(<FONT ID="StringLiteral">"/myprefix"</FONT>, <FONT ID="StringLiteral">"/originalPath/${var1}/path/${var2}"</FONT>), <FONT ID="StringLiteral">"/myprefix/originalPath/${var1}/path/${var2}"</FONT>);
+<A NAME="16"></A>        Assert.assertEquals(Util.augmentHdfsPath(<FONT ID="StringLiteral">"/myprefix"</FONT>, <FONT ID="StringLiteral">"hdfs:/originalPath/${var1}/path/${var2}"</FONT>), <FONT ID="StringLiteral">"hdfs:/myprefix/originalPath/${var1}/path/${var2}"</FONT>);
+<A NAME="17"></A>        Assert.assertEquals(Util.augmentHdfsPath(<FONT ID="StringLiteral">"/myprefix"</FONT>, <FONT ID="StringLiteral">"hdfs:///originalPath/${var1}/path/${var2}"</FONT>), <FONT ID="StringLiteral">"hdfs:///myprefix/originalPath/${var1}/path/${var2}"</FONT>);
+<A NAME="18"></A>        Assert.assertEquals(Util.augmentHdfsPath(<FONT ID="StringLiteral">"/myprefix"</FONT>, <FONT ID="StringLiteral">"hdfs://nameservice/originalPath/${var1}/path/${var2}"</FONT>), <FONT ID="StringLiteral">"hdfs://nameservice/myprefix/originalPath/${var1}/path/${var2}"</FONT>);
+<A NAME="19"></A>        Assert.assertEquals(Util.augmentHdfsPath(<FONT ID="StringLiteral">"/myprefix"</FONT>, <FONT ID="StringLiteral">"hdfs://nameservice:2345/originalPath/${var1}/path/${var2}"</FONT>), <FONT ID="StringLiteral">"hdfs://nameservice:2345/myprefix/originalPath/${var1}/path/${var2}"</FONT>);
+<A NAME="20"></A>
+<A NAME="21"></A>        Assert.assertEquals(Util.augmentHdfsPath(<FONT ID="StringLiteral">"/"</FONT>, <FONT ID="StringLiteral">"/originalPath/${var1}/path/${var2}"</FONT>), <FONT ID="StringLiteral">"/originalPath/${var1}/path/${var2}"</FONT>);
+<A NAME="22"></A>        Assert.assertEquals(Util.augmentHdfsPath(<FONT ID="StringLiteral">"/"</FONT>, <FONT ID="StringLiteral">"hdfs:/originalPath/${var1}/path/${var2}"</FONT>), <FONT ID="StringLiteral">"hdfs:/originalPath/${var1}/path/${var2}"</FONT>);
+<A NAME="23"></A>        Assert.assertEquals(Util.augmentHdfsPath(<FONT ID="StringLiteral">"/"</FONT>, <FONT ID="StringLiteral">"hdfs:///originalPath/${var1}/path/${var2}"</FONT>), <FONT ID="StringLiteral">"hdfs:///originalPath/${var1}/path/${var2}"</FONT>);
+<A NAME="24"></A>        Assert.assertEquals(Util.augmentHdfsPath(<FONT ID="StringLiteral">"/"</FONT>, <FONT ID="StringLiteral">"hdfs://nameservice/originalPath/${var1}/path/${var2}"</FONT>), <FONT ID="StringLiteral">"hdfs://nameservice/originalPath/${var1}/path/${var2}"</FONT>);
+<A NAME="25"></A>        Assert.assertEquals(Util.augmentHdfsPath(<FONT ID="StringLiteral">"/"</FONT>, <FONT ID="StringLiteral">"hdfs://nameservice:2345/originalPath/${var1}/path/${var2}"</FONT>), <FONT ID="StringLiteral">"hdfs://nameservice:2345/originalPath/${var1}/path/${var2}"</FONT>);
+<A NAME="26"></A>    }
+<A NAME="27"></A>
+<A NAME="28"></A>}
+<A NAME="29"></A></pre>
+</BODY>
+</HTML>

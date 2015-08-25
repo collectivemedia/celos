@@ -1,0 +1,37 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.PropertiesGenerator (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">PropertiesGenerator.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> com.fasterxml.jackson.databind.ObjectMapper;
+<A NAME="4"></A><FONT ID="Import">import</FONT> com.fasterxml.jackson.databind.node.ObjectNode;
+<A NAME="5"></A>
+<A NAME="6"></A><FONT ID="Public">public</FONT> <FONT ID="Interface">interface</FONT> PropertiesGenerator {
+<A NAME="7"></A>
+<A NAME="8"></A>    <FONT ID="Public">public</FONT> ObjectNode getProperties(<A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A> id);
+<A NAME="9"></A>    
+<A NAME="10"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> <A HREF="../../../com/collective/celos/PropertiesGenerator.java.html">PropertiesGenerator</A> EMPTY = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/PropertiesGenerator.java.html">PropertiesGenerator</A>() {
+<A NAME="11"></A>        @Override
+<A NAME="12"></A>        <FONT ID="Public">public</FONT> ObjectNode getProperties(<A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A> id) {
+<A NAME="13"></A>            <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> ObjectMapper().createObjectNode();
+<A NAME="14"></A>        }
+<A NAME="15"></A>    };
+<A NAME="16"></A>    
+<A NAME="17"></A>}
+<A NAME="18"></A></pre>
+</BODY>
+</HTML>

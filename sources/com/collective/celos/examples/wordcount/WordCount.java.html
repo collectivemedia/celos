@@ -1,0 +1,76 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.examples.wordcount.WordCount (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">WordCount.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos.examples.wordcount;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> java.io.IOException;
+<A NAME="4"></A><FONT ID="Import">import</FONT> java.util.*;
+<A NAME="5"></A>
+<A NAME="6"></A><FONT ID="Import">import</FONT> org.apache.hadoop.fs.Path;
+<A NAME="7"></A><FONT ID="Import">import</FONT> org.apache.hadoop.conf.*;
+<A NAME="8"></A><FONT ID="Import">import</FONT> org.apache.hadoop.io.*;
+<A NAME="9"></A><FONT ID="Import">import</FONT> org.apache.hadoop.mapred.*;
+<A NAME="10"></A><FONT ID="Import">import</FONT> org.apache.hadoop.util.*;
+<A NAME="11"></A>
+<A NAME="12"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> WordCount {
+<A NAME="13"></A>
+<A NAME="14"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Class">class</FONT> Map <FONT ID="Extends">extends</FONT> MapReduceBase <FONT ID="Implements">implements</FONT> Mapper&lt;LongWritable, Text, Text, IntWritable&gt; {
+<A NAME="15"></A>        <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> <FONT ID="Static">static</FONT> IntWritable one = <FONT ID="New">new</FONT> IntWritable(<FONT ID="IntegerLiteral">1</FONT>);
+<A NAME="16"></A>        <FONT ID="Private">private</FONT> Text word = <FONT ID="New">new</FONT> Text();
+<A NAME="17"></A>
+<A NAME="18"></A>        <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> map(LongWritable key, Text value, OutputCollector&lt;Text, IntWritable&gt; output, Reporter reporter) <FONT ID="Throws">throws</FONT> IOException {
+<A NAME="19"></A>            String line = value.toString();
+<A NAME="20"></A>            StringTokenizer tokenizer = <FONT ID="New">new</FONT> StringTokenizer(line);
+<A NAME="21"></A>            <FONT ID="While">while</FONT> (tokenizer.hasMoreTokens()) {
+<A NAME="22"></A>                word.set(tokenizer.nextToken());
+<A NAME="23"></A>                output.collect(word, one);
+<A NAME="24"></A>            }
+<A NAME="25"></A>        }
+<A NAME="26"></A>    }
+<A NAME="27"></A>
+<A NAME="28"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Class">class</FONT> Reduce <FONT ID="Extends">extends</FONT> MapReduceBase <FONT ID="Implements">implements</FONT> Reducer&lt;Text, IntWritable, Text, IntWritable&gt; {
+<A NAME="29"></A>        <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> reduce(Text key, Iterator&lt;IntWritable&gt; values, OutputCollector&lt;Text, IntWritable&gt; output, Reporter reporter) <FONT ID="Throws">throws</FONT> IOException {
+<A NAME="30"></A>            <FONT ID="Int">int</FONT> sum = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="31"></A>            <FONT ID="While">while</FONT> (values.hasNext()) {
+<A NAME="32"></A>                sum += values.next().get();
+<A NAME="33"></A>            }
+<A NAME="34"></A>            output.collect(key, <FONT ID="New">new</FONT> IntWritable(sum));
+<A NAME="35"></A>        }
+<A NAME="36"></A>    }
+<A NAME="37"></A>
+<A NAME="38"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Void">void</FONT> main(String[] args) <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="39"></A>        JobConf conf = <FONT ID="New">new</FONT> JobConf(<A HREF="../../../../../com/collective/celos/examples/wordcount/WordCount.java.html">WordCount</A>.<FONT ID="Class">class</FONT>);
+<A NAME="40"></A>        conf.setJobName(<FONT ID="StringLiteral">"wordcount"</FONT>);
+<A NAME="41"></A>
+<A NAME="42"></A>        conf.setOutputKeyClass(Text.<FONT ID="Class">class</FONT>);
+<A NAME="43"></A>        conf.setOutputValueClass(IntWritable.<FONT ID="Class">class</FONT>);
+<A NAME="44"></A>
+<A NAME="45"></A>        conf.setMapperClass(Map.<FONT ID="Class">class</FONT>);
+<A NAME="46"></A>        conf.setCombinerClass(Reduce.<FONT ID="Class">class</FONT>);
+<A NAME="47"></A>        conf.setReducerClass(Reduce.<FONT ID="Class">class</FONT>);
+<A NAME="48"></A>
+<A NAME="49"></A>        conf.setInputFormat(TextInputFormat.<FONT ID="Class">class</FONT>);
+<A NAME="50"></A>        conf.setOutputFormat(TextOutputFormat.<FONT ID="Class">class</FONT>);
+<A NAME="51"></A>
+<A NAME="52"></A>        FileInputFormat.setInputPaths(conf, <FONT ID="New">new</FONT> Path(args[<FONT ID="IntegerLiteral">0</FONT>]));
+<A NAME="53"></A>        FileOutputFormat.setOutputPath(conf, <FONT ID="New">new</FONT> Path(args[<FONT ID="IntegerLiteral">1</FONT>]));
+<A NAME="54"></A>
+<A NAME="55"></A>        JobClient.runJob(conf);
+<A NAME="56"></A>    }
+<A NAME="57"></A>}</pre>
+</BODY>
+</HTML>

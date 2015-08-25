@@ -1,0 +1,72 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.ci.deploy.HdfsDeployer (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">HdfsDeployer.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos.ci.deploy;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../com/collective/celos/Util.java.html">com.collective.celos.Util</A>;
+<A NAME="4"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../com/collective/celos/ci/config/deploy/CelosCiContext.java.html">com.collective.celos.ci.config.deploy.CelosCiContext</A>;
+<A NAME="5"></A><FONT ID="Import">import</FONT> org.apache.hadoop.fs.FileSystem;
+<A NAME="6"></A><FONT ID="Import">import</FONT> org.apache.hadoop.fs.Path;
+<A NAME="7"></A>
+<A NAME="8"></A><FONT ID="Import">import</FONT> java.io.File;
+<A NAME="9"></A>
+<A NAME="10"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> HdfsDeployer {
+<A NAME="11"></A>
+<A NAME="12"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String REMOTE_HDFS_PATTERN = <FONT ID="StringLiteral">"%s/user/celos/app/%s"</FONT>;
+<A NAME="13"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String LOCAL_HDFS_PATTERN = <FONT ID="StringLiteral">"%s/hdfs"</FONT>;
+<A NAME="14"></A>
+<A NAME="15"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> <A HREF="../../../../../com/collective/celos/ci/config/deploy/CelosCiContext.java.html">CelosCiContext</A> context;
+<A NAME="16"></A>
+<A NAME="17"></A>    <FONT ID="Public">public</FONT> HdfsDeployer(<A HREF="../../../../../com/collective/celos/ci/config/deploy/CelosCiContext.java.html">CelosCiContext</A> context) <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="18"></A>        <FONT ID="This">this</FONT>.context = Util.requireNonNull(context);
+<A NAME="19"></A>    }
+<A NAME="20"></A>
+<A NAME="21"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> undeploy() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="22"></A>        Path dst = getDestinationHdfsPath();
+<A NAME="23"></A>        <FONT ID="If">if</FONT> (context.getFileSystem().exists(dst)) {
+<A NAME="24"></A>            context.getFileSystem().delete(dst, <FONT ID="True">true</FONT>);
+<A NAME="25"></A>        }
+<A NAME="26"></A>    }
+<A NAME="27"></A>
+<A NAME="28"></A>    Path getDestinationHdfsPath() {
+<A NAME="29"></A>        <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> Path(String.format(REMOTE_HDFS_PATTERN, context.getHdfsPrefix(), context.getWorkflowName()));
+<A NAME="30"></A>    }
+<A NAME="31"></A>
+<A NAME="32"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> deploy() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="33"></A>
+<A NAME="34"></A>        FileSystem fs = context.getFileSystem();
+<A NAME="35"></A>        <FONT ID="Final">final</FONT> String hdfsDirLocalPath = String.format(LOCAL_HDFS_PATTERN, context.getDeployDir());
+<A NAME="36"></A>
+<A NAME="37"></A>        <FONT ID="Final">final</FONT> File hdfsDirLocal = <FONT ID="New">new</FONT> File(hdfsDirLocalPath);
+<A NAME="38"></A>        <FONT ID="If">if</FONT> (!hdfsDirLocal.exists()) {
+<A NAME="39"></A>            <FONT ID="Throw">throw</FONT> <FONT ID="New">new</FONT> IllegalStateException(hdfsDirLocalPath + <FONT ID="StringLiteral">" not found local FS"</FONT>);
+<A NAME="40"></A>        }
+<A NAME="41"></A>
+<A NAME="42"></A>        undeploy();
+<A NAME="43"></A>
+<A NAME="44"></A>        Path dst = getDestinationHdfsPath();
+<A NAME="45"></A>        fs.mkdirs(dst);
+<A NAME="46"></A>        String[] childFiles = hdfsDirLocal.list();
+<A NAME="47"></A>        <FONT ID="For">for</FONT> (String child : childFiles) {
+<A NAME="48"></A>            fs.copyFromLocalFile(<FONT ID="New">new</FONT> Path(hdfsDirLocalPath, child), dst);
+<A NAME="49"></A>        }
+<A NAME="50"></A>    }
+<A NAME="51"></A>
+<A NAME="52"></A>}
+<A NAME="53"></A></pre>
+</BODY>
+</HTML>

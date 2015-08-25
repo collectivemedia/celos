@@ -1,0 +1,50 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.OffsetTrigger (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">OffsetTrigger.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> org.joda.time.DateTime;
+<A NAME="4"></A>
+<A NAME="5"></A><FONT ID="FormalComment">/**
+<A NAME="6"></A> * var oneDay = 60 * 60 * 24;
+<A NAME="7"></A> * andTrigger(offsetTrigger(oneDay, hdfsCheckTrigger("/${year}/${month}/${day}/..."))
+<A NAME="8"></A>*/</FONT>
+<A NAME="9"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> OffsetTrigger <FONT ID="Implements">implements</FONT> <A HREF="../../../com/collective/celos/Trigger.java.html">Trigger</A> {
+<A NAME="10"></A>
+<A NAME="11"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> <FONT ID="Int">int</FONT> seconds;
+<A NAME="12"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> <A HREF="../../../com/collective/celos/Trigger.java.html">Trigger</A> trigger;
+<A NAME="13"></A>
+<A NAME="14"></A>    <FONT ID="Public">public</FONT> OffsetTrigger(<FONT ID="Int">int</FONT> seconds, <A HREF="../../../com/collective/celos/Trigger.java.html">Trigger</A> trigger) {
+<A NAME="15"></A>        <FONT ID="This">this</FONT>.seconds = seconds;
+<A NAME="16"></A>        <FONT ID="This">this</FONT>.trigger = Util.requireNonNull(trigger);
+<A NAME="17"></A>    }
+<A NAME="18"></A>
+<A NAME="19"></A>    <FONT ID="Public">public</FONT> <FONT ID="Boolean">boolean</FONT> isDataAvailable(<A HREF="../../../com/collective/celos/Scheduler.java.html">Scheduler</A> scheduler, <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> now, <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> t) <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="20"></A>        <FONT ID="Return">return</FONT> trigger.isDataAvailable(scheduler, now, t.plusSeconds(seconds));
+<A NAME="21"></A>    }
+<A NAME="22"></A>
+<A NAME="23"></A>    <FONT ID="Public">public</FONT> <FONT ID="Int">int</FONT> getSeconds() {
+<A NAME="24"></A>        <FONT ID="Return">return</FONT> seconds;
+<A NAME="25"></A>    }
+<A NAME="26"></A>
+<A NAME="27"></A>    <FONT ID="Public">public</FONT> <A HREF="../../../com/collective/celos/Trigger.java.html">Trigger</A> getTrigger() {
+<A NAME="28"></A>        <FONT ID="Return">return</FONT> trigger;
+<A NAME="29"></A>    }
+<A NAME="30"></A>}
+<A NAME="31"></A></pre>
+</BODY>
+</HTML>

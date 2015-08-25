@@ -1,0 +1,109 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../../../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.ci.testing.fixtures.deploy.HdfsInputDeployer (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">HdfsInputDeployer.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos.ci.testing.fixtures.deploy;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../../com/collective/celos/Util.java.html">com.collective.celos.Util</A>;
+<A NAME="4"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../../com/collective/celos/ci/mode/test/TestRun.java.html">com.collective.celos.ci.mode.test.TestRun</A>;
+<A NAME="5"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">com.collective.celos.ci.testing.fixtures.create.FixObjectCreator</A>;
+<A NAME="6"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFile.java.html">com.collective.celos.ci.testing.structure.fixobject.FixFile</A>;
+<A NAME="7"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFsObject.java.html">com.collective.celos.ci.testing.structure.fixobject.FixFsObject</A>;
+<A NAME="8"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/tree/TreeObjectProcessor.java.html">com.collective.celos.ci.testing.structure.tree.TreeObjectProcessor</A>;
+<A NAME="9"></A><FONT ID="Import">import</FONT> com.google.common.collect.Maps;
+<A NAME="10"></A><FONT ID="Import">import</FONT> org.apache.commons.io.IOUtils;
+<A NAME="11"></A><FONT ID="Import">import</FONT> org.apache.commons.lang.StringUtils;
+<A NAME="12"></A><FONT ID="Import">import</FONT> org.apache.hadoop.fs.FSDataOutputStream;
+<A NAME="13"></A><FONT ID="Import">import</FONT> org.apache.hadoop.fs.FileSystem;
+<A NAME="14"></A><FONT ID="Import">import</FONT> org.apache.hadoop.fs.Path;
+<A NAME="15"></A>
+<A NAME="16"></A><FONT ID="Import">import</FONT> java.io.IOException;
+<A NAME="17"></A><FONT ID="Import">import</FONT> java.util.Map;
+<A NAME="18"></A>
+<A NAME="19"></A><FONT ID="FormalComment">/**
+<A NAME="20"></A> * Created by akonopko on 21.11.14.
+<A NAME="21"></A> */</FONT>
+<A NAME="22"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> HdfsInputDeployer <FONT ID="Implements">implements</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/deploy/FixtureDeployer.java.html">FixtureDeployer</A> {
+<A NAME="23"></A>
+<A NAME="24"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">FixObjectCreator</A>&lt;<A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFsObject.java.html">FixFsObject</A>&gt; fixObjectCreator;
+<A NAME="25"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> Path path;
+<A NAME="26"></A>
+<A NAME="27"></A>    <FONT ID="Public">public</FONT> HdfsInputDeployer(<A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">FixObjectCreator</A>&lt;<A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFsObject.java.html">FixFsObject</A>&gt; fixObjectCreator, String path) {
+<A NAME="28"></A>        <FONT ID="This">this</FONT>.fixObjectCreator = fixObjectCreator;
+<A NAME="29"></A>        <FONT ID="This">this</FONT>.path = <FONT ID="New">new</FONT> Path(path);
+<A NAME="30"></A>    }
+<A NAME="31"></A>
+<A NAME="32"></A>    @Override
+<A NAME="33"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> undeploy(<A HREF="../../../../../../../com/collective/celos/ci/mode/test/TestRun.java.html">TestRun</A> testRun) <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="34"></A>        <FONT ID="SingleLineComment">// do nothing, because all HDFS cleanup is already done in TestRun explicitly
+<A NAME="35"></A></FONT>    }
+<A NAME="36"></A>
+<A NAME="37"></A>    @Override
+<A NAME="38"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> deploy(<A HREF="../../../../../../../com/collective/celos/ci/mode/test/TestRun.java.html">TestRun</A> testRun) <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="39"></A>        FileSystem fileSystem = testRun.getCiContext().getFileSystem();
+<A NAME="40"></A>
+<A NAME="41"></A>        CollectFilesAndPathsProcessor pathToFile = <FONT ID="New">new</FONT> CollectFilesAndPathsProcessor();
+<A NAME="42"></A>        TreeObjectProcessor.process(fixObjectCreator.create(testRun), pathToFile);
+<A NAME="43"></A>
+<A NAME="44"></A>        Path pathPrefixed = <FONT ID="New">new</FONT> Path(Util.augmentHdfsPath(testRun.getHdfsPrefix(), path.toString()));
+<A NAME="45"></A>        <FONT ID="For">for</FONT> (java.nio.file.Path childPath: pathToFile.pathToFiles.keySet()) {
+<A NAME="46"></A>            Path pathTo = <FONT ID="New">new</FONT> Path(pathPrefixed, childPath.toString());
+<A NAME="47"></A>            fileSystem.mkdirs(pathTo.getParent());
+<A NAME="48"></A>
+<A NAME="49"></A>            FSDataOutputStream outputStream = fileSystem.create(pathTo);
+<A NAME="50"></A>            <FONT ID="Try">try</FONT> {
+<A NAME="51"></A>                IOUtils.copy(pathToFile.pathToFiles.get(childPath).getContent(), outputStream);
+<A NAME="52"></A>            } <FONT ID="Finally">finally</FONT> {
+<A NAME="53"></A>                outputStream.flush();
+<A NAME="54"></A>                outputStream.close();
+<A NAME="55"></A>            }
+<A NAME="56"></A>
+<A NAME="57"></A>        }
+<A NAME="58"></A>    }
+<A NAME="59"></A>
+<A NAME="60"></A>    @Override
+<A NAME="61"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> validate(<A HREF="../../../../../../../com/collective/celos/ci/mode/test/TestRun.java.html">TestRun</A> testRun) <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="62"></A>        Path pathToCheck = <FONT ID="New">new</FONT> Path(testRun.getHdfsPrefix(), path);
+<A NAME="63"></A>        FileSystem fileSystem = testRun.getCiContext().getFileSystem();
+<A NAME="64"></A>        <FONT ID="If">if</FONT> (fileSystem.exists(pathToCheck)) {
+<A NAME="65"></A>            <FONT ID="Throw">throw</FONT> <FONT ID="New">new</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/deploy/CelosCiDirtyStateException.java.html">CelosCiDirtyStateException</A>(<FONT ID="StringLiteral">"Celos-CI temporary path still exists: "</FONT> + pathToCheck);
+<A NAME="66"></A>        }
+<A NAME="67"></A>    }
+<A NAME="68"></A>
+<A NAME="69"></A>    <FONT ID="Public">public</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">FixObjectCreator</A>&lt;<A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFsObject.java.html">FixFsObject</A>&gt; getFixObjectCreator() {
+<A NAME="70"></A>        <FONT ID="Return">return</FONT> fixObjectCreator;
+<A NAME="71"></A>    }
+<A NAME="72"></A>
+<A NAME="73"></A>    <FONT ID="Public">public</FONT> Path getPath() {
+<A NAME="74"></A>        <FONT ID="Return">return</FONT> path;
+<A NAME="75"></A>    }
+<A NAME="76"></A>
+<A NAME="77"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Class">class</FONT> CollectFilesAndPathsProcessor <FONT ID="Extends">extends</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/tree/TreeObjectProcessor.java.html">TreeObjectProcessor</A>&lt;<A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFsObject.java.html">FixFsObject</A>&gt; {
+<A NAME="78"></A>
+<A NAME="79"></A>        <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> Map&lt;java.nio.file.Path, <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFile.java.html">FixFile</A>&gt; pathToFiles = Maps.newHashMap();
+<A NAME="80"></A>
+<A NAME="81"></A>        @Override
+<A NAME="82"></A>        <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> process(java.nio.file.Path path, <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFsObject.java.html">FixFsObject</A> fo) <FONT ID="Throws">throws</FONT> IOException {
+<A NAME="83"></A>            <FONT ID="If">if</FONT> (fo.isFile()) {
+<A NAME="84"></A>                pathToFiles.put(path, fo.asFile());
+<A NAME="85"></A>            }
+<A NAME="86"></A>        }
+<A NAME="87"></A>    }
+<A NAME="88"></A>
+<A NAME="89"></A>}
+<A NAME="90"></A></pre>
+</BODY>
+</HTML>

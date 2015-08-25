@@ -1,0 +1,59 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.server.ServerCommandLineParserTest (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">ServerCommandLineParserTest.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos.server;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> <A HREF="../../../../com/collective/celos/Constants.java.html">com.collective.celos.Constants</A>;
+<A NAME="4"></A><FONT ID="Import">import</FONT> junit.framework.Assert;
+<A NAME="5"></A><FONT ID="Import">import</FONT> org.junit.Test;
+<A NAME="6"></A>
+<A NAME="7"></A><FONT ID="Import">import</FONT> java.io.File;
+<A NAME="8"></A>
+<A NAME="9"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> ServerCommandLineParserTest {
+<A NAME="10"></A>    
+<A NAME="11"></A>    @Test(expected=IllegalArgumentException.<FONT ID="Class">class</FONT>)
+<A NAME="12"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testPortIsRequired() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="13"></A>        <FONT ID="New">new</FONT> <A HREF="../../../../com/collective/celos/server/ServerCommandLineParser.java.html">ServerCommandLineParser</A>().parse(<FONT ID="New">new</FONT> String[] {});
+<A NAME="14"></A>    }
+<A NAME="15"></A>    
+<A NAME="16"></A>    @Test(expected=IllegalArgumentException.<FONT ID="Class">class</FONT>)
+<A NAME="17"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testPortIsRequiredEvenIfOtherArgsAreSupplied() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="18"></A>        <FONT ID="New">new</FONT> <A HREF="../../../../com/collective/celos/server/ServerCommandLineParser.java.html">ServerCommandLineParser</A>().parse(<FONT ID="New">new</FONT> String[] {<FONT ID="StringLiteral">"--defaultsDir"</FONT>, <FONT ID="StringLiteral">"/foo"</FONT>});
+<A NAME="19"></A>    }
+<A NAME="20"></A>    
+<A NAME="21"></A>    @Test
+<A NAME="22"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testDefaults() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="23"></A>        <A HREF="../../../../com/collective/celos/server/ServerCommandLine.java.html">ServerCommandLine</A> cmdLine = <FONT ID="New">new</FONT> <A HREF="../../../../com/collective/celos/server/ServerCommandLineParser.java.html">ServerCommandLineParser</A>().parse(<FONT ID="New">new</FONT> String[] {<FONT ID="StringLiteral">"--port"</FONT>, <FONT ID="StringLiteral">"1337"</FONT>});
+<A NAME="24"></A>        Assert.assertEquals(<FONT ID="IntegerLiteral">1337</FONT>, cmdLine.getPort());
+<A NAME="25"></A>        Assert.assertEquals(<FONT ID="New">new</FONT> File(Constants.DEFAULT_WORKFLOWS_DIR), cmdLine.getWorkflowsDir());
+<A NAME="26"></A>        Assert.assertEquals(<FONT ID="New">new</FONT> File(Constants.DEFAULT_DEFAULTS_DIR), cmdLine.getDefaultsDir());
+<A NAME="27"></A>        Assert.assertEquals(<FONT ID="New">new</FONT> File(Constants.DEFAULT_DB_DIR), cmdLine.getStateDatabase());
+<A NAME="28"></A>    }
+<A NAME="29"></A>    
+<A NAME="30"></A>    @Test
+<A NAME="31"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testOverrideDefaults() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="32"></A>        <A HREF="../../../../com/collective/celos/server/ServerCommandLine.java.html">ServerCommandLine</A> cmdLine = <FONT ID="New">new</FONT> <A HREF="../../../../com/collective/celos/server/ServerCommandLineParser.java.html">ServerCommandLineParser</A>().parse(<FONT ID="New">new</FONT> String[] {<FONT ID="StringLiteral">"--port"</FONT>, <FONT ID="StringLiteral">"1337"</FONT>, <FONT ID="StringLiteral">"--workflowsDir"</FONT>, <FONT ID="StringLiteral">"/wf"</FONT>, <FONT ID="StringLiteral">"--stateDir"</FONT>, <FONT ID="StringLiteral">"/db"</FONT>, <FONT ID="StringLiteral">"--defaultsDir"</FONT>, <FONT ID="StringLiteral">"/defaults"</FONT>});
+<A NAME="33"></A>        Assert.assertEquals(<FONT ID="IntegerLiteral">1337</FONT>, cmdLine.getPort());
+<A NAME="34"></A>        Assert.assertEquals(<FONT ID="New">new</FONT> File(<FONT ID="StringLiteral">"/wf"</FONT>), cmdLine.getWorkflowsDir());
+<A NAME="35"></A>        Assert.assertEquals(<FONT ID="New">new</FONT> File(<FONT ID="StringLiteral">"/defaults"</FONT>), cmdLine.getDefaultsDir());
+<A NAME="36"></A>        Assert.assertEquals(<FONT ID="New">new</FONT> File(<FONT ID="StringLiteral">"/db"</FONT>), cmdLine.getStateDatabase());
+<A NAME="37"></A>    }
+<A NAME="38"></A>
+<A NAME="39"></A>}
+<A NAME="40"></A></pre>
+</BODY>
+</HTML>

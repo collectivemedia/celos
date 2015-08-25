@@ -1,0 +1,191 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.ci.mode.test.CelosSchedulerWorkerTest (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">CelosSchedulerWorkerTest.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos.ci.mode.test;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> com.collective.celos.*;
+<A NAME="4"></A><FONT ID="Import">import</FONT> com.google.common.collect.Sets;
+<A NAME="5"></A><FONT ID="Import">import</FONT> junit.framework.Assert;
+<A NAME="6"></A><FONT ID="Import">import</FONT> org.junit.Test;
+<A NAME="7"></A>
+<A NAME="8"></A><FONT ID="Import">import</FONT> java.util.Arrays;
+<A NAME="9"></A><FONT ID="Import">import</FONT> java.util.Collections;
+<A NAME="10"></A><FONT ID="Import">import</FONT> java.util.Set;
+<A NAME="11"></A>
+<A NAME="12"></A><FONT ID="Import">import</FONT> <FONT ID="Static">static</FONT> org.mockito.Mockito.*;
+<A NAME="13"></A>
+<A NAME="14"></A><FONT ID="FormalComment">/**
+<A NAME="15"></A> * Created by akonopko on 21.01.15.
+<A NAME="16"></A> */</FONT>
+<A NAME="17"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> CelosSchedulerWorkerTest {
+<A NAME="18"></A>
+<A NAME="19"></A>    @Test
+<A NAME="20"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testIsThereAnyRunningWorkflowsFalse1() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="21"></A>        CelosClient celosClient = mock(CelosClient.<FONT ID="Class">class</FONT>);
+<A NAME="22"></A>        <A HREF="../../../../../../com/collective/celos/ci/mode/test/CelosSchedulerWorker.java.html">CelosSchedulerWorker</A> worker = <FONT ID="New">new</FONT> <A HREF="../../../../../../com/collective/celos/ci/mode/test/CelosSchedulerWorker.java.html">CelosSchedulerWorker</A>(celosClient);
+<A NAME="23"></A>        WorkflowID wf1 = <FONT ID="New">new</FONT> WorkflowID(<FONT ID="StringLiteral">"wf1"</FONT>);
+<A NAME="24"></A>        WorkflowID wf2 = <FONT ID="New">new</FONT> WorkflowID(<FONT ID="StringLiteral">"wf2"</FONT>);
+<A NAME="25"></A>        Set&lt;WorkflowID&gt; workflowSet = Sets.newHashSet(wf1, wf2);
+<A NAME="26"></A>        ScheduledTime scheduledTime = <FONT ID="New">new</FONT> ScheduledTime(<FONT ID="StringLiteral">"2013-12-20T16:00Z"</FONT>);
+<A NAME="27"></A>
+<A NAME="28"></A>        SlotState slotState1 = <FONT ID="New">new</FONT> SlotState(<FONT ID="New">new</FONT> SlotID(wf1, scheduledTime), SlotState.Status.WAITING);
+<A NAME="29"></A>        SlotState slotState2 = <FONT ID="New">new</FONT> SlotState(<FONT ID="New">new</FONT> SlotID(wf1, scheduledTime), SlotState.Status.SUCCESS);
+<A NAME="30"></A>
+<A NAME="31"></A>        SlotState slotState3 = <FONT ID="New">new</FONT> SlotState(<FONT ID="New">new</FONT> SlotID(wf2, scheduledTime), SlotState.Status.WAITING);
+<A NAME="32"></A>        SlotState slotState4 = <FONT ID="New">new</FONT> SlotState(<FONT ID="New">new</FONT> SlotID(wf2, scheduledTime), SlotState.Status.FAILURE);
+<A NAME="33"></A>
+<A NAME="34"></A>        doReturn(createWfStatus(slotState1, slotState2)).when(celosClient).getWorkflowStatus(wf1, scheduledTime);
+<A NAME="35"></A>        doReturn(createWfStatus(slotState3, slotState4)).when(celosClient).getWorkflowStatus(wf2, scheduledTime);
+<A NAME="36"></A>        Assert.assertFalse(worker.isThereAnyRunningWorkflows(workflowSet, scheduledTime));
+<A NAME="37"></A>    }
+<A NAME="38"></A>
+<A NAME="39"></A>    <FONT ID="Private">private</FONT> WorkflowStatus createWfStatus(SlotState... states) {
+<A NAME="40"></A>        WorkflowInfo info = <FONT ID="New">new</FONT> WorkflowInfo(<FONT ID="Null">null</FONT>, Collections.&lt;WorkflowInfo.ContactsInfo&gt;emptyList());
+<A NAME="41"></A>        <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> WorkflowStatus(info, Arrays.asList(states));
+<A NAME="42"></A>    }
+<A NAME="43"></A>
+<A NAME="44"></A>
+<A NAME="45"></A>    @Test
+<A NAME="46"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testIsThereAnyRunningWorkflowsTrue() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="47"></A>        CelosClient celosClient = mock(CelosClient.<FONT ID="Class">class</FONT>);
+<A NAME="48"></A>        <A HREF="../../../../../../com/collective/celos/ci/mode/test/CelosSchedulerWorker.java.html">CelosSchedulerWorker</A> worker = <FONT ID="New">new</FONT> <A HREF="../../../../../../com/collective/celos/ci/mode/test/CelosSchedulerWorker.java.html">CelosSchedulerWorker</A>(celosClient);
+<A NAME="49"></A>        WorkflowID wf1 = <FONT ID="New">new</FONT> WorkflowID(<FONT ID="StringLiteral">"wf1"</FONT>);
+<A NAME="50"></A>        WorkflowID wf2 = <FONT ID="New">new</FONT> WorkflowID(<FONT ID="StringLiteral">"wf2"</FONT>);
+<A NAME="51"></A>        Set&lt;WorkflowID&gt; workflowSet = Sets.newHashSet(wf1, wf2);
+<A NAME="52"></A>        ScheduledTime scheduledTime = <FONT ID="New">new</FONT> ScheduledTime(<FONT ID="StringLiteral">"2013-12-20T16:00Z"</FONT>);
+<A NAME="53"></A>
+<A NAME="54"></A>        SlotState slotState1 = <FONT ID="New">new</FONT> SlotState(<FONT ID="New">new</FONT> SlotID(wf1, scheduledTime), SlotState.Status.WAITING);
+<A NAME="55"></A>        SlotState slotState2 = <FONT ID="New">new</FONT> SlotState(<FONT ID="New">new</FONT> SlotID(wf1, scheduledTime), SlotState.Status.READY);
+<A NAME="56"></A>
+<A NAME="57"></A>        SlotState slotState3 = <FONT ID="New">new</FONT> SlotState(<FONT ID="New">new</FONT> SlotID(wf2, scheduledTime), SlotState.Status.WAITING);
+<A NAME="58"></A>        SlotState slotState4 = <FONT ID="New">new</FONT> SlotState(<FONT ID="New">new</FONT> SlotID(wf2, scheduledTime), SlotState.Status.RUNNING);
+<A NAME="59"></A>
+<A NAME="60"></A>
+<A NAME="61"></A>        doReturn(createWfStatus(slotState1, slotState2)).when(celosClient).getWorkflowStatus(wf1, scheduledTime);
+<A NAME="62"></A>        doReturn(createWfStatus(slotState3, slotState4)).when(celosClient).getWorkflowStatus(wf2, scheduledTime);
+<A NAME="63"></A>
+<A NAME="64"></A>        Assert.assertTrue(worker.isThereAnyRunningWorkflows(workflowSet, scheduledTime));
+<A NAME="65"></A>    }
+<A NAME="66"></A>
+<A NAME="67"></A>
+<A NAME="68"></A>    @Test
+<A NAME="69"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testGetWorkflowStatusesInfo() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="70"></A>        CelosClient celosClient = mock(CelosClient.<FONT ID="Class">class</FONT>);
+<A NAME="71"></A>        <A HREF="../../../../../../com/collective/celos/ci/mode/test/CelosSchedulerWorker.java.html">CelosSchedulerWorker</A> worker = <FONT ID="New">new</FONT> <A HREF="../../../../../../com/collective/celos/ci/mode/test/CelosSchedulerWorker.java.html">CelosSchedulerWorker</A>(celosClient);
+<A NAME="72"></A>
+<A NAME="73"></A>        WorkflowID wf1 = <FONT ID="New">new</FONT> WorkflowID(<FONT ID="StringLiteral">"wf1"</FONT>);
+<A NAME="74"></A>        WorkflowID wf2 = <FONT ID="New">new</FONT> WorkflowID(<FONT ID="StringLiteral">"wf2"</FONT>);
+<A NAME="75"></A>        Set&lt;WorkflowID&gt; workflowSet = Sets.newHashSet(wf1, wf2);
+<A NAME="76"></A>        ScheduledTime scheduledTime = <FONT ID="New">new</FONT> ScheduledTime(<FONT ID="StringLiteral">"2013-12-20T16:00Z"</FONT>);
+<A NAME="77"></A>
+<A NAME="78"></A>        SlotState slotState1 = <FONT ID="New">new</FONT> SlotState(<FONT ID="New">new</FONT> SlotID(wf1, scheduledTime), SlotState.Status.WAITING);
+<A NAME="79"></A>        SlotState slotState2 = <FONT ID="New">new</FONT> SlotState(<FONT ID="New">new</FONT> SlotID(wf1, scheduledTime), SlotState.Status.READY);
+<A NAME="80"></A>
+<A NAME="81"></A>        SlotState slotState3 = <FONT ID="New">new</FONT> SlotState(<FONT ID="New">new</FONT> SlotID(wf2, scheduledTime), SlotState.Status.WAITING);
+<A NAME="82"></A>        SlotState slotState4 = <FONT ID="New">new</FONT> SlotState(<FONT ID="New">new</FONT> SlotID(wf2, scheduledTime), SlotState.Status.RUNNING);
+<A NAME="83"></A>
+<A NAME="84"></A>
+<A NAME="85"></A>        doReturn(createWfStatus(slotState1, slotState2)).when(celosClient).getWorkflowStatus(wf1, scheduledTime);
+<A NAME="86"></A>        doReturn(createWfStatus(slotState3, slotState4)).when(celosClient).getWorkflowStatus(wf2, scheduledTime);
+<A NAME="87"></A>
+<A NAME="88"></A>        Set&lt;String&gt; statuses = worker.getWorkflowStatusesInfo(workflowSet, scheduledTime);
+<A NAME="89"></A>        Assert.assertEquals(statuses, Sets.newHashSet(
+<A NAME="90"></A>                <FONT ID="StringLiteral">"SlotState[slotID=wf1@2013-12-20T16:00:00.000Z,status=READY,externalID=&lt;null&gt;,retryCount=0]"</FONT>,
+<A NAME="91"></A>                <FONT ID="StringLiteral">"SlotState[slotID=wf2@2013-12-20T16:00:00.000Z,status=RUNNING,externalID=&lt;null&gt;,retryCount=0]"</FONT>)
+<A NAME="92"></A>        );
+<A NAME="93"></A>    }
+<A NAME="94"></A>
+<A NAME="95"></A>    @Test
+<A NAME="96"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testRunCelosSchedulerAllWfs() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="97"></A>
+<A NAME="98"></A>        CelosClient celosClient = mock(CelosClient.<FONT ID="Class">class</FONT>);
+<A NAME="99"></A>        <A HREF="../../../../../../com/collective/celos/ci/mode/test/CelosSchedulerWorker.java.html">CelosSchedulerWorker</A> worker = <FONT ID="New">new</FONT> <A HREF="../../../../../../com/collective/celos/ci/mode/test/CelosSchedulerWorker.java.html">CelosSchedulerWorker</A>(celosClient);
+<A NAME="100"></A>
+<A NAME="101"></A>        ScheduledTime scheduledTimeStart = <FONT ID="New">new</FONT> ScheduledTime(<FONT ID="StringLiteral">"2013-12-20T16:00Z"</FONT>);
+<A NAME="102"></A>        ScheduledTime scheduledTimeEnd = <FONT ID="New">new</FONT> ScheduledTime(<FONT ID="StringLiteral">"2013-12-20T18:00Z"</FONT>);
+<A NAME="103"></A>
+<A NAME="104"></A>        ScheduledTime time1 = scheduledTimeStart.plusSeconds(<FONT ID="IntegerLiteral">1</FONT>);
+<A NAME="105"></A>        ScheduledTime time2 = scheduledTimeStart.plusHours(<FONT ID="IntegerLiteral">1</FONT>).plusSeconds(<FONT ID="IntegerLiteral">1</FONT>);
+<A NAME="106"></A>        ScheduledTime time3 = scheduledTimeStart.plusHours(<FONT ID="IntegerLiteral">2</FONT>).plusSeconds(<FONT ID="IntegerLiteral">1</FONT>);
+<A NAME="107"></A>
+<A NAME="108"></A>        WorkflowID wf1 = <FONT ID="New">new</FONT> WorkflowID(<FONT ID="StringLiteral">"wf1"</FONT>);
+<A NAME="109"></A>        WorkflowID wf2 = <FONT ID="New">new</FONT> WorkflowID(<FONT ID="StringLiteral">"wf2"</FONT>);
+<A NAME="110"></A>
+<A NAME="111"></A>        <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestCase.java.html">TestCase</A> testCase = <FONT ID="New">new</FONT> <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestCase.java.html">TestCase</A>(<FONT ID="StringLiteral">"name"</FONT>, scheduledTimeStart, scheduledTimeEnd);
+<A NAME="112"></A>
+<A NAME="113"></A>        Set&lt;WorkflowID&gt; workflowIDs = Sets.newHashSet(wf1, wf2);
+<A NAME="114"></A>        doReturn(workflowIDs).when(celosClient).getWorkflowList();
+<A NAME="115"></A>
+<A NAME="116"></A>        doReturn(createWfStatus()).when(celosClient).getWorkflowStatus(wf1, time1);
+<A NAME="117"></A>        doReturn(createWfStatus()).when(celosClient).getWorkflowStatus(wf2, time1);
+<A NAME="118"></A>        doReturn(createWfStatus()).when(celosClient).getWorkflowStatus(wf1, time2);
+<A NAME="119"></A>        doReturn(createWfStatus()).when(celosClient).getWorkflowStatus(wf2, time2);
+<A NAME="120"></A>        doReturn(createWfStatus()).when(celosClient).getWorkflowStatus(wf1, time3);
+<A NAME="121"></A>        doReturn(createWfStatus()).when(celosClient).getWorkflowStatus(wf2, time3);
+<A NAME="122"></A>
+<A NAME="123"></A>        worker.runCelosScheduler(testCase);
+<A NAME="124"></A>
+<A NAME="125"></A>        verify(celosClient).iterateScheduler(time1, Collections.&lt;WorkflowID&gt;emptySet());
+<A NAME="126"></A>        verify(celosClient).iterateScheduler(time2, Collections.&lt;WorkflowID&gt;emptySet());
+<A NAME="127"></A>        verify(celosClient).iterateScheduler(time3, Collections.&lt;WorkflowID&gt;emptySet());
+<A NAME="128"></A>    }
+<A NAME="129"></A>
+<A NAME="130"></A>    @Test
+<A NAME="131"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testRunCelosSchedulerRestrictWfs() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="132"></A>
+<A NAME="133"></A>        CelosClient celosClient = mock(CelosClient.<FONT ID="Class">class</FONT>);
+<A NAME="134"></A>        <A HREF="../../../../../../com/collective/celos/ci/mode/test/CelosSchedulerWorker.java.html">CelosSchedulerWorker</A> worker = <FONT ID="New">new</FONT> <A HREF="../../../../../../com/collective/celos/ci/mode/test/CelosSchedulerWorker.java.html">CelosSchedulerWorker</A>(celosClient);
+<A NAME="135"></A>
+<A NAME="136"></A>        ScheduledTime scheduledTimeStart = <FONT ID="New">new</FONT> ScheduledTime(<FONT ID="StringLiteral">"2013-12-20T16:00Z"</FONT>);
+<A NAME="137"></A>        ScheduledTime scheduledTimeEnd = <FONT ID="New">new</FONT> ScheduledTime(<FONT ID="StringLiteral">"2013-12-20T18:00Z"</FONT>);
+<A NAME="138"></A>
+<A NAME="139"></A>        ScheduledTime time1 = scheduledTimeStart.plusSeconds(<FONT ID="IntegerLiteral">1</FONT>);
+<A NAME="140"></A>        ScheduledTime time2 = scheduledTimeStart.plusHours(<FONT ID="IntegerLiteral">1</FONT>).plusSeconds(<FONT ID="IntegerLiteral">1</FONT>);
+<A NAME="141"></A>        ScheduledTime time3 = scheduledTimeStart.plusHours(<FONT ID="IntegerLiteral">2</FONT>).plusSeconds(<FONT ID="IntegerLiteral">1</FONT>);
+<A NAME="142"></A>
+<A NAME="143"></A>        WorkflowID wf1 = <FONT ID="New">new</FONT> WorkflowID(<FONT ID="StringLiteral">"wf1"</FONT>);
+<A NAME="144"></A>        WorkflowID wf2 = <FONT ID="New">new</FONT> WorkflowID(<FONT ID="StringLiteral">"wf2"</FONT>);
+<A NAME="145"></A>
+<A NAME="146"></A>        <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestCase.java.html">TestCase</A> testCase = <FONT ID="New">new</FONT> <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestCase.java.html">TestCase</A>(<FONT ID="StringLiteral">"name"</FONT>, scheduledTimeStart, scheduledTimeEnd);
+<A NAME="147"></A>        testCase.addTargetWorkflow(wf1);
+<A NAME="148"></A>
+<A NAME="149"></A>        Set&lt;WorkflowID&gt; workflowIDs = Sets.newHashSet(wf1, wf2);
+<A NAME="150"></A>        doReturn(workflowIDs).when(celosClient).getWorkflowList();
+<A NAME="151"></A>
+<A NAME="152"></A>        doReturn(createWfStatus()).when(celosClient).getWorkflowStatus(wf1, time1);
+<A NAME="153"></A>        doReturn(createWfStatus()).when(celosClient).getWorkflowStatus(wf2, time1);
+<A NAME="154"></A>        doReturn(createWfStatus()).when(celosClient).getWorkflowStatus(wf1, time2);
+<A NAME="155"></A>        doReturn(createWfStatus()).when(celosClient).getWorkflowStatus(wf2, time2);
+<A NAME="156"></A>        doReturn(createWfStatus()).when(celosClient).getWorkflowStatus(wf1, time3);
+<A NAME="157"></A>        doReturn(createWfStatus()).when(celosClient).getWorkflowStatus(wf2, time3);
+<A NAME="158"></A>
+<A NAME="159"></A>        worker.runCelosScheduler(testCase);
+<A NAME="160"></A>
+<A NAME="161"></A>        Set&lt;WorkflowID&gt; workflowIDSet = Sets.newHashSet(wf1);
+<A NAME="162"></A>        verify(celosClient).iterateScheduler(scheduledTimeStart.plusSeconds(<FONT ID="IntegerLiteral">1</FONT>), workflowIDSet);
+<A NAME="163"></A>        verify(celosClient).iterateScheduler(scheduledTimeStart.plusHours(<FONT ID="IntegerLiteral">1</FONT>).plusSeconds(<FONT ID="IntegerLiteral">1</FONT>), workflowIDSet);
+<A NAME="164"></A>        verify(celosClient).iterateScheduler(scheduledTimeStart.plusHours(<FONT ID="IntegerLiteral">2</FONT>).plusSeconds(<FONT ID="IntegerLiteral">1</FONT>), workflowIDSet);
+<A NAME="165"></A>
+<A NAME="166"></A>        verify(celosClient, never()).iterateScheduler(time1, Collections.&lt;WorkflowID&gt;emptySet());
+<A NAME="167"></A>        verify(celosClient, never()).iterateScheduler(time2, Collections.&lt;WorkflowID&gt;emptySet());
+<A NAME="168"></A>        verify(celosClient, never()).iterateScheduler(time3, Collections.&lt;WorkflowID&gt;emptySet());
+<A NAME="169"></A>    }
+<A NAME="170"></A>
+<A NAME="171"></A>}
+<A NAME="172"></A></pre>
+</BODY>
+</HTML>

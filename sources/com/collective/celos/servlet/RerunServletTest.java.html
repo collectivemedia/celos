@@ -1,0 +1,74 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.servlet.RerunServletTest (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">RerunServletTest.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos.servlet;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> com.collective.celos.*;
+<A NAME="4"></A><FONT ID="Import">import</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/SlotState.Status.html">com.collective.celos.SlotState.Status</A>;
+<A NAME="5"></A><FONT ID="Import">import</FONT> <A HREF="../../../../com/collective/celos/ScheduledTime.java.html">com.collective.celos.ScheduledTime</A>;
+<A NAME="6"></A><FONT ID="Import">import</FONT> org.junit.Assert;
+<A NAME="7"></A><FONT ID="Import">import</FONT> org.junit.Test;
+<A NAME="8"></A>
+<A NAME="9"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> RerunServletTest {
+<A NAME="10"></A>
+<A NAME="11"></A>    @Test(expected = IllegalStateException.<FONT ID="Class">class</FONT>)
+<A NAME="12"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> failsOnRunningSlot() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="13"></A>        failsOnWrongStatusTest(SlotState.Status.RUNNING);
+<A NAME="14"></A>    }
+<A NAME="15"></A>
+<A NAME="16"></A>    @Test(expected = IllegalStateException.<FONT ID="Class">class</FONT>)
+<A NAME="17"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> failsOnReadySlot() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="18"></A>        failsOnWrongStatusTest(SlotState.Status.READY);
+<A NAME="19"></A>    }
+<A NAME="20"></A>
+<A NAME="21"></A>    @Test(expected = IllegalStateException.<FONT ID="Class">class</FONT>)
+<A NAME="22"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> failsOnWaitingSlot() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="23"></A>        failsOnWrongStatusTest(SlotState.Status.WAITING);
+<A NAME="24"></A>    }
+<A NAME="25"></A>
+<A NAME="26"></A>    <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> failsOnWrongStatusTest(<A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/SlotState.Status.html">Status</A> status) <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="27"></A>        StateDatabase db = <FONT ID="New">new</FONT> MemoryStateDatabase();
+<A NAME="28"></A>        SlotID id = <FONT ID="New">new</FONT> SlotID(<FONT ID="New">new</FONT> WorkflowID(<FONT ID="StringLiteral">"foo"</FONT>), <FONT ID="New">new</FONT> <A HREF="../../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2014-02-08T20:00Z"</FONT>));
+<A NAME="29"></A>        SlotState state = <FONT ID="New">new</FONT> SlotState(id, status);
+<A NAME="30"></A>        db.putSlotState(state);
+<A NAME="31"></A>        <FONT ID="New">new</FONT> <A HREF="../../../../com/collective/celos/servlet/RerunServlet.java.html">RerunServlet</A>().updateSlotToRerun(state, db);
+<A NAME="32"></A>    }
+<A NAME="33"></A>
+<A NAME="34"></A>    @Test
+<A NAME="35"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> succeedsOnSuccessSlot() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="36"></A>        succeedsOnRightStatusTest(SlotState.Status.SUCCESS);
+<A NAME="37"></A>    }
+<A NAME="38"></A>
+<A NAME="39"></A>    @Test
+<A NAME="40"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> succeedsOnFailureSlot() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="41"></A>        succeedsOnRightStatusTest(SlotState.Status.FAILURE);
+<A NAME="42"></A>    }
+<A NAME="43"></A>
+<A NAME="44"></A>    <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> succeedsOnRightStatusTest(<A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/SlotState.Status.html">Status</A> status) <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="45"></A>        StateDatabase db = <FONT ID="New">new</FONT> MemoryStateDatabase();
+<A NAME="46"></A>        SlotID id = <FONT ID="New">new</FONT> SlotID(<FONT ID="New">new</FONT> WorkflowID(<FONT ID="StringLiteral">"foo"</FONT>), <FONT ID="New">new</FONT> <A HREF="../../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2014-02-08T20:00Z"</FONT>));
+<A NAME="47"></A>        SlotState state = <FONT ID="New">new</FONT> SlotState(id, status);
+<A NAME="48"></A>        db.putSlotState(state);
+<A NAME="49"></A>        <FONT ID="New">new</FONT> <A HREF="../../../../com/collective/celos/servlet/RerunServlet.java.html">RerunServlet</A>().updateSlotToRerun(state, db);
+<A NAME="50"></A>        SlotState dbState = db.getSlotState(id);
+<A NAME="51"></A>        Assert.assertEquals(state.transitionToRerun(), dbState);
+<A NAME="52"></A>    }
+<A NAME="53"></A>    
+<A NAME="54"></A>}
+<A NAME="55"></A></pre>
+</BODY>
+</HTML>

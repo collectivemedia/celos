@@ -1,0 +1,85 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.DependentScheduleTest (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">DependentScheduleTest.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> java.util.Collections;
+<A NAME="4"></A><FONT ID="Import">import</FONT> java.util.SortedSet;
+<A NAME="5"></A>
+<A NAME="6"></A><FONT ID="Import">import</FONT> org.junit.Assert;
+<A NAME="7"></A><FONT ID="Import">import</FONT> org.junit.Test;
+<A NAME="8"></A>
+<A NAME="9"></A><FONT ID="Import">import</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/WorkflowInfo.ContactsInfo.html">com.collective.celos.WorkflowInfo.ContactsInfo</A>;
+<A NAME="10"></A><FONT ID="Import">import</FONT> com.google.common.collect.Sets;
+<A NAME="11"></A>
+<A NAME="12"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> DependentScheduleTest {
+<A NAME="13"></A>
+<A NAME="14"></A>    @Test
+<A NAME="15"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> throwsExceptionContainingWorkflowIDIfWorkflowNotFound() {
+<A NAME="16"></A>        <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/WorkflowConfiguration.html">WorkflowConfiguration</A> emptyConf = <FONT ID="New">new</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/WorkflowConfiguration.html">WorkflowConfiguration</A>();
+<A NAME="17"></A>        <A HREF="../../../com/collective/celos/StateDatabase.java.html">StateDatabase</A> emptyDB = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/MemoryStateDatabase.java.html">MemoryStateDatabase</A>();
+<A NAME="18"></A>        <FONT ID="Int">int</FONT> slidingWindowHours = <FONT ID="IntegerLiteral">24</FONT>;
+<A NAME="19"></A>        <A HREF="../../../com/collective/celos/Scheduler.java.html">Scheduler</A> scheduler = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/Scheduler.java.html">Scheduler</A>(emptyConf, emptyDB, slidingWindowHours);
+<A NAME="20"></A>        String id = <FONT ID="StringLiteral">"nonexisting-workflow"</FONT>;
+<A NAME="21"></A>        <A HREF="../../../com/collective/celos/DependentSchedule.java.html">DependentSchedule</A> schedule = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/DependentSchedule.java.html">DependentSchedule</A>(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(id));
+<A NAME="22"></A>        <FONT ID="Try">try</FONT> {
+<A NAME="23"></A>            schedule.getScheduledTimes(scheduler, ScheduledTime.now(), ScheduledTime.now());
+<A NAME="24"></A>        } <FONT ID="Catch">catch</FONT>(Exception e) {
+<A NAME="25"></A>            <FONT ID="If">if</FONT> (!e.getMessage().contains(id)) {
+<A NAME="26"></A>                Assert.assertFalse(<FONT ID="True">true</FONT>);
+<A NAME="27"></A>            }
+<A NAME="28"></A>        }
+<A NAME="29"></A>    }
+<A NAME="30"></A>
+<A NAME="31"></A>    @Test
+<A NAME="32"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> usesScheduleOfOtherWorkflow() {
+<A NAME="33"></A>        
+<A NAME="34"></A>        <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> workflowStartTime = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2015-02-23T00:00Z"</FONT>);
+<A NAME="35"></A>        <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> schedulingStartTime = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2015-02-23T10:00Z"</FONT>);
+<A NAME="36"></A>        <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> schedulingEndTime = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2015-02-23T12:01Z"</FONT>);
+<A NAME="37"></A>
+<A NAME="38"></A>        <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/WorkflowConfiguration.html">WorkflowConfiguration</A> conf = <FONT ID="New">new</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/WorkflowConfiguration.html">WorkflowConfiguration</A>();
+<A NAME="39"></A>        <A HREF="../../../com/collective/celos/StateDatabase.java.html">StateDatabase</A> emptyDB = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/MemoryStateDatabase.java.html">MemoryStateDatabase</A>();
+<A NAME="40"></A>        <FONT ID="Int">int</FONT> slidingWindowHours = <FONT ID="IntegerLiteral">24</FONT>;
+<A NAME="41"></A>        <A HREF="../../../com/collective/celos/Scheduler.java.html">Scheduler</A> scheduler = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/Scheduler.java.html">Scheduler</A>(conf, emptyDB, slidingWindowHours);
+<A NAME="42"></A>        String id = <FONT ID="StringLiteral">"other-workflow"</FONT>;
+<A NAME="43"></A>        <A HREF="../../../com/collective/celos/Schedule.java.html">Schedule</A> otherSchedule = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/HourlySchedule.java.html">HourlySchedule</A>();
+<A NAME="44"></A>        
+<A NAME="45"></A>        conf.addWorkflow(
+<A NAME="46"></A>                <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/Workflow.java.html">Workflow</A>(
+<A NAME="47"></A>                        <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(id), 
+<A NAME="48"></A>                        otherSchedule,
+<A NAME="49"></A>                        <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SerialSchedulingStrategy.java.html">SerialSchedulingStrategy</A>(<FONT ID="IntegerLiteral">1</FONT>),
+<A NAME="50"></A>                        <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/AlwaysTrigger.java.html">AlwaysTrigger</A>(),
+<A NAME="51"></A>                        <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/MockExternalService.java.html">MockExternalService</A>(
+<A NAME="52"></A>                                <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/MockExternalService.java.html">MockExternalService.MockExternalStatusSuccess</A>()),
+<A NAME="53"></A>                        slidingWindowHours,
+<A NAME="54"></A>                        workflowStartTime,
+<A NAME="55"></A>                        Workflow.DEFAULT_WAIT_TIMEOUT_SECONDS,
+<A NAME="56"></A>                        <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowInfo.java.html">WorkflowInfo</A>(<FONT ID="Null">null</FONT>, Collections.&lt;<A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/WorkflowInfo.ContactsInfo.html">ContactsInfo</A>&gt;emptyList())));
+<A NAME="57"></A>        
+<A NAME="58"></A>        <A HREF="../../../com/collective/celos/DependentSchedule.java.html">DependentSchedule</A> schedule = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/DependentSchedule.java.html">DependentSchedule</A>(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(id));
+<A NAME="59"></A>        SortedSet&lt;<A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>&gt; times = schedule.getScheduledTimes(scheduler, schedulingStartTime, schedulingEndTime);
+<A NAME="60"></A>        Assert.assertEquals(Sets.newHashSet(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2015-02-23T10:00Z"</FONT>), <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2015-02-23T11:00Z"</FONT>), <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2015-02-23T12:00Z"</FONT>)),
+<A NAME="61"></A>                            times);
+<A NAME="62"></A>        
+<A NAME="63"></A>    }
+<A NAME="64"></A>
+<A NAME="65"></A>}
+<A NAME="66"></A></pre>
+</BODY>
+</HTML>

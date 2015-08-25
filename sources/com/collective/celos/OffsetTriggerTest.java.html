@@ -1,0 +1,82 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.OffsetTriggerTest (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">OffsetTriggerTest.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> org.junit.Assert;
+<A NAME="4"></A><FONT ID="Import">import</FONT> org.junit.Before;
+<A NAME="5"></A><FONT ID="Import">import</FONT> org.junit.Rule;
+<A NAME="6"></A><FONT ID="Import">import</FONT> org.junit.Test;
+<A NAME="7"></A><FONT ID="Import">import</FONT> org.junit.rules.TemporaryFolder;
+<A NAME="8"></A>
+<A NAME="9"></A><FONT ID="Import">import</FONT> java.io.File;
+<A NAME="10"></A><FONT ID="Import">import</FONT> java.io.IOException;
+<A NAME="11"></A>
+<A NAME="12"></A><FONT ID="Import">import</FONT> <FONT ID="Static">static</FONT> org.junit.Assert.assertTrue;
+<A NAME="13"></A><FONT ID="Import">import</FONT> <FONT ID="Static">static</FONT> org.mockito.Mockito.mock;
+<A NAME="14"></A>
+<A NAME="15"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> OffsetTriggerTest {
+<A NAME="16"></A>
+<A NAME="17"></A>    @Rule
+<A NAME="18"></A>    <FONT ID="Public">public</FONT> TemporaryFolder tempFolder = <FONT ID="New">new</FONT> TemporaryFolder();
+<A NAME="19"></A>
+<A NAME="20"></A>    <FONT ID="Private">private</FONT> <A HREF="../../../com/collective/celos/Scheduler.java.html">Scheduler</A> scheduler;
+<A NAME="21"></A>
+<A NAME="22"></A>    @Before
+<A NAME="23"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> prepare() <FONT ID="Throws">throws</FONT> IOException {
+<A NAME="24"></A>        String root = tempFolder.getRoot().getPath();
+<A NAME="25"></A>
+<A NAME="26"></A>        File triggerFile = <FONT ID="New">new</FONT> File(root, <FONT ID="StringLiteral">"2013-11-22/1500/_READY"</FONT>);
+<A NAME="27"></A>        triggerFile.getParentFile().mkdirs();
+<A NAME="28"></A>        triggerFile.createNewFile();
+<A NAME="29"></A>
+<A NAME="30"></A>        scheduler = mock(<A HREF="../../../com/collective/celos/Scheduler.java.html">Scheduler</A>.<FONT ID="Class">class</FONT>);
+<A NAME="31"></A>
+<A NAME="32"></A>    }
+<A NAME="33"></A>
+<A NAME="34"></A>    @Test
+<A NAME="35"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testTriggerAddsSomething() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="36"></A>        <A HREF="../../../com/collective/celos/Trigger.java.html">Trigger</A> dependent = <FONT ID="New">new</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/HDFSCheckTrigger.html">HDFSCheckTrigger</A>(tempFolder.getRoot().getPath() + <FONT ID="StringLiteral">"/${year}-${month}-${day}/${hour}00/_READY"</FONT>,  <FONT ID="StringLiteral">"file:///"</FONT>);
+<A NAME="37"></A>
+<A NAME="38"></A>        <A HREF="../../../com/collective/celos/Trigger.java.html">Trigger</A> offsetTriggerPlus = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/OffsetTrigger.java.html">OffsetTrigger</A>(<FONT ID="IntegerLiteral">60</FONT>*<FONT ID="IntegerLiteral">60</FONT>, dependent);
+<A NAME="39"></A>        assertTrue(offsetTriggerPlus.isDataAvailable(scheduler, ScheduledTime.now(), <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-11-22T14:00Z"</FONT>)));
+<A NAME="40"></A>
+<A NAME="41"></A>    }
+<A NAME="42"></A>
+<A NAME="43"></A>    @Test
+<A NAME="44"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testTriggerDoesNothing() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="45"></A>        <A HREF="../../../com/collective/celos/Trigger.java.html">Trigger</A> dependent = <FONT ID="New">new</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/HDFSCheckTrigger.html">HDFSCheckTrigger</A>(tempFolder.getRoot().getPath() + <FONT ID="StringLiteral">"/${year}-${month}-${day}/${hour}00/_READY"</FONT>,  <FONT ID="StringLiteral">"file:///"</FONT>);
+<A NAME="46"></A>
+<A NAME="47"></A>        <A HREF="../../../com/collective/celos/Trigger.java.html">Trigger</A> offsetTriggerPlus = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/OffsetTrigger.java.html">OffsetTrigger</A>(<FONT ID="IntegerLiteral">0</FONT>, dependent);
+<A NAME="48"></A>        assertTrue(offsetTriggerPlus.isDataAvailable(scheduler, ScheduledTime.now(), <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-11-22T15:00Z"</FONT>)));
+<A NAME="49"></A>
+<A NAME="50"></A>    }
+<A NAME="51"></A>
+<A NAME="52"></A>    @Test
+<A NAME="53"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testTriggerSubsSomething() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="54"></A>        <A HREF="../../../com/collective/celos/Trigger.java.html">Trigger</A> dependent = <FONT ID="New">new</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/HDFSCheckTrigger.html">HDFSCheckTrigger</A>(tempFolder.getRoot().getPath() + <FONT ID="StringLiteral">"/${year}-${month}-${day}/${hour}00/_READY"</FONT>,  <FONT ID="StringLiteral">"file:///"</FONT>);
+<A NAME="55"></A>
+<A NAME="56"></A>        <A HREF="../../../com/collective/celos/Trigger.java.html">Trigger</A> offsetTriggerMinus = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/OffsetTrigger.java.html">OffsetTrigger</A>(-<FONT ID="IntegerLiteral">60</FONT>*<FONT ID="IntegerLiteral">60</FONT>, dependent);
+<A NAME="57"></A>        assertTrue(offsetTriggerMinus.isDataAvailable(scheduler, ScheduledTime.now(), <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-11-22T16:00Z"</FONT>)));
+<A NAME="58"></A>
+<A NAME="59"></A>    }
+<A NAME="60"></A>
+<A NAME="61"></A>
+<A NAME="62"></A>}
+<A NAME="63"></A></pre>
+</BODY>
+</HTML>

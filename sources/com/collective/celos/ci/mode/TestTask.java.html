@@ -1,0 +1,158 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.ci.mode.TestTask (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">TestTask.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos.ci.mode;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> java.io.File;
+<A NAME="4"></A><FONT ID="Import">import</FONT> java.io.IOException;
+<A NAME="5"></A><FONT ID="Import">import</FONT> java.nio.file.Files;
+<A NAME="6"></A><FONT ID="Import">import</FONT> java.nio.file.attribute.FileAttribute;
+<A NAME="7"></A><FONT ID="Import">import</FONT> java.nio.file.attribute.PosixFilePermission;
+<A NAME="8"></A><FONT ID="Import">import</FONT> java.nio.file.attribute.PosixFilePermissions;
+<A NAME="9"></A><FONT ID="Import">import</FONT> java.util.List;
+<A NAME="10"></A><FONT ID="Import">import</FONT> java.util.Set;
+<A NAME="11"></A><FONT ID="Import">import</FONT> java.util.UUID;
+<A NAME="12"></A><FONT ID="Import">import</FONT> java.util.concurrent.Callable;
+<A NAME="13"></A><FONT ID="Import">import</FONT> java.util.concurrent.ExecutionException;
+<A NAME="14"></A><FONT ID="Import">import</FONT> java.util.concurrent.ExecutorService;
+<A NAME="15"></A><FONT ID="Import">import</FONT> java.util.concurrent.Executors;
+<A NAME="16"></A><FONT ID="Import">import</FONT> java.util.concurrent.Future;
+<A NAME="17"></A>
+<A NAME="18"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../com/collective/celos/Util.java.html">com.collective.celos.Util</A>;
+<A NAME="19"></A><FONT ID="Import">import</FONT> org.apache.commons.io.FileUtils;
+<A NAME="20"></A><FONT ID="Import">import</FONT> org.apache.log4j.FileAppender;
+<A NAME="21"></A><FONT ID="Import">import</FONT> org.apache.log4j.Level;
+<A NAME="22"></A><FONT ID="Import">import</FONT> org.apache.log4j.Logger;
+<A NAME="23"></A><FONT ID="Import">import</FONT> org.apache.log4j.PatternLayout;
+<A NAME="24"></A>
+<A NAME="25"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../com/collective/celos/ci/CelosCi.java.html">com.collective.celos.ci.CelosCi</A>;
+<A NAME="26"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../com/collective/celos/ci/config/CiCommandLine.java.html">com.collective.celos.ci.config.CiCommandLine</A>;
+<A NAME="27"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../com/collective/celos/ci/config/deploy/CelosCiTarget.java.html">com.collective.celos.ci.config.deploy.CelosCiTarget</A>;
+<A NAME="28"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../com/collective/celos/ci/config/deploy/CelosCiTargetParser.java.html">com.collective.celos.ci.config.deploy.CelosCiTargetParser</A>;
+<A NAME="29"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../com/collective/celos/ci/mode/test/TestCase.java.html">com.collective.celos.ci.mode.test.TestCase</A>;
+<A NAME="30"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../com/collective/celos/ci/mode/test/TestConfigurationParser.java.html">com.collective.celos.ci.mode.test.TestConfigurationParser</A>;
+<A NAME="31"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../com/collective/celos/ci/mode/test/TestRun.java.html">com.collective.celos.ci.mode.test.TestRun</A>;
+<A NAME="32"></A><FONT ID="Import">import</FONT> com.google.common.collect.Lists;
+<A NAME="33"></A>
+<A NAME="34"></A><FONT ID="FormalComment">/**
+<A NAME="35"></A> * Created by akonopko on 10/1/14.
+<A NAME="36"></A> */</FONT>
+<A NAME="37"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> TestTask <FONT ID="Extends">extends</FONT> <A HREF="../../../../../com/collective/celos/ci/CelosCi.java.html">CelosCi</A> {
+<A NAME="38"></A>
+<A NAME="39"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String CELOS_CI_DIR = <FONT ID="StringLiteral">".celos-ci"</FONT>;
+<A NAME="40"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String TEST_CONFIG_JS_FILE = <FONT ID="StringLiteral">"test.js"</FONT>;
+<A NAME="41"></A>
+<A NAME="42"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> List&lt;<A HREF="../../../../../com/collective/celos/ci/mode/test/TestRun.java.html">TestRun</A>&gt; testRuns = Lists.newArrayList();
+<A NAME="43"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> File celosCiTempDir;
+<A NAME="44"></A>
+<A NAME="45"></A>    <FONT ID="Public">public</FONT> TestTask(<A HREF="../../../../../com/collective/celos/ci/config/CiCommandLine.java.html">CiCommandLine</A> commandLine) <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="46"></A>        <FONT ID="This">this</FONT>(commandLine, getConfigJSFile(commandLine), getTempDir());
+<A NAME="47"></A>    }
+<A NAME="48"></A>
+<A NAME="49"></A>    TestTask(<A HREF="../../../../../com/collective/celos/ci/config/CiCommandLine.java.html">CiCommandLine</A> commandLine, File configJSFile, File tempDir) <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="50"></A>
+<A NAME="51"></A>        <FONT ID="This">this</FONT>.celosCiTempDir = tempDir;
+<A NAME="52"></A>        Util.setupLogging(tempDir);
+<A NAME="53"></A>
+<A NAME="54"></A>        <A HREF="../../../../../com/collective/celos/ci/config/deploy/CelosCiTargetParser.java.html">CelosCiTargetParser</A> parser = <FONT ID="New">new</FONT> <A HREF="../../../../../com/collective/celos/ci/config/deploy/CelosCiTargetParser.java.html">CelosCiTargetParser</A>(commandLine.getUserName());
+<A NAME="55"></A>        <A HREF="../../../../../com/collective/celos/ci/config/deploy/CelosCiTarget.java.html">CelosCiTarget</A> target = parser.parse(commandLine.getTargetUri());
+<A NAME="56"></A>
+<A NAME="57"></A>        <A HREF="../../../../../com/collective/celos/ci/mode/test/TestConfigurationParser.java.html">TestConfigurationParser</A> configurationParser = <FONT ID="New">new</FONT> <A HREF="../../../../../com/collective/celos/ci/mode/test/TestConfigurationParser.java.html">TestConfigurationParser</A>();
+<A NAME="58"></A>        configurationParser.evaluateTestConfig(configJSFile);
+<A NAME="59"></A>
+<A NAME="60"></A>        <FONT ID="For">for</FONT> (<A HREF="../../../../../com/collective/celos/ci/mode/test/TestCase.java.html">TestCase</A> testCase : configurationParser.getTestCases()) {
+<A NAME="61"></A>            testRuns.add(<FONT ID="New">new</FONT> <A HREF="../../../../../com/collective/celos/ci/mode/test/TestRun.java.html">TestRun</A>(target, commandLine, testCase, celosCiTempDir));
+<A NAME="62"></A>        }
+<A NAME="63"></A>    }
+<A NAME="64"></A>
+<A NAME="65"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> File getConfigJSFile(<A HREF="../../../../../com/collective/celos/ci/config/CiCommandLine.java.html">CiCommandLine</A> commandLine) {
+<A NAME="66"></A>        <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> File(commandLine.getTestCasesDir(), TEST_CONFIG_JS_FILE);
+<A NAME="67"></A>    }
+<A NAME="68"></A>
+<A NAME="69"></A>    <FONT ID="Static">static</FONT> File getTempDir() <FONT ID="Throws">throws</FONT> IOException {
+<A NAME="70"></A>        File celosCiDir = <FONT ID="New">new</FONT> File(System.getProperty(<FONT ID="StringLiteral">"user.home"</FONT>), CELOS_CI_DIR);
+<A NAME="71"></A>        File tempDir = <FONT ID="New">new</FONT> File(celosCiDir, UUID.randomUUID().toString());
+<A NAME="72"></A>        <FONT ID="Return">return</FONT> Files.createDirectories(tempDir.toPath(), getTempDirAttributes()).toFile();
+<A NAME="73"></A>    }
+<A NAME="74"></A>
+<A NAME="75"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> FileAttribute&lt;Set&lt;PosixFilePermission&gt;&gt; getTempDirAttributes() {
+<A NAME="76"></A>        <FONT ID="Return">return</FONT> PosixFilePermissions.asFileAttribute(PosixFilePermissions.fromString(<FONT ID="StringLiteral">"rwxr-xr-x"</FONT>));
+<A NAME="77"></A>    }
+<A NAME="78"></A>
+<A NAME="79"></A>    @Override
+<A NAME="80"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> start() <FONT ID="Throws">throws</FONT> Throwable {
+<A NAME="81"></A>        <FONT ID="Try">try</FONT> {
+<A NAME="82"></A>            List&lt;Future&gt; futures = submitTestRuns();
+<A NAME="83"></A>            waitForCompletion(futures);
+<A NAME="84"></A>        } <FONT ID="Finally">finally</FONT> {
+<A NAME="85"></A>            <FONT ID="If">if</FONT> (celosCiTempDir.exists() &amp;&amp; allTestCasesDeletedTheirData()) {
+<A NAME="86"></A>                FileUtils.forceDelete(celosCiTempDir);
+<A NAME="87"></A>            }
+<A NAME="88"></A>        }
+<A NAME="89"></A>    }
+<A NAME="90"></A>
+<A NAME="91"></A>    <FONT ID="Private">private</FONT> <FONT ID="Boolean">boolean</FONT> allTestCasesDeletedTheirData() {
+<A NAME="92"></A>        <FONT ID="For">for</FONT> (File child : celosCiTempDir.listFiles()) {
+<A NAME="93"></A>            <FONT ID="If">if</FONT> (child.isDirectory()) {
+<A NAME="94"></A>                <FONT ID="Return">return</FONT> <FONT ID="False">false</FONT>;
+<A NAME="95"></A>            }
+<A NAME="96"></A>        }
+<A NAME="97"></A>        <FONT ID="Return">return</FONT> <FONT ID="True">true</FONT>;
+<A NAME="98"></A>    }
+<A NAME="99"></A>
+<A NAME="100"></A>    <FONT ID="Private">private</FONT> List&lt;Future&gt; submitTestRuns() {
+<A NAME="101"></A>        ExecutorService executor = Executors.newCachedThreadPool();
+<A NAME="102"></A>        List&lt;Future&gt; futures = Lists.newArrayList();
+<A NAME="103"></A>        <FONT ID="For">for</FONT> (<FONT ID="Final">final</FONT> <A HREF="../../../../../com/collective/celos/ci/mode/test/TestRun.java.html">TestRun</A> testRun : testRuns) {
+<A NAME="104"></A>            Callable callable = <FONT ID="New">new</FONT> Callable&lt;Void&gt;() {
+<A NAME="105"></A>                @Override
+<A NAME="106"></A>                <FONT ID="Public">public</FONT> Void call() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="107"></A>                    testRun.start();
+<A NAME="108"></A>                    <FONT ID="Return">return</FONT> <FONT ID="Null">null</FONT>;
+<A NAME="109"></A>                }
+<A NAME="110"></A>            };
+<A NAME="111"></A>            futures.add(executor.submit(callable));
+<A NAME="112"></A>        }
+<A NAME="113"></A>        <FONT ID="Return">return</FONT> futures;
+<A NAME="114"></A>    }
+<A NAME="115"></A>
+<A NAME="116"></A>    <FONT ID="Void">void</FONT> waitForCompletion(List&lt;Future&gt; futures) <FONT ID="Throws">throws</FONT> Throwable {
+<A NAME="117"></A>        List&lt;Throwable&gt; throwables = Lists.newArrayList();
+<A NAME="118"></A>        <FONT ID="For">for</FONT> (Future future : futures) {
+<A NAME="119"></A>            <FONT ID="Try">try</FONT> {
+<A NAME="120"></A>                future.get();
+<A NAME="121"></A>            } <FONT ID="Catch">catch</FONT> (ExecutionException ee) {
+<A NAME="122"></A>                throwables.add(ee.getCause());
+<A NAME="123"></A>            }
+<A NAME="124"></A>        }
+<A NAME="125"></A>        <FONT ID="If">if</FONT> (!throwables.isEmpty()) {
+<A NAME="126"></A>            List&lt;Throwable&gt; throwablesWOLast = throwables.subList(<FONT ID="IntegerLiteral">0</FONT>, throwables.size() - <FONT ID="IntegerLiteral">1</FONT>);
+<A NAME="127"></A>            <FONT ID="For">for</FONT> (Throwable t : throwablesWOLast) {
+<A NAME="128"></A>                t.printStackTrace();
+<A NAME="129"></A>            }
+<A NAME="130"></A>            Throwable lastThrowable = throwables.get(throwables.size() - <FONT ID="IntegerLiteral">1</FONT>);
+<A NAME="131"></A>            <FONT ID="Throw">throw</FONT> lastThrowable;
+<A NAME="132"></A>        }
+<A NAME="133"></A>    }
+<A NAME="134"></A>
+<A NAME="135"></A>    List&lt;<A HREF="../../../../../com/collective/celos/ci/mode/test/TestRun.java.html">TestRun</A>&gt; getTestRuns() {
+<A NAME="136"></A>        <FONT ID="Return">return</FONT> testRuns;
+<A NAME="137"></A>    }
+<A NAME="138"></A>}
+<A NAME="139"></A></pre>
+</BODY>
+</HTML>

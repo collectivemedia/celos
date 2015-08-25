@@ -1,0 +1,67 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.ci.mode.test.TestRunCelosServerModeProvided (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">TestRunCelosServerModeProvided.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos.ci.mode.test;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../com/collective/celos/ci/config/CiCommandLine.java.html">com.collective.celos.ci.config.CiCommandLine</A>;
+<A NAME="4"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../com/collective/celos/ci/config/deploy/CelosCiTarget.java.html">com.collective.celos.ci.config.deploy.CelosCiTarget</A>;
+<A NAME="5"></A>
+<A NAME="6"></A><FONT ID="Import">import</FONT> java.net.URI;
+<A NAME="7"></A>
+<A NAME="8"></A><FONT ID="FormalComment">/**
+<A NAME="9"></A> * Created by akonopko on 10/1/14.
+<A NAME="10"></A> */</FONT>
+<A NAME="11"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> TestRunCelosServerModeProvided <FONT ID="Implements">implements</FONT> <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestRunCelosServerMode.java.html">TestRunCelosServerMode</A> {
+<A NAME="12"></A>
+<A NAME="13"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String HDFS_PREFIX_PATTERN = <FONT ID="StringLiteral">"/user/%s/celos.selftest"</FONT>;
+<A NAME="14"></A>
+<A NAME="15"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> URI celosServerUrl;
+<A NAME="16"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> <A HREF="../../../../../../com/collective/celos/ci/config/deploy/CelosCiTarget.java.html">CelosCiTarget</A> target;
+<A NAME="17"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> String hdfsPrefix;
+<A NAME="18"></A>
+<A NAME="19"></A>    <FONT ID="Public">public</FONT> TestRunCelosServerModeProvided(<A HREF="../../../../../../com/collective/celos/ci/config/CiCommandLine.java.html">CiCommandLine</A> commandLine, <A HREF="../../../../../../com/collective/celos/ci/config/deploy/CelosCiTarget.java.html">CelosCiTarget</A> target) {
+<A NAME="20"></A>        <FONT ID="This">this</FONT>.celosServerUrl = commandLine.getCelosServerUrl();
+<A NAME="21"></A>        <FONT ID="This">this</FONT>.target = target;
+<A NAME="22"></A>        <FONT ID="This">this</FONT>.hdfsPrefix = String.format(HDFS_PREFIX_PATTERN, commandLine.getUserName());
+<A NAME="23"></A>    }
+<A NAME="24"></A>
+<A NAME="25"></A>    <FONT ID="Public">public</FONT> URI startServer(<A HREF="../../../../../../com/collective/celos/ci/mode/test/TestRun.java.html">TestRun</A> testRun) <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="26"></A>        <FONT ID="Return">return</FONT> celosServerUrl;
+<A NAME="27"></A>    }
+<A NAME="28"></A>
+<A NAME="29"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> stopServer(<A HREF="../../../../../../com/collective/celos/ci/mode/test/TestRun.java.html">TestRun</A> testRun) {
+<A NAME="30"></A>    }
+<A NAME="31"></A>
+<A NAME="32"></A>    @Override
+<A NAME="33"></A>    <FONT ID="Public">public</FONT> String getHdfsPrefix() {
+<A NAME="34"></A>        <FONT ID="Return">return</FONT> hdfsPrefix;
+<A NAME="35"></A>    }
+<A NAME="36"></A>
+<A NAME="37"></A>    @Override
+<A NAME="38"></A>    <FONT ID="Public">public</FONT> URI getCelosWorkflowDir() {
+<A NAME="39"></A>        <FONT ID="Return">return</FONT> target.getWorkflowsDirUri();
+<A NAME="40"></A>    }
+<A NAME="41"></A>
+<A NAME="42"></A>    @Override
+<A NAME="43"></A>    <FONT ID="Public">public</FONT> URI getCelosDefaultsDir() {
+<A NAME="44"></A>        <FONT ID="Return">return</FONT> target.getDefaultsDirUri();
+<A NAME="45"></A>    }
+<A NAME="46"></A>
+<A NAME="47"></A>}
+<A NAME="48"></A></pre>
+</BODY>
+</HTML>

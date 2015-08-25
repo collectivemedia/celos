@@ -1,0 +1,39 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.Schedule (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">Schedule.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> java.util.SortedSet;
+<A NAME="4"></A>
+<A NAME="5"></A><FONT ID="FormalComment">/**
+<A NAME="6"></A> * Determines the times at which a workflow is supposed to run.
+<A NAME="7"></A> */</FONT>
+<A NAME="8"></A><FONT ID="Public">public</FONT> <FONT ID="Interface">interface</FONT> Schedule {
+<A NAME="9"></A>
+<A NAME="10"></A>    <FONT ID="FormalComment">/**
+<A NAME="11"></A>     * Returns the set of scheduled times of this schedule within the
+<A NAME="12"></A>     * window defined by start (inclusive) and end (exclusive).
+<A NAME="13"></A>     * 
+<A NAME="14"></A>     * The scheduler parameter is currently only used by DependentSchedule, so tests
+<A NAME="15"></A>     * of other schedules pass null as scheduler, which is a bit of a hack, but works.
+<A NAME="16"></A>     */</FONT>
+<A NAME="17"></A>    <FONT ID="Public">public</FONT> SortedSet&lt;<A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>&gt; getScheduledTimes(<A HREF="../../../com/collective/celos/Scheduler.java.html">Scheduler</A> scheduler, <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> start, <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> end);
+<A NAME="18"></A>
+<A NAME="19"></A>}
+<A NAME="20"></A></pre>
+</BODY>
+</HTML>

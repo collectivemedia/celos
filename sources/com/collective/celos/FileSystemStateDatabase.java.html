@@ -1,0 +1,118 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.FileSystemStateDatabase (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">FileSystemStateDatabase.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> java.io.File;
+<A NAME="4"></A><FONT ID="Import">import</FONT> java.io.IOException;
+<A NAME="5"></A>
+<A NAME="6"></A><FONT ID="Import">import</FONT> org.apache.commons.io.FileUtils;
+<A NAME="7"></A>
+<A NAME="8"></A><FONT ID="Import">import</FONT> com.fasterxml.jackson.databind.ObjectMapper;
+<A NAME="9"></A><FONT ID="Import">import</FONT> com.fasterxml.jackson.databind.node.ObjectNode;
+<A NAME="10"></A>
+<A NAME="11"></A><FONT ID="FormalComment">/**
+<A NAME="12"></A> * Brutally simple persistent implementation of StateDatabase
+<A NAME="13"></A> * that stores slot states as JSON files in the file system.
+<A NAME="14"></A> * 
+<A NAME="15"></A> * The database has a top-level directory.  Inside it, there
+<A NAME="16"></A> * is a subdirectory for each workflow.  Inside each workflow directory
+<A NAME="17"></A> * is one directory per day.  Inside each day directory is one JSON file
+<A NAME="18"></A> * per workflow run.
+<A NAME="19"></A> * 
+<A NAME="20"></A> * /
+<A NAME="21"></A> *   workflow-1/
+<A NAME="22"></A> *     2013-12-02/
+<A NAME="23"></A> *       16:00:00.000Z
+<A NAME="24"></A> *       17:00:00.000Z
+<A NAME="25"></A> *     ...
+<A NAME="26"></A> *   workflow-2/
+<A NAME="27"></A> *     2013-12-02/
+<A NAME="28"></A> *       16:00:00.000Z
+<A NAME="29"></A> *       17:00:00.000Z
+<A NAME="30"></A> *     ...
+<A NAME="31"></A> *   ...
+<A NAME="32"></A> *   
+<A NAME="33"></A> * A JSON file looks like this:
+<A NAME="34"></A> * 
+<A NAME="35"></A> * {"status":"WAITING"}
+<A NAME="36"></A> * 
+<A NAME="37"></A> * or
+<A NAME="38"></A> * 
+<A NAME="39"></A> * {"status":"RUNNING","externalID":"23873218-13202130978213-W"}
+<A NAME="40"></A> */</FONT>
+<A NAME="41"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> FileSystemStateDatabase <FONT ID="Implements">implements</FONT> <A HREF="../../../com/collective/celos/StateDatabase.java.html">StateDatabase</A> {
+<A NAME="42"></A>
+<A NAME="43"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String CHARSET = <FONT ID="StringLiteral">"UTF-8"</FONT>;
+<A NAME="44"></A>
+<A NAME="45"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> ObjectMapper mapper = <FONT ID="New">new</FONT> ObjectMapper();
+<A NAME="46"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> <A HREF="../../../com/collective/celos/ScheduledTimeFormatter.java.html">ScheduledTimeFormatter</A> formatter = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTimeFormatter.java.html">ScheduledTimeFormatter</A>();
+<A NAME="47"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> File dir;
+<A NAME="48"></A>    
+<A NAME="49"></A>    <FONT ID="FormalComment">/**
+<A NAME="50"></A>     * Creates a new DB that stores data in the given directory, which must exist.
+<A NAME="51"></A>     */</FONT>
+<A NAME="52"></A>    <FONT ID="Public">public</FONT> FileSystemStateDatabase(File dir) <FONT ID="Throws">throws</FONT> IOException {
+<A NAME="53"></A>        <FONT ID="This">this</FONT>.dir = Util.requireNonNull(dir);
+<A NAME="54"></A>        <FONT ID="If">if</FONT> (!dir.exists()) {
+<A NAME="55"></A>            <FONT ID="Throw">throw</FONT> <FONT ID="New">new</FONT> IOException(<FONT ID="StringLiteral">"Database directory "</FONT> + dir + <FONT ID="StringLiteral">" doesn't exist."</FONT>);
+<A NAME="56"></A>        }
+<A NAME="57"></A>    }
+<A NAME="58"></A>
+<A NAME="59"></A>    @Override
+<A NAME="60"></A>    <FONT ID="Public">public</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> getSlotState(<A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A> id) <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="61"></A>        File file = getSlotFile(id);
+<A NAME="62"></A>        <FONT ID="If">if</FONT> (!file.exists()) {
+<A NAME="63"></A>            <FONT ID="Return">return</FONT> <FONT ID="Null">null</FONT>;
+<A NAME="64"></A>        } <FONT ID="Else">else</FONT> {
+<A NAME="65"></A>            String json = FileUtils.readFileToString(file, CHARSET);
+<A NAME="66"></A>            <FONT ID="Return">return</FONT> SlotState.fromJSONNode(id, (ObjectNode) mapper.readTree(json));
+<A NAME="67"></A>        }
+<A NAME="68"></A>    }
+<A NAME="69"></A>
+<A NAME="70"></A>    @Override
+<A NAME="71"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> putSlotState(<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> state) <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="72"></A>        String json = mapper.writeValueAsString(state.toJSONNode());
+<A NAME="73"></A>        File file = getSlotFile(state.getSlotID());
+<A NAME="74"></A>        FileUtils.forceMkdir(file.getParentFile());
+<A NAME="75"></A>        FileUtils.write(file, json, CHARSET);
+<A NAME="76"></A>    }
+<A NAME="77"></A>
+<A NAME="78"></A>    <FONT ID="Private">private</FONT> File getSlotFile(<A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A> slotID) {
+<A NAME="79"></A>        <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> File(getDayDir(slotID), getSlotFileName(slotID));
+<A NAME="80"></A>    }
+<A NAME="81"></A>
+<A NAME="82"></A>    <FONT ID="FormalComment">/** Returns the directory containing a day's data inside the workflow dir. */</FONT>
+<A NAME="83"></A>    <FONT ID="Private">private</FONT> File getDayDir(<A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A> slotID) {
+<A NAME="84"></A>        File workflowDir = getWorkflowDir(slotID);
+<A NAME="85"></A>        File dayDir = <FONT ID="New">new</FONT> File(workflowDir, formatter.formatDatestamp(slotID.getScheduledTime()));
+<A NAME="86"></A>        <FONT ID="Return">return</FONT> dayDir;
+<A NAME="87"></A>    }
+<A NAME="88"></A>
+<A NAME="89"></A>    <FONT ID="FormalComment">/** Returns the directory containing all data for the slot's workflow. */</FONT>
+<A NAME="90"></A>    <FONT ID="Private">private</FONT> File getWorkflowDir(<A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A> slotID) {
+<A NAME="91"></A>        <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> File(dir, slotID.getWorkflowID().toString());
+<A NAME="92"></A>    }
+<A NAME="93"></A>    
+<A NAME="94"></A>    <FONT ID="Private">private</FONT> String getSlotFileName(<A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A> slotID) {
+<A NAME="95"></A>        <FONT ID="Return">return</FONT> formatter.formatTimestamp(slotID.getScheduledTime());
+<A NAME="96"></A>    }
+<A NAME="97"></A>
+<A NAME="98"></A>}
+<A NAME="99"></A></pre>
+</BODY>
+</HTML>

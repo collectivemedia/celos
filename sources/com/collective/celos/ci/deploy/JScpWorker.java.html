@@ -1,0 +1,71 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.ci.deploy.JScpWorker (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">JScpWorker.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos.ci.deploy;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> org.apache.commons.vfs2.*;
+<A NAME="4"></A><FONT ID="Import">import</FONT> org.apache.commons.vfs2.provider.sftp.SftpFileSystemConfigBuilder;
+<A NAME="5"></A>
+<A NAME="6"></A><FONT ID="Import">import</FONT> java.io.InputStream;
+<A NAME="7"></A><FONT ID="Import">import</FONT> java.net.URI;
+<A NAME="8"></A><FONT ID="Import">import</FONT> java.net.URISyntaxException;
+<A NAME="9"></A>
+<A NAME="10"></A>
+<A NAME="11"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> JScpWorker {
+<A NAME="12"></A>
+<A NAME="13"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String DEFAULT_SECURITY_SETTINGS = <FONT ID="StringLiteral">"gssapi-with-mic,publickey,keyboard-interactive,password"</FONT>;
+<A NAME="14"></A>
+<A NAME="15"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> FileSystemManager fsManager;
+<A NAME="16"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> String userName;
+<A NAME="17"></A>
+<A NAME="18"></A>    <FONT ID="Public">public</FONT> JScpWorker(String userName) <FONT ID="Throws">throws</FONT> FileSystemException {
+<A NAME="19"></A>        <FONT ID="This">this</FONT>.fsManager = VFS.getManager();
+<A NAME="20"></A>        <FONT ID="This">this</FONT>.userName = userName;
+<A NAME="21"></A>    }
+<A NAME="22"></A>
+<A NAME="23"></A>    <FONT ID="Public">public</FONT> FileObject getFileObjectByUri(String file) <FONT ID="Throws">throws</FONT> URISyntaxException, FileSystemException {
+<A NAME="24"></A>        <FONT ID="Return">return</FONT> getFileObjectByUri(URI.create(file));
+<A NAME="25"></A>    }
+<A NAME="26"></A>
+<A NAME="27"></A>    <FONT ID="Public">public</FONT> FileObject getFileObjectByUri(URI file) <FONT ID="Throws">throws</FONT> URISyntaxException, FileSystemException {
+<A NAME="28"></A>        URI uri = getURIRespectingUsername(file);
+<A NAME="29"></A>        <FONT ID="Return">return</FONT> fsManager.resolveFile(uri.toString(), getSftpDefaultOptions());
+<A NAME="30"></A>    }
+<A NAME="31"></A>
+<A NAME="32"></A>    URI getURIRespectingUsername(URI uri) <FONT ID="Throws">throws</FONT> URISyntaxException {
+<A NAME="33"></A>
+<A NAME="34"></A>        <FONT ID="If">if</FONT> (userName != <FONT ID="Null">null</FONT> &amp;&amp; uri.getUserInfo() == <FONT ID="Null">null</FONT>) {
+<A NAME="35"></A>            uri = <FONT ID="New">new</FONT> URI(uri.getScheme(), userName, uri.getHost(), uri.getPort(),
+<A NAME="36"></A>                    uri.getPath(), uri.getQuery(),
+<A NAME="37"></A>                    uri.getFragment());
+<A NAME="38"></A>        }
+<A NAME="39"></A>        <FONT ID="Return">return</FONT> uri;
+<A NAME="40"></A>    }
+<A NAME="41"></A>
+<A NAME="42"></A>    <FONT ID="Public">public</FONT> FileSystemOptions getSftpDefaultOptions() <FONT ID="Throws">throws</FONT> FileSystemException {
+<A NAME="43"></A>        FileSystemOptions opts = <FONT ID="New">new</FONT> FileSystemOptions();
+<A NAME="44"></A>        SftpFileSystemConfigBuilder.getInstance().setPreferredAuthentications(opts, DEFAULT_SECURITY_SETTINGS);
+<A NAME="45"></A>        SftpFileSystemConfigBuilder.getInstance().setStrictHostKeyChecking(opts, <FONT ID="StringLiteral">"no"</FONT>);
+<A NAME="46"></A>        SftpFileSystemConfigBuilder.getInstance().setUserDirIsRoot(opts, <FONT ID="False">false</FONT>);
+<A NAME="47"></A>        <FONT ID="Return">return</FONT> opts;
+<A NAME="48"></A>    }
+<A NAME="49"></A>
+<A NAME="50"></A>
+<A NAME="51"></A>}
+<A NAME="52"></A></pre>
+</BODY>
+</HTML>

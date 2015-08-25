@@ -1,0 +1,307 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.ci.mode.TestTaskTest (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">TestTaskTest.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos.ci.mode;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../com/collective/celos/ScheduledTime.java.html">com.collective.celos.ScheduledTime</A>;
+<A NAME="4"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../com/collective/celos/ci/config/CiCommandLine.java.html">com.collective.celos.ci.config.CiCommandLine</A>;
+<A NAME="5"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../com/collective/celos/ci/config/deploy/CelosCiTarget.java.html">com.collective.celos.ci.config.deploy.CelosCiTarget</A>;
+<A NAME="6"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../com/collective/celos/ci/config/deploy/CelosCiTargetParser.java.html">com.collective.celos.ci.config.deploy.CelosCiTargetParser</A>;
+<A NAME="7"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../com/collective/celos/ci/mode/test/TestCase.java.html">com.collective.celos.ci.mode.test.TestCase</A>;
+<A NAME="8"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../com/collective/celos/ci/mode/test/TestConfigurationParser.java.html">com.collective.celos.ci.mode.test.TestConfigurationParser</A>;
+<A NAME="9"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../com/collective/celos/ci/mode/test/TestRun.java.html">com.collective.celos.ci.mode.test.TestRun</A>;
+<A NAME="10"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../com/collective/celos/ci/mode/test/TestRunFailedException.java.html">com.collective.celos.ci.mode.test.TestRunFailedException</A>;
+<A NAME="11"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../com/collective/celos/ci/testing/fixtures/compare/RecursiveFsObjectComparer.java.html">com.collective.celos.ci.testing.fixtures.compare.RecursiveFsObjectComparer</A>;
+<A NAME="12"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../com/collective/celos/ci/testing/fixtures/create/FixDirFromResourceCreator.java.html">com.collective.celos.ci.testing.fixtures.create.FixDirFromResourceCreator</A>;
+<A NAME="13"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../com/collective/celos/ci/testing/fixtures/create/OutputFixDirFromHdfsCreator.java.html">com.collective.celos.ci.testing.fixtures.create.OutputFixDirFromHdfsCreator</A>;
+<A NAME="14"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../com/collective/celos/ci/testing/fixtures/deploy/HdfsInputDeployer.java.html">com.collective.celos.ci.testing.fixtures.deploy.HdfsInputDeployer</A>;
+<A NAME="15"></A><FONT ID="Import">import</FONT> com.google.common.collect.Lists;
+<A NAME="16"></A>
+<A NAME="17"></A><FONT ID="Import">import</FONT> org.apache.hadoop.fs.Path;
+<A NAME="18"></A><FONT ID="Import">import</FONT> org.junit.Assert;
+<A NAME="19"></A><FONT ID="Import">import</FONT> org.junit.Before;
+<A NAME="20"></A><FONT ID="Import">import</FONT> org.junit.Rule;
+<A NAME="21"></A><FONT ID="Import">import</FONT> org.junit.Test;
+<A NAME="22"></A><FONT ID="Import">import</FONT> org.junit.rules.TemporaryFolder;
+<A NAME="23"></A>
+<A NAME="24"></A><FONT ID="Import">import</FONT> java.io.File;
+<A NAME="25"></A><FONT ID="Import">import</FONT> java.io.FileOutputStream;
+<A NAME="26"></A><FONT ID="Import">import</FONT> java.io.IOException;
+<A NAME="27"></A><FONT ID="Import">import</FONT> java.nio.file.Files;
+<A NAME="28"></A><FONT ID="Import">import</FONT> java.nio.file.attribute.PosixFilePermission;
+<A NAME="29"></A><FONT ID="Import">import</FONT> java.util.List;
+<A NAME="30"></A><FONT ID="Import">import</FONT> java.util.Set;
+<A NAME="31"></A>
+<A NAME="32"></A><FONT ID="Import">import</FONT> <FONT ID="Static">static</FONT> org.mockito.Mockito.doReturn;
+<A NAME="33"></A><FONT ID="Import">import</FONT> <FONT ID="Static">static</FONT> org.mockito.Mockito.mock;
+<A NAME="34"></A>
+<A NAME="35"></A><FONT ID="FormalComment">/**
+<A NAME="36"></A> * Created by akonopko on 10/2/14.
+<A NAME="37"></A> */</FONT>
+<A NAME="38"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> TestTaskTest {
+<A NAME="39"></A>
+<A NAME="40"></A>    <FONT ID="Private">private</FONT> <A HREF="../../../../../com/collective/celos/ci/mode/test/TestRun.java.html">TestRun</A> testRun;
+<A NAME="41"></A>
+<A NAME="42"></A>    @Before
+<A NAME="43"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> setUp() {
+<A NAME="44"></A>        testRun = mock(<A HREF="../../../../../com/collective/celos/ci/mode/test/TestRun.java.html">TestRun</A>.<FONT ID="Class">class</FONT>);
+<A NAME="45"></A>        doReturn(<FONT ID="New">new</FONT> File(<FONT ID="StringLiteral">"testDir"</FONT>)).when(testRun).getTestCasesDir();
+<A NAME="46"></A>    }
+<A NAME="47"></A>
+<A NAME="48"></A>
+<A NAME="49"></A>    @Rule
+<A NAME="50"></A>    <FONT ID="Public">public</FONT> TemporaryFolder tempDir = <FONT ID="New">new</FONT> TemporaryFolder();
+<A NAME="51"></A>
+<A NAME="52"></A>    @Test
+<A NAME="53"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testTestRunsAreCreatedOk() <FONT ID="Throws">throws</FONT> <A HREF="../../../../../com/collective/celos/ci/mode/test/TestRunFailedException.java.html">Exception</A> {
+<A NAME="54"></A>
+<A NAME="55"></A>        String hadoopCoreUrl = Thread.currentThread().getContextClassLoader().getResource(<FONT ID="StringLiteral">"com/collective/celos/ci/testing/config/core-site.xml"</FONT>).getFile();
+<A NAME="56"></A>        String hadoopHdfsUrl = Thread.currentThread().getContextClassLoader().getResource(<FONT ID="StringLiteral">"com/collective/celos/ci/testing/config/hdfs-site.xml"</FONT>).getFile();
+<A NAME="57"></A>
+<A NAME="58"></A>        String targetFileStr = <FONT ID="StringLiteral">"{\n"</FONT> +
+<A NAME="59"></A>                <FONT ID="StringLiteral">"    \"security.settings\": \"secsettings\",\n"</FONT> +
+<A NAME="60"></A>                <FONT ID="StringLiteral">"    \"workflows.dir.uri\": \"celoswfdir\",\n"</FONT> +
+<A NAME="61"></A>                <FONT ID="StringLiteral">"    \"hadoop.hdfs-site.xml\": \""</FONT> + hadoopHdfsUrl +<FONT ID="StringLiteral">"\",\n"</FONT> +
+<A NAME="62"></A>                <FONT ID="StringLiteral">"    \"hadoop.core-site.xml\": \""</FONT> + hadoopCoreUrl +<FONT ID="StringLiteral">"\",\n"</FONT> +
+<A NAME="63"></A>                <FONT ID="StringLiteral">"    \"defaults.dir.uri\": \"defdir\"\n"</FONT> +
+<A NAME="64"></A>                <FONT ID="StringLiteral">"}\n"</FONT>;
+<A NAME="65"></A>
+<A NAME="66"></A>        File targetFile = tempDir.newFile();
+<A NAME="67"></A>        FileOutputStream stream = <FONT ID="New">new</FONT> FileOutputStream(targetFile);
+<A NAME="68"></A>        stream.write(targetFileStr.getBytes());
+<A NAME="69"></A>        stream.flush();
+<A NAME="70"></A>
+<A NAME="71"></A>        <A HREF="../../../../../com/collective/celos/ci/config/deploy/CelosCiTargetParser.java.html">CelosCiTargetParser</A> parser = <FONT ID="New">new</FONT> <A HREF="../../../../../com/collective/celos/ci/config/deploy/CelosCiTargetParser.java.html">CelosCiTargetParser</A>(<FONT ID="StringLiteral">""</FONT>);
+<A NAME="72"></A>        <A HREF="../../../../../com/collective/celos/ci/config/deploy/CelosCiTarget.java.html">CelosCiTarget</A> target = parser.parse(targetFile.toURI());
+<A NAME="73"></A>
+<A NAME="74"></A>        File tmpDir = tempDir.newFolder();
+<A NAME="75"></A>
+<A NAME="76"></A>        String configJS = Thread.currentThread().getContextClassLoader().getResource(<FONT ID="StringLiteral">"com/collective/celos/ci/testing/config/test.js"</FONT>).getFile();
+<A NAME="77"></A>
+<A NAME="78"></A>        <A HREF="../../../../../com/collective/celos/ci/config/CiCommandLine.java.html">CiCommandLine</A> commandLine = <FONT ID="New">new</FONT> <A HREF="../../../../../com/collective/celos/ci/config/CiCommandLine.java.html">CiCommandLine</A>(targetFile.toURI().toString(), <FONT ID="StringLiteral">"DEPLOY"</FONT>, <FONT ID="StringLiteral">"deploydir"</FONT>, <FONT ID="StringLiteral">"workflow"</FONT>, <FONT ID="StringLiteral">"testDir"</FONT>, <FONT ID="StringLiteral">"uname"</FONT>, <FONT ID="False">false</FONT>, <FONT ID="Null">null</FONT>);
+<A NAME="79"></A>        <A HREF="../../../../../com/collective/celos/ci/mode/TestTask.java.html">TestTask</A> testTask = <FONT ID="New">new</FONT> <A HREF="../../../../../com/collective/celos/ci/mode/TestTask.java.html">TestTask</A>(commandLine, <FONT ID="New">new</FONT> File(configJS), tmpDir);
+<A NAME="80"></A>
+<A NAME="81"></A>        String tempDirUri = tmpDir.toURI().toString();
+<A NAME="82"></A>
+<A NAME="83"></A>        Assert.assertTrue(testTask.getTestRuns().get(<FONT ID="IntegerLiteral">0</FONT>).getCiContext().getTarget().getDefaultsDirUri().toString().startsWith(tempDirUri));
+<A NAME="84"></A>        Assert.assertEquals(testTask.getTestRuns().get(<FONT ID="IntegerLiteral">0</FONT>).getCiContext().getTarget().getPathToCoreSite(), target.getPathToCoreSite());
+<A NAME="85"></A>        Assert.assertEquals(testTask.getTestRuns().get(<FONT ID="IntegerLiteral">0</FONT>).getCiContext().getTarget().getPathToHdfsSite(), target.getPathToHdfsSite());
+<A NAME="86"></A>        Assert.assertTrue(testTask.getTestRuns().get(<FONT ID="IntegerLiteral">0</FONT>).getCiContext().getTarget().getWorkflowsDirUri().toString().startsWith(tempDirUri));
+<A NAME="87"></A>        Assert.assertTrue(testTask.getTestRuns().get(<FONT ID="IntegerLiteral">0</FONT>).getCiContext().getTarget().getWorkflowsDirUri().toString().length() &gt; tempDirUri.length());
+<A NAME="88"></A>        Assert.assertEquals(testTask.getTestRuns().get(<FONT ID="IntegerLiteral">0</FONT>).getTestCase().getName(), <FONT ID="StringLiteral">"wordcount test case 1"</FONT>);
+<A NAME="89"></A>        Assert.assertEquals(testTask.getTestRuns().get(<FONT ID="IntegerLiteral">0</FONT>).getTestCase().getSampleTimeStart(), <FONT ID="New">new</FONT> <A HREF="../../../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-11-20T11:00Z"</FONT>));
+<A NAME="90"></A>        Assert.assertEquals(testTask.getTestRuns().get(<FONT ID="IntegerLiteral">0</FONT>).getTestCase().getSampleTimeEnd(), <FONT ID="New">new</FONT> <A HREF="../../../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-11-20T18:00Z"</FONT>));
+<A NAME="91"></A>        <A HREF="../../../../../com/collective/celos/ci/testing/fixtures/deploy/HdfsInputDeployer.java.html">HdfsInputDeployer</A> deployer1 = (<A HREF="../../../../../com/collective/celos/ci/testing/fixtures/deploy/HdfsInputDeployer.java.html">HdfsInputDeployer</A>) testTask.getTestRuns().get(<FONT ID="IntegerLiteral">0</FONT>).getTestCase().getInputs().get(<FONT ID="IntegerLiteral">0</FONT>);
+<A NAME="92"></A>        <A HREF="../../../../../com/collective/celos/ci/testing/fixtures/deploy/HdfsInputDeployer.java.html">HdfsInputDeployer</A> deployer2 = (<A HREF="../../../../../com/collective/celos/ci/testing/fixtures/deploy/HdfsInputDeployer.java.html">HdfsInputDeployer</A>) testTask.getTestRuns().get(<FONT ID="IntegerLiteral">0</FONT>).getTestCase().getInputs().get(<FONT ID="IntegerLiteral">1</FONT>);
+<A NAME="93"></A>        Assert.assertEquals(deployer1.getPath(), <FONT ID="New">new</FONT> Path(<FONT ID="StringLiteral">"input/wordcount1"</FONT>));
+<A NAME="94"></A>        Assert.assertEquals(deployer2.getPath(), <FONT ID="New">new</FONT> Path(<FONT ID="StringLiteral">"input/wordcount11"</FONT>));
+<A NAME="95"></A>        <A HREF="../../../../../com/collective/celos/ci/testing/fixtures/compare/RecursiveFsObjectComparer.java.html">RecursiveFsObjectComparer</A> comparer = (<A HREF="../../../../../com/collective/celos/ci/testing/fixtures/compare/RecursiveFsObjectComparer.java.html">RecursiveFsObjectComparer</A>) testTask.getTestRuns().get(<FONT ID="IntegerLiteral">0</FONT>).getTestCase().getOutputs().get(<FONT ID="IntegerLiteral">0</FONT>);
+<A NAME="96"></A>        <A HREF="../../../../../com/collective/celos/ci/testing/fixtures/create/OutputFixDirFromHdfsCreator.java.html">OutputFixDirFromHdfsCreator</A> hdfsCreator = (<A HREF="../../../../../com/collective/celos/ci/testing/fixtures/create/OutputFixDirFromHdfsCreator.java.html">OutputFixDirFromHdfsCreator</A>) comparer.getActualDataCreator();
+<A NAME="97"></A>        Assert.assertEquals(hdfsCreator.getPath(), <FONT ID="New">new</FONT> Path(<FONT ID="StringLiteral">"output/wordcount1"</FONT>));
+<A NAME="98"></A>        <A HREF="../../../../../com/collective/celos/ci/testing/fixtures/create/FixDirFromResourceCreator.java.html">FixDirFromResourceCreator</A> resourceDataCreator = (<A HREF="../../../../../com/collective/celos/ci/testing/fixtures/create/FixDirFromResourceCreator.java.html">FixDirFromResourceCreator</A>) comparer.getExpectedDataCreator();
+<A NAME="99"></A>        Assert.assertEquals(resourceDataCreator.getPath(testRun), <FONT ID="New">new</FONT> File(<FONT ID="StringLiteral">"testDir/src/test/celos-ci/test-1/output/plain/output/wordcount1"</FONT>));
+<A NAME="100"></A>
+<A NAME="101"></A>        Assert.assertTrue(testTask.getTestRuns().get(<FONT ID="IntegerLiteral">1</FONT>).getCiContext().getTarget().getDefaultsDirUri().toString().startsWith(tempDirUri));
+<A NAME="102"></A>        Assert.assertEquals(testTask.getTestRuns().get(<FONT ID="IntegerLiteral">1</FONT>).getCiContext().getTarget().getPathToCoreSite(), target.getPathToCoreSite());
+<A NAME="103"></A>        Assert.assertEquals(testTask.getTestRuns().get(<FONT ID="IntegerLiteral">1</FONT>).getCiContext().getTarget().getPathToHdfsSite(), target.getPathToHdfsSite());
+<A NAME="104"></A>        Assert.assertTrue(testTask.getTestRuns().get(<FONT ID="IntegerLiteral">1</FONT>).getCiContext().getTarget().getWorkflowsDirUri().toString().startsWith(tempDirUri));
+<A NAME="105"></A>        Assert.assertTrue(testTask.getTestRuns().get(<FONT ID="IntegerLiteral">1</FONT>).getCiContext().getTarget().getWorkflowsDirUri().toString().length() &gt; tempDirUri.length());
+<A NAME="106"></A>        Assert.assertEquals(testTask.getTestRuns().get(<FONT ID="IntegerLiteral">1</FONT>).getTestCase().getName(), <FONT ID="StringLiteral">"wordcount test case 2"</FONT>);
+<A NAME="107"></A>        Assert.assertEquals(testTask.getTestRuns().get(<FONT ID="IntegerLiteral">1</FONT>).getTestCase().getSampleTimeStart(), <FONT ID="New">new</FONT> <A HREF="../../../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-12-20T16:00Z"</FONT>));
+<A NAME="108"></A>        Assert.assertEquals(testTask.getTestRuns().get(<FONT ID="IntegerLiteral">1</FONT>).getTestCase().getSampleTimeEnd(), <FONT ID="New">new</FONT> <A HREF="../../../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-12-20T18:00Z"</FONT>));
+<A NAME="109"></A>        <A HREF="../../../../../com/collective/celos/ci/testing/fixtures/deploy/HdfsInputDeployer.java.html">HdfsInputDeployer</A> deployer21 = (<A HREF="../../../../../com/collective/celos/ci/testing/fixtures/deploy/HdfsInputDeployer.java.html">HdfsInputDeployer</A>) testTask.getTestRuns().get(<FONT ID="IntegerLiteral">1</FONT>).getTestCase().getInputs().get(<FONT ID="IntegerLiteral">0</FONT>);
+<A NAME="110"></A>        Assert.assertEquals(deployer21.getPath(), <FONT ID="New">new</FONT> Path(<FONT ID="StringLiteral">"input/wordcount2"</FONT>));
+<A NAME="111"></A>        <A HREF="../../../../../com/collective/celos/ci/testing/fixtures/compare/RecursiveFsObjectComparer.java.html">RecursiveFsObjectComparer</A> comparer2 = (<A HREF="../../../../../com/collective/celos/ci/testing/fixtures/compare/RecursiveFsObjectComparer.java.html">RecursiveFsObjectComparer</A>) testTask.getTestRuns().get(<FONT ID="IntegerLiteral">1</FONT>).getTestCase().getOutputs().get(<FONT ID="IntegerLiteral">0</FONT>);
+<A NAME="112"></A>        <A HREF="../../../../../com/collective/celos/ci/testing/fixtures/create/OutputFixDirFromHdfsCreator.java.html">OutputFixDirFromHdfsCreator</A> hdfsCreator2 = (<A HREF="../../../../../com/collective/celos/ci/testing/fixtures/create/OutputFixDirFromHdfsCreator.java.html">OutputFixDirFromHdfsCreator</A>) comparer2.getActualDataCreator();
+<A NAME="113"></A>        Assert.assertEquals(hdfsCreator2.getPath(), <FONT ID="New">new</FONT> Path(<FONT ID="StringLiteral">"output/wordcount2"</FONT>));
+<A NAME="114"></A>        <A HREF="../../../../../com/collective/celos/ci/testing/fixtures/create/FixDirFromResourceCreator.java.html">FixDirFromResourceCreator</A> resourceDataCreator2 = (<A HREF="../../../../../com/collective/celos/ci/testing/fixtures/create/FixDirFromResourceCreator.java.html">FixDirFromResourceCreator</A>) comparer2.getExpectedDataCreator();
+<A NAME="115"></A>        Assert.assertEquals(resourceDataCreator2.getPath(testRun), <FONT ID="New">new</FONT> File(<FONT ID="StringLiteral">"testDir/src/test/celos-ci/test-1/output/plain/output/wordcount2"</FONT>));
+<A NAME="116"></A>
+<A NAME="117"></A>        File logFile = <FONT ID="New">new</FONT> File(tmpDir, <FONT ID="StringLiteral">"celos.log"</FONT>);
+<A NAME="118"></A>        Assert.assertArrayEquals(<FONT ID="New">new</FONT> File[]{ logFile }, tmpDir.listFiles());
+<A NAME="119"></A>        Assert.assertTrue(logFile.length() &gt; <FONT ID="IntegerLiteral">0</FONT>);
+<A NAME="120"></A>
+<A NAME="121"></A>    }
+<A NAME="122"></A>
+<A NAME="123"></A>    <FONT ID="Private">private</FONT> <FONT ID="Class">class</FONT> MockTestRun <FONT ID="Extends">extends</FONT> <A HREF="../../../../../com/collective/celos/ci/mode/test/TestRun.java.html">TestRun</A> {
+<A NAME="124"></A>
+<A NAME="125"></A>        <FONT ID="Private">private</FONT> <FONT ID="Boolean">boolean</FONT> finished;
+<A NAME="126"></A>
+<A NAME="127"></A>        <FONT ID="Public">public</FONT> MockTestRun(<A HREF="../../../../../com/collective/celos/ci/config/deploy/CelosCiTarget.java.html">CelosCiTarget</A> target, <A HREF="../../../../../com/collective/celos/ci/config/CiCommandLine.java.html">CiCommandLine</A> commandLine, <A HREF="../../../../../com/collective/celos/ci/mode/test/TestCase.java.html">TestCase</A> testCase) <FONT ID="Throws">throws</FONT> <A HREF="../../../../../com/collective/celos/ci/mode/test/TestRunFailedException.java.html">Exception</A> {
+<A NAME="128"></A>            <FONT ID="Super">super</FONT>(target, commandLine, testCase, tempDir.newFolder());
+<A NAME="129"></A>        }
+<A NAME="130"></A>
+<A NAME="131"></A>        <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> start() <FONT ID="Throws">throws</FONT> <A HREF="../../../../../com/collective/celos/ci/mode/test/TestRunFailedException.java.html">Exception</A> {
+<A NAME="132"></A>            finished = <FONT ID="True">true</FONT>;
+<A NAME="133"></A>        }
+<A NAME="134"></A>
+<A NAME="135"></A>        <FONT ID="Public">public</FONT> <FONT ID="Boolean">boolean</FONT> isFinished() {
+<A NAME="136"></A>            <FONT ID="Return">return</FONT> finished;
+<A NAME="137"></A>        }
+<A NAME="138"></A>    }
+<A NAME="139"></A>
+<A NAME="140"></A>    @Test
+<A NAME="141"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testTest() <FONT ID="Throws">throws</FONT> Throwable {
+<A NAME="142"></A>
+<A NAME="143"></A>        String hadoopCoreUrl = Thread.currentThread().getContextClassLoader().getResource(<FONT ID="StringLiteral">"com/collective/celos/ci/testing/config/core-site.xml"</FONT>).getFile();
+<A NAME="144"></A>        String hadoopHdfsUrl = Thread.currentThread().getContextClassLoader().getResource(<FONT ID="StringLiteral">"com/collective/celos/ci/testing/config/hdfs-site.xml"</FONT>).getFile();
+<A NAME="145"></A>
+<A NAME="146"></A>        String targetFileStr = <FONT ID="StringLiteral">"{\n"</FONT> +
+<A NAME="147"></A>                <FONT ID="StringLiteral">"    \"security.settings\": \"secsettings\",\n"</FONT> +
+<A NAME="148"></A>                <FONT ID="StringLiteral">"    \"workflows.dir.uri\": \"celoswfdir\",\n"</FONT> +
+<A NAME="149"></A>                <FONT ID="StringLiteral">"    \"hadoop.hdfs-site.xml\": \""</FONT> + hadoopHdfsUrl +<FONT ID="StringLiteral">"\",\n"</FONT> +
+<A NAME="150"></A>                <FONT ID="StringLiteral">"    \"hadoop.core-site.xml\": \""</FONT> + hadoopCoreUrl +<FONT ID="StringLiteral">"\",\n"</FONT> +
+<A NAME="151"></A>                <FONT ID="StringLiteral">"    \"defaults.dir.uri\": \"deffile\"\n"</FONT> +
+<A NAME="152"></A>                <FONT ID="StringLiteral">"}\n"</FONT>;
+<A NAME="153"></A>
+<A NAME="154"></A>        File targetFile = tempDir.newFile();
+<A NAME="155"></A>        FileOutputStream stream = <FONT ID="New">new</FONT> FileOutputStream(targetFile);
+<A NAME="156"></A>        stream.write(targetFileStr.getBytes());
+<A NAME="157"></A>        stream.flush();
+<A NAME="158"></A>
+<A NAME="159"></A>        <A HREF="../../../../../com/collective/celos/ci/config/CiCommandLine.java.html">CiCommandLine</A> commandLine = <FONT ID="New">new</FONT> <A HREF="../../../../../com/collective/celos/ci/config/CiCommandLine.java.html">CiCommandLine</A>(targetFile.toURI().toString(), <FONT ID="StringLiteral">"DEPLOY"</FONT>, <FONT ID="StringLiteral">"deploydir"</FONT>, <FONT ID="StringLiteral">"workflow"</FONT>, <FONT ID="StringLiteral">"testDir"</FONT>, <FONT ID="StringLiteral">"uname"</FONT>, <FONT ID="False">false</FONT>, <FONT ID="Null">null</FONT>);
+<A NAME="160"></A>        String configJS = Thread.currentThread().getContextClassLoader().getResource(<FONT ID="StringLiteral">"com/collective/celos/ci/testing/config/test.js"</FONT>).getFile();
+<A NAME="161"></A>
+<A NAME="162"></A>        <A HREF="../../../../../com/collective/celos/ci/mode/test/TestConfigurationParser.java.html">TestConfigurationParser</A> testConfigurationParser = mock(<A HREF="../../../../../com/collective/celos/ci/mode/test/TestConfigurationParser.java.html">TestConfigurationParser</A>.<FONT ID="Class">class</FONT>);
+<A NAME="163"></A>
+<A NAME="164"></A>        <A HREF="../../../../../com/collective/celos/ci/config/deploy/CelosCiTargetParser.java.html">CelosCiTargetParser</A> parser = <FONT ID="New">new</FONT> <A HREF="../../../../../com/collective/celos/ci/config/deploy/CelosCiTargetParser.java.html">CelosCiTargetParser</A>(<FONT ID="StringLiteral">""</FONT>);
+<A NAME="165"></A>        <A HREF="../../../../../com/collective/celos/ci/config/deploy/CelosCiTarget.java.html">CelosCiTarget</A> target = parser.parse(targetFile.toURI());
+<A NAME="166"></A>
+<A NAME="167"></A>        List&lt;MockTestRun&gt; runList = Lists.newArrayList(<FONT ID="New">new</FONT> MockTestRun(target, commandLine, <FONT ID="Null">null</FONT>), <FONT ID="New">new</FONT> MockTestRun(target, commandLine, <FONT ID="Null">null</FONT>));
+<A NAME="168"></A>        doReturn(runList).when(testConfigurationParser).getTestCases();
+<A NAME="169"></A>
+<A NAME="170"></A>        <A HREF="../../../../../com/collective/celos/ci/mode/TestTask.java.html">TestTask</A> testTask = <FONT ID="New">new</FONT> <A HREF="../../../../../com/collective/celos/ci/mode/TestTask.java.html">TestTask</A>(commandLine, <FONT ID="New">new</FONT> File(configJS), tempDir.newFolder());
+<A NAME="171"></A>        testTask.getTestRuns().clear();
+<A NAME="172"></A>        testTask.getTestRuns().addAll(runList);
+<A NAME="173"></A>        testTask.start();
+<A NAME="174"></A>
+<A NAME="175"></A>        <FONT ID="Int">int</FONT> SLEEP_SECONDS_BEFORE_TEST_FAIL = <FONT ID="IntegerLiteral">5</FONT>;
+<A NAME="176"></A>
+<A NAME="177"></A>        <FONT ID="Int">int</FONT> waitCount = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="178"></A>        <FONT ID="While">while</FONT> (!runList.get(<FONT ID="IntegerLiteral">0</FONT>).isFinished() || !runList.get(<FONT ID="IntegerLiteral">1</FONT>).isFinished()) {
+<A NAME="179"></A>            <FONT ID="If">if</FONT> (waitCount ++ == SLEEP_SECONDS_BEFORE_TEST_FAIL) {
+<A NAME="180"></A>                Assert.assertTrue(<FONT ID="False">false</FONT>);
+<A NAME="181"></A>            }
+<A NAME="182"></A>            Thread.sleep(<FONT ID="IntegerLiteral">1000</FONT>);
+<A NAME="183"></A>        }
+<A NAME="184"></A>    }
+<A NAME="185"></A>
+<A NAME="186"></A>    <FONT ID="Private">private</FONT> <FONT ID="Class">class</FONT> MockTestRunException <FONT ID="Extends">extends</FONT> <A HREF="../../../../../com/collective/celos/ci/mode/test/TestRun.java.html">TestRun</A> {
+<A NAME="187"></A>
+<A NAME="188"></A>        <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> String testRunFailedText;
+<A NAME="189"></A>
+<A NAME="190"></A>        <FONT ID="Public">public</FONT> MockTestRunException(String testRunFailedText, <A HREF="../../../../../com/collective/celos/ci/config/deploy/CelosCiTarget.java.html">CelosCiTarget</A> target, <A HREF="../../../../../com/collective/celos/ci/config/CiCommandLine.java.html">CiCommandLine</A> commandLine, <A HREF="../../../../../com/collective/celos/ci/mode/test/TestCase.java.html">TestCase</A> testCase) <FONT ID="Throws">throws</FONT> <A HREF="../../../../../com/collective/celos/ci/mode/test/TestRunFailedException.java.html">Exception</A> {
+<A NAME="191"></A>            <FONT ID="Super">super</FONT>(target, commandLine, testCase, tempDir.newFolder());
+<A NAME="192"></A>            <FONT ID="This">this</FONT>.testRunFailedText = testRunFailedText;
+<A NAME="193"></A>        }
+<A NAME="194"></A>
+<A NAME="195"></A>        <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> start() <FONT ID="Throws">throws</FONT> <A HREF="../../../../../com/collective/celos/ci/mode/test/TestRunFailedException.java.html">Exception</A> {
+<A NAME="196"></A>            <FONT ID="Throw">throw</FONT> <FONT ID="New">new</FONT> <A HREF="../../../../../com/collective/celos/ci/mode/test/TestRunFailedException.java.html">TestRunFailedException</A>(testRunFailedText);
+<A NAME="197"></A>        }
+<A NAME="198"></A>
+<A NAME="199"></A>    }
+<A NAME="200"></A>
+<A NAME="201"></A>    @Test(expected = <A HREF="../../../../../com/collective/celos/ci/mode/test/TestRunFailedException.java.html">TestRunFailedException</A>.<FONT ID="Class">class</FONT>)
+<A NAME="202"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testTestException() <FONT ID="Throws">throws</FONT> Throwable {
+<A NAME="203"></A>
+<A NAME="204"></A>        String hadoopCoreUrl = Thread.currentThread().getContextClassLoader().getResource(<FONT ID="StringLiteral">"com/collective/celos/ci/testing/config/core-site.xml"</FONT>).getFile();
+<A NAME="205"></A>        String hadoopHdfsUrl = Thread.currentThread().getContextClassLoader().getResource(<FONT ID="StringLiteral">"com/collective/celos/ci/testing/config/hdfs-site.xml"</FONT>).getFile();
+<A NAME="206"></A>
+<A NAME="207"></A>        String targetFileStr = <FONT ID="StringLiteral">"{\n"</FONT> +
+<A NAME="208"></A>                <FONT ID="StringLiteral">"    \"security.settings\": \"secsettings\",\n"</FONT> +
+<A NAME="209"></A>                <FONT ID="StringLiteral">"    \"workflows.dir.uri\": \"celoswfdir\",\n"</FONT> +
+<A NAME="210"></A>                <FONT ID="StringLiteral">"    \"hadoop.hdfs-site.xml\": \""</FONT> + hadoopHdfsUrl +<FONT ID="StringLiteral">"\",\n"</FONT> +
+<A NAME="211"></A>                <FONT ID="StringLiteral">"    \"hadoop.core-site.xml\": \""</FONT> + hadoopCoreUrl +<FONT ID="StringLiteral">"\",\n"</FONT> +
+<A NAME="212"></A>                <FONT ID="StringLiteral">"    \"defaults.dir.uri\": \"deffile\"\n"</FONT> +
+<A NAME="213"></A>                <FONT ID="StringLiteral">"}\n"</FONT>;
+<A NAME="214"></A>
+<A NAME="215"></A>        File targetFile = tempDir.newFile();
+<A NAME="216"></A>        FileOutputStream stream = <FONT ID="New">new</FONT> FileOutputStream(targetFile);
+<A NAME="217"></A>        stream.write(targetFileStr.getBytes());
+<A NAME="218"></A>        stream.flush();
+<A NAME="219"></A>
+<A NAME="220"></A>        <A HREF="../../../../../com/collective/celos/ci/config/CiCommandLine.java.html">CiCommandLine</A> commandLine = <FONT ID="New">new</FONT> <A HREF="../../../../../com/collective/celos/ci/config/CiCommandLine.java.html">CiCommandLine</A>(targetFile.toURI().toString(), <FONT ID="StringLiteral">"DEPLOY"</FONT>, <FONT ID="StringLiteral">"deploydir"</FONT>, <FONT ID="StringLiteral">"workflow"</FONT>, <FONT ID="StringLiteral">"testDir"</FONT>, <FONT ID="StringLiteral">"uname"</FONT>, <FONT ID="False">false</FONT>, <FONT ID="Null">null</FONT>);
+<A NAME="221"></A>        String configJS = Thread.currentThread().getContextClassLoader().getResource(<FONT ID="StringLiteral">"com/collective/celos/ci/testing/config/test.js"</FONT>).getFile();
+<A NAME="222"></A>
+<A NAME="223"></A>        <A HREF="../../../../../com/collective/celos/ci/mode/test/TestConfigurationParser.java.html">TestConfigurationParser</A> testConfigurationParser = mock(<A HREF="../../../../../com/collective/celos/ci/mode/test/TestConfigurationParser.java.html">TestConfigurationParser</A>.<FONT ID="Class">class</FONT>);
+<A NAME="224"></A>
+<A NAME="225"></A>        <A HREF="../../../../../com/collective/celos/ci/config/deploy/CelosCiTargetParser.java.html">CelosCiTargetParser</A> parser = <FONT ID="New">new</FONT> <A HREF="../../../../../com/collective/celos/ci/config/deploy/CelosCiTargetParser.java.html">CelosCiTargetParser</A>(<FONT ID="StringLiteral">""</FONT>);
+<A NAME="226"></A>        <A HREF="../../../../../com/collective/celos/ci/config/deploy/CelosCiTarget.java.html">CelosCiTarget</A> target = parser.parse(targetFile.toURI());
+<A NAME="227"></A>
+<A NAME="228"></A>        List&lt;MockTestRunException&gt; runList = Lists.newArrayList(<FONT ID="New">new</FONT> MockTestRunException(<FONT ID="StringLiteral">"error2"</FONT>, target, commandLine, <FONT ID="Null">null</FONT>));
+<A NAME="229"></A>        doReturn(runList).when(testConfigurationParser).getTestCases();
+<A NAME="230"></A>
+<A NAME="231"></A>        <A HREF="../../../../../com/collective/celos/ci/mode/TestTask.java.html">TestTask</A> testTask = <FONT ID="New">new</FONT> <A HREF="../../../../../com/collective/celos/ci/mode/TestTask.java.html">TestTask</A>(commandLine, <FONT ID="New">new</FONT> File(configJS), tempDir.newFolder());
+<A NAME="232"></A>        testTask.getTestRuns().clear();
+<A NAME="233"></A>        testTask.getTestRuns().addAll(runList);
+<A NAME="234"></A>
+<A NAME="235"></A>        testTask.start();
+<A NAME="236"></A>    }
+<A NAME="237"></A>
+<A NAME="238"></A>    @Test(expected = <A HREF="../../../../../com/collective/celos/ci/mode/test/TestRunFailedException.java.html">TestRunFailedException</A>.<FONT ID="Class">class</FONT>)
+<A NAME="239"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testTestTwoExceptions() <FONT ID="Throws">throws</FONT> Throwable {
+<A NAME="240"></A>
+<A NAME="241"></A>        String hadoopCoreUrl = Thread.currentThread().getContextClassLoader().getResource(<FONT ID="StringLiteral">"com/collective/celos/ci/testing/config/core-site.xml"</FONT>).getFile();
+<A NAME="242"></A>        String hadoopHdfsUrl = Thread.currentThread().getContextClassLoader().getResource(<FONT ID="StringLiteral">"com/collective/celos/ci/testing/config/hdfs-site.xml"</FONT>).getFile();
+<A NAME="243"></A>
+<A NAME="244"></A>        String targetFileStr = <FONT ID="StringLiteral">"{\n"</FONT> +
+<A NAME="245"></A>                <FONT ID="StringLiteral">"    \"security.settings\": \"secsettings\",\n"</FONT> +
+<A NAME="246"></A>                <FONT ID="StringLiteral">"    \"workflows.dir.uri\": \"celoswfdir\",\n"</FONT> +
+<A NAME="247"></A>                <FONT ID="StringLiteral">"    \"hadoop.hdfs-site.xml\": \""</FONT> + hadoopHdfsUrl +<FONT ID="StringLiteral">"\",\n"</FONT> +
+<A NAME="248"></A>                <FONT ID="StringLiteral">"    \"hadoop.core-site.xml\": \""</FONT> + hadoopCoreUrl +<FONT ID="StringLiteral">"\",\n"</FONT> +
+<A NAME="249"></A>                <FONT ID="StringLiteral">"    \"defaults.dir.uri\": \"deffile\"\n"</FONT> +
+<A NAME="250"></A>                <FONT ID="StringLiteral">"}\n"</FONT>;
+<A NAME="251"></A>
+<A NAME="252"></A>        File targetFile = tempDir.newFile();
+<A NAME="253"></A>        FileOutputStream stream = <FONT ID="New">new</FONT> FileOutputStream(targetFile);
+<A NAME="254"></A>        stream.write(targetFileStr.getBytes());
+<A NAME="255"></A>        stream.flush();
+<A NAME="256"></A>
+<A NAME="257"></A>        <A HREF="../../../../../com/collective/celos/ci/config/CiCommandLine.java.html">CiCommandLine</A> commandLine = <FONT ID="New">new</FONT> <A HREF="../../../../../com/collective/celos/ci/config/CiCommandLine.java.html">CiCommandLine</A>(targetFile.toURI().toString(), <FONT ID="StringLiteral">"DEPLOY"</FONT>, <FONT ID="StringLiteral">"deploydir"</FONT>, <FONT ID="StringLiteral">"workflow"</FONT>, <FONT ID="StringLiteral">"testDir"</FONT>, <FONT ID="StringLiteral">"uname"</FONT>, <FONT ID="False">false</FONT>, <FONT ID="Null">null</FONT>);
+<A NAME="258"></A>        String configJS = Thread.currentThread().getContextClassLoader().getResource(<FONT ID="StringLiteral">"com/collective/celos/ci/testing/config/test.js"</FONT>).getFile();
+<A NAME="259"></A>
+<A NAME="260"></A>        <A HREF="../../../../../com/collective/celos/ci/mode/test/TestConfigurationParser.java.html">TestConfigurationParser</A> testConfigurationParser = mock(<A HREF="../../../../../com/collective/celos/ci/mode/test/TestConfigurationParser.java.html">TestConfigurationParser</A>.<FONT ID="Class">class</FONT>);
+<A NAME="261"></A>
+<A NAME="262"></A>        <A HREF="../../../../../com/collective/celos/ci/config/deploy/CelosCiTargetParser.java.html">CelosCiTargetParser</A> parser = <FONT ID="New">new</FONT> <A HREF="../../../../../com/collective/celos/ci/config/deploy/CelosCiTargetParser.java.html">CelosCiTargetParser</A>(<FONT ID="StringLiteral">""</FONT>);
+<A NAME="263"></A>        <A HREF="../../../../../com/collective/celos/ci/config/deploy/CelosCiTarget.java.html">CelosCiTarget</A> target = parser.parse(targetFile.toURI());
+<A NAME="264"></A>
+<A NAME="265"></A>        List&lt;MockTestRunException&gt; runList = Lists.newArrayList(<FONT ID="New">new</FONT> MockTestRunException(<FONT ID="StringLiteral">"error1"</FONT>, target, commandLine, <FONT ID="Null">null</FONT>), <FONT ID="New">new</FONT> MockTestRunException(<FONT ID="StringLiteral">"error2"</FONT>, target, commandLine, <FONT ID="Null">null</FONT>));
+<A NAME="266"></A>        doReturn(runList).when(testConfigurationParser).getTestCases();
+<A NAME="267"></A>
+<A NAME="268"></A>        <A HREF="../../../../../com/collective/celos/ci/mode/TestTask.java.html">TestTask</A> testTask = <FONT ID="New">new</FONT> <A HREF="../../../../../com/collective/celos/ci/mode/TestTask.java.html">TestTask</A>(commandLine, <FONT ID="New">new</FONT> File(configJS), tempDir.newFolder());
+<A NAME="269"></A>        testTask.getTestRuns().clear();
+<A NAME="270"></A>        testTask.getTestRuns().addAll(runList);
+<A NAME="271"></A>
+<A NAME="272"></A>        testTask.start();
+<A NAME="273"></A>    }
+<A NAME="274"></A>    
+<A NAME="275"></A>    @Test
+<A NAME="276"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testTempDirIsWorldReadable() <FONT ID="Throws">throws</FONT> IOException {
+<A NAME="277"></A>        File tempDir = TestTask.getTempDir();
+<A NAME="278"></A>        Set&lt;PosixFilePermission&gt; perms = Files.getPosixFilePermissions(tempDir.toPath());
+<A NAME="279"></A>        Assert.assertTrue(perms.contains(PosixFilePermission.OTHERS_READ));
+<A NAME="280"></A>        Assert.assertTrue(perms.contains(PosixFilePermission.OTHERS_EXECUTE));
+<A NAME="281"></A>        Assert.assertTrue(perms.contains(PosixFilePermission.OWNER_READ));
+<A NAME="282"></A>        Assert.assertTrue(perms.contains(PosixFilePermission.OWNER_EXECUTE));
+<A NAME="283"></A>        Assert.assertTrue(perms.contains(PosixFilePermission.OWNER_WRITE));
+<A NAME="284"></A>        tempDir.delete();
+<A NAME="285"></A>    }
+<A NAME="286"></A>
+<A NAME="287"></A>}
+<A NAME="288"></A></pre>
+</BODY>
+</HTML>

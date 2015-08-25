@@ -1,0 +1,98 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.CelosClientTest (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">CelosClientTest.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> java.io.ByteArrayInputStream;
+<A NAME="4"></A><FONT ID="Import">import</FONT> java.io.IOException;
+<A NAME="5"></A><FONT ID="Import">import</FONT> java.net.URI;
+<A NAME="6"></A><FONT ID="Import">import</FONT> java.net.UnknownHostException;
+<A NAME="7"></A><FONT ID="Import">import</FONT> java.util.List;
+<A NAME="8"></A><FONT ID="Import">import</FONT> java.util.Set;
+<A NAME="9"></A>
+<A NAME="10"></A><FONT ID="Import">import</FONT> org.junit.Assert;
+<A NAME="11"></A><FONT ID="Import">import</FONT> org.junit.Test;
+<A NAME="12"></A>
+<A NAME="13"></A><FONT ID="Import">import</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">com.collective.celos.ScheduledTime</A>;
+<A NAME="14"></A><FONT ID="Import">import</FONT> <A HREF="../../../com/collective/celos/SlotID.java.html">com.collective.celos.SlotID</A>;
+<A NAME="15"></A><FONT ID="Import">import</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">com.collective.celos.SlotState</A>;
+<A NAME="16"></A><FONT ID="Import">import</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">com.collective.celos.WorkflowID</A>;
+<A NAME="17"></A><FONT ID="Import">import</FONT> com.google.common.collect.Sets;
+<A NAME="18"></A>
+<A NAME="19"></A><FONT ID="FormalComment">/**
+<A NAME="20"></A> * Created by akonopko on 03.02.15.
+<A NAME="21"></A> */</FONT>
+<A NAME="22"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> CelosClientTest {
+<A NAME="23"></A>
+<A NAME="24"></A>    @Test (expected = UnknownHostException.<FONT ID="Class">class</FONT>)
+<A NAME="25"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testCelosClientFailsNoServer() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="26"></A>        <A HREF="../../../com/collective/celos/CelosClient.java.html">CelosClient</A> celosClient = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/CelosClient.java.html">CelosClient</A>(URI.create(<FONT ID="StringLiteral">"http://thereisnosuchhost:1234"</FONT>));
+<A NAME="27"></A>        celosClient.getWorkflowList();
+<A NAME="28"></A>    }
+<A NAME="29"></A>
+<A NAME="30"></A>
+<A NAME="31"></A>    @Test
+<A NAME="32"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testParseWorkflowStatusesMap() <FONT ID="Throws">throws</FONT> IOException {
+<A NAME="33"></A>
+<A NAME="34"></A>        String str = <FONT ID="StringLiteral">""</FONT> +
+<A NAME="35"></A>                <FONT ID="StringLiteral">"{\n"</FONT> +
+<A NAME="36"></A>                <FONT ID="StringLiteral">"\"info\": { \"url\": \"http://myurl\", \"contacts\": [ { \"name\": \"John Doe\", \"email\": \"John.Doe@Gmail.Com\"} ] },\n"</FONT> +
+<A NAME="37"></A>                <FONT ID="StringLiteral">"\"slots\": [\n"</FONT> +
+<A NAME="38"></A>                <FONT ID="StringLiteral">"  {\n"</FONT> +
+<A NAME="39"></A>                <FONT ID="StringLiteral">"    \"time\" : \"2014-10-27T14:00:00.000Z\",\n"</FONT> +
+<A NAME="40"></A>                <FONT ID="StringLiteral">"    \"status\" : \"SUCCESS\",\n"</FONT> +
+<A NAME="41"></A>                <FONT ID="StringLiteral">"    \"externalID\" : \"0029532-141007123109603-oozie-oozi-W\",\n"</FONT> +
+<A NAME="42"></A>                <FONT ID="StringLiteral">"    \"retryCount\" : 0\n"</FONT> +
+<A NAME="43"></A>                <FONT ID="StringLiteral">"  },\n"</FONT> +
+<A NAME="44"></A>                <FONT ID="StringLiteral">"  {\n"</FONT> +
+<A NAME="45"></A>                <FONT ID="StringLiteral">"    \"time\" : \"2014-10-27T15:00:00.000Z\",\n"</FONT> +
+<A NAME="46"></A>                <FONT ID="StringLiteral">"    \"status\" : \"FAILURE\",\n"</FONT> +
+<A NAME="47"></A>                <FONT ID="StringLiteral">"    \"externalID\" : \"0029595-141007123109603-oozie-oozi-W\",\n"</FONT> +
+<A NAME="48"></A>                <FONT ID="StringLiteral">"    \"retryCount\" : 2\n"</FONT> +
+<A NAME="49"></A>                <FONT ID="StringLiteral">"   }"</FONT> +
+<A NAME="50"></A>                <FONT ID="StringLiteral">"   ]"</FONT> +
+<A NAME="51"></A>                <FONT ID="StringLiteral">"}"</FONT>;
+<A NAME="52"></A>
+<A NAME="53"></A>        <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A> workflowID = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"123"</FONT>);
+<A NAME="54"></A>        List&lt;<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>&gt; result = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/CelosClient.java.html">CelosClient</A>(URI.create(<FONT ID="StringLiteral">"localhost"</FONT>)).parseWorkflowStatus(workflowID, <FONT ID="New">new</FONT> ByteArrayInputStream(str.getBytes())).getSlotStates();
+<A NAME="55"></A>        Assert.assertEquals(result.size(), <FONT ID="IntegerLiteral">2</FONT>);
+<A NAME="56"></A>
+<A NAME="57"></A>        <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> time1 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2014-10-27T14:00:00.000Z"</FONT>);
+<A NAME="58"></A>        <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> time2 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2014-10-27T15:00:00.000Z"</FONT>);
+<A NAME="59"></A>
+<A NAME="60"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> val1 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A>(workflowID, time1), SlotState.Status.SUCCESS, <FONT ID="StringLiteral">"0029532-141007123109603-oozie-oozi-W"</FONT>, <FONT ID="IntegerLiteral">0</FONT>);
+<A NAME="61"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> val2 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A>(workflowID, time2), SlotState.Status.FAILURE, <FONT ID="StringLiteral">"0029595-141007123109603-oozie-oozi-W"</FONT>, <FONT ID="IntegerLiteral">2</FONT>);
+<A NAME="62"></A>
+<A NAME="63"></A>        Assert.assertEquals(Sets.newHashSet(result), Sets.newHashSet(val1, val2));
+<A NAME="64"></A>    }
+<A NAME="65"></A>
+<A NAME="66"></A>
+<A NAME="67"></A>    @Test
+<A NAME="68"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testParseWorkflowIdsList() <FONT ID="Throws">throws</FONT> IOException {
+<A NAME="69"></A>        String str =
+<A NAME="70"></A>                <FONT ID="StringLiteral">"{\n"</FONT> +
+<A NAME="71"></A>                <FONT ID="StringLiteral">"  \"ids\" : [ \"GC-export-profiles\", \"GrandCentral-01-harmony\"]"</FONT> +
+<A NAME="72"></A>                <FONT ID="StringLiteral">"}"</FONT>;
+<A NAME="73"></A>
+<A NAME="74"></A>        Set&lt;<A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>&gt; result = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/CelosClient.java.html">CelosClient</A>(URI.create(<FONT ID="StringLiteral">"localhost"</FONT>)).parseWorkflowIdsList(<FONT ID="New">new</FONT> ByteArrayInputStream(str.getBytes()));
+<A NAME="75"></A>        Assert.assertEquals(result, Sets.newHashSet(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"GrandCentral-01-harmony"</FONT>), <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"GC-export-profiles"</FONT>)));
+<A NAME="76"></A>    }
+<A NAME="77"></A>
+<A NAME="78"></A>}
+<A NAME="79"></A></pre>
+</BODY>
+</HTML>

@@ -1,0 +1,105 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../../../../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.ci.testing.fixtures.compare.json.JsonContentsComparer (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">JsonContentsComparer.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A>
+<A NAME="2"></A><FONT ID="Package">package</FONT> com.collective.celos.ci.testing.fixtures.compare.json;
+<A NAME="3"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../../../com/collective/celos/ci/mode/test/TestRun.java.html">com.collective.celos.ci.mode.test.TestRun</A>;
+<A NAME="4"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../../../com/collective/celos/ci/testing/fixtures/compare/CompareHelper.java.html">com.collective.celos.ci.testing.fixtures.compare.CompareHelper</A>;
+<A NAME="5"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../../../com/collective/celos/ci/testing/fixtures/compare/FixObjectCompareResult.java.html">com.collective.celos.ci.testing.fixtures.compare.FixObjectCompareResult</A>;
+<A NAME="6"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../../../com/collective/celos/ci/testing/fixtures/compare/FixtureComparer.java.html">com.collective.celos.ci.testing.fixtures.compare.FixtureComparer</A>;
+<A NAME="7"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">com.collective.celos.ci.testing.fixtures.create.FixObjectCreator</A>;
+<A NAME="8"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixDir.java.html">com.collective.celos.ci.testing.structure.fixobject.FixDir</A>;
+<A NAME="9"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFile.java.html">com.collective.celos.ci.testing.structure.fixobject.FixFile</A>;
+<A NAME="10"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFsObject.java.html">com.collective.celos.ci.testing.structure.fixobject.FixFsObject</A>;
+<A NAME="11"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixObject.java.html">com.collective.celos.ci.testing.structure.fixobject.FixObject</A>;
+<A NAME="12"></A><FONT ID="Import">import</FONT> com.google.common.collect.Lists;
+<A NAME="13"></A><FONT ID="Import">import</FONT> com.google.common.collect.Maps;
+<A NAME="14"></A><FONT ID="Import">import</FONT> com.google.common.collect.Sets;
+<A NAME="15"></A><FONT ID="Import">import</FONT> com.google.gson.JsonElement;
+<A NAME="16"></A><FONT ID="Import">import</FONT> org.apache.commons.lang.StringUtils;
+<A NAME="17"></A>
+<A NAME="18"></A><FONT ID="Import">import</FONT> java.io.BufferedReader;
+<A NAME="19"></A><FONT ID="Import">import</FONT> java.io.IOException;
+<A NAME="20"></A><FONT ID="Import">import</FONT> java.io.InputStream;
+<A NAME="21"></A><FONT ID="Import">import</FONT> java.io.InputStreamReader;
+<A NAME="22"></A><FONT ID="Import">import</FONT> java.util.*;
+<A NAME="23"></A>
+<A NAME="24"></A><FONT ID="FormalComment">/**
+<A NAME="25"></A> * Created by akonopko on 10/7/14.
+<A NAME="26"></A> */</FONT>
+<A NAME="27"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> JsonContentsComparer <FONT ID="Implements">implements</FONT> <A HREF="../../../../../../../../com/collective/celos/ci/testing/fixtures/compare/FixtureComparer.java.html">FixtureComparer</A> {
+<A NAME="28"></A>
+<A NAME="29"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> <A HREF="../../../../../../../../com/collective/celos/ci/testing/fixtures/compare/json/JsonElementConstructor.java.html">JsonElementConstructor</A> constructor;
+<A NAME="30"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> Set&lt;String&gt; ignorePaths;
+<A NAME="31"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> <A HREF="../../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">FixObjectCreator</A>&lt;<A HREF="../../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFile.java.html">FixFile</A>&gt; expectedDataCreator;
+<A NAME="32"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> <A HREF="../../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">FixObjectCreator</A>&lt;? <FONT ID="Extends">extends</FONT> <A HREF="../../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFsObject.java.html">FixFsObject</A>&gt; actualDataCreator;
+<A NAME="33"></A>
+<A NAME="34"></A>    <FONT ID="Public">public</FONT> JsonContentsComparer(Set&lt;String&gt; ignorePaths, <A HREF="../../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">FixObjectCreator</A>&lt;<A HREF="../../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFile.java.html">FixFile</A>&gt; expectedDataCreator, <A HREF="../../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">FixObjectCreator</A>&lt;? <FONT ID="Extends">extends</FONT> <A HREF="../../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFsObject.java.html">FixFsObject</A>&gt; actualDataCreator) {
+<A NAME="35"></A>        <FONT ID="This">this</FONT>.ignorePaths = ignorePaths;
+<A NAME="36"></A>        <FONT ID="This">this</FONT>.expectedDataCreator = expectedDataCreator;
+<A NAME="37"></A>        <FONT ID="This">this</FONT>.actualDataCreator = actualDataCreator;
+<A NAME="38"></A>        <FONT ID="This">this</FONT>.constructor = <FONT ID="New">new</FONT> <A HREF="../../../../../../../../com/collective/celos/ci/testing/fixtures/compare/json/JsonElementConstructor.java.html">JsonElementConstructor</A>();
+<A NAME="39"></A>    }
+<A NAME="40"></A>
+<A NAME="41"></A>    <FONT ID="Public">public</FONT> <A HREF="../../../../../../../../com/collective/celos/ci/testing/fixtures/compare/FixObjectCompareResult.java.html">FixObjectCompareResult</A> check(<A HREF="../../../../../../../../com/collective/celos/ci/mode/test/TestRun.java.html">TestRun</A> testRun) <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="42"></A>
+<A NAME="43"></A>        <A HREF="../../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFsObject.java.html">FixFsObject</A> fixFsObject = actualDataCreator.create(testRun);
+<A NAME="44"></A>
+<A NAME="45"></A>        Map&lt;JsonElement, Integer&gt; actualRes = Maps.newHashMap();
+<A NAME="46"></A>        <FONT ID="If">if</FONT>  (fixFsObject.isFile()) {
+<A NAME="47"></A>            fillMapWithJsonFromIS(actualRes, fixFsObject.asFile().getContent());
+<A NAME="48"></A>        } <FONT ID="Else">else</FONT> {
+<A NAME="49"></A>            Collection&lt;<A HREF="../../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFsObject.java.html">FixFsObject</A>&gt; children = fixFsObject.asDir().getChildren().values();
+<A NAME="50"></A>            getJsonEntityCountMap(children, actualRes);
+<A NAME="51"></A>        }
+<A NAME="52"></A>
+<A NAME="53"></A>        Map&lt;JsonElement, Integer&gt; expectedRes = Maps.newHashMap();
+<A NAME="54"></A>        fillMapWithJsonFromIS(expectedRes, expectedDataCreator.create(testRun).getContent());
+<A NAME="55"></A>
+<A NAME="56"></A>        <FONT ID="Return">return</FONT> CompareHelper.compareEntityNumber(testRun, actualDataCreator, expectedDataCreator, expectedRes, actualRes);
+<A NAME="57"></A>    }
+<A NAME="58"></A>
+<A NAME="59"></A>    <FONT ID="Private">private</FONT> &lt;T <FONT ID="Extends">extends</FONT> <A HREF="../../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFsObject.java.html">FixFsObject</A>&gt; Map&lt;JsonElement, Integer&gt; getJsonEntityCountMap(
+<A NAME="60"></A>            Collection&lt;<A HREF="../../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFsObject.java.html">FixFsObject</A>&gt; children, Map&lt;JsonElement, Integer&gt; jsonEntities) <FONT ID="Throws">throws</FONT> IOException {
+<A NAME="61"></A>
+<A NAME="62"></A>        <FONT ID="For">for</FONT> (<A HREF="../../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFsObject.java.html">FixFsObject</A> entry : children) {
+<A NAME="63"></A>            <FONT ID="If">if</FONT> (!entry.isFile()) {
+<A NAME="64"></A>                <FONT ID="Throw">throw</FONT> <FONT ID="New">new</FONT> RuntimeException(getClass().getName() + <FONT ID="StringLiteral">" only works with directories with no sub-dirs"</FONT>);
+<A NAME="65"></A>            }
+<A NAME="66"></A>            InputStream content = entry.asFile().getContent();
+<A NAME="67"></A>            fillMapWithJsonFromIS(jsonEntities, content);
+<A NAME="68"></A>        }
+<A NAME="69"></A>        <FONT ID="Return">return</FONT> jsonEntities;
+<A NAME="70"></A>    }
+<A NAME="71"></A>
+<A NAME="72"></A>    <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> fillMapWithJsonFromIS(Map&lt;JsonElement, Integer&gt; jsonElems, InputStream content) <FONT ID="Throws">throws</FONT> IOException {
+<A NAME="73"></A>        BufferedReader reader = <FONT ID="New">new</FONT> BufferedReader(<FONT ID="New">new</FONT> InputStreamReader(content));
+<A NAME="74"></A>        String line;
+<A NAME="75"></A>        <FONT ID="While">while</FONT> ((line = reader.readLine()) != <FONT ID="Null">null</FONT>) {
+<A NAME="76"></A>            JsonElement entity = constructor.construct(line, ignorePaths);
+<A NAME="77"></A>            Integer cnt = jsonElems.get(entity);
+<A NAME="78"></A>            jsonElems.put(entity, cnt == <FONT ID="Null">null</FONT> ? <FONT ID="IntegerLiteral">1</FONT> : cnt + <FONT ID="IntegerLiteral">1</FONT>);
+<A NAME="79"></A>        }
+<A NAME="80"></A>    }
+<A NAME="81"></A>
+<A NAME="82"></A>    <FONT ID="Public">public</FONT> Set&lt;String&gt; getIgnorePaths() {
+<A NAME="83"></A>        <FONT ID="Return">return</FONT> ignorePaths;
+<A NAME="84"></A>    }
+<A NAME="85"></A>}
+<A NAME="86"></A></pre>
+</BODY>
+</HTML>

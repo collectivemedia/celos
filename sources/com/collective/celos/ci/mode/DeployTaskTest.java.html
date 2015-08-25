@@ -1,0 +1,132 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.ci.mode.DeployTaskTest (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">DeployTaskTest.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos.ci.mode;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../com/collective/celos/ci/config/CiCommandLine.java.html">com.collective.celos.ci.config.CiCommandLine</A>;
+<A NAME="4"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../com/collective/celos/ci/config/deploy/CelosCiContext.java.html">com.collective.celos.ci.config.deploy.CelosCiContext</A>;
+<A NAME="5"></A><FONT ID="Import">import</FONT> com.google.common.collect.Sets;
+<A NAME="6"></A><FONT ID="Import">import</FONT> org.junit.Assert;
+<A NAME="7"></A><FONT ID="Import">import</FONT> org.junit.Rule;
+<A NAME="8"></A><FONT ID="Import">import</FONT> org.junit.Test;
+<A NAME="9"></A><FONT ID="Import">import</FONT> org.junit.rules.TemporaryFolder;
+<A NAME="10"></A><FONT ID="Import">import</FONT> org.powermock.api.mockito.PowerMockito;
+<A NAME="11"></A>
+<A NAME="12"></A>
+<A NAME="13"></A><FONT ID="Import">import</FONT> java.io.File;
+<A NAME="14"></A><FONT ID="Import">import</FONT> java.io.FileOutputStream;
+<A NAME="15"></A><FONT ID="Import">import</FONT> java.lang.reflect.Field;
+<A NAME="16"></A><FONT ID="Import">import</FONT> java.net.URI;
+<A NAME="17"></A><FONT ID="Import">import</FONT> java.util.Set;
+<A NAME="18"></A>
+<A NAME="19"></A><FONT ID="FormalComment">/**
+<A NAME="20"></A> * Created by akonopko on 10/1/14.
+<A NAME="21"></A> */</FONT>
+<A NAME="22"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> DeployTaskTest {
+<A NAME="23"></A>
+<A NAME="24"></A>    @Rule
+<A NAME="25"></A>    <FONT ID="Public">public</FONT> TemporaryFolder tempDir = <FONT ID="New">new</FONT> TemporaryFolder();
+<A NAME="26"></A>
+<A NAME="27"></A>    @Test
+<A NAME="28"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testCelosCiDeployContext() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="29"></A>
+<A NAME="30"></A>
+<A NAME="31"></A>        String hadoopCoreUrl = Thread.currentThread().getContextClassLoader().getResource(<FONT ID="StringLiteral">"com/collective/celos/ci/testing/config/core-site.xml"</FONT>).getFile();
+<A NAME="32"></A>        String hadoopHdfsUrl = Thread.currentThread().getContextClassLoader().getResource(<FONT ID="StringLiteral">"com/collective/celos/ci/testing/config/hdfs-site.xml"</FONT>).getFile();
+<A NAME="33"></A>
+<A NAME="34"></A>        String targetFileStr = <FONT ID="StringLiteral">"{\n"</FONT> +
+<A NAME="35"></A>                <FONT ID="StringLiteral">"    \"security.settings\": \"secsettings\",\n"</FONT> +
+<A NAME="36"></A>                <FONT ID="StringLiteral">"    \"workflows.dir.uri\": \"celoswfdir\",\n"</FONT> +
+<A NAME="37"></A>                <FONT ID="StringLiteral">"    \"hadoop.hdfs-site.xml\": \""</FONT> + hadoopHdfsUrl +<FONT ID="StringLiteral">"\",\n"</FONT> +
+<A NAME="38"></A>                <FONT ID="StringLiteral">"    \"hadoop.core-site.xml\": \""</FONT> + hadoopCoreUrl +<FONT ID="StringLiteral">"\",\n"</FONT> +
+<A NAME="39"></A>                <FONT ID="StringLiteral">"    \"defaults.dir.uri\": \"defdir\"\n"</FONT> +
+<A NAME="40"></A>                <FONT ID="StringLiteral">"}\n"</FONT>;
+<A NAME="41"></A>
+<A NAME="42"></A>        File targetFile = tempDir.newFile();
+<A NAME="43"></A>        FileOutputStream stream = <FONT ID="New">new</FONT> FileOutputStream(targetFile);
+<A NAME="44"></A>        stream.write(targetFileStr.getBytes());
+<A NAME="45"></A>        stream.flush();
+<A NAME="46"></A>
+<A NAME="47"></A>        <A HREF="../../../../../com/collective/celos/ci/config/CiCommandLine.java.html">CiCommandLine</A> commandLine = <FONT ID="New">new</FONT> <A HREF="../../../../../com/collective/celos/ci/config/CiCommandLine.java.html">CiCommandLine</A>(targetFile.toURI().toString(), <FONT ID="StringLiteral">"DEPLOY"</FONT>, <FONT ID="StringLiteral">"deploydir"</FONT>, <FONT ID="StringLiteral">"workflow"</FONT>, <FONT ID="StringLiteral">"testDir"</FONT>, <FONT ID="StringLiteral">"uname"</FONT>, <FONT ID="False">false</FONT>, <FONT ID="Null">null</FONT>);
+<A NAME="48"></A>        <A HREF="../../../../../com/collective/celos/ci/mode/DeployTask.java.html">DeployTask</A> deployTask = <FONT ID="New">new</FONT> <A HREF="../../../../../com/collective/celos/ci/mode/DeployTask.java.html">DeployTask</A>(commandLine);
+<A NAME="49"></A>
+<A NAME="50"></A>        <A HREF="../../../../../com/collective/celos/ci/config/deploy/CelosCiContext.java.html">CelosCiContext</A> context = deployTask.getCiContext();
+<A NAME="51"></A>
+<A NAME="52"></A>        Assert.assertEquals(context.getDeployDir(), commandLine.getDeployDir());
+<A NAME="53"></A>        Assert.assertEquals(context.getHdfsPrefix(), <FONT ID="StringLiteral">""</FONT>);
+<A NAME="54"></A>        Assert.assertEquals(context.getMode(), commandLine.getMode());
+<A NAME="55"></A>        Assert.assertEquals(context.getTarget().getWorkflowsDirUri(), URI.create(<FONT ID="StringLiteral">"celoswfdir"</FONT>));
+<A NAME="56"></A>        Assert.assertEquals(context.getTarget().getDefaultsDirUri(), URI.create(<FONT ID="StringLiteral">"defdir"</FONT>));
+<A NAME="57"></A>        Assert.assertEquals(context.getTarget().getPathToCoreSite(), URI.create(hadoopCoreUrl));
+<A NAME="58"></A>        Assert.assertEquals(context.getTarget().getPathToHdfsSite(), URI.create(hadoopHdfsUrl));
+<A NAME="59"></A>        Assert.assertEquals(context.getUserName(), commandLine.getUserName());
+<A NAME="60"></A>        Assert.assertEquals(context.getWorkflowName(), commandLine.getWorkflowName());
+<A NAME="61"></A>    }
+<A NAME="62"></A>
+<A NAME="63"></A>    @Test
+<A NAME="64"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testCelosCiDeployStart() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="65"></A>
+<A NAME="66"></A>
+<A NAME="67"></A>        String hadoopCoreUrl = Thread.currentThread().getContextClassLoader().getResource(<FONT ID="StringLiteral">"com/collective/celos/ci/testing/config/core-site.xml"</FONT>).getFile();
+<A NAME="68"></A>        String hadoopHdfsUrl = Thread.currentThread().getContextClassLoader().getResource(<FONT ID="StringLiteral">"com/collective/celos/ci/testing/config/hdfs-site.xml"</FONT>).getFile();
+<A NAME="69"></A>
+<A NAME="70"></A>        File celosWfDir = tempDir.newFolder();
+<A NAME="71"></A>        File defDir = tempDir.newFolder();
+<A NAME="72"></A>        File hdfsDir = tempDir.newFolder();
+<A NAME="73"></A>        File deployDir = <FONT ID="New">new</FONT> File(Thread.currentThread().getContextClassLoader().getResource(<FONT ID="StringLiteral">"com/collective/celos/ci/testing/deploy"</FONT>).getFile());
+<A NAME="74"></A>
+<A NAME="75"></A>        String targetFileStr = <FONT ID="StringLiteral">"{\n"</FONT> +
+<A NAME="76"></A>                <FONT ID="StringLiteral">"    \"defaults.dir.uri\": \""</FONT> + defDir.getAbsolutePath() +<FONT ID="StringLiteral">"\",\n"</FONT> +
+<A NAME="77"></A>                <FONT ID="StringLiteral">"    \"workflows.dir.uri\": \""</FONT> + celosWfDir.getAbsolutePath() +<FONT ID="StringLiteral">"\",\n"</FONT> +
+<A NAME="78"></A>                <FONT ID="StringLiteral">"    \"hadoop.hdfs-site.xml\": \""</FONT> + hadoopHdfsUrl +<FONT ID="StringLiteral">"\",\n"</FONT> +
+<A NAME="79"></A>                <FONT ID="StringLiteral">"    \"hadoop.core-site.xml\": \""</FONT> + hadoopCoreUrl +<FONT ID="StringLiteral">"\"\n"</FONT> +
+<A NAME="80"></A>                <FONT ID="StringLiteral">"}\n"</FONT>;
+<A NAME="81"></A>
+<A NAME="82"></A>        File targetFile = tempDir.newFile();
+<A NAME="83"></A>        FileOutputStream stream = <FONT ID="New">new</FONT> FileOutputStream(targetFile);
+<A NAME="84"></A>        stream.write(targetFileStr.getBytes());
+<A NAME="85"></A>        stream.flush();
+<A NAME="86"></A>
+<A NAME="87"></A>        <A HREF="../../../../../com/collective/celos/ci/config/CiCommandLine.java.html">CiCommandLine</A> commandLine = <FONT ID="New">new</FONT> <A HREF="../../../../../com/collective/celos/ci/config/CiCommandLine.java.html">CiCommandLine</A>(targetFile.toURI().toString(), <FONT ID="StringLiteral">"DEPLOY"</FONT>, deployDir.getAbsolutePath(), <FONT ID="StringLiteral">"workflow"</FONT>, <FONT ID="StringLiteral">"testDir"</FONT>, <FONT ID="StringLiteral">"uname"</FONT>, <FONT ID="False">false</FONT>, <FONT ID="Null">null</FONT>);
+<A NAME="88"></A>
+<A NAME="89"></A>        <A HREF="../../../../../com/collective/celos/ci/mode/DeployTask.java.html">DeployTask</A> deployTask = <FONT ID="New">new</FONT> <A HREF="../../../../../com/collective/celos/ci/mode/DeployTask.java.html">DeployTask</A>(commandLine);
+<A NAME="90"></A>
+<A NAME="91"></A>        Field f = PowerMockito.field(<A HREF="../../../../../com/collective/celos/ci/config/deploy/CelosCiContext.java.html">CelosCiContext</A>.<FONT ID="Class">class</FONT>, <FONT ID="StringLiteral">"hdfsPrefix"</FONT>);
+<A NAME="92"></A>        f.set(deployTask.getCiContext(), hdfsDir.getAbsolutePath());
+<A NAME="93"></A>
+<A NAME="94"></A>        deployTask.start();
+<A NAME="95"></A>        Assert.assertArrayEquals(celosWfDir.list(), <FONT ID="New">new</FONT> String[] {<FONT ID="StringLiteral">"workflow.js"</FONT>});
+<A NAME="96"></A>        Set&lt;String&gt; resultSet = getFilesWithoutCrc(<FONT ID="New">new</FONT> File(hdfsDir, <FONT ID="StringLiteral">"user/celos/app/workflow"</FONT>));
+<A NAME="97"></A>        Assert.assertEquals(Sets.newHashSet(<FONT ID="StringLiteral">"file1"</FONT>, <FONT ID="StringLiteral">"file2"</FONT>), resultSet);
+<A NAME="98"></A>
+<A NAME="99"></A>    }
+<A NAME="100"></A>
+<A NAME="101"></A>    <FONT ID="Private">private</FONT> Set&lt;String&gt; getFilesWithoutCrc(File targetDir) {
+<A NAME="102"></A>        <FONT ID="SingleLineComment">// LocalFileSystem is extends the CRCFileSysstem. so , we will get crc files at local.
+<A NAME="103"></A></FONT>        Set&lt;String&gt; resultSet = Sets.newHashSet();
+<A NAME="104"></A>        <FONT ID="For">for</FONT> (String str : targetDir.list()) {
+<A NAME="105"></A>            <FONT ID="If">if</FONT> (!str.endsWith(<FONT ID="StringLiteral">".crc"</FONT>)) {
+<A NAME="106"></A>                resultSet.add(str);
+<A NAME="107"></A>            }
+<A NAME="108"></A>        }
+<A NAME="109"></A>        <FONT ID="Return">return</FONT> resultSet;
+<A NAME="110"></A>    }
+<A NAME="111"></A>
+<A NAME="112"></A>}
+<A NAME="113"></A></pre>
+</BODY>
+</HTML>

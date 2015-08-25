@@ -1,0 +1,49 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.WorkflowID (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">WorkflowID.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="FormalComment">/**
+<A NAME="4"></A> * Uniquely identifies a workflow.
+<A NAME="5"></A> */</FONT>
+<A NAME="6"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> WorkflowID <FONT ID="Extends">extends</FONT> <A HREF="../../../com/collective/celos/ValueObject.java.html">ValueObject</A> <FONT ID="Implements">implements</FONT> Comparable&lt;<A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>&gt; {
+<A NAME="7"></A>
+<A NAME="8"></A>    <FONT ID="Protected">protected</FONT> <FONT ID="Final">final</FONT> String id;
+<A NAME="9"></A>    
+<A NAME="10"></A>    <FONT ID="Public">public</FONT> WorkflowID(String id) {
+<A NAME="11"></A>        <FONT ID="This">this</FONT>.id = Util.requireNonNull(id);
+<A NAME="12"></A>        <FONT ID="If">if</FONT> (id.trim().equals(<FONT ID="StringLiteral">""</FONT>)) {
+<A NAME="13"></A>            <FONT ID="Throw">throw</FONT> <FONT ID="New">new</FONT> IllegalArgumentException(<FONT ID="StringLiteral">"Workflow ID can't be only whitespace."</FONT>);
+<A NAME="14"></A>        }
+<A NAME="15"></A>        <FONT ID="If">if</FONT> (id.contains(<FONT ID="StringLiteral">"/"</FONT>)) {
+<A NAME="16"></A>            <FONT ID="Throw">throw</FONT> <FONT ID="New">new</FONT> IllegalArgumentException(<FONT ID="StringLiteral">"Workflow ID can't contain slash."</FONT>);
+<A NAME="17"></A>        }
+<A NAME="18"></A>    }
+<A NAME="19"></A>
+<A NAME="20"></A>    <FONT ID="Public">public</FONT> String toString() {
+<A NAME="21"></A>        <FONT ID="Return">return</FONT> id;
+<A NAME="22"></A>    }
+<A NAME="23"></A>
+<A NAME="24"></A>    @Override
+<A NAME="25"></A>    <FONT ID="Public">public</FONT> <FONT ID="Int">int</FONT> compareTo(<A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A> o) {
+<A NAME="26"></A>        <FONT ID="Return">return</FONT> <FONT ID="This">this</FONT>.id.compareTo(o.id);
+<A NAME="27"></A>    }
+<A NAME="28"></A>    
+<A NAME="29"></A>}
+<A NAME="30"></A></pre>
+</BODY>
+</HTML>

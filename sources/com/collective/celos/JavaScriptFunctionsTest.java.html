@@ -1,0 +1,368 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.JavaScriptFunctionsTest (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">JavaScriptFunctionsTest.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> com.fasterxml.jackson.databind.ObjectMapper;
+<A NAME="4"></A><FONT ID="Import">import</FONT> com.fasterxml.jackson.databind.node.ObjectNode;
+<A NAME="5"></A><FONT ID="Import">import</FONT> com.google.common.collect.ImmutableMap;
+<A NAME="6"></A><FONT ID="Import">import</FONT> org.junit.Assert;
+<A NAME="7"></A><FONT ID="Import">import</FONT> org.junit.Rule;
+<A NAME="8"></A><FONT ID="Import">import</FONT> org.junit.Test;
+<A NAME="9"></A><FONT ID="Import">import</FONT> org.junit.rules.TemporaryFolder;
+<A NAME="10"></A><FONT ID="Import">import</FONT> org.mozilla.javascript.JavaScriptException;
+<A NAME="11"></A><FONT ID="Import">import</FONT> org.mozilla.javascript.NativeJavaObject;
+<A NAME="12"></A>
+<A NAME="13"></A><FONT ID="Import">import</FONT> java.io.File;
+<A NAME="14"></A><FONT ID="Import">import</FONT> java.io.StringReader;
+<A NAME="15"></A><FONT ID="Import">import</FONT> java.util.Arrays;
+<A NAME="16"></A><FONT ID="Import">import</FONT> java.util.Properties;
+<A NAME="17"></A>
+<A NAME="18"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> JavaScriptFunctionsTest {
+<A NAME="19"></A>
+<A NAME="20"></A>    @Rule
+<A NAME="21"></A>    <FONT ID="Public">public</FONT> TemporaryFolder tempFolder = <FONT ID="New">new</FONT> TemporaryFolder();
+<A NAME="22"></A>
+<A NAME="23"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> ObjectMapper mapper = <FONT ID="New">new</FONT> ObjectMapper();
+<A NAME="24"></A>    
+<A NAME="25"></A>    @Test
+<A NAME="26"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testHourlySchedule() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="27"></A>        <A HREF="../../../com/collective/celos/HourlySchedule.java.html">HourlySchedule</A> s = (<A HREF="../../../com/collective/celos/HourlySchedule.java.html">HourlySchedule</A>) runJS(<FONT ID="StringLiteral">"hourlySchedule()"</FONT>);
+<A NAME="28"></A>    }
+<A NAME="29"></A>
+<A NAME="30"></A>    @Test
+<A NAME="31"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testMinutelySchedule() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="32"></A>        <A HREF="../../../com/collective/celos/MinutelySchedule.java.html">MinutelySchedule</A> s = (<A HREF="../../../com/collective/celos/MinutelySchedule.java.html">MinutelySchedule</A>) runJS(<FONT ID="StringLiteral">"minutelySchedule()"</FONT>);
+<A NAME="33"></A>    }
+<A NAME="34"></A>
+<A NAME="35"></A>    @Test
+<A NAME="36"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testCronSchedule() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="37"></A>        <A HREF="../../../com/collective/celos/CronSchedule.java.html">CronSchedule</A> s = (<A HREF="../../../com/collective/celos/CronSchedule.java.html">CronSchedule</A>) runJS(<FONT ID="StringLiteral">"cronSchedule('* 15 * * * ?')"</FONT>);
+<A NAME="38"></A>        Assert.assertEquals(<FONT ID="StringLiteral">"* 15 * * * ?"</FONT>, s.getCronExpression());
+<A NAME="39"></A>    }
+<A NAME="40"></A>    
+<A NAME="41"></A>    @Test
+<A NAME="42"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testDependentSchedule() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="43"></A>        <A HREF="../../../com/collective/celos/DependentSchedule.java.html">DependentSchedule</A> s = (<A HREF="../../../com/collective/celos/DependentSchedule.java.html">DependentSchedule</A>) runJS(<FONT ID="StringLiteral">"dependentSchedule('foo')"</FONT>);
+<A NAME="44"></A>        Assert.assertEquals(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"foo"</FONT>), s.getOtherWorkflowID());
+<A NAME="45"></A>    }
+<A NAME="46"></A>
+<A NAME="47"></A>    @Test
+<A NAME="48"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testCronScheduleRequiresExpr() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="49"></A>        expectMessage(<FONT ID="StringLiteral">"cronSchedule()"</FONT>, <FONT ID="StringLiteral">"Undefined cron expression"</FONT>);
+<A NAME="50"></A>    }
+<A NAME="51"></A>    
+<A NAME="52"></A>    @Test
+<A NAME="53"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testSerialSchedulingStrategyDefault() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="54"></A>        <A HREF="../../../com/collective/celos/SerialSchedulingStrategy.java.html">SerialSchedulingStrategy</A> s = (<A HREF="../../../com/collective/celos/SerialSchedulingStrategy.java.html">SerialSchedulingStrategy</A>) runJS(<FONT ID="StringLiteral">"serialSchedulingStrategy()"</FONT>);
+<A NAME="55"></A>        Assert.assertEquals(s.getConcurrencyLevel(), <FONT ID="IntegerLiteral">1</FONT>);
+<A NAME="56"></A>    }
+<A NAME="57"></A>
+<A NAME="58"></A>    @Test
+<A NAME="59"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testSerialSchedulingStrategy() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="60"></A>        <A HREF="../../../com/collective/celos/SerialSchedulingStrategy.java.html">SerialSchedulingStrategy</A> s = (<A HREF="../../../com/collective/celos/SerialSchedulingStrategy.java.html">SerialSchedulingStrategy</A>) runJS(<FONT ID="StringLiteral">"serialSchedulingStrategy(5)"</FONT>);
+<A NAME="61"></A>        Assert.assertEquals(s.getConcurrencyLevel(), <FONT ID="IntegerLiteral">5</FONT>);
+<A NAME="62"></A>    }
+<A NAME="63"></A>
+<A NAME="64"></A>    @Test
+<A NAME="65"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testAlwaysTrigger() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="66"></A>        <A HREF="../../../com/collective/celos/AlwaysTrigger.java.html">AlwaysTrigger</A> t = (<A HREF="../../../com/collective/celos/AlwaysTrigger.java.html">AlwaysTrigger</A>) runJS(<FONT ID="StringLiteral">"alwaysTrigger()"</FONT>);
+<A NAME="67"></A>    }
+<A NAME="68"></A>
+<A NAME="69"></A>    @Test
+<A NAME="70"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testHDFSCheckTrigger() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="71"></A>        <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/HDFSCheckTrigger.html">HDFSCheckTrigger</A> t = (<A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/HDFSCheckTrigger.html">HDFSCheckTrigger</A>) runJS(<FONT ID="StringLiteral">"hdfsCheckTrigger('/foo', 'file:///')"</FONT>);
+<A NAME="72"></A>        Assert.assertEquals(<FONT ID="StringLiteral">"/foo"</FONT>, t.getRawPathString());
+<A NAME="73"></A>        Assert.assertEquals(<FONT ID="StringLiteral">"file:///"</FONT>, t.getFsString());
+<A NAME="74"></A>    }
+<A NAME="75"></A>    
+<A NAME="76"></A>    @Test
+<A NAME="77"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testHDFSCheckTriggerRequiresPath() {
+<A NAME="78"></A>        expectMessage(<FONT ID="StringLiteral">"hdfsCheckTrigger()"</FONT>, <FONT ID="StringLiteral">"Undefined path"</FONT>);
+<A NAME="79"></A>    }
+<A NAME="80"></A>
+<A NAME="81"></A>    @Test
+<A NAME="82"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testHDFSCheckTriggerRequiresFs() {
+<A NAME="83"></A>        expectMessage(<FONT ID="StringLiteral">"hdfsCheckTrigger('/foo')"</FONT>, <FONT ID="StringLiteral">"Undefined fs"</FONT>);
+<A NAME="84"></A>    }
+<A NAME="85"></A>
+<A NAME="86"></A>    @Test
+<A NAME="87"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testHDFSCheckTriggerUsesDefaultNameNode() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="88"></A>        <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/HDFSCheckTrigger.html">HDFSCheckTrigger</A> t = (<A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/HDFSCheckTrigger.html">HDFSCheckTrigger</A>) runJS(<FONT ID="StringLiteral">"var CELOS_DEFAULT_HDFS = 'file:///'; hdfsCheckTrigger('/foo')"</FONT>);
+<A NAME="89"></A>        Assert.assertEquals(<FONT ID="StringLiteral">"/foo"</FONT>, t.getRawPathString());
+<A NAME="90"></A>        Assert.assertEquals(<FONT ID="StringLiteral">"file:///"</FONT>, t.getFsString());
+<A NAME="91"></A>    }
+<A NAME="92"></A>
+<A NAME="93"></A>    @Test
+<A NAME="94"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testAndTrigger() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="95"></A>        <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/AndTrigger.html">AndTrigger</A> t = (<A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/AndTrigger.html">AndTrigger</A>) runJS(<FONT ID="StringLiteral">"andTrigger(delayTrigger(1), alwaysTrigger())"</FONT>);
+<A NAME="96"></A>        <A HREF="../../../com/collective/celos/DelayTrigger.java.html">DelayTrigger</A> dt = (<A HREF="../../../com/collective/celos/DelayTrigger.java.html">DelayTrigger</A>) t.getTriggers().get(<FONT ID="IntegerLiteral">0</FONT>);
+<A NAME="97"></A>        Assert.assertEquals(<FONT ID="IntegerLiteral">1</FONT>, dt.getSeconds());
+<A NAME="98"></A>        <A HREF="../../../com/collective/celos/AlwaysTrigger.java.html">AlwaysTrigger</A> at = (<A HREF="../../../com/collective/celos/AlwaysTrigger.java.html">AlwaysTrigger</A>) t.getTriggers().get(<FONT ID="IntegerLiteral">1</FONT>);
+<A NAME="99"></A>        Assert.assertEquals(<FONT ID="IntegerLiteral">2</FONT>, t.getTriggers().size());
+<A NAME="100"></A>    }
+<A NAME="101"></A>    
+<A NAME="102"></A>    @Test
+<A NAME="103"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testOrTrigger() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="104"></A>        <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/OrTrigger.html">OrTrigger</A> t = (<A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/OrTrigger.html">OrTrigger</A>) runJS(<FONT ID="StringLiteral">"orTrigger(delayTrigger(1), alwaysTrigger())"</FONT>);
+<A NAME="105"></A>        <A HREF="../../../com/collective/celos/DelayTrigger.java.html">DelayTrigger</A> dt = (<A HREF="../../../com/collective/celos/DelayTrigger.java.html">DelayTrigger</A>) t.getTriggers().get(<FONT ID="IntegerLiteral">0</FONT>);
+<A NAME="106"></A>        Assert.assertEquals(<FONT ID="IntegerLiteral">1</FONT>, dt.getSeconds());
+<A NAME="107"></A>        <A HREF="../../../com/collective/celos/AlwaysTrigger.java.html">AlwaysTrigger</A> at = (<A HREF="../../../com/collective/celos/AlwaysTrigger.java.html">AlwaysTrigger</A>) t.getTriggers().get(<FONT ID="IntegerLiteral">1</FONT>);
+<A NAME="108"></A>        Assert.assertEquals(<FONT ID="IntegerLiteral">2</FONT>, t.getTriggers().size());
+<A NAME="109"></A>    }
+<A NAME="110"></A>    
+<A NAME="111"></A>    @Test
+<A NAME="112"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testNotTrigger() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="113"></A>        <A HREF="../../../com/collective/celos/NotTrigger.java.html">NotTrigger</A> t = (<A HREF="../../../com/collective/celos/NotTrigger.java.html">NotTrigger</A>) runJS(<FONT ID="StringLiteral">"notTrigger(alwaysTrigger())"</FONT>);
+<A NAME="114"></A>        <A HREF="../../../com/collective/celos/AlwaysTrigger.java.html">AlwaysTrigger</A> at = (<A HREF="../../../com/collective/celos/AlwaysTrigger.java.html">AlwaysTrigger</A>) t.getTrigger();
+<A NAME="115"></A>    }
+<A NAME="116"></A>    
+<A NAME="117"></A>    @Test
+<A NAME="118"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testNotTriggerRequiresSubTrigger() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="119"></A>        expectMessage(<FONT ID="StringLiteral">"notTrigger()"</FONT>, <FONT ID="StringLiteral">"Undefined sub trigger"</FONT>);
+<A NAME="120"></A>    }
+<A NAME="121"></A>
+<A NAME="122"></A>    @Test
+<A NAME="123"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testOffsetTrigger() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="124"></A>        <A HREF="../../../com/collective/celos/OffsetTrigger.java.html">OffsetTrigger</A> t = (<A HREF="../../../com/collective/celos/OffsetTrigger.java.html">OffsetTrigger</A>) runJS(<FONT ID="StringLiteral">"offsetTrigger(25, alwaysTrigger())"</FONT>);
+<A NAME="125"></A>        Assert.assertEquals(<FONT ID="IntegerLiteral">25</FONT>, t.getSeconds());
+<A NAME="126"></A>        Assert.assertEquals(<A HREF="../../../com/collective/celos/AlwaysTrigger.java.html">AlwaysTrigger</A>.<FONT ID="Class">class</FONT>, t.getTrigger().getClass());
+<A NAME="127"></A>    }
+<A NAME="128"></A>
+<A NAME="129"></A>    @Test
+<A NAME="130"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testOffsetTriggerRequiresSeconds() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="131"></A>        expectMessage(<FONT ID="StringLiteral">"offsetTrigger()"</FONT>, <FONT ID="StringLiteral">"Undefined seconds"</FONT>);
+<A NAME="132"></A>    }
+<A NAME="133"></A>
+<A NAME="134"></A>    @Test
+<A NAME="135"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testOffsetTriggerRequiresSecondsAndTrigger() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="136"></A>        expectMessage(<FONT ID="StringLiteral">"offsetTrigger(25)"</FONT>, <FONT ID="StringLiteral">"Undefined trigger"</FONT>);
+<A NAME="137"></A>    }
+<A NAME="138"></A>
+<A NAME="139"></A>
+<A NAME="140"></A>    @Test
+<A NAME="141"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testDelayTrigger() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="142"></A>        <A HREF="../../../com/collective/celos/DelayTrigger.java.html">DelayTrigger</A> t = (<A HREF="../../../com/collective/celos/DelayTrigger.java.html">DelayTrigger</A>) runJS(<FONT ID="StringLiteral">"delayTrigger(25)"</FONT>);
+<A NAME="143"></A>        Assert.assertEquals(<FONT ID="IntegerLiteral">25</FONT>, t.getSeconds());
+<A NAME="144"></A>    }
+<A NAME="145"></A>    
+<A NAME="146"></A>    @Test
+<A NAME="147"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testDelayTriggerRequiresSeconds() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="148"></A>        expectMessage(<FONT ID="StringLiteral">"delayTrigger()"</FONT>, <FONT ID="StringLiteral">"Undefined seconds"</FONT>);
+<A NAME="149"></A>    }
+<A NAME="150"></A>
+<A NAME="151"></A>    @Test
+<A NAME="152"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testSuccessTrigger() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="153"></A>        <A HREF="../../../com/collective/celos/SuccessTrigger.java.html">SuccessTrigger</A> t = (<A HREF="../../../com/collective/celos/SuccessTrigger.java.html">SuccessTrigger</A>) runJS(<FONT ID="StringLiteral">"successTrigger('myworkflow')"</FONT>);
+<A NAME="154"></A>        Assert.assertEquals(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"myworkflow"</FONT>), t.getTriggerWorkflowId());
+<A NAME="155"></A>    }
+<A NAME="156"></A>    
+<A NAME="157"></A>    @Test
+<A NAME="158"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testSuccessTriggerRequiresWorkflowName() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="159"></A>        expectMessage(<FONT ID="StringLiteral">"successTrigger()"</FONT>, <FONT ID="StringLiteral">"Undefined workflow name"</FONT>);
+<A NAME="160"></A>    }
+<A NAME="161"></A>
+<A NAME="162"></A>    @Test
+<A NAME="163"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testOozieExternalService() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="164"></A>        <A HREF="../../../com/collective/celos/OozieExternalService.java.html">OozieExternalService</A> s = (<A HREF="../../../com/collective/celos/OozieExternalService.java.html">OozieExternalService</A>) runJS(<FONT ID="StringLiteral">"oozieExternalService({bla:'hello'}, 'http://foo')"</FONT>);
+<A NAME="165"></A>        Assert.assertEquals(<FONT ID="StringLiteral">"http://foo"</FONT>, s.getOozieURL());
+<A NAME="166"></A>        ObjectNode props = <FONT ID="New">new</FONT> ObjectMapper().createObjectNode();
+<A NAME="167"></A>        props.put(<FONT ID="StringLiteral">"bla"</FONT>, <FONT ID="StringLiteral">"hello"</FONT>);
+<A NAME="168"></A>        Assert.assertEquals(props, s.getProperties(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A>(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"foo"</FONT>), ScheduledTime.now())));
+<A NAME="169"></A>    }
+<A NAME="170"></A>    
+<A NAME="171"></A>    @Test
+<A NAME="172"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testOozieURLRequired() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="173"></A>        expectMessage(<FONT ID="StringLiteral">"oozieExternalService({bla:'hello'})"</FONT>, <FONT ID="StringLiteral">"Undefined Oozie URL"</FONT>);
+<A NAME="174"></A>    }
+<A NAME="175"></A>
+<A NAME="176"></A>    @Test
+<A NAME="177"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testOozieURLUsesDefault() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="178"></A>        String js = <FONT ID="StringLiteral">"var CELOS_DEFAULT_OOZIE = 'http://oooooozie'; oozieExternalService({bla:'hello'})"</FONT>;
+<A NAME="179"></A>        <A HREF="../../../com/collective/celos/OozieExternalService.java.html">OozieExternalService</A> s = (<A HREF="../../../com/collective/celos/OozieExternalService.java.html">OozieExternalService</A>) runJS(js);
+<A NAME="180"></A>        Assert.assertEquals(<FONT ID="StringLiteral">"http://oooooozie"</FONT>, s.getOozieURL());
+<A NAME="181"></A>    }
+<A NAME="182"></A>
+<A NAME="183"></A>    @Test
+<A NAME="184"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testUsesOozieDefaultProperties() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="185"></A>        String js = <FONT ID="StringLiteral">"var CELOS_DEFAULT_OOZIE_PROPERTIES = {a:'1', b:'2'}; oozieExternalService({b: '3', c:'4'}, 'http://oozie')"</FONT>;
+<A NAME="186"></A>        <A HREF="../../../com/collective/celos/OozieExternalService.java.html">OozieExternalService</A> s = (<A HREF="../../../com/collective/celos/OozieExternalService.java.html">OozieExternalService</A>) runJS(js);
+<A NAME="187"></A>        Assert.assertEquals(<FONT ID="StringLiteral">"http://oozie"</FONT>, s.getOozieURL());
+<A NAME="188"></A>        ObjectNode props = <FONT ID="New">new</FONT> ObjectMapper().createObjectNode();
+<A NAME="189"></A>        props.put(<FONT ID="StringLiteral">"a"</FONT>, <FONT ID="StringLiteral">"1"</FONT>);
+<A NAME="190"></A>        props.put(<FONT ID="StringLiteral">"b"</FONT>, <FONT ID="StringLiteral">"3"</FONT>);
+<A NAME="191"></A>        props.put(<FONT ID="StringLiteral">"c"</FONT>, <FONT ID="StringLiteral">"4"</FONT>);
+<A NAME="192"></A>        Assert.assertEquals(props, s.getProperties(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A>(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"foo"</FONT>), ScheduledTime.now())));
+<A NAME="193"></A>    }
+<A NAME="194"></A>
+<A NAME="195"></A>    @Test
+<A NAME="196"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testOoziePropertiesFunction() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="197"></A>        String js = <FONT ID="StringLiteral">"var CELOS_DEFAULT_OOZIE_PROPERTIES = { a: '${year}' }; oozieExternalService(function(slot){ return { b: '${month}', c: new String(slot.getScheduledTime().minusYears(1).year()) }; }, 'http://oozie')"</FONT>;
+<A NAME="198"></A>        <A HREF="../../../com/collective/celos/OozieExternalService.java.html">OozieExternalService</A> s = (<A HREF="../../../com/collective/celos/OozieExternalService.java.html">OozieExternalService</A>) runJS(js);
+<A NAME="199"></A>        Properties props = <FONT ID="New">new</FONT> Properties();
+<A NAME="200"></A>        props.put(<FONT ID="StringLiteral">"a"</FONT>, <FONT ID="StringLiteral">"2014"</FONT>);
+<A NAME="201"></A>        props.put(<FONT ID="StringLiteral">"b"</FONT>, <FONT ID="StringLiteral">"03"</FONT>);
+<A NAME="202"></A>        props.put(<FONT ID="StringLiteral">"c"</FONT>, <FONT ID="StringLiteral">"2013"</FONT>);
+<A NAME="203"></A>        <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> t = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2014-03-01T00:00Z"</FONT>);
+<A NAME="204"></A>        Assert.assertEquals(props, s.setupDefaultProperties(s.getProperties(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A>(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"foo"</FONT>), t)), t));
+<A NAME="205"></A>    }
+<A NAME="206"></A>
+<A NAME="207"></A>    @Test
+<A NAME="208"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testOoziePropertiesFunctionWithJavaObject() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="209"></A>        String js = <FONT ID="StringLiteral">"var CELOS_DEFAULT_OOZIE_PROPERTIES = "</FONT> +
+<A NAME="210"></A>                <FONT ID="StringLiteral">"{ "</FONT> +
+<A NAME="211"></A>                <FONT ID="StringLiteral">"   a: '${year}' "</FONT> +
+<A NAME="212"></A>                <FONT ID="StringLiteral">"}; "</FONT> +
+<A NAME="213"></A>                <FONT ID="StringLiteral">"oozieExternalService(function(slot)"</FONT> +
+<A NAME="214"></A>                <FONT ID="StringLiteral">"   { "</FONT> +
+<A NAME="215"></A>                <FONT ID="StringLiteral">"       return { "</FONT> +
+<A NAME="216"></A>                <FONT ID="StringLiteral">"           b: '${month}', "</FONT> +
+<A NAME="217"></A>                <FONT ID="StringLiteral">"           c: slot.getScheduledTime().minusYears(1).year()"</FONT> +
+<A NAME="218"></A>                <FONT ID="StringLiteral">"   }; "</FONT> +
+<A NAME="219"></A>                <FONT ID="StringLiteral">"}, 'http://oozie')"</FONT>;
+<A NAME="220"></A>        <A HREF="../../../com/collective/celos/OozieExternalService.java.html">OozieExternalService</A> s = (<A HREF="../../../com/collective/celos/OozieExternalService.java.html">OozieExternalService</A>) runJS(js);
+<A NAME="221"></A>        Properties props = <FONT ID="New">new</FONT> Properties();
+<A NAME="222"></A>        props.put(<FONT ID="StringLiteral">"a"</FONT>, <FONT ID="StringLiteral">"2014"</FONT>);
+<A NAME="223"></A>        props.put(<FONT ID="StringLiteral">"b"</FONT>, <FONT ID="StringLiteral">"03"</FONT>);
+<A NAME="224"></A>        props.put(<FONT ID="StringLiteral">"c"</FONT>, <FONT ID="StringLiteral">"2013"</FONT>);
+<A NAME="225"></A>        <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> t = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2014-03-01T00:00Z"</FONT>);
+<A NAME="226"></A>        Assert.assertEquals(props, s.setupDefaultProperties(s.getProperties(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A>(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"foo"</FONT>), t)), t));
+<A NAME="227"></A>    }
+<A NAME="228"></A>    
+<A NAME="229"></A>    @Test
+<A NAME="230"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> replaceTimeVariablesWorks() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="231"></A>        String s = (String) runJS(<FONT ID="StringLiteral">"replaceTimeVariables('${year}-${month}-${day}T${hour}:${minute}:${second}Z ${year}', new Packages.com.collective.celos.ScheduledTime('2014-05-12T19:33:01Z'))"</FONT>);
+<A NAME="232"></A>        Assert.assertEquals(<FONT ID="StringLiteral">"2014-05-12T19:33:01Z 2014"</FONT>, s);
+<A NAME="233"></A>    }
+<A NAME="234"></A>
+<A NAME="235"></A>
+<A NAME="236"></A>    @Test
+<A NAME="237"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testHdfsPathFunction() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="238"></A>        String js = <FONT ID="StringLiteral">"var HDFS_PREFIX_JS_VAR = '/user/celos/test'; \n"</FONT> +
+<A NAME="239"></A>                <FONT ID="StringLiteral">"hdfsPath('/path')"</FONT>;
+<A NAME="240"></A>        String s = (String) runJS(js);
+<A NAME="241"></A>        Assert.assertEquals(s, <FONT ID="StringLiteral">"/user/celos/test/path"</FONT>);
+<A NAME="242"></A>    }
+<A NAME="243"></A>
+<A NAME="244"></A>    @Test
+<A NAME="245"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testHdfsPathFunctionNoPrefix() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="246"></A>        String js = <FONT ID="StringLiteral">"hdfsPath('/path')"</FONT>;
+<A NAME="247"></A>        String s = (String) runJS(js);
+<A NAME="248"></A>        Assert.assertEquals(s, <FONT ID="StringLiteral">"/path"</FONT>);
+<A NAME="249"></A>    }
+<A NAME="250"></A>
+<A NAME="251"></A>    @Test
+<A NAME="252"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testIsRunningInTestModeFalse() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="253"></A>        String js = <FONT ID="StringLiteral">"celos.isRunningInTestMode()"</FONT>;
+<A NAME="254"></A>        Boolean s = (Boolean) runJS(js);
+<A NAME="255"></A>        Assert.assertEquals(s, <FONT ID="False">false</FONT>);
+<A NAME="256"></A>    }
+<A NAME="257"></A>
+<A NAME="258"></A>    @Test
+<A NAME="259"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testIsRunningInTestModeTrue() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="260"></A>        String js = <FONT ID="StringLiteral">"HDFS_PREFIX_JS_VAR = 'some';"</FONT> +
+<A NAME="261"></A>                <FONT ID="StringLiteral">"celos.isRunningInTestMode()"</FONT>;
+<A NAME="262"></A>        Boolean s = (Boolean) runJS(js);
+<A NAME="263"></A>        Assert.assertEquals(s, <FONT ID="True">true</FONT>);
+<A NAME="264"></A>    }
+<A NAME="265"></A>
+<A NAME="266"></A>
+<A NAME="267"></A>    @Test
+<A NAME="268"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testHdfsCheckNotExists() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="269"></A>        String js = <FONT ID="StringLiteral">"var CELOS_DEFAULT_HDFS = ''; "</FONT> +
+<A NAME="270"></A>                <FONT ID="StringLiteral">"var schTime = new Packages.com.collective.celos.ScheduledTime('2014-05-12T19:33:01Z');"</FONT> +
+<A NAME="271"></A>                <FONT ID="StringLiteral">"var workflowId = new Packages.com.collective.celos.WorkflowID('id');"</FONT> +
+<A NAME="272"></A>                <FONT ID="StringLiteral">"var slotId = new Packages.com.collective.celos.SlotID(workflowId, schTime);"</FONT> +
+<A NAME="273"></A>                <FONT ID="StringLiteral">"hdfsCheck('/path', slotId)"</FONT>;
+<A NAME="274"></A>
+<A NAME="275"></A>        Boolean s = (Boolean) runJS(js);
+<A NAME="276"></A>        Assert.assertEquals(s, <FONT ID="False">false</FONT>);
+<A NAME="277"></A>
+<A NAME="278"></A>    }
+<A NAME="279"></A>
+<A NAME="280"></A>    @Test
+<A NAME="281"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testHdfsCheckExists() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="282"></A>        String js = <FONT ID="StringLiteral">"var CELOS_DEFAULT_HDFS = ''; "</FONT> +
+<A NAME="283"></A>                <FONT ID="StringLiteral">"var schTime = new Packages.com.collective.celos.ScheduledTime('2014-05-12T19:33:01Z');"</FONT> +
+<A NAME="284"></A>                <FONT ID="StringLiteral">"var workflowId = new Packages.com.collective.celos.WorkflowID('id');"</FONT> +
+<A NAME="285"></A>                <FONT ID="StringLiteral">"var slotId = new Packages.com.collective.celos.SlotID(workflowId, schTime);"</FONT> +
+<A NAME="286"></A>                <FONT ID="StringLiteral">"hdfsCheck('file:///tmp', slotId)"</FONT>;
+<A NAME="287"></A>
+<A NAME="288"></A>        Boolean s = (Boolean) runJS(js);
+<A NAME="289"></A>        Assert.assertEquals(s, <FONT ID="True">true</FONT>);
+<A NAME="290"></A>
+<A NAME="291"></A>    }
+<A NAME="292"></A>
+<A NAME="293"></A>    @Test
+<A NAME="294"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testHdfsCheckExists2() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="295"></A>        String js = <FONT ID="StringLiteral">"var CELOS_DEFAULT_HDFS = ''; "</FONT> +
+<A NAME="296"></A>                <FONT ID="StringLiteral">"var schTime = new Packages.com.collective.celos.ScheduledTime('2014-05-12T19:33:01Z');"</FONT> +
+<A NAME="297"></A>                <FONT ID="StringLiteral">"var workflowId = new Packages.com.collective.celos.WorkflowID('id');"</FONT> +
+<A NAME="298"></A>                <FONT ID="StringLiteral">"var slotId = new Packages.com.collective.celos.SlotID(workflowId, schTime);"</FONT> +
+<A NAME="299"></A>                <FONT ID="StringLiteral">"hdfsCheck('/tmp', slotId, 'file:///')"</FONT>;
+<A NAME="300"></A>
+<A NAME="301"></A>        Boolean s = (Boolean) runJS(js);
+<A NAME="302"></A>        Assert.assertEquals(s, <FONT ID="True">true</FONT>);
+<A NAME="303"></A>
+<A NAME="304"></A>    }
+<A NAME="305"></A>
+<A NAME="306"></A>    @Test(expected = JavaScriptException.<FONT ID="Class">class</FONT>)
+<A NAME="307"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testHdfsCheckWrongType() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="308"></A>        String js = <FONT ID="StringLiteral">"var CELOS_DEFAULT_HDFS = ''; "</FONT> +
+<A NAME="309"></A>                <FONT ID="StringLiteral">"var schTime = new Packages.com.collective.celos.ScheduledTime('2014-05-12T19:33:01Z');"</FONT> +
+<A NAME="310"></A>                <FONT ID="StringLiteral">"var workflowId = new Packages.com.collective.celos.WorkflowID('id');"</FONT> +
+<A NAME="311"></A>                <FONT ID="StringLiteral">"var slotId = 'slot';"</FONT> +
+<A NAME="312"></A>                <FONT ID="StringLiteral">"hdfsCheck('file:///tmp', slotId)"</FONT>;
+<A NAME="313"></A>
+<A NAME="314"></A>        Boolean s = (Boolean) runJS(js);
+<A NAME="315"></A>        Assert.assertEquals(s, <FONT ID="True">true</FONT>);
+<A NAME="316"></A>
+<A NAME="317"></A>    }
+<A NAME="318"></A>
+<A NAME="319"></A>    <FONT ID="Private">private</FONT> Object runJS(String js) <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="320"></A>        <A HREF="../../../com/collective/celos/WorkflowConfigurationParser.java.html">WorkflowConfigurationParser</A> parser = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowConfigurationParser.java.html">WorkflowConfigurationParser</A>(<FONT ID="New">new</FONT> File(<FONT ID="StringLiteral">"unused"</FONT>), ImmutableMap.&lt;String, String&gt;of());
+<A NAME="321"></A>        <FONT ID="SingleLineComment">// Evaluate JS function call
+<A NAME="322"></A></FONT>        Object jsResult = parser.evaluateReader(<FONT ID="New">new</FONT> StringReader(js), <FONT ID="StringLiteral">"string"</FONT>);
+<A NAME="323"></A>        <FONT ID="If">if</FONT> (jsResult <FONT ID="InstanceOf">instanceof</FONT> NativeJavaObject) {
+<A NAME="324"></A>            <FONT ID="Return">return</FONT> ((NativeJavaObject) jsResult).unwrap();
+<A NAME="325"></A>        } <FONT ID="Else">else</FONT> {
+<A NAME="326"></A>            <FONT ID="Return">return</FONT> jsResult;
+<A NAME="327"></A>        }
+<A NAME="328"></A>    }
+<A NAME="329"></A>
+<A NAME="330"></A>    <FONT ID="Private">private</FONT> Object runJSNativeResult(String js) <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="331"></A>        <A HREF="../../../com/collective/celos/WorkflowConfigurationParser.java.html">WorkflowConfigurationParser</A> parser = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowConfigurationParser.java.html">WorkflowConfigurationParser</A>(<FONT ID="New">new</FONT> File(<FONT ID="StringLiteral">"unused"</FONT>), ImmutableMap.&lt;String, String&gt;of());
+<A NAME="332"></A>        <FONT ID="SingleLineComment">// Evaluate JS function call
+<A NAME="333"></A></FONT>        <FONT ID="Return">return</FONT> parser.evaluateReader(<FONT ID="New">new</FONT> StringReader(js), <FONT ID="StringLiteral">"string"</FONT>);
+<A NAME="334"></A>    }
+<A NAME="335"></A>
+<A NAME="336"></A>
+<A NAME="337"></A>    <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> expectMessage(String js, String string) <FONT ID="Throws">throws</FONT> AssertionError {
+<A NAME="338"></A>        <FONT ID="Try">try</FONT> {
+<A NAME="339"></A>            runJS(js);
+<A NAME="340"></A>        } <FONT ID="Catch">catch</FONT>(Exception e) {
+<A NAME="341"></A>            <FONT ID="If">if</FONT> (e.getMessage().contains(string)) {
+<A NAME="342"></A>                <FONT ID="Return">return</FONT>;
+<A NAME="343"></A>            }
+<A NAME="344"></A>        }
+<A NAME="345"></A>        <FONT ID="Throw">throw</FONT> <FONT ID="New">new</FONT> AssertionError();
+<A NAME="346"></A>    }
+<A NAME="347"></A>    
+<A NAME="348"></A>}
+<A NAME="349"></A></pre>
+</BODY>
+</HTML>

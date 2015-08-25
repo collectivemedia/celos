@@ -1,0 +1,213 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.Scheduler (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">Scheduler.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> java.util.ArrayList;
+<A NAME="4"></A><FONT ID="Import">import</FONT> java.util.Collections;
+<A NAME="5"></A><FONT ID="Import">import</FONT> java.util.List;
+<A NAME="6"></A><FONT ID="Import">import</FONT> java.util.Set;
+<A NAME="7"></A><FONT ID="Import">import</FONT> java.util.SortedSet;
+<A NAME="8"></A>
+<A NAME="9"></A><FONT ID="Import">import</FONT> org.apache.log4j.Logger;
+<A NAME="10"></A>
+<A NAME="11"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> Scheduler {
+<A NAME="12"></A>
+<A NAME="13"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> <FONT ID="Int">int</FONT> slidingWindowHours;
+<A NAME="14"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/WorkflowConfiguration.html">WorkflowConfiguration</A> configuration;
+<A NAME="15"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> <A HREF="../../../com/collective/celos/StateDatabase.java.html">StateDatabase</A> database;
+<A NAME="16"></A>
+<A NAME="17"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> Logger LOGGER = Logger.getLogger(<A HREF="../../../com/collective/celos/Scheduler.java.html">Scheduler</A>.<FONT ID="Class">class</FONT>);
+<A NAME="18"></A>
+<A NAME="19"></A>    <FONT ID="Public">public</FONT> Scheduler(<A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/WorkflowConfiguration.html">WorkflowConfiguration</A> configuration, <A HREF="../../../com/collective/celos/StateDatabase.java.html">StateDatabase</A> database, <FONT ID="Int">int</FONT> slidingWindowHours) {
+<A NAME="20"></A>        <FONT ID="If">if</FONT> (slidingWindowHours &lt;= <FONT ID="IntegerLiteral">0</FONT>) {
+<A NAME="21"></A>            <FONT ID="Throw">throw</FONT> <FONT ID="New">new</FONT> IllegalArgumentException(<FONT ID="StringLiteral">"Sliding window hours must greater then zero."</FONT>);
+<A NAME="22"></A>        }
+<A NAME="23"></A>        <FONT ID="This">this</FONT>.slidingWindowHours = slidingWindowHours;
+<A NAME="24"></A>        <FONT ID="This">this</FONT>.configuration = Util.requireNonNull(configuration);
+<A NAME="25"></A>        <FONT ID="This">this</FONT>.database = Util.requireNonNull(database);
+<A NAME="26"></A>    }
+<A NAME="27"></A>    
+<A NAME="28"></A>    <FONT ID="FormalComment">/**
+<A NAME="29"></A>     * Returns the start of the sliding window, given the current time.
+<A NAME="30"></A>     */</FONT>
+<A NAME="31"></A>    <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> getSlidingWindowStartTime(<A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> current) {
+<A NAME="32"></A>        <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(current.getDateTime().minusHours(slidingWindowHours));
+<A NAME="33"></A>    }
+<A NAME="34"></A>    
+<A NAME="35"></A>    <FONT ID="FormalComment">/**
+<A NAME="36"></A>     * Main method, called every minute.
+<A NAME="37"></A>     * 
+<A NAME="38"></A>     * Steps through all workflows.
+<A NAME="39"></A>     */</FONT>
+<A NAME="40"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> step(<A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> current) {
+<A NAME="41"></A>        <FONT ID="SingleLineComment">// by default, schedule all workflows
+<A NAME="42"></A></FONT>        step(current, Collections.&lt;<A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>&gt;emptySet());
+<A NAME="43"></A>    }
+<A NAME="44"></A>    
+<A NAME="45"></A>    <FONT ID="FormalComment">/**
+<A NAME="46"></A>     * If workflowIDs is empty, schedule all workflows.
+<A NAME="47"></A>     * 
+<A NAME="48"></A>     * Otherwise, schedule only workflows in the set.
+<A NAME="49"></A>     */</FONT>
+<A NAME="50"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> step(<A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> current, Set&lt;<A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>&gt; workflowIDs) {
+<A NAME="51"></A>        LOGGER.info(<FONT ID="StringLiteral">"Starting scheduler step: "</FONT> + current + <FONT ID="StringLiteral">" -- "</FONT> + getSlidingWindowStartTime(current));
+<A NAME="52"></A>        <FONT ID="For">for</FONT> (<A HREF="../../../com/collective/celos/Workflow.java.html">Workflow</A> wf : configuration.getWorkflows()) {
+<A NAME="53"></A>            <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A> id = wf.getID();
+<A NAME="54"></A>            <FONT ID="If">if</FONT> (workflowIDs.isEmpty() || workflowIDs.contains(id)) {
+<A NAME="55"></A>                <FONT ID="Try">try</FONT> {
+<A NAME="56"></A>                    stepWorkflow(wf, current);
+<A NAME="57"></A>                } <FONT ID="Catch">catch</FONT> (Exception e) {
+<A NAME="58"></A>                    LOGGER.error(<FONT ID="StringLiteral">"Exception in workflow: "</FONT> + id + <FONT ID="StringLiteral">": "</FONT> + e.getMessage(), e);
+<A NAME="59"></A>                }
+<A NAME="60"></A>            } <FONT ID="Else">else</FONT> {
+<A NAME="61"></A>                LOGGER.info(<FONT ID="StringLiteral">"Ignoring workflow: "</FONT> + id);
+<A NAME="62"></A>            }
+<A NAME="63"></A>        }
+<A NAME="64"></A>        LOGGER.info(<FONT ID="StringLiteral">"Ending scheduler step: "</FONT> + current + <FONT ID="StringLiteral">" -- "</FONT> + getSlidingWindowStartTime(current));
+<A NAME="65"></A>    }
+<A NAME="66"></A>
+<A NAME="67"></A>    <FONT ID="FormalComment">/**
+<A NAME="68"></A>     * Steps a single workflow:
+<A NAME="69"></A>     * 
+<A NAME="70"></A>     * - Submit any READY slots to the external service.
+<A NAME="71"></A>     * 
+<A NAME="72"></A>     * - Check any WAITING slots for data availability.
+<A NAME="73"></A>     * 
+<A NAME="74"></A>     * - Check any RUNNING slots for their current external status.
+<A NAME="75"></A>     */</FONT>
+<A NAME="76"></A>    <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> stepWorkflow(<A HREF="../../../com/collective/celos/Workflow.java.html">Workflow</A> wf, <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> current) <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="77"></A>        LOGGER.info(<FONT ID="StringLiteral">"Processing workflow: "</FONT> + wf.getID() + <FONT ID="StringLiteral">" at: "</FONT> + current);
+<A NAME="78"></A>        List&lt;<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>&gt; slotStates = getSlotStates(wf, getWorkflowStartTime(wf, current), current);
+<A NAME="79"></A>        runExternalWorkflows(wf, slotStates);
+<A NAME="80"></A>        <FONT ID="For">for</FONT> (<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> slotState : slotStates) {
+<A NAME="81"></A>            updateSlotState(wf, slotState, current);
+<A NAME="82"></A>        }
+<A NAME="83"></A>    }
+<A NAME="84"></A>
+<A NAME="85"></A>    <FONT ID="FormalComment">/**
+<A NAME="86"></A>     * Get the slot states of all slots of the workflow from within the window defined by start (inclusive) and end (exclusive)
+<A NAME="87"></A>     */</FONT>
+<A NAME="88"></A>    <FONT ID="Public">public</FONT> List&lt;<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>&gt; getSlotStates(<A HREF="../../../com/collective/celos/Workflow.java.html">Workflow</A> wf, <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> start, <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> end) <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="89"></A>        SortedSet&lt;<A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>&gt; scheduledTimes =  wf.getSchedule().getScheduledTimes(<FONT ID="This">this</FONT>, start, end);
+<A NAME="90"></A>        List&lt;<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>&gt; slotStates = <FONT ID="New">new</FONT> ArrayList&lt;<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>&gt;(scheduledTimes.size());
+<A NAME="91"></A>        <FONT ID="For">for</FONT> (<A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> t : scheduledTimes) {
+<A NAME="92"></A>            <A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A> slotID = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A>(wf.getID(), t);
+<A NAME="93"></A>            <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> slotState = database.getSlotState(slotID);
+<A NAME="94"></A>            <FONT ID="If">if</FONT> (slotState != <FONT ID="Null">null</FONT>) {
+<A NAME="95"></A>                slotStates.add(slotState);
+<A NAME="96"></A>            } <FONT ID="Else">else</FONT> {
+<A NAME="97"></A>                <FONT ID="SingleLineComment">// Database doesn't have any info on the slot yet -
+<A NAME="98"></A></FONT>                <FONT ID="SingleLineComment">// synthesize a fresh waiting slot and put it in the list
+<A NAME="99"></A></FONT>                <FONT ID="SingleLineComment">// (not in the database).
+<A NAME="100"></A></FONT>                slotStates.add(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(slotID, SlotState.Status.WAITING));
+<A NAME="101"></A>            }
+<A NAME="102"></A>        }
+<A NAME="103"></A>        <FONT ID="Return">return</FONT> Collections.unmodifiableList(slotStates);
+<A NAME="104"></A>    }
+<A NAME="105"></A>
+<A NAME="106"></A>    <FONT ID="Public">public</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> getWorkflowStartTime(<A HREF="../../../com/collective/celos/Workflow.java.html">Workflow</A> wf, <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> current) {
+<A NAME="107"></A>        <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> slidingWindowStartTime = getSlidingWindowStartTime(current);
+<A NAME="108"></A>        <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> workflowStartTime = wf.getStartTime();
+<A NAME="109"></A>        <FONT ID="Return">return</FONT> Util.max(slidingWindowStartTime, workflowStartTime);
+<A NAME="110"></A>    }
+<A NAME="111"></A>    
+<A NAME="112"></A>    <FONT ID="FormalComment">/**
+<A NAME="113"></A>     * Get scheduled slots from scheduling strategy and submit them to external system.
+<A NAME="114"></A>     */</FONT>
+<A NAME="115"></A>    <FONT ID="Void">void</FONT> runExternalWorkflows(<A HREF="../../../com/collective/celos/Workflow.java.html">Workflow</A> wf, List&lt;<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>&gt; slotStates) <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="116"></A>        List&lt;<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>&gt; scheduledSlots = wf.getSchedulingStrategy().getSchedulingCandidates(slotStates);
+<A NAME="117"></A>        <FONT ID="For">for</FONT> (<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> slotState : scheduledSlots) {
+<A NAME="118"></A>            <FONT ID="If">if</FONT> (!slotState.getStatus().equals(SlotState.Status.READY)) {
+<A NAME="119"></A>                <FONT ID="Throw">throw</FONT> <FONT ID="New">new</FONT> IllegalStateException(<FONT ID="StringLiteral">"Scheduling strategy returned non-ready slot: "</FONT> + slotState);
+<A NAME="120"></A>            }
+<A NAME="121"></A>            <A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A> slotID = slotState.getSlotID();
+<A NAME="122"></A>            LOGGER.info(<FONT ID="StringLiteral">"Submitting slot to external service: "</FONT> + slotID);
+<A NAME="123"></A>            String externalID = wf.getExternalService().submit(slotID);
+<A NAME="124"></A>            database.putSlotState(slotState.transitionToRunning(externalID));
+<A NAME="125"></A>            LOGGER.info(<FONT ID="StringLiteral">"Starting slot: "</FONT> + slotID + <FONT ID="StringLiteral">" with external ID: "</FONT> + externalID);
+<A NAME="126"></A>            wf.getExternalService().start(slotID, externalID);
+<A NAME="127"></A>        }
+<A NAME="128"></A>    }
+<A NAME="129"></A>
+<A NAME="130"></A>    <FONT ID="FormalComment">/**
+<A NAME="131"></A>     * Check the trigger for all WAITING slots, and update them to READY if data is available.
+<A NAME="132"></A>     * 
+<A NAME="133"></A>     * Check the external status of all RUNNING slots, and update them to SUCCESS or FAILURE if they're finished.
+<A NAME="134"></A>     */</FONT>
+<A NAME="135"></A>    <FONT ID="Void">void</FONT> updateSlotState(<A HREF="../../../com/collective/celos/Workflow.java.html">Workflow</A> wf, <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> slotState, <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> current) <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="136"></A>        <A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A> slotID = slotState.getSlotID();
+<A NAME="137"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState.Status</A> status = slotState.getStatus();
+<A NAME="138"></A>        <FONT ID="If">if</FONT> (status.equals(SlotState.Status.WAITING)) {
+<A NAME="139"></A>            <FONT ID="If">if</FONT> (callTrigger(wf, slotState, current)) {
+<A NAME="140"></A>                LOGGER.info(<FONT ID="StringLiteral">"Slot is ready: "</FONT> + slotID);
+<A NAME="141"></A>                database.putSlotState(slotState.transitionToReady());
+<A NAME="142"></A>            } <FONT ID="Else">else</FONT> <FONT ID="If">if</FONT> (isSlotTimedOut(slotState.getScheduledTime(), current, wf.getWaitTimeoutSeconds())) {
+<A NAME="143"></A>                LOGGER.info(<FONT ID="StringLiteral">"Slot timed out waiting: "</FONT> + slotID);
+<A NAME="144"></A>                database.putSlotState(slotState.transitionToWaitTimeout());
+<A NAME="145"></A>            } <FONT ID="Else">else</FONT> {
+<A NAME="146"></A>                LOGGER.info(<FONT ID="StringLiteral">"Waiting for slot: "</FONT> + slotID);
+<A NAME="147"></A>            }
+<A NAME="148"></A>        } <FONT ID="Else">else</FONT> <FONT ID="If">if</FONT> (status.equals(SlotState.Status.RUNNING)) {
+<A NAME="149"></A>            String externalID = slotState.getExternalID();
+<A NAME="150"></A>            <A HREF="../../../com/collective/celos/ExternalStatus.java.html">ExternalStatus</A> xStatus = wf.getExternalService().getStatus(slotID, externalID);
+<A NAME="151"></A>            <FONT ID="If">if</FONT> (!xStatus.isRunning()) {
+<A NAME="152"></A>                <FONT ID="If">if</FONT> (xStatus.isSuccess()) {
+<A NAME="153"></A>                    LOGGER.info(<FONT ID="StringLiteral">"Slot successful: "</FONT> + slotID + <FONT ID="StringLiteral">" external ID: "</FONT> + externalID);
+<A NAME="154"></A>                    database.putSlotState(slotState.transitionToSuccess());
+<A NAME="155"></A>                } <FONT ID="Else">else</FONT> {
+<A NAME="156"></A>                    <FONT ID="If">if</FONT> (slotState.getRetryCount() &lt; wf.getMaxRetryCount()) {
+<A NAME="157"></A>                        LOGGER.info(<FONT ID="StringLiteral">"Slot failed, preparing for retry: "</FONT> + slotID + <FONT ID="StringLiteral">" external ID: "</FONT> + externalID);
+<A NAME="158"></A>                        database.putSlotState(slotState.transitionToRetry());
+<A NAME="159"></A>                    } <FONT ID="Else">else</FONT> {
+<A NAME="160"></A>                        LOGGER.info(<FONT ID="StringLiteral">"Slot failed permanently: "</FONT> + slotID + <FONT ID="StringLiteral">" external ID: "</FONT> + externalID);
+<A NAME="161"></A>                        database.putSlotState(slotState.transitionToFailure());
+<A NAME="162"></A>                    }
+<A NAME="163"></A>                }
+<A NAME="164"></A>            } <FONT ID="Else">else</FONT> {
+<A NAME="165"></A>                LOGGER.info(<FONT ID="StringLiteral">"Slot still running: "</FONT> + slotID + <FONT ID="StringLiteral">" external ID: "</FONT> + externalID);
+<A NAME="166"></A>            }
+<A NAME="167"></A>        }
+<A NAME="168"></A>    }
+<A NAME="169"></A>
+<A NAME="170"></A>    <FONT ID="Private">private</FONT> <FONT ID="Boolean">boolean</FONT> callTrigger(<A HREF="../../../com/collective/celos/Workflow.java.html">Workflow</A> wf, <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> slotState, <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> current) <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="171"></A>        <A HREF="../../../com/collective/celos/Trigger.java.html">Trigger</A> trigger = wf.getTrigger();
+<A NAME="172"></A>        <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> scheduledTime = slotState.getScheduledTime();
+<A NAME="173"></A>        <FONT ID="Return">return</FONT> trigger.isDataAvailable(<FONT ID="This">this</FONT>, current, scheduledTime);
+<A NAME="174"></A>    }
+<A NAME="175"></A>    
+<A NAME="176"></A>    <FONT ID="Static">static</FONT> <FONT ID="Boolean">boolean</FONT> isSlotTimedOut(<A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> nominalTime, <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> current, <FONT ID="Int">int</FONT> timeoutSeconds) {
+<A NAME="177"></A>        <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> timeoutTime = nominalTime.plusSeconds(timeoutSeconds);
+<A NAME="178"></A>        <FONT ID="Return">return</FONT> current.getDateTime().isAfter(timeoutTime.getDateTime());
+<A NAME="179"></A>    }
+<A NAME="180"></A>    
+<A NAME="181"></A>    <FONT ID="Public">public</FONT> <FONT ID="Int">int</FONT> getSlidingWindowHours() {
+<A NAME="182"></A>        <FONT ID="Return">return</FONT> slidingWindowHours;
+<A NAME="183"></A>    }
+<A NAME="184"></A>
+<A NAME="185"></A>    <FONT ID="Public">public</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/WorkflowConfiguration.html">WorkflowConfiguration</A> getWorkflowConfiguration() {
+<A NAME="186"></A>        <FONT ID="Return">return</FONT> configuration;
+<A NAME="187"></A>    }
+<A NAME="188"></A>
+<A NAME="189"></A>    <FONT ID="Public">public</FONT> <A HREF="../../../com/collective/celos/StateDatabase.java.html">StateDatabase</A> getStateDatabase() {
+<A NAME="190"></A>        <FONT ID="Return">return</FONT> database;
+<A NAME="191"></A>    }
+<A NAME="192"></A>
+<A NAME="193"></A>}
+<A NAME="194"></A></pre>
+</BODY>
+</HTML>

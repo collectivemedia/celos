@@ -1,0 +1,397 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.ci.deploy.WorkflowFilesDeployerTest (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">WorkflowFilesDeployerTest.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos.ci.deploy;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../com/collective/celos/ci/config/deploy/CelosCiContext.java.html">com.collective.celos.ci.config.deploy.CelosCiContext</A>;
+<A NAME="4"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../com/collective/celos/ci/config/deploy/CelosCiTarget.java.html">com.collective.celos.ci.config.deploy.CelosCiTarget</A>;
+<A NAME="5"></A><FONT ID="Import">import</FONT> org.apache.commons.vfs2.FileSystemException;
+<A NAME="6"></A><FONT ID="Import">import</FONT> org.junit.Assert;
+<A NAME="7"></A><FONT ID="Import">import</FONT> org.junit.Before;
+<A NAME="8"></A><FONT ID="Import">import</FONT> org.junit.Rule;
+<A NAME="9"></A><FONT ID="Import">import</FONT> org.junit.Test;
+<A NAME="10"></A><FONT ID="Import">import</FONT> org.junit.rules.TemporaryFolder;
+<A NAME="11"></A>
+<A NAME="12"></A><FONT ID="Import">import</FONT> java.io.File;
+<A NAME="13"></A><FONT ID="Import">import</FONT> java.io.FileOutputStream;
+<A NAME="14"></A><FONT ID="Import">import</FONT> java.io.IOException;
+<A NAME="15"></A><FONT ID="Import">import</FONT> java.io.OutputStream;
+<A NAME="16"></A><FONT ID="Import">import</FONT> java.net.URI;
+<A NAME="17"></A><FONT ID="Import">import</FONT> java.net.URISyntaxException;
+<A NAME="18"></A><FONT ID="Import">import</FONT> java.nio.file.Files;
+<A NAME="19"></A><FONT ID="Import">import</FONT> java.nio.file.Paths;
+<A NAME="20"></A>
+<A NAME="21"></A><FONT ID="Import">import</FONT> <FONT ID="Static">static</FONT> org.mockito.Mockito.doReturn;
+<A NAME="22"></A><FONT ID="Import">import</FONT> <FONT ID="Static">static</FONT> org.mockito.Mockito.mock;
+<A NAME="23"></A>
+<A NAME="24"></A>
+<A NAME="25"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> WorkflowFilesDeployerTest {
+<A NAME="26"></A>
+<A NAME="27"></A>    @Rule
+<A NAME="28"></A>    <FONT ID="Public">public</FONT> TemporaryFolder tempDir = <FONT ID="New">new</FONT> TemporaryFolder();
+<A NAME="29"></A>
+<A NAME="30"></A>    <FONT ID="Private">private</FONT> URI emptyURI;
+<A NAME="31"></A>
+<A NAME="32"></A>    @Before
+<A NAME="33"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> setUp() <FONT ID="Throws">throws</FONT> IOException {
+<A NAME="34"></A>        emptyURI = tempDir.newFolder().toURI();
+<A NAME="35"></A>    }
+<A NAME="36"></A>
+<A NAME="37"></A>
+<A NAME="38"></A>    @Test
+<A NAME="39"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testGetWorkflowJsUri1() <FONT ID="Throws">throws</FONT> FileSystemException, URISyntaxException {
+<A NAME="40"></A>        <A HREF="../../../../../com/collective/celos/ci/config/deploy/CelosCiContext.java.html">CelosCiContext</A> context = mock(<A HREF="../../../../../com/collective/celos/ci/config/deploy/CelosCiContext.java.html">CelosCiContext</A>.<FONT ID="Class">class</FONT>);
+<A NAME="41"></A>        <A HREF="../../../../../com/collective/celos/ci/deploy/WorkflowFilesDeployer.java.html">WorkflowFilesDeployer</A> deployer = <FONT ID="New">new</FONT> <A HREF="../../../../../com/collective/celos/ci/deploy/WorkflowFilesDeployer.java.html">WorkflowFilesDeployer</A>(context);
+<A NAME="42"></A>
+<A NAME="43"></A>        <A HREF="../../../../../com/collective/celos/ci/config/deploy/CelosCiTarget.java.html">CelosCiTarget</A> target = <FONT ID="New">new</FONT> <A HREF="../../../../../com/collective/celos/ci/config/deploy/CelosCiTarget.java.html">CelosCiTarget</A>(URI.create(<FONT ID="StringLiteral">""</FONT>), URI.create(<FONT ID="StringLiteral">""</FONT>), emptyURI, emptyURI, URI.create(<FONT ID="StringLiteral">"hiveJdbc"</FONT>));
+<A NAME="44"></A>        doReturn(target).when(context).getTarget();
+<A NAME="45"></A>        doReturn(<FONT ID="StringLiteral">"workflow"</FONT>).when(context).getWorkflowName();
+<A NAME="46"></A>        Assert.assertEquals(deployer.getTargetJsFileUri(URI.create(<FONT ID="StringLiteral">""</FONT>)), URI.create(<FONT ID="StringLiteral">"/workflow.js"</FONT>));
+<A NAME="47"></A>    }
+<A NAME="48"></A>
+<A NAME="49"></A>    @Test
+<A NAME="50"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testGetWorkflowJsUri2() <FONT ID="Throws">throws</FONT> FileSystemException, URISyntaxException {
+<A NAME="51"></A>        <A HREF="../../../../../com/collective/celos/ci/config/deploy/CelosCiContext.java.html">CelosCiContext</A> context = mock(<A HREF="../../../../../com/collective/celos/ci/config/deploy/CelosCiContext.java.html">CelosCiContext</A>.<FONT ID="Class">class</FONT>);
+<A NAME="52"></A>        <A HREF="../../../../../com/collective/celos/ci/deploy/WorkflowFilesDeployer.java.html">WorkflowFilesDeployer</A> deployer = <FONT ID="New">new</FONT> <A HREF="../../../../../com/collective/celos/ci/deploy/WorkflowFilesDeployer.java.html">WorkflowFilesDeployer</A>(context);
+<A NAME="53"></A>
+<A NAME="54"></A>        doReturn(<FONT ID="StringLiteral">"workflow"</FONT>).when(context).getWorkflowName();
+<A NAME="55"></A>        Assert.assertEquals(deployer.getTargetJsFileUri(URI.create(<FONT ID="StringLiteral">"/home"</FONT>)), URI.create(<FONT ID="StringLiteral">"/home/workflow.js"</FONT>));
+<A NAME="56"></A>    }
+<A NAME="57"></A>
+<A NAME="58"></A>    @Test
+<A NAME="59"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testGetWorkflowJsUri3() <FONT ID="Throws">throws</FONT> FileSystemException, URISyntaxException {
+<A NAME="60"></A>        <A HREF="../../../../../com/collective/celos/ci/config/deploy/CelosCiContext.java.html">CelosCiContext</A> context = mock(<A HREF="../../../../../com/collective/celos/ci/config/deploy/CelosCiContext.java.html">CelosCiContext</A>.<FONT ID="Class">class</FONT>);
+<A NAME="61"></A>        <A HREF="../../../../../com/collective/celos/ci/deploy/WorkflowFilesDeployer.java.html">WorkflowFilesDeployer</A> deployer = <FONT ID="New">new</FONT> <A HREF="../../../../../com/collective/celos/ci/deploy/WorkflowFilesDeployer.java.html">WorkflowFilesDeployer</A>(context);
+<A NAME="62"></A>
+<A NAME="63"></A>        doReturn(<FONT ID="StringLiteral">"workflow"</FONT>).when(context).getWorkflowName();
+<A NAME="64"></A>        Assert.assertEquals(deployer.getTargetJsFileUri(URI.create(<FONT ID="StringLiteral">"sftp://user@server:999/home"</FONT>)), URI.create(<FONT ID="StringLiteral">"sftp://user@server:999/home/workflow.js"</FONT>));
+<A NAME="65"></A>    }
+<A NAME="66"></A>
+<A NAME="67"></A>    @Test(expected=NullPointerException.<FONT ID="Class">class</FONT>)
+<A NAME="68"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testGetWorkflowJsUri4() <FONT ID="Throws">throws</FONT> FileSystemException, URISyntaxException {
+<A NAME="69"></A>        <A HREF="../../../../../com/collective/celos/ci/config/deploy/CelosCiContext.java.html">CelosCiContext</A> context = mock(<A HREF="../../../../../com/collective/celos/ci/config/deploy/CelosCiContext.java.html">CelosCiContext</A>.<FONT ID="Class">class</FONT>);
+<A NAME="70"></A>        <A HREF="../../../../../com/collective/celos/ci/deploy/WorkflowFilesDeployer.java.html">WorkflowFilesDeployer</A> deployer = <FONT ID="New">new</FONT> <A HREF="../../../../../com/collective/celos/ci/deploy/WorkflowFilesDeployer.java.html">WorkflowFilesDeployer</A>(context);
+<A NAME="71"></A>
+<A NAME="72"></A>        doReturn(<FONT ID="StringLiteral">"workflow"</FONT>).when(context).getWorkflowName();
+<A NAME="73"></A>        Assert.assertEquals(deployer.getTargetJsFileUri(<FONT ID="Null">null</FONT>), <FONT ID="Null">null</FONT>);
+<A NAME="74"></A>    }
+<A NAME="75"></A>
+<A NAME="76"></A>    @Test
+<A NAME="77"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testDeployWorkflowFile() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="78"></A>        <A HREF="../../../../../com/collective/celos/ci/config/deploy/CelosCiContext.java.html">CelosCiContext</A> context = mock(<A HREF="../../../../../com/collective/celos/ci/config/deploy/CelosCiContext.java.html">CelosCiContext</A>.<FONT ID="Class">class</FONT>);
+<A NAME="79"></A>
+<A NAME="80"></A>        File localFolder = tempDir.newFolder();
+<A NAME="81"></A>        localFolder.mkdirs();
+<A NAME="82"></A>        File wfFile = <FONT ID="New">new</FONT> File(localFolder, <FONT ID="StringLiteral">"workflow.js"</FONT>);
+<A NAME="83"></A>        wfFile.createNewFile();
+<A NAME="84"></A>
+<A NAME="85"></A>        OutputStream os = <FONT ID="New">new</FONT> FileOutputStream(wfFile);
+<A NAME="86"></A>        os.write(<FONT ID="StringLiteral">"newfile"</FONT>.getBytes());
+<A NAME="87"></A>        os.flush();
+<A NAME="88"></A>
+<A NAME="89"></A>        <A HREF="../../../../../com/collective/celos/ci/deploy/WorkflowFilesDeployer.java.html">WorkflowFilesDeployer</A> deployer = <FONT ID="New">new</FONT> <A HREF="../../../../../com/collective/celos/ci/deploy/WorkflowFilesDeployer.java.html">WorkflowFilesDeployer</A>(context);
+<A NAME="90"></A>
+<A NAME="91"></A>        File remoteFolderWf = tempDir.newFolder();
+<A NAME="92"></A>        remoteFolderWf.mkdirs();
+<A NAME="93"></A>
+<A NAME="94"></A>        File remoteFolderDef = tempDir.newFolder();
+<A NAME="95"></A>        remoteFolderDef.mkdirs();
+<A NAME="96"></A>
+<A NAME="97"></A>        <A HREF="../../../../../com/collective/celos/ci/config/deploy/CelosCiTarget.java.html">CelosCiTarget</A> target = <FONT ID="New">new</FONT> <A HREF="../../../../../com/collective/celos/ci/config/deploy/CelosCiTarget.java.html">CelosCiTarget</A>(URI.create(<FONT ID="StringLiteral">""</FONT>), URI.create(<FONT ID="StringLiteral">""</FONT>), remoteFolderWf.toURI(), remoteFolderDef.toURI(), URI.create(<FONT ID="StringLiteral">"hiveJdbc"</FONT>));
+<A NAME="98"></A>
+<A NAME="99"></A>        doReturn(localFolder).when(context).getDeployDir();
+<A NAME="100"></A>        doReturn(target).when(context).getTarget();
+<A NAME="101"></A>        doReturn(<FONT ID="StringLiteral">"workflow"</FONT>).when(context).getWorkflowName();
+<A NAME="102"></A>
+<A NAME="103"></A>        deployer.deploy();
+<A NAME="104"></A>
+<A NAME="105"></A>        Assert.assertArrayEquals(remoteFolderWf.list(), <FONT ID="New">new</FONT> String[] {<FONT ID="StringLiteral">"workflow.js"</FONT>});
+<A NAME="106"></A>        Assert.assertArrayEquals(remoteFolderDef.list(), <FONT ID="New">new</FONT> String[] {});
+<A NAME="107"></A>    }
+<A NAME="108"></A>
+<A NAME="109"></A>    @Test
+<A NAME="110"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testDeployDefaultsFile() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="111"></A>        <A HREF="../../../../../com/collective/celos/ci/config/deploy/CelosCiContext.java.html">CelosCiContext</A> context = mock(<A HREF="../../../../../com/collective/celos/ci/config/deploy/CelosCiContext.java.html">CelosCiContext</A>.<FONT ID="Class">class</FONT>);
+<A NAME="112"></A>
+<A NAME="113"></A>        File localFolder = tempDir.newFolder();
+<A NAME="114"></A>        localFolder.mkdirs();
+<A NAME="115"></A>        File defFile = <FONT ID="New">new</FONT> File(localFolder, <FONT ID="StringLiteral">"defaults.js"</FONT>);
+<A NAME="116"></A>        defFile.createNewFile();
+<A NAME="117"></A>
+<A NAME="118"></A>        OutputStream os = <FONT ID="New">new</FONT> FileOutputStream(defFile);
+<A NAME="119"></A>        os.write(<FONT ID="StringLiteral">"newfile"</FONT>.getBytes());
+<A NAME="120"></A>        os.flush();
+<A NAME="121"></A>
+<A NAME="122"></A>        <A HREF="../../../../../com/collective/celos/ci/deploy/WorkflowFilesDeployer.java.html">WorkflowFilesDeployer</A> deployer = <FONT ID="New">new</FONT> <A HREF="../../../../../com/collective/celos/ci/deploy/WorkflowFilesDeployer.java.html">WorkflowFilesDeployer</A>(context);
+<A NAME="123"></A>
+<A NAME="124"></A>        File remoteFolderWf = tempDir.newFolder();
+<A NAME="125"></A>        remoteFolderWf.mkdirs();
+<A NAME="126"></A>
+<A NAME="127"></A>        File remoteFolderDef = tempDir.newFolder();
+<A NAME="128"></A>        remoteFolderDef.mkdirs();
+<A NAME="129"></A>
+<A NAME="130"></A>        <A HREF="../../../../../com/collective/celos/ci/config/deploy/CelosCiTarget.java.html">CelosCiTarget</A> target = <FONT ID="New">new</FONT> <A HREF="../../../../../com/collective/celos/ci/config/deploy/CelosCiTarget.java.html">CelosCiTarget</A>(URI.create(<FONT ID="StringLiteral">""</FONT>), URI.create(<FONT ID="StringLiteral">""</FONT>), remoteFolderWf.toURI(), remoteFolderDef.toURI(), URI.create(<FONT ID="StringLiteral">"hiveJdbc"</FONT>));
+<A NAME="131"></A>
+<A NAME="132"></A>        doReturn(localFolder).when(context).getDeployDir();
+<A NAME="133"></A>        doReturn(target).when(context).getTarget();
+<A NAME="134"></A>        doReturn(<FONT ID="StringLiteral">"workflow"</FONT>).when(context).getWorkflowName();
+<A NAME="135"></A>
+<A NAME="136"></A>        deployer.deploy();
+<A NAME="137"></A>
+<A NAME="138"></A>        Assert.assertArrayEquals(remoteFolderWf.list(), <FONT ID="New">new</FONT> String[] {});
+<A NAME="139"></A>        Assert.assertArrayEquals(remoteFolderDef.list(), <FONT ID="New">new</FONT> String[] {<FONT ID="StringLiteral">"workflow.js"</FONT>});
+<A NAME="140"></A>    }
+<A NAME="141"></A>
+<A NAME="142"></A>
+<A NAME="143"></A>    @Test
+<A NAME="144"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testDeployWorkflowFileNullDefDirURI() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="145"></A>        <A HREF="../../../../../com/collective/celos/ci/config/deploy/CelosCiContext.java.html">CelosCiContext</A> context = mock(<A HREF="../../../../../com/collective/celos/ci/config/deploy/CelosCiContext.java.html">CelosCiContext</A>.<FONT ID="Class">class</FONT>);
+<A NAME="146"></A>
+<A NAME="147"></A>        File localFolder = tempDir.newFolder();
+<A NAME="148"></A>        localFolder.mkdirs();
+<A NAME="149"></A>        File wfFile = <FONT ID="New">new</FONT> File(localFolder, <FONT ID="StringLiteral">"workflow.js"</FONT>);
+<A NAME="150"></A>        wfFile.createNewFile();
+<A NAME="151"></A>
+<A NAME="152"></A>        OutputStream os = <FONT ID="New">new</FONT> FileOutputStream(wfFile);
+<A NAME="153"></A>        os.write(<FONT ID="StringLiteral">"newfile"</FONT>.getBytes());
+<A NAME="154"></A>        os.flush();
+<A NAME="155"></A>
+<A NAME="156"></A>        <A HREF="../../../../../com/collective/celos/ci/deploy/WorkflowFilesDeployer.java.html">WorkflowFilesDeployer</A> deployer = <FONT ID="New">new</FONT> <A HREF="../../../../../com/collective/celos/ci/deploy/WorkflowFilesDeployer.java.html">WorkflowFilesDeployer</A>(context);
+<A NAME="157"></A>
+<A NAME="158"></A>        File remoteFolderWf = tempDir.newFolder();
+<A NAME="159"></A>        remoteFolderWf.mkdirs();
+<A NAME="160"></A>
+<A NAME="161"></A>        File remoteFolderDef = tempDir.newFolder();
+<A NAME="162"></A>        remoteFolderDef.mkdirs();
+<A NAME="163"></A>
+<A NAME="164"></A>        <A HREF="../../../../../com/collective/celos/ci/config/deploy/CelosCiTarget.java.html">CelosCiTarget</A> target = <FONT ID="New">new</FONT> <A HREF="../../../../../com/collective/celos/ci/config/deploy/CelosCiTarget.java.html">CelosCiTarget</A>(URI.create(<FONT ID="StringLiteral">""</FONT>), URI.create(<FONT ID="StringLiteral">""</FONT>), remoteFolderWf.toURI(), emptyURI, URI.create(<FONT ID="StringLiteral">"hiveJdbc"</FONT>));
+<A NAME="165"></A>
+<A NAME="166"></A>        doReturn(localFolder).when(context).getDeployDir();
+<A NAME="167"></A>        doReturn(target).when(context).getTarget();
+<A NAME="168"></A>        doReturn(<FONT ID="StringLiteral">"workflow"</FONT>).when(context).getWorkflowName();
+<A NAME="169"></A>
+<A NAME="170"></A>        deployer.deploy();
+<A NAME="171"></A>
+<A NAME="172"></A>        Assert.assertArrayEquals(remoteFolderWf.list(), <FONT ID="New">new</FONT> String[] {<FONT ID="StringLiteral">"workflow.js"</FONT>});
+<A NAME="173"></A>        Assert.assertArrayEquals(remoteFolderDef.list(), <FONT ID="New">new</FONT> String[] {});
+<A NAME="174"></A>    }
+<A NAME="175"></A>
+<A NAME="176"></A>    @Test
+<A NAME="177"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testDeployDefaultsFileNullWFDirURI() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="178"></A>        <A HREF="../../../../../com/collective/celos/ci/config/deploy/CelosCiContext.java.html">CelosCiContext</A> context = mock(<A HREF="../../../../../com/collective/celos/ci/config/deploy/CelosCiContext.java.html">CelosCiContext</A>.<FONT ID="Class">class</FONT>);
+<A NAME="179"></A>
+<A NAME="180"></A>        File localFolder = tempDir.newFolder();
+<A NAME="181"></A>        localFolder.mkdirs();
+<A NAME="182"></A>        File defFile = <FONT ID="New">new</FONT> File(localFolder, <FONT ID="StringLiteral">"defaults.js"</FONT>);
+<A NAME="183"></A>        defFile.createNewFile();
+<A NAME="184"></A>
+<A NAME="185"></A>        OutputStream os = <FONT ID="New">new</FONT> FileOutputStream(defFile);
+<A NAME="186"></A>        os.write(<FONT ID="StringLiteral">"newfile"</FONT>.getBytes());
+<A NAME="187"></A>        os.flush();
+<A NAME="188"></A>
+<A NAME="189"></A>        <A HREF="../../../../../com/collective/celos/ci/deploy/WorkflowFilesDeployer.java.html">WorkflowFilesDeployer</A> deployer = <FONT ID="New">new</FONT> <A HREF="../../../../../com/collective/celos/ci/deploy/WorkflowFilesDeployer.java.html">WorkflowFilesDeployer</A>(context);
+<A NAME="190"></A>
+<A NAME="191"></A>        File remoteFolderWf = tempDir.newFolder();
+<A NAME="192"></A>        remoteFolderWf.mkdirs();
+<A NAME="193"></A>
+<A NAME="194"></A>        File remoteFolderDef = tempDir.newFolder();
+<A NAME="195"></A>        remoteFolderDef.mkdirs();
+<A NAME="196"></A>
+<A NAME="197"></A>        <A HREF="../../../../../com/collective/celos/ci/config/deploy/CelosCiTarget.java.html">CelosCiTarget</A> target = <FONT ID="New">new</FONT> <A HREF="../../../../../com/collective/celos/ci/config/deploy/CelosCiTarget.java.html">CelosCiTarget</A>(URI.create(<FONT ID="StringLiteral">""</FONT>), URI.create(<FONT ID="StringLiteral">""</FONT>), emptyURI, remoteFolderDef.toURI(), URI.create(<FONT ID="StringLiteral">"hiveJdbc"</FONT>));
+<A NAME="198"></A>
+<A NAME="199"></A>        doReturn(localFolder).when(context).getDeployDir();
+<A NAME="200"></A>        doReturn(target).when(context).getTarget();
+<A NAME="201"></A>        doReturn(<FONT ID="StringLiteral">"workflow"</FONT>).when(context).getWorkflowName();
+<A NAME="202"></A>
+<A NAME="203"></A>        deployer.deploy();
+<A NAME="204"></A>
+<A NAME="205"></A>        Assert.assertArrayEquals(remoteFolderWf.list(), <FONT ID="New">new</FONT> String[] {});
+<A NAME="206"></A>        Assert.assertArrayEquals(remoteFolderDef.list(), <FONT ID="New">new</FONT> String[] {<FONT ID="StringLiteral">"workflow.js"</FONT>});
+<A NAME="207"></A>    }
+<A NAME="208"></A>
+<A NAME="209"></A>    @Test
+<A NAME="210"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testDeployDefaultsAndWorkflowFile() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="211"></A>        <A HREF="../../../../../com/collective/celos/ci/config/deploy/CelosCiContext.java.html">CelosCiContext</A> context = mock(<A HREF="../../../../../com/collective/celos/ci/config/deploy/CelosCiContext.java.html">CelosCiContext</A>.<FONT ID="Class">class</FONT>);
+<A NAME="212"></A>
+<A NAME="213"></A>        File localFolder = tempDir.newFolder();
+<A NAME="214"></A>        localFolder.mkdirs();
+<A NAME="215"></A>
+<A NAME="216"></A>        File wfFile = <FONT ID="New">new</FONT> File(localFolder, <FONT ID="StringLiteral">"workflow.js"</FONT>);
+<A NAME="217"></A>        wfFile.createNewFile();
+<A NAME="218"></A>
+<A NAME="219"></A>        File defFile = <FONT ID="New">new</FONT> File(localFolder, <FONT ID="StringLiteral">"defaults.js"</FONT>);
+<A NAME="220"></A>        defFile.createNewFile();
+<A NAME="221"></A>
+<A NAME="222"></A>        OutputStream os1 = <FONT ID="New">new</FONT> FileOutputStream(defFile);
+<A NAME="223"></A>        os1.write(<FONT ID="StringLiteral">"newfile"</FONT>.getBytes());
+<A NAME="224"></A>        os1.flush();
+<A NAME="225"></A>
+<A NAME="226"></A>        OutputStream os2 = <FONT ID="New">new</FONT> FileOutputStream(wfFile);
+<A NAME="227"></A>        os2.write(<FONT ID="StringLiteral">"newfile"</FONT>.getBytes());
+<A NAME="228"></A>        os2.flush();
+<A NAME="229"></A>
+<A NAME="230"></A>        <A HREF="../../../../../com/collective/celos/ci/deploy/WorkflowFilesDeployer.java.html">WorkflowFilesDeployer</A> deployer = <FONT ID="New">new</FONT> <A HREF="../../../../../com/collective/celos/ci/deploy/WorkflowFilesDeployer.java.html">WorkflowFilesDeployer</A>(context);
+<A NAME="231"></A>
+<A NAME="232"></A>        File remoteFolderWf = tempDir.newFolder();
+<A NAME="233"></A>        remoteFolderWf.mkdirs();
+<A NAME="234"></A>
+<A NAME="235"></A>        File remoteFolderDef = tempDir.newFolder();
+<A NAME="236"></A>        remoteFolderDef.mkdirs();
+<A NAME="237"></A>
+<A NAME="238"></A>        <A HREF="../../../../../com/collective/celos/ci/config/deploy/CelosCiTarget.java.html">CelosCiTarget</A> target = <FONT ID="New">new</FONT> <A HREF="../../../../../com/collective/celos/ci/config/deploy/CelosCiTarget.java.html">CelosCiTarget</A>(URI.create(<FONT ID="StringLiteral">""</FONT>), URI.create(<FONT ID="StringLiteral">""</FONT>), remoteFolderWf.toURI(), remoteFolderDef.toURI(), URI.create(<FONT ID="StringLiteral">"hiveJdbc"</FONT>));
+<A NAME="239"></A>        doReturn(localFolder).when(context).getDeployDir();
+<A NAME="240"></A>        doReturn(target).when(context).getTarget();
+<A NAME="241"></A>        doReturn(<FONT ID="StringLiteral">"workflow"</FONT>).when(context).getWorkflowName();
+<A NAME="242"></A>
+<A NAME="243"></A>        deployer.deploy();
+<A NAME="244"></A>
+<A NAME="245"></A>        Assert.assertArrayEquals(remoteFolderWf.list(), <FONT ID="New">new</FONT> String[] {<FONT ID="StringLiteral">"workflow.js"</FONT>});
+<A NAME="246"></A>        Assert.assertArrayEquals(remoteFolderDef.list(), <FONT ID="New">new</FONT> String[] {<FONT ID="StringLiteral">"workflow.js"</FONT>});
+<A NAME="247"></A>    }
+<A NAME="248"></A>
+<A NAME="249"></A>    @Test
+<A NAME="250"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testUndeployWf() <FONT ID="Throws">throws</FONT> IOException, URISyntaxException {
+<A NAME="251"></A>        <A HREF="../../../../../com/collective/celos/ci/config/deploy/CelosCiContext.java.html">CelosCiContext</A> context = mock(<A HREF="../../../../../com/collective/celos/ci/config/deploy/CelosCiContext.java.html">CelosCiContext</A>.<FONT ID="Class">class</FONT>);
+<A NAME="252"></A>
+<A NAME="253"></A>        File remoteFolderWf = tempDir.newFolder();
+<A NAME="254"></A>        remoteFolderWf.mkdirs();
+<A NAME="255"></A>        File wfFile = <FONT ID="New">new</FONT> File(remoteFolderWf, <FONT ID="StringLiteral">"workflow.js"</FONT>);
+<A NAME="256"></A>        wfFile.createNewFile();
+<A NAME="257"></A>
+<A NAME="258"></A>        File remoteFolderDef = tempDir.newFolder();
+<A NAME="259"></A>        remoteFolderDef.mkdirs();
+<A NAME="260"></A>
+<A NAME="261"></A>        <A HREF="../../../../../com/collective/celos/ci/config/deploy/CelosCiTarget.java.html">CelosCiTarget</A> target = <FONT ID="New">new</FONT> <A HREF="../../../../../com/collective/celos/ci/config/deploy/CelosCiTarget.java.html">CelosCiTarget</A>(URI.create(<FONT ID="StringLiteral">""</FONT>), URI.create(<FONT ID="StringLiteral">""</FONT>), remoteFolderWf.toURI(), remoteFolderDef.toURI(), URI.create(<FONT ID="StringLiteral">"hiveJdbc"</FONT>));
+<A NAME="262"></A>        doReturn(remoteFolderDef).when(context).getDeployDir();
+<A NAME="263"></A>        doReturn(target).when(context).getTarget();
+<A NAME="264"></A>        doReturn(<FONT ID="StringLiteral">"workflow"</FONT>).when(context).getWorkflowName();
+<A NAME="265"></A>
+<A NAME="266"></A>        <A HREF="../../../../../com/collective/celos/ci/deploy/WorkflowFilesDeployer.java.html">WorkflowFilesDeployer</A> deployer = <FONT ID="New">new</FONT> <A HREF="../../../../../com/collective/celos/ci/deploy/WorkflowFilesDeployer.java.html">WorkflowFilesDeployer</A>(context);
+<A NAME="267"></A>
+<A NAME="268"></A>        Assert.assertTrue(wfFile.exists());
+<A NAME="269"></A>
+<A NAME="270"></A>        deployer.undeploy();
+<A NAME="271"></A>
+<A NAME="272"></A>        Assert.assertFalse(wfFile.exists());
+<A NAME="273"></A>    }
+<A NAME="274"></A>
+<A NAME="275"></A>    @Test
+<A NAME="276"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testUndeployDef() <FONT ID="Throws">throws</FONT> IOException, URISyntaxException {
+<A NAME="277"></A>        <A HREF="../../../../../com/collective/celos/ci/config/deploy/CelosCiContext.java.html">CelosCiContext</A> context = mock(<A HREF="../../../../../com/collective/celos/ci/config/deploy/CelosCiContext.java.html">CelosCiContext</A>.<FONT ID="Class">class</FONT>);
+<A NAME="278"></A>
+<A NAME="279"></A>        File remoteFolderWf = tempDir.newFolder();
+<A NAME="280"></A>        remoteFolderWf.mkdirs();
+<A NAME="281"></A>
+<A NAME="282"></A>        File remoteFolderDef = tempDir.newFolder();
+<A NAME="283"></A>        remoteFolderDef.mkdirs();
+<A NAME="284"></A>        File defFile = <FONT ID="New">new</FONT> File(remoteFolderDef, <FONT ID="StringLiteral">"workflow.js"</FONT>);
+<A NAME="285"></A>        defFile.createNewFile();
+<A NAME="286"></A>
+<A NAME="287"></A>        <A HREF="../../../../../com/collective/celos/ci/config/deploy/CelosCiTarget.java.html">CelosCiTarget</A> target = <FONT ID="New">new</FONT> <A HREF="../../../../../com/collective/celos/ci/config/deploy/CelosCiTarget.java.html">CelosCiTarget</A>(URI.create(<FONT ID="StringLiteral">""</FONT>), URI.create(<FONT ID="StringLiteral">""</FONT>), remoteFolderWf.toURI(), remoteFolderDef.toURI(), URI.create(<FONT ID="StringLiteral">"hiveJdbc"</FONT>));
+<A NAME="288"></A>        doReturn(remoteFolderDef).when(context).getDeployDir();
+<A NAME="289"></A>        doReturn(target).when(context).getTarget();
+<A NAME="290"></A>        doReturn(<FONT ID="StringLiteral">"workflow"</FONT>).when(context).getWorkflowName();
+<A NAME="291"></A>
+<A NAME="292"></A>        <A HREF="../../../../../com/collective/celos/ci/deploy/WorkflowFilesDeployer.java.html">WorkflowFilesDeployer</A> deployer = <FONT ID="New">new</FONT> <A HREF="../../../../../com/collective/celos/ci/deploy/WorkflowFilesDeployer.java.html">WorkflowFilesDeployer</A>(context);
+<A NAME="293"></A>
+<A NAME="294"></A>        Assert.assertTrue(defFile.exists());
+<A NAME="295"></A>
+<A NAME="296"></A>        deployer.undeploy();
+<A NAME="297"></A>
+<A NAME="298"></A>        Assert.assertFalse(defFile.exists());
+<A NAME="299"></A>    }
+<A NAME="300"></A>
+<A NAME="301"></A>    @Test
+<A NAME="302"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testUndeployBoth() <FONT ID="Throws">throws</FONT> IOException, URISyntaxException {
+<A NAME="303"></A>        <A HREF="../../../../../com/collective/celos/ci/config/deploy/CelosCiContext.java.html">CelosCiContext</A> context = mock(<A HREF="../../../../../com/collective/celos/ci/config/deploy/CelosCiContext.java.html">CelosCiContext</A>.<FONT ID="Class">class</FONT>);
+<A NAME="304"></A>
+<A NAME="305"></A>        File remoteFolderWf = tempDir.newFolder();
+<A NAME="306"></A>        remoteFolderWf.mkdirs();
+<A NAME="307"></A>        File wfFile = <FONT ID="New">new</FONT> File(remoteFolderWf, <FONT ID="StringLiteral">"workflow.js"</FONT>);
+<A NAME="308"></A>        wfFile.createNewFile();
+<A NAME="309"></A>
+<A NAME="310"></A>        File remoteFolderDef = tempDir.newFolder();
+<A NAME="311"></A>        remoteFolderDef.mkdirs();
+<A NAME="312"></A>        File defFile = <FONT ID="New">new</FONT> File(remoteFolderDef, <FONT ID="StringLiteral">"workflow.js"</FONT>);
+<A NAME="313"></A>        defFile.createNewFile();
+<A NAME="314"></A>
+<A NAME="315"></A>        <A HREF="../../../../../com/collective/celos/ci/config/deploy/CelosCiTarget.java.html">CelosCiTarget</A> target = <FONT ID="New">new</FONT> <A HREF="../../../../../com/collective/celos/ci/config/deploy/CelosCiTarget.java.html">CelosCiTarget</A>(URI.create(<FONT ID="StringLiteral">""</FONT>), URI.create(<FONT ID="StringLiteral">""</FONT>), remoteFolderWf.toURI(), remoteFolderDef.toURI(), URI.create(<FONT ID="StringLiteral">"hiveJdbc"</FONT>));
+<A NAME="316"></A>        doReturn(remoteFolderDef).when(context).getDeployDir();
+<A NAME="317"></A>        doReturn(target).when(context).getTarget();
+<A NAME="318"></A>        doReturn(<FONT ID="StringLiteral">"workflow"</FONT>).when(context).getWorkflowName();
+<A NAME="319"></A>
+<A NAME="320"></A>        <A HREF="../../../../../com/collective/celos/ci/deploy/WorkflowFilesDeployer.java.html">WorkflowFilesDeployer</A> deployer = <FONT ID="New">new</FONT> <A HREF="../../../../../com/collective/celos/ci/deploy/WorkflowFilesDeployer.java.html">WorkflowFilesDeployer</A>(context);
+<A NAME="321"></A>
+<A NAME="322"></A>        Assert.assertTrue(wfFile.exists());
+<A NAME="323"></A>        Assert.assertTrue(defFile.exists());
+<A NAME="324"></A>
+<A NAME="325"></A>        deployer.undeploy();
+<A NAME="326"></A>
+<A NAME="327"></A>        Assert.assertFalse(wfFile.exists());
+<A NAME="328"></A>        Assert.assertFalse(defFile.exists());
+<A NAME="329"></A>    }
+<A NAME="330"></A>
+<A NAME="331"></A>
+<A NAME="332"></A>    @Test
+<A NAME="333"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testDeployFileExists() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="334"></A>        <A HREF="../../../../../com/collective/celos/ci/config/deploy/CelosCiContext.java.html">CelosCiContext</A> context = mock(<A HREF="../../../../../com/collective/celos/ci/config/deploy/CelosCiContext.java.html">CelosCiContext</A>.<FONT ID="Class">class</FONT>);
+<A NAME="335"></A>
+<A NAME="336"></A>        File localFolder = tempDir.newFolder();
+<A NAME="337"></A>        localFolder.mkdirs();
+<A NAME="338"></A>        File wfFile = <FONT ID="New">new</FONT> File(localFolder, <FONT ID="StringLiteral">"workflow.js"</FONT>);
+<A NAME="339"></A>        wfFile.createNewFile();
+<A NAME="340"></A>
+<A NAME="341"></A>        writeTextToFile(wfFile, <FONT ID="StringLiteral">"newfile"</FONT>);
+<A NAME="342"></A>        <A HREF="../../../../../com/collective/celos/ci/deploy/WorkflowFilesDeployer.java.html">WorkflowFilesDeployer</A> deployer = <FONT ID="New">new</FONT> <A HREF="../../../../../com/collective/celos/ci/deploy/WorkflowFilesDeployer.java.html">WorkflowFilesDeployer</A>(context);
+<A NAME="343"></A>
+<A NAME="344"></A>        File remoteFolder = tempDir.newFolder();
+<A NAME="345"></A>        remoteFolder.mkdirs();
+<A NAME="346"></A>
+<A NAME="347"></A>        <A HREF="../../../../../com/collective/celos/ci/config/deploy/CelosCiTarget.java.html">CelosCiTarget</A> target = <FONT ID="New">new</FONT> <A HREF="../../../../../com/collective/celos/ci/config/deploy/CelosCiTarget.java.html">CelosCiTarget</A>(URI.create(<FONT ID="StringLiteral">""</FONT>), URI.create(<FONT ID="StringLiteral">""</FONT>), remoteFolder.toURI(), emptyURI, URI.create(<FONT ID="StringLiteral">"hiveJdbc"</FONT>));
+<A NAME="348"></A>        doReturn(localFolder).when(context).getDeployDir();
+<A NAME="349"></A>        doReturn(target).when(context).getTarget();
+<A NAME="350"></A>        doReturn(<FONT ID="StringLiteral">"workflow"</FONT>).when(context).getWorkflowName();
+<A NAME="351"></A>
+<A NAME="352"></A>        File destFile = <FONT ID="New">new</FONT> File(remoteFolder, <FONT ID="StringLiteral">"workflow.js"</FONT>);
+<A NAME="353"></A>        destFile.createNewFile();
+<A NAME="354"></A>        writeTextToFile(destFile, <FONT ID="StringLiteral">"oldfile"</FONT>);
+<A NAME="355"></A>
+<A NAME="356"></A>        Assert.assertEquals(<FONT ID="StringLiteral">"oldfile"</FONT>, readFileContent(destFile));
+<A NAME="357"></A>
+<A NAME="358"></A>        deployer.deploy();
+<A NAME="359"></A>
+<A NAME="360"></A>        Assert.assertArrayEquals(remoteFolder.list(), <FONT ID="New">new</FONT> String[] {<FONT ID="StringLiteral">"workflow.js"</FONT>});
+<A NAME="361"></A>        Assert.assertEquals(<FONT ID="StringLiteral">"newfile"</FONT>, readFileContent(destFile));
+<A NAME="362"></A>    }
+<A NAME="363"></A>
+<A NAME="364"></A>    <FONT ID="Private">private</FONT> String  readFileContent(File fileExists) <FONT ID="Throws">throws</FONT> IOException {
+<A NAME="365"></A>        <FONT ID="Byte">byte</FONT>[] encoded = Files.readAllBytes(Paths.get(fileExists.toURI()));
+<A NAME="366"></A>        <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> String(encoded);
+<A NAME="367"></A>    }
+<A NAME="368"></A>
+<A NAME="369"></A>    <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> writeTextToFile(File wfFile, String test) <FONT ID="Throws">throws</FONT> IOException {
+<A NAME="370"></A>        OutputStream os = <FONT ID="New">new</FONT> FileOutputStream(wfFile);
+<A NAME="371"></A>        os.write(test.getBytes());
+<A NAME="372"></A>        os.flush();
+<A NAME="373"></A>        os.close();
+<A NAME="374"></A>    }
+<A NAME="375"></A>
+<A NAME="376"></A>
+<A NAME="377"></A>}
+<A NAME="378"></A></pre>
+</BODY>
+</HTML>

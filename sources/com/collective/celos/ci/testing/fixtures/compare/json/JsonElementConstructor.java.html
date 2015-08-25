@@ -1,0 +1,79 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../../../../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.ci.testing.fixtures.compare.json.JsonElementConstructor (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">JsonElementConstructor.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos.ci.testing.fixtures.compare.json;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> com.google.gson.JsonArray;
+<A NAME="4"></A><FONT ID="Import">import</FONT> com.google.gson.JsonElement;
+<A NAME="5"></A><FONT ID="Import">import</FONT> com.google.gson.JsonObject;
+<A NAME="6"></A><FONT ID="Import">import</FONT> com.google.gson.JsonParser;
+<A NAME="7"></A><FONT ID="Import">import</FONT> java.util.Iterator;
+<A NAME="8"></A><FONT ID="Import">import</FONT> java.util.Map;
+<A NAME="9"></A><FONT ID="Import">import</FONT> java.util.Set;
+<A NAME="10"></A>
+<A NAME="11"></A><FONT ID="FormalComment">/**
+<A NAME="12"></A> * Created by akonopko on 9/29/14.
+<A NAME="13"></A> */</FONT>
+<A NAME="14"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> JsonElementConstructor {
+<A NAME="15"></A>
+<A NAME="16"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> JsonParser jsonParser = <FONT ID="New">new</FONT> JsonParser();
+<A NAME="17"></A>
+<A NAME="18"></A>    <FONT ID="Public">public</FONT> JsonElement construct(String json) {
+<A NAME="19"></A>        <FONT ID="Return">return</FONT> jsonParser.parse(json);
+<A NAME="20"></A>    }
+<A NAME="21"></A>
+<A NAME="22"></A>    <FONT ID="Public">public</FONT> JsonElement construct(String json, Set&lt;String&gt; ignorePaths) {
+<A NAME="23"></A>        <FONT ID="Return">return</FONT> deepCopy(<FONT ID="StringLiteral">"root"</FONT>, jsonParser.parse(json), ignorePaths);
+<A NAME="24"></A>    }
+<A NAME="25"></A>
+<A NAME="26"></A>    <FONT ID="Private">private</FONT> JsonElement deepCopy(String path, JsonElement el, Set&lt;String&gt; ignorePaths) {
+<A NAME="27"></A>        <FONT ID="If">if</FONT> (el.isJsonArray()) {
+<A NAME="28"></A>            <FONT ID="Return">return</FONT> deepCopyJsonArray(path, el.getAsJsonArray(), ignorePaths);
+<A NAME="29"></A>        }
+<A NAME="30"></A>        <FONT ID="If">if</FONT> (el.isJsonObject()) {
+<A NAME="31"></A>            <FONT ID="Return">return</FONT> deepCopyJsonObject(path, el.getAsJsonObject(), ignorePaths);
+<A NAME="32"></A>        }
+<A NAME="33"></A>        <FONT ID="If">if</FONT> (el.isJsonPrimitive() || el.isJsonNull()) {
+<A NAME="34"></A>            <FONT ID="Return">return</FONT> el;
+<A NAME="35"></A>        }
+<A NAME="36"></A>        <FONT ID="Throw">throw</FONT> <FONT ID="New">new</FONT> IllegalStateException(<FONT ID="StringLiteral">"JSONElement should be either Array, Object, Primitive or Null. So you cannot get here"</FONT>);
+<A NAME="37"></A>    }
+<A NAME="38"></A>
+<A NAME="39"></A>    <FONT ID="Private">private</FONT> JsonArray deepCopyJsonArray(String path, JsonArray el, Set&lt;String&gt; ignorePaths) {
+<A NAME="40"></A>        JsonArray array = <FONT ID="New">new</FONT> JsonArray();
+<A NAME="41"></A>        Iterator&lt;JsonElement&gt; element1Iterator = el.iterator();
+<A NAME="42"></A>        <FONT ID="While">while</FONT> (element1Iterator.hasNext()) {
+<A NAME="43"></A>            array.add(deepCopy(path, element1Iterator.next(), ignorePaths));
+<A NAME="44"></A>        }
+<A NAME="45"></A>        <FONT ID="Return">return</FONT> array;
+<A NAME="46"></A>    }
+<A NAME="47"></A>
+<A NAME="48"></A>    <FONT ID="Private">private</FONT> JsonObject deepCopyJsonObject(String path, JsonObject el, Set&lt;String&gt; ignorePaths) {
+<A NAME="49"></A>
+<A NAME="50"></A>        JsonObject result = <FONT ID="New">new</FONT> JsonObject();
+<A NAME="51"></A>        <FONT ID="For">for</FONT> (Map.Entry&lt;String, JsonElement&gt; entry : el.entrySet()) {
+<A NAME="52"></A>            String newPath = path + <FONT ID="StringLiteral">"/"</FONT> + entry.getKey();
+<A NAME="53"></A>            <FONT ID="If">if</FONT> (!ignorePaths.contains(newPath)) {
+<A NAME="54"></A>                result.add(entry.getKey(), deepCopy(newPath, entry.getValue(), ignorePaths));
+<A NAME="55"></A>            }
+<A NAME="56"></A>        }
+<A NAME="57"></A>        <FONT ID="Return">return</FONT> result;
+<A NAME="58"></A>    }
+<A NAME="59"></A>}
+<A NAME="60"></A></pre>
+</BODY>
+</HTML>

@@ -1,0 +1,48 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.ui.UICommandLine (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">UICommandLine.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos.ui;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> <A HREF="../../../../com/collective/celos/Util.java.html">com.collective.celos.Util</A>;
+<A NAME="4"></A>
+<A NAME="5"></A><FONT ID="Import">import</FONT> java.io.File;
+<A NAME="6"></A><FONT ID="Import">import</FONT> java.net.URL;
+<A NAME="7"></A>
+<A NAME="8"></A><FONT ID="FormalComment">/**
+<A NAME="9"></A> * Created by akonopko on 9/30/14.
+<A NAME="10"></A> */</FONT>
+<A NAME="11"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> UICommandLine {
+<A NAME="12"></A>
+<A NAME="13"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> URL celosUrl;
+<A NAME="14"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> <FONT ID="Int">int</FONT> port;
+<A NAME="15"></A>
+<A NAME="16"></A>    <FONT ID="Public">public</FONT> UICommandLine(URL celosUrl, <FONT ID="Int">int</FONT> port) {
+<A NAME="17"></A>        <FONT ID="This">this</FONT>.celosUrl =  Util.requireNonNull(celosUrl);
+<A NAME="18"></A>        <FONT ID="This">this</FONT>.port = port;
+<A NAME="19"></A>    }
+<A NAME="20"></A>
+<A NAME="21"></A>    <FONT ID="Public">public</FONT> URL getCelosUrl() {
+<A NAME="22"></A>        <FONT ID="Return">return</FONT> celosUrl;
+<A NAME="23"></A>    }
+<A NAME="24"></A>
+<A NAME="25"></A>    <FONT ID="Public">public</FONT> <FONT ID="Int">int</FONT> getPort() {
+<A NAME="26"></A>        <FONT ID="Return">return</FONT> port;
+<A NAME="27"></A>    }
+<A NAME="28"></A>}
+<A NAME="29"></A></pre>
+</BODY>
+</HTML>

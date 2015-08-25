@@ -1,0 +1,120 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.ScheduledTimeFormatterTest (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">ScheduledTimeFormatterTest.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> <FONT ID="Static">static</FONT> org.junit.Assert.assertEquals;
+<A NAME="4"></A>
+<A NAME="5"></A><FONT ID="Import">import</FONT> org.junit.Test;
+<A NAME="6"></A>
+<A NAME="7"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> ScheduledTimeFormatterTest {
+<A NAME="8"></A>
+<A NAME="9"></A>    @Test
+<A NAME="10"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testReplaceYearTokens() {
+<A NAME="11"></A>        testReplaceTokens(<FONT ID="StringLiteral">"/foo/${year}/bar"</FONT>, <FONT ID="StringLiteral">"/foo/2013/bar"</FONT>);
+<A NAME="12"></A>        testReplaceTokens(<FONT ID="StringLiteral">"/foo/${year}/bar/${year}/baz"</FONT>,
+<A NAME="13"></A>                <FONT ID="StringLiteral">"/foo/2013/bar/2013/baz"</FONT>);
+<A NAME="14"></A>    }
+<A NAME="15"></A>
+<A NAME="16"></A>    @Test
+<A NAME="17"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testReplaceMonthTokens() {
+<A NAME="18"></A>        testReplaceTokens(<FONT ID="StringLiteral">"/foo/${month}/bar"</FONT>, <FONT ID="StringLiteral">"/foo/11/bar"</FONT>);
+<A NAME="19"></A>        testReplaceTokens(<FONT ID="StringLiteral">"/foo/${month}/bar/${month}/baz"</FONT>,
+<A NAME="20"></A>                <FONT ID="StringLiteral">"/foo/11/bar/11/baz"</FONT>);
+<A NAME="21"></A>    }
+<A NAME="22"></A>
+<A NAME="23"></A>    @Test
+<A NAME="24"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testReplaceDayTokens() {
+<A NAME="25"></A>        testReplaceTokens(<FONT ID="StringLiteral">"/foo/${day}/bar"</FONT>, <FONT ID="StringLiteral">"/foo/22/bar"</FONT>);
+<A NAME="26"></A>        testReplaceTokens(<FONT ID="StringLiteral">"/foo/${day}/bar/${day}/baz"</FONT>, <FONT ID="StringLiteral">"/foo/22/bar/22/baz"</FONT>);
+<A NAME="27"></A>    }
+<A NAME="28"></A>
+<A NAME="29"></A>    @Test
+<A NAME="30"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testReplaceHourTokens() {
+<A NAME="31"></A>        testReplaceTokens(<FONT ID="StringLiteral">"/foo/${hour}/bar"</FONT>, <FONT ID="StringLiteral">"/foo/14/bar"</FONT>);
+<A NAME="32"></A>        testReplaceTokens(<FONT ID="StringLiteral">"/foo/${hour}/bar/${hour}/baz"</FONT>, <FONT ID="StringLiteral">"/foo/14/bar/14/baz"</FONT>);
+<A NAME="33"></A>    }
+<A NAME="34"></A>    
+<A NAME="35"></A>    @Test
+<A NAME="36"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testReplaceMinuteTokens() {
+<A NAME="37"></A>        testReplaceTokens(<FONT ID="StringLiteral">"/foo/${minute}/bar"</FONT>, <FONT ID="StringLiteral">"/foo/00/bar"</FONT>);
+<A NAME="38"></A>        testReplaceTokens(<FONT ID="StringLiteral">"/foo/${minute}/bar/${minute}/baz"</FONT>, <FONT ID="StringLiteral">"/foo/00/bar/00/baz"</FONT>);
+<A NAME="39"></A>    }
+<A NAME="40"></A>    
+<A NAME="41"></A>    @Test
+<A NAME="42"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testReplaceSecondTokens() {
+<A NAME="43"></A>        testReplaceTokens(<FONT ID="StringLiteral">"/foo/${second}/bar"</FONT>, <FONT ID="StringLiteral">"/foo/53/bar"</FONT>);
+<A NAME="44"></A>        testReplaceTokens(<FONT ID="StringLiteral">"/foo/${second}/bar/${second}/baz"</FONT>, <FONT ID="StringLiteral">"/foo/53/bar/53/baz"</FONT>);
+<A NAME="45"></A>    }
+<A NAME="46"></A>
+<A NAME="47"></A>    @Test
+<A NAME="48"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testReplaceMillisecondTokens() {
+<A NAME="49"></A>        testReplaceTokens(<FONT ID="StringLiteral">"/foo/${millisecond}/bar"</FONT>, <FONT ID="StringLiteral">"/foo/023/bar"</FONT>);
+<A NAME="50"></A>        testReplaceTokens(<FONT ID="StringLiteral">"/foo/${millisecond}/bar/${millisecond}/baz"</FONT>, <FONT ID="StringLiteral">"/foo/023/bar/023/baz"</FONT>);
+<A NAME="51"></A>    }
+<A NAME="52"></A>
+<A NAME="53"></A>    @Test
+<A NAME="54"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> millisecondPaddingTest() {
+<A NAME="55"></A>        <A HREF="../../../com/collective/celos/ScheduledTimeFormatter.java.html">ScheduledTimeFormatter</A> formatter = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTimeFormatter.java.html">ScheduledTimeFormatter</A>();
+<A NAME="56"></A>        assertEquals(<FONT ID="StringLiteral">"001"</FONT>, formatter.formatMillisecond(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2014-02-25T01:02:03.001Z"</FONT>)));
+<A NAME="57"></A>        assertEquals(<FONT ID="StringLiteral">"010"</FONT>, formatter.formatMillisecond(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2014-02-25T01:02:03.010Z"</FONT>)));
+<A NAME="58"></A>        assertEquals(<FONT ID="StringLiteral">"100"</FONT>, formatter.formatMillisecond(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2014-02-25T01:02:03.100Z"</FONT>)));
+<A NAME="59"></A>    }
+<A NAME="60"></A>    
+<A NAME="61"></A>    @Test
+<A NAME="62"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> timestampTest() {
+<A NAME="63"></A>        <A HREF="../../../com/collective/celos/ScheduledTimeFormatter.java.html">ScheduledTimeFormatter</A> formatter = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTimeFormatter.java.html">ScheduledTimeFormatter</A>();
+<A NAME="64"></A>        assertEquals(<FONT ID="StringLiteral">"20:15:00.053Z"</FONT>, formatter.formatTimestamp(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2014-02-25T20:15:00.053Z"</FONT>)));
+<A NAME="65"></A>    }
+<A NAME="66"></A>    
+<A NAME="67"></A>    @Test
+<A NAME="68"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> datestampTest() {
+<A NAME="69"></A>        <A HREF="../../../com/collective/celos/ScheduledTimeFormatter.java.html">ScheduledTimeFormatter</A> formatter = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTimeFormatter.java.html">ScheduledTimeFormatter</A>();
+<A NAME="70"></A>        assertEquals(<FONT ID="StringLiteral">"2014-02-25"</FONT>, formatter.formatDatestamp(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2014-02-25T20:15:00.053Z"</FONT>)));
+<A NAME="71"></A>    }
+<A NAME="72"></A>    
+<A NAME="73"></A>    @Test
+<A NAME="74"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testReplaceTokensPadding() {
+<A NAME="75"></A>        <A HREF="../../../com/collective/celos/ScheduledTimeFormatter.java.html">ScheduledTimeFormatter</A> formatter = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTimeFormatter.java.html">ScheduledTimeFormatter</A>();
+<A NAME="76"></A>        String actual = formatter.replaceTimeTokens(
+<A NAME="77"></A>                <FONT ID="StringLiteral">"/${year}/${month}/${day}/${hour}"</FONT>, <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(
+<A NAME="78"></A>                        <FONT ID="StringLiteral">"0001-02-03T04:00Z"</FONT>));
+<A NAME="79"></A>        assertEquals(<FONT ID="StringLiteral">"/0001/02/03/04"</FONT>, actual);
+<A NAME="80"></A>    }
+<A NAME="81"></A>
+<A NAME="82"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testReplaceTokens(String input, String expected) {
+<A NAME="83"></A>        <A HREF="../../../com/collective/celos/ScheduledTimeFormatter.java.html">ScheduledTimeFormatter</A> formatter = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTimeFormatter.java.html">ScheduledTimeFormatter</A>();
+<A NAME="84"></A>        String actual = formatter.replaceTimeTokens(input, <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(
+<A NAME="85"></A>                <FONT ID="StringLiteral">"2013-11-22T14:00:53.023Z"</FONT>));
+<A NAME="86"></A>        assertEquals(expected, actual);
+<A NAME="87"></A>    }
+<A NAME="88"></A>
+<A NAME="89"></A>    @Test
+<A NAME="90"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testPretty() {
+<A NAME="91"></A>        <A HREF="../../../com/collective/celos/ScheduledTimeFormatter.java.html">ScheduledTimeFormatter</A> formatter = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTimeFormatter.java.html">ScheduledTimeFormatter</A>();
+<A NAME="92"></A>        assertEquals(<FONT ID="StringLiteral">"2014-03-20T00:00Z"</FONT>, formatter.formatPretty(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2014-03-20T00:00Z"</FONT>)));
+<A NAME="93"></A>        assertEquals(<FONT ID="StringLiteral">"2014-03-20T12:00Z"</FONT>, formatter.formatPretty(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2014-03-20T12:00Z"</FONT>)));
+<A NAME="94"></A>        assertEquals(<FONT ID="StringLiteral">"2014-03-20T12:30Z"</FONT>, formatter.formatPretty(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2014-03-20T12:30Z"</FONT>)));
+<A NAME="95"></A>        assertEquals(<FONT ID="StringLiteral">"2014-03-20T12:30:01Z"</FONT>, formatter.formatPretty(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2014-03-20T12:30:01Z"</FONT>)));
+<A NAME="96"></A>        assertEquals(<FONT ID="StringLiteral">"2014-03-20T12:30:00.001Z"</FONT>, formatter.formatPretty(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2014-03-20T12:30:00.001Z"</FONT>)));
+<A NAME="97"></A>        assertEquals(<FONT ID="StringLiteral">"2014-03-20T12:30:01.001Z"</FONT>, formatter.formatPretty(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2014-03-20T12:30:01.001Z"</FONT>)));
+<A NAME="98"></A>    }
+<A NAME="99"></A>    
+<A NAME="100"></A>}
+<A NAME="101"></A></pre>
+</BODY>
+</HTML>

@@ -1,0 +1,107 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.ci.mode.test.CelosSchedulerWorker (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">CelosSchedulerWorker.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos.ci.mode.test;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../com/collective/celos/CelosClient.java.html">com.collective.celos.CelosClient</A>;
+<A NAME="4"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../com/collective/celos/ScheduledTime.java.html">com.collective.celos.ScheduledTime</A>;
+<A NAME="5"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../com/collective/celos/SlotState.java.html">com.collective.celos.SlotState</A>;
+<A NAME="6"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../com/collective/celos/WorkflowID.java.html">com.collective.celos.WorkflowID</A>;
+<A NAME="7"></A><FONT ID="Import">import</FONT> com.google.common.collect.Sets;
+<A NAME="8"></A><FONT ID="Import">import</FONT> org.apache.commons.lang.StringUtils;
+<A NAME="9"></A>
+<A NAME="10"></A><FONT ID="Import">import</FONT> java.util.List;
+<A NAME="11"></A><FONT ID="Import">import</FONT> java.util.Set;
+<A NAME="12"></A>
+<A NAME="13"></A><FONT ID="FormalComment">/**
+<A NAME="14"></A> * Created by akonopko on 9/18/14.
+<A NAME="15"></A> */</FONT>
+<A NAME="16"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> CelosSchedulerWorker {
+<A NAME="17"></A>
+<A NAME="18"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> <A HREF="../../../../../../com/collective/celos/CelosClient.java.html">CelosClient</A> client;
+<A NAME="19"></A>
+<A NAME="20"></A>    <FONT ID="Public">public</FONT> CelosSchedulerWorker(<A HREF="../../../../../../com/collective/celos/CelosClient.java.html">CelosClient</A> client) {
+<A NAME="21"></A>        <FONT ID="This">this</FONT>.client = client;
+<A NAME="22"></A>    }
+<A NAME="23"></A>
+<A NAME="24"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> runCelosScheduler(<A HREF="../../../../../../com/collective/celos/ci/mode/test/TestCase.java.html">TestCase</A> testCase) <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="25"></A>        Set&lt;<A HREF="../../../../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>&gt; workflowList;
+<A NAME="26"></A>        client.clearCache();
+<A NAME="27"></A>
+<A NAME="28"></A>        <FONT ID="If">if</FONT> (testCase.getTargetWorkflows().isEmpty()) {
+<A NAME="29"></A>            workflowList = client.getWorkflowList();
+<A NAME="30"></A>        } <FONT ID="Else">else</FONT> {
+<A NAME="31"></A>            workflowList = testCase.getTargetWorkflows();
+<A NAME="32"></A>        }
+<A NAME="33"></A>
+<A NAME="34"></A>        <A HREF="../../../../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> startTime = testCase.getSampleTimeStart().plusSeconds(<FONT ID="IntegerLiteral">1</FONT>);
+<A NAME="35"></A>        <A HREF="../../../../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> actualTime = startTime;
+<A NAME="36"></A>        <A HREF="../../../../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> endTime = testCase.getSampleTimeEnd().plusSeconds(<FONT ID="IntegerLiteral">1</FONT>);
+<A NAME="37"></A>
+<A NAME="38"></A>        <FONT ID="If">if</FONT> (!workflowList.isEmpty()) {
+<A NAME="39"></A>            startScheduler(testCase, workflowList, actualTime, endTime);
+<A NAME="40"></A>        } <FONT ID="Else">else</FONT> {
+<A NAME="41"></A>            System.out.println(testCase.getName() + <FONT ID="StringLiteral">": there are no workflows to run"</FONT>);
+<A NAME="42"></A>        }
+<A NAME="43"></A>    }
+<A NAME="44"></A>
+<A NAME="45"></A>    <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> startScheduler(<A HREF="../../../../../../com/collective/celos/ci/mode/test/TestCase.java.html">TestCase</A> testCase, Set&lt;<A HREF="../../../../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>&gt; workflowList, <A HREF="../../../../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> actualTime, <A HREF="../../../../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> endTime) <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="46"></A>        System.out.println(testCase.getName() + <FONT ID="StringLiteral">": Starting scheduler for: "</FONT> + StringUtils.join(workflowList, <FONT ID="StringLiteral">", "</FONT>));
+<A NAME="47"></A>        client.iterateScheduler(actualTime, testCase.getTargetWorkflows());
+<A NAME="48"></A>
+<A NAME="49"></A>        <FONT ID="While">while</FONT> (!actualTime.getDateTime().isAfter(endTime.getDateTime())) {
+<A NAME="50"></A>            String workflowStatuses = StringUtils.join(getWorkflowStatusesInfo(workflowList, actualTime), <FONT ID="StringLiteral">" "</FONT>);
+<A NAME="51"></A>            <FONT ID="If">if</FONT> (!workflowStatuses.trim().isEmpty()) {
+<A NAME="52"></A>                System.out.println(testCase.getName() + <FONT ID="StringLiteral">": Workflow statuses: "</FONT> + workflowStatuses);
+<A NAME="53"></A>            }
+<A NAME="54"></A>            <FONT ID="If">if</FONT> (!isThereAnyRunningWorkflows(workflowList, actualTime)) {
+<A NAME="55"></A>                actualTime = <FONT ID="New">new</FONT> <A HREF="../../../../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(actualTime.getDateTime().plusHours(<FONT ID="IntegerLiteral">1</FONT>));
+<A NAME="56"></A>            } <FONT ID="Else">else</FONT> {
+<A NAME="57"></A>                Thread.sleep(<FONT ID="IntegerLiteral">2000</FONT>);
+<A NAME="58"></A>            }
+<A NAME="59"></A>            client.iterateScheduler(actualTime, testCase.getTargetWorkflows());
+<A NAME="60"></A>        }
+<A NAME="61"></A>    }
+<A NAME="62"></A>
+<A NAME="63"></A>    <FONT ID="Boolean">boolean</FONT> isThereAnyRunningWorkflows(Set&lt;<A HREF="../../../../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>&gt; workflowList, <A HREF="../../../../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> schedTime) <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="64"></A>        <FONT ID="For">for</FONT> (<A HREF="../../../../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A> workflowID : workflowList) {
+<A NAME="65"></A>            List&lt;<A HREF="../../../../../../com/collective/celos/SlotState.java.html">SlotState</A>&gt; slotStates = client.getWorkflowStatus(workflowID, schedTime).getSlotStates();
+<A NAME="66"></A>            <FONT ID="For">for</FONT> (<A HREF="../../../../../../com/collective/celos/SlotState.java.html">SlotState</A> slotState : slotStates) {
+<A NAME="67"></A>                <FONT ID="If">if</FONT> (slotState.getStatus() == SlotState.Status.READY || slotState.getStatus() == SlotState.Status.RUNNING) {
+<A NAME="68"></A>                    <FONT ID="Return">return</FONT> <FONT ID="True">true</FONT>;
+<A NAME="69"></A>                }
+<A NAME="70"></A>            }
+<A NAME="71"></A>        }
+<A NAME="72"></A>        <FONT ID="Return">return</FONT> <FONT ID="False">false</FONT>;
+<A NAME="73"></A>    }
+<A NAME="74"></A>
+<A NAME="75"></A>    Set&lt;String&gt; getWorkflowStatusesInfo(Set&lt;<A HREF="../../../../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>&gt; workflowList, <A HREF="../../../../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> schedTime) <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="76"></A>        Set&lt;String&gt; messages = Sets.newHashSet();
+<A NAME="77"></A>        <FONT ID="For">for</FONT> (<A HREF="../../../../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A> workflowID : workflowList) {
+<A NAME="78"></A>            List&lt;<A HREF="../../../../../../com/collective/celos/SlotState.java.html">SlotState</A>&gt; slotStates = client.getWorkflowStatus(workflowID, schedTime).getSlotStates();
+<A NAME="79"></A>            <FONT ID="For">for</FONT> (<A HREF="../../../../../../com/collective/celos/SlotState.java.html">SlotState</A> slotState : slotStates) {
+<A NAME="80"></A>                <FONT ID="If">if</FONT> (slotState.getStatus() != SlotState.Status.WAITING) {
+<A NAME="81"></A>                    messages.add(slotState.toString());
+<A NAME="82"></A>                }
+<A NAME="83"></A>            }
+<A NAME="84"></A>        }
+<A NAME="85"></A>        <FONT ID="Return">return</FONT> messages;
+<A NAME="86"></A>    }
+<A NAME="87"></A>
+<A NAME="88"></A>}</pre>
+</BODY>
+</HTML>

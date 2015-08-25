@@ -1,0 +1,68 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.OozieExternalServiceTest (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">OozieExternalServiceTest.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> java.util.Properties;
+<A NAME="4"></A>
+<A NAME="5"></A><FONT ID="Import">import</FONT> junit.framework.Assert;
+<A NAME="6"></A>
+<A NAME="7"></A><FONT ID="Import">import</FONT> org.junit.Test;
+<A NAME="8"></A>
+<A NAME="9"></A><FONT ID="Import">import</FONT> com.fasterxml.jackson.databind.node.ObjectNode;
+<A NAME="10"></A>
+<A NAME="11"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> OozieExternalServiceTest {
+<A NAME="12"></A>
+<A NAME="13"></A>    @Test(expected=NullPointerException.<FONT ID="Class">class</FONT>)
+<A NAME="14"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> oozieURLIsRequired() {
+<A NAME="15"></A>        <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/OozieExternalService.java.html">OozieExternalService</A>(<FONT ID="Null">null</FONT>, PropertiesGenerator.EMPTY);
+<A NAME="16"></A>    }
+<A NAME="17"></A>
+<A NAME="18"></A>    @Test(expected=NullPointerException.<FONT ID="Class">class</FONT>)
+<A NAME="19"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> propertiesGeneratorIsRequired() {
+<A NAME="20"></A>        <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/OozieExternalService.java.html">OozieExternalService</A>(<FONT ID="StringLiteral">"http://oozie"</FONT>, <FONT ID="Null">null</FONT>);
+<A NAME="21"></A>    }
+<A NAME="22"></A>
+<A NAME="23"></A>    @Test
+<A NAME="24"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> runPropertiesAreCorrectlySetup() {
+<A NAME="25"></A>        <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> t = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-11-26T17:23Z"</FONT>);
+<A NAME="26"></A>        <A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A> id = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A>(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"test"</FONT>), t); 
+<A NAME="27"></A>        ObjectNode defaults = Util.newObjectNode();
+<A NAME="28"></A>        defaults.put(<FONT ID="StringLiteral">"foo"</FONT>, <FONT ID="StringLiteral">"bar"</FONT>);
+<A NAME="29"></A>        defaults.put(<FONT ID="StringLiteral">"uses-variables"</FONT>, <FONT ID="StringLiteral">"${year}-${month}-${day}-${hour}-${year}"</FONT>);
+<A NAME="30"></A>        defaults.put(<FONT ID="StringLiteral">"another-one"</FONT>, <FONT ID="StringLiteral">"${year}-${month}-${day}T${hour}:${minute}:${second}.${millisecond}Z"</FONT>);
+<A NAME="31"></A>        Properties runProperties = makeOozieExternalService().setupRunProperties(defaults, id);
+<A NAME="32"></A>        Assert.assertEquals(<FONT ID="StringLiteral">"bar"</FONT>, runProperties.getProperty(<FONT ID="StringLiteral">"foo"</FONT>));
+<A NAME="33"></A>        Assert.assertEquals(<FONT ID="StringLiteral">"2013-11-26-17-2013"</FONT>, runProperties.getProperty(<FONT ID="StringLiteral">"uses-variables"</FONT>));
+<A NAME="34"></A>        Assert.assertEquals(<FONT ID="StringLiteral">"2013-11-26T17:23:00.000Z"</FONT>, runProperties.getProperty(<FONT ID="StringLiteral">"another-one"</FONT>));
+<A NAME="35"></A>        Assert.assertEquals(<FONT ID="StringLiteral">"2013"</FONT>, runProperties.getProperty(OozieExternalService.YEAR_PROP));
+<A NAME="36"></A>        Assert.assertEquals(<FONT ID="StringLiteral">"11"</FONT>, runProperties.getProperty(OozieExternalService.MONTH_PROP));
+<A NAME="37"></A>        Assert.assertEquals(<FONT ID="StringLiteral">"26"</FONT>, runProperties.getProperty(OozieExternalService.DAY_PROP));
+<A NAME="38"></A>        Assert.assertEquals(<FONT ID="StringLiteral">"17"</FONT>, runProperties.getProperty(OozieExternalService.HOUR_PROP));
+<A NAME="39"></A>        Assert.assertEquals(<FONT ID="StringLiteral">"23"</FONT>, runProperties.getProperty(OozieExternalService.MINUTE_PROP));
+<A NAME="40"></A>        Assert.assertEquals(<FONT ID="StringLiteral">"00"</FONT>, runProperties.getProperty(OozieExternalService.SECOND_PROP));
+<A NAME="41"></A>        Assert.assertEquals(<FONT ID="StringLiteral">"test@2013-11-26T17:23Z"</FONT>, runProperties.getProperty(OozieExternalService.WORKFLOW_NAME_PROP));
+<A NAME="42"></A>    }
+<A NAME="43"></A>    
+<A NAME="44"></A>    <FONT ID="Private">private</FONT> <A HREF="../../../com/collective/celos/OozieExternalService.java.html">OozieExternalService</A> makeOozieExternalService() {
+<A NAME="45"></A>        <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/OozieExternalService.java.html">OozieExternalService</A>(<FONT ID="StringLiteral">"http://example.com"</FONT>, PropertiesGenerator.EMPTY);
+<A NAME="46"></A>    }
+<A NAME="47"></A>    
+<A NAME="48"></A>}
+<A NAME="49"></A></pre>
+</BODY>
+</HTML>

@@ -1,0 +1,116 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.ci.testing.tree.TreeStructureProcessorTest (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">TreeStructureProcessorTest.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos.ci.testing.tree;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixDir.java.html">com.collective.celos.ci.testing.structure.fixobject.FixDir</A>;
+<A NAME="4"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFile.java.html">com.collective.celos.ci.testing.structure.fixobject.FixFile</A>;
+<A NAME="5"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFsObject.java.html">com.collective.celos.ci.testing.structure.fixobject.FixFsObject</A>;
+<A NAME="6"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../com/collective/celos/ci/testing/structure/tree/TreeObjectProcessor.java.html">com.collective.celos.ci.testing.structure.tree.TreeObjectProcessor</A>;
+<A NAME="7"></A><FONT ID="Import">import</FONT> com.google.common.collect.Lists;
+<A NAME="8"></A><FONT ID="Import">import</FONT> com.google.common.collect.Maps;
+<A NAME="9"></A><FONT ID="Import">import</FONT> junit.framework.Assert;
+<A NAME="10"></A><FONT ID="Import">import</FONT> org.apache.commons.io.IOUtils;
+<A NAME="11"></A><FONT ID="Import">import</FONT> org.junit.Test;
+<A NAME="12"></A>
+<A NAME="13"></A><FONT ID="Import">import</FONT> java.io.IOException;
+<A NAME="14"></A><FONT ID="Import">import</FONT> java.io.InputStream;
+<A NAME="15"></A><FONT ID="Import">import</FONT> java.nio.file.Path;
+<A NAME="16"></A><FONT ID="Import">import</FONT> java.nio.file.Paths;
+<A NAME="17"></A><FONT ID="Import">import</FONT> java.util.Collections;
+<A NAME="18"></A><FONT ID="Import">import</FONT> java.util.List;
+<A NAME="19"></A><FONT ID="Import">import</FONT> java.util.Map;
+<A NAME="20"></A>
+<A NAME="21"></A><FONT ID="FormalComment">/**
+<A NAME="22"></A> * Created by akonopko on 10/9/14.
+<A NAME="23"></A> */</FONT>
+<A NAME="24"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> TreeStructureProcessorTest {
+<A NAME="25"></A>
+<A NAME="26"></A>    @Test
+<A NAME="27"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testTreeStructureProcessor() <FONT ID="Throws">throws</FONT> IOException {
+<A NAME="28"></A>        <A HREF="../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixDir.java.html">FixDir</A> dir1 = createDirWithSubdirsAndFile();
+<A NAME="29"></A>        InputStream inputStream2 = IOUtils.toInputStream(<FONT ID="StringLiteral">"stream3"</FONT>);
+<A NAME="30"></A>        <A HREF="../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFile.java.html">FixFile</A> file = <FONT ID="New">new</FONT> <A HREF="../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFile.java.html">FixFile</A>(inputStream2);
+<A NAME="31"></A>
+<A NAME="32"></A>        Map&lt;String, <A HREF="../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFsObject.java.html">FixFsObject</A>&gt; content = Maps.newHashMap();
+<A NAME="33"></A>        content.put(<FONT ID="StringLiteral">"dir1"</FONT>, dir1);
+<A NAME="34"></A>        content.put(<FONT ID="StringLiteral">"file"</FONT>, file);
+<A NAME="35"></A>        <A HREF="../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixDir.java.html">FixDir</A> dir = <FONT ID="New">new</FONT> <A HREF="../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixDir.java.html">FixDir</A>(content);
+<A NAME="36"></A>
+<A NAME="37"></A>        TreeObjectProcessorImpl holder = <FONT ID="New">new</FONT> TreeObjectProcessorImpl();
+<A NAME="38"></A>        TreeObjectProcessor.process(dir, holder);
+<A NAME="39"></A>
+<A NAME="40"></A>        List&lt;Path&gt; expectedStructure = Lists.newArrayList(
+<A NAME="41"></A>                Paths.get(<FONT ID="StringLiteral">""</FONT>),
+<A NAME="42"></A>                Paths.get(<FONT ID="StringLiteral">"file"</FONT>),
+<A NAME="43"></A>                Paths.get(<FONT ID="StringLiteral">"dir1"</FONT>),
+<A NAME="44"></A>                Paths.get(<FONT ID="StringLiteral">"dir1/file"</FONT>),
+<A NAME="45"></A>                Paths.get(<FONT ID="StringLiteral">"dir1/dir1"</FONT>),
+<A NAME="46"></A>                Paths.get(<FONT ID="StringLiteral">"dir1/dir1/file1"</FONT>),
+<A NAME="47"></A>                Paths.get(<FONT ID="StringLiteral">"dir1/dir1/file2"</FONT>),
+<A NAME="48"></A>                Paths.get(<FONT ID="StringLiteral">"dir1/dir2"</FONT>),
+<A NAME="49"></A>                Paths.get(<FONT ID="StringLiteral">"dir1/dir2/file1"</FONT>),
+<A NAME="50"></A>                Paths.get(<FONT ID="StringLiteral">"dir1/dir2/file2"</FONT>));
+<A NAME="51"></A>
+<A NAME="52"></A>        Collections.sort(expectedStructure);
+<A NAME="53"></A>        Collections.sort(holder.content);
+<A NAME="54"></A>        Assert.assertEquals(holder.content, expectedStructure);
+<A NAME="55"></A>    }
+<A NAME="56"></A>
+<A NAME="57"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Class">class</FONT> TreeObjectProcessorImpl <FONT ID="Extends">extends</FONT> <A HREF="../../../../../../com/collective/celos/ci/testing/structure/tree/TreeObjectProcessor.java.html">TreeObjectProcessor</A>&lt;<A HREF="../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFsObject.java.html">FixFsObject</A>&gt; {
+<A NAME="58"></A>
+<A NAME="59"></A>        List&lt;Path&gt; content = Lists.newArrayList();
+<A NAME="60"></A>
+<A NAME="61"></A>        @Override
+<A NAME="62"></A>        <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> process(Path path, <A HREF="../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFsObject.java.html">FixFsObject</A> ff) <FONT ID="Throws">throws</FONT> IOException {
+<A NAME="63"></A>            content.add(path);
+<A NAME="64"></A>        }
+<A NAME="65"></A>    }
+<A NAME="66"></A>
+<A NAME="67"></A>    <FONT ID="Private">private</FONT> <A HREF="../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixDir.java.html">FixDir</A> createDirWithSubdirsAndFile() {
+<A NAME="68"></A>        <A HREF="../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixDir.java.html">FixDir</A> dir1 = getFixDirWithTwoFiles1();
+<A NAME="69"></A>        <A HREF="../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixDir.java.html">FixDir</A> dir2 = getFixDirWithTwoFiles1();
+<A NAME="70"></A>        InputStream inputStream2 = IOUtils.toInputStream(<FONT ID="StringLiteral">"stream"</FONT>);
+<A NAME="71"></A>        <A HREF="../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFile.java.html">FixFile</A> file = <FONT ID="New">new</FONT> <A HREF="../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFile.java.html">FixFile</A>(inputStream2);
+<A NAME="72"></A>
+<A NAME="73"></A>        Map&lt;String, <A HREF="../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFsObject.java.html">FixFsObject</A>&gt; content = Maps.newHashMap();
+<A NAME="74"></A>        content.put(<FONT ID="StringLiteral">"dir1"</FONT>, dir1);
+<A NAME="75"></A>        content.put(<FONT ID="StringLiteral">"dir2"</FONT>, dir2);
+<A NAME="76"></A>        content.put(<FONT ID="StringLiteral">"file"</FONT>, file);
+<A NAME="77"></A>        <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> <A HREF="../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixDir.java.html">FixDir</A>(content);
+<A NAME="78"></A>    }
+<A NAME="79"></A>
+<A NAME="80"></A>    <FONT ID="Private">private</FONT> <A HREF="../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixDir.java.html">FixDir</A> getFixDirWithTwoFiles1() {
+<A NAME="81"></A>        InputStream inputStream1 = IOUtils.toInputStream(<FONT ID="StringLiteral">"stream"</FONT>);
+<A NAME="82"></A>        <A HREF="../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFile.java.html">FixFile</A> file1 = <FONT ID="New">new</FONT> <A HREF="../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFile.java.html">FixFile</A>(inputStream1);
+<A NAME="83"></A>
+<A NAME="84"></A>        InputStream inputStream2 = IOUtils.toInputStream(<FONT ID="StringLiteral">"stream2"</FONT>);
+<A NAME="85"></A>        <A HREF="../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFile.java.html">FixFile</A> file2 = <FONT ID="New">new</FONT> <A HREF="../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFile.java.html">FixFile</A>(inputStream2);
+<A NAME="86"></A>
+<A NAME="87"></A>        Map&lt;String, <A HREF="../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFsObject.java.html">FixFsObject</A>&gt; content1 = Maps.newHashMap();
+<A NAME="88"></A>        content1.put(<FONT ID="StringLiteral">"file1"</FONT>, file1);
+<A NAME="89"></A>        content1.put(<FONT ID="StringLiteral">"file2"</FONT>, file2);
+<A NAME="90"></A>        <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> <A HREF="../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixDir.java.html">FixDir</A>(content1);
+<A NAME="91"></A>    }
+<A NAME="92"></A>
+<A NAME="93"></A>
+<A NAME="94"></A>
+<A NAME="95"></A>}
+<A NAME="96"></A>
+<A NAME="97"></A></pre>
+</BODY>
+</HTML>

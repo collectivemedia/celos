@@ -1,0 +1,163 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.UtilTest (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">UtilTest.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> com.fasterxml.jackson.databind.node.ArrayNode;
+<A NAME="4"></A><FONT ID="Import">import</FONT> com.fasterxml.jackson.databind.node.ObjectNode;
+<A NAME="5"></A><FONT ID="Import">import</FONT> org.joda.time.DateTime;
+<A NAME="6"></A><FONT ID="Import">import</FONT> org.joda.time.format.DateTimeFormat;
+<A NAME="7"></A><FONT ID="Import">import</FONT> org.junit.Assert;
+<A NAME="8"></A><FONT ID="Import">import</FONT> org.junit.Test;
+<A NAME="9"></A>
+<A NAME="10"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> UtilTest {
+<A NAME="11"></A>    
+<A NAME="12"></A>    @Test(expected=NullPointerException.<FONT ID="Class">class</FONT>)
+<A NAME="13"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> requireNonNullWorks() {
+<A NAME="14"></A>        Util.requireNonNull(<FONT ID="Null">null</FONT>);
+<A NAME="15"></A>    }
+<A NAME="16"></A>
+<A NAME="17"></A>    <FONT ID="SingleLineComment">// DATETIME TESTS
+<A NAME="18"></A></FONT>    
+<A NAME="19"></A>    @Test
+<A NAME="20"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> toFullHourWorks() {
+<A NAME="21"></A>        Assert.assertEquals(<FONT ID="New">new</FONT> DateTime(<FONT ID="StringLiteral">"2013-11-27T15:00:00.000Z"</FONT>), Util.toFullHour(<FONT ID="New">new</FONT> DateTime(<FONT ID="StringLiteral">"2013-11-27T15:36:23.475Z"</FONT>)));
+<A NAME="22"></A>    }
+<A NAME="23"></A>    
+<A NAME="24"></A>    @Test
+<A NAME="25"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> toFullMinuteWorks() {
+<A NAME="26"></A>        Assert.assertEquals(<FONT ID="New">new</FONT> DateTime(<FONT ID="StringLiteral">"2013-11-27T15:36:00.000Z"</FONT>), Util.toFullMinute(<FONT ID="New">new</FONT> DateTime(<FONT ID="StringLiteral">"2013-11-27T15:36:23.475Z"</FONT>)));
+<A NAME="27"></A>    }
+<A NAME="28"></A>    
+<A NAME="29"></A>    @Test
+<A NAME="30"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> toFullSecondWorks() {
+<A NAME="31"></A>        Assert.assertEquals(<FONT ID="New">new</FONT> DateTime(<FONT ID="StringLiteral">"2013-11-27T15:36:23.000Z"</FONT>), Util.toFullSecond(<FONT ID="New">new</FONT> DateTime(<FONT ID="StringLiteral">"2013-11-27T15:36:23.475Z"</FONT>)));
+<A NAME="32"></A>    }
+<A NAME="33"></A>    
+<A NAME="34"></A>    @Test
+<A NAME="35"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> isFullHourWorks() {
+<A NAME="36"></A>        Assert.assertTrue(Util.isFullHour(<FONT ID="New">new</FONT> DateTime(<FONT ID="StringLiteral">"2013-11-27T15:00:00.000Z"</FONT>)));
+<A NAME="37"></A>        Assert.assertFalse(Util.isFullHour(<FONT ID="New">new</FONT> DateTime(<FONT ID="StringLiteral">"2013-11-27T15:36:00.000Z"</FONT>)));
+<A NAME="38"></A>    }
+<A NAME="39"></A>    
+<A NAME="40"></A>    @Test
+<A NAME="41"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> isFullMinuteWorks() {
+<A NAME="42"></A>        Assert.assertTrue(Util.isFullMinute(<FONT ID="New">new</FONT> DateTime(<FONT ID="StringLiteral">"2013-11-27T15:01:00.000Z"</FONT>)));
+<A NAME="43"></A>        Assert.assertFalse(Util.isFullMinute(<FONT ID="New">new</FONT> DateTime(<FONT ID="StringLiteral">"2013-11-27T15:36:01.000Z"</FONT>)));
+<A NAME="44"></A>    }
+<A NAME="45"></A>    
+<A NAME="46"></A>    @Test
+<A NAME="47"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> isFullSecondWorks() {
+<A NAME="48"></A>        Assert.assertTrue(Util.isFullSecond(<FONT ID="New">new</FONT> DateTime(<FONT ID="StringLiteral">"2013-11-27T15:01:00.000Z"</FONT>)));
+<A NAME="49"></A>        Assert.assertFalse(Util.isFullSecond(<FONT ID="New">new</FONT> DateTime(<FONT ID="StringLiteral">"2013-11-27T15:36:01.001Z"</FONT>)));
+<A NAME="50"></A>    }
+<A NAME="51"></A>    
+<A NAME="52"></A>    <FONT ID="SingleLineComment">// JSON TESTS
+<A NAME="53"></A></FONT>    
+<A NAME="54"></A>    @Test(expected=IllegalArgumentException.<FONT ID="Class">class</FONT>)
+<A NAME="55"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> getStringPropertyDetectsUnsetProperty() {
+<A NAME="56"></A>        ObjectNode node = Util.newObjectNode();
+<A NAME="57"></A>        Util.getStringProperty(node, <FONT ID="StringLiteral">"foo"</FONT>);
+<A NAME="58"></A>    }
+<A NAME="59"></A>    
+<A NAME="60"></A>    @Test(expected=IllegalArgumentException.<FONT ID="Class">class</FONT>)
+<A NAME="61"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> getStringPropertyDetectsNonStringProperty() {
+<A NAME="62"></A>        ObjectNode node = Util.newObjectNode();
+<A NAME="63"></A>        node.put(<FONT ID="StringLiteral">"foo"</FONT>, <FONT ID="IntegerLiteral">12</FONT>);
+<A NAME="64"></A>        Util.getStringProperty(node, <FONT ID="StringLiteral">"foo"</FONT>);
+<A NAME="65"></A>    }
+<A NAME="66"></A>    
+<A NAME="67"></A>    @Test
+<A NAME="68"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> getStringPropertyWorks() {
+<A NAME="69"></A>        ObjectNode node = Util.newObjectNode();
+<A NAME="70"></A>        node.put(<FONT ID="StringLiteral">"foo"</FONT>, <FONT ID="StringLiteral">"bar"</FONT>);
+<A NAME="71"></A>        Assert.assertEquals(<FONT ID="StringLiteral">"bar"</FONT>, Util.getStringProperty(node, <FONT ID="StringLiteral">"foo"</FONT>));
+<A NAME="72"></A>    }
+<A NAME="73"></A>    
+<A NAME="74"></A>    @Test(expected=IllegalArgumentException.<FONT ID="Class">class</FONT>)
+<A NAME="75"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> getIntPropertyDetectsUnsetProperty() {
+<A NAME="76"></A>        ObjectNode node = Util.newObjectNode();
+<A NAME="77"></A>        Util.getIntProperty(node, <FONT ID="StringLiteral">"foo"</FONT>);
+<A NAME="78"></A>    }
+<A NAME="79"></A>    
+<A NAME="80"></A>    @Test(expected=IllegalArgumentException.<FONT ID="Class">class</FONT>)
+<A NAME="81"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> getIntPropertyDetectsNonIntProperty() {
+<A NAME="82"></A>        ObjectNode node = Util.newObjectNode();
+<A NAME="83"></A>        node.put(<FONT ID="StringLiteral">"foo"</FONT>, <FONT ID="StringLiteral">"foo"</FONT>);
+<A NAME="84"></A>        Util.getIntProperty(node, <FONT ID="StringLiteral">"foo"</FONT>);
+<A NAME="85"></A>    }
+<A NAME="86"></A>    
+<A NAME="87"></A>    @Test
+<A NAME="88"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> getIntPropertyWorks() {
+<A NAME="89"></A>        ObjectNode node = Util.newObjectNode();
+<A NAME="90"></A>        node.put(<FONT ID="StringLiteral">"foo"</FONT>, <FONT ID="IntegerLiteral">12</FONT>);
+<A NAME="91"></A>        Assert.assertEquals(<FONT ID="IntegerLiteral">12</FONT>, Util.getIntProperty(node, <FONT ID="StringLiteral">"foo"</FONT>));
+<A NAME="92"></A>    }
+<A NAME="93"></A>    
+<A NAME="94"></A>    @Test(expected=IllegalArgumentException.<FONT ID="Class">class</FONT>)
+<A NAME="95"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> getArrayPropertyDetectsUnsetProperty() {
+<A NAME="96"></A>        ObjectNode node = Util.newObjectNode();
+<A NAME="97"></A>        Util.getArrayProperty(node, <FONT ID="StringLiteral">"foo"</FONT>);
+<A NAME="98"></A>    }
+<A NAME="99"></A>    
+<A NAME="100"></A>    @Test(expected=IllegalArgumentException.<FONT ID="Class">class</FONT>)
+<A NAME="101"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> getArrayPropertyDetectsNonArrayProperty() {
+<A NAME="102"></A>        ObjectNode node = Util.newObjectNode();
+<A NAME="103"></A>        node.put(<FONT ID="StringLiteral">"foo"</FONT>, <FONT ID="IntegerLiteral">12</FONT>);
+<A NAME="104"></A>        Util.getArrayProperty(node, <FONT ID="StringLiteral">"foo"</FONT>);
+<A NAME="105"></A>    }
+<A NAME="106"></A>    
+<A NAME="107"></A>    @Test
+<A NAME="108"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> getArrayPropertyWorks() {
+<A NAME="109"></A>        ObjectNode node = Util.newObjectNode();
+<A NAME="110"></A>        ArrayNode array = Util.newArrayNode();
+<A NAME="111"></A>        array.add(<FONT ID="StringLiteral">"bar"</FONT>);
+<A NAME="112"></A>        node.put(<FONT ID="StringLiteral">"foo"</FONT>, array);
+<A NAME="113"></A>        Assert.assertEquals(array, Util.getArrayProperty(node, <FONT ID="StringLiteral">"foo"</FONT>));
+<A NAME="114"></A>    }
+<A NAME="115"></A>    
+<A NAME="116"></A>    @Test(expected=IllegalArgumentException.<FONT ID="Class">class</FONT>)
+<A NAME="117"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> getObjectPropertyDetectsUnsetProperty() {
+<A NAME="118"></A>        ObjectNode node = Util.newObjectNode();
+<A NAME="119"></A>        Util.getObjectProperty(node, <FONT ID="StringLiteral">"foo"</FONT>);
+<A NAME="120"></A>    }
+<A NAME="121"></A>    
+<A NAME="122"></A>    @Test(expected=IllegalArgumentException.<FONT ID="Class">class</FONT>)
+<A NAME="123"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> getObjectPropertyDetectsNonObjectProperty() {
+<A NAME="124"></A>        ObjectNode node = Util.newObjectNode();
+<A NAME="125"></A>        node.put(<FONT ID="StringLiteral">"foo"</FONT>, <FONT ID="IntegerLiteral">12</FONT>);
+<A NAME="126"></A>        Util.getObjectProperty(node, <FONT ID="StringLiteral">"foo"</FONT>);
+<A NAME="127"></A>    }
+<A NAME="128"></A>    
+<A NAME="129"></A>    @Test
+<A NAME="130"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> getObjectPropertyWorks() {
+<A NAME="131"></A>        ObjectNode node = Util.newObjectNode();
+<A NAME="132"></A>        ObjectNode nested = Util.newObjectNode();
+<A NAME="133"></A>        node.put(<FONT ID="StringLiteral">"foo"</FONT>, nested);
+<A NAME="134"></A>        Assert.assertEquals(nested, Util.getObjectProperty(node, <FONT ID="StringLiteral">"foo"</FONT>));
+<A NAME="135"></A>    }
+<A NAME="136"></A>
+<A NAME="137"></A>    @Test
+<A NAME="138"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> toNominalTimeFormat() {
+<A NAME="139"></A>        String formatted = <FONT ID="New">new</FONT> DateTime(<FONT ID="IntegerLiteral">2013</FONT>, <FONT ID="IntegerLiteral">1</FONT>, <FONT ID="IntegerLiteral">3</FONT>, <FONT ID="IntegerLiteral">12</FONT>, <FONT ID="IntegerLiteral">10</FONT>).toString(DateTimeFormat.forPattern(<FONT ID="StringLiteral">"YYYY-MM-dd'T'HH:mm'Z"</FONT>));
+<A NAME="140"></A>        Assert.assertEquals(formatted, <FONT ID="StringLiteral">"2013-01-03T12:10Z"</FONT>);
+<A NAME="141"></A>    }
+<A NAME="142"></A>    
+<A NAME="143"></A>}
+<A NAME="144"></A></pre>
+</BODY>
+</HTML>

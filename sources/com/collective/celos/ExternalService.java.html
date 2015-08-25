@@ -1,0 +1,43 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.ExternalService (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">ExternalService.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Public">public</FONT> <FONT ID="Interface">interface</FONT> ExternalService {
+<A NAME="4"></A>
+<A NAME="5"></A>    <FONT ID="FormalComment">/**
+<A NAME="6"></A>     * Submits slot to external service.
+<A NAME="7"></A>     * 
+<A NAME="8"></A>     * Returns external ID of submitted workflow, or throws an exception.
+<A NAME="9"></A>     */</FONT>
+<A NAME="10"></A>    <FONT ID="Public">public</FONT> String submit(<A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A> id) <FONT ID="Throws">throws</FONT> <A HREF="../../../com/collective/celos/ExternalServiceException.java.html">ExternalServiceException</A>;
+<A NAME="11"></A>
+<A NAME="12"></A>    <FONT ID="FormalComment">/**
+<A NAME="13"></A>     * Starts workflow with the given external ID.
+<A NAME="14"></A>     * 
+<A NAME="15"></A>     * The slot ID is the same that previously passed to submit.
+<A NAME="16"></A>     */</FONT>
+<A NAME="17"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> start(<A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A> id, String externalID) <FONT ID="Throws">throws</FONT> <A HREF="../../../com/collective/celos/ExternalServiceException.java.html">ExternalServiceException</A>;
+<A NAME="18"></A>    
+<A NAME="19"></A>    <FONT ID="FormalComment">/**
+<A NAME="20"></A>     * Gets the status of the externally running workflow with the given ID.
+<A NAME="21"></A>     */</FONT>
+<A NAME="22"></A>    <FONT ID="Public">public</FONT> <A HREF="../../../com/collective/celos/ExternalStatus.java.html">ExternalStatus</A> getStatus(<A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A> id, String externalID) <FONT ID="Throws">throws</FONT> <A HREF="../../../com/collective/celos/ExternalServiceException.java.html">ExternalServiceException</A>;
+<A NAME="23"></A>
+<A NAME="24"></A>}</pre>
+</BODY>
+</HTML>

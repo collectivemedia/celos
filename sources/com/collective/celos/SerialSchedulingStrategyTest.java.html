@@ -1,0 +1,314 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.SerialSchedulingStrategyTest (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">SerialSchedulingStrategyTest.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> <FONT ID="Static">static</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/SlotState.Status.html">com.collective.celos.SlotState.Status.FAILURE</A>;
+<A NAME="4"></A><FONT ID="Import">import</FONT> <FONT ID="Static">static</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/SlotState.Status.html">com.collective.celos.SlotState.Status.READY</A>;
+<A NAME="5"></A><FONT ID="Import">import</FONT> <FONT ID="Static">static</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/SlotState.Status.html">com.collective.celos.SlotState.Status.RUNNING</A>;
+<A NAME="6"></A><FONT ID="Import">import</FONT> <FONT ID="Static">static</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/SlotState.Status.html">com.collective.celos.SlotState.Status.SUCCESS</A>;
+<A NAME="7"></A><FONT ID="Import">import</FONT> <FONT ID="Static">static</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/SlotState.Status.html">com.collective.celos.SlotState.Status.WAITING</A>;
+<A NAME="8"></A>
+<A NAME="9"></A><FONT ID="Import">import</FONT> java.util.Arrays;
+<A NAME="10"></A><FONT ID="Import">import</FONT> java.util.List;
+<A NAME="11"></A>
+<A NAME="12"></A><FONT ID="Import">import</FONT> org.junit.Assert;
+<A NAME="13"></A><FONT ID="Import">import</FONT> org.junit.Before;
+<A NAME="14"></A><FONT ID="Import">import</FONT> org.junit.Test;
+<A NAME="15"></A>
+<A NAME="16"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> SerialSchedulingStrategyTest {
+<A NAME="17"></A>
+<A NAME="18"></A>    <FONT ID="Private">private</FONT> <A HREF="../../../com/collective/celos/SerialSchedulingStrategy.java.html">SerialSchedulingStrategy</A> makeSerialSchedulingStrategy() {
+<A NAME="19"></A>        <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SerialSchedulingStrategy.java.html">SerialSchedulingStrategy</A>(<FONT ID="IntegerLiteral">1</FONT>);
+<A NAME="20"></A>    }
+<A NAME="21"></A>
+<A NAME="22"></A>    <FONT ID="Private">private</FONT> <A HREF="../../../com/collective/celos/SerialSchedulingStrategy.java.html">SerialSchedulingStrategy</A> makeSerialSchedulingStrategyConcurrent() {
+<A NAME="23"></A>        <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SerialSchedulingStrategy.java.html">SerialSchedulingStrategy</A>(<FONT ID="IntegerLiteral">3</FONT>);
+<A NAME="24"></A>    }
+<A NAME="25"></A>
+<A NAME="26"></A>
+<A NAME="27"></A>    <FONT ID="Private">private</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A> workflow;
+<A NAME="28"></A>    <FONT ID="Private">private</FONT> <A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A> slot1;
+<A NAME="29"></A>    <FONT ID="Private">private</FONT> <A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A> slot2;
+<A NAME="30"></A>    <FONT ID="Private">private</FONT> <A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A> slot3;
+<A NAME="31"></A>    <FONT ID="Private">private</FONT> <A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A> slot4;
+<A NAME="32"></A>    <FONT ID="Private">private</FONT> <A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A> slot5;
+<A NAME="33"></A>    <FONT ID="Private">private</FONT> <A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A> slot6;
+<A NAME="34"></A>
+<A NAME="35"></A>    @Before
+<A NAME="36"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> setUp() {
+<A NAME="37"></A>        workflow = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"foo"</FONT>);
+<A NAME="38"></A>        slot1 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A>(workflow, <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(
+<A NAME="39"></A>                <FONT ID="StringLiteral">"2013-11-18T20:00Z"</FONT>));
+<A NAME="40"></A>        slot2 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A>(workflow, <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(
+<A NAME="41"></A>                <FONT ID="StringLiteral">"2013-11-18T21:00Z"</FONT>));
+<A NAME="42"></A>        slot3 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A>(workflow, <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(
+<A NAME="43"></A>                <FONT ID="StringLiteral">"2013-11-18T22:00Z"</FONT>));
+<A NAME="44"></A>        slot4 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A>(workflow, <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(
+<A NAME="45"></A>                <FONT ID="StringLiteral">"2013-11-18T23:00Z"</FONT>));
+<A NAME="46"></A>        slot5 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A>(workflow, <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(
+<A NAME="47"></A>                <FONT ID="StringLiteral">"2013-11-19T00:00Z"</FONT>));
+<A NAME="48"></A>        slot6 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A>(workflow, <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(
+<A NAME="49"></A>                <FONT ID="StringLiteral">"2013-11-19T01:00Z"</FONT>));
+<A NAME="50"></A>    }
+<A NAME="51"></A>
+<A NAME="52"></A>    @Test
+<A NAME="53"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testHasNoSlots() {
+<A NAME="54"></A>        List&lt;<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>&gt; input = Arrays
+<A NAME="55"></A>                .asList(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>[] {});
+<A NAME="56"></A>        List&lt;<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>&gt; expected = Arrays.asList(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>[] {});
+<A NAME="57"></A>
+<A NAME="58"></A>        <A HREF="../../../com/collective/celos/SchedulingStrategy.java.html">SchedulingStrategy</A> strategy = makeSerialSchedulingStrategy();
+<A NAME="59"></A>        Assert.assertEquals(expected, strategy.getSchedulingCandidates(input));
+<A NAME="60"></A>    }
+<A NAME="61"></A>
+<A NAME="62"></A>    @Test
+<A NAME="63"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testHasRunningSlot() {
+<A NAME="64"></A>        List&lt;<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>&gt; input = Arrays
+<A NAME="65"></A>                .asList(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>[] {
+<A NAME="66"></A>                        <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(slot1, FAILURE),
+<A NAME="67"></A>                        <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(slot1, READY),
+<A NAME="68"></A>                        <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(slot2, RUNNING),
+<A NAME="69"></A>                        <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(slot3, SUCCESS),
+<A NAME="70"></A>                        <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(slot4, READY),
+<A NAME="71"></A>                        <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(slot5, WAITING), });
+<A NAME="72"></A>        List&lt;<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>&gt; expected = Arrays.asList(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>[] {});
+<A NAME="73"></A>
+<A NAME="74"></A>        <A HREF="../../../com/collective/celos/SchedulingStrategy.java.html">SchedulingStrategy</A> strategy = makeSerialSchedulingStrategy();
+<A NAME="75"></A>        Assert.assertEquals(expected, strategy.getSchedulingCandidates(input));
+<A NAME="76"></A>    }
+<A NAME="77"></A>
+<A NAME="78"></A>    @Test
+<A NAME="79"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testHasReadySlot() {
+<A NAME="80"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> scheduledSlot = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(slot1, READY);
+<A NAME="81"></A>        List&lt;<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>&gt; input = Arrays
+<A NAME="82"></A>                .asList(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>[] {
+<A NAME="83"></A>                        <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(slot1, FAILURE),
+<A NAME="84"></A>                        scheduledSlot,
+<A NAME="85"></A>                        <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(slot3, SUCCESS),
+<A NAME="86"></A>                        <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(slot4, WAITING),
+<A NAME="87"></A>                        <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(slot5, WAITING), });
+<A NAME="88"></A>        List&lt;<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>&gt; expected = Arrays.asList(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>[] { scheduledSlot });
+<A NAME="89"></A>
+<A NAME="90"></A>        <A HREF="../../../com/collective/celos/SchedulingStrategy.java.html">SchedulingStrategy</A> strategy = makeSerialSchedulingStrategy();
+<A NAME="91"></A>        Assert.assertEquals(expected, strategy.getSchedulingCandidates(input));
+<A NAME="92"></A>    }
+<A NAME="93"></A>
+<A NAME="94"></A>    @Test
+<A NAME="95"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testHasMultipleReadySlots() {
+<A NAME="96"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> scheduledSlot = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(slot1, READY);
+<A NAME="97"></A>        List&lt;<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>&gt; input = Arrays
+<A NAME="98"></A>                .asList(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>[] {
+<A NAME="99"></A>                        <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(slot1, FAILURE),
+<A NAME="100"></A>                        scheduledSlot,
+<A NAME="101"></A>                        <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(slot3, SUCCESS),
+<A NAME="102"></A>                        <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(slot4, READY),
+<A NAME="103"></A>                        <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(slot5, READY), });
+<A NAME="104"></A>        List&lt;<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>&gt; expected = Arrays.asList(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>[] { scheduledSlot });
+<A NAME="105"></A>
+<A NAME="106"></A>        <A HREF="../../../com/collective/celos/SchedulingStrategy.java.html">SchedulingStrategy</A> strategy = makeSerialSchedulingStrategy();
+<A NAME="107"></A>        Assert.assertEquals(expected, strategy.getSchedulingCandidates(input));
+<A NAME="108"></A>    }
+<A NAME="109"></A>
+<A NAME="110"></A>    @Test
+<A NAME="111"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testHasNoReadySlots() {
+<A NAME="112"></A>        List&lt;<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>&gt; input = Arrays
+<A NAME="113"></A>                .asList(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>[] {
+<A NAME="114"></A>                        <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(slot1, FAILURE),
+<A NAME="115"></A>                        <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(slot1, WAITING),
+<A NAME="116"></A>                        <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(slot3, SUCCESS),
+<A NAME="117"></A>                        <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(slot4, WAITING),
+<A NAME="118"></A>                        <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(slot5, SUCCESS), });
+<A NAME="119"></A>        List&lt;<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>&gt; expected = Arrays.asList(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>[] {});
+<A NAME="120"></A>
+<A NAME="121"></A>        <A HREF="../../../com/collective/celos/SchedulingStrategy.java.html">SchedulingStrategy</A> strategy = makeSerialSchedulingStrategy();
+<A NAME="122"></A>        Assert.assertEquals(expected, strategy.getSchedulingCandidates(input));
+<A NAME="123"></A>    }
+<A NAME="124"></A>
+<A NAME="125"></A>    @Test
+<A NAME="126"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testHasNoSlotsConcurrent() {
+<A NAME="127"></A>        List&lt;<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>&gt; input = Arrays
+<A NAME="128"></A>                .asList(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>[] {});
+<A NAME="129"></A>        List&lt;<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>&gt; expected = Arrays.asList(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>[] {});
+<A NAME="130"></A>
+<A NAME="131"></A>        <A HREF="../../../com/collective/celos/SchedulingStrategy.java.html">SchedulingStrategy</A> strategy = makeSerialSchedulingStrategyConcurrent();
+<A NAME="132"></A>        Assert.assertEquals(expected, strategy.getSchedulingCandidates(input));
+<A NAME="133"></A>    }
+<A NAME="134"></A>
+<A NAME="135"></A>    @Test
+<A NAME="136"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testHasRunningSlotConcurrent() {
+<A NAME="137"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> slotState1 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(slot1, READY);
+<A NAME="138"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> slotState2 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(slot4, READY);
+<A NAME="139"></A>        List&lt;<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>&gt; input = Arrays
+<A NAME="140"></A>                .asList(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>[] {
+<A NAME="141"></A>                        <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(slot1, FAILURE),
+<A NAME="142"></A>                        slotState1,
+<A NAME="143"></A>                        <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(slot2, RUNNING),
+<A NAME="144"></A>                        <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(slot3, SUCCESS),
+<A NAME="145"></A>                        slotState2,
+<A NAME="146"></A>                        <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(slot5, WAITING), });
+<A NAME="147"></A>        List&lt;<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>&gt; expected = Arrays.asList(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>[] {slotState1, slotState2});
+<A NAME="148"></A>
+<A NAME="149"></A>        <A HREF="../../../com/collective/celos/SchedulingStrategy.java.html">SchedulingStrategy</A> strategy = makeSerialSchedulingStrategyConcurrent();
+<A NAME="150"></A>        Assert.assertEquals(expected, strategy.getSchedulingCandidates(input));
+<A NAME="151"></A>    }
+<A NAME="152"></A>
+<A NAME="153"></A>    @Test
+<A NAME="154"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testHasReadySlotConcurrent() {
+<A NAME="155"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> scheduledSlot = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(slot1, READY);
+<A NAME="156"></A>        List&lt;<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>&gt; input = Arrays
+<A NAME="157"></A>                .asList(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>[] {
+<A NAME="158"></A>                        <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(slot1, FAILURE),
+<A NAME="159"></A>                        scheduledSlot,
+<A NAME="160"></A>                        <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(slot3, SUCCESS),
+<A NAME="161"></A>                        <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(slot4, WAITING),
+<A NAME="162"></A>                        <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(slot5, WAITING), });
+<A NAME="163"></A>        List&lt;<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>&gt; expected = Arrays.asList(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>[] { scheduledSlot });
+<A NAME="164"></A>
+<A NAME="165"></A>        <A HREF="../../../com/collective/celos/SchedulingStrategy.java.html">SchedulingStrategy</A> strategy = makeSerialSchedulingStrategyConcurrent();
+<A NAME="166"></A>        Assert.assertEquals(expected, strategy.getSchedulingCandidates(input));
+<A NAME="167"></A>    }
+<A NAME="168"></A>
+<A NAME="169"></A>    @Test
+<A NAME="170"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testHasMultipleReadySlotsConcurrent() {
+<A NAME="171"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> scheduledSlot1 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(slot1, READY);
+<A NAME="172"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> scheduledSlot2 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(slot4, READY);
+<A NAME="173"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> scheduledSlot3 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(slot5, READY);
+<A NAME="174"></A>        List&lt;<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>&gt; input = Arrays
+<A NAME="175"></A>                .asList(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>[] {
+<A NAME="176"></A>                        <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(slot1, FAILURE),
+<A NAME="177"></A>                        scheduledSlot1,
+<A NAME="178"></A>                        <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(slot3, SUCCESS),
+<A NAME="179"></A>                        scheduledSlot2,
+<A NAME="180"></A>                        scheduledSlot3});
+<A NAME="181"></A>        List&lt;<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>&gt; expected = Arrays.asList(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>[] { scheduledSlot1, scheduledSlot2, scheduledSlot3 });
+<A NAME="182"></A>
+<A NAME="183"></A>        <A HREF="../../../com/collective/celos/SchedulingStrategy.java.html">SchedulingStrategy</A> strategy = makeSerialSchedulingStrategyConcurrent();
+<A NAME="184"></A>        Assert.assertEquals(expected, strategy.getSchedulingCandidates(input));
+<A NAME="185"></A>    }
+<A NAME="186"></A>
+<A NAME="187"></A>    @Test
+<A NAME="188"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testHasMultipleReadySlotsConcurrentMoreThanReady() {
+<A NAME="189"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> scheduledSlot1 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(slot1, READY);
+<A NAME="190"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> scheduledSlot2 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(slot4, READY);
+<A NAME="191"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> scheduledSlot3 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(slot5, READY);
+<A NAME="192"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> scheduledSlot6 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(slot6, READY);
+<A NAME="193"></A>        List&lt;<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>&gt; input = Arrays
+<A NAME="194"></A>                .asList(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>[] {
+<A NAME="195"></A>                        <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(slot1, FAILURE),
+<A NAME="196"></A>                        scheduledSlot1,
+<A NAME="197"></A>                        <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(slot3, SUCCESS),
+<A NAME="198"></A>                        scheduledSlot2,
+<A NAME="199"></A>                        scheduledSlot3,
+<A NAME="200"></A>                        scheduledSlot6
+<A NAME="201"></A>                });
+<A NAME="202"></A>        List&lt;<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>&gt; expected = Arrays.asList(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>[] { scheduledSlot1, scheduledSlot2, scheduledSlot3});
+<A NAME="203"></A>
+<A NAME="204"></A>        <A HREF="../../../com/collective/celos/SchedulingStrategy.java.html">SchedulingStrategy</A> strategy = makeSerialSchedulingStrategyConcurrent();
+<A NAME="205"></A>        Assert.assertEquals(expected, strategy.getSchedulingCandidates(input));
+<A NAME="206"></A>    }
+<A NAME="207"></A>
+<A NAME="208"></A>
+<A NAME="209"></A>    @Test
+<A NAME="210"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testHasNoReadySlotsConcurrent() {
+<A NAME="211"></A>        List&lt;<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>&gt; input = Arrays
+<A NAME="212"></A>                .asList(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>[] {
+<A NAME="213"></A>                        <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(slot1, FAILURE),
+<A NAME="214"></A>                        <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(slot1, WAITING),
+<A NAME="215"></A>                        <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(slot3, SUCCESS),
+<A NAME="216"></A>                        <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(slot4, WAITING),
+<A NAME="217"></A>                        <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(slot5, SUCCESS), });
+<A NAME="218"></A>        List&lt;<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>&gt; expected = Arrays.asList(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>[] {});
+<A NAME="219"></A>
+<A NAME="220"></A>        <A HREF="../../../com/collective/celos/SchedulingStrategy.java.html">SchedulingStrategy</A> strategy = makeSerialSchedulingStrategyConcurrent();
+<A NAME="221"></A>        Assert.assertEquals(expected, strategy.getSchedulingCandidates(input));
+<A NAME="222"></A>    }
+<A NAME="223"></A>    
+<A NAME="224"></A>    @Test
+<A NAME="225"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testHasMultipleRunningSlots() {
+<A NAME="226"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> scheduledSlot1 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(slot1, READY);
+<A NAME="227"></A>        List&lt;<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>&gt; input = Arrays
+<A NAME="228"></A>                .asList(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>[] {
+<A NAME="229"></A>                        <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(slot1, FAILURE),
+<A NAME="230"></A>                        scheduledSlot1,
+<A NAME="231"></A>                        <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(slot3, SUCCESS),
+<A NAME="232"></A>                        <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(slot3, RUNNING),
+<A NAME="233"></A>                        <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(slot3, RUNNING)
+<A NAME="234"></A>                });
+<A NAME="235"></A>        List&lt;<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>&gt; expected = Arrays.asList(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>[] { scheduledSlot1 });
+<A NAME="236"></A>
+<A NAME="237"></A>        <A HREF="../../../com/collective/celos/SchedulingStrategy.java.html">SchedulingStrategy</A> strategy = makeSerialSchedulingStrategyConcurrent();
+<A NAME="238"></A>        Assert.assertEquals(expected, strategy.getSchedulingCandidates(input));
+<A NAME="239"></A>    }
+<A NAME="240"></A>
+<A NAME="241"></A>    @Test
+<A NAME="242"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testHasMultipleRunningSlotsDifferentOrder() {
+<A NAME="243"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> scheduledSlot1 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(slot1, READY);
+<A NAME="244"></A>        List&lt;<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>&gt; input = Arrays
+<A NAME="245"></A>                .asList(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>[] {
+<A NAME="246"></A>                        <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(slot1, FAILURE),
+<A NAME="247"></A>                        <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(slot3, SUCCESS),
+<A NAME="248"></A>                        <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(slot3, RUNNING),
+<A NAME="249"></A>                        <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(slot3, RUNNING),
+<A NAME="250"></A>                        scheduledSlot1
+<A NAME="251"></A>                });
+<A NAME="252"></A>        List&lt;<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>&gt; expected = Arrays.asList(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>[] { scheduledSlot1 });
+<A NAME="253"></A>
+<A NAME="254"></A>        <A HREF="../../../com/collective/celos/SchedulingStrategy.java.html">SchedulingStrategy</A> strategy = makeSerialSchedulingStrategyConcurrent();
+<A NAME="255"></A>        Assert.assertEquals(expected, strategy.getSchedulingCandidates(input));
+<A NAME="256"></A>    }
+<A NAME="257"></A>
+<A NAME="258"></A>    @Test
+<A NAME="259"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testHasTooManyRunningSlots() {
+<A NAME="260"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> scheduledSlot1 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(slot1, READY);
+<A NAME="261"></A>        List&lt;<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>&gt; input = Arrays
+<A NAME="262"></A>                .asList(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>[] {
+<A NAME="263"></A>                        <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(slot1, RUNNING),
+<A NAME="264"></A>                        scheduledSlot1,
+<A NAME="265"></A>                        <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(slot3, SUCCESS),
+<A NAME="266"></A>                        <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(slot3, RUNNING),
+<A NAME="267"></A>                        <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(slot3, RUNNING)
+<A NAME="268"></A>                });
+<A NAME="269"></A>        List&lt;<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>&gt; expected = Arrays.asList(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>[] { });
+<A NAME="270"></A>
+<A NAME="271"></A>        <A HREF="../../../com/collective/celos/SchedulingStrategy.java.html">SchedulingStrategy</A> strategy = makeSerialSchedulingStrategyConcurrent();
+<A NAME="272"></A>        Assert.assertEquals(expected, strategy.getSchedulingCandidates(input));
+<A NAME="273"></A>    }
+<A NAME="274"></A>
+<A NAME="275"></A>    @Test
+<A NAME="276"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testHasMultipleRunningSlotsAnotherOne() {
+<A NAME="277"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> scheduledSlot1 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(slot1, READY);
+<A NAME="278"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> scheduledSlot2 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(slot2, READY);
+<A NAME="279"></A>        List&lt;<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>&gt; input = Arrays
+<A NAME="280"></A>                .asList(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>[] {
+<A NAME="281"></A>                        <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(slot1, FAILURE),
+<A NAME="282"></A>                        scheduledSlot1,
+<A NAME="283"></A>                        <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(slot3, RUNNING),
+<A NAME="284"></A>                        <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(slot3, RUNNING),
+<A NAME="285"></A>                        scheduledSlot2
+<A NAME="286"></A>                });
+<A NAME="287"></A>        List&lt;<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>&gt; expected = Arrays.asList(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>[] { scheduledSlot1 });
+<A NAME="288"></A>
+<A NAME="289"></A>        <A HREF="../../../com/collective/celos/SchedulingStrategy.java.html">SchedulingStrategy</A> strategy = makeSerialSchedulingStrategyConcurrent();
+<A NAME="290"></A>        Assert.assertEquals(expected, strategy.getSchedulingCandidates(input));
+<A NAME="291"></A>    }
+<A NAME="292"></A>
+<A NAME="293"></A>
+<A NAME="294"></A>}
+<A NAME="295"></A></pre>
+</BODY>
+</HTML>

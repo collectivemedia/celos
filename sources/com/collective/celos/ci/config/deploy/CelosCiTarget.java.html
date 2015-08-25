@@ -1,0 +1,63 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.ci.config.deploy.CelosCiTarget (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">CelosCiTarget.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos.ci.config.deploy;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../com/collective/celos/Util.java.html">com.collective.celos.Util</A>;
+<A NAME="4"></A>
+<A NAME="5"></A><FONT ID="Import">import</FONT> java.net.URI;
+<A NAME="6"></A>
+<A NAME="7"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> CelosCiTarget {
+<A NAME="8"></A>
+<A NAME="9"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> URI pathToHdfsSite;
+<A NAME="10"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> URI pathToCoreSite;
+<A NAME="11"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> URI workflowsDirUri;
+<A NAME="12"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> URI defaultsDirUri;
+<A NAME="13"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> URI hiveJdbc;
+<A NAME="14"></A>
+<A NAME="15"></A>    <FONT ID="Public">public</FONT> CelosCiTarget(URI pathToHdfsSite, URI pathToCoreSite, URI workflowsDirUri, URI defaultsDirUri, URI hiveJdbc) {
+<A NAME="16"></A>        <FONT ID="This">this</FONT>.pathToHdfsSite = Util.requireNonNull(pathToHdfsSite);
+<A NAME="17"></A>        <FONT ID="This">this</FONT>.pathToCoreSite = Util.requireNonNull(pathToCoreSite);
+<A NAME="18"></A>        <FONT ID="This">this</FONT>.workflowsDirUri = Util.requireNonNull(workflowsDirUri);
+<A NAME="19"></A>        <FONT ID="This">this</FONT>.defaultsDirUri = Util.requireNonNull(defaultsDirUri);
+<A NAME="20"></A>        <FONT ID="This">this</FONT>.hiveJdbc = hiveJdbc;
+<A NAME="21"></A>    }
+<A NAME="22"></A>
+<A NAME="23"></A>    <FONT ID="Public">public</FONT> URI getPathToHdfsSite() {
+<A NAME="24"></A>        <FONT ID="Return">return</FONT> pathToHdfsSite;
+<A NAME="25"></A>    }
+<A NAME="26"></A>
+<A NAME="27"></A>    <FONT ID="Public">public</FONT> URI getPathToCoreSite() {
+<A NAME="28"></A>        <FONT ID="Return">return</FONT> pathToCoreSite;
+<A NAME="29"></A>    }
+<A NAME="30"></A>
+<A NAME="31"></A>    <FONT ID="Public">public</FONT> URI getWorkflowsDirUri() {
+<A NAME="32"></A>        <FONT ID="Return">return</FONT> workflowsDirUri;
+<A NAME="33"></A>    }
+<A NAME="34"></A>
+<A NAME="35"></A>    <FONT ID="Public">public</FONT> URI getDefaultsDirUri() {
+<A NAME="36"></A>        <FONT ID="Return">return</FONT> defaultsDirUri;
+<A NAME="37"></A>    }
+<A NAME="38"></A>
+<A NAME="39"></A>    <FONT ID="Public">public</FONT> URI getHiveJdbc() {
+<A NAME="40"></A>        <FONT ID="Return">return</FONT> hiveJdbc;
+<A NAME="41"></A>    }
+<A NAME="42"></A>}
+<A NAME="43"></A>
+<A NAME="44"></A></pre>
+</BODY>
+</HTML>

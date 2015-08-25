@@ -1,0 +1,45 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.ValueObject (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">ValueObject.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> org.apache.commons.lang.builder.EqualsBuilder;
+<A NAME="4"></A><FONT ID="Import">import</FONT> org.apache.commons.lang.builder.HashCodeBuilder;
+<A NAME="5"></A><FONT ID="Import">import</FONT> org.apache.commons.lang.builder.ToStringBuilder;
+<A NAME="6"></A><FONT ID="Import">import</FONT> org.apache.commons.lang.builder.ToStringStyle;
+<A NAME="7"></A>
+<A NAME="8"></A><FONT ID="FormalComment">/**
+<A NAME="9"></A> * Provides automatic equals, hashCode, and toString for simple objects.
+<A NAME="10"></A> */</FONT>
+<A NAME="11"></A><FONT ID="Public">public</FONT> <FONT ID="Abstract">abstract</FONT> <FONT ID="Class">class</FONT> ValueObject {
+<A NAME="12"></A>
+<A NAME="13"></A>    <FONT ID="Public">public</FONT> <FONT ID="Boolean">boolean</FONT> equals(Object other) {
+<A NAME="14"></A>        <FONT ID="Return">return</FONT> EqualsBuilder.reflectionEquals(<FONT ID="This">this</FONT>, other);
+<A NAME="15"></A>    }
+<A NAME="16"></A>    
+<A NAME="17"></A>    <FONT ID="Public">public</FONT> <FONT ID="Int">int</FONT> hashCode() {
+<A NAME="18"></A>        <FONT ID="Return">return</FONT> HashCodeBuilder.reflectionHashCode(<FONT ID="This">this</FONT>);
+<A NAME="19"></A>    }
+<A NAME="20"></A>
+<A NAME="21"></A>    <FONT ID="Public">public</FONT> String toString() {
+<A NAME="22"></A>        <FONT ID="Return">return</FONT> ToStringBuilder.reflectionToString(<FONT ID="This">this</FONT>, ToStringStyle.SHORT_PREFIX_STYLE);
+<A NAME="23"></A>    }
+<A NAME="24"></A>    
+<A NAME="25"></A>}
+<A NAME="26"></A></pre>
+</BODY>
+</HTML>

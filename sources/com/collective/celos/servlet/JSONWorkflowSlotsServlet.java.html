@@ -1,0 +1,116 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.servlet.JSONWorkflowSlotsServlet (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">JSONWorkflowSlotsServlet.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos.servlet;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> com.collective.celos.*;
+<A NAME="4"></A><FONT ID="Import">import</FONT> com.fasterxml.jackson.databind.JsonNode;
+<A NAME="5"></A><FONT ID="Import">import</FONT> com.fasterxml.jackson.databind.node.ObjectNode;
+<A NAME="6"></A><FONT ID="Import">import</FONT> com.google.common.collect.Lists;
+<A NAME="7"></A><FONT ID="Import">import</FONT> org.joda.time.DateTime;
+<A NAME="8"></A><FONT ID="Import">import</FONT> org.joda.time.DateTimeZone;
+<A NAME="9"></A>
+<A NAME="10"></A><FONT ID="Import">import</FONT> javax.servlet.ServletException;
+<A NAME="11"></A><FONT ID="Import">import</FONT> javax.servlet.http.HttpServletRequest;
+<A NAME="12"></A><FONT ID="Import">import</FONT> javax.servlet.http.HttpServletResponse;
+<A NAME="13"></A><FONT ID="Import">import</FONT> java.util.List;
+<A NAME="14"></A>
+<A NAME="15"></A><FONT ID="FormalComment">/**
+<A NAME="16"></A> * Returns information about the slot states of a single workflow as JSON.
+<A NAME="17"></A> * 
+<A NAME="18"></A> * GET /workflow-slots?id=workflow-1
+<A NAME="19"></A> * ----
+<A NAME="20"></A> * {
+<A NAME="21"></A> *   "info": {
+<A NAME="22"></A> *       "url": "http://myurl",
+<A NAME="23"></A> *       "contacts": [
+<A NAME="24"></A> *           { "name": "John Doe", "email": "John.Doe@Gmail.Com"},
+<A NAME="25"></A> *           { "name": "Jack Smith", "email": "Jack.Smith@Gmail.Com"},
+<A NAME="26"></A> *       ]
+<A NAME="27"></A> *   },
+<A NAME="28"></A> *   "slots": [
+<A NAME="29"></A> *      { "time": "2013-12-07T13:00:00.000Z", "status": "RUNNING", "externalID": "237982137-371832798321-W", retryCount: 5 },
+<A NAME="30"></A> *      { "time": "2013-12-07T14:00:00.000Z", "status": "READY", "externalID": null, retryCount: 0 },
+<A NAME="31"></A> *     ...
+<A NAME="32"></A> *   ]
+<A NAME="33"></A> * }
+<A NAME="34"></A> * 
+<A NAME="35"></A> * If the "end" parameter is supplied, information is returned about 
+<A NAME="36"></A> * slot states up to that time.  Defaults to the current time.
+<A NAME="37"></A> *
+<A NAME="38"></A> * If the "start" parameter is supplied, information is returned about 
+<A NAME="39"></A> * slot states starting at that time.
+<A NAME="40"></A> * Defaults to the beginning of the sliding window ending at "end".
+<A NAME="41"></A> */</FONT>
+<A NAME="42"></A>@SuppressWarnings(<FONT ID="StringLiteral">"serial"</FONT>)
+<A NAME="43"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> JSONWorkflowSlotsServlet <FONT ID="Extends">extends</FONT> <A HREF="../../../../com/collective/celos/servlet/AbstractJSONServlet.java.html">AbstractJSONServlet</A> {
+<A NAME="44"></A>
+<A NAME="45"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String ID_PARAM = <FONT ID="StringLiteral">"id"</FONT>;
+<A NAME="46"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String INFO_PARAM = <FONT ID="StringLiteral">"info"</FONT>;
+<A NAME="47"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String SLOTS_PARAM = <FONT ID="StringLiteral">"slots"</FONT>;
+<A NAME="48"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String START_TIME_PARAM = <FONT ID="StringLiteral">"start"</FONT>;
+<A NAME="49"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String END_TIME_PARAM = <FONT ID="StringLiteral">"end"</FONT>;
+<A NAME="50"></A>
+<A NAME="51"></A>    <FONT ID="Protected">protected</FONT> <FONT ID="Void">void</FONT> doGet(HttpServletRequest req, HttpServletResponse res) <FONT ID="Throws">throws</FONT> ServletException {
+<A NAME="52"></A>        String id = req.getParameter(ID_PARAM);
+<A NAME="53"></A>        <FONT ID="Try">try</FONT> {
+<A NAME="54"></A>            <FONT ID="If">if</FONT> (id == <FONT ID="Null">null</FONT>) {
+<A NAME="55"></A>                res.sendError(HttpServletResponse.SC_BAD_REQUEST, ID_PARAM + <FONT ID="StringLiteral">" parameter missing."</FONT>);
+<A NAME="56"></A>                <FONT ID="Return">return</FONT>;
+<A NAME="57"></A>            }
+<A NAME="58"></A>            Scheduler scheduler = getOrCreateCachedScheduler();
+<A NAME="59"></A>            Workflow wf = scheduler.getWorkflowConfiguration().findWorkflow(<FONT ID="New">new</FONT> WorkflowID(id));
+<A NAME="60"></A>            <FONT ID="If">if</FONT> (wf == <FONT ID="Null">null</FONT>) {
+<A NAME="61"></A>                res.sendError(HttpServletResponse.SC_NOT_FOUND, <FONT ID="StringLiteral">"Workflow not found: "</FONT> + id);
+<A NAME="62"></A>                <FONT ID="Return">return</FONT>;
+<A NAME="63"></A>            }
+<A NAME="64"></A>
+<A NAME="65"></A>            ScheduledTime endTime = getTimeParam(req, END_TIME_PARAM, <FONT ID="New">new</FONT> ScheduledTime(DateTime.now(DateTimeZone.UTC)));
+<A NAME="66"></A>            ScheduledTime startTime = getTimeParam(req, START_TIME_PARAM, scheduler.getWorkflowStartTime(wf, endTime));
+<A NAME="67"></A>
+<A NAME="68"></A>            <FONT ID="If">if</FONT> (startTime.plusHours(scheduler.getSlidingWindowHours()).getDateTime().isBefore(endTime.getDateTime())) {
+<A NAME="69"></A>                res.sendError(HttpServletResponse.SC_BAD_REQUEST, <FONT ID="StringLiteral">"Time interval between start and end is limited to: "</FONT> + scheduler.getSlidingWindowHours() + <FONT ID="StringLiteral">" hours"</FONT>);
+<A NAME="70"></A>                <FONT ID="Return">return</FONT>;
+<A NAME="71"></A>            }
+<A NAME="72"></A>
+<A NAME="73"></A>            List&lt;SlotState&gt; slotStates = scheduler.getSlotStates(wf, startTime, endTime);
+<A NAME="74"></A>            List&lt;JsonNode&gt; objectNodes = Lists.newArrayList();
+<A NAME="75"></A>            <FONT ID="For">for</FONT> (SlotState state : Lists.reverse(slotStates)) {
+<A NAME="76"></A>                objectNodes.add(state.toJSONNode());
+<A NAME="77"></A>            }
+<A NAME="78"></A>
+<A NAME="79"></A>            ObjectNode node = mapper.createObjectNode();
+<A NAME="80"></A>            node.put(INFO_PARAM, mapper.valueToTree(wf.getWorkflowInfo()));
+<A NAME="81"></A>            node.putArray(SLOTS_PARAM).addAll(objectNodes);
+<A NAME="82"></A>            writer.writeValue(res.getOutputStream(), node);
+<A NAME="83"></A>        } <FONT ID="Catch">catch</FONT> (Exception e) {
+<A NAME="84"></A>            <FONT ID="Throw">throw</FONT> <FONT ID="New">new</FONT> ServletException(e);
+<A NAME="85"></A>        }
+<A NAME="86"></A>    }
+<A NAME="87"></A>
+<A NAME="88"></A>    <FONT ID="Private">private</FONT> ScheduledTime getTimeParam(HttpServletRequest req, String paramName, ScheduledTime defaultTime) <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="89"></A>        String timeParam = req.getParameter(paramName);
+<A NAME="90"></A>        <FONT ID="If">if</FONT> (timeParam != <FONT ID="Null">null</FONT>) {
+<A NAME="91"></A>            <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> ScheduledTime(timeParam);
+<A NAME="92"></A>        }
+<A NAME="93"></A>        <FONT ID="Return">return</FONT> defaultTime;
+<A NAME="94"></A>    }
+<A NAME="95"></A>
+<A NAME="96"></A>}
+<A NAME="97"></A></pre>
+</BODY>
+</HTML>

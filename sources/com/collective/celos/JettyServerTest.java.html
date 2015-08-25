@@ -1,0 +1,71 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.JettyServerTest (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">JettyServerTest.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> junit.framework.Assert;
+<A NAME="4"></A><FONT ID="Import">import</FONT> org.apache.http.HttpResponse;
+<A NAME="5"></A><FONT ID="Import">import</FONT> org.apache.http.client.HttpClient;
+<A NAME="6"></A><FONT ID="Import">import</FONT> org.apache.http.client.methods.HttpGet;
+<A NAME="7"></A><FONT ID="Import">import</FONT> org.apache.http.conn.HttpHostConnectException;
+<A NAME="8"></A><FONT ID="Import">import</FONT> org.apache.http.impl.client.DefaultHttpClient;
+<A NAME="9"></A><FONT ID="Import">import</FONT> org.apache.http.util.EntityUtils;
+<A NAME="10"></A><FONT ID="Import">import</FONT> org.junit.Test;
+<A NAME="11"></A>
+<A NAME="12"></A><FONT ID="FormalComment">/**
+<A NAME="13"></A> * Created by akonopko on 22.12.14.
+<A NAME="14"></A> */</FONT>
+<A NAME="15"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> JettyServerTest {
+<A NAME="16"></A>
+<A NAME="17"></A>    @Test
+<A NAME="18"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testServerStartsSpecifyPort() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="19"></A>        <FONT ID="Int">int</FONT> port = Util.getFreePort();
+<A NAME="20"></A>
+<A NAME="21"></A>        <A HREF="../../../com/collective/celos/JettyServer.java.html">JettyServer</A> jettyServer = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/JettyServer.java.html">JettyServer</A>();
+<A NAME="22"></A>        jettyServer.start(port);
+<A NAME="23"></A>
+<A NAME="24"></A>        HttpClient httpClient = <FONT ID="New">new</FONT> DefaultHttpClient();
+<A NAME="25"></A>        HttpGet workflowListGet = <FONT ID="New">new</FONT> HttpGet(<FONT ID="StringLiteral">"http://localhost:"</FONT> + port);
+<A NAME="26"></A>        HttpResponse response = httpClient.execute(workflowListGet);
+<A NAME="27"></A>        EntityUtils.consume(response.getEntity());
+<A NAME="28"></A>
+<A NAME="29"></A>        Assert.assertEquals(response.getStatusLine().getStatusCode(), <FONT ID="IntegerLiteral">200</FONT>);
+<A NAME="30"></A>    }
+<A NAME="31"></A>
+<A NAME="32"></A>
+<A NAME="33"></A>    @Test(expected = HttpHostConnectException.<FONT ID="Class">class</FONT>)
+<A NAME="34"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testServerStopsSpecifyPort() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="35"></A>        <FONT ID="Int">int</FONT> port = Util.getFreePort();
+<A NAME="36"></A>
+<A NAME="37"></A>        <A HREF="../../../com/collective/celos/JettyServer.java.html">JettyServer</A> jettyServer = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/JettyServer.java.html">JettyServer</A>();
+<A NAME="38"></A>        jettyServer.start(port);
+<A NAME="39"></A>
+<A NAME="40"></A>        HttpClient httpClient = <FONT ID="New">new</FONT> DefaultHttpClient();
+<A NAME="41"></A>        HttpGet workflowListGet = <FONT ID="New">new</FONT> HttpGet(<FONT ID="StringLiteral">"http://localhost:"</FONT> + port);
+<A NAME="42"></A>        HttpResponse response = httpClient.execute(workflowListGet);
+<A NAME="43"></A>
+<A NAME="44"></A>        Assert.assertEquals(response.getStatusLine().getStatusCode(), <FONT ID="IntegerLiteral">200</FONT>);
+<A NAME="45"></A>        EntityUtils.consume(response.getEntity());
+<A NAME="46"></A>        jettyServer.stop();
+<A NAME="47"></A>
+<A NAME="48"></A>        httpClient.execute(workflowListGet);
+<A NAME="49"></A>    }
+<A NAME="50"></A>
+<A NAME="51"></A>}
+<A NAME="52"></A></pre>
+</BODY>
+</HTML>
