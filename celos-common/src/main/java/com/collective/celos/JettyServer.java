@@ -1,7 +1,9 @@
 package com.collective.celos;
 
 import org.apache.http.client.utils.URIBuilder;
+import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.webapp.WebAppContext;
 
 import java.net.URL;
@@ -15,7 +17,20 @@ public class JettyServer {
 
     public void start(int port) throws Exception {
         server = new Server(port);
+        startServer();
+    }
 
+    public int start() throws Exception {
+        server = new Server();
+        ServerConnector serverConnector = new ServerConnector(server);
+        server.setConnectors(new Connector[]{serverConnector});
+
+        startServer();
+
+        return serverConnector.getLocalPort();
+    }
+
+    private void startServer() throws Exception {
         URL url = Thread.currentThread().getContextClassLoader().getResource("WEB-INF");
         URIBuilder uriBuilder = new URIBuilder(url.toURI());
         uriBuilder.setPath(Paths.get(url.getPath()).getParent().toString());
