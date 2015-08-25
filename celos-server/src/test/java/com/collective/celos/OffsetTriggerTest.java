@@ -1,6 +1,8 @@
 package com.collective.celos;
 
-import org.junit.Assert;
+import com.collective.celos.trigger.HDFSCheckTrigger;
+import com.collective.celos.trigger.OffsetTrigger;
+import com.collective.celos.trigger.Trigger;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;

@@ -1,6 +1,8 @@
-package com.collective.celos;
+package com.collective.celos.trigger;
 
-import org.joda.time.DateTime;
+import com.collective.celos.ScheduledTime;
+import com.collective.celos.Scheduler;
+import com.collective.celos.Util;
 
 /**
  * var oneDay = 60 * 60 * 24;

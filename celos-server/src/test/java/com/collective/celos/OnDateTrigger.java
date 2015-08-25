@@ -1,8 +1,6 @@
 package com.collective.celos;
 
-import com.collective.celos.ScheduledTime;
-import com.collective.celos.Scheduler;
-import com.collective.celos.Trigger;
+import com.collective.celos.trigger.Trigger;
 
 public class OnDateTrigger implements Trigger {
 

@@ -8,6 +8,7 @@ import java.net.URL;
 import java.util.List;
 import java.util.SortedSet;
 
+import com.collective.celos.trigger.Trigger;
 import com.google.common.collect.ImmutableMap;
 import org.junit.Assert;
 import org.junit.Test;

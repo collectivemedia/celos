@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
 
+import com.collective.celos.trigger.Trigger;
 import org.apache.log4j.Logger;
 
 public class Scheduler {
