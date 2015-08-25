@@ -19,7 +19,7 @@
 <A NAME="2"></A>
 <A NAME="3"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../../com/collective/celos/DatabaseName.java.html">com.collective.celos.DatabaseName</A>;
 <A NAME="4"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../../com/collective/celos/ci/mode/test/TestRun.java.html">com.collective.celos.ci.mode.test.TestRun</A>;
-<A NAME="5"></A><FONT ID="Import">import</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">com.collective.celos.ci.testing.structure.fixobject.FixTable</A>;
+<A NAME="5"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixTable.java.html">com.collective.celos.ci.testing.structure.fixobject.FixTable</A>;
 <A NAME="6"></A><FONT ID="Import">import</FONT> com.google.common.collect.Maps;
 <A NAME="7"></A><FONT ID="Import">import</FONT> junit.framework.Assert;
 <A NAME="8"></A><FONT ID="Import">import</FONT> org.junit.Test;
@@ -38,7 +38,7 @@
 <A NAME="21"></A>
 <A NAME="22"></A>    @Test
 <A NAME="23"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testCreateFixTable() <FONT ID="Throws">throws</FONT> SQLException {
-<A NAME="24"></A>        <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/fixtures/create/OutputFixTableFromHiveCreator.html">OutputFixTableFromHiveCreator</A> creator = <FONT ID="New">new</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/fixtures/create/OutputFixTableFromHiveCreator.html">OutputFixTableFromHiveCreator</A>(<FONT ID="New">new</FONT> <A HREF="../../../../../../../com/collective/celos/DatabaseName.java.html">DatabaseName</A>(<FONT ID="StringLiteral">"db"</FONT>), <FONT ID="StringLiteral">"table"</FONT>);
+<A NAME="24"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/OutputFixTableFromHiveCreator.java.html">OutputFixTableFromHiveCreator</A> creator = <FONT ID="New">new</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/OutputFixTableFromHiveCreator.java.html">OutputFixTableFromHiveCreator</A>(<FONT ID="New">new</FONT> <A HREF="../../../../../../../com/collective/celos/DatabaseName.java.html">DatabaseName</A>(<FONT ID="StringLiteral">"db"</FONT>), <FONT ID="StringLiteral">"table"</FONT>);
 <A NAME="25"></A>
 <A NAME="26"></A>        Connection connection = mock(Connection.<FONT ID="Class">class</FONT>);
 <A NAME="27"></A>        Statement statement = mock(Statement.<FONT ID="Class">class</FONT>);
@@ -64,12 +64,12 @@
 <A NAME="47"></A>        when(resultSet.getString(<FONT ID="StringLiteral">"col2"</FONT>)).thenReturn(<FONT ID="StringLiteral">"col2val1"</FONT>).thenReturn(<FONT ID="StringLiteral">"col2val2"</FONT>).thenReturn(<FONT ID="StringLiteral">"col2val3"</FONT>);
 <A NAME="48"></A>        when(resultSet.getString(<FONT ID="StringLiteral">"col3"</FONT>)).thenReturn(<FONT ID="StringLiteral">"col3val1"</FONT>).thenReturn(<FONT ID="StringLiteral">"col3val2"</FONT>).thenReturn(<FONT ID="StringLiteral">"col3val3"</FONT>);
 <A NAME="49"></A>
-<A NAME="50"></A>        <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable</A> resultTable = creator.createFixTable(testRun, statement);
-<A NAME="51"></A>        List&lt;<A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable.FixRow</A>&gt; rowList = resultTable.getRows();
+<A NAME="50"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixTable.java.html">FixTable</A> resultTable = creator.createFixTable(testRun, statement);
+<A NAME="51"></A>        List&lt;<A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixTable.java.html">FixTable.FixRow</A>&gt; rowList = resultTable.getRows();
 <A NAME="52"></A>
 <A NAME="53"></A>        Assert.assertEquals(rowList.size(), <FONT ID="IntegerLiteral">2</FONT>);
-<A NAME="54"></A>        <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable.FixRow</A> row1 = rowList.get(<FONT ID="IntegerLiteral">0</FONT>);
-<A NAME="55"></A>        <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable.FixRow</A> row2 = rowList.get(<FONT ID="IntegerLiteral">1</FONT>);
+<A NAME="54"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixTable.java.html">FixTable.FixRow</A> row1 = rowList.get(<FONT ID="IntegerLiteral">0</FONT>);
+<A NAME="55"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixTable.java.html">FixTable.FixRow</A> row2 = rowList.get(<FONT ID="IntegerLiteral">1</FONT>);
 <A NAME="56"></A>
 <A NAME="57"></A>        Map&lt;String,String&gt; rowData1 = Maps.newHashMap();
 <A NAME="58"></A>        rowData1.put(<FONT ID="StringLiteral">"col1"</FONT>, <FONT ID="StringLiteral">"col1val1"</FONT>);
@@ -87,7 +87,7 @@
 <A NAME="70"></A>
 <A NAME="71"></A>    @Test
 <A NAME="72"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testCreateFixTableNoData() <FONT ID="Throws">throws</FONT> SQLException {
-<A NAME="73"></A>        <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/fixtures/create/OutputFixTableFromHiveCreator.html">OutputFixTableFromHiveCreator</A> creator = <FONT ID="New">new</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/fixtures/create/OutputFixTableFromHiveCreator.html">OutputFixTableFromHiveCreator</A>(<FONT ID="New">new</FONT> <A HREF="../../../../../../../com/collective/celos/DatabaseName.java.html">DatabaseName</A>(<FONT ID="StringLiteral">"db"</FONT>), <FONT ID="StringLiteral">"table"</FONT>);
+<A NAME="73"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/OutputFixTableFromHiveCreator.java.html">OutputFixTableFromHiveCreator</A> creator = <FONT ID="New">new</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/OutputFixTableFromHiveCreator.java.html">OutputFixTableFromHiveCreator</A>(<FONT ID="New">new</FONT> <A HREF="../../../../../../../com/collective/celos/DatabaseName.java.html">DatabaseName</A>(<FONT ID="StringLiteral">"db"</FONT>), <FONT ID="StringLiteral">"table"</FONT>);
 <A NAME="74"></A>
 <A NAME="75"></A>        Connection connection = mock(Connection.<FONT ID="Class">class</FONT>);
 <A NAME="76"></A>        Statement statement = mock(Statement.<FONT ID="Class">class</FONT>);
@@ -110,8 +110,8 @@
 <A NAME="93"></A>
 <A NAME="94"></A>        when(resultSet.next()).thenReturn(<FONT ID="False">false</FONT>);
 <A NAME="95"></A>
-<A NAME="96"></A>        <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable</A> resultTable = creator.createFixTable(testRun, statement);
-<A NAME="97"></A>        List&lt;<A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable.FixRow</A>&gt; rowList = resultTable.getRows();
+<A NAME="96"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixTable.java.html">FixTable</A> resultTable = creator.createFixTable(testRun, statement);
+<A NAME="97"></A>        List&lt;<A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixTable.java.html">FixTable.FixRow</A>&gt; rowList = resultTable.getRows();
 <A NAME="98"></A>
 <A NAME="99"></A>        Assert.assertEquals(rowList.size(), <FONT ID="IntegerLiteral">0</FONT>);
 <A NAME="100"></A>    }

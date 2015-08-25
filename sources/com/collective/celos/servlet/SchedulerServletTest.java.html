@@ -1,0 +1,54 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.servlet.SchedulerServletTest (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">SchedulerServletTest.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos.servlet;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> <A HREF="../../../../com/collective/celos/WorkflowID.java.html">com.collective.celos.WorkflowID</A>;
+<A NAME="4"></A><FONT ID="Import">import</FONT> org.junit.Assert;
+<A NAME="5"></A><FONT ID="Import">import</FONT> org.junit.Test;
+<A NAME="6"></A>
+<A NAME="7"></A><FONT ID="Import">import</FONT> javax.servlet.http.HttpServletRequest;
+<A NAME="8"></A><FONT ID="Import">import</FONT> java.util.Collections;
+<A NAME="9"></A><FONT ID="Import">import</FONT> java.util.HashSet;
+<A NAME="10"></A><FONT ID="Import">import</FONT> java.util.Set;
+<A NAME="11"></A>
+<A NAME="12"></A><FONT ID="Import">import</FONT> <FONT ID="Static">static</FONT> org.mockito.Mockito.mock;
+<A NAME="13"></A><FONT ID="Import">import</FONT> <FONT ID="Static">static</FONT> org.mockito.Mockito.when;
+<A NAME="14"></A>
+<A NAME="15"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> SchedulerServletTest {
+<A NAME="16"></A>
+<A NAME="17"></A>    @Test
+<A NAME="18"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> parsesIDsParameterMissing() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="19"></A>        HttpServletRequest req = mock(HttpServletRequest.<FONT ID="Class">class</FONT>);
+<A NAME="20"></A>        when(req.getParameter(SchedulerServlet.IDS_PARAM)).thenReturn(<FONT ID="Null">null</FONT>);
+<A NAME="21"></A>        Assert.assertEquals(Collections.emptySet(), <FONT ID="New">new</FONT> <A HREF="../../../../com/collective/celos/servlet/SchedulerServlet.java.html">SchedulerServlet</A>().getWorkflowIDs(req));
+<A NAME="22"></A>    }
+<A NAME="23"></A>    
+<A NAME="24"></A>    @Test
+<A NAME="25"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> parsesIDsParameter() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="26"></A>        HttpServletRequest req = mock(HttpServletRequest.<FONT ID="Class">class</FONT>);
+<A NAME="27"></A>        when(req.getParameter(SchedulerServlet.IDS_PARAM)).thenReturn(<FONT ID="StringLiteral">"foo,bar"</FONT>);
+<A NAME="28"></A>        Set&lt;<A HREF="../../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>&gt; ids = <FONT ID="New">new</FONT> HashSet&lt;<A HREF="../../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>&gt;();
+<A NAME="29"></A>        ids.add(<FONT ID="New">new</FONT> <A HREF="../../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"foo"</FONT>));
+<A NAME="30"></A>        ids.add(<FONT ID="New">new</FONT> <A HREF="../../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"bar"</FONT>));
+<A NAME="31"></A>        Assert.assertEquals(ids, <FONT ID="New">new</FONT> <A HREF="../../../../com/collective/celos/servlet/SchedulerServlet.java.html">SchedulerServlet</A>().getWorkflowIDs(req));
+<A NAME="32"></A>    }
+<A NAME="33"></A>    
+<A NAME="34"></A>}
+<A NAME="35"></A></pre>
+</BODY>
+</HTML>

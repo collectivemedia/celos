@@ -65,589 +65,587 @@
 <A NAME="48"></A>        defaultsDir.mkdirs();
 <A NAME="49"></A>        <FONT ID="This">this</FONT>.slotDbDir.mkdirs();
 <A NAME="50"></A>
-<A NAME="51"></A>        Integer port = Util.getFreePort();
-<A NAME="52"></A>
-<A NAME="53"></A>        <FONT ID="This">this</FONT>.celosServer = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/server/CelosServer.java.html">CelosServer</A>();
-<A NAME="54"></A>        celosServer.startServer(port, ImmutableMap.&lt;String, String&gt;of(), workflowsDir, defaultsDir, slotDbDir);
-<A NAME="55"></A>        <FONT ID="This">this</FONT>.celosClient = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/CelosClient.java.html">CelosClient</A>(URI.create(<FONT ID="StringLiteral">"http://localhost:"</FONT> + port));
-<A NAME="56"></A>    }
-<A NAME="57"></A>
-<A NAME="58"></A>    @After
-<A NAME="59"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> tearDown() <FONT ID="Throws">throws</FONT> Exception {
-<A NAME="60"></A>        celosServer.stopServer();
-<A NAME="61"></A>    }
-<A NAME="62"></A>
-<A NAME="63"></A>    @Test
-<A NAME="64"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testGetWorkflowListEmpty() <FONT ID="Throws">throws</FONT> Exception {
-<A NAME="65"></A>        Set&lt;<A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>&gt; workflowIDs = celosClient.getWorkflowList();
-<A NAME="66"></A>        Assert.assertTrue(workflowIDs.isEmpty());
-<A NAME="67"></A>    }
-<A NAME="68"></A>
-<A NAME="69"></A>    @Test
-<A NAME="70"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testGetWorkflowListEmptyBeforeClearCache() <FONT ID="Throws">throws</FONT> Exception {
-<A NAME="71"></A>        Set&lt;<A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>&gt; workflowIDs = celosClient.getWorkflowList();
-<A NAME="72"></A>        Assert.assertTrue(workflowIDs.isEmpty());
-<A NAME="73"></A>
-<A NAME="74"></A>        File src = <FONT ID="New">new</FONT> File(Thread.currentThread().getContextClassLoader().getResource(<FONT ID="StringLiteral">"com/collective/celos/client/wf-list"</FONT>).toURI());
-<A NAME="75"></A>        FileUtils.copyDirectory(src, workflowsDir);
-<A NAME="76"></A>
-<A NAME="77"></A>        workflowIDs = celosClient.getWorkflowList();
-<A NAME="78"></A>        Assert.assertTrue(workflowIDs.isEmpty());
+<A NAME="51"></A>        <FONT ID="This">this</FONT>.celosServer = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/server/CelosServer.java.html">CelosServer</A>();
+<A NAME="52"></A>        <FONT ID="Int">int</FONT> port = celosServer.startServer(ImmutableMap.&lt;String, String&gt;of(), workflowsDir, defaultsDir, slotDbDir);
+<A NAME="53"></A>        <FONT ID="This">this</FONT>.celosClient = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/CelosClient.java.html">CelosClient</A>(URI.create(<FONT ID="StringLiteral">"http://localhost:"</FONT> + port));
+<A NAME="54"></A>    }
+<A NAME="55"></A>
+<A NAME="56"></A>    @After
+<A NAME="57"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> tearDown() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="58"></A>        celosServer.stopServer();
+<A NAME="59"></A>    }
+<A NAME="60"></A>
+<A NAME="61"></A>    @Test
+<A NAME="62"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testGetWorkflowListEmpty() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="63"></A>        Set&lt;<A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>&gt; workflowIDs = celosClient.getWorkflowList();
+<A NAME="64"></A>        Assert.assertTrue(workflowIDs.isEmpty());
+<A NAME="65"></A>    }
+<A NAME="66"></A>
+<A NAME="67"></A>    @Test
+<A NAME="68"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testGetWorkflowListEmptyBeforeClearCache() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="69"></A>        Set&lt;<A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>&gt; workflowIDs = celosClient.getWorkflowList();
+<A NAME="70"></A>        Assert.assertTrue(workflowIDs.isEmpty());
+<A NAME="71"></A>
+<A NAME="72"></A>        File src = <FONT ID="New">new</FONT> File(Thread.currentThread().getContextClassLoader().getResource(<FONT ID="StringLiteral">"com/collective/celos/client/wf-list"</FONT>).toURI());
+<A NAME="73"></A>        FileUtils.copyDirectory(src, workflowsDir);
+<A NAME="74"></A>
+<A NAME="75"></A>        workflowIDs = celosClient.getWorkflowList();
+<A NAME="76"></A>        Assert.assertTrue(workflowIDs.isEmpty());
+<A NAME="77"></A>
+<A NAME="78"></A>        celosClient.clearCache();
 <A NAME="79"></A>
-<A NAME="80"></A>        celosClient.clearCache();
-<A NAME="81"></A>
-<A NAME="82"></A>        workflowIDs = celosClient.getWorkflowList();
-<A NAME="83"></A>        Assert.assertEquals(
-<A NAME="84"></A>                Sets.newHashSet(workflowIDs),
-<A NAME="85"></A>                Sets.newHashSet(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"workflow-1"</FONT>), <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"workflow-2"</FONT>), <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"workflow-Iñtërnâtiônàlizætiøn"</FONT>), <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"workflow-4"</FONT>))
-<A NAME="86"></A>        );
-<A NAME="87"></A>    }
-<A NAME="88"></A>
-<A NAME="89"></A>    @Test(expected = HttpHostConnectException.<FONT ID="Class">class</FONT>)
-<A NAME="90"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testServerStops() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="80"></A>        workflowIDs = celosClient.getWorkflowList();
+<A NAME="81"></A>        Assert.assertEquals(
+<A NAME="82"></A>                Sets.newHashSet(workflowIDs),
+<A NAME="83"></A>                Sets.newHashSet(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"workflow-1"</FONT>), <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"workflow-2"</FONT>), <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"workflow-Iñtërnâtiônàlizætiøn"</FONT>), <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"workflow-4"</FONT>))
+<A NAME="84"></A>        );
+<A NAME="85"></A>    }
+<A NAME="86"></A>
+<A NAME="87"></A>    @Test(expected = HttpHostConnectException.<FONT ID="Class">class</FONT>)
+<A NAME="88"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testServerStops() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="89"></A>        celosClient.getWorkflowList();
+<A NAME="90"></A>        celosServer.stopServer();
 <A NAME="91"></A>        celosClient.getWorkflowList();
-<A NAME="92"></A>        celosServer.stopServer();
-<A NAME="93"></A>        celosClient.getWorkflowList();
-<A NAME="94"></A>    }
-<A NAME="95"></A>
-<A NAME="96"></A>    @Test(expected = IOException.<FONT ID="Class">class</FONT>)
-<A NAME="97"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testGetWorkflowStatusFailsNoId() <FONT ID="Throws">throws</FONT> Exception {
-<A NAME="98"></A>        celosClient.getWorkflowStatus(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"noid"</FONT>));
-<A NAME="99"></A>    }
-<A NAME="100"></A>
-<A NAME="101"></A>    @Test(expected = IOException.<FONT ID="Class">class</FONT>)
-<A NAME="102"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testGetWorkflowStatusFailsNoIdWithSomeData() <FONT ID="Throws">throws</FONT> Exception {
-<A NAME="103"></A>        File src = <FONT ID="New">new</FONT> File(Thread.currentThread().getContextClassLoader().getResource(<FONT ID="StringLiteral">"com/collective/celos/client/wf-list"</FONT>).toURI());
-<A NAME="104"></A>        FileUtils.copyDirectory(src, workflowsDir);
-<A NAME="105"></A>
-<A NAME="106"></A>        celosClient.getWorkflowStatus(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"noid"</FONT>));
-<A NAME="107"></A>    }
-<A NAME="108"></A>
-<A NAME="109"></A>    @Test
-<A NAME="110"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testGetWorkflowStatusWaiting() <FONT ID="Throws">throws</FONT> Exception {
-<A NAME="111"></A>        File src = <FONT ID="New">new</FONT> File(Thread.currentThread().getContextClassLoader().getResource(<FONT ID="StringLiteral">"com/collective/celos/client/wf-list"</FONT>).toURI());
-<A NAME="112"></A>        FileUtils.copyDirectory(src, workflowsDir);
-<A NAME="113"></A>
-<A NAME="114"></A>        List&lt;<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>&gt; slotStates = celosClient.getWorkflowStatus(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"workflow-2"</FONT>)).getSlotStates();
-<A NAME="115"></A>        Assert.assertEquals(slotStates.size(), SLOTS_IN_CELOS_SERVER_SLIDING_WINDOW);
-<A NAME="116"></A>
-<A NAME="117"></A>        <FONT ID="For">for</FONT> (<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> slotState : slotStates) {
-<A NAME="118"></A>            Assert.assertEquals(slotState.getStatus(), SlotState.Status.WAITING);
-<A NAME="119"></A>            Assert.assertEquals(slotState.getExternalID(), <FONT ID="Null">null</FONT>);
-<A NAME="120"></A>            Assert.assertEquals(slotState.getRetryCount(), <FONT ID="IntegerLiteral">0</FONT>);
-<A NAME="121"></A>        }
-<A NAME="122"></A>    }
-<A NAME="123"></A>
-<A NAME="124"></A>
-<A NAME="125"></A>    @Test
-<A NAME="126"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testGetWorkflowStatusCorrectOrder() <FONT ID="Throws">throws</FONT> Exception {
-<A NAME="127"></A>        File src = <FONT ID="New">new</FONT> File(Thread.currentThread().getContextClassLoader().getResource(<FONT ID="StringLiteral">"com/collective/celos/client/wf-list"</FONT>).toURI());
-<A NAME="128"></A>        FileUtils.copyDirectory(src, workflowsDir);
-<A NAME="129"></A>
-<A NAME="130"></A>        List&lt;<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>&gt; slotStates = celosClient.getWorkflowStatus(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"workflow-2"</FONT>)).getSlotStates();
-<A NAME="131"></A>        Assert.assertEquals(slotStates.size(), SLOTS_IN_CELOS_SERVER_SLIDING_WINDOW);
-<A NAME="132"></A>
-<A NAME="133"></A>        <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> i = <FONT ID="IntegerLiteral">0</FONT>; i &lt; slotStates.size() - <FONT ID="IntegerLiteral">1</FONT>; i ++ ) {
-<A NAME="134"></A>            <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> slotState = slotStates.get(i);
-<A NAME="135"></A>            <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> nextSlotState = slotStates.get(i + <FONT ID="IntegerLiteral">1</FONT>);
-<A NAME="136"></A>            Assert.assertTrue(!slotState.getScheduledTime().getDateTime().isBefore(nextSlotState.getScheduledTime().getDateTime()));
-<A NAME="137"></A>        }
-<A NAME="138"></A>    }
-<A NAME="139"></A>
-<A NAME="140"></A>    @Test
-<A NAME="141"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testGetWorkflowStatusTransitionToReady() <FONT ID="Throws">throws</FONT> Exception {
-<A NAME="142"></A>
-<A NAME="143"></A>        File src = <FONT ID="New">new</FONT> File(Thread.currentThread().getContextClassLoader().getResource(<FONT ID="StringLiteral">"com/collective/celos/client/wf-list"</FONT>).toURI());
-<A NAME="144"></A>        FileUtils.copyDirectory(src, workflowsDir);
-<A NAME="145"></A>
-<A NAME="146"></A>        celosClient.iterateScheduler(ScheduledTime.now());
-<A NAME="147"></A>        List&lt;<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>&gt; slotStates = celosClient.getWorkflowStatus(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"workflow-2"</FONT>)).getSlotStates();
-<A NAME="148"></A>        Assert.assertEquals(slotStates.size(), SLOTS_IN_CELOS_SERVER_SLIDING_WINDOW);
-<A NAME="149"></A>
-<A NAME="150"></A>        <FONT ID="For">for</FONT> (<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> slotState : slotStates) {
-<A NAME="151"></A>            Assert.assertEquals(slotState.getStatus(), SlotState.Status.READY);
-<A NAME="152"></A>            Assert.assertEquals(slotState.getExternalID(), <FONT ID="Null">null</FONT>);
-<A NAME="153"></A>            Assert.assertEquals(slotState.getRetryCount(), <FONT ID="IntegerLiteral">0</FONT>);
-<A NAME="154"></A>        }
-<A NAME="155"></A>    }
-<A NAME="156"></A>
-<A NAME="157"></A>    @Test
-<A NAME="158"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testGetWorkflowStatusNoInfo() <FONT ID="Throws">throws</FONT> Exception {
-<A NAME="159"></A>
-<A NAME="160"></A>        File src = <FONT ID="New">new</FONT> File(Thread.currentThread().getContextClassLoader().getResource(<FONT ID="StringLiteral">"com/collective/celos/client/wf-list"</FONT>).toURI());
-<A NAME="161"></A>        FileUtils.copyDirectory(src, workflowsDir);
-<A NAME="162"></A>
-<A NAME="163"></A>        celosClient.iterateScheduler(ScheduledTime.now());
-<A NAME="164"></A>        <A HREF="../../../com/collective/celos/WorkflowStatus.java.html">WorkflowStatus</A> status = celosClient.getWorkflowStatus(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"workflow-1"</FONT>));
-<A NAME="165"></A>        Assert.assertNull(status.getInfo().getUrl());
-<A NAME="166"></A>        Assert.assertTrue(status.getInfo().getContacts().isEmpty());
-<A NAME="167"></A>    }
-<A NAME="168"></A>
-<A NAME="169"></A>    @Test
-<A NAME="170"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testGetWorkflowStatusWithInfo() <FONT ID="Throws">throws</FONT> Exception {
-<A NAME="171"></A>
-<A NAME="172"></A>        File src = <FONT ID="New">new</FONT> File(Thread.currentThread().getContextClassLoader().getResource(<FONT ID="StringLiteral">"com/collective/celos/client/wf-list"</FONT>).toURI());
-<A NAME="173"></A>        FileUtils.copyDirectory(src, workflowsDir);
-<A NAME="174"></A>
-<A NAME="175"></A>        celosClient.iterateScheduler(ScheduledTime.now());
-<A NAME="176"></A>        <A HREF="../../../com/collective/celos/WorkflowStatus.java.html">WorkflowStatus</A> status = celosClient.getWorkflowStatus(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"workflow-2"</FONT>));
-<A NAME="177"></A>
-<A NAME="178"></A>        Assert.assertEquals(<FONT ID="New">new</FONT> URL(<FONT ID="StringLiteral">"http://collective.com"</FONT>), status.getInfo().getUrl());
-<A NAME="179"></A>        Assert.assertEquals(<FONT ID="IntegerLiteral">1</FONT>, status.getInfo().getContacts().size());
-<A NAME="180"></A>        Assert.assertEquals(<FONT ID="StringLiteral">"John Doe"</FONT>, status.getInfo().getContacts().get(<FONT ID="IntegerLiteral">0</FONT>).getName());
-<A NAME="181"></A>        Assert.assertEquals(URI.create(<FONT ID="StringLiteral">"john.doe@collective.com"</FONT>), status.getInfo().getContacts().get(<FONT ID="IntegerLiteral">0</FONT>).getEmail());
-<A NAME="182"></A>    }
-<A NAME="183"></A>
-<A NAME="184"></A>
-<A NAME="185"></A>    @Test
-<A NAME="186"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testGetWorkflowStatusTransitionToRunningFailsWrongOozieService() <FONT ID="Throws">throws</FONT> Exception {
-<A NAME="187"></A>
-<A NAME="188"></A>        File src = <FONT ID="New">new</FONT> File(Thread.currentThread().getContextClassLoader().getResource(<FONT ID="StringLiteral">"com/collective/celos/client/wf-list"</FONT>).toURI());
-<A NAME="189"></A>        FileUtils.copyDirectory(src, workflowsDir);
-<A NAME="190"></A>
-<A NAME="191"></A>        celosClient.iterateScheduler(ScheduledTime.now());
-<A NAME="192"></A>        celosClient.iterateScheduler(ScheduledTime.now());
-<A NAME="193"></A>        List&lt;<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>&gt; slotStates = celosClient.getWorkflowStatus(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"workflow-1"</FONT>)).getSlotStates();
-<A NAME="194"></A>        Assert.assertEquals(slotStates.size(), SLOTS_IN_CELOS_SERVER_SLIDING_WINDOW);
-<A NAME="195"></A>
-<A NAME="196"></A>        <FONT ID="For">for</FONT> (<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> slotState : slotStates) {
-<A NAME="197"></A>            Assert.assertEquals(slotState.getStatus(), SlotState.Status.READY);
-<A NAME="198"></A>            Assert.assertNull(slotState.getExternalID());
-<A NAME="199"></A>            Assert.assertEquals(slotState.getRetryCount(), <FONT ID="IntegerLiteral">0</FONT>);
-<A NAME="200"></A>        }
-<A NAME="201"></A>    }
-<A NAME="202"></A>
-<A NAME="203"></A>    @Test
-<A NAME="204"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testGetWorkflowStatusTransitionToRunning() <FONT ID="Throws">throws</FONT> Exception {
-<A NAME="205"></A>
-<A NAME="206"></A>        File src = <FONT ID="New">new</FONT> File(Thread.currentThread().getContextClassLoader().getResource(<FONT ID="StringLiteral">"com/collective/celos/client/wf-list"</FONT>).toURI());
-<A NAME="207"></A>        FileUtils.copyDirectory(src, workflowsDir);
-<A NAME="208"></A>
-<A NAME="209"></A>        celosClient.iterateScheduler(ScheduledTime.now());
-<A NAME="210"></A>        celosClient.iterateScheduler(ScheduledTime.now());
-<A NAME="211"></A>        List&lt;<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>&gt; slotStates = celosClient.getWorkflowStatus(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"workflow-2"</FONT>)).getSlotStates();
-<A NAME="212"></A>        Assert.assertEquals(slotStates.size(), SLOTS_IN_CELOS_SERVER_SLIDING_WINDOW);
-<A NAME="213"></A>
-<A NAME="214"></A>        List&lt;<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>&gt; slotStatesOther = slotStates.subList(<FONT ID="IntegerLiteral">0</FONT>, slotStates.size() - <FONT ID="IntegerLiteral">1</FONT>);
-<A NAME="215"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> slotStateLst = slotStates.get(slotStates.size() - <FONT ID="IntegerLiteral">1</FONT>);
-<A NAME="216"></A>        Assert.assertEquals(slotStateLst.getStatus(), SlotState.Status.RUNNING);
-<A NAME="217"></A>        Assert.assertNotNull(slotStateLst.getExternalID());
-<A NAME="218"></A>        Assert.assertEquals(slotStateLst.getRetryCount(), <FONT ID="IntegerLiteral">0</FONT>);
-<A NAME="219"></A>
-<A NAME="220"></A>        <FONT ID="For">for</FONT> (<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> slotState : slotStatesOther) {
-<A NAME="221"></A>            Assert.assertEquals(slotState.getStatus(), SlotState.Status.READY);
-<A NAME="222"></A>            Assert.assertNull(slotState.getExternalID());
-<A NAME="223"></A>            Assert.assertEquals(slotState.getRetryCount(), <FONT ID="IntegerLiteral">0</FONT>);
-<A NAME="224"></A>        }
-<A NAME="225"></A>    }
-<A NAME="226"></A>
-<A NAME="227"></A>    @Test
-<A NAME="228"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testGetWorkflowStatusTransitionToSuccess() <FONT ID="Throws">throws</FONT> Exception {
-<A NAME="229"></A>
-<A NAME="230"></A>        File src = <FONT ID="New">new</FONT> File(Thread.currentThread().getContextClassLoader().getResource(<FONT ID="StringLiteral">"com/collective/celos/client/wf-list"</FONT>).toURI());
-<A NAME="231"></A>        FileUtils.copyDirectory(src, workflowsDir);
-<A NAME="232"></A>
+<A NAME="92"></A>    }
+<A NAME="93"></A>
+<A NAME="94"></A>    @Test(expected = IOException.<FONT ID="Class">class</FONT>)
+<A NAME="95"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testGetWorkflowStatusFailsNoId() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="96"></A>        celosClient.getWorkflowStatus(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"noid"</FONT>));
+<A NAME="97"></A>    }
+<A NAME="98"></A>
+<A NAME="99"></A>    @Test(expected = IOException.<FONT ID="Class">class</FONT>)
+<A NAME="100"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testGetWorkflowStatusFailsNoIdWithSomeData() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="101"></A>        File src = <FONT ID="New">new</FONT> File(Thread.currentThread().getContextClassLoader().getResource(<FONT ID="StringLiteral">"com/collective/celos/client/wf-list"</FONT>).toURI());
+<A NAME="102"></A>        FileUtils.copyDirectory(src, workflowsDir);
+<A NAME="103"></A>
+<A NAME="104"></A>        celosClient.getWorkflowStatus(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"noid"</FONT>));
+<A NAME="105"></A>    }
+<A NAME="106"></A>
+<A NAME="107"></A>    @Test
+<A NAME="108"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testGetWorkflowStatusWaiting() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="109"></A>        File src = <FONT ID="New">new</FONT> File(Thread.currentThread().getContextClassLoader().getResource(<FONT ID="StringLiteral">"com/collective/celos/client/wf-list"</FONT>).toURI());
+<A NAME="110"></A>        FileUtils.copyDirectory(src, workflowsDir);
+<A NAME="111"></A>
+<A NAME="112"></A>        List&lt;<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>&gt; slotStates = celosClient.getWorkflowStatus(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"workflow-2"</FONT>)).getSlotStates();
+<A NAME="113"></A>        Assert.assertEquals(slotStates.size(), SLOTS_IN_CELOS_SERVER_SLIDING_WINDOW);
+<A NAME="114"></A>
+<A NAME="115"></A>        <FONT ID="For">for</FONT> (<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> slotState : slotStates) {
+<A NAME="116"></A>            Assert.assertEquals(slotState.getStatus(), SlotState.Status.WAITING);
+<A NAME="117"></A>            Assert.assertEquals(slotState.getExternalID(), <FONT ID="Null">null</FONT>);
+<A NAME="118"></A>            Assert.assertEquals(slotState.getRetryCount(), <FONT ID="IntegerLiteral">0</FONT>);
+<A NAME="119"></A>        }
+<A NAME="120"></A>    }
+<A NAME="121"></A>
+<A NAME="122"></A>
+<A NAME="123"></A>    @Test
+<A NAME="124"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testGetWorkflowStatusCorrectOrder() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="125"></A>        File src = <FONT ID="New">new</FONT> File(Thread.currentThread().getContextClassLoader().getResource(<FONT ID="StringLiteral">"com/collective/celos/client/wf-list"</FONT>).toURI());
+<A NAME="126"></A>        FileUtils.copyDirectory(src, workflowsDir);
+<A NAME="127"></A>
+<A NAME="128"></A>        List&lt;<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>&gt; slotStates = celosClient.getWorkflowStatus(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"workflow-2"</FONT>)).getSlotStates();
+<A NAME="129"></A>        Assert.assertEquals(slotStates.size(), SLOTS_IN_CELOS_SERVER_SLIDING_WINDOW);
+<A NAME="130"></A>
+<A NAME="131"></A>        <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> i = <FONT ID="IntegerLiteral">0</FONT>; i &lt; slotStates.size() - <FONT ID="IntegerLiteral">1</FONT>; i ++ ) {
+<A NAME="132"></A>            <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> slotState = slotStates.get(i);
+<A NAME="133"></A>            <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> nextSlotState = slotStates.get(i + <FONT ID="IntegerLiteral">1</FONT>);
+<A NAME="134"></A>            Assert.assertTrue(!slotState.getScheduledTime().getDateTime().isBefore(nextSlotState.getScheduledTime().getDateTime()));
+<A NAME="135"></A>        }
+<A NAME="136"></A>    }
+<A NAME="137"></A>
+<A NAME="138"></A>    @Test
+<A NAME="139"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testGetWorkflowStatusTransitionToReady() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="140"></A>
+<A NAME="141"></A>        File src = <FONT ID="New">new</FONT> File(Thread.currentThread().getContextClassLoader().getResource(<FONT ID="StringLiteral">"com/collective/celos/client/wf-list"</FONT>).toURI());
+<A NAME="142"></A>        FileUtils.copyDirectory(src, workflowsDir);
+<A NAME="143"></A>
+<A NAME="144"></A>        celosClient.iterateScheduler(ScheduledTime.now());
+<A NAME="145"></A>        List&lt;<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>&gt; slotStates = celosClient.getWorkflowStatus(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"workflow-2"</FONT>)).getSlotStates();
+<A NAME="146"></A>        Assert.assertEquals(slotStates.size(), SLOTS_IN_CELOS_SERVER_SLIDING_WINDOW);
+<A NAME="147"></A>
+<A NAME="148"></A>        <FONT ID="For">for</FONT> (<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> slotState : slotStates) {
+<A NAME="149"></A>            Assert.assertEquals(slotState.getStatus(), SlotState.Status.READY);
+<A NAME="150"></A>            Assert.assertEquals(slotState.getExternalID(), <FONT ID="Null">null</FONT>);
+<A NAME="151"></A>            Assert.assertEquals(slotState.getRetryCount(), <FONT ID="IntegerLiteral">0</FONT>);
+<A NAME="152"></A>        }
+<A NAME="153"></A>    }
+<A NAME="154"></A>
+<A NAME="155"></A>    @Test
+<A NAME="156"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testGetWorkflowStatusNoInfo() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="157"></A>
+<A NAME="158"></A>        File src = <FONT ID="New">new</FONT> File(Thread.currentThread().getContextClassLoader().getResource(<FONT ID="StringLiteral">"com/collective/celos/client/wf-list"</FONT>).toURI());
+<A NAME="159"></A>        FileUtils.copyDirectory(src, workflowsDir);
+<A NAME="160"></A>
+<A NAME="161"></A>        celosClient.iterateScheduler(ScheduledTime.now());
+<A NAME="162"></A>        <A HREF="../../../com/collective/celos/WorkflowStatus.java.html">WorkflowStatus</A> status = celosClient.getWorkflowStatus(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"workflow-1"</FONT>));
+<A NAME="163"></A>        Assert.assertNull(status.getInfo().getUrl());
+<A NAME="164"></A>        Assert.assertTrue(status.getInfo().getContacts().isEmpty());
+<A NAME="165"></A>    }
+<A NAME="166"></A>
+<A NAME="167"></A>    @Test
+<A NAME="168"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testGetWorkflowStatusWithInfo() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="169"></A>
+<A NAME="170"></A>        File src = <FONT ID="New">new</FONT> File(Thread.currentThread().getContextClassLoader().getResource(<FONT ID="StringLiteral">"com/collective/celos/client/wf-list"</FONT>).toURI());
+<A NAME="171"></A>        FileUtils.copyDirectory(src, workflowsDir);
+<A NAME="172"></A>
+<A NAME="173"></A>        celosClient.iterateScheduler(ScheduledTime.now());
+<A NAME="174"></A>        <A HREF="../../../com/collective/celos/WorkflowStatus.java.html">WorkflowStatus</A> status = celosClient.getWorkflowStatus(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"workflow-2"</FONT>));
+<A NAME="175"></A>
+<A NAME="176"></A>        Assert.assertEquals(<FONT ID="New">new</FONT> URL(<FONT ID="StringLiteral">"http://collective.com"</FONT>), status.getInfo().getUrl());
+<A NAME="177"></A>        Assert.assertEquals(<FONT ID="IntegerLiteral">1</FONT>, status.getInfo().getContacts().size());
+<A NAME="178"></A>        Assert.assertEquals(<FONT ID="StringLiteral">"John Doe"</FONT>, status.getInfo().getContacts().get(<FONT ID="IntegerLiteral">0</FONT>).getName());
+<A NAME="179"></A>        Assert.assertEquals(URI.create(<FONT ID="StringLiteral">"john.doe@collective.com"</FONT>), status.getInfo().getContacts().get(<FONT ID="IntegerLiteral">0</FONT>).getEmail());
+<A NAME="180"></A>    }
+<A NAME="181"></A>
+<A NAME="182"></A>
+<A NAME="183"></A>    @Test
+<A NAME="184"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testGetWorkflowStatusTransitionToRunningFailsWrongOozieService() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="185"></A>
+<A NAME="186"></A>        File src = <FONT ID="New">new</FONT> File(Thread.currentThread().getContextClassLoader().getResource(<FONT ID="StringLiteral">"com/collective/celos/client/wf-list"</FONT>).toURI());
+<A NAME="187"></A>        FileUtils.copyDirectory(src, workflowsDir);
+<A NAME="188"></A>
+<A NAME="189"></A>        celosClient.iterateScheduler(ScheduledTime.now());
+<A NAME="190"></A>        celosClient.iterateScheduler(ScheduledTime.now());
+<A NAME="191"></A>        List&lt;<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>&gt; slotStates = celosClient.getWorkflowStatus(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"workflow-1"</FONT>)).getSlotStates();
+<A NAME="192"></A>        Assert.assertEquals(slotStates.size(), SLOTS_IN_CELOS_SERVER_SLIDING_WINDOW);
+<A NAME="193"></A>
+<A NAME="194"></A>        <FONT ID="For">for</FONT> (<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> slotState : slotStates) {
+<A NAME="195"></A>            Assert.assertEquals(slotState.getStatus(), SlotState.Status.READY);
+<A NAME="196"></A>            Assert.assertNull(slotState.getExternalID());
+<A NAME="197"></A>            Assert.assertEquals(slotState.getRetryCount(), <FONT ID="IntegerLiteral">0</FONT>);
+<A NAME="198"></A>        }
+<A NAME="199"></A>    }
+<A NAME="200"></A>
+<A NAME="201"></A>    @Test
+<A NAME="202"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testGetWorkflowStatusTransitionToRunning() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="203"></A>
+<A NAME="204"></A>        File src = <FONT ID="New">new</FONT> File(Thread.currentThread().getContextClassLoader().getResource(<FONT ID="StringLiteral">"com/collective/celos/client/wf-list"</FONT>).toURI());
+<A NAME="205"></A>        FileUtils.copyDirectory(src, workflowsDir);
+<A NAME="206"></A>
+<A NAME="207"></A>        celosClient.iterateScheduler(ScheduledTime.now());
+<A NAME="208"></A>        celosClient.iterateScheduler(ScheduledTime.now());
+<A NAME="209"></A>        List&lt;<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>&gt; slotStates = celosClient.getWorkflowStatus(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"workflow-2"</FONT>)).getSlotStates();
+<A NAME="210"></A>        Assert.assertEquals(slotStates.size(), SLOTS_IN_CELOS_SERVER_SLIDING_WINDOW);
+<A NAME="211"></A>
+<A NAME="212"></A>        List&lt;<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>&gt; slotStatesOther = slotStates.subList(<FONT ID="IntegerLiteral">0</FONT>, slotStates.size() - <FONT ID="IntegerLiteral">1</FONT>);
+<A NAME="213"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> slotStateLst = slotStates.get(slotStates.size() - <FONT ID="IntegerLiteral">1</FONT>);
+<A NAME="214"></A>        Assert.assertEquals(slotStateLst.getStatus(), SlotState.Status.RUNNING);
+<A NAME="215"></A>        Assert.assertNotNull(slotStateLst.getExternalID());
+<A NAME="216"></A>        Assert.assertEquals(slotStateLst.getRetryCount(), <FONT ID="IntegerLiteral">0</FONT>);
+<A NAME="217"></A>
+<A NAME="218"></A>        <FONT ID="For">for</FONT> (<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> slotState : slotStatesOther) {
+<A NAME="219"></A>            Assert.assertEquals(slotState.getStatus(), SlotState.Status.READY);
+<A NAME="220"></A>            Assert.assertNull(slotState.getExternalID());
+<A NAME="221"></A>            Assert.assertEquals(slotState.getRetryCount(), <FONT ID="IntegerLiteral">0</FONT>);
+<A NAME="222"></A>        }
+<A NAME="223"></A>    }
+<A NAME="224"></A>
+<A NAME="225"></A>    @Test
+<A NAME="226"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testGetWorkflowStatusTransitionToSuccess() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="227"></A>
+<A NAME="228"></A>        File src = <FONT ID="New">new</FONT> File(Thread.currentThread().getContextClassLoader().getResource(<FONT ID="StringLiteral">"com/collective/celos/client/wf-list"</FONT>).toURI());
+<A NAME="229"></A>        FileUtils.copyDirectory(src, workflowsDir);
+<A NAME="230"></A>
+<A NAME="231"></A>        celosClient.iterateScheduler(ScheduledTime.now());
+<A NAME="232"></A>        celosClient.iterateScheduler(ScheduledTime.now());
 <A NAME="233"></A>        celosClient.iterateScheduler(ScheduledTime.now());
-<A NAME="234"></A>        celosClient.iterateScheduler(ScheduledTime.now());
-<A NAME="235"></A>        celosClient.iterateScheduler(ScheduledTime.now());
-<A NAME="236"></A>
-<A NAME="237"></A>        List&lt;<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>&gt; slotStates = celosClient.getWorkflowStatus(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"workflow-2"</FONT>)).getSlotStates();
-<A NAME="238"></A>        Assert.assertEquals(slotStates.size(), SLOTS_IN_CELOS_SERVER_SLIDING_WINDOW);
-<A NAME="239"></A>
-<A NAME="240"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> slotStateLst = slotStates.get(slotStates.size() - <FONT ID="IntegerLiteral">1</FONT>);
-<A NAME="241"></A>        Assert.assertEquals(slotStateLst.getStatus(), SlotState.Status.SUCCESS);
-<A NAME="242"></A>        Assert.assertNotNull(slotStateLst.getExternalID());
-<A NAME="243"></A>        Assert.assertEquals(slotStateLst.getRetryCount(), <FONT ID="IntegerLiteral">0</FONT>);
-<A NAME="244"></A>
-<A NAME="245"></A>        slotStates = slotStates.subList(<FONT ID="IntegerLiteral">0</FONT>, slotStates.size() - <FONT ID="IntegerLiteral">1</FONT>);
-<A NAME="246"></A>        <FONT ID="For">for</FONT> (<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> slotState : slotStates) {
-<A NAME="247"></A>            Assert.assertEquals(slotState.getStatus(), SlotState.Status.READY);
-<A NAME="248"></A>            Assert.assertNull(slotState.getExternalID());
-<A NAME="249"></A>            Assert.assertEquals(slotState.getRetryCount(), <FONT ID="IntegerLiteral">0</FONT>);
-<A NAME="250"></A>        }
-<A NAME="251"></A>    }
-<A NAME="252"></A>
-<A NAME="253"></A>    @Test
-<A NAME="254"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testGetWorkflowStatusTransitionToSuccessRunning() <FONT ID="Throws">throws</FONT> Exception {
-<A NAME="255"></A>
-<A NAME="256"></A>        File src = <FONT ID="New">new</FONT> File(Thread.currentThread().getContextClassLoader().getResource(<FONT ID="StringLiteral">"com/collective/celos/client/wf-list"</FONT>).toURI());
-<A NAME="257"></A>        FileUtils.copyDirectory(src, workflowsDir);
-<A NAME="258"></A>
+<A NAME="234"></A>
+<A NAME="235"></A>        List&lt;<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>&gt; slotStates = celosClient.getWorkflowStatus(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"workflow-2"</FONT>)).getSlotStates();
+<A NAME="236"></A>        Assert.assertEquals(slotStates.size(), SLOTS_IN_CELOS_SERVER_SLIDING_WINDOW);
+<A NAME="237"></A>
+<A NAME="238"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> slotStateLst = slotStates.get(slotStates.size() - <FONT ID="IntegerLiteral">1</FONT>);
+<A NAME="239"></A>        Assert.assertEquals(slotStateLst.getStatus(), SlotState.Status.SUCCESS);
+<A NAME="240"></A>        Assert.assertNotNull(slotStateLst.getExternalID());
+<A NAME="241"></A>        Assert.assertEquals(slotStateLst.getRetryCount(), <FONT ID="IntegerLiteral">0</FONT>);
+<A NAME="242"></A>
+<A NAME="243"></A>        slotStates = slotStates.subList(<FONT ID="IntegerLiteral">0</FONT>, slotStates.size() - <FONT ID="IntegerLiteral">1</FONT>);
+<A NAME="244"></A>        <FONT ID="For">for</FONT> (<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> slotState : slotStates) {
+<A NAME="245"></A>            Assert.assertEquals(slotState.getStatus(), SlotState.Status.READY);
+<A NAME="246"></A>            Assert.assertNull(slotState.getExternalID());
+<A NAME="247"></A>            Assert.assertEquals(slotState.getRetryCount(), <FONT ID="IntegerLiteral">0</FONT>);
+<A NAME="248"></A>        }
+<A NAME="249"></A>    }
+<A NAME="250"></A>
+<A NAME="251"></A>    @Test
+<A NAME="252"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testGetWorkflowStatusTransitionToSuccessRunning() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="253"></A>
+<A NAME="254"></A>        File src = <FONT ID="New">new</FONT> File(Thread.currentThread().getContextClassLoader().getResource(<FONT ID="StringLiteral">"com/collective/celos/client/wf-list"</FONT>).toURI());
+<A NAME="255"></A>        FileUtils.copyDirectory(src, workflowsDir);
+<A NAME="256"></A>
+<A NAME="257"></A>        celosClient.iterateScheduler(ScheduledTime.now());
+<A NAME="258"></A>        celosClient.iterateScheduler(ScheduledTime.now());
 <A NAME="259"></A>        celosClient.iterateScheduler(ScheduledTime.now());
 <A NAME="260"></A>        celosClient.iterateScheduler(ScheduledTime.now());
-<A NAME="261"></A>        celosClient.iterateScheduler(ScheduledTime.now());
-<A NAME="262"></A>        celosClient.iterateScheduler(ScheduledTime.now());
-<A NAME="263"></A>
-<A NAME="264"></A>        List&lt;<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>&gt; slotStates = celosClient.getWorkflowStatus(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"workflow-2"</FONT>)).getSlotStates();
-<A NAME="265"></A>        Assert.assertEquals(slotStates.size(), SLOTS_IN_CELOS_SERVER_SLIDING_WINDOW);
-<A NAME="266"></A>
-<A NAME="267"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> slotStateLst = slotStates.get(slotStates.size() - <FONT ID="IntegerLiteral">1</FONT>);
-<A NAME="268"></A>        Assert.assertEquals(slotStateLst.getStatus(), SlotState.Status.SUCCESS);
-<A NAME="269"></A>        Assert.assertNotNull(slotStateLst.getExternalID());
-<A NAME="270"></A>        Assert.assertEquals(slotStateLst.getRetryCount(), <FONT ID="IntegerLiteral">0</FONT>);
-<A NAME="271"></A>
-<A NAME="272"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> slotStatePreLst = slotStates.get(slotStates.size() - <FONT ID="IntegerLiteral">2</FONT>);
-<A NAME="273"></A>        Assert.assertEquals(slotStatePreLst.getStatus(), SlotState.Status.RUNNING);
-<A NAME="274"></A>        Assert.assertNotNull(slotStatePreLst.getExternalID());
-<A NAME="275"></A>        Assert.assertEquals(slotStatePreLst.getRetryCount(), <FONT ID="IntegerLiteral">0</FONT>);
-<A NAME="276"></A>
-<A NAME="277"></A>        slotStates = slotStates.subList(<FONT ID="IntegerLiteral">0</FONT>, slotStates.size() - <FONT ID="IntegerLiteral">2</FONT>);
-<A NAME="278"></A>        <FONT ID="For">for</FONT> (<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> slotState : slotStates) {
-<A NAME="279"></A>            Assert.assertEquals(slotState.getStatus(), SlotState.Status.READY);
-<A NAME="280"></A>            Assert.assertNull(slotState.getExternalID());
-<A NAME="281"></A>            Assert.assertEquals(slotState.getRetryCount(), <FONT ID="IntegerLiteral">0</FONT>);
-<A NAME="282"></A>        }
-<A NAME="283"></A>    }
-<A NAME="284"></A>
-<A NAME="285"></A>
-<A NAME="286"></A>    @Test
-<A NAME="287"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testGetWorkflowStatusTransitionToSuccessFailure() <FONT ID="Throws">throws</FONT> Exception {
-<A NAME="288"></A>
-<A NAME="289"></A>        File src = <FONT ID="New">new</FONT> File(Thread.currentThread().getContextClassLoader().getResource(<FONT ID="StringLiteral">"com/collective/celos/client/wf-list"</FONT>).toURI());
-<A NAME="290"></A>        FileUtils.copyDirectory(src, workflowsDir);
-<A NAME="291"></A>
+<A NAME="261"></A>
+<A NAME="262"></A>        List&lt;<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>&gt; slotStates = celosClient.getWorkflowStatus(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"workflow-2"</FONT>)).getSlotStates();
+<A NAME="263"></A>        Assert.assertEquals(slotStates.size(), SLOTS_IN_CELOS_SERVER_SLIDING_WINDOW);
+<A NAME="264"></A>
+<A NAME="265"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> slotStateLst = slotStates.get(slotStates.size() - <FONT ID="IntegerLiteral">1</FONT>);
+<A NAME="266"></A>        Assert.assertEquals(slotStateLst.getStatus(), SlotState.Status.SUCCESS);
+<A NAME="267"></A>        Assert.assertNotNull(slotStateLst.getExternalID());
+<A NAME="268"></A>        Assert.assertEquals(slotStateLst.getRetryCount(), <FONT ID="IntegerLiteral">0</FONT>);
+<A NAME="269"></A>
+<A NAME="270"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> slotStatePreLst = slotStates.get(slotStates.size() - <FONT ID="IntegerLiteral">2</FONT>);
+<A NAME="271"></A>        Assert.assertEquals(slotStatePreLst.getStatus(), SlotState.Status.RUNNING);
+<A NAME="272"></A>        Assert.assertNotNull(slotStatePreLst.getExternalID());
+<A NAME="273"></A>        Assert.assertEquals(slotStatePreLst.getRetryCount(), <FONT ID="IntegerLiteral">0</FONT>);
+<A NAME="274"></A>
+<A NAME="275"></A>        slotStates = slotStates.subList(<FONT ID="IntegerLiteral">0</FONT>, slotStates.size() - <FONT ID="IntegerLiteral">2</FONT>);
+<A NAME="276"></A>        <FONT ID="For">for</FONT> (<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> slotState : slotStates) {
+<A NAME="277"></A>            Assert.assertEquals(slotState.getStatus(), SlotState.Status.READY);
+<A NAME="278"></A>            Assert.assertNull(slotState.getExternalID());
+<A NAME="279"></A>            Assert.assertEquals(slotState.getRetryCount(), <FONT ID="IntegerLiteral">0</FONT>);
+<A NAME="280"></A>        }
+<A NAME="281"></A>    }
+<A NAME="282"></A>
+<A NAME="283"></A>
+<A NAME="284"></A>    @Test
+<A NAME="285"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testGetWorkflowStatusTransitionToSuccessFailure() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="286"></A>
+<A NAME="287"></A>        File src = <FONT ID="New">new</FONT> File(Thread.currentThread().getContextClassLoader().getResource(<FONT ID="StringLiteral">"com/collective/celos/client/wf-list"</FONT>).toURI());
+<A NAME="288"></A>        FileUtils.copyDirectory(src, workflowsDir);
+<A NAME="289"></A>
+<A NAME="290"></A>        celosClient.iterateScheduler(ScheduledTime.now());
+<A NAME="291"></A>        celosClient.iterateScheduler(ScheduledTime.now());
 <A NAME="292"></A>        celosClient.iterateScheduler(ScheduledTime.now());
-<A NAME="293"></A>        celosClient.iterateScheduler(ScheduledTime.now());
-<A NAME="294"></A>        celosClient.iterateScheduler(ScheduledTime.now());
-<A NAME="295"></A>
-<A NAME="296"></A>        List&lt;<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>&gt; slotStates = celosClient.getWorkflowStatus(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"workflow-Iñtërnâtiônàlizætiøn"</FONT>)).getSlotStates();
-<A NAME="297"></A>        Assert.assertEquals(slotStates.size(), SLOTS_IN_CELOS_SERVER_SLIDING_WINDOW);
-<A NAME="298"></A>
-<A NAME="299"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> slotStateFst = slotStates.get(slotStates.size() - <FONT ID="IntegerLiteral">1</FONT>);
-<A NAME="300"></A>        Assert.assertEquals(slotStateFst.getStatus(), SlotState.Status.FAILURE);
-<A NAME="301"></A>        Assert.assertNotNull(slotStateFst.getExternalID());
-<A NAME="302"></A>        Assert.assertEquals(slotStateFst.getRetryCount(), <FONT ID="IntegerLiteral">0</FONT>);
-<A NAME="303"></A>    }
-<A NAME="304"></A>
-<A NAME="305"></A>    @Test
-<A NAME="306"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testGetWorkflowStatusInPast() <FONT ID="Throws">throws</FONT> Exception {
-<A NAME="307"></A>
-<A NAME="308"></A>        <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> timeInPast = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2000-12-01T00:00Z"</FONT>);
-<A NAME="309"></A>        File src = <FONT ID="New">new</FONT> File(Thread.currentThread().getContextClassLoader().getResource(<FONT ID="StringLiteral">"com/collective/celos/client/wf-list"</FONT>).toURI());
-<A NAME="310"></A>        FileUtils.copyDirectory(src, workflowsDir);
-<A NAME="311"></A>
-<A NAME="312"></A>        List&lt;<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>&gt; slotStates = celosClient.getWorkflowStatus(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"workflow-4"</FONT>)).getSlotStates();
-<A NAME="313"></A>        Assert.assertEquals(slotStates.size(), SLOTS_IN_CELOS_SERVER_SLIDING_WINDOW);
-<A NAME="314"></A>        Assert.assertTrue(slotStates.get(slotStates.size() - <FONT ID="IntegerLiteral">1</FONT>).getScheduledTime().getDateTime().isAfter(timeInPast.getDateTime().plusYears(<FONT ID="IntegerLiteral">1</FONT>)));
-<A NAME="315"></A>
-<A NAME="316"></A>        slotStates = celosClient.getWorkflowStatus(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"workflow-4"</FONT>), timeInPast).getSlotStates();
-<A NAME="317"></A>        Assert.assertEquals(slotStates.get(slotStates.size() - <FONT ID="IntegerLiteral">1</FONT>).getScheduledTime(), timeInPast.minusDays(SchedulerConfiguration.SLIDING_WINDOW_DAYS));
-<A NAME="318"></A>        Assert.assertEquals(slotStates.get(<FONT ID="IntegerLiteral">0</FONT>).getScheduledTime(), timeInPast.minusHours(<FONT ID="IntegerLiteral">1</FONT>));
-<A NAME="319"></A>
-<A NAME="320"></A>        slotStates = celosClient.getWorkflowStatus(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"workflow-4"</FONT>), timeInPast.plusSeconds(<FONT ID="IntegerLiteral">1</FONT>)).getSlotStates();
-<A NAME="321"></A>        Assert.assertEquals(slotStates.get(<FONT ID="IntegerLiteral">0</FONT>).getScheduledTime(), timeInPast);
-<A NAME="322"></A>    }
-<A NAME="323"></A>
-<A NAME="324"></A>    @Test
-<A NAME="325"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testSchedulerIteratorPast() <FONT ID="Throws">throws</FONT> Exception {
-<A NAME="326"></A>
-<A NAME="327"></A>        <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> timeInPast = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2000-12-01T00:00Z"</FONT>);
-<A NAME="328"></A>        File src = <FONT ID="New">new</FONT> File(Thread.currentThread().getContextClassLoader().getResource(<FONT ID="StringLiteral">"com/collective/celos/client/wf-list"</FONT>).toURI());
-<A NAME="329"></A>        FileUtils.copyDirectory(src, workflowsDir);
-<A NAME="330"></A>
-<A NAME="331"></A>        List&lt;<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>&gt; slotStates = celosClient.getWorkflowStatus(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"workflow-4"</FONT>)).getSlotStates();
-<A NAME="332"></A>        Assert.assertEquals(slotStates.size(), SLOTS_IN_CELOS_SERVER_SLIDING_WINDOW);
+<A NAME="293"></A>
+<A NAME="294"></A>        List&lt;<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>&gt; slotStates = celosClient.getWorkflowStatus(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"workflow-Iñtërnâtiônàlizætiøn"</FONT>)).getSlotStates();
+<A NAME="295"></A>        Assert.assertEquals(slotStates.size(), SLOTS_IN_CELOS_SERVER_SLIDING_WINDOW);
+<A NAME="296"></A>
+<A NAME="297"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> slotStateFst = slotStates.get(slotStates.size() - <FONT ID="IntegerLiteral">1</FONT>);
+<A NAME="298"></A>        Assert.assertEquals(slotStateFst.getStatus(), SlotState.Status.FAILURE);
+<A NAME="299"></A>        Assert.assertNotNull(slotStateFst.getExternalID());
+<A NAME="300"></A>        Assert.assertEquals(slotStateFst.getRetryCount(), <FONT ID="IntegerLiteral">0</FONT>);
+<A NAME="301"></A>    }
+<A NAME="302"></A>
+<A NAME="303"></A>    @Test
+<A NAME="304"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testGetWorkflowStatusInPast() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="305"></A>
+<A NAME="306"></A>        <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> timeInPast = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2000-12-01T00:00Z"</FONT>);
+<A NAME="307"></A>        File src = <FONT ID="New">new</FONT> File(Thread.currentThread().getContextClassLoader().getResource(<FONT ID="StringLiteral">"com/collective/celos/client/wf-list"</FONT>).toURI());
+<A NAME="308"></A>        FileUtils.copyDirectory(src, workflowsDir);
+<A NAME="309"></A>
+<A NAME="310"></A>        List&lt;<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>&gt; slotStates = celosClient.getWorkflowStatus(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"workflow-4"</FONT>)).getSlotStates();
+<A NAME="311"></A>        Assert.assertEquals(slotStates.size(), SLOTS_IN_CELOS_SERVER_SLIDING_WINDOW);
+<A NAME="312"></A>        Assert.assertTrue(slotStates.get(slotStates.size() - <FONT ID="IntegerLiteral">1</FONT>).getScheduledTime().getDateTime().isAfter(timeInPast.getDateTime().plusYears(<FONT ID="IntegerLiteral">1</FONT>)));
+<A NAME="313"></A>
+<A NAME="314"></A>        slotStates = celosClient.getWorkflowStatus(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"workflow-4"</FONT>), timeInPast).getSlotStates();
+<A NAME="315"></A>        Assert.assertEquals(slotStates.get(slotStates.size() - <FONT ID="IntegerLiteral">1</FONT>).getScheduledTime(), timeInPast.minusDays(SchedulerConfiguration.SLIDING_WINDOW_DAYS));
+<A NAME="316"></A>        Assert.assertEquals(slotStates.get(<FONT ID="IntegerLiteral">0</FONT>).getScheduledTime(), timeInPast.minusHours(<FONT ID="IntegerLiteral">1</FONT>));
+<A NAME="317"></A>
+<A NAME="318"></A>        slotStates = celosClient.getWorkflowStatus(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"workflow-4"</FONT>), timeInPast.plusSeconds(<FONT ID="IntegerLiteral">1</FONT>)).getSlotStates();
+<A NAME="319"></A>        Assert.assertEquals(slotStates.get(<FONT ID="IntegerLiteral">0</FONT>).getScheduledTime(), timeInPast);
+<A NAME="320"></A>    }
+<A NAME="321"></A>
+<A NAME="322"></A>    @Test
+<A NAME="323"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testSchedulerIteratorPast() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="324"></A>
+<A NAME="325"></A>        <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> timeInPast = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2000-12-01T00:00Z"</FONT>);
+<A NAME="326"></A>        File src = <FONT ID="New">new</FONT> File(Thread.currentThread().getContextClassLoader().getResource(<FONT ID="StringLiteral">"com/collective/celos/client/wf-list"</FONT>).toURI());
+<A NAME="327"></A>        FileUtils.copyDirectory(src, workflowsDir);
+<A NAME="328"></A>
+<A NAME="329"></A>        List&lt;<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>&gt; slotStates = celosClient.getWorkflowStatus(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"workflow-4"</FONT>)).getSlotStates();
+<A NAME="330"></A>        Assert.assertEquals(slotStates.size(), SLOTS_IN_CELOS_SERVER_SLIDING_WINDOW);
+<A NAME="331"></A>
+<A NAME="332"></A>        celosClient.iterateScheduler(timeInPast);
 <A NAME="333"></A>
-<A NAME="334"></A>        celosClient.iterateScheduler(timeInPast);
-<A NAME="335"></A>
-<A NAME="336"></A>        <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> inclusivePeriod = timeInPast.plusSeconds(<FONT ID="IntegerLiteral">1</FONT>);
-<A NAME="337"></A>        slotStates = celosClient.getWorkflowStatus(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"workflow-4"</FONT>), inclusivePeriod).getSlotStates();
-<A NAME="338"></A>
-<A NAME="339"></A>        <FONT ID="For">for</FONT> (<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> slotState : slotStates) {
-<A NAME="340"></A>            Assert.assertEquals(slotState.getStatus(), SlotState.Status.WAITING);
-<A NAME="341"></A>            Assert.assertEquals(slotState.getExternalID(), <FONT ID="Null">null</FONT>);
-<A NAME="342"></A>            Assert.assertEquals(slotState.getRetryCount(), <FONT ID="IntegerLiteral">0</FONT>);
-<A NAME="343"></A>        }
-<A NAME="344"></A>
-<A NAME="345"></A>        celosClient.iterateScheduler(timeInPast);
-<A NAME="346"></A>        slotStates = celosClient.getWorkflowStatus(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"workflow-4"</FONT>), inclusivePeriod).getSlotStates();
-<A NAME="347"></A>
-<A NAME="348"></A>        <FONT ID="For">for</FONT> (<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> slotState : slotStates) {
-<A NAME="349"></A>            Assert.assertEquals(slotState.getStatus(), SlotState.Status.WAITING);
-<A NAME="350"></A>            Assert.assertEquals(slotState.getExternalID(), <FONT ID="Null">null</FONT>);
-<A NAME="351"></A>            Assert.assertEquals(slotState.getRetryCount(), <FONT ID="IntegerLiteral">0</FONT>);
-<A NAME="352"></A>        }
-<A NAME="353"></A>
-<A NAME="354"></A>
-<A NAME="355"></A>        celosClient.iterateScheduler(inclusivePeriod);
-<A NAME="356"></A>        slotStates = celosClient.getWorkflowStatus(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"workflow-4"</FONT>), inclusivePeriod).getSlotStates();
-<A NAME="357"></A>        Assert.assertEquals(slotStates.get(<FONT ID="IntegerLiteral">0</FONT>).getStatus(), SlotState.Status.READY);
-<A NAME="358"></A>        <FONT ID="For">for</FONT> (<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> slotState : slotStates.subList(<FONT ID="IntegerLiteral">1</FONT>, slotStates.size())) {
-<A NAME="359"></A>            Assert.assertEquals(slotState.getStatus(), SlotState.Status.WAITING);
-<A NAME="360"></A>            Assert.assertEquals(slotState.getExternalID(), <FONT ID="Null">null</FONT>);
-<A NAME="361"></A>            Assert.assertEquals(slotState.getRetryCount(), <FONT ID="IntegerLiteral">0</FONT>);
-<A NAME="362"></A>        }
-<A NAME="363"></A>    }
-<A NAME="364"></A>
-<A NAME="365"></A>    @Test
-<A NAME="366"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testServerRespondsToScheduler() <FONT ID="Throws">throws</FONT> Exception {
-<A NAME="367"></A>        <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> time1 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2014-10-27T14:00:00.000Z"</FONT>);
-<A NAME="368"></A>        celosClient.iterateScheduler(time1);
-<A NAME="369"></A>    }
-<A NAME="370"></A>
-<A NAME="371"></A>    @Test
-<A NAME="372"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testServerRespondsToSchedulerPOST() <FONT ID="Throws">throws</FONT> IOException {
-<A NAME="373"></A>        HttpPost request = <FONT ID="New">new</FONT> HttpPost(celosClient.getAddress() + <FONT ID="StringLiteral">"/scheduler"</FONT>);
-<A NAME="374"></A>        HttpResponse response = <FONT ID="New">new</FONT> DefaultHttpClient().execute(request);
-<A NAME="375"></A>        Assert.assertEquals(response.getStatusLine().getStatusCode(), <FONT ID="IntegerLiteral">200</FONT>);
-<A NAME="376"></A>    }
-<A NAME="377"></A>
-<A NAME="378"></A>    @Test
-<A NAME="379"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testSchedulerNoRespondToGet() <FONT ID="Throws">throws</FONT> IOException {
-<A NAME="380"></A>        HttpGet request = <FONT ID="New">new</FONT> HttpGet(celosClient.getAddress() + <FONT ID="StringLiteral">"/scheduler"</FONT>);
-<A NAME="381"></A>        HttpResponse response = <FONT ID="New">new</FONT> DefaultHttpClient().execute(request);
-<A NAME="382"></A>        Assert.assertEquals(response.getStatusLine().getStatusCode(), <FONT ID="IntegerLiteral">405</FONT>);
-<A NAME="383"></A>        Assert.assertEquals(response.getStatusLine().getReasonPhrase(), <FONT ID="StringLiteral">"HTTP method GET is not supported by this URL"</FONT>);
-<A NAME="384"></A>    }
-<A NAME="385"></A>
-<A NAME="386"></A>    @Test
-<A NAME="387"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testGetWorkflowFailsWithNoIdParameter() <FONT ID="Throws">throws</FONT> Exception {
-<A NAME="388"></A>        File src = <FONT ID="New">new</FONT> File(Thread.currentThread().getContextClassLoader().getResource(<FONT ID="StringLiteral">"com/collective/celos/client/wf-list"</FONT>).toURI());
-<A NAME="389"></A>        FileUtils.copyDirectory(src, workflowsDir);
-<A NAME="390"></A>
-<A NAME="391"></A>        HttpGet request = <FONT ID="New">new</FONT> HttpGet(celosClient.getAddress() + <FONT ID="StringLiteral">"/workflow"</FONT>);
-<A NAME="392"></A>        HttpResponse response = <FONT ID="New">new</FONT> DefaultHttpClient().execute(request);
-<A NAME="393"></A>        Assert.assertEquals(response.getStatusLine().getStatusCode(), <FONT ID="IntegerLiteral">400</FONT>);
-<A NAME="394"></A>        Assert.assertEquals(response.getStatusLine().getReasonPhrase(), <FONT ID="StringLiteral">"id parameter missing."</FONT>);
-<A NAME="395"></A>    }
-<A NAME="396"></A>
-<A NAME="397"></A>    @Test (expected = IOException.<FONT ID="Class">class</FONT>)
-<A NAME="398"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testCantGetStatusFromDBOnly() <FONT ID="Throws">throws</FONT> Exception {
-<A NAME="399"></A>
-<A NAME="400"></A>        File src2 = <FONT ID="New">new</FONT> File(Thread.currentThread().getContextClassLoader().getResource(<FONT ID="StringLiteral">"com/collective/celos/server/slot-db-1"</FONT>).toURI());
-<A NAME="401"></A>        FileUtils.copyDirectory(src2, slotDbDir);
-<A NAME="402"></A>
-<A NAME="403"></A>        celosClient.getWorkflowStatus(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"workflow-1"</FONT>), <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-12-02T20:00Z"</FONT>));
-<A NAME="404"></A>    }
-<A NAME="405"></A>
-<A NAME="406"></A>
-<A NAME="407"></A>    @Test
-<A NAME="408"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testCorrectWorkflowStatesFromDbWf1() <FONT ID="Throws">throws</FONT> Exception {
-<A NAME="409"></A>        File src = <FONT ID="New">new</FONT> File(Thread.currentThread().getContextClassLoader().getResource(<FONT ID="StringLiteral">"com/collective/celos/client/wf-list"</FONT>).toURI());
-<A NAME="410"></A>        FileUtils.copyDirectory(src, workflowsDir);
-<A NAME="411"></A>
-<A NAME="412"></A>        File src2 = <FONT ID="New">new</FONT> File(Thread.currentThread().getContextClassLoader().getResource(<FONT ID="StringLiteral">"com/collective/celos/server/slot-db-1"</FONT>).toURI());
-<A NAME="413"></A>        FileUtils.copyDirectory(src2, slotDbDir);
-<A NAME="414"></A>
-<A NAME="415"></A>        <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> timeStart = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-11-25T20:00:00.000Z"</FONT>);
-<A NAME="416"></A>        <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> waitingSlotsTimeEnd = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-12-02T19:00:00.000Z"</FONT>);
+<A NAME="334"></A>        <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> inclusivePeriod = timeInPast.plusSeconds(<FONT ID="IntegerLiteral">1</FONT>);
+<A NAME="335"></A>        slotStates = celosClient.getWorkflowStatus(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"workflow-4"</FONT>), inclusivePeriod).getSlotStates();
+<A NAME="336"></A>
+<A NAME="337"></A>        <FONT ID="For">for</FONT> (<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> slotState : slotStates) {
+<A NAME="338"></A>            Assert.assertEquals(slotState.getStatus(), SlotState.Status.WAITING);
+<A NAME="339"></A>            Assert.assertEquals(slotState.getExternalID(), <FONT ID="Null">null</FONT>);
+<A NAME="340"></A>            Assert.assertEquals(slotState.getRetryCount(), <FONT ID="IntegerLiteral">0</FONT>);
+<A NAME="341"></A>        }
+<A NAME="342"></A>
+<A NAME="343"></A>        celosClient.iterateScheduler(timeInPast);
+<A NAME="344"></A>        slotStates = celosClient.getWorkflowStatus(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"workflow-4"</FONT>), inclusivePeriod).getSlotStates();
+<A NAME="345"></A>
+<A NAME="346"></A>        <FONT ID="For">for</FONT> (<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> slotState : slotStates) {
+<A NAME="347"></A>            Assert.assertEquals(slotState.getStatus(), SlotState.Status.WAITING);
+<A NAME="348"></A>            Assert.assertEquals(slotState.getExternalID(), <FONT ID="Null">null</FONT>);
+<A NAME="349"></A>            Assert.assertEquals(slotState.getRetryCount(), <FONT ID="IntegerLiteral">0</FONT>);
+<A NAME="350"></A>        }
+<A NAME="351"></A>
+<A NAME="352"></A>
+<A NAME="353"></A>        celosClient.iterateScheduler(inclusivePeriod);
+<A NAME="354"></A>        slotStates = celosClient.getWorkflowStatus(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"workflow-4"</FONT>), inclusivePeriod).getSlotStates();
+<A NAME="355"></A>        Assert.assertEquals(slotStates.get(<FONT ID="IntegerLiteral">0</FONT>).getStatus(), SlotState.Status.READY);
+<A NAME="356"></A>        <FONT ID="For">for</FONT> (<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> slotState : slotStates.subList(<FONT ID="IntegerLiteral">1</FONT>, slotStates.size())) {
+<A NAME="357"></A>            Assert.assertEquals(slotState.getStatus(), SlotState.Status.WAITING);
+<A NAME="358"></A>            Assert.assertEquals(slotState.getExternalID(), <FONT ID="Null">null</FONT>);
+<A NAME="359"></A>            Assert.assertEquals(slotState.getRetryCount(), <FONT ID="IntegerLiteral">0</FONT>);
+<A NAME="360"></A>        }
+<A NAME="361"></A>    }
+<A NAME="362"></A>
+<A NAME="363"></A>    @Test
+<A NAME="364"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testServerRespondsToScheduler() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="365"></A>        <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> time1 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2014-10-27T14:00:00.000Z"</FONT>);
+<A NAME="366"></A>        celosClient.iterateScheduler(time1);
+<A NAME="367"></A>    }
+<A NAME="368"></A>
+<A NAME="369"></A>    @Test
+<A NAME="370"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testServerRespondsToSchedulerPOST() <FONT ID="Throws">throws</FONT> IOException {
+<A NAME="371"></A>        HttpPost request = <FONT ID="New">new</FONT> HttpPost(celosClient.getAddress() + <FONT ID="StringLiteral">"/scheduler"</FONT>);
+<A NAME="372"></A>        HttpResponse response = <FONT ID="New">new</FONT> DefaultHttpClient().execute(request);
+<A NAME="373"></A>        Assert.assertEquals(response.getStatusLine().getStatusCode(), <FONT ID="IntegerLiteral">200</FONT>);
+<A NAME="374"></A>    }
+<A NAME="375"></A>
+<A NAME="376"></A>    @Test
+<A NAME="377"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testSchedulerNoRespondToGet() <FONT ID="Throws">throws</FONT> IOException {
+<A NAME="378"></A>        HttpGet request = <FONT ID="New">new</FONT> HttpGet(celosClient.getAddress() + <FONT ID="StringLiteral">"/scheduler"</FONT>);
+<A NAME="379"></A>        HttpResponse response = <FONT ID="New">new</FONT> DefaultHttpClient().execute(request);
+<A NAME="380"></A>        Assert.assertEquals(response.getStatusLine().getStatusCode(), <FONT ID="IntegerLiteral">405</FONT>);
+<A NAME="381"></A>        Assert.assertEquals(response.getStatusLine().getReasonPhrase(), <FONT ID="StringLiteral">"HTTP method GET is not supported by this URL"</FONT>);
+<A NAME="382"></A>    }
+<A NAME="383"></A>
+<A NAME="384"></A>    @Test
+<A NAME="385"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testGetWorkflowFailsWithNoIdParameter() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="386"></A>        File src = <FONT ID="New">new</FONT> File(Thread.currentThread().getContextClassLoader().getResource(<FONT ID="StringLiteral">"com/collective/celos/client/wf-list"</FONT>).toURI());
+<A NAME="387"></A>        FileUtils.copyDirectory(src, workflowsDir);
+<A NAME="388"></A>
+<A NAME="389"></A>        HttpGet request = <FONT ID="New">new</FONT> HttpGet(celosClient.getAddress() + <FONT ID="StringLiteral">"/workflow"</FONT>);
+<A NAME="390"></A>        HttpResponse response = <FONT ID="New">new</FONT> DefaultHttpClient().execute(request);
+<A NAME="391"></A>        Assert.assertEquals(response.getStatusLine().getStatusCode(), <FONT ID="IntegerLiteral">400</FONT>);
+<A NAME="392"></A>        Assert.assertEquals(response.getStatusLine().getReasonPhrase(), <FONT ID="StringLiteral">"id parameter missing."</FONT>);
+<A NAME="393"></A>    }
+<A NAME="394"></A>
+<A NAME="395"></A>    @Test (expected = IOException.<FONT ID="Class">class</FONT>)
+<A NAME="396"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testCantGetStatusFromDBOnly() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="397"></A>
+<A NAME="398"></A>        File src2 = <FONT ID="New">new</FONT> File(Thread.currentThread().getContextClassLoader().getResource(<FONT ID="StringLiteral">"com/collective/celos/server/slot-db-1"</FONT>).toURI());
+<A NAME="399"></A>        FileUtils.copyDirectory(src2, slotDbDir);
+<A NAME="400"></A>
+<A NAME="401"></A>        celosClient.getWorkflowStatus(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"workflow-1"</FONT>), <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-12-02T20:00Z"</FONT>));
+<A NAME="402"></A>    }
+<A NAME="403"></A>
+<A NAME="404"></A>
+<A NAME="405"></A>    @Test
+<A NAME="406"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testCorrectWorkflowStatesFromDbWf1() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="407"></A>        File src = <FONT ID="New">new</FONT> File(Thread.currentThread().getContextClassLoader().getResource(<FONT ID="StringLiteral">"com/collective/celos/client/wf-list"</FONT>).toURI());
+<A NAME="408"></A>        FileUtils.copyDirectory(src, workflowsDir);
+<A NAME="409"></A>
+<A NAME="410"></A>        File src2 = <FONT ID="New">new</FONT> File(Thread.currentThread().getContextClassLoader().getResource(<FONT ID="StringLiteral">"com/collective/celos/server/slot-db-1"</FONT>).toURI());
+<A NAME="411"></A>        FileUtils.copyDirectory(src2, slotDbDir);
+<A NAME="412"></A>
+<A NAME="413"></A>        <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> timeStart = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-11-25T20:00:00.000Z"</FONT>);
+<A NAME="414"></A>        <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> waitingSlotsTimeEnd = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-12-02T19:00:00.000Z"</FONT>);
+<A NAME="415"></A>
+<A NAME="416"></A>        <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> time = waitingSlotsTimeEnd;
 <A NAME="417"></A>
-<A NAME="418"></A>        <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> time = waitingSlotsTimeEnd;
-<A NAME="419"></A>
-<A NAME="420"></A>        List&lt;<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>&gt; expectedSlotStates = Lists.newArrayList();
-<A NAME="421"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> slotStateRunning = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A>(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"workflow-1"</FONT>), time), SlotState.Status.RUNNING, <FONT ID="StringLiteral">"foo-bar"</FONT>, <FONT ID="IntegerLiteral">0</FONT>);
+<A NAME="418"></A>        List&lt;<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>&gt; expectedSlotStates = Lists.newArrayList();
+<A NAME="419"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> slotStateRunning = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A>(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"workflow-1"</FONT>), time), SlotState.Status.RUNNING, <FONT ID="StringLiteral">"foo-bar"</FONT>, <FONT ID="IntegerLiteral">0</FONT>);
+<A NAME="420"></A>        time = time.minusHours(<FONT ID="IntegerLiteral">1</FONT>);
+<A NAME="421"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> slotStateReady = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A>(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"workflow-1"</FONT>), time), SlotState.Status.READY, <FONT ID="Null">null</FONT>, <FONT ID="IntegerLiteral">14</FONT>);
 <A NAME="422"></A>        time = time.minusHours(<FONT ID="IntegerLiteral">1</FONT>);
-<A NAME="423"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> slotStateReady = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A>(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"workflow-1"</FONT>), time), SlotState.Status.READY, <FONT ID="Null">null</FONT>, <FONT ID="IntegerLiteral">14</FONT>);
-<A NAME="424"></A>        time = time.minusHours(<FONT ID="IntegerLiteral">1</FONT>);
-<A NAME="425"></A>
-<A NAME="426"></A>        expectedSlotStates.add(slotStateRunning);
-<A NAME="427"></A>        expectedSlotStates.add(slotStateReady);
-<A NAME="428"></A>
-<A NAME="429"></A>        <FONT ID="While">while</FONT> (!time.getDateTime().isBefore(timeStart.getDateTime())) {
-<A NAME="430"></A>            <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> slotState = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A>(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"workflow-1"</FONT>), time), SlotState.Status.WAITING);
-<A NAME="431"></A>            expectedSlotStates.add(slotState);
-<A NAME="432"></A>            time = time.minusHours(<FONT ID="IntegerLiteral">1</FONT>);
-<A NAME="433"></A>        }
+<A NAME="423"></A>
+<A NAME="424"></A>        expectedSlotStates.add(slotStateRunning);
+<A NAME="425"></A>        expectedSlotStates.add(slotStateReady);
+<A NAME="426"></A>
+<A NAME="427"></A>        <FONT ID="While">while</FONT> (!time.getDateTime().isBefore(timeStart.getDateTime())) {
+<A NAME="428"></A>            <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> slotState = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A>(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"workflow-1"</FONT>), time), SlotState.Status.WAITING);
+<A NAME="429"></A>            expectedSlotStates.add(slotState);
+<A NAME="430"></A>            time = time.minusHours(<FONT ID="IntegerLiteral">1</FONT>);
+<A NAME="431"></A>        }
+<A NAME="432"></A>
+<A NAME="433"></A>        List&lt;<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>&gt; resultSlotStates = celosClient.getWorkflowStatus(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"workflow-1"</FONT>), <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-12-02T20:00Z"</FONT>)).getSlotStates();
 <A NAME="434"></A>
-<A NAME="435"></A>        List&lt;<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>&gt; resultSlotStates = celosClient.getWorkflowStatus(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"workflow-1"</FONT>), <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-12-02T20:00Z"</FONT>)).getSlotStates();
-<A NAME="436"></A>
-<A NAME="437"></A>        Assert.assertEquals(expectedSlotStates, resultSlotStates);
-<A NAME="438"></A>    }
-<A NAME="439"></A>
-<A NAME="440"></A>
-<A NAME="441"></A>    @Test
-<A NAME="442"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testCorrectWorkflowStatesFromDbWf1Only10Hours() <FONT ID="Throws">throws</FONT> Exception {
-<A NAME="443"></A>        File src = <FONT ID="New">new</FONT> File(Thread.currentThread().getContextClassLoader().getResource(<FONT ID="StringLiteral">"com/collective/celos/client/wf-list"</FONT>).toURI());
-<A NAME="444"></A>        FileUtils.copyDirectory(src, workflowsDir);
-<A NAME="445"></A>
-<A NAME="446"></A>        File src2 = <FONT ID="New">new</FONT> File(Thread.currentThread().getContextClassLoader().getResource(<FONT ID="StringLiteral">"com/collective/celos/server/slot-db-1"</FONT>).toURI());
-<A NAME="447"></A>        FileUtils.copyDirectory(src2, slotDbDir);
-<A NAME="448"></A>
-<A NAME="449"></A>        <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> timeStart = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-12-02T10:00:00.000Z"</FONT>);
-<A NAME="450"></A>        <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> waitingSlotsTimeEnd = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-12-02T19:00:00.000Z"</FONT>);
+<A NAME="435"></A>        Assert.assertEquals(expectedSlotStates, resultSlotStates);
+<A NAME="436"></A>    }
+<A NAME="437"></A>
+<A NAME="438"></A>
+<A NAME="439"></A>    @Test
+<A NAME="440"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testCorrectWorkflowStatesFromDbWf1Only10Hours() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="441"></A>        File src = <FONT ID="New">new</FONT> File(Thread.currentThread().getContextClassLoader().getResource(<FONT ID="StringLiteral">"com/collective/celos/client/wf-list"</FONT>).toURI());
+<A NAME="442"></A>        FileUtils.copyDirectory(src, workflowsDir);
+<A NAME="443"></A>
+<A NAME="444"></A>        File src2 = <FONT ID="New">new</FONT> File(Thread.currentThread().getContextClassLoader().getResource(<FONT ID="StringLiteral">"com/collective/celos/server/slot-db-1"</FONT>).toURI());
+<A NAME="445"></A>        FileUtils.copyDirectory(src2, slotDbDir);
+<A NAME="446"></A>
+<A NAME="447"></A>        <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> timeStart = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-12-02T10:00:00.000Z"</FONT>);
+<A NAME="448"></A>        <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> waitingSlotsTimeEnd = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-12-02T19:00:00.000Z"</FONT>);
+<A NAME="449"></A>
+<A NAME="450"></A>        <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> time = waitingSlotsTimeEnd;
 <A NAME="451"></A>
-<A NAME="452"></A>        <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> time = waitingSlotsTimeEnd;
-<A NAME="453"></A>
-<A NAME="454"></A>        List&lt;<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>&gt; expectedSlotStates = Lists.newArrayList();
-<A NAME="455"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> slotStateRunning = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A>(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"workflow-1"</FONT>), time), SlotState.Status.RUNNING, <FONT ID="StringLiteral">"foo-bar"</FONT>, <FONT ID="IntegerLiteral">0</FONT>);
+<A NAME="452"></A>        List&lt;<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>&gt; expectedSlotStates = Lists.newArrayList();
+<A NAME="453"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> slotStateRunning = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A>(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"workflow-1"</FONT>), time), SlotState.Status.RUNNING, <FONT ID="StringLiteral">"foo-bar"</FONT>, <FONT ID="IntegerLiteral">0</FONT>);
+<A NAME="454"></A>        time = time.minusHours(<FONT ID="IntegerLiteral">1</FONT>);
+<A NAME="455"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> slotStateReady = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A>(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"workflow-1"</FONT>), time), SlotState.Status.READY, <FONT ID="Null">null</FONT>, <FONT ID="IntegerLiteral">14</FONT>);
 <A NAME="456"></A>        time = time.minusHours(<FONT ID="IntegerLiteral">1</FONT>);
-<A NAME="457"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> slotStateReady = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A>(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"workflow-1"</FONT>), time), SlotState.Status.READY, <FONT ID="Null">null</FONT>, <FONT ID="IntegerLiteral">14</FONT>);
-<A NAME="458"></A>        time = time.minusHours(<FONT ID="IntegerLiteral">1</FONT>);
-<A NAME="459"></A>
-<A NAME="460"></A>        expectedSlotStates.add(slotStateRunning);
-<A NAME="461"></A>        expectedSlotStates.add(slotStateReady);
-<A NAME="462"></A>
-<A NAME="463"></A>        <FONT ID="While">while</FONT> (!time.getDateTime().isBefore(timeStart.getDateTime())) {
-<A NAME="464"></A>            <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> slotState = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A>(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"workflow-1"</FONT>), time), SlotState.Status.WAITING);
-<A NAME="465"></A>            expectedSlotStates.add(slotState);
-<A NAME="466"></A>            time = time.minusHours(<FONT ID="IntegerLiteral">1</FONT>);
-<A NAME="467"></A>        }
-<A NAME="468"></A>
-<A NAME="469"></A>        <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> reqTimeEnd = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-12-02T20:00Z"</FONT>);
-<A NAME="470"></A>        <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> reqTimeStart = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-12-02T10:00Z"</FONT>);
-<A NAME="471"></A>        List&lt;<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>&gt; resultSlotStates = celosClient.getWorkflowStatus(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"workflow-1"</FONT>), reqTimeStart, reqTimeEnd).getSlotStates();
-<A NAME="472"></A>
-<A NAME="473"></A>        Assert.assertEquals(expectedSlotStates, resultSlotStates);
-<A NAME="474"></A>    }
-<A NAME="475"></A>
-<A NAME="476"></A>    @Test
-<A NAME="477"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testWorksfor5Days() <FONT ID="Throws">throws</FONT> Exception {
-<A NAME="478"></A>        File src = <FONT ID="New">new</FONT> File(Thread.currentThread().getContextClassLoader().getResource(<FONT ID="StringLiteral">"com/collective/celos/client/wf-list"</FONT>).toURI());
-<A NAME="479"></A>        FileUtils.copyDirectory(src, workflowsDir);
-<A NAME="480"></A>
-<A NAME="481"></A>        <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> reqTimeEnd = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-12-07T20:00Z"</FONT>);
-<A NAME="482"></A>        <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> reqTimeStart = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-12-02T10:00Z"</FONT>);
-<A NAME="483"></A>        celosClient.getWorkflowStatus(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"workflow-1"</FONT>), reqTimeStart, reqTimeEnd);
-<A NAME="484"></A>    }
-<A NAME="485"></A>
-<A NAME="486"></A>    @Test (expected = IOException.<FONT ID="Class">class</FONT>)
-<A NAME="487"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testNotWorksfor25Days() <FONT ID="Throws">throws</FONT> Exception {
-<A NAME="488"></A>        File src = <FONT ID="New">new</FONT> File(Thread.currentThread().getContextClassLoader().getResource(<FONT ID="StringLiteral">"com/collective/celos/client/wf-list"</FONT>).toURI());
-<A NAME="489"></A>        FileUtils.copyDirectory(src, workflowsDir);
-<A NAME="490"></A>
-<A NAME="491"></A>        <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> reqTimeEnd = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-12-27T20:00Z"</FONT>);
-<A NAME="492"></A>        <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> reqTimeStart = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-12-02T10:00Z"</FONT>);
-<A NAME="493"></A>        celosClient.getWorkflowStatus(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"workflow-1"</FONT>), reqTimeStart, reqTimeEnd);
-<A NAME="494"></A>    }
-<A NAME="495"></A>
-<A NAME="496"></A>
-<A NAME="497"></A>    @Test
-<A NAME="498"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testCorrectWorkflowStatesFromDbWf1StartTimeIsAfterEndTime() <FONT ID="Throws">throws</FONT> Exception {
-<A NAME="499"></A>
-<A NAME="500"></A>        File src = <FONT ID="New">new</FONT> File(Thread.currentThread().getContextClassLoader().getResource(<FONT ID="StringLiteral">"com/collective/celos/client/wf-list"</FONT>).toURI());
-<A NAME="501"></A>        FileUtils.copyDirectory(src, workflowsDir);
-<A NAME="502"></A>
-<A NAME="503"></A>        <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> reqTimeEnd = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-12-02T20:00Z"</FONT>);
-<A NAME="504"></A>        <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> reqTimeStart = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-12-02T21:00Z"</FONT>);
-<A NAME="505"></A>        <A HREF="../../../com/collective/celos/WorkflowStatus.java.html">WorkflowStatus</A> workflowStatus = celosClient.getWorkflowStatus(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"workflow-1"</FONT>), reqTimeStart, reqTimeEnd);
-<A NAME="506"></A>        Assert.assertEquals(workflowStatus.getSlotStates().size(), <FONT ID="IntegerLiteral">0</FONT>);
-<A NAME="507"></A>    }
-<A NAME="508"></A>
-<A NAME="509"></A>
-<A NAME="510"></A>    @Test
-<A NAME="511"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testCorrectWorkflowStatesFromDbWf2() <FONT ID="Throws">throws</FONT> Exception {
-<A NAME="512"></A>        File src = <FONT ID="New">new</FONT> File(Thread.currentThread().getContextClassLoader().getResource(<FONT ID="StringLiteral">"com/collective/celos/client/wf-list"</FONT>).toURI());
-<A NAME="513"></A>        FileUtils.copyDirectory(src, workflowsDir);
-<A NAME="514"></A>
-<A NAME="515"></A>        File src2 = <FONT ID="New">new</FONT> File(Thread.currentThread().getContextClassLoader().getResource(<FONT ID="StringLiteral">"com/collective/celos/server/slot-db-1"</FONT>).toURI());
-<A NAME="516"></A>        FileUtils.copyDirectory(src2, slotDbDir);
-<A NAME="517"></A>
-<A NAME="518"></A>        <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> timeStart = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-11-25T20:00:00.000Z"</FONT>);
-<A NAME="519"></A>        <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> waitingSlotsTimeEnd = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-12-02T19:00:00.000Z"</FONT>);
+<A NAME="457"></A>
+<A NAME="458"></A>        expectedSlotStates.add(slotStateRunning);
+<A NAME="459"></A>        expectedSlotStates.add(slotStateReady);
+<A NAME="460"></A>
+<A NAME="461"></A>        <FONT ID="While">while</FONT> (!time.getDateTime().isBefore(timeStart.getDateTime())) {
+<A NAME="462"></A>            <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> slotState = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A>(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"workflow-1"</FONT>), time), SlotState.Status.WAITING);
+<A NAME="463"></A>            expectedSlotStates.add(slotState);
+<A NAME="464"></A>            time = time.minusHours(<FONT ID="IntegerLiteral">1</FONT>);
+<A NAME="465"></A>        }
+<A NAME="466"></A>
+<A NAME="467"></A>        <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> reqTimeEnd = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-12-02T20:00Z"</FONT>);
+<A NAME="468"></A>        <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> reqTimeStart = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-12-02T10:00Z"</FONT>);
+<A NAME="469"></A>        List&lt;<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>&gt; resultSlotStates = celosClient.getWorkflowStatus(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"workflow-1"</FONT>), reqTimeStart, reqTimeEnd).getSlotStates();
+<A NAME="470"></A>
+<A NAME="471"></A>        Assert.assertEquals(expectedSlotStates, resultSlotStates);
+<A NAME="472"></A>    }
+<A NAME="473"></A>
+<A NAME="474"></A>    @Test
+<A NAME="475"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testWorksfor5Days() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="476"></A>        File src = <FONT ID="New">new</FONT> File(Thread.currentThread().getContextClassLoader().getResource(<FONT ID="StringLiteral">"com/collective/celos/client/wf-list"</FONT>).toURI());
+<A NAME="477"></A>        FileUtils.copyDirectory(src, workflowsDir);
+<A NAME="478"></A>
+<A NAME="479"></A>        <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> reqTimeEnd = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-12-07T20:00Z"</FONT>);
+<A NAME="480"></A>        <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> reqTimeStart = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-12-02T10:00Z"</FONT>);
+<A NAME="481"></A>        celosClient.getWorkflowStatus(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"workflow-1"</FONT>), reqTimeStart, reqTimeEnd);
+<A NAME="482"></A>    }
+<A NAME="483"></A>
+<A NAME="484"></A>    @Test (expected = IOException.<FONT ID="Class">class</FONT>)
+<A NAME="485"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testNotWorksfor25Days() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="486"></A>        File src = <FONT ID="New">new</FONT> File(Thread.currentThread().getContextClassLoader().getResource(<FONT ID="StringLiteral">"com/collective/celos/client/wf-list"</FONT>).toURI());
+<A NAME="487"></A>        FileUtils.copyDirectory(src, workflowsDir);
+<A NAME="488"></A>
+<A NAME="489"></A>        <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> reqTimeEnd = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-12-27T20:00Z"</FONT>);
+<A NAME="490"></A>        <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> reqTimeStart = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-12-02T10:00Z"</FONT>);
+<A NAME="491"></A>        celosClient.getWorkflowStatus(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"workflow-1"</FONT>), reqTimeStart, reqTimeEnd);
+<A NAME="492"></A>    }
+<A NAME="493"></A>
+<A NAME="494"></A>
+<A NAME="495"></A>    @Test
+<A NAME="496"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testCorrectWorkflowStatesFromDbWf1StartTimeIsAfterEndTime() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="497"></A>
+<A NAME="498"></A>        File src = <FONT ID="New">new</FONT> File(Thread.currentThread().getContextClassLoader().getResource(<FONT ID="StringLiteral">"com/collective/celos/client/wf-list"</FONT>).toURI());
+<A NAME="499"></A>        FileUtils.copyDirectory(src, workflowsDir);
+<A NAME="500"></A>
+<A NAME="501"></A>        <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> reqTimeEnd = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-12-02T20:00Z"</FONT>);
+<A NAME="502"></A>        <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> reqTimeStart = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-12-02T21:00Z"</FONT>);
+<A NAME="503"></A>        <A HREF="../../../com/collective/celos/WorkflowStatus.java.html">WorkflowStatus</A> workflowStatus = celosClient.getWorkflowStatus(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"workflow-1"</FONT>), reqTimeStart, reqTimeEnd);
+<A NAME="504"></A>        Assert.assertEquals(workflowStatus.getSlotStates().size(), <FONT ID="IntegerLiteral">0</FONT>);
+<A NAME="505"></A>    }
+<A NAME="506"></A>
+<A NAME="507"></A>
+<A NAME="508"></A>    @Test
+<A NAME="509"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testCorrectWorkflowStatesFromDbWf2() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="510"></A>        File src = <FONT ID="New">new</FONT> File(Thread.currentThread().getContextClassLoader().getResource(<FONT ID="StringLiteral">"com/collective/celos/client/wf-list"</FONT>).toURI());
+<A NAME="511"></A>        FileUtils.copyDirectory(src, workflowsDir);
+<A NAME="512"></A>
+<A NAME="513"></A>        File src2 = <FONT ID="New">new</FONT> File(Thread.currentThread().getContextClassLoader().getResource(<FONT ID="StringLiteral">"com/collective/celos/server/slot-db-1"</FONT>).toURI());
+<A NAME="514"></A>        FileUtils.copyDirectory(src2, slotDbDir);
+<A NAME="515"></A>
+<A NAME="516"></A>        <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> timeStart = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-11-25T20:00:00.000Z"</FONT>);
+<A NAME="517"></A>        <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> waitingSlotsTimeEnd = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-12-02T19:00:00.000Z"</FONT>);
+<A NAME="518"></A>
+<A NAME="519"></A>        <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> time = waitingSlotsTimeEnd;
 <A NAME="520"></A>
-<A NAME="521"></A>        <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> time = waitingSlotsTimeEnd;
-<A NAME="522"></A>
-<A NAME="523"></A>        List&lt;<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>&gt; expectedSlotStates = Lists.newArrayList();
-<A NAME="524"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> slotStateRunning = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A>(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"workflow-2"</FONT>), time), SlotState.Status.RUNNING, <FONT ID="StringLiteral">"quux"</FONT>, <FONT ID="IntegerLiteral">2</FONT>);
+<A NAME="521"></A>        List&lt;<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>&gt; expectedSlotStates = Lists.newArrayList();
+<A NAME="522"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> slotStateRunning = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A>(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"workflow-2"</FONT>), time), SlotState.Status.RUNNING, <FONT ID="StringLiteral">"quux"</FONT>, <FONT ID="IntegerLiteral">2</FONT>);
+<A NAME="523"></A>        time = time.minusHours(<FONT ID="IntegerLiteral">1</FONT>);
+<A NAME="524"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> slotStateReady = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A>(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"workflow-2"</FONT>), time), SlotState.Status.READY);
 <A NAME="525"></A>        time = time.minusHours(<FONT ID="IntegerLiteral">1</FONT>);
-<A NAME="526"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> slotStateReady = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A>(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"workflow-2"</FONT>), time), SlotState.Status.READY);
-<A NAME="527"></A>        time = time.minusHours(<FONT ID="IntegerLiteral">1</FONT>);
-<A NAME="528"></A>
-<A NAME="529"></A>        expectedSlotStates.add(slotStateRunning);
-<A NAME="530"></A>        expectedSlotStates.add(slotStateReady);
-<A NAME="531"></A>
-<A NAME="532"></A>        <FONT ID="While">while</FONT> (!time.getDateTime().isBefore(timeStart.getDateTime())) {
-<A NAME="533"></A>            <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> slotState = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A>(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"workflow-2"</FONT>), time), SlotState.Status.WAITING);
-<A NAME="534"></A>            expectedSlotStates.add(slotState);
-<A NAME="535"></A>            time = time.minusHours(<FONT ID="IntegerLiteral">1</FONT>);
-<A NAME="536"></A>        }
+<A NAME="526"></A>
+<A NAME="527"></A>        expectedSlotStates.add(slotStateRunning);
+<A NAME="528"></A>        expectedSlotStates.add(slotStateReady);
+<A NAME="529"></A>
+<A NAME="530"></A>        <FONT ID="While">while</FONT> (!time.getDateTime().isBefore(timeStart.getDateTime())) {
+<A NAME="531"></A>            <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> slotState = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A>(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"workflow-2"</FONT>), time), SlotState.Status.WAITING);
+<A NAME="532"></A>            expectedSlotStates.add(slotState);
+<A NAME="533"></A>            time = time.minusHours(<FONT ID="IntegerLiteral">1</FONT>);
+<A NAME="534"></A>        }
+<A NAME="535"></A>
+<A NAME="536"></A>        List&lt;<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>&gt; resultSlotStates = celosClient.getWorkflowStatus(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"workflow-2"</FONT>), <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-12-02T20:00Z"</FONT>)).getSlotStates();
 <A NAME="537"></A>
-<A NAME="538"></A>        List&lt;<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>&gt; resultSlotStates = celosClient.getWorkflowStatus(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"workflow-2"</FONT>), <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-12-02T20:00Z"</FONT>)).getSlotStates();
-<A NAME="539"></A>
-<A NAME="540"></A>        Assert.assertEquals(expectedSlotStates, resultSlotStates);
-<A NAME="541"></A>    }
-<A NAME="542"></A>
-<A NAME="543"></A>    @Test
-<A NAME="544"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testGetSlotState() <FONT ID="Throws">throws</FONT> Exception {
-<A NAME="545"></A>
-<A NAME="546"></A>        File src = <FONT ID="New">new</FONT> File(Thread.currentThread().getContextClassLoader().getResource(<FONT ID="StringLiteral">"com/collective/celos/client/wf-list"</FONT>).toURI());
-<A NAME="547"></A>        FileUtils.copyDirectory(src, workflowsDir);
-<A NAME="548"></A>
-<A NAME="549"></A>        File src2 = <FONT ID="New">new</FONT> File(Thread.currentThread().getContextClassLoader().getResource(<FONT ID="StringLiteral">"com/collective/celos/server/slot-db-1"</FONT>).toURI());
-<A NAME="550"></A>        FileUtils.copyDirectory(src2, slotDbDir);
+<A NAME="538"></A>        Assert.assertEquals(expectedSlotStates, resultSlotStates);
+<A NAME="539"></A>    }
+<A NAME="540"></A>
+<A NAME="541"></A>    @Test
+<A NAME="542"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testGetSlotState() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="543"></A>
+<A NAME="544"></A>        File src = <FONT ID="New">new</FONT> File(Thread.currentThread().getContextClassLoader().getResource(<FONT ID="StringLiteral">"com/collective/celos/client/wf-list"</FONT>).toURI());
+<A NAME="545"></A>        FileUtils.copyDirectory(src, workflowsDir);
+<A NAME="546"></A>
+<A NAME="547"></A>        File src2 = <FONT ID="New">new</FONT> File(Thread.currentThread().getContextClassLoader().getResource(<FONT ID="StringLiteral">"com/collective/celos/server/slot-db-1"</FONT>).toURI());
+<A NAME="548"></A>        FileUtils.copyDirectory(src2, slotDbDir);
+<A NAME="549"></A>
+<A NAME="550"></A>        <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A> workflowID = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"workflow-1"</FONT>);
 <A NAME="551"></A>
-<A NAME="552"></A>        <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A> workflowID = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"workflow-1"</FONT>);
-<A NAME="553"></A>
-<A NAME="554"></A>        <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> scheduledTime1 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-12-02T19:00Z"</FONT>);
-<A NAME="555"></A>        <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> scheduledTime2 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-12-02T18:00Z"</FONT>);
-<A NAME="556"></A>
-<A NAME="557"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> slotState1 = celosClient.getSlotState(workflowID, scheduledTime1);
-<A NAME="558"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> slotState2 = celosClient.getSlotState(workflowID, scheduledTime2);
-<A NAME="559"></A>
-<A NAME="560"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> expectedSlotState1 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A>(workflowID, scheduledTime1), SlotState.Status.RUNNING, <FONT ID="StringLiteral">"foo-bar"</FONT>, <FONT ID="IntegerLiteral">0</FONT>);
-<A NAME="561"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> expectedSlotState2 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A>(workflowID, scheduledTime2), SlotState.Status.READY, <FONT ID="Null">null</FONT>, <FONT ID="IntegerLiteral">14</FONT>);
-<A NAME="562"></A>
-<A NAME="563"></A>        Assert.assertEquals(expectedSlotState1, slotState1);
-<A NAME="564"></A>        Assert.assertEquals(expectedSlotState2, slotState2);
-<A NAME="565"></A>    }
-<A NAME="566"></A>
-<A NAME="567"></A>    @Test(expected = IOException.<FONT ID="Class">class</FONT>)
-<A NAME="568"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testGetSlotStateNotFound() <FONT ID="Throws">throws</FONT> Exception {
-<A NAME="569"></A>
-<A NAME="570"></A>        File src = <FONT ID="New">new</FONT> File(Thread.currentThread().getContextClassLoader().getResource(<FONT ID="StringLiteral">"com/collective/celos/client/wf-list"</FONT>).toURI());
-<A NAME="571"></A>        FileUtils.copyDirectory(src, workflowsDir);
-<A NAME="572"></A>
-<A NAME="573"></A>        File src2 = <FONT ID="New">new</FONT> File(Thread.currentThread().getContextClassLoader().getResource(<FONT ID="StringLiteral">"com/collective/celos/server/slot-db-1"</FONT>).toURI());
-<A NAME="574"></A>        FileUtils.copyDirectory(src2, slotDbDir);
-<A NAME="575"></A>
-<A NAME="576"></A>        <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A> workflowID = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"workflow-1"</FONT>);
-<A NAME="577"></A>        <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> scheduledTime1 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2000-12-02T19:00Z"</FONT>);
-<A NAME="578"></A>
-<A NAME="579"></A>        celosClient.getSlotState(workflowID, scheduledTime1);
-<A NAME="580"></A>    }
-<A NAME="581"></A>
-<A NAME="582"></A>    @Test(expected = IOException.<FONT ID="Class">class</FONT>)
-<A NAME="583"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testGetSlotStateNotFoundNotExistingWF() <FONT ID="Throws">throws</FONT> Exception {
-<A NAME="584"></A>
-<A NAME="585"></A>        File src = <FONT ID="New">new</FONT> File(Thread.currentThread().getContextClassLoader().getResource(<FONT ID="StringLiteral">"com/collective/celos/client/wf-list"</FONT>).toURI());
-<A NAME="586"></A>        FileUtils.copyDirectory(src, workflowsDir);
-<A NAME="587"></A>
-<A NAME="588"></A>        File src2 = <FONT ID="New">new</FONT> File(Thread.currentThread().getContextClassLoader().getResource(<FONT ID="StringLiteral">"com/collective/celos/server/slot-db-1"</FONT>).toURI());
-<A NAME="589"></A>        FileUtils.copyDirectory(src2, slotDbDir);
-<A NAME="590"></A>
-<A NAME="591"></A>        <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A> workflowID = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"workflow-doesnt-exist"</FONT>);
-<A NAME="592"></A>        <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> scheduledTime1 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2000-12-02T19:00Z"</FONT>);
-<A NAME="593"></A>
-<A NAME="594"></A>        celosClient.getSlotState(workflowID, scheduledTime1);
-<A NAME="595"></A>    }
-<A NAME="596"></A>
-<A NAME="597"></A>    @Test
-<A NAME="598"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testRerunSlot() <FONT ID="Throws">throws</FONT> Exception {
-<A NAME="599"></A>
-<A NAME="600"></A>        File src = <FONT ID="New">new</FONT> File(Thread.currentThread().getContextClassLoader().getResource(<FONT ID="StringLiteral">"com/collective/celos/client/wf-list"</FONT>).toURI());
-<A NAME="601"></A>        FileUtils.copyDirectory(src, workflowsDir);
-<A NAME="602"></A>
+<A NAME="552"></A>        <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> scheduledTime1 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-12-02T19:00Z"</FONT>);
+<A NAME="553"></A>        <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> scheduledTime2 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-12-02T18:00Z"</FONT>);
+<A NAME="554"></A>
+<A NAME="555"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> slotState1 = celosClient.getSlotState(workflowID, scheduledTime1);
+<A NAME="556"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> slotState2 = celosClient.getSlotState(workflowID, scheduledTime2);
+<A NAME="557"></A>
+<A NAME="558"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> expectedSlotState1 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A>(workflowID, scheduledTime1), SlotState.Status.RUNNING, <FONT ID="StringLiteral">"foo-bar"</FONT>, <FONT ID="IntegerLiteral">0</FONT>);
+<A NAME="559"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> expectedSlotState2 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A>(workflowID, scheduledTime2), SlotState.Status.READY, <FONT ID="Null">null</FONT>, <FONT ID="IntegerLiteral">14</FONT>);
+<A NAME="560"></A>
+<A NAME="561"></A>        Assert.assertEquals(expectedSlotState1, slotState1);
+<A NAME="562"></A>        Assert.assertEquals(expectedSlotState2, slotState2);
+<A NAME="563"></A>    }
+<A NAME="564"></A>
+<A NAME="565"></A>    @Test(expected = IOException.<FONT ID="Class">class</FONT>)
+<A NAME="566"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testGetSlotStateNotFound() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="567"></A>
+<A NAME="568"></A>        File src = <FONT ID="New">new</FONT> File(Thread.currentThread().getContextClassLoader().getResource(<FONT ID="StringLiteral">"com/collective/celos/client/wf-list"</FONT>).toURI());
+<A NAME="569"></A>        FileUtils.copyDirectory(src, workflowsDir);
+<A NAME="570"></A>
+<A NAME="571"></A>        File src2 = <FONT ID="New">new</FONT> File(Thread.currentThread().getContextClassLoader().getResource(<FONT ID="StringLiteral">"com/collective/celos/server/slot-db-1"</FONT>).toURI());
+<A NAME="572"></A>        FileUtils.copyDirectory(src2, slotDbDir);
+<A NAME="573"></A>
+<A NAME="574"></A>        <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A> workflowID = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"workflow-1"</FONT>);
+<A NAME="575"></A>        <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> scheduledTime1 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2000-12-02T19:00Z"</FONT>);
+<A NAME="576"></A>
+<A NAME="577"></A>        celosClient.getSlotState(workflowID, scheduledTime1);
+<A NAME="578"></A>    }
+<A NAME="579"></A>
+<A NAME="580"></A>    @Test(expected = IOException.<FONT ID="Class">class</FONT>)
+<A NAME="581"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testGetSlotStateNotFoundNotExistingWF() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="582"></A>
+<A NAME="583"></A>        File src = <FONT ID="New">new</FONT> File(Thread.currentThread().getContextClassLoader().getResource(<FONT ID="StringLiteral">"com/collective/celos/client/wf-list"</FONT>).toURI());
+<A NAME="584"></A>        FileUtils.copyDirectory(src, workflowsDir);
+<A NAME="585"></A>
+<A NAME="586"></A>        File src2 = <FONT ID="New">new</FONT> File(Thread.currentThread().getContextClassLoader().getResource(<FONT ID="StringLiteral">"com/collective/celos/server/slot-db-1"</FONT>).toURI());
+<A NAME="587"></A>        FileUtils.copyDirectory(src2, slotDbDir);
+<A NAME="588"></A>
+<A NAME="589"></A>        <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A> workflowID = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"workflow-doesnt-exist"</FONT>);
+<A NAME="590"></A>        <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> scheduledTime1 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2000-12-02T19:00Z"</FONT>);
+<A NAME="591"></A>
+<A NAME="592"></A>        celosClient.getSlotState(workflowID, scheduledTime1);
+<A NAME="593"></A>    }
+<A NAME="594"></A>
+<A NAME="595"></A>    @Test
+<A NAME="596"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testRerunSlot() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="597"></A>
+<A NAME="598"></A>        File src = <FONT ID="New">new</FONT> File(Thread.currentThread().getContextClassLoader().getResource(<FONT ID="StringLiteral">"com/collective/celos/client/wf-list"</FONT>).toURI());
+<A NAME="599"></A>        FileUtils.copyDirectory(src, workflowsDir);
+<A NAME="600"></A>
+<A NAME="601"></A>        celosClient.iterateScheduler(ScheduledTime.now());
+<A NAME="602"></A>        celosClient.iterateScheduler(ScheduledTime.now());
 <A NAME="603"></A>        celosClient.iterateScheduler(ScheduledTime.now());
-<A NAME="604"></A>        celosClient.iterateScheduler(ScheduledTime.now());
-<A NAME="605"></A>        celosClient.iterateScheduler(ScheduledTime.now());
+<A NAME="604"></A>
+<A NAME="605"></A>        <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A> workflowID = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"workflow-Iñtërnâtiônàlizætiøn"</FONT>);
 <A NAME="606"></A>
-<A NAME="607"></A>        <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A> workflowID = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"workflow-Iñtërnâtiônàlizætiøn"</FONT>);
-<A NAME="608"></A>
-<A NAME="609"></A>        List&lt;<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>&gt; slotStates = celosClient.getWorkflowStatus(workflowID).getSlotStates();
-<A NAME="610"></A>        Assert.assertEquals(slotStates.size(), SLOTS_IN_CELOS_SERVER_SLIDING_WINDOW);
-<A NAME="611"></A>
-<A NAME="612"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> slotStateLst = slotStates.get(slotStates.size() - <FONT ID="IntegerLiteral">1</FONT>);
-<A NAME="613"></A>        Assert.assertEquals(slotStateLst.getStatus(), SlotState.Status.FAILURE);
-<A NAME="614"></A>        <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> scheduledTime = slotStateLst.getScheduledTime();
-<A NAME="615"></A>
-<A NAME="616"></A>        celosClient.rerunSlot(workflowID, scheduledTime);
-<A NAME="617"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> slotStateUpdated = celosClient.getSlotState(workflowID, scheduledTime);
-<A NAME="618"></A>
-<A NAME="619"></A>        Assert.assertEquals(slotStateUpdated.getStatus(), SlotState.Status.WAITING);
-<A NAME="620"></A>    }
-<A NAME="621"></A>
-<A NAME="622"></A>
-<A NAME="623"></A>    @Test(expected = IOException.<FONT ID="Class">class</FONT>)
-<A NAME="624"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testRerunSlotFails() <FONT ID="Throws">throws</FONT> Exception {
-<A NAME="625"></A>
-<A NAME="626"></A>        File src = <FONT ID="New">new</FONT> File(Thread.currentThread().getContextClassLoader().getResource(<FONT ID="StringLiteral">"com/collective/celos/client/wf-list"</FONT>).toURI());
-<A NAME="627"></A>        FileUtils.copyDirectory(src, workflowsDir);
-<A NAME="628"></A>
-<A NAME="629"></A>        <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A> workflowID = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"unknown-workflow"</FONT>);
-<A NAME="630"></A>        celosClient.rerunSlot(workflowID, ScheduledTime.now());
-<A NAME="631"></A>    }
-<A NAME="632"></A>
-<A NAME="633"></A>}
-<A NAME="634"></A></pre>
+<A NAME="607"></A>        List&lt;<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>&gt; slotStates = celosClient.getWorkflowStatus(workflowID).getSlotStates();
+<A NAME="608"></A>        Assert.assertEquals(slotStates.size(), SLOTS_IN_CELOS_SERVER_SLIDING_WINDOW);
+<A NAME="609"></A>
+<A NAME="610"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> slotStateLst = slotStates.get(slotStates.size() - <FONT ID="IntegerLiteral">1</FONT>);
+<A NAME="611"></A>        Assert.assertEquals(slotStateLst.getStatus(), SlotState.Status.FAILURE);
+<A NAME="612"></A>        <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> scheduledTime = slotStateLst.getScheduledTime();
+<A NAME="613"></A>
+<A NAME="614"></A>        celosClient.rerunSlot(workflowID, scheduledTime);
+<A NAME="615"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> slotStateUpdated = celosClient.getSlotState(workflowID, scheduledTime);
+<A NAME="616"></A>
+<A NAME="617"></A>        Assert.assertEquals(slotStateUpdated.getStatus(), SlotState.Status.WAITING);
+<A NAME="618"></A>    }
+<A NAME="619"></A>
+<A NAME="620"></A>
+<A NAME="621"></A>    @Test(expected = IOException.<FONT ID="Class">class</FONT>)
+<A NAME="622"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testRerunSlotFails() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="623"></A>
+<A NAME="624"></A>        File src = <FONT ID="New">new</FONT> File(Thread.currentThread().getContextClassLoader().getResource(<FONT ID="StringLiteral">"com/collective/celos/client/wf-list"</FONT>).toURI());
+<A NAME="625"></A>        FileUtils.copyDirectory(src, workflowsDir);
+<A NAME="626"></A>
+<A NAME="627"></A>        <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A> workflowID = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"unknown-workflow"</FONT>);
+<A NAME="628"></A>        celosClient.rerunSlot(workflowID, ScheduledTime.now());
+<A NAME="629"></A>    }
+<A NAME="630"></A>
+<A NAME="631"></A>}
+<A NAME="632"></A></pre>
 </BODY>
 </HTML>

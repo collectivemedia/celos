@@ -130,71 +130,76 @@
 <A NAME="113"></A>            <FONT ID="Return">return</FONT> results;
 <A NAME="114"></A>        } <FONT ID="Catch">catch</FONT> (Throwable t) {
 <A NAME="115"></A>            t.printStackTrace(System.err);
-<A NAME="116"></A>            <FONT ID="Throw">throw</FONT> t;
-<A NAME="117"></A>        } <FONT ID="Finally">finally</FONT> {
-<A NAME="118"></A>            celosServerMode.stopServer(<FONT ID="This">this</FONT>);
-<A NAME="119"></A>            cleanData();
-<A NAME="120"></A>        }
-<A NAME="121"></A>    }
-<A NAME="122"></A>
-<A NAME="123"></A>    <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> cleanData() {
-<A NAME="124"></A>        <FONT ID="Try">try</FONT> {
-<A NAME="125"></A>            <FONT ID="If">if</FONT> (!keepTempData) {
-<A NAME="126"></A>                doCleanup();
-<A NAME="127"></A>                validateCleanState();
-<A NAME="128"></A>            }
-<A NAME="129"></A>        } <FONT ID="Catch">catch</FONT> (Exception e) {
-<A NAME="130"></A>            e.printStackTrace(System.err);
-<A NAME="131"></A>        }
-<A NAME="132"></A>    }
-<A NAME="133"></A>
-<A NAME="134"></A>    <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> validateCleanState() <FONT ID="Throws">throws</FONT> Exception {
-<A NAME="135"></A>        <FONT ID="For">for</FONT> (<A HREF="../../../../../../com/collective/celos/ci/testing/fixtures/deploy/FixtureDeployer.java.html">FixtureDeployer</A> fixtureDeployer : testCase.getInputs()) {
-<A NAME="136"></A>            fixtureDeployer.validate(<FONT ID="This">this</FONT>);
-<A NAME="137"></A>        }
-<A NAME="138"></A>    }
-<A NAME="139"></A>
-<A NAME="140"></A>    <FONT ID="Private">private</FONT> <FONT ID="Boolean">boolean</FONT> isTestRunFailed(List&lt;<A HREF="../../../../../../com/collective/celos/ci/testing/fixtures/compare/FixObjectCompareResult.java.html">FixObjectCompareResult</A>&gt; results) {
-<A NAME="141"></A>        <FONT ID="For">for</FONT> (<A HREF="../../../../../../com/collective/celos/ci/testing/fixtures/compare/FixObjectCompareResult.java.html">FixObjectCompareResult</A> result : results) {
-<A NAME="142"></A>            <FONT ID="If">if</FONT> (result.getStatus() == FixObjectCompareResult.Status.FAIL) {
-<A NAME="143"></A>                <FONT ID="Return">return</FONT> <FONT ID="True">true</FONT>;
-<A NAME="144"></A>            }
-<A NAME="145"></A>        }
-<A NAME="146"></A>        <FONT ID="Return">return</FONT> <FONT ID="False">false</FONT>;
-<A NAME="147"></A>    }
-<A NAME="148"></A>
-<A NAME="149"></A>    <FONT ID="Private">private</FONT> String getComparisonResults(List&lt;<A HREF="../../../../../../com/collective/celos/ci/testing/fixtures/compare/FixObjectCompareResult.java.html">FixObjectCompareResult</A>&gt; results) <FONT ID="Throws">throws</FONT> IOException {
-<A NAME="150"></A>        List&lt;String&gt; messages = Lists.newArrayList();
-<A NAME="151"></A>        <FONT ID="For">for</FONT> (<A HREF="../../../../../../com/collective/celos/ci/testing/fixtures/compare/FixObjectCompareResult.java.html">FixObjectCompareResult</A> result : results) {
-<A NAME="152"></A>            <FONT ID="If">if</FONT> (result.getStatus() == FixObjectCompareResult.Status.FAIL) {
-<A NAME="153"></A>                messages.add(result.generateDescription());
-<A NAME="154"></A>            }
-<A NAME="155"></A>        }
-<A NAME="156"></A>        <FONT ID="Return">return</FONT> StringUtils.join(messages, <FONT ID="StringLiteral">"\n"</FONT>);
-<A NAME="157"></A>    }
-<A NAME="158"></A>
-<A NAME="159"></A>    <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> doCleanup() <FONT ID="Throws">throws</FONT> Exception {
-<A NAME="160"></A>        <FONT ID="If">if</FONT> (testCaseTempDir.exists()) {
-<A NAME="161"></A>            FileUtils.forceDelete(testCaseTempDir);
-<A NAME="162"></A>        }
-<A NAME="163"></A>        <FONT ID="For">for</FONT> (<A HREF="../../../../../../com/collective/celos/ci/testing/fixtures/deploy/FixtureDeployer.java.html">FixtureDeployer</A> fixtureDeployer : testCase.getInputs()) {
-<A NAME="164"></A>            fixtureDeployer.undeploy(<FONT ID="This">this</FONT>);
-<A NAME="165"></A>        }
-<A NAME="166"></A>        ciContext.getFileSystem().delete(<FONT ID="New">new</FONT> org.apache.hadoop.fs.Path(ciContext.getHdfsPrefix()), <FONT ID="True">true</FONT>);
-<A NAME="167"></A>    }
-<A NAME="168"></A>
-<A NAME="169"></A>    <FONT ID="Public">public</FONT> <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestCase.java.html">TestCase</A> getTestCase() {
-<A NAME="170"></A>        <FONT ID="Return">return</FONT> testCase;
-<A NAME="171"></A>    }
-<A NAME="172"></A>
-<A NAME="173"></A>    <FONT ID="Public">public</FONT> <A HREF="../../../../../../com/collective/celos/ci/config/deploy/CelosCiTarget.java.html">CelosCiTarget</A> getOriginalTarget() {
-<A NAME="174"></A>        <FONT ID="Return">return</FONT> originalTarget;
-<A NAME="175"></A>    }
-<A NAME="176"></A>
-<A NAME="177"></A>    <FONT ID="Public">public</FONT> String getHdfsPrefix() {
-<A NAME="178"></A>        <FONT ID="Return">return</FONT> celosServerMode.getHdfsPrefix();
-<A NAME="179"></A>    }
-<A NAME="180"></A>}
-<A NAME="181"></A></pre>
+<A NAME="116"></A>            <FONT ID="Try">try</FONT> {
+<A NAME="117"></A>                <FONT ID="Throw">throw</FONT> t;
+<A NAME="118"></A>            } <FONT ID="Catch">catch</FONT> (Throwable throwable) {
+<A NAME="119"></A>                throwable.printStackTrace();
+<A NAME="120"></A>            }
+<A NAME="121"></A>        } <FONT ID="Finally">finally</FONT> {
+<A NAME="122"></A>            celosServerMode.stopServer(<FONT ID="This">this</FONT>);
+<A NAME="123"></A>            cleanData();
+<A NAME="124"></A>        }
+<A NAME="125"></A>        <FONT ID="Return">return</FONT> <FONT ID="Null">null</FONT>;
+<A NAME="126"></A>    }
+<A NAME="127"></A>
+<A NAME="128"></A>    <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> cleanData() {
+<A NAME="129"></A>        <FONT ID="Try">try</FONT> {
+<A NAME="130"></A>            <FONT ID="If">if</FONT> (!keepTempData) {
+<A NAME="131"></A>                doCleanup();
+<A NAME="132"></A>                validateCleanState();
+<A NAME="133"></A>            }
+<A NAME="134"></A>        } <FONT ID="Catch">catch</FONT> (Exception e) {
+<A NAME="135"></A>            e.printStackTrace(System.err);
+<A NAME="136"></A>        }
+<A NAME="137"></A>    }
+<A NAME="138"></A>
+<A NAME="139"></A>    <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> validateCleanState() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="140"></A>        <FONT ID="For">for</FONT> (<A HREF="../../../../../../com/collective/celos/ci/testing/fixtures/deploy/FixtureDeployer.java.html">FixtureDeployer</A> fixtureDeployer : testCase.getInputs()) {
+<A NAME="141"></A>            fixtureDeployer.validate(<FONT ID="This">this</FONT>);
+<A NAME="142"></A>        }
+<A NAME="143"></A>    }
+<A NAME="144"></A>
+<A NAME="145"></A>    <FONT ID="Private">private</FONT> <FONT ID="Boolean">boolean</FONT> isTestRunFailed(List&lt;<A HREF="../../../../../../com/collective/celos/ci/testing/fixtures/compare/FixObjectCompareResult.java.html">FixObjectCompareResult</A>&gt; results) {
+<A NAME="146"></A>        <FONT ID="For">for</FONT> (<A HREF="../../../../../../com/collective/celos/ci/testing/fixtures/compare/FixObjectCompareResult.java.html">FixObjectCompareResult</A> result : results) {
+<A NAME="147"></A>            <FONT ID="If">if</FONT> (result.getStatus() == FixObjectCompareResult.Status.FAIL) {
+<A NAME="148"></A>                <FONT ID="Return">return</FONT> <FONT ID="True">true</FONT>;
+<A NAME="149"></A>            }
+<A NAME="150"></A>        }
+<A NAME="151"></A>        <FONT ID="Return">return</FONT> <FONT ID="False">false</FONT>;
+<A NAME="152"></A>    }
+<A NAME="153"></A>
+<A NAME="154"></A>    <FONT ID="Private">private</FONT> String getComparisonResults(List&lt;<A HREF="../../../../../../com/collective/celos/ci/testing/fixtures/compare/FixObjectCompareResult.java.html">FixObjectCompareResult</A>&gt; results) <FONT ID="Throws">throws</FONT> IOException {
+<A NAME="155"></A>        List&lt;String&gt; messages = Lists.newArrayList();
+<A NAME="156"></A>        <FONT ID="For">for</FONT> (<A HREF="../../../../../../com/collective/celos/ci/testing/fixtures/compare/FixObjectCompareResult.java.html">FixObjectCompareResult</A> result : results) {
+<A NAME="157"></A>            <FONT ID="If">if</FONT> (result.getStatus() == FixObjectCompareResult.Status.FAIL) {
+<A NAME="158"></A>                messages.add(result.generateDescription());
+<A NAME="159"></A>            }
+<A NAME="160"></A>        }
+<A NAME="161"></A>        <FONT ID="Return">return</FONT> StringUtils.join(messages, <FONT ID="StringLiteral">"\n"</FONT>);
+<A NAME="162"></A>    }
+<A NAME="163"></A>
+<A NAME="164"></A>    <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> doCleanup() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="165"></A>        <FONT ID="If">if</FONT> (testCaseTempDir.exists()) {
+<A NAME="166"></A>            FileUtils.forceDelete(testCaseTempDir);
+<A NAME="167"></A>        }
+<A NAME="168"></A>        <FONT ID="For">for</FONT> (<A HREF="../../../../../../com/collective/celos/ci/testing/fixtures/deploy/FixtureDeployer.java.html">FixtureDeployer</A> fixtureDeployer : testCase.getInputs()) {
+<A NAME="169"></A>            fixtureDeployer.undeploy(<FONT ID="This">this</FONT>);
+<A NAME="170"></A>        }
+<A NAME="171"></A>        ciContext.getFileSystem().delete(<FONT ID="New">new</FONT> org.apache.hadoop.fs.Path(ciContext.getHdfsPrefix()), <FONT ID="True">true</FONT>);
+<A NAME="172"></A>    }
+<A NAME="173"></A>
+<A NAME="174"></A>    <FONT ID="Public">public</FONT> <A HREF="../../../../../../com/collective/celos/ci/mode/test/TestCase.java.html">TestCase</A> getTestCase() {
+<A NAME="175"></A>        <FONT ID="Return">return</FONT> testCase;
+<A NAME="176"></A>    }
+<A NAME="177"></A>
+<A NAME="178"></A>    <FONT ID="Public">public</FONT> <A HREF="../../../../../../com/collective/celos/ci/config/deploy/CelosCiTarget.java.html">CelosCiTarget</A> getOriginalTarget() {
+<A NAME="179"></A>        <FONT ID="Return">return</FONT> originalTarget;
+<A NAME="180"></A>    }
+<A NAME="181"></A>
+<A NAME="182"></A>    <FONT ID="Public">public</FONT> String getHdfsPrefix() {
+<A NAME="183"></A>        <FONT ID="Return">return</FONT> celosServerMode.getHdfsPrefix();
+<A NAME="184"></A>    }
+<A NAME="185"></A>}
+<A NAME="186"></A></pre>
 </BODY>
 </HTML>

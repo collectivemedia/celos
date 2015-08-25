@@ -34,7 +34,7 @@
 <A NAME="17"></A>
 <A NAME="18"></A>    @Test
 <A NAME="19"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> emptyDirCreatesEmptyWorkflowConfiguration() <FONT ID="Throws">throws</FONT> Exception {
-<A NAME="20"></A>        <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/WorkflowConfiguration.html">WorkflowConfiguration</A> cfg = parseDir(<FONT ID="StringLiteral">"empty"</FONT>);
+<A NAME="20"></A>        <A HREF="../../../com/collective/celos/WorkflowConfiguration.java.html">WorkflowConfiguration</A> cfg = parseDir(<FONT ID="StringLiteral">"empty"</FONT>);
 <A NAME="21"></A>        Assert.assertEquals(<FONT ID="IntegerLiteral">0</FONT>, cfg.getWorkflows().size());
 <A NAME="22"></A>    }
 <A NAME="23"></A>
@@ -80,7 +80,7 @@
 <A NAME="63"></A>
 <A NAME="64"></A>    @Test
 <A NAME="65"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> propertiesAreCorrectlySet() <FONT ID="Throws">throws</FONT> Exception {
-<A NAME="66"></A>        <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/WorkflowConfiguration.html">WorkflowConfiguration</A> cfg = parseFile(<FONT ID="StringLiteral">"properties-test"</FONT>);
+<A NAME="66"></A>        <A HREF="../../../com/collective/celos/WorkflowConfiguration.java.html">WorkflowConfiguration</A> cfg = parseFile(<FONT ID="StringLiteral">"properties-test"</FONT>);
 <A NAME="67"></A>        
 <A NAME="68"></A>        <A HREF="../../../com/collective/celos/Workflow.java.html">Workflow</A> wf1 = cfg.findWorkflow(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"workflow-1"</FONT>));
 <A NAME="69"></A>        Assert.assertEquals(<FONT ID="StringLiteral">"workflow-1"</FONT>, wf1.getID().toString());
@@ -97,7 +97,7 @@
 <A NAME="80"></A>
 <A NAME="81"></A>    @Test
 <A NAME="82"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> workflowInfoWF1() <FONT ID="Throws">throws</FONT> Exception {
-<A NAME="83"></A>        <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/WorkflowConfiguration.html">WorkflowConfiguration</A> cfg = parseFile(<FONT ID="StringLiteral">"workflow-info-test"</FONT>);
+<A NAME="83"></A>        <A HREF="../../../com/collective/celos/WorkflowConfiguration.java.html">WorkflowConfiguration</A> cfg = parseFile(<FONT ID="StringLiteral">"workflow-info-test"</FONT>);
 <A NAME="84"></A>        <A HREF="../../../com/collective/celos/WorkflowInfo.java.html">WorkflowInfo</A> workflowInfo = cfg.findWorkflow(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"workflow-1"</FONT>)).getWorkflowInfo();
 <A NAME="85"></A>
 <A NAME="86"></A>        Assert.assertNull(workflowInfo.getUrl());
@@ -106,7 +106,7 @@
 <A NAME="89"></A>
 <A NAME="90"></A>    @Test
 <A NAME="91"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> workflowInfoWF2() <FONT ID="Throws">throws</FONT> Exception {
-<A NAME="92"></A>        <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/WorkflowConfiguration.html">WorkflowConfiguration</A> cfg = parseFile(<FONT ID="StringLiteral">"workflow-info-test"</FONT>);
+<A NAME="92"></A>        <A HREF="../../../com/collective/celos/WorkflowConfiguration.java.html">WorkflowConfiguration</A> cfg = parseFile(<FONT ID="StringLiteral">"workflow-info-test"</FONT>);
 <A NAME="93"></A>
 <A NAME="94"></A>        <A HREF="../../../com/collective/celos/WorkflowInfo.java.html">WorkflowInfo</A> workflowInfo = cfg.findWorkflow(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"workflow-2"</FONT>)).getWorkflowInfo();
 <A NAME="95"></A>        Assert.assertEquals(<FONT ID="New">new</FONT> URL(<FONT ID="StringLiteral">"http://collective.com/workflow"</FONT>), workflowInfo.getUrl());
@@ -117,7 +117,7 @@
 <A NAME="100"></A>
 <A NAME="101"></A>    @Test
 <A NAME="102"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> workflowInfoWFNoName() <FONT ID="Throws">throws</FONT> Exception {
-<A NAME="103"></A>        <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/WorkflowConfiguration.html">WorkflowConfiguration</A> cfg = parseFile(<FONT ID="StringLiteral">"workflow-info-test"</FONT>);
+<A NAME="103"></A>        <A HREF="../../../com/collective/celos/WorkflowConfiguration.java.html">WorkflowConfiguration</A> cfg = parseFile(<FONT ID="StringLiteral">"workflow-info-test"</FONT>);
 <A NAME="104"></A>
 <A NAME="105"></A>        <A HREF="../../../com/collective/celos/WorkflowInfo.java.html">WorkflowInfo</A> workflowInfo = cfg.findWorkflow(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"workflow-3"</FONT>)).getWorkflowInfo();
 <A NAME="106"></A>        Assert.assertEquals(<FONT ID="New">new</FONT> URL(<FONT ID="StringLiteral">"http://collective.com/workflow"</FONT>), workflowInfo.getUrl());
@@ -128,7 +128,7 @@
 <A NAME="111"></A>
 <A NAME="112"></A>    @Test
 <A NAME="113"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> workflowInfoNoEmail() <FONT ID="Throws">throws</FONT> Exception {
-<A NAME="114"></A>        <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/WorkflowConfiguration.html">WorkflowConfiguration</A> cfg = parseFile(<FONT ID="StringLiteral">"workflow-info-test"</FONT>);
+<A NAME="114"></A>        <A HREF="../../../com/collective/celos/WorkflowConfiguration.java.html">WorkflowConfiguration</A> cfg = parseFile(<FONT ID="StringLiteral">"workflow-info-test"</FONT>);
 <A NAME="115"></A>
 <A NAME="116"></A>        <A HREF="../../../com/collective/celos/WorkflowInfo.java.html">WorkflowInfo</A> workflowInfo = cfg.findWorkflow(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"workflow-4"</FONT>)).getWorkflowInfo();
 <A NAME="117"></A>        Assert.assertEquals(<FONT ID="New">new</FONT> URL(<FONT ID="StringLiteral">"http://collective.com/workflow"</FONT>), workflowInfo.getUrl());
@@ -139,7 +139,7 @@
 <A NAME="122"></A>
 <A NAME="123"></A>    @Test
 <A NAME="124"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> workflowInfoNoContacts() <FONT ID="Throws">throws</FONT> Exception {
-<A NAME="125"></A>        <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/WorkflowConfiguration.html">WorkflowConfiguration</A> cfg = parseFile(<FONT ID="StringLiteral">"workflow-info-test"</FONT>);
+<A NAME="125"></A>        <A HREF="../../../com/collective/celos/WorkflowConfiguration.java.html">WorkflowConfiguration</A> cfg = parseFile(<FONT ID="StringLiteral">"workflow-info-test"</FONT>);
 <A NAME="126"></A>
 <A NAME="127"></A>        <A HREF="../../../com/collective/celos/WorkflowInfo.java.html">WorkflowInfo</A> workflowInfo = cfg.findWorkflow(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"workflow-5"</FONT>)).getWorkflowInfo();
 <A NAME="128"></A>        Assert.assertEquals(<FONT ID="New">new</FONT> URL(<FONT ID="StringLiteral">"http://collective.com/workflow"</FONT>), workflowInfo.getUrl());
@@ -148,7 +148,7 @@
 <A NAME="131"></A>
 <A NAME="132"></A>    @Test
 <A NAME="133"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> canFindWorkflow() <FONT ID="Throws">throws</FONT> Exception {
-<A NAME="134"></A>        <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/WorkflowConfiguration.html">WorkflowConfiguration</A> cfg = parseDir(<FONT ID="StringLiteral">"properties-test"</FONT>);
+<A NAME="134"></A>        <A HREF="../../../com/collective/celos/WorkflowConfiguration.java.html">WorkflowConfiguration</A> cfg = parseDir(<FONT ID="StringLiteral">"properties-test"</FONT>);
 <A NAME="135"></A>        <A HREF="../../../com/collective/celos/Workflow.java.html">Workflow</A> wf1 = cfg.findWorkflow(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"workflow-1"</FONT>));
 <A NAME="136"></A>        Assert.assertEquals(<FONT ID="IntegerLiteral">55</FONT>, wf1.getMaxRetryCount());
 <A NAME="137"></A>        Assert.assertNull(cfg.findWorkflow(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"foobar"</FONT>)));
@@ -177,7 +177,7 @@
 <A NAME="160"></A>    
 <A NAME="161"></A>    @Test
 <A NAME="162"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> doesntFailOnSingleWorkflowError() <FONT ID="Throws">throws</FONT> Exception {
-<A NAME="163"></A>        <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/WorkflowConfiguration.html">WorkflowConfiguration</A> cfg = parseDir(<FONT ID="StringLiteral">"single-error"</FONT>);
+<A NAME="163"></A>        <A HREF="../../../com/collective/celos/WorkflowConfiguration.java.html">WorkflowConfiguration</A> cfg = parseDir(<FONT ID="StringLiteral">"single-error"</FONT>);
 <A NAME="164"></A>        Assert.assertEquals(<FONT ID="IntegerLiteral">2</FONT>, cfg.getWorkflows().size());
 <A NAME="165"></A>        Assert.assertNotNull(cfg.findWorkflow(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"workflow-1"</FONT>)));
 <A NAME="166"></A>        Assert.assertNotNull(cfg.findWorkflow(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"workflow-3"</FONT>)));
@@ -186,7 +186,7 @@
 <A NAME="169"></A>    @Test
 <A NAME="170"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> doesntAllowDuplicateIDs() <FONT ID="Throws">throws</FONT> Exception {
 <A NAME="171"></A>        <FONT ID="SingleLineComment">// Directory contains 2 workflows, but one will be dropped because of duplicate ID.
-<A NAME="172"></A></FONT>        <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/WorkflowConfiguration.html">WorkflowConfiguration</A> cfg = parseFile(<FONT ID="StringLiteral">"duplicate-ids"</FONT>);
+<A NAME="172"></A></FONT>        <A HREF="../../../com/collective/celos/WorkflowConfiguration.java.html">WorkflowConfiguration</A> cfg = parseFile(<FONT ID="StringLiteral">"duplicate-ids"</FONT>);
 <A NAME="173"></A>        Assert.assertEquals(<FONT ID="IntegerLiteral">1</FONT>, cfg.getWorkflows().size());
 <A NAME="174"></A>    }
 <A NAME="175"></A>    
@@ -267,11 +267,11 @@
 <A NAME="250"></A>        Assert.fail();
 <A NAME="251"></A>    }
 <A NAME="252"></A>
-<A NAME="253"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/WorkflowConfiguration.html">WorkflowConfiguration</A> parseFile(String label) <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="253"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <A HREF="../../../com/collective/celos/WorkflowConfiguration.java.html">WorkflowConfiguration</A> parseFile(String label) <FONT ID="Throws">throws</FONT> Exception {
 <A NAME="254"></A>        <FONT ID="Return">return</FONT> parseNamedFile(label, <FONT ID="StringLiteral">"workflow-1"</FONT>);
 <A NAME="255"></A>    }
 <A NAME="256"></A>
-<A NAME="257"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/WorkflowConfiguration.html">WorkflowConfiguration</A> parseNamedFile(String label, String workflowName) <FONT ID="Throws">throws</FONT> URISyntaxException,
+<A NAME="257"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <A HREF="../../../com/collective/celos/WorkflowConfiguration.java.html">WorkflowConfiguration</A> parseNamedFile(String label, String workflowName) <FONT ID="Throws">throws</FONT> URISyntaxException,
 <A NAME="258"></A>            Exception {
 <A NAME="259"></A>        File dir = getConfigurationDir(label);
 <A NAME="260"></A>        File defaults = getDefaultsDir();
@@ -281,7 +281,7 @@
 <A NAME="264"></A>        <FONT ID="Return">return</FONT> workflowConfigurationParser.getWorkflowConfiguration();
 <A NAME="265"></A>    }
 <A NAME="266"></A>    
-<A NAME="267"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/WorkflowConfiguration.html">WorkflowConfiguration</A> parseDir(String label) <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="267"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <A HREF="../../../com/collective/celos/WorkflowConfiguration.java.html">WorkflowConfiguration</A> parseDir(String label) <FONT ID="Throws">throws</FONT> Exception {
 <A NAME="268"></A>        File dir = getConfigurationDir(label);
 <A NAME="269"></A>        File defaults = getDefaultsDir();
 <A NAME="270"></A>        <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowConfigurationParser.java.html">WorkflowConfigurationParser</A>(defaults, ImmutableMap.&lt;String, String&gt;of()).parseConfiguration(dir).getWorkflowConfiguration();

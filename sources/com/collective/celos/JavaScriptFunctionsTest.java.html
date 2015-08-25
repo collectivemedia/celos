@@ -85,7 +85,7 @@
 <A NAME="68"></A>
 <A NAME="69"></A>    @Test
 <A NAME="70"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testHDFSCheckTrigger() <FONT ID="Throws">throws</FONT> Exception {
-<A NAME="71"></A>        <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/HDFSCheckTrigger.html">HDFSCheckTrigger</A> t = (<A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/HDFSCheckTrigger.html">HDFSCheckTrigger</A>) runJS(<FONT ID="StringLiteral">"hdfsCheckTrigger('/foo', 'file:///')"</FONT>);
+<A NAME="71"></A>        <A HREF="../../../com/collective/celos/HDFSCheckTrigger.java.html">HDFSCheckTrigger</A> t = (<A HREF="../../../com/collective/celos/HDFSCheckTrigger.java.html">HDFSCheckTrigger</A>) runJS(<FONT ID="StringLiteral">"hdfsCheckTrigger('/foo', 'file:///')"</FONT>);
 <A NAME="72"></A>        Assert.assertEquals(<FONT ID="StringLiteral">"/foo"</FONT>, t.getRawPathString());
 <A NAME="73"></A>        Assert.assertEquals(<FONT ID="StringLiteral">"file:///"</FONT>, t.getFsString());
 <A NAME="74"></A>    }
@@ -102,14 +102,14 @@
 <A NAME="85"></A>
 <A NAME="86"></A>    @Test
 <A NAME="87"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testHDFSCheckTriggerUsesDefaultNameNode() <FONT ID="Throws">throws</FONT> Exception {
-<A NAME="88"></A>        <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/HDFSCheckTrigger.html">HDFSCheckTrigger</A> t = (<A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/HDFSCheckTrigger.html">HDFSCheckTrigger</A>) runJS(<FONT ID="StringLiteral">"var CELOS_DEFAULT_HDFS = 'file:///'; hdfsCheckTrigger('/foo')"</FONT>);
+<A NAME="88"></A>        <A HREF="../../../com/collective/celos/HDFSCheckTrigger.java.html">HDFSCheckTrigger</A> t = (<A HREF="../../../com/collective/celos/HDFSCheckTrigger.java.html">HDFSCheckTrigger</A>) runJS(<FONT ID="StringLiteral">"var CELOS_DEFAULT_HDFS = 'file:///'; hdfsCheckTrigger('/foo')"</FONT>);
 <A NAME="89"></A>        Assert.assertEquals(<FONT ID="StringLiteral">"/foo"</FONT>, t.getRawPathString());
 <A NAME="90"></A>        Assert.assertEquals(<FONT ID="StringLiteral">"file:///"</FONT>, t.getFsString());
 <A NAME="91"></A>    }
 <A NAME="92"></A>
 <A NAME="93"></A>    @Test
 <A NAME="94"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testAndTrigger() <FONT ID="Throws">throws</FONT> Exception {
-<A NAME="95"></A>        <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/AndTrigger.html">AndTrigger</A> t = (<A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/AndTrigger.html">AndTrigger</A>) runJS(<FONT ID="StringLiteral">"andTrigger(delayTrigger(1), alwaysTrigger())"</FONT>);
+<A NAME="95"></A>        <A HREF="../../../com/collective/celos/AndTrigger.java.html">AndTrigger</A> t = (<A HREF="../../../com/collective/celos/AndTrigger.java.html">AndTrigger</A>) runJS(<FONT ID="StringLiteral">"andTrigger(delayTrigger(1), alwaysTrigger())"</FONT>);
 <A NAME="96"></A>        <A HREF="../../../com/collective/celos/DelayTrigger.java.html">DelayTrigger</A> dt = (<A HREF="../../../com/collective/celos/DelayTrigger.java.html">DelayTrigger</A>) t.getTriggers().get(<FONT ID="IntegerLiteral">0</FONT>);
 <A NAME="97"></A>        Assert.assertEquals(<FONT ID="IntegerLiteral">1</FONT>, dt.getSeconds());
 <A NAME="98"></A>        <A HREF="../../../com/collective/celos/AlwaysTrigger.java.html">AlwaysTrigger</A> at = (<A HREF="../../../com/collective/celos/AlwaysTrigger.java.html">AlwaysTrigger</A>) t.getTriggers().get(<FONT ID="IntegerLiteral">1</FONT>);
@@ -118,7 +118,7 @@
 <A NAME="101"></A>    
 <A NAME="102"></A>    @Test
 <A NAME="103"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testOrTrigger() <FONT ID="Throws">throws</FONT> Exception {
-<A NAME="104"></A>        <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/OrTrigger.html">OrTrigger</A> t = (<A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/OrTrigger.html">OrTrigger</A>) runJS(<FONT ID="StringLiteral">"orTrigger(delayTrigger(1), alwaysTrigger())"</FONT>);
+<A NAME="104"></A>        <A HREF="../../../com/collective/celos/OrTrigger.java.html">OrTrigger</A> t = (<A HREF="../../../com/collective/celos/OrTrigger.java.html">OrTrigger</A>) runJS(<FONT ID="StringLiteral">"orTrigger(delayTrigger(1), alwaysTrigger())"</FONT>);
 <A NAME="105"></A>        <A HREF="../../../com/collective/celos/DelayTrigger.java.html">DelayTrigger</A> dt = (<A HREF="../../../com/collective/celos/DelayTrigger.java.html">DelayTrigger</A>) t.getTriggers().get(<FONT ID="IntegerLiteral">0</FONT>);
 <A NAME="106"></A>        Assert.assertEquals(<FONT ID="IntegerLiteral">1</FONT>, dt.getSeconds());
 <A NAME="107"></A>        <A HREF="../../../com/collective/celos/AlwaysTrigger.java.html">AlwaysTrigger</A> at = (<A HREF="../../../com/collective/celos/AlwaysTrigger.java.html">AlwaysTrigger</A>) t.getTriggers().get(<FONT ID="IntegerLiteral">1</FONT>);

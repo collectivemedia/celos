@@ -1,0 +1,129 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.servlet.AbstractServlet (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">AbstractServlet.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos.servlet;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> <A HREF="../../../../com/collective/celos/Constants.java.html">com.collective.celos.Constants</A>;
+<A NAME="4"></A><FONT ID="Import">import</FONT> <A HREF="../../../../com/collective/celos/ScheduledTime.java.html">com.collective.celos.ScheduledTime</A>;
+<A NAME="5"></A><FONT ID="Import">import</FONT> <A HREF="../../../../com/collective/celos/Scheduler.java.html">com.collective.celos.Scheduler</A>;
+<A NAME="6"></A><FONT ID="Import">import</FONT> <A HREF="../../../../com/collective/celos/SchedulerConfiguration.java.html">com.collective.celos.SchedulerConfiguration</A>;
+<A NAME="7"></A><FONT ID="Import">import</FONT> com.google.common.collect.ImmutableMap;
+<A NAME="8"></A><FONT ID="Import">import</FONT> org.apache.log4j.Logger;
+<A NAME="9"></A><FONT ID="Import">import</FONT> org.joda.time.DateTime;
+<A NAME="10"></A><FONT ID="Import">import</FONT> org.joda.time.DateTimeZone;
+<A NAME="11"></A>
+<A NAME="12"></A><FONT ID="Import">import</FONT> javax.servlet.ServletException;
+<A NAME="13"></A><FONT ID="Import">import</FONT> javax.servlet.http.HttpServlet;
+<A NAME="14"></A><FONT ID="Import">import</FONT> javax.servlet.http.HttpServletRequest;
+<A NAME="15"></A><FONT ID="Import">import</FONT> javax.servlet.http.HttpServletResponse;
+<A NAME="16"></A><FONT ID="Import">import</FONT> java.io.File;
+<A NAME="17"></A><FONT ID="Import">import</FONT> java.io.IOException;
+<A NAME="18"></A><FONT ID="Import">import</FONT> java.util.Map;
+<A NAME="19"></A>
+<A NAME="20"></A><FONT ID="FormalComment">/**
+<A NAME="21"></A> * Superclass for all servlets that access the database.
+<A NAME="22"></A> *
+<A NAME="23"></A> * Serializes all database accesses with a lock.
+<A NAME="24"></A> */</FONT>
+<A NAME="25"></A>@SuppressWarnings(<FONT ID="StringLiteral">"serial"</FONT>)
+<A NAME="26"></A><FONT ID="Public">public</FONT> <FONT ID="Abstract">abstract</FONT> <FONT ID="Class">class</FONT> AbstractServlet <FONT ID="Extends">extends</FONT> HttpServlet {
+<A NAME="27"></A>
+<A NAME="28"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String TIME_PARAM = <FONT ID="StringLiteral">"time"</FONT>;
+<A NAME="29"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> Logger LOGGER = Logger.getLogger(<A HREF="../../../../com/collective/celos/servlet/AbstractServlet.java.html">AbstractServlet</A>.<FONT ID="Class">class</FONT>);
+<A NAME="30"></A>
+<A NAME="31"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String SCHEDULER_ATTR = <FONT ID="StringLiteral">"celos.scheduler"</FONT>;
+<A NAME="32"></A>
+<A NAME="33"></A>    <FONT ID="FormalComment">/**
+<A NAME="34"></A>     * This lock serves to synchronize all operations.
+<A NAME="35"></A>     */</FONT>
+<A NAME="36"></A>    <FONT ID="Protected">protected</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> Object LOCK = <FONT ID="New">new</FONT> Object();
+<A NAME="37"></A>
+<A NAME="38"></A>    @Override
+<A NAME="39"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> service(HttpServletRequest req, HttpServletResponse res) <FONT ID="Throws">throws</FONT> ServletException, IOException {
+<A NAME="40"></A>        <FONT ID="Synchronized">synchronized</FONT>(LOCK) {
+<A NAME="41"></A>            <FONT ID="Try">try</FONT> {
+<A NAME="42"></A>                <FONT ID="Super">super</FONT>.service(req, res);
+<A NAME="43"></A>                res.setHeader(<FONT ID="StringLiteral">"Access-Control-Allow-Origin"</FONT>, <FONT ID="StringLiteral">"*"</FONT>);
+<A NAME="44"></A>            } <FONT ID="Catch">catch</FONT>(ServletException e) {
+<A NAME="45"></A>                LOGGER.error(e.getMessage(), e);
+<A NAME="46"></A>                <FONT ID="Throw">throw</FONT> e;
+<A NAME="47"></A>            } <FONT ID="Catch">catch</FONT>(IOException e) {
+<A NAME="48"></A>                LOGGER.error(e.getMessage(), e);
+<A NAME="49"></A>                <FONT ID="Throw">throw</FONT> e;
+<A NAME="50"></A>            } <FONT ID="Catch">catch</FONT>(RuntimeException e) {
+<A NAME="51"></A>                LOGGER.error(e.getMessage(), e);
+<A NAME="52"></A>                <FONT ID="Throw">throw</FONT> e;
+<A NAME="53"></A>            }
+<A NAME="54"></A>        }
+<A NAME="55"></A>    }
+<A NAME="56"></A>
+<A NAME="57"></A>    <FONT ID="Protected">protected</FONT> <A HREF="../../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> getRequestTime(HttpServletRequest req) {
+<A NAME="58"></A>        String t = req.getParameter(TIME_PARAM);
+<A NAME="59"></A>        <FONT ID="If">if</FONT> (t == <FONT ID="Null">null</FONT>) {
+<A NAME="60"></A>            <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> <A HREF="../../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(DateTime.now(DateTimeZone.UTC));
+<A NAME="61"></A>        } <FONT ID="Else">else</FONT> {
+<A NAME="62"></A>            <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> <A HREF="../../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(t);
+<A NAME="63"></A>        }
+<A NAME="64"></A>    }
+<A NAME="65"></A>
+<A NAME="66"></A>    <FONT ID="MultiLineComment">/*
+<A NAME="67"></A>     * Scheduler cache
+<A NAME="68"></A>     *
+<A NAME="69"></A>     * Reading and evaluating the .js files takes a bit of time, so it is cached
+<A NAME="70"></A>     * between servlet calls.
+<A NAME="71"></A>     *
+<A NAME="72"></A>     * The scheduler servlet uses createAndCacheScheduler(), which refreshes
+<A NAME="73"></A>     * the cache once a minute, whereas all other servlets use, for performance,
+<A NAME="74"></A>     * getOrCreateCachedScheduler() which usually retrieves the cached
+<A NAME="75"></A>     * scheduler. The clear-cache servlet can be used during e.g. integration testing
+<A NAME="76"></A>     * to reset the cache and force a reload of the configuration.
+<A NAME="77"></A>     */</FONT>
+<A NAME="78"></A>
+<A NAME="79"></A>    <FONT ID="Protected">protected</FONT> <A HREF="../../../../com/collective/celos/Scheduler.java.html">Scheduler</A> createAndCacheScheduler() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="80"></A>        String workflowConfigPath = getServletContext().getInitParameter(Constants.WORKFLOW_CONFIGURATION_PATH_ATTR);
+<A NAME="81"></A>        String defaultsConfigPath = getServletContext().getInitParameter(Constants.DEFAULTS_CONFIGURATION_PATH_ATTR);
+<A NAME="82"></A>        String stateDatabasePath = getServletContext().getInitParameter(Constants.STATE_DATABASE_PATH_ATTR);
+<A NAME="83"></A>        Map&lt;String, String&gt; additionalVars = (Map&lt;String, String&gt;) getServletContext().getAttribute(Constants.ADDITIONAL_JS_VARIABLES);
+<A NAME="84"></A>        <FONT ID="If">if</FONT> (additionalVars == <FONT ID="Null">null</FONT>) {
+<A NAME="85"></A>            additionalVars = ImmutableMap.of();
+<A NAME="86"></A>        }
+<A NAME="87"></A>
+<A NAME="88"></A>        <A HREF="../../../../com/collective/celos/Scheduler.java.html">Scheduler</A> sch = <FONT ID="New">new</FONT> <A HREF="../../../../com/collective/celos/SchedulerConfiguration.java.html">SchedulerConfiguration</A>(
+<A NAME="89"></A>                <FONT ID="New">new</FONT> File(workflowConfigPath), <FONT ID="New">new</FONT> File(defaultsConfigPath), <FONT ID="New">new</FONT> File(stateDatabasePath), additionalVars
+<A NAME="90"></A>        ).makeDefaultScheduler();
+<A NAME="91"></A>
+<A NAME="92"></A>        getServletContext().setAttribute(SCHEDULER_ATTR, sch);
+<A NAME="93"></A>        <FONT ID="Return">return</FONT> sch;
+<A NAME="94"></A>    }
+<A NAME="95"></A>
+<A NAME="96"></A>    <FONT ID="Protected">protected</FONT> <A HREF="../../../../com/collective/celos/Scheduler.java.html">Scheduler</A> getOrCreateCachedScheduler() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="97"></A>        <A HREF="../../../../com/collective/celos/Scheduler.java.html">Scheduler</A> sch = (<A HREF="../../../../com/collective/celos/Scheduler.java.html">Scheduler</A>) getServletContext().getAttribute(SCHEDULER_ATTR);
+<A NAME="98"></A>        <FONT ID="If">if</FONT> (sch == <FONT ID="Null">null</FONT>) {
+<A NAME="99"></A>            <FONT ID="Return">return</FONT> createAndCacheScheduler();
+<A NAME="100"></A>        } <FONT ID="Else">else</FONT> {
+<A NAME="101"></A>            <FONT ID="Return">return</FONT> sch;
+<A NAME="102"></A>        }
+<A NAME="103"></A>    }
+<A NAME="104"></A>
+<A NAME="105"></A>    <FONT ID="Protected">protected</FONT> <FONT ID="Void">void</FONT> clearSchedulerCache() {
+<A NAME="106"></A>        getServletContext().removeAttribute(SCHEDULER_ATTR);
+<A NAME="107"></A>    }
+<A NAME="108"></A>
+<A NAME="109"></A>}
+<A NAME="110"></A></pre>
+</BODY>
+</HTML>

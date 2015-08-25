@@ -1,0 +1,329 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.ui.CelosUIServlet (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">CelosUIServlet.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos.ui;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> com.collective.celos.*;
+<A NAME="4"></A><FONT ID="Import">import</FONT> com.google.common.collect.ImmutableList;
+<A NAME="5"></A><FONT ID="Import">import</FONT> org.joda.time.DateTime;
+<A NAME="6"></A><FONT ID="Import">import</FONT> org.joda.time.format.DateTimeFormat;
+<A NAME="7"></A><FONT ID="Import">import</FONT> org.joda.time.format.DateTimeFormatter;
+<A NAME="8"></A>
+<A NAME="9"></A><FONT ID="Import">import</FONT> javax.servlet.ServletException;
+<A NAME="10"></A><FONT ID="Import">import</FONT> javax.servlet.http.HttpServlet;
+<A NAME="11"></A><FONT ID="Import">import</FONT> javax.servlet.http.HttpServletRequest;
+<A NAME="12"></A><FONT ID="Import">import</FONT> javax.servlet.http.HttpServletResponse;
+<A NAME="13"></A><FONT ID="Import">import</FONT> java.io.IOException;
+<A NAME="14"></A><FONT ID="Import">import</FONT> java.io.PrintWriter;
+<A NAME="15"></A><FONT ID="Import">import</FONT> java.net.URI;
+<A NAME="16"></A><FONT ID="Import">import</FONT> java.util.*;
+<A NAME="17"></A>
+<A NAME="18"></A><FONT ID="FormalComment">/**
+<A NAME="19"></A> * Created by akonopko on 22.07.15.
+<A NAME="20"></A> */</FONT>
+<A NAME="21"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> CelosUIServlet <FONT ID="Extends">extends</FONT> HttpServlet {
+<A NAME="22"></A>
+<A NAME="23"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String ZOOM_PARAM = <FONT ID="StringLiteral">"zoom"</FONT>;
+<A NAME="24"></A>
+<A NAME="25"></A>    @Override
+<A NAME="26"></A>    <FONT ID="Protected">protected</FONT> <FONT ID="Void">void</FONT> doGet(HttpServletRequest req, HttpServletResponse res) <FONT ID="Throws">throws</FONT> ServletException, IOException {
+<A NAME="27"></A>        <FONT ID="Try">try</FONT> {
+<A NAME="28"></A>            String celosURL = Util.requireNonNull(getServletContext().getAttribute(Main.CELOS_URL_ATTR).toString());
+<A NAME="29"></A>            CelosClient client = <FONT ID="New">new</FONT> CelosClient(<FONT ID="New">new</FONT> URI(celosURL));
+<A NAME="30"></A>            res.setContentType(<FONT ID="StringLiteral">"text/html;charset=utf-8"</FONT>);
+<A NAME="31"></A>            res.setStatus(HttpServletResponse.SC_OK);
+<A NAME="32"></A>            PrintWriter writer = res.getWriter();
+<A NAME="33"></A>            writer.append(PREFIX);
+<A NAME="34"></A>            render(client, getZoomLevel(req.getParameter(ZOOM_PARAM)), writer);
+<A NAME="35"></A>            writer.append(POSTFIX);
+<A NAME="36"></A>        } <FONT ID="Catch">catch</FONT> (Exception e) {
+<A NAME="37"></A>            <FONT ID="Throw">throw</FONT> <FONT ID="New">new</FONT> ServletException(e);
+<A NAME="38"></A>        }
+<A NAME="39"></A>    }
+<A NAME="40"></A>    
+<A NAME="41"></A>    <FONT ID="Static">static</FONT> <FONT ID="Int">int</FONT> getZoomLevel(String zoomStr) {
+<A NAME="42"></A>        <FONT ID="If">if</FONT> (zoomStr == <FONT ID="Null">null</FONT>) {
+<A NAME="43"></A>            <FONT ID="Return">return</FONT> DEFAULT_ZOOM_LEVEL_MINUTES;
+<A NAME="44"></A>        } <FONT ID="Else">else</FONT> {
+<A NAME="45"></A>            <FONT ID="Int">int</FONT> zoom = Integer.parseInt(zoomStr);
+<A NAME="46"></A>            <FONT ID="If">if</FONT> (zoom &lt; MIN_ZOOM_LEVEL_MINUTES) {
+<A NAME="47"></A>                <FONT ID="Return">return</FONT> MIN_ZOOM_LEVEL_MINUTES;
+<A NAME="48"></A>            } <FONT ID="Else">else</FONT> <FONT ID="If">if</FONT> (zoom &gt; MAX_ZOOM_LEVEL_MINUTES) {
+<A NAME="49"></A>                <FONT ID="Return">return</FONT> MAX_ZOOM_LEVEL_MINUTES;
+<A NAME="50"></A>            } <FONT ID="Else">else</FONT> {
+<A NAME="51"></A>                <FONT ID="Return">return</FONT> zoom;
+<A NAME="52"></A>            }
+<A NAME="53"></A>        }
+<A NAME="54"></A>    }
+<A NAME="55"></A>
+<A NAME="56"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> Map&lt;SlotState.Status, String&gt; STATUS_TO_SHORT_NAME = <FONT ID="New">new</FONT> HashMap&lt;SlotState.Status, String&gt;();
+<A NAME="57"></A>    <FONT ID="Static">static</FONT> {
+<A NAME="58"></A>        STATUS_TO_SHORT_NAME.put(SlotState.Status.FAILURE, <FONT ID="StringLiteral">"fail"</FONT>);
+<A NAME="59"></A>        STATUS_TO_SHORT_NAME.put(SlotState.Status.READY, <FONT ID="StringLiteral">"rdy&amp;nbsp;"</FONT>);
+<A NAME="60"></A>        STATUS_TO_SHORT_NAME.put(SlotState.Status.RUNNING, <FONT ID="StringLiteral">"run&amp;nbsp;"</FONT>);
+<A NAME="61"></A>        STATUS_TO_SHORT_NAME.put(SlotState.Status.SUCCESS, <FONT ID="StringLiteral">"&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;"</FONT>);
+<A NAME="62"></A>        STATUS_TO_SHORT_NAME.put(SlotState.Status.WAIT_TIMEOUT, <FONT ID="StringLiteral">"time"</FONT>);
+<A NAME="63"></A>        STATUS_TO_SHORT_NAME.put(SlotState.Status.WAITING, <FONT ID="StringLiteral">"wait"</FONT>);
+<A NAME="64"></A>        <FONT ID="If">if</FONT> (STATUS_TO_SHORT_NAME.size() != SlotState.Status.values().length) {
+<A NAME="65"></A>            <FONT ID="Throw">throw</FONT> <FONT ID="New">new</FONT> Error(<FONT ID="StringLiteral">"STATUS_TO_SHORT_NAME mapping is incomplete"</FONT>);
+<A NAME="66"></A>        }
+<A NAME="67"></A>    }
+<A NAME="68"></A>    
+<A NAME="69"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> <FONT ID="Int">int</FONT>[] ZOOM_LEVEL_MINUTES = <FONT ID="New">new</FONT> <FONT ID="Int">int</FONT>[]{<FONT ID="IntegerLiteral">1</FONT>, <FONT ID="IntegerLiteral">5</FONT>, <FONT ID="IntegerLiteral">15</FONT>, <FONT ID="IntegerLiteral">30</FONT>, <FONT ID="IntegerLiteral">60</FONT>, <FONT ID="IntegerLiteral">60</FONT>*<FONT ID="IntegerLiteral">24</FONT>};
+<A NAME="70"></A>    <FONT ID="Static">static</FONT> <FONT ID="Int">int</FONT> DEFAULT_ZOOM_LEVEL_MINUTES = <FONT ID="IntegerLiteral">60</FONT>;
+<A NAME="71"></A>    <FONT ID="Static">static</FONT> <FONT ID="Int">int</FONT> MIN_ZOOM_LEVEL_MINUTES = <FONT ID="IntegerLiteral">1</FONT>;
+<A NAME="72"></A>    <FONT ID="Static">static</FONT> <FONT ID="Int">int</FONT> MAX_ZOOM_LEVEL_MINUTES = <FONT ID="IntegerLiteral">60</FONT>*<FONT ID="IntegerLiteral">24</FONT>; <FONT ID="SingleLineComment">// Code won't work with higher level, because of toFullDay()
+<A NAME="73"></A></FONT>    
+<A NAME="74"></A>    <FONT ID="SingleLineComment">// We never want to fetch more data than for a week from Celos so as not to overload the server
+<A NAME="75"></A></FONT>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Int">int</FONT> MAX_MINUTES_TO_FETCH = <FONT ID="IntegerLiteral">7</FONT> * <FONT ID="IntegerLiteral">60</FONT> * <FONT ID="IntegerLiteral">24</FONT>;
+<A NAME="76"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Int">int</FONT> MAX_TILES_TO_DISPLAY = <FONT ID="IntegerLiteral">48</FONT>;
+<A NAME="77"></A>    
+<A NAME="78"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> DateTimeFormatter DAY_FORMAT = DateTimeFormat.forPattern(<FONT ID="StringLiteral">"dd"</FONT>);
+<A NAME="79"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> DateTimeFormatter HEADER_FORMAT = DateTimeFormat.forPattern(<FONT ID="StringLiteral">"HHmm"</FONT>);
+<A NAME="80"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> DateTimeFormatter FULL_FORMAT = DateTimeFormat.forPattern(<FONT ID="StringLiteral">"YYYY-MM-dd HH:mm"</FONT>);
+<A NAME="81"></A>    
+<A NAME="82"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> String PREFIX;
+<A NAME="83"></A>    <FONT ID="Static">static</FONT> {
+<A NAME="84"></A>        StringBuffer prefix = <FONT ID="New">new</FONT> StringBuffer();
+<A NAME="85"></A>        prefix.append(<FONT ID="StringLiteral">"&lt;html&gt;\n"</FONT>);
+<A NAME="86"></A>        prefix.append(<FONT ID="StringLiteral">"&lt;head&gt;\n"</FONT>);
+<A NAME="87"></A>        prefix.append(<FONT ID="StringLiteral">"&lt;title&gt;Celos&lt;/title&gt;\n"</FONT>);
+<A NAME="88"></A>        prefix.append(<FONT ID="StringLiteral">"&lt;style type='text/css'&gt;\n"</FONT>);
+<A NAME="89"></A>        prefix.append(<FONT ID="StringLiteral">"html { font-family: sans; background-color: #fff; }\n"</FONT>);
+<A NAME="90"></A>        prefix.append(<FONT ID="StringLiteral">"a { text-decoration: none; }\n"</FONT>);
+<A NAME="91"></A>        prefix.append(<FONT ID="StringLiteral">".mainTable { table-layout: fixed; }\n"</FONT>);
+<A NAME="92"></A>        prefix.append(<FONT ID="StringLiteral">".workflowGroup { text-align: right; font-size: large; font-weight: bold; padding-top: 1em; padding-right: 20px; }\n"</FONT>);
+<A NAME="93"></A>        prefix.append(<FONT ID="StringLiteral">".workflow { text-align: right; padding-right: 20px; font-weight: normal; overflow: hidden; }\n"</FONT>);
+<A NAME="94"></A>        prefix.append(<FONT ID="StringLiteral">".hour, .day, .noDay, .dayHeader { font-family: monospace; text-align: center; }\n"</FONT>);
+<A NAME="95"></A>        prefix.append(<FONT ID="StringLiteral">".day { background-color: black; color: white; font-weight: bold; }\n"</FONT>);
+<A NAME="96"></A>        prefix.append(<FONT ID="StringLiteral">".currentDate { font-family: monospace; text-align: right; padding-right: 20px; font-weight: bold; }\n"</FONT>);
+<A NAME="97"></A>        prefix.append(<FONT ID="StringLiteral">".slot { font-family: monospace; font-size: small; }\n"</FONT>);
+<A NAME="98"></A>        prefix.append(<FONT ID="StringLiteral">".RUNNING, .READY { background-color: #ffc; }\n"</FONT>);
+<A NAME="99"></A>        prefix.append(<FONT ID="StringLiteral">".SUCCESS { background-color: #cfc; }\n"</FONT>);
+<A NAME="100"></A>        prefix.append(<FONT ID="StringLiteral">".WAITING { background-color: #ccf; }\n"</FONT>);
+<A NAME="101"></A>        prefix.append(<FONT ID="StringLiteral">".FAILURE, .WAIT_TIMEOUT { background-color: #fcc; }\n"</FONT>);
+<A NAME="102"></A>        prefix.append(<FONT ID="StringLiteral">"&lt;/style&gt;\n"</FONT>);
+<A NAME="103"></A>        prefix.append(<FONT ID="StringLiteral">"&lt;/head&gt;\n"</FONT>);
+<A NAME="104"></A>        prefix.append(<FONT ID="StringLiteral">"&lt;body&gt;\n"</FONT>);
+<A NAME="105"></A>        PREFIX = prefix.toString();
+<A NAME="106"></A>    }
+<A NAME="107"></A>    
+<A NAME="108"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> String POSTFIX;
+<A NAME="109"></A>    <FONT ID="Static">static</FONT> {
+<A NAME="110"></A>        StringBuffer postfix = <FONT ID="New">new</FONT> StringBuffer();
+<A NAME="111"></A>        postfix.append(<FONT ID="StringLiteral">"&lt;/body&gt;\n"</FONT>);
+<A NAME="112"></A>        postfix.append(<FONT ID="StringLiteral">"&lt;/html&gt;\n"</FONT>);
+<A NAME="113"></A>        POSTFIX = postfix.toString();
+<A NAME="114"></A>    }
+<A NAME="115"></A>
+<A NAME="116"></A>    <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> render(CelosClient client, <FONT ID="Int">int</FONT> zoomLevelMinutes, PrintWriter w) <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="117"></A>        Set&lt;WorkflowID&gt; workflows = client.getWorkflowList();
+<A NAME="118"></A>        ScheduledTime now = ScheduledTime.now();
+<A NAME="119"></A>        List&lt;ScheduledTime&gt; times = getDefaultTileTimes(now, zoomLevelMinutes);
+<A NAME="120"></A>        <FONT ID="If">if</FONT> (times.size() &lt; <FONT ID="IntegerLiteral">1</FONT>) <FONT ID="Throw">throw</FONT> <FONT ID="New">new</FONT> Error(<FONT ID="StringLiteral">"This shouldn't happen: times list is empty"</FONT>);
+<A NAME="121"></A>        ScheduledTime end = times.get(<FONT ID="IntegerLiteral">0</FONT>);
+<A NAME="122"></A>        <FONT ID="SingleLineComment">// Go zoomLevelMinutes into the past to populate last tile
+<A NAME="123"></A></FONT>        ScheduledTime start = times.get(times.size() - <FONT ID="IntegerLiteral">1</FONT>).minusMinutes(zoomLevelMinutes);
+<A NAME="124"></A>        Map&lt;WorkflowID, WorkflowStatus&gt; statuses = fetchStatuses(client, workflows, start, end);
+<A NAME="125"></A>        Map&lt;WorkflowID, Map&lt;ScheduledTime,Set&lt;SlotState&gt;&gt;&gt; tiles = bucketByTime(statuses, zoomLevelMinutes);
+<A NAME="126"></A>        writeTable(now, getGroups(workflows), times, tiles, w);
+<A NAME="127"></A>    }
+<A NAME="128"></A>
+<A NAME="129"></A>    <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> writeTable(ScheduledTime now, List&lt;<A HREF="../../../../com/collective/celos/ui/WorkflowGroup.java.html">WorkflowGroup</A>&gt; groups, List&lt;ScheduledTime&gt; times, Map&lt;WorkflowID, Map&lt;ScheduledTime, Set&lt;SlotState&gt;&gt;&gt; tiles, PrintWriter w) {
+<A NAME="130"></A>        w.println(<FONT ID="StringLiteral">"&lt;table class='mainTable'&gt;"</FONT>);
+<A NAME="131"></A>        writeHeader(now, times, w);
+<A NAME="132"></A>        <FONT ID="For">for</FONT> (<A HREF="../../../../com/collective/celos/ui/WorkflowGroup.java.html">WorkflowGroup</A> g : groups) {
+<A NAME="133"></A>            writeGroup(g, times, tiles, w);
+<A NAME="134"></A>        }
+<A NAME="135"></A>        w.println(<FONT ID="StringLiteral">"&lt;/table&gt;"</FONT>);
+<A NAME="136"></A>    }
+<A NAME="137"></A>
+<A NAME="138"></A>    <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> writeHeader(ScheduledTime now, List&lt;ScheduledTime&gt; times, PrintWriter w) {
+<A NAME="139"></A>        writeDayHeader(now, times, w);
+<A NAME="140"></A>        writeTimeHeader(now, times, w);
+<A NAME="141"></A>    }
+<A NAME="142"></A>    
+<A NAME="143"></A>    <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> writeDayHeader(ScheduledTime now, List&lt;ScheduledTime&gt; times, PrintWriter w) {
+<A NAME="144"></A>        w.println(<FONT ID="StringLiteral">"&lt;tr&gt;"</FONT>);
+<A NAME="145"></A>        <FONT ID="SingleLineComment">// This establishes the width of the workflow IDs column
+<A NAME="146"></A></FONT>        <FONT ID="SingleLineComment">// Hack, but enables fast rendering via table-layout: fixed
+<A NAME="147"></A></FONT>        w.println(<FONT ID="StringLiteral">"&lt;td class='dayHeader'&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&lt;/td&gt;"</FONT>);
+<A NAME="148"></A>        String label, dayClass;
+<A NAME="149"></A>        <FONT ID="For">for</FONT> (ScheduledTime t : times) {
+<A NAME="150"></A>            <FONT ID="If">if</FONT> (Util.isFullDay(t.getDateTime())) {
+<A NAME="151"></A>                label = (<FONT ID="StringLiteral">"&amp;nbsp;"</FONT> + DAY_FORMAT.print(t.getDateTime()) + <FONT ID="StringLiteral">"&amp;nbsp;"</FONT>);
+<A NAME="152"></A>                dayClass = <FONT ID="StringLiteral">"day"</FONT>;
+<A NAME="153"></A>            } <FONT ID="Else">else</FONT> {
+<A NAME="154"></A>                label = <FONT ID="StringLiteral">"&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;"</FONT>;
+<A NAME="155"></A>                dayClass = <FONT ID="StringLiteral">"noDay"</FONT>;
+<A NAME="156"></A>            }
+<A NAME="157"></A>            w.println(<FONT ID="StringLiteral">"&lt;td class='"</FONT> + dayClass + <FONT ID="StringLiteral">"'&gt;"</FONT> + label + <FONT ID="StringLiteral">"&lt;/td&gt;"</FONT>);
+<A NAME="158"></A>        }
+<A NAME="159"></A>        w.println(<FONT ID="StringLiteral">"&lt;/tr&gt;"</FONT>);
+<A NAME="160"></A>    }
+<A NAME="161"></A>
+<A NAME="162"></A>    <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> writeTimeHeader(ScheduledTime now, List&lt;ScheduledTime&gt; times, PrintWriter w) {
+<A NAME="163"></A>        w.println(<FONT ID="StringLiteral">"&lt;tr&gt;"</FONT>);
+<A NAME="164"></A>        w.println(<FONT ID="StringLiteral">"&lt;td class='currentDate'&gt;"</FONT> + FULL_FORMAT.print(now.getDateTime()) + <FONT ID="StringLiteral">" UTC&lt;/td&gt;"</FONT>);
+<A NAME="165"></A>        <FONT ID="For">for</FONT> (ScheduledTime t : times) {
+<A NAME="166"></A>            w.println(<FONT ID="StringLiteral">"&lt;td class='hour'&gt;"</FONT> + HEADER_FORMAT.print(t.getDateTime()) + <FONT ID="StringLiteral">"&lt;/td&gt;"</FONT>);
+<A NAME="167"></A>        }
+<A NAME="168"></A>        w.println(<FONT ID="StringLiteral">"&lt;/tr&gt;"</FONT>);
+<A NAME="169"></A>    }
+<A NAME="170"></A>
+<A NAME="171"></A>    <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> writeGroup(<A HREF="../../../../com/collective/celos/ui/WorkflowGroup.java.html">WorkflowGroup</A> g, List&lt;ScheduledTime&gt; times, Map&lt;WorkflowID, Map&lt;ScheduledTime, Set&lt;SlotState&gt;&gt;&gt; tiles, PrintWriter w) {
+<A NAME="172"></A>        w.println(<FONT ID="StringLiteral">"&lt;tr&gt;"</FONT>);
+<A NAME="173"></A>        w.println(<FONT ID="StringLiteral">"&lt;td class='workflowGroup'&gt;"</FONT> + g.getName() + <FONT ID="StringLiteral">"&lt;/td&gt;"</FONT>);
+<A NAME="174"></A>        w.println(<FONT ID="StringLiteral">"&lt;/tr&gt;"</FONT>);
+<A NAME="175"></A>        <FONT ID="For">for</FONT> (WorkflowID id : g.getWorkflows()) {
+<A NAME="176"></A>            writeWorkflow(id, times, tiles.get(id), w);
+<A NAME="177"></A>        }
+<A NAME="178"></A>    }
+<A NAME="179"></A>
+<A NAME="180"></A>    <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> writeWorkflow(WorkflowID id, List&lt;ScheduledTime&gt; times, Map&lt;ScheduledTime, Set&lt;SlotState&gt;&gt; tiles, PrintWriter w) {
+<A NAME="181"></A>        w.println(<FONT ID="StringLiteral">"&lt;tr&gt;"</FONT>);
+<A NAME="182"></A>        w.println(<FONT ID="StringLiteral">"&lt;td class='workflow'&gt;"</FONT> + id.toString() + <FONT ID="StringLiteral">"&lt;/td&gt;"</FONT>);
+<A NAME="183"></A>        <FONT ID="For">for</FONT> (ScheduledTime t : times) {
+<A NAME="184"></A>            Set&lt;SlotState&gt; slots = tiles.get(t);
+<A NAME="185"></A>            String slotClass = <FONT ID="StringLiteral">"slot "</FONT> + printTileClass(slots);
+<A NAME="186"></A>            w.println(<FONT ID="StringLiteral">"&lt;td class='"</FONT> + slotClass + <FONT ID="StringLiteral">"'&gt;"</FONT> + printTile(slots) + <FONT ID="StringLiteral">"&lt;/td&gt;"</FONT>);
+<A NAME="187"></A>        }
+<A NAME="188"></A>        w.println(<FONT ID="StringLiteral">"&lt;/td&gt;"</FONT>);
+<A NAME="189"></A>    }
+<A NAME="190"></A>
+<A NAME="191"></A>    <FONT ID="Static">static</FONT> String printTileClass(Set&lt;SlotState&gt; slots) {
+<A NAME="192"></A>        <FONT ID="If">if</FONT> (slots == <FONT ID="Null">null</FONT>) {
+<A NAME="193"></A>            <FONT ID="Return">return</FONT> <FONT ID="StringLiteral">""</FONT>;
+<A NAME="194"></A>        } <FONT ID="Else">else</FONT> <FONT ID="If">if</FONT> (slots.size() == <FONT ID="IntegerLiteral">1</FONT>) {
+<A NAME="195"></A>            <FONT ID="Return">return</FONT> slots.iterator().next().getStatus().name();
+<A NAME="196"></A>        } <FONT ID="Else">else</FONT> {
+<A NAME="197"></A>            <FONT ID="Return">return</FONT> printMultiSlotClass(slots);
+<A NAME="198"></A>        }
+<A NAME="199"></A>    }
+<A NAME="200"></A>
+<A NAME="201"></A>    <FONT ID="Static">static</FONT> String printMultiSlotClass(Set&lt;SlotState&gt; slots) {
+<A NAME="202"></A>        <FONT ID="Boolean">boolean</FONT> hasIndeterminate = <FONT ID="False">false</FONT>;
+<A NAME="203"></A>        <FONT ID="For">for</FONT> (SlotState slot : slots) {
+<A NAME="204"></A>            <FONT ID="If">if</FONT> (slot.getStatus().getType() == SlotState.StatusType.FAILURE) {
+<A NAME="205"></A>                <FONT ID="Return">return</FONT> SlotState.Status.FAILURE.name();
+<A NAME="206"></A>            } <FONT ID="Else">else</FONT> <FONT ID="If">if</FONT> (slot.getStatus().getType() == SlotState.StatusType.INDETERMINATE) {
+<A NAME="207"></A>                hasIndeterminate = <FONT ID="True">true</FONT>;
+<A NAME="208"></A>            }
+<A NAME="209"></A>        }
+<A NAME="210"></A>        <FONT ID="If">if</FONT> (hasIndeterminate) {
+<A NAME="211"></A>            <FONT ID="Return">return</FONT> SlotState.Status.WAITING.name();
+<A NAME="212"></A>        } <FONT ID="Else">else</FONT> {
+<A NAME="213"></A>            <FONT ID="Return">return</FONT> SlotState.Status.SUCCESS.name();
+<A NAME="214"></A>        }
+<A NAME="215"></A>    }
+<A NAME="216"></A>
+<A NAME="217"></A>    <FONT ID="Private">private</FONT> String printTile(Set&lt;SlotState&gt; slots) {
+<A NAME="218"></A>        <FONT ID="If">if</FONT> (slots == <FONT ID="Null">null</FONT>) {
+<A NAME="219"></A>            <FONT ID="Return">return</FONT> <FONT ID="StringLiteral">"&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;"</FONT>;
+<A NAME="220"></A>        } <FONT ID="Else">else</FONT> <FONT ID="If">if</FONT> (slots.size() == <FONT ID="IntegerLiteral">1</FONT>) {
+<A NAME="221"></A>            <FONT ID="Return">return</FONT> printSingleSlot(slots.iterator().next());
+<A NAME="222"></A>        } <FONT ID="Else">else</FONT> {
+<A NAME="223"></A>            <FONT ID="Return">return</FONT> printMultiSlot(slots.size());
+<A NAME="224"></A>        }
+<A NAME="225"></A>    }
+<A NAME="226"></A>
+<A NAME="227"></A>    <FONT ID="Static">static</FONT> String printMultiSlot(<FONT ID="Int">int</FONT> slotsCount) {
+<A NAME="228"></A>        String num = Integer.toString(slotsCount);
+<A NAME="229"></A>        <FONT ID="If">if</FONT> (num.length() &gt; <FONT ID="IntegerLiteral">4</FONT>) {
+<A NAME="230"></A>            <FONT ID="Return">return</FONT> <FONT ID="StringLiteral">"999+"</FONT>;
+<A NAME="231"></A>        } <FONT ID="Else">else</FONT> {
+<A NAME="232"></A>            <FONT ID="Return">return</FONT> num;
+<A NAME="233"></A>        }
+<A NAME="234"></A>    }
+<A NAME="235"></A>
+<A NAME="236"></A>    <FONT ID="Private">private</FONT> String printSingleSlot(SlotState next) {
+<A NAME="237"></A>        <FONT ID="Return">return</FONT> STATUS_TO_SHORT_NAME.get(next.getStatus());
+<A NAME="238"></A>    }
+<A NAME="239"></A>
+<A NAME="240"></A>    <FONT ID="Private">private</FONT> Map&lt;WorkflowID, Map&lt;ScheduledTime, Set&lt;SlotState&gt;&gt;&gt; bucketByTime(Map&lt;WorkflowID, WorkflowStatus&gt; statuses, <FONT ID="Int">int</FONT> zoomLevelMinutes) {
+<A NAME="241"></A>        Map&lt;WorkflowID, Map&lt;ScheduledTime, Set&lt;SlotState&gt;&gt;&gt; buckets = <FONT ID="New">new</FONT> HashMap&lt;WorkflowID, Map&lt;ScheduledTime, Set&lt;SlotState&gt;&gt;&gt;();
+<A NAME="242"></A>        <FONT ID="For">for</FONT> (Map.Entry&lt;WorkflowID, WorkflowStatus&gt; status : statuses.entrySet()) {
+<A NAME="243"></A>            buckets.put(status.getKey(), bucketSlotsByTime(status.getValue().getSlotStates(), zoomLevelMinutes));
+<A NAME="244"></A>        }
+<A NAME="245"></A>        <FONT ID="Return">return</FONT> buckets;
+<A NAME="246"></A>    }
+<A NAME="247"></A>
+<A NAME="248"></A>    <FONT ID="Static">static</FONT> Map&lt;ScheduledTime, Set&lt;SlotState&gt;&gt; bucketSlotsByTime(List&lt;SlotState&gt; slotStates, <FONT ID="Int">int</FONT> zoomLevelMinutes) {
+<A NAME="249"></A>        Map&lt;ScheduledTime, Set&lt;SlotState&gt;&gt; buckets = <FONT ID="New">new</FONT> HashMap&lt;ScheduledTime, Set&lt;SlotState&gt;&gt;();
+<A NAME="250"></A>        <FONT ID="For">for</FONT> (SlotState slot : slotStates) {
+<A NAME="251"></A>            ScheduledTime bucketTime = bucketTime(slot.getScheduledTime(), zoomLevelMinutes);
+<A NAME="252"></A>            Set&lt;SlotState&gt; slotsForBucket = buckets.get(bucketTime);
+<A NAME="253"></A>            <FONT ID="If">if</FONT> (slotsForBucket == <FONT ID="Null">null</FONT>) {
+<A NAME="254"></A>                slotsForBucket = <FONT ID="New">new</FONT> HashSet&lt;SlotState&gt;();
+<A NAME="255"></A>                buckets.put(bucketTime, slotsForBucket);
+<A NAME="256"></A>            }
+<A NAME="257"></A>            slotsForBucket.add(slot);
+<A NAME="258"></A>        }
+<A NAME="259"></A>        <FONT ID="Return">return</FONT> buckets;
+<A NAME="260"></A>    }
+<A NAME="261"></A>
+<A NAME="262"></A>    <FONT ID="Private">private</FONT> Map&lt;WorkflowID, WorkflowStatus&gt; fetchStatuses(CelosClient client, Set&lt;WorkflowID&gt; workflows, ScheduledTime start, ScheduledTime end) <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="263"></A>        Map&lt;WorkflowID, WorkflowStatus&gt; statuses = <FONT ID="New">new</FONT> HashMap&lt;WorkflowID, WorkflowStatus&gt;();
+<A NAME="264"></A>        <FONT ID="For">for</FONT> (WorkflowID id : workflows) {
+<A NAME="265"></A>            WorkflowStatus status = client.getWorkflowStatus(id, start, end);
+<A NAME="266"></A>            statuses.put(id, status);
+<A NAME="267"></A>        }
+<A NAME="268"></A>        <FONT ID="Return">return</FONT> statuses;
+<A NAME="269"></A>    }
+<A NAME="270"></A>
+<A NAME="271"></A>    <FONT ID="Static">static</FONT> List&lt;ScheduledTime&gt; getDefaultTileTimes(ScheduledTime now, <FONT ID="Int">int</FONT> zoomLevelMinutes) {
+<A NAME="272"></A>        <FONT ID="Return">return</FONT> getTileTimes(now, zoomLevelMinutes, MAX_MINUTES_TO_FETCH, MAX_TILES_TO_DISPLAY);
+<A NAME="273"></A>    }
+<A NAME="274"></A>    
+<A NAME="275"></A>    <FONT ID="Static">static</FONT> List&lt;ScheduledTime&gt; getTileTimes(ScheduledTime now, <FONT ID="Int">int</FONT> zoomLevelMinutes, <FONT ID="Int">int</FONT> maxMinutesToFetch, <FONT ID="Int">int</FONT> maxTilesToDisplay) {
+<A NAME="276"></A>        <FONT ID="Int">int</FONT> numTiles = getNumTiles(zoomLevelMinutes, maxMinutesToFetch, maxTilesToDisplay);
+<A NAME="277"></A>        List&lt;ScheduledTime&gt; times = <FONT ID="New">new</FONT> LinkedList&lt;ScheduledTime&gt;();
+<A NAME="278"></A>        ScheduledTime t = now;
+<A NAME="279"></A>        <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> i = <FONT ID="IntegerLiteral">1</FONT>; i &lt;= numTiles; i++) {
+<A NAME="280"></A>            times.add(bucketTime(t, zoomLevelMinutes));
+<A NAME="281"></A>            t = t.minusMinutes(zoomLevelMinutes);
+<A NAME="282"></A>        }
+<A NAME="283"></A>        <FONT ID="Return">return</FONT> times;
+<A NAME="284"></A>    }
+<A NAME="285"></A>
+<A NAME="286"></A>    <FONT ID="Static">static</FONT> <FONT ID="Int">int</FONT> getNumTiles(<FONT ID="Int">int</FONT> zoomLevelMinutes, <FONT ID="Int">int</FONT> maxMinutesToFetch, <FONT ID="Int">int</FONT> maxTilesToDisplay) {
+<A NAME="287"></A>        <FONT ID="Return">return</FONT> Math.min(maxMinutesToFetch / zoomLevelMinutes, maxTilesToDisplay);
+<A NAME="288"></A>    }
+<A NAME="289"></A>
+<A NAME="290"></A>    <FONT ID="Static">static</FONT> ScheduledTime bucketTime(ScheduledTime t, <FONT ID="Int">int</FONT> zoomLevelMinutes) {
+<A NAME="291"></A>        DateTime dtNow = t.getDateTime();
+<A NAME="292"></A>        DateTime dtFullDay = toFullDay(dtNow);
+<A NAME="293"></A>        DateTime dt = dtFullDay;
+<A NAME="294"></A>        <FONT ID="While">while</FONT>(dt.isBefore(dtNow)) {
+<A NAME="295"></A>            dt = dt.plusMinutes(zoomLevelMinutes);
+<A NAME="296"></A>        }
+<A NAME="297"></A>        <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> ScheduledTime(dt);
+<A NAME="298"></A>    }
+<A NAME="299"></A>
+<A NAME="300"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> DateTime toFullDay(DateTime dt) {
+<A NAME="301"></A>        <FONT ID="Return">return</FONT> dt.withHourOfDay(<FONT ID="IntegerLiteral">0</FONT>).withMinuteOfHour(<FONT ID="IntegerLiteral">0</FONT>).withSecondOfMinute(<FONT ID="IntegerLiteral">0</FONT>).withMillisOfSecond(<FONT ID="IntegerLiteral">0</FONT>);
+<A NAME="302"></A>    }
+<A NAME="303"></A>
+<A NAME="304"></A>    <FONT ID="Private">private</FONT> List&lt;<A HREF="../../../../com/collective/celos/ui/WorkflowGroup.java.html">WorkflowGroup</A>&gt; getGroups(Set&lt;WorkflowID&gt; workflows) {
+<A NAME="305"></A>        <FONT ID="SingleLineComment">// For now, stuff all workflows into a single group
+<A NAME="306"></A></FONT>        <FONT ID="Return">return</FONT> ImmutableList.of(<FONT ID="New">new</FONT> <A HREF="../../../../com/collective/celos/ui/WorkflowGroup.java.html">WorkflowGroup</A>(<FONT ID="StringLiteral">"All Workflows"</FONT>, <FONT ID="New">new</FONT> LinkedList&lt;WorkflowID&gt;(<FONT ID="New">new</FONT> TreeSet&lt;WorkflowID&gt;(workflows))));
+<A NAME="307"></A>    }
+<A NAME="308"></A>    
+<A NAME="309"></A>}
+<A NAME="310"></A></pre>
+</BODY>
+</HTML>

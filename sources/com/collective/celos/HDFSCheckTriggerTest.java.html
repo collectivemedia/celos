@@ -33,29 +33,29 @@
 <A NAME="16"></A>    
 <A NAME="17"></A>    @Test(expected = NullPointerException.<FONT ID="Class">class</FONT>)
 <A NAME="18"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testNeedsFs() <FONT ID="Throws">throws</FONT> Exception {
-<A NAME="19"></A>        <FONT ID="New">new</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/HDFSCheckTrigger.html">HDFSCheckTrigger</A>(<FONT ID="StringLiteral">"/foo"</FONT>, <FONT ID="Null">null</FONT>);
+<A NAME="19"></A>        <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/HDFSCheckTrigger.java.html">HDFSCheckTrigger</A>(<FONT ID="StringLiteral">"/foo"</FONT>, <FONT ID="Null">null</FONT>);
 <A NAME="20"></A>    }
 <A NAME="21"></A>    
 <A NAME="22"></A>    @Test(expected = NullPointerException.<FONT ID="Class">class</FONT>)
 <A NAME="23"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testNeedsPath() <FONT ID="Throws">throws</FONT> Exception {
-<A NAME="24"></A>        <FONT ID="New">new</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/HDFSCheckTrigger.html">HDFSCheckTrigger</A>(<FONT ID="Null">null</FONT>, <FONT ID="StringLiteral">"hdfs://foo"</FONT>);
+<A NAME="24"></A>        <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/HDFSCheckTrigger.java.html">HDFSCheckTrigger</A>(<FONT ID="Null">null</FONT>, <FONT ID="StringLiteral">"hdfs://foo"</FONT>);
 <A NAME="25"></A>    }
 <A NAME="26"></A>    
 <A NAME="27"></A>    @Test(expected = NullPointerException.<FONT ID="Class">class</FONT>)
 <A NAME="28"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testNeedsFsAndPath() <FONT ID="Throws">throws</FONT> Exception {
-<A NAME="29"></A>        <FONT ID="New">new</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/HDFSCheckTrigger.html">HDFSCheckTrigger</A>(<FONT ID="Null">null</FONT>, <FONT ID="Null">null</FONT>);
+<A NAME="29"></A>        <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/HDFSCheckTrigger.java.html">HDFSCheckTrigger</A>(<FONT ID="Null">null</FONT>, <FONT ID="Null">null</FONT>);
 <A NAME="30"></A>    }
 <A NAME="31"></A>
 <A NAME="32"></A>    @Test
 <A NAME="33"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testDirectoryExists() <FONT ID="Throws">throws</FONT> Exception {
 <A NAME="34"></A>        <A HREF="../../../com/collective/celos/Scheduler.java.html">Scheduler</A> scheduler = mock(<A HREF="../../../com/collective/celos/Scheduler.java.html">Scheduler</A>.<FONT ID="Class">class</FONT>);
-<A NAME="35"></A>        assertTrue(<FONT ID="New">new</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/HDFSCheckTrigger.html">HDFSCheckTrigger</A>(<FONT ID="StringLiteral">"/tmp"</FONT>, <FONT ID="StringLiteral">"file:///"</FONT>).isDataAvailable(scheduler, ScheduledTime.now(), <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-11-22T15:00Z"</FONT>)));
+<A NAME="35"></A>        assertTrue(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/HDFSCheckTrigger.java.html">HDFSCheckTrigger</A>(<FONT ID="StringLiteral">"/tmp"</FONT>, <FONT ID="StringLiteral">"file:///"</FONT>).isDataAvailable(scheduler, ScheduledTime.now(), <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-11-22T15:00Z"</FONT>)));
 <A NAME="36"></A>    }
 <A NAME="37"></A>
 <A NAME="38"></A>    @Test
 <A NAME="39"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testDirectoryDoesNotExist() <FONT ID="Throws">throws</FONT> Exception {
 <A NAME="40"></A>        <A HREF="../../../com/collective/celos/Scheduler.java.html">Scheduler</A> scheduler = mock(<A HREF="../../../com/collective/celos/Scheduler.java.html">Scheduler</A>.<FONT ID="Class">class</FONT>);
-<A NAME="41"></A>        assertFalse(<FONT ID="New">new</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/HDFSCheckTrigger.html">HDFSCheckTrigger</A>(<FONT ID="StringLiteral">"/tmp-does-not-exist"</FONT>, <FONT ID="StringLiteral">"file:///"</FONT>).isDataAvailable(scheduler, ScheduledTime.now(), <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-11-22T15:00Z"</FONT>)));
+<A NAME="41"></A>        assertFalse(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/HDFSCheckTrigger.java.html">HDFSCheckTrigger</A>(<FONT ID="StringLiteral">"/tmp-does-not-exist"</FONT>, <FONT ID="StringLiteral">"file:///"</FONT>).isDataAvailable(scheduler, ScheduledTime.now(), <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-11-22T15:00Z"</FONT>)));
 <A NAME="42"></A>    }
 <A NAME="43"></A>
 <A NAME="44"></A>    @Test
@@ -68,7 +68,7 @@
 <A NAME="51"></A>
 <A NAME="52"></A>        <A HREF="../../../com/collective/celos/Scheduler.java.html">Scheduler</A> scheduler = mock(<A HREF="../../../com/collective/celos/Scheduler.java.html">Scheduler</A>.<FONT ID="Class">class</FONT>);
 <A NAME="53"></A>
-<A NAME="54"></A>        assertTrue(<FONT ID="New">new</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/HDFSCheckTrigger.html">HDFSCheckTrigger</A>(root + <FONT ID="StringLiteral">"/${year}-${month}-${day}/${hour}00/_READY"</FONT>,  <FONT ID="StringLiteral">"file:///"</FONT>).isDataAvailable(scheduler, ScheduledTime.now(), <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-11-22T15:00Z"</FONT>)));
+<A NAME="54"></A>        assertTrue(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/HDFSCheckTrigger.java.html">HDFSCheckTrigger</A>(root + <FONT ID="StringLiteral">"/${year}-${month}-${day}/${hour}00/_READY"</FONT>,  <FONT ID="StringLiteral">"file:///"</FONT>).isDataAvailable(scheduler, ScheduledTime.now(), <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-11-22T15:00Z"</FONT>)));
 <A NAME="55"></A>    }
 <A NAME="56"></A>
 <A NAME="57"></A>    @Test
@@ -82,7 +82,7 @@
 <A NAME="65"></A>
 <A NAME="66"></A>        <A HREF="../../../com/collective/celos/Scheduler.java.html">Scheduler</A> scheduler = mock(<A HREF="../../../com/collective/celos/Scheduler.java.html">Scheduler</A>.<FONT ID="Class">class</FONT>);
 <A NAME="67"></A>       
-<A NAME="68"></A>        assertFalse(<FONT ID="New">new</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/HDFSCheckTrigger.html">HDFSCheckTrigger</A>(root + <FONT ID="StringLiteral">"/${year}-${month}-${day}/${hour}00/_READY"</FONT>, <FONT ID="StringLiteral">"file:///"</FONT>).isDataAvailable(scheduler, ScheduledTime.now(), <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-11-22T15:00Z"</FONT>)));
+<A NAME="68"></A>        assertFalse(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/HDFSCheckTrigger.java.html">HDFSCheckTrigger</A>(root + <FONT ID="StringLiteral">"/${year}-${month}-${day}/${hour}00/_READY"</FONT>, <FONT ID="StringLiteral">"file:///"</FONT>).isDataAvailable(scheduler, ScheduledTime.now(), <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-11-22T15:00Z"</FONT>)));
 <A NAME="69"></A>    }
 <A NAME="70"></A>    
 <A NAME="71"></A>    <FONT ID="MultiLineComment">/*
@@ -93,7 +93,7 @@
 <A NAME="76"></A>    @Test(expected = IllegalArgumentException.<FONT ID="Class">class</FONT>)
 <A NAME="77"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testIOExceptionIsPropagated() <FONT ID="Throws">throws</FONT> Exception {
 <A NAME="78"></A>        <A HREF="../../../com/collective/celos/Scheduler.java.html">Scheduler</A> scheduler = mock(<A HREF="../../../com/collective/celos/Scheduler.java.html">Scheduler</A>.<FONT ID="Class">class</FONT>);
-<A NAME="79"></A>        <FONT ID="New">new</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/HDFSCheckTrigger.html">HDFSCheckTrigger</A>(<FONT ID="StringLiteral">"/some/path"</FONT>, <FONT ID="StringLiteral">"hdfs://no-such-host"</FONT>).isDataAvailable(scheduler, ScheduledTime.now(), <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-11-22T15:00Z"</FONT>));
+<A NAME="79"></A>        <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/HDFSCheckTrigger.java.html">HDFSCheckTrigger</A>(<FONT ID="StringLiteral">"/some/path"</FONT>, <FONT ID="StringLiteral">"hdfs://no-such-host"</FONT>).isDataAvailable(scheduler, ScheduledTime.now(), <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-11-22T15:00Z"</FONT>));
 <A NAME="80"></A>    }
 <A NAME="81"></A>
 <A NAME="82"></A>}

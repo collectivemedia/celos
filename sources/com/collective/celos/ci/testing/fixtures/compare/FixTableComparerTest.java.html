@@ -18,7 +18,7 @@
 <A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos.ci.testing.fixtures.compare;
 <A NAME="2"></A>
 <A NAME="3"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">com.collective.celos.ci.testing.fixtures.create.FixObjectCreator</A>;
-<A NAME="4"></A><FONT ID="Import">import</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">com.collective.celos.ci.testing.structure.fixobject.FixTable</A>;
+<A NAME="4"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixTable.java.html">com.collective.celos.ci.testing.structure.fixobject.FixTable</A>;
 <A NAME="5"></A><FONT ID="Import">import</FONT> com.google.common.collect.Lists;
 <A NAME="6"></A><FONT ID="Import">import</FONT> com.google.common.collect.Maps;
 <A NAME="7"></A><FONT ID="Import">import</FONT> junit.framework.Assert;
@@ -37,13 +37,13 @@
 <A NAME="20"></A>
 <A NAME="21"></A>    @Test
 <A NAME="22"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testSuccess() <FONT ID="Throws">throws</FONT> Exception {
-<A NAME="23"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">FixObjectCreator</A>&lt;<A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable</A>&gt; expectedDataCreator = mock(<A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">FixObjectCreator</A>.<FONT ID="Class">class</FONT>);
-<A NAME="24"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">FixObjectCreator</A>&lt;<A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable</A>&gt; actualDataCreator = mock(<A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">FixObjectCreator</A>.<FONT ID="Class">class</FONT>);
+<A NAME="23"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">FixObjectCreator</A>&lt;<A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixTable.java.html">FixTable</A>&gt; expectedDataCreator = mock(<A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">FixObjectCreator</A>.<FONT ID="Class">class</FONT>);
+<A NAME="24"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">FixObjectCreator</A>&lt;<A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixTable.java.html">FixTable</A>&gt; actualDataCreator = mock(<A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">FixObjectCreator</A>.<FONT ID="Class">class</FONT>);
 <A NAME="25"></A>        <FONT ID="Boolean">boolean</FONT> columnNamesOrdered = <FONT ID="True">true</FONT>;
 <A NAME="26"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/compare/FixTableComparer.java.html">FixTableComparer</A> comparer = <FONT ID="New">new</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/compare/FixTableComparer.java.html">FixTableComparer</A>(expectedDataCreator, actualDataCreator, columnNamesOrdered, <FONT ID="True">true</FONT>);
 <A NAME="27"></A>
-<A NAME="28"></A>        <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable</A> table1 = generateFixTable();
-<A NAME="29"></A>        <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable</A> table2 = generateFixTable();
+<A NAME="28"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixTable.java.html">FixTable</A> table1 = generateFixTable();
+<A NAME="29"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixTable.java.html">FixTable</A> table2 = generateFixTable();
 <A NAME="30"></A>
 <A NAME="31"></A>        doReturn(table1).when(expectedDataCreator).create(<FONT ID="Null">null</FONT>);
 <A NAME="32"></A>        doReturn(table2).when(actualDataCreator).create(<FONT ID="Null">null</FONT>);
@@ -54,13 +54,13 @@
 <A NAME="37"></A>
 <A NAME="38"></A>    @Test
 <A NAME="39"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testSuccessDiffRowOrder() <FONT ID="Throws">throws</FONT> Exception {
-<A NAME="40"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">FixObjectCreator</A>&lt;<A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable</A>&gt; expectedDataCreator = mock(<A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">FixObjectCreator</A>.<FONT ID="Class">class</FONT>);
-<A NAME="41"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">FixObjectCreator</A>&lt;<A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable</A>&gt; actualDataCreator = mock(<A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">FixObjectCreator</A>.<FONT ID="Class">class</FONT>);
+<A NAME="40"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">FixObjectCreator</A>&lt;<A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixTable.java.html">FixTable</A>&gt; expectedDataCreator = mock(<A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">FixObjectCreator</A>.<FONT ID="Class">class</FONT>);
+<A NAME="41"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">FixObjectCreator</A>&lt;<A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixTable.java.html">FixTable</A>&gt; actualDataCreator = mock(<A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">FixObjectCreator</A>.<FONT ID="Class">class</FONT>);
 <A NAME="42"></A>        <FONT ID="Boolean">boolean</FONT> columnNamesOrdered = <FONT ID="True">true</FONT>;
 <A NAME="43"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/compare/FixTableComparer.java.html">FixTableComparer</A> comparer = <FONT ID="New">new</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/compare/FixTableComparer.java.html">FixTableComparer</A>(expectedDataCreator, actualDataCreator, columnNamesOrdered, <FONT ID="False">false</FONT>);
 <A NAME="44"></A>
-<A NAME="45"></A>        <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable</A> table1 = generateFixTable();
-<A NAME="46"></A>        <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable</A> table2 = generateFixTableDiffRowOrder();
+<A NAME="45"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixTable.java.html">FixTable</A> table1 = generateFixTable();
+<A NAME="46"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixTable.java.html">FixTable</A> table2 = generateFixTableDiffRowOrder();
 <A NAME="47"></A>
 <A NAME="48"></A>        doReturn(table1).when(expectedDataCreator).create(<FONT ID="Null">null</FONT>);
 <A NAME="49"></A>        doReturn(table2).when(actualDataCreator).create(<FONT ID="Null">null</FONT>);
@@ -71,13 +71,13 @@
 <A NAME="54"></A>
 <A NAME="55"></A>    @Test
 <A NAME="56"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testFailsDiffRowOrder() <FONT ID="Throws">throws</FONT> Exception {
-<A NAME="57"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">FixObjectCreator</A>&lt;<A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable</A>&gt; expectedDataCreator = mock(<A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">FixObjectCreator</A>.<FONT ID="Class">class</FONT>);
-<A NAME="58"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">FixObjectCreator</A>&lt;<A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable</A>&gt; actualDataCreator = mock(<A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">FixObjectCreator</A>.<FONT ID="Class">class</FONT>);
+<A NAME="57"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">FixObjectCreator</A>&lt;<A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixTable.java.html">FixTable</A>&gt; expectedDataCreator = mock(<A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">FixObjectCreator</A>.<FONT ID="Class">class</FONT>);
+<A NAME="58"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">FixObjectCreator</A>&lt;<A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixTable.java.html">FixTable</A>&gt; actualDataCreator = mock(<A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">FixObjectCreator</A>.<FONT ID="Class">class</FONT>);
 <A NAME="59"></A>        <FONT ID="Boolean">boolean</FONT> columnNamesOrdered = <FONT ID="True">true</FONT>;
 <A NAME="60"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/compare/FixTableComparer.java.html">FixTableComparer</A> comparer = <FONT ID="New">new</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/compare/FixTableComparer.java.html">FixTableComparer</A>(expectedDataCreator, actualDataCreator, columnNamesOrdered, <FONT ID="False">false</FONT>);
 <A NAME="61"></A>
-<A NAME="62"></A>        <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable</A> table1 = generateFixTable();
-<A NAME="63"></A>        <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable</A> table2 = generateFixTableDiffData();
+<A NAME="62"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixTable.java.html">FixTable</A> table1 = generateFixTable();
+<A NAME="63"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixTable.java.html">FixTable</A> table2 = generateFixTableDiffData();
 <A NAME="64"></A>
 <A NAME="65"></A>        doReturn(table1).when(expectedDataCreator).create(<FONT ID="Null">null</FONT>);
 <A NAME="66"></A>        doReturn(table2).when(actualDataCreator).create(<FONT ID="Null">null</FONT>);
@@ -100,13 +100,13 @@
 <A NAME="83"></A>
 <A NAME="84"></A>    @Test
 <A NAME="85"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testFailDifferentCells() <FONT ID="Throws">throws</FONT> Exception {
-<A NAME="86"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">FixObjectCreator</A>&lt;<A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable</A>&gt; expectedDataCreator = mock(<A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">FixObjectCreator</A>.<FONT ID="Class">class</FONT>);
-<A NAME="87"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">FixObjectCreator</A>&lt;<A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable</A>&gt; actualDataCreator = mock(<A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">FixObjectCreator</A>.<FONT ID="Class">class</FONT>);
+<A NAME="86"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">FixObjectCreator</A>&lt;<A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixTable.java.html">FixTable</A>&gt; expectedDataCreator = mock(<A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">FixObjectCreator</A>.<FONT ID="Class">class</FONT>);
+<A NAME="87"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">FixObjectCreator</A>&lt;<A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixTable.java.html">FixTable</A>&gt; actualDataCreator = mock(<A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">FixObjectCreator</A>.<FONT ID="Class">class</FONT>);
 <A NAME="88"></A>        <FONT ID="Boolean">boolean</FONT> columnNamesOrdered = <FONT ID="True">true</FONT>;
 <A NAME="89"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/compare/FixTableComparer.java.html">FixTableComparer</A> comparer = <FONT ID="New">new</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/compare/FixTableComparer.java.html">FixTableComparer</A>(expectedDataCreator, actualDataCreator, columnNamesOrdered, <FONT ID="True">true</FONT>);
 <A NAME="90"></A>
-<A NAME="91"></A>        <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable</A> table1 = generateFixTable();
-<A NAME="92"></A>        <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable</A> table2 = generateFixTableDiffData();
+<A NAME="91"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixTable.java.html">FixTable</A> table1 = generateFixTable();
+<A NAME="92"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixTable.java.html">FixTable</A> table2 = generateFixTableDiffData();
 <A NAME="93"></A>
 <A NAME="94"></A>        doReturn(table1).when(expectedDataCreator).create(<FONT ID="Null">null</FONT>);
 <A NAME="95"></A>        doReturn(table2).when(actualDataCreator).create(<FONT ID="Null">null</FONT>);
@@ -121,13 +121,13 @@
 <A NAME="104"></A>
 <A NAME="105"></A>    @Test
 <A NAME="106"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testFailDifferentCells2() <FONT ID="Throws">throws</FONT> Exception {
-<A NAME="107"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">FixObjectCreator</A>&lt;<A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable</A>&gt; expectedDataCreator = mock(<A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">FixObjectCreator</A>.<FONT ID="Class">class</FONT>);
-<A NAME="108"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">FixObjectCreator</A>&lt;<A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable</A>&gt; actualDataCreator = mock(<A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">FixObjectCreator</A>.<FONT ID="Class">class</FONT>);
+<A NAME="107"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">FixObjectCreator</A>&lt;<A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixTable.java.html">FixTable</A>&gt; expectedDataCreator = mock(<A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">FixObjectCreator</A>.<FONT ID="Class">class</FONT>);
+<A NAME="108"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">FixObjectCreator</A>&lt;<A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixTable.java.html">FixTable</A>&gt; actualDataCreator = mock(<A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">FixObjectCreator</A>.<FONT ID="Class">class</FONT>);
 <A NAME="109"></A>        <FONT ID="Boolean">boolean</FONT> columnNamesOrdered = <FONT ID="True">true</FONT>;
 <A NAME="110"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/compare/FixTableComparer.java.html">FixTableComparer</A> comparer = <FONT ID="New">new</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/compare/FixTableComparer.java.html">FixTableComparer</A>(expectedDataCreator, actualDataCreator, columnNamesOrdered, <FONT ID="True">true</FONT>);
 <A NAME="111"></A>
-<A NAME="112"></A>        <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable</A> table1 = generateFixTable();
-<A NAME="113"></A>        <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable</A> table2 = generateFixTableDiffData();
+<A NAME="112"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixTable.java.html">FixTable</A> table1 = generateFixTable();
+<A NAME="113"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixTable.java.html">FixTable</A> table2 = generateFixTableDiffData();
 <A NAME="114"></A>
 <A NAME="115"></A>        doReturn(table1).when(expectedDataCreator).create(<FONT ID="Null">null</FONT>);
 <A NAME="116"></A>        doReturn(table2).when(actualDataCreator).create(<FONT ID="Null">null</FONT>);
@@ -143,13 +143,13 @@
 <A NAME="126"></A>
 <A NAME="127"></A>    @Test
 <A NAME="128"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testFailsColumnOrder() <FONT ID="Throws">throws</FONT> Exception {
-<A NAME="129"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">FixObjectCreator</A>&lt;<A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable</A>&gt; expectedDataCreator = mock(<A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">FixObjectCreator</A>.<FONT ID="Class">class</FONT>);
-<A NAME="130"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">FixObjectCreator</A>&lt;<A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable</A>&gt; actualDataCreator = mock(<A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">FixObjectCreator</A>.<FONT ID="Class">class</FONT>);
+<A NAME="129"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">FixObjectCreator</A>&lt;<A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixTable.java.html">FixTable</A>&gt; expectedDataCreator = mock(<A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">FixObjectCreator</A>.<FONT ID="Class">class</FONT>);
+<A NAME="130"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">FixObjectCreator</A>&lt;<A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixTable.java.html">FixTable</A>&gt; actualDataCreator = mock(<A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">FixObjectCreator</A>.<FONT ID="Class">class</FONT>);
 <A NAME="131"></A>        <FONT ID="Boolean">boolean</FONT> columnNamesOrdered = <FONT ID="True">true</FONT>;
 <A NAME="132"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/compare/FixTableComparer.java.html">FixTableComparer</A> comparer = <FONT ID="New">new</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/compare/FixTableComparer.java.html">FixTableComparer</A>(expectedDataCreator, actualDataCreator, columnNamesOrdered, <FONT ID="True">true</FONT>);
 <A NAME="133"></A>
-<A NAME="134"></A>        <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable</A> table1 = generateFixTable();
-<A NAME="135"></A>        <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable</A> table2 = generateFixTableDifferentOrder();
+<A NAME="134"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixTable.java.html">FixTable</A> table1 = generateFixTable();
+<A NAME="135"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixTable.java.html">FixTable</A> table2 = generateFixTableDifferentOrder();
 <A NAME="136"></A>
 <A NAME="137"></A>        doReturn(table1).when(expectedDataCreator).create(<FONT ID="Null">null</FONT>);
 <A NAME="138"></A>        doReturn(table2).when(actualDataCreator).create(<FONT ID="Null">null</FONT>);
@@ -161,13 +161,13 @@
 <A NAME="144"></A>
 <A NAME="145"></A>    @Test
 <A NAME="146"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testSuccessIgnoreColumnOrder() <FONT ID="Throws">throws</FONT> Exception {
-<A NAME="147"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">FixObjectCreator</A>&lt;<A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable</A>&gt; expectedDataCreator = mock(<A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">FixObjectCreator</A>.<FONT ID="Class">class</FONT>);
-<A NAME="148"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">FixObjectCreator</A>&lt;<A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable</A>&gt; actualDataCreator = mock(<A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">FixObjectCreator</A>.<FONT ID="Class">class</FONT>);
+<A NAME="147"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">FixObjectCreator</A>&lt;<A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixTable.java.html">FixTable</A>&gt; expectedDataCreator = mock(<A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">FixObjectCreator</A>.<FONT ID="Class">class</FONT>);
+<A NAME="148"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">FixObjectCreator</A>&lt;<A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixTable.java.html">FixTable</A>&gt; actualDataCreator = mock(<A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">FixObjectCreator</A>.<FONT ID="Class">class</FONT>);
 <A NAME="149"></A>        <FONT ID="Boolean">boolean</FONT> columnNamesOrdered = <FONT ID="False">false</FONT>;
 <A NAME="150"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/compare/FixTableComparer.java.html">FixTableComparer</A> comparer = <FONT ID="New">new</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/compare/FixTableComparer.java.html">FixTableComparer</A>(expectedDataCreator, actualDataCreator, columnNamesOrdered, <FONT ID="True">true</FONT>);
 <A NAME="151"></A>
-<A NAME="152"></A>        <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable</A> table1 = generateFixTable();
-<A NAME="153"></A>        <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable</A> table2 = generateFixTableDifferentOrder();
+<A NAME="152"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixTable.java.html">FixTable</A> table1 = generateFixTable();
+<A NAME="153"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixTable.java.html">FixTable</A> table2 = generateFixTableDifferentOrder();
 <A NAME="154"></A>
 <A NAME="155"></A>        doReturn(table1).when(expectedDataCreator).create(<FONT ID="Null">null</FONT>);
 <A NAME="156"></A>        doReturn(table2).when(actualDataCreator).create(<FONT ID="Null">null</FONT>);
@@ -179,13 +179,13 @@
 <A NAME="162"></A>
 <A NAME="163"></A>    @Test
 <A NAME="164"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testFailsColumnNumber() <FONT ID="Throws">throws</FONT> Exception {
-<A NAME="165"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">FixObjectCreator</A>&lt;<A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable</A>&gt; expectedDataCreator = mock(<A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">FixObjectCreator</A>.<FONT ID="Class">class</FONT>);
-<A NAME="166"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">FixObjectCreator</A>&lt;<A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable</A>&gt; actualDataCreator = mock(<A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">FixObjectCreator</A>.<FONT ID="Class">class</FONT>);
+<A NAME="165"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">FixObjectCreator</A>&lt;<A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixTable.java.html">FixTable</A>&gt; expectedDataCreator = mock(<A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">FixObjectCreator</A>.<FONT ID="Class">class</FONT>);
+<A NAME="166"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">FixObjectCreator</A>&lt;<A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixTable.java.html">FixTable</A>&gt; actualDataCreator = mock(<A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">FixObjectCreator</A>.<FONT ID="Class">class</FONT>);
 <A NAME="167"></A>        <FONT ID="Boolean">boolean</FONT> columnNamesOrdered = <FONT ID="False">false</FONT>;
 <A NAME="168"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/compare/FixTableComparer.java.html">FixTableComparer</A> comparer = <FONT ID="New">new</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/compare/FixTableComparer.java.html">FixTableComparer</A>(expectedDataCreator, actualDataCreator, columnNamesOrdered, <FONT ID="True">true</FONT>);
 <A NAME="169"></A>
-<A NAME="170"></A>        <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable</A> table1 = generateFixTable();
-<A NAME="171"></A>        <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable</A> table2 = generateFixTableMoreColumns();
+<A NAME="170"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixTable.java.html">FixTable</A> table1 = generateFixTable();
+<A NAME="171"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixTable.java.html">FixTable</A> table2 = generateFixTableMoreColumns();
 <A NAME="172"></A>
 <A NAME="173"></A>        doReturn(table1).when(expectedDataCreator).create(<FONT ID="Null">null</FONT>);
 <A NAME="174"></A>        doReturn(table2).when(actualDataCreator).create(<FONT ID="Null">null</FONT>);
@@ -197,13 +197,13 @@
 <A NAME="180"></A>
 <A NAME="181"></A>    @Test
 <A NAME="182"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testFailsRowNumber() <FONT ID="Throws">throws</FONT> Exception {
-<A NAME="183"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">FixObjectCreator</A>&lt;<A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable</A>&gt; expectedDataCreator = mock(<A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">FixObjectCreator</A>.<FONT ID="Class">class</FONT>);
-<A NAME="184"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">FixObjectCreator</A>&lt;<A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable</A>&gt; actualDataCreator = mock(<A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">FixObjectCreator</A>.<FONT ID="Class">class</FONT>);
+<A NAME="183"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">FixObjectCreator</A>&lt;<A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixTable.java.html">FixTable</A>&gt; expectedDataCreator = mock(<A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">FixObjectCreator</A>.<FONT ID="Class">class</FONT>);
+<A NAME="184"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">FixObjectCreator</A>&lt;<A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixTable.java.html">FixTable</A>&gt; actualDataCreator = mock(<A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">FixObjectCreator</A>.<FONT ID="Class">class</FONT>);
 <A NAME="185"></A>        <FONT ID="Boolean">boolean</FONT> columnNamesOrdered = <FONT ID="False">false</FONT>;
 <A NAME="186"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/compare/FixTableComparer.java.html">FixTableComparer</A> comparer = <FONT ID="New">new</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/compare/FixTableComparer.java.html">FixTableComparer</A>(expectedDataCreator, actualDataCreator, columnNamesOrdered, <FONT ID="True">true</FONT>);
 <A NAME="187"></A>
-<A NAME="188"></A>        <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable</A> table1 = generateFixTable();
-<A NAME="189"></A>        <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable</A> table2 = generateFixTableMoreRows();
+<A NAME="188"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixTable.java.html">FixTable</A> table1 = generateFixTable();
+<A NAME="189"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixTable.java.html">FixTable</A> table2 = generateFixTableMoreRows();
 <A NAME="190"></A>
 <A NAME="191"></A>        doReturn(table1).when(expectedDataCreator).create(<FONT ID="Null">null</FONT>);
 <A NAME="192"></A>        doReturn(table2).when(actualDataCreator).create(<FONT ID="Null">null</FONT>);
@@ -213,8 +213,8 @@
 <A NAME="196"></A>        Assert.assertEquals(<FONT ID="StringLiteral">"Data set size for expected and actual data set differed: expected has 2 while actual data has 3 rows\n"</FONT>, result.generateDescription());
 <A NAME="197"></A>    }
 <A NAME="198"></A>
-<A NAME="199"></A>    <FONT ID="Private">private</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable</A> generateFixTable() {
-<A NAME="200"></A>        List&lt;<A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable.FixRow</A>&gt; fixRows = Lists.newArrayList();
+<A NAME="199"></A>    <FONT ID="Private">private</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixTable.java.html">FixTable</A> generateFixTable() {
+<A NAME="200"></A>        List&lt;<A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixTable.java.html">FixTable.FixRow</A>&gt; fixRows = Lists.newArrayList();
 <A NAME="201"></A>        Map&lt;String, String&gt; map = Maps.newHashMap();
 <A NAME="202"></A>        map.put(<FONT ID="StringLiteral">"col1"</FONT>, <FONT ID="StringLiteral">"val1"</FONT>);
 <A NAME="203"></A>        map.put(<FONT ID="StringLiteral">"col2"</FONT>, <FONT ID="StringLiteral">"val2"</FONT>);
@@ -223,15 +223,15 @@
 <A NAME="206"></A>        map2.put(<FONT ID="StringLiteral">"col1"</FONT>, <FONT ID="StringLiteral">"val11"</FONT>);
 <A NAME="207"></A>        map2.put(<FONT ID="StringLiteral">"col2"</FONT>, <FONT ID="StringLiteral">"val22"</FONT>);
 <A NAME="208"></A>
-<A NAME="209"></A>        <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable.FixRow</A> row1 = <FONT ID="New">new</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable.FixRow</A>(map);
-<A NAME="210"></A>        <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable.FixRow</A> row2 = <FONT ID="New">new</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable.FixRow</A>(map2);
+<A NAME="209"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixTable.java.html">FixTable.FixRow</A> row1 = <FONT ID="New">new</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixTable.java.html">FixTable.FixRow</A>(map);
+<A NAME="210"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixTable.java.html">FixTable.FixRow</A> row2 = <FONT ID="New">new</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixTable.java.html">FixTable.FixRow</A>(map2);
 <A NAME="211"></A>        fixRows.add(row1);
 <A NAME="212"></A>        fixRows.add(row2);
-<A NAME="213"></A>        <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable</A>(Lists.newArrayList(<FONT ID="StringLiteral">"col1"</FONT>, <FONT ID="StringLiteral">"col2"</FONT>), fixRows);
+<A NAME="213"></A>        <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixTable.java.html">FixTable</A>(Lists.newArrayList(<FONT ID="StringLiteral">"col1"</FONT>, <FONT ID="StringLiteral">"col2"</FONT>), fixRows);
 <A NAME="214"></A>    }
 <A NAME="215"></A>
-<A NAME="216"></A>    <FONT ID="Private">private</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable</A> generateFixTableDiffRowOrder() {
-<A NAME="217"></A>        List&lt;<A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable.FixRow</A>&gt; fixRows = Lists.newArrayList();
+<A NAME="216"></A>    <FONT ID="Private">private</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixTable.java.html">FixTable</A> generateFixTableDiffRowOrder() {
+<A NAME="217"></A>        List&lt;<A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixTable.java.html">FixTable.FixRow</A>&gt; fixRows = Lists.newArrayList();
 <A NAME="218"></A>        Map&lt;String, String&gt; map = Maps.newHashMap();
 <A NAME="219"></A>        map.put(<FONT ID="StringLiteral">"col1"</FONT>, <FONT ID="StringLiteral">"val1"</FONT>);
 <A NAME="220"></A>        map.put(<FONT ID="StringLiteral">"col2"</FONT>, <FONT ID="StringLiteral">"val2"</FONT>);
@@ -240,15 +240,15 @@
 <A NAME="223"></A>        map2.put(<FONT ID="StringLiteral">"col1"</FONT>, <FONT ID="StringLiteral">"val11"</FONT>);
 <A NAME="224"></A>        map2.put(<FONT ID="StringLiteral">"col2"</FONT>, <FONT ID="StringLiteral">"val22"</FONT>);
 <A NAME="225"></A>
-<A NAME="226"></A>        <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable.FixRow</A> row1 = <FONT ID="New">new</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable.FixRow</A>(map2);
-<A NAME="227"></A>        <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable.FixRow</A> row2 = <FONT ID="New">new</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable.FixRow</A>(map);
+<A NAME="226"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixTable.java.html">FixTable.FixRow</A> row1 = <FONT ID="New">new</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixTable.java.html">FixTable.FixRow</A>(map2);
+<A NAME="227"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixTable.java.html">FixTable.FixRow</A> row2 = <FONT ID="New">new</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixTable.java.html">FixTable.FixRow</A>(map);
 <A NAME="228"></A>        fixRows.add(row1);
 <A NAME="229"></A>        fixRows.add(row2);
-<A NAME="230"></A>        <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable</A>(Lists.newArrayList(<FONT ID="StringLiteral">"col1"</FONT>, <FONT ID="StringLiteral">"col2"</FONT>), fixRows);
+<A NAME="230"></A>        <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixTable.java.html">FixTable</A>(Lists.newArrayList(<FONT ID="StringLiteral">"col1"</FONT>, <FONT ID="StringLiteral">"col2"</FONT>), fixRows);
 <A NAME="231"></A>    }
 <A NAME="232"></A>
-<A NAME="233"></A>    <FONT ID="Private">private</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable</A> generateFixTableDiffData() {
-<A NAME="234"></A>        List&lt;<A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable.FixRow</A>&gt; fixRows = Lists.newArrayList();
+<A NAME="233"></A>    <FONT ID="Private">private</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixTable.java.html">FixTable</A> generateFixTableDiffData() {
+<A NAME="234"></A>        List&lt;<A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixTable.java.html">FixTable.FixRow</A>&gt; fixRows = Lists.newArrayList();
 <A NAME="235"></A>        Map&lt;String, String&gt; map = Maps.newHashMap();
 <A NAME="236"></A>        map.put(<FONT ID="StringLiteral">"col1"</FONT>, <FONT ID="StringLiteral">"val1_"</FONT>);
 <A NAME="237"></A>        map.put(<FONT ID="StringLiteral">"col2"</FONT>, <FONT ID="StringLiteral">"val2_"</FONT>);
@@ -257,15 +257,15 @@
 <A NAME="240"></A>        map2.put(<FONT ID="StringLiteral">"col1"</FONT>, <FONT ID="StringLiteral">"val11_"</FONT>);
 <A NAME="241"></A>        map2.put(<FONT ID="StringLiteral">"col2"</FONT>, <FONT ID="StringLiteral">"val22_"</FONT>);
 <A NAME="242"></A>
-<A NAME="243"></A>        <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable.FixRow</A> row1 = <FONT ID="New">new</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable.FixRow</A>(map);
-<A NAME="244"></A>        <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable.FixRow</A> row2 = <FONT ID="New">new</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable.FixRow</A>(map2);
+<A NAME="243"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixTable.java.html">FixTable.FixRow</A> row1 = <FONT ID="New">new</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixTable.java.html">FixTable.FixRow</A>(map);
+<A NAME="244"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixTable.java.html">FixTable.FixRow</A> row2 = <FONT ID="New">new</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixTable.java.html">FixTable.FixRow</A>(map2);
 <A NAME="245"></A>        fixRows.add(row1);
 <A NAME="246"></A>        fixRows.add(row2);
-<A NAME="247"></A>        <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable</A>(Lists.newArrayList(<FONT ID="StringLiteral">"col1"</FONT>, <FONT ID="StringLiteral">"col2"</FONT>), fixRows);
+<A NAME="247"></A>        <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixTable.java.html">FixTable</A>(Lists.newArrayList(<FONT ID="StringLiteral">"col1"</FONT>, <FONT ID="StringLiteral">"col2"</FONT>), fixRows);
 <A NAME="248"></A>    }
 <A NAME="249"></A>
-<A NAME="250"></A>    <FONT ID="Private">private</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable</A> generateFixTableMoreRows() {
-<A NAME="251"></A>        List&lt;<A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable.FixRow</A>&gt; fixRows = Lists.newArrayList();
+<A NAME="250"></A>    <FONT ID="Private">private</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixTable.java.html">FixTable</A> generateFixTableMoreRows() {
+<A NAME="251"></A>        List&lt;<A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixTable.java.html">FixTable.FixRow</A>&gt; fixRows = Lists.newArrayList();
 <A NAME="252"></A>        Map&lt;String, String&gt; map = Maps.newHashMap();
 <A NAME="253"></A>        map.put(<FONT ID="StringLiteral">"col1"</FONT>, <FONT ID="StringLiteral">"val1"</FONT>);
 <A NAME="254"></A>        map.put(<FONT ID="StringLiteral">"col2"</FONT>, <FONT ID="StringLiteral">"val2"</FONT>);
@@ -278,18 +278,18 @@
 <A NAME="261"></A>        map3.put(<FONT ID="StringLiteral">"col1"</FONT>, <FONT ID="StringLiteral">"val31"</FONT>);
 <A NAME="262"></A>        map3.put(<FONT ID="StringLiteral">"col2"</FONT>, <FONT ID="StringLiteral">"val32"</FONT>);
 <A NAME="263"></A>
-<A NAME="264"></A>        <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable.FixRow</A> row1 = <FONT ID="New">new</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable.FixRow</A>(map);
-<A NAME="265"></A>        <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable.FixRow</A> row2 = <FONT ID="New">new</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable.FixRow</A>(map2);
-<A NAME="266"></A>        <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable.FixRow</A> row3 = <FONT ID="New">new</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable.FixRow</A>(map3);
+<A NAME="264"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixTable.java.html">FixTable.FixRow</A> row1 = <FONT ID="New">new</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixTable.java.html">FixTable.FixRow</A>(map);
+<A NAME="265"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixTable.java.html">FixTable.FixRow</A> row2 = <FONT ID="New">new</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixTable.java.html">FixTable.FixRow</A>(map2);
+<A NAME="266"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixTable.java.html">FixTable.FixRow</A> row3 = <FONT ID="New">new</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixTable.java.html">FixTable.FixRow</A>(map3);
 <A NAME="267"></A>        fixRows.add(row1);
 <A NAME="268"></A>        fixRows.add(row2);
 <A NAME="269"></A>        fixRows.add(row3);
 <A NAME="270"></A>
-<A NAME="271"></A>        <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable</A>(Lists.newArrayList(<FONT ID="StringLiteral">"col1"</FONT>, <FONT ID="StringLiteral">"col2"</FONT>), fixRows);
+<A NAME="271"></A>        <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixTable.java.html">FixTable</A>(Lists.newArrayList(<FONT ID="StringLiteral">"col1"</FONT>, <FONT ID="StringLiteral">"col2"</FONT>), fixRows);
 <A NAME="272"></A>    }
 <A NAME="273"></A>
-<A NAME="274"></A>    <FONT ID="Private">private</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable</A> generateFixTableMoreColumns() {
-<A NAME="275"></A>        List&lt;<A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable.FixRow</A>&gt; fixRows = Lists.newArrayList();
+<A NAME="274"></A>    <FONT ID="Private">private</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixTable.java.html">FixTable</A> generateFixTableMoreColumns() {
+<A NAME="275"></A>        List&lt;<A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixTable.java.html">FixTable.FixRow</A>&gt; fixRows = Lists.newArrayList();
 <A NAME="276"></A>        Map&lt;String, String&gt; map = Maps.newHashMap();
 <A NAME="277"></A>        map.put(<FONT ID="StringLiteral">"col1"</FONT>, <FONT ID="StringLiteral">"val1"</FONT>);
 <A NAME="278"></A>        map.put(<FONT ID="StringLiteral">"col2"</FONT>, <FONT ID="StringLiteral">"val2"</FONT>);
@@ -300,15 +300,15 @@
 <A NAME="283"></A>        map2.put(<FONT ID="StringLiteral">"col2"</FONT>, <FONT ID="StringLiteral">"val22"</FONT>);
 <A NAME="284"></A>        map2.put(<FONT ID="StringLiteral">"col3"</FONT>, <FONT ID="StringLiteral">"val22"</FONT>);
 <A NAME="285"></A>
-<A NAME="286"></A>        <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable.FixRow</A> row1 = <FONT ID="New">new</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable.FixRow</A>(map);
-<A NAME="287"></A>        <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable.FixRow</A> row2 = <FONT ID="New">new</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable.FixRow</A>(map2);
+<A NAME="286"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixTable.java.html">FixTable.FixRow</A> row1 = <FONT ID="New">new</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixTable.java.html">FixTable.FixRow</A>(map);
+<A NAME="287"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixTable.java.html">FixTable.FixRow</A> row2 = <FONT ID="New">new</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixTable.java.html">FixTable.FixRow</A>(map2);
 <A NAME="288"></A>        fixRows.add(row1);
 <A NAME="289"></A>        fixRows.add(row2);
-<A NAME="290"></A>        <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable</A>(Lists.newArrayList(<FONT ID="StringLiteral">"col1"</FONT>, <FONT ID="StringLiteral">"col2"</FONT>, <FONT ID="StringLiteral">"col3"</FONT>), fixRows);
+<A NAME="290"></A>        <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixTable.java.html">FixTable</A>(Lists.newArrayList(<FONT ID="StringLiteral">"col1"</FONT>, <FONT ID="StringLiteral">"col2"</FONT>, <FONT ID="StringLiteral">"col3"</FONT>), fixRows);
 <A NAME="291"></A>    }
 <A NAME="292"></A>
-<A NAME="293"></A>    <FONT ID="Private">private</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable</A> generateFixTableDifferentOrder() {
-<A NAME="294"></A>        List&lt;<A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable.FixRow</A>&gt; fixRows = Lists.newArrayList();
+<A NAME="293"></A>    <FONT ID="Private">private</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixTable.java.html">FixTable</A> generateFixTableDifferentOrder() {
+<A NAME="294"></A>        List&lt;<A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixTable.java.html">FixTable.FixRow</A>&gt; fixRows = Lists.newArrayList();
 <A NAME="295"></A>        Map&lt;String, String&gt; map = Maps.newHashMap();
 <A NAME="296"></A>        map.put(<FONT ID="StringLiteral">"col1"</FONT>, <FONT ID="StringLiteral">"val1"</FONT>);
 <A NAME="297"></A>        map.put(<FONT ID="StringLiteral">"col2"</FONT>, <FONT ID="StringLiteral">"val2"</FONT>);
@@ -317,11 +317,11 @@
 <A NAME="300"></A>        map2.put(<FONT ID="StringLiteral">"col1"</FONT>, <FONT ID="StringLiteral">"val11"</FONT>);
 <A NAME="301"></A>        map2.put(<FONT ID="StringLiteral">"col2"</FONT>, <FONT ID="StringLiteral">"val22"</FONT>);
 <A NAME="302"></A>
-<A NAME="303"></A>        <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable.FixRow</A> row1 = <FONT ID="New">new</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable.FixRow</A>(map);
-<A NAME="304"></A>        <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable.FixRow</A> row2 = <FONT ID="New">new</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable.FixRow</A>(map2);
+<A NAME="303"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixTable.java.html">FixTable.FixRow</A> row1 = <FONT ID="New">new</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixTable.java.html">FixTable.FixRow</A>(map);
+<A NAME="304"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixTable.java.html">FixTable.FixRow</A> row2 = <FONT ID="New">new</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixTable.java.html">FixTable.FixRow</A>(map2);
 <A NAME="305"></A>        fixRows.add(row1);
 <A NAME="306"></A>        fixRows.add(row2);
-<A NAME="307"></A>        <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable</A>(Lists.newArrayList(<FONT ID="StringLiteral">"col2"</FONT>, <FONT ID="StringLiteral">"col1"</FONT>), fixRows);
+<A NAME="307"></A>        <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixTable.java.html">FixTable</A>(Lists.newArrayList(<FONT ID="StringLiteral">"col2"</FONT>, <FONT ID="StringLiteral">"col1"</FONT>), fixRows);
 <A NAME="308"></A>    }
 <A NAME="309"></A>
 <A NAME="310"></A>}

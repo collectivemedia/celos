@@ -28,31 +28,47 @@
 <A NAME="11"></A>
 <A NAME="12"></A>    <FONT ID="Private">private</FONT> <A HREF="../../../../com/collective/celos/JettyServer.java.html">JettyServer</A> server = <FONT ID="New">new</FONT> <A HREF="../../../../com/collective/celos/JettyServer.java.html">JettyServer</A>();
 <A NAME="13"></A>
-<A NAME="14"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> startServer(<FONT ID="Int">int</FONT> port, Map&lt;String, String&gt; jsVariables, File workflowsDir, File defaultsDir, File stateDatabase) <FONT ID="Throws">throws</FONT> Exception {
-<A NAME="15"></A>
-<A NAME="16"></A>        validateDirExists(workflowsDir);
-<A NAME="17"></A>        validateDirExists(defaultsDir);
-<A NAME="18"></A>        validateDirExists(stateDatabase);
-<A NAME="19"></A>
-<A NAME="20"></A>        server.start(port);
-<A NAME="21"></A>        Map&lt;String, Object&gt; attributes = ImmutableMap.&lt;String, Object&gt;of(Constants.ADDITIONAL_JS_VARIABLES, jsVariables);
-<A NAME="22"></A>        Map&lt;String, String&gt; initParams = ImmutableMap.of(Constants.WORKFLOW_CONFIGURATION_PATH_ATTR, workflowsDir.getAbsolutePath(),
-<A NAME="23"></A>                Constants.DEFAULTS_CONFIGURATION_PATH_ATTR, defaultsDir.getAbsolutePath(),
-<A NAME="24"></A>                Constants.STATE_DATABASE_PATH_ATTR, stateDatabase.getAbsolutePath());
-<A NAME="25"></A>
-<A NAME="26"></A>        server.setupContext(attributes, initParams);
-<A NAME="27"></A>    }
-<A NAME="28"></A>
-<A NAME="29"></A>    <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> validateDirExists(File dir) {
-<A NAME="30"></A>        <FONT ID="If">if</FONT> (dir == <FONT ID="Null">null</FONT> || !dir.isDirectory() || !dir.exists()) {
-<A NAME="31"></A>            <FONT ID="Throw">throw</FONT> <FONT ID="New">new</FONT> IllegalStateException(<FONT ID="StringLiteral">"Cannot start server: "</FONT> + dir + <FONT ID="StringLiteral">" doesnt exist"</FONT>);
-<A NAME="32"></A>        }
-<A NAME="33"></A>    }
-<A NAME="34"></A>
-<A NAME="35"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> stopServer() <FONT ID="Throws">throws</FONT> Exception {
-<A NAME="36"></A>        server.stop();
-<A NAME="37"></A>    }
-<A NAME="38"></A>
-<A NAME="39"></A>}</pre>
+<A NAME="14"></A>    <FONT ID="Public">public</FONT> <FONT ID="Int">int</FONT> startServer(Map&lt;String, String&gt; jsVariables, File workflowsDir, File defaultsDir, File stateDatabase) <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="15"></A>        validateDirExists(workflowsDir);
+<A NAME="16"></A>        validateDirExists(defaultsDir);
+<A NAME="17"></A>        validateDirExists(stateDatabase);
+<A NAME="18"></A>
+<A NAME="19"></A>        <FONT ID="Int">int</FONT> port = server.start();
+<A NAME="20"></A>
+<A NAME="21"></A>        setupContext(jsVariables, workflowsDir, defaultsDir, stateDatabase);
+<A NAME="22"></A>        <FONT ID="Return">return</FONT> port;
+<A NAME="23"></A>    }
+<A NAME="24"></A>
+<A NAME="25"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> startServer(<FONT ID="Int">int</FONT> port, Map&lt;String, String&gt; jsVariables, File workflowsDir, File defaultsDir, File stateDatabase) <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="26"></A>
+<A NAME="27"></A>        validateDirExists(workflowsDir);
+<A NAME="28"></A>        validateDirExists(defaultsDir);
+<A NAME="29"></A>        validateDirExists(stateDatabase);
+<A NAME="30"></A>
+<A NAME="31"></A>        server.start(port);
+<A NAME="32"></A>
+<A NAME="33"></A>        setupContext(jsVariables, workflowsDir, defaultsDir, stateDatabase);
+<A NAME="34"></A>    }
+<A NAME="35"></A>
+<A NAME="36"></A>    <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> setupContext(Map&lt;String, String&gt; jsVariables, File workflowsDir, File defaultsDir, File stateDatabase) {
+<A NAME="37"></A>        Map&lt;String, Object&gt; attributes = ImmutableMap.&lt;String, Object&gt;of(Constants.ADDITIONAL_JS_VARIABLES, jsVariables);
+<A NAME="38"></A>        Map&lt;String, String&gt; initParams = ImmutableMap.of(Constants.WORKFLOW_CONFIGURATION_PATH_ATTR, workflowsDir.getAbsolutePath(),
+<A NAME="39"></A>                Constants.DEFAULTS_CONFIGURATION_PATH_ATTR, defaultsDir.getAbsolutePath(),
+<A NAME="40"></A>                Constants.STATE_DATABASE_PATH_ATTR, stateDatabase.getAbsolutePath());
+<A NAME="41"></A>
+<A NAME="42"></A>        server.setupContext(attributes, initParams);
+<A NAME="43"></A>    }
+<A NAME="44"></A>
+<A NAME="45"></A>    <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> validateDirExists(File dir) {
+<A NAME="46"></A>        <FONT ID="If">if</FONT> (dir == <FONT ID="Null">null</FONT> || !dir.isDirectory() || !dir.exists()) {
+<A NAME="47"></A>            <FONT ID="Throw">throw</FONT> <FONT ID="New">new</FONT> IllegalStateException(<FONT ID="StringLiteral">"Cannot start server: "</FONT> + dir + <FONT ID="StringLiteral">" doesnt exist"</FONT>);
+<A NAME="48"></A>        }
+<A NAME="49"></A>    }
+<A NAME="50"></A>
+<A NAME="51"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> stopServer() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="52"></A>        server.stop();
+<A NAME="53"></A>    }
+<A NAME="54"></A>
+<A NAME="55"></A>}</pre>
 </BODY>
 </HTML>

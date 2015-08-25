@@ -1,0 +1,88 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../../../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.ci.testing.fixtures.create.OutputFixTableFromHiveCreator (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">OutputFixTableFromHiveCreator.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos.ci.testing.fixtures.create;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../../com/collective/celos/DatabaseName.java.html">com.collective.celos.DatabaseName</A>;
+<A NAME="4"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../../com/collective/celos/ci/mode/test/TestRun.java.html">com.collective.celos.ci.mode.test.TestRun</A>;
+<A NAME="5"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixTable.java.html">com.collective.celos.ci.testing.structure.fixobject.FixTable</A>;
+<A NAME="6"></A><FONT ID="Import">import</FONT> com.google.common.collect.Lists;
+<A NAME="7"></A>
+<A NAME="8"></A><FONT ID="Import">import</FONT> java.sql.*;
+<A NAME="9"></A><FONT ID="Import">import</FONT> java.util.HashMap;
+<A NAME="10"></A><FONT ID="Import">import</FONT> java.util.List;
+<A NAME="11"></A><FONT ID="Import">import</FONT> java.util.Map;
+<A NAME="12"></A>
+<A NAME="13"></A><FONT ID="FormalComment">/**
+<A NAME="14"></A> * Created by akonopko on 22.01.15.
+<A NAME="15"></A> */</FONT>
+<A NAME="16"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> OutputFixTableFromHiveCreator <FONT ID="Implements">implements</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">FixObjectCreator</A>&lt;<A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixTable.java.html">FixTable</A>&gt; {
+<A NAME="17"></A>
+<A NAME="18"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> <FONT ID="Static">static</FONT> String READ_TABLE_DATA_SQL = <FONT ID="StringLiteral">"SELECT * FROM %s.%s"</FONT>;
+<A NAME="19"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String DESCRIPTION = <FONT ID="StringLiteral">"Hive table %s.%s"</FONT>;
+<A NAME="20"></A>
+<A NAME="21"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> <A HREF="../../../../../../../com/collective/celos/DatabaseName.java.html">DatabaseName</A> databaseName;
+<A NAME="22"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> String tableName;
+<A NAME="23"></A>
+<A NAME="24"></A>    <FONT ID="Public">public</FONT> OutputFixTableFromHiveCreator(<A HREF="../../../../../../../com/collective/celos/DatabaseName.java.html">DatabaseName</A> databaseName, String tableName) {
+<A NAME="25"></A>        <FONT ID="This">this</FONT>.databaseName = databaseName;
+<A NAME="26"></A>        <FONT ID="This">this</FONT>.tableName = tableName;
+<A NAME="27"></A>    }
+<A NAME="28"></A>
+<A NAME="29"></A>    @Override
+<A NAME="30"></A>    <FONT ID="Public">public</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixTable.java.html">FixTable</A> create(<A HREF="../../../../../../../com/collective/celos/ci/mode/test/TestRun.java.html">TestRun</A> testRun) <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="31"></A>        Connection connection = getConnection(testRun);
+<A NAME="32"></A>        Statement statement = connection.createStatement();
+<A NAME="33"></A>        <FONT ID="Return">return</FONT> createFixTable(testRun, statement);
+<A NAME="34"></A>    }
+<A NAME="35"></A>
+<A NAME="36"></A>    <FONT ID="Private">private</FONT> Connection getConnection(<A HREF="../../../../../../../com/collective/celos/ci/mode/test/TestRun.java.html">TestRun</A> testRun) <FONT ID="Throws">throws</FONT> SQLException {
+<A NAME="37"></A>        <FONT ID="Return">return</FONT> DriverManager.getConnection(testRun.getCiContext().getTarget().getHiveJdbc().toString());
+<A NAME="38"></A>    }
+<A NAME="39"></A>
+<A NAME="40"></A>
+<A NAME="41"></A>    <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixTable.java.html">FixTable</A> createFixTable(<A HREF="../../../../../../../com/collective/celos/ci/mode/test/TestRun.java.html">TestRun</A> testRun, Statement statement) <FONT ID="Throws">throws</FONT> SQLException {
+<A NAME="42"></A>
+<A NAME="43"></A>        String augmentedDbData = databaseName.getMockedName(testRun.getTestUUID());
+<A NAME="44"></A>        String query = String.format(READ_TABLE_DATA_SQL, augmentedDbData, tableName);
+<A NAME="45"></A>        ResultSet rs = statement.executeQuery(query);
+<A NAME="46"></A>
+<A NAME="47"></A>        List&lt;String&gt; columnNames = Lists.newArrayList();
+<A NAME="48"></A>        <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> i=<FONT ID="IntegerLiteral">0</FONT>; i &lt; rs.getMetaData().getColumnCount(); i++) {
+<A NAME="49"></A>            columnNames.add(rs.getMetaData().getColumnName(i + <FONT ID="IntegerLiteral">1</FONT>));
+<A NAME="50"></A>        }
+<A NAME="51"></A>
+<A NAME="52"></A>        List&lt;<A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixTable.java.html">FixTable.FixRow</A>&gt; fixRows = Lists.newArrayList();
+<A NAME="53"></A>        <FONT ID="While">while</FONT> (rs.next()) {
+<A NAME="54"></A>            Map&lt;String, String&gt; rowData = <FONT ID="New">new</FONT> HashMap&lt;String, String&gt;();
+<A NAME="55"></A>            <FONT ID="For">for</FONT> (String colName : columnNames) {
+<A NAME="56"></A>                rowData.put(colName, rs.getString(colName));
+<A NAME="57"></A>            }
+<A NAME="58"></A>            fixRows.add(<FONT ID="New">new</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixTable.java.html">FixTable.FixRow</A>(rowData));
+<A NAME="59"></A>        }
+<A NAME="60"></A>
+<A NAME="61"></A>        <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixTable.java.html">FixTable</A>(columnNames, fixRows);
+<A NAME="62"></A>    }
+<A NAME="63"></A>
+<A NAME="64"></A>    @Override
+<A NAME="65"></A>    <FONT ID="Public">public</FONT> String getDescription(<A HREF="../../../../../../../com/collective/celos/ci/mode/test/TestRun.java.html">TestRun</A> testRun) {
+<A NAME="66"></A>        <FONT ID="Return">return</FONT> String.format(DESCRIPTION, databaseName.getMockedName(testRun.getTestUUID()), tableName);
+<A NAME="67"></A>    }
+<A NAME="68"></A>}
+<A NAME="69"></A></pre>
+</BODY>
+</HTML>

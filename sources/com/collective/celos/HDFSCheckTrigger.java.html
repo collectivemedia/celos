@@ -1,0 +1,93 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.HDFSCheckTrigger (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">HDFSCheckTrigger.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> org.apache.hadoop.conf.Configuration;
+<A NAME="4"></A><FONT ID="Import">import</FONT> org.apache.hadoop.fs.FileSystem;
+<A NAME="5"></A><FONT ID="Import">import</FONT> org.apache.hadoop.fs.Path;
+<A NAME="6"></A><FONT ID="Import">import</FONT> org.apache.log4j.Logger;
+<A NAME="7"></A>
+<A NAME="8"></A><FONT ID="Import">import</FONT> java.io.FileNotFoundException;
+<A NAME="9"></A><FONT ID="Import">import</FONT> java.io.InputStream;
+<A NAME="10"></A><FONT ID="Import">import</FONT> java.net.URI;
+<A NAME="11"></A><FONT ID="Import">import</FONT> java.util.HashMap;
+<A NAME="12"></A><FONT ID="Import">import</FONT> java.util.Map;
+<A NAME="13"></A>
+<A NAME="14"></A><FONT ID="FormalComment">/**
+<A NAME="15"></A> * Check in HDFS for a data dependency.
+<A NAME="16"></A> */</FONT>
+<A NAME="17"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> HDFSCheckTrigger <FONT ID="Implements">implements</FONT> <A HREF="../../../com/collective/celos/Trigger.java.html">Trigger</A> {
+<A NAME="18"></A>
+<A NAME="19"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> Map&lt;String, FileSystem&gt; cachedFSs = <FONT ID="New">new</FONT> HashMap&lt;String, FileSystem&gt;();
+<A NAME="20"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> <A HREF="../../../com/collective/celos/ScheduledTimeFormatter.java.html">ScheduledTimeFormatter</A> formatter = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTimeFormatter.java.html">ScheduledTimeFormatter</A>();
+<A NAME="21"></A>
+<A NAME="22"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> Logger LOGGER = Logger.getLogger(<A HREF="../../../com/collective/celos/HDFSCheckTrigger.java.html">HDFSCheckTrigger</A>.<FONT ID="Class">class</FONT>);
+<A NAME="23"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> FileSystem fs;
+<A NAME="24"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> String rawPathString;
+<A NAME="25"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> String fsString;
+<A NAME="26"></A>
+<A NAME="27"></A>    <FONT ID="Public">public</FONT> HDFSCheckTrigger(String rawPathString, String fsString) <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="28"></A>        <FONT ID="This">this</FONT>.rawPathString = Util.requireNonNull(rawPathString);
+<A NAME="29"></A>        <FONT ID="This">this</FONT>.fsString = Util.requireNonNull(fsString);
+<A NAME="30"></A>
+<A NAME="31"></A>        <FONT ID="If">if</FONT> (cachedFSs.containsKey(fsString)) {
+<A NAME="32"></A>            <FONT ID="This">this</FONT>.fs = cachedFSs.get(fsString);
+<A NAME="33"></A>        } <FONT ID="Else">else</FONT> {
+<A NAME="34"></A>            Configuration conf = <FONT ID="New">new</FONT> Configuration();
+<A NAME="35"></A>            <FONT ID="SingleLineComment">//required due http://stackoverflow.com/questions/17265002/hadoop-no-filesystem-for-scheme-file
+<A NAME="36"></A></FONT>            conf.set(<FONT ID="StringLiteral">"fs.hdfs.impl"</FONT>, org.apache.hadoop.hdfs.DistributedFileSystem.<FONT ID="Class">class</FONT>.getName());
+<A NAME="37"></A>            conf.set(<FONT ID="StringLiteral">"fs.file.impl"</FONT>, org.apache.hadoop.fs.LocalFileSystem.<FONT ID="Class">class</FONT>.getName());
+<A NAME="38"></A>
+<A NAME="39"></A>            addFileToConfiguration(conf, <FONT ID="StringLiteral">"hdfs-site.xml"</FONT>);
+<A NAME="40"></A>            addFileToConfiguration(conf, <FONT ID="StringLiteral">"core-site.xml"</FONT>);
+<A NAME="41"></A>
+<A NAME="42"></A>            <FONT ID="This">this</FONT>.fs = FileSystem.get(<FONT ID="New">new</FONT> URI(fsString), conf);
+<A NAME="43"></A>            cachedFSs.put(fsString, <FONT ID="This">this</FONT>.fs);
+<A NAME="44"></A>        }
+<A NAME="45"></A>    }
+<A NAME="46"></A>
+<A NAME="47"></A>    <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> addFileToConfiguration(Configuration conf, String fileName) <FONT ID="Throws">throws</FONT> FileNotFoundException {
+<A NAME="48"></A>        InputStream fileStream = getClass().getClassLoader().getResourceAsStream(fileName);
+<A NAME="49"></A>        <FONT ID="If">if</FONT> (fileStream != <FONT ID="Null">null</FONT>) {
+<A NAME="50"></A>            conf.addResource(fileStream);
+<A NAME="51"></A>        }
+<A NAME="52"></A>    }
+<A NAME="53"></A>
+<A NAME="54"></A>    @Override
+<A NAME="55"></A>    <FONT ID="Public">public</FONT> <FONT ID="Boolean">boolean</FONT> isDataAvailable(<A HREF="../../../com/collective/celos/Scheduler.java.html">Scheduler</A> scheduler, <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> now, <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> t) <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="56"></A>        Path path = <FONT ID="New">new</FONT> Path(formatter.replaceTimeTokens(getRawPathString(), t));
+<A NAME="57"></A>        LOGGER.info(<FONT ID="StringLiteral">"Checking HDFS path: "</FONT> + path);
+<A NAME="58"></A>        <FONT ID="Return">return</FONT> getFs().exists(path);
+<A NAME="59"></A>    }
+<A NAME="60"></A>
+<A NAME="61"></A>
+<A NAME="62"></A>    <FONT ID="Public">public</FONT> String getRawPathString() {
+<A NAME="63"></A>        <FONT ID="Return">return</FONT> rawPathString;
+<A NAME="64"></A>    }
+<A NAME="65"></A>
+<A NAME="66"></A>    <FONT ID="Public">public</FONT> String getFsString() {
+<A NAME="67"></A>        <FONT ID="Return">return</FONT> fsString;
+<A NAME="68"></A>    }
+<A NAME="69"></A>
+<A NAME="70"></A>    <FONT ID="Public">public</FONT> FileSystem getFs() {
+<A NAME="71"></A>        <FONT ID="Return">return</FONT> fs;
+<A NAME="72"></A>    }
+<A NAME="73"></A>}
+<A NAME="74"></A></pre>
+</BODY>
+</HTML>

@@ -50,7 +50,7 @@
 <A NAME="33"></A>
 <A NAME="34"></A>    @Test
 <A NAME="35"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testTriggerAddsSomething() <FONT ID="Throws">throws</FONT> Exception {
-<A NAME="36"></A>        <A HREF="../../../com/collective/celos/Trigger.java.html">Trigger</A> dependent = <FONT ID="New">new</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/HDFSCheckTrigger.html">HDFSCheckTrigger</A>(tempFolder.getRoot().getPath() + <FONT ID="StringLiteral">"/${year}-${month}-${day}/${hour}00/_READY"</FONT>,  <FONT ID="StringLiteral">"file:///"</FONT>);
+<A NAME="36"></A>        <A HREF="../../../com/collective/celos/Trigger.java.html">Trigger</A> dependent = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/HDFSCheckTrigger.java.html">HDFSCheckTrigger</A>(tempFolder.getRoot().getPath() + <FONT ID="StringLiteral">"/${year}-${month}-${day}/${hour}00/_READY"</FONT>,  <FONT ID="StringLiteral">"file:///"</FONT>);
 <A NAME="37"></A>
 <A NAME="38"></A>        <A HREF="../../../com/collective/celos/Trigger.java.html">Trigger</A> offsetTriggerPlus = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/OffsetTrigger.java.html">OffsetTrigger</A>(<FONT ID="IntegerLiteral">60</FONT>*<FONT ID="IntegerLiteral">60</FONT>, dependent);
 <A NAME="39"></A>        assertTrue(offsetTriggerPlus.isDataAvailable(scheduler, ScheduledTime.now(), <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-11-22T14:00Z"</FONT>)));
@@ -59,7 +59,7 @@
 <A NAME="42"></A>
 <A NAME="43"></A>    @Test
 <A NAME="44"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testTriggerDoesNothing() <FONT ID="Throws">throws</FONT> Exception {
-<A NAME="45"></A>        <A HREF="../../../com/collective/celos/Trigger.java.html">Trigger</A> dependent = <FONT ID="New">new</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/HDFSCheckTrigger.html">HDFSCheckTrigger</A>(tempFolder.getRoot().getPath() + <FONT ID="StringLiteral">"/${year}-${month}-${day}/${hour}00/_READY"</FONT>,  <FONT ID="StringLiteral">"file:///"</FONT>);
+<A NAME="45"></A>        <A HREF="../../../com/collective/celos/Trigger.java.html">Trigger</A> dependent = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/HDFSCheckTrigger.java.html">HDFSCheckTrigger</A>(tempFolder.getRoot().getPath() + <FONT ID="StringLiteral">"/${year}-${month}-${day}/${hour}00/_READY"</FONT>,  <FONT ID="StringLiteral">"file:///"</FONT>);
 <A NAME="46"></A>
 <A NAME="47"></A>        <A HREF="../../../com/collective/celos/Trigger.java.html">Trigger</A> offsetTriggerPlus = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/OffsetTrigger.java.html">OffsetTrigger</A>(<FONT ID="IntegerLiteral">0</FONT>, dependent);
 <A NAME="48"></A>        assertTrue(offsetTriggerPlus.isDataAvailable(scheduler, ScheduledTime.now(), <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-11-22T15:00Z"</FONT>)));
@@ -68,7 +68,7 @@
 <A NAME="51"></A>
 <A NAME="52"></A>    @Test
 <A NAME="53"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testTriggerSubsSomething() <FONT ID="Throws">throws</FONT> Exception {
-<A NAME="54"></A>        <A HREF="../../../com/collective/celos/Trigger.java.html">Trigger</A> dependent = <FONT ID="New">new</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/HDFSCheckTrigger.html">HDFSCheckTrigger</A>(tempFolder.getRoot().getPath() + <FONT ID="StringLiteral">"/${year}-${month}-${day}/${hour}00/_READY"</FONT>,  <FONT ID="StringLiteral">"file:///"</FONT>);
+<A NAME="54"></A>        <A HREF="../../../com/collective/celos/Trigger.java.html">Trigger</A> dependent = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/HDFSCheckTrigger.java.html">HDFSCheckTrigger</A>(tempFolder.getRoot().getPath() + <FONT ID="StringLiteral">"/${year}-${month}-${day}/${hour}00/_READY"</FONT>,  <FONT ID="StringLiteral">"file:///"</FONT>);
 <A NAME="55"></A>
 <A NAME="56"></A>        <A HREF="../../../com/collective/celos/Trigger.java.html">Trigger</A> offsetTriggerMinus = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/OffsetTrigger.java.html">OffsetTrigger</A>(-<FONT ID="IntegerLiteral">60</FONT>*<FONT ID="IntegerLiteral">60</FONT>, dependent);
 <A NAME="57"></A>        assertTrue(offsetTriggerMinus.isDataAvailable(scheduler, ScheduledTime.now(), <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-11-22T16:00Z"</FONT>)));

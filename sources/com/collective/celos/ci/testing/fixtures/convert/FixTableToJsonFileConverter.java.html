@@ -20,7 +20,7 @@
 <A NAME="3"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../../com/collective/celos/ci/mode/test/TestRun.java.html">com.collective.celos.ci.mode.test.TestRun</A>;
 <A NAME="4"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/AbstractFixObjectConverter.java.html">com.collective.celos.ci.testing.structure.fixobject.AbstractFixObjectConverter</A>;
 <A NAME="5"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFile.java.html">com.collective.celos.ci.testing.structure.fixobject.FixFile</A>;
-<A NAME="6"></A><FONT ID="Import">import</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">com.collective.celos.ci.testing.structure.fixobject.FixTable</A>;
+<A NAME="6"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixTable.java.html">com.collective.celos.ci.testing.structure.fixobject.FixTable</A>;
 <A NAME="7"></A><FONT ID="Import">import</FONT> com.google.common.collect.Lists;
 <A NAME="8"></A><FONT ID="Import">import</FONT> com.google.gson.Gson;
 <A NAME="9"></A><FONT ID="Import">import</FONT> com.google.gson.GsonBuilder;
@@ -32,14 +32,14 @@
 <A NAME="15"></A><FONT ID="FormalComment">/**
 <A NAME="16"></A> * Created by akonopko on 22.01.15.
 <A NAME="17"></A> */</FONT>
-<A NAME="18"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> FixTableToJsonFileConverter <FONT ID="Extends">extends</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/AbstractFixObjectConverter.java.html">AbstractFixObjectConverter</A>&lt;<A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable</A>,<A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFile.java.html">FixFile</A>&gt; {
+<A NAME="18"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> FixTableToJsonFileConverter <FONT ID="Extends">extends</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/AbstractFixObjectConverter.java.html">AbstractFixObjectConverter</A>&lt;<A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixTable.java.html">FixTable</A>,<A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFile.java.html">FixFile</A>&gt; {
 <A NAME="19"></A>
 <A NAME="20"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> Gson gson = <FONT ID="New">new</FONT> GsonBuilder().create();
 <A NAME="21"></A>
 <A NAME="22"></A>    @Override
-<A NAME="23"></A>    <FONT ID="Public">public</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFile.java.html">FixFile</A> convert(<A HREF="../../../../../../../com/collective/celos/ci/mode/test/TestRun.java.html">TestRun</A> tr, <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable</A> ff) <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="23"></A>    <FONT ID="Public">public</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFile.java.html">FixFile</A> convert(<A HREF="../../../../../../../com/collective/celos/ci/mode/test/TestRun.java.html">TestRun</A> tr, <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixTable.java.html">FixTable</A> ff) <FONT ID="Throws">throws</FONT> Exception {
 <A NAME="24"></A>        List&lt;String&gt; jsonStrs = Lists.newArrayList();
-<A NAME="25"></A>        <FONT ID="For">for</FONT> (<A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/structure/fixobject/FixTable.html">FixTable.FixRow</A> fr : ff.getRows()) {
+<A NAME="25"></A>        <FONT ID="For">for</FONT> (<A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixTable.java.html">FixTable.FixRow</A> fr : ff.getRows()) {
 <A NAME="26"></A>            jsonStrs.add(gson.toJson(fr.getCells()));
 <A NAME="27"></A>        }
 <A NAME="28"></A>        <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFile.java.html">FixFile</A>(IOUtils.toInputStream(StringUtils.join(jsonStrs, <FONT ID="StringLiteral">"\n"</FONT>)));

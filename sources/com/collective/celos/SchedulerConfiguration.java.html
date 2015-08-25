@@ -41,7 +41,7 @@
 <A NAME="24"></A>    }
 <A NAME="25"></A>
 <A NAME="26"></A>    <FONT ID="Public">public</FONT> <A HREF="../../../com/collective/celos/Scheduler.java.html">Scheduler</A> makeDefaultScheduler() <FONT ID="Throws">throws</FONT> Exception {
-<A NAME="27"></A>        <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/WorkflowConfiguration.html">WorkflowConfiguration</A> config = getWorkflowConfigurationParser().getWorkflowConfiguration();
+<A NAME="27"></A>        <A HREF="../../../com/collective/celos/WorkflowConfiguration.java.html">WorkflowConfiguration</A> config = getWorkflowConfigurationParser().getWorkflowConfiguration();
 <A NAME="28"></A>        <A HREF="../../../com/collective/celos/StateDatabase.java.html">StateDatabase</A> db = makeDefaultStateDatabase();
 <A NAME="29"></A>        <FONT ID="Int">int</FONT> slidingWindowHours = <FONT ID="IntegerLiteral">24</FONT> * SLIDING_WINDOW_DAYS;
 <A NAME="30"></A>        <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/Scheduler.java.html">Scheduler</A>(config, db, slidingWindowHours);

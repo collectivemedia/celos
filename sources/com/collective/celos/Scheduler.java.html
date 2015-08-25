@@ -28,12 +28,12 @@
 <A NAME="11"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> Scheduler {
 <A NAME="12"></A>
 <A NAME="13"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> <FONT ID="Int">int</FONT> slidingWindowHours;
-<A NAME="14"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/WorkflowConfiguration.html">WorkflowConfiguration</A> configuration;
+<A NAME="14"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> <A HREF="../../../com/collective/celos/WorkflowConfiguration.java.html">WorkflowConfiguration</A> configuration;
 <A NAME="15"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> <A HREF="../../../com/collective/celos/StateDatabase.java.html">StateDatabase</A> database;
 <A NAME="16"></A>
 <A NAME="17"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> Logger LOGGER = Logger.getLogger(<A HREF="../../../com/collective/celos/Scheduler.java.html">Scheduler</A>.<FONT ID="Class">class</FONT>);
 <A NAME="18"></A>
-<A NAME="19"></A>    <FONT ID="Public">public</FONT> Scheduler(<A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/WorkflowConfiguration.html">WorkflowConfiguration</A> configuration, <A HREF="../../../com/collective/celos/StateDatabase.java.html">StateDatabase</A> database, <FONT ID="Int">int</FONT> slidingWindowHours) {
+<A NAME="19"></A>    <FONT ID="Public">public</FONT> Scheduler(<A HREF="../../../com/collective/celos/WorkflowConfiguration.java.html">WorkflowConfiguration</A> configuration, <A HREF="../../../com/collective/celos/StateDatabase.java.html">StateDatabase</A> database, <FONT ID="Int">int</FONT> slidingWindowHours) {
 <A NAME="20"></A>        <FONT ID="If">if</FONT> (slidingWindowHours &lt;= <FONT ID="IntegerLiteral">0</FONT>) {
 <A NAME="21"></A>            <FONT ID="Throw">throw</FONT> <FONT ID="New">new</FONT> IllegalArgumentException(<FONT ID="StringLiteral">"Sliding window hours must greater then zero."</FONT>);
 <A NAME="22"></A>        }
@@ -199,7 +199,7 @@
 <A NAME="182"></A>        <FONT ID="Return">return</FONT> slidingWindowHours;
 <A NAME="183"></A>    }
 <A NAME="184"></A>
-<A NAME="185"></A>    <FONT ID="Public">public</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/WorkflowConfiguration.html">WorkflowConfiguration</A> getWorkflowConfiguration() {
+<A NAME="185"></A>    <FONT ID="Public">public</FONT> <A HREF="../../../com/collective/celos/WorkflowConfiguration.java.html">WorkflowConfiguration</A> getWorkflowConfiguration() {
 <A NAME="186"></A>        <FONT ID="Return">return</FONT> configuration;
 <A NAME="187"></A>    }
 <A NAME="188"></A>

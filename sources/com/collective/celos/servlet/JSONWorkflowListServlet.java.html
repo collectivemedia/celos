@@ -19,7 +19,7 @@
 <A NAME="2"></A>
 <A NAME="3"></A><FONT ID="Import">import</FONT> <A HREF="../../../../com/collective/celos/Scheduler.java.html">com.collective.celos.Scheduler</A>;
 <A NAME="4"></A><FONT ID="Import">import</FONT> <A HREF="../../../../com/collective/celos/Workflow.java.html">com.collective.celos.Workflow</A>;
-<A NAME="5"></A><FONT ID="Import">import</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/WorkflowConfiguration.html">com.collective.celos.WorkflowConfiguration</A>;
+<A NAME="5"></A><FONT ID="Import">import</FONT> <A HREF="../../../../com/collective/celos/WorkflowConfiguration.java.html">com.collective.celos.WorkflowConfiguration</A>;
 <A NAME="6"></A><FONT ID="Import">import</FONT> com.fasterxml.jackson.databind.node.ArrayNode;
 <A NAME="7"></A><FONT ID="Import">import</FONT> com.fasterxml.jackson.databind.node.ObjectNode;
 <A NAME="8"></A>
@@ -33,7 +33,7 @@
 <A NAME="16"></A> * Returns list of IDs of configured workflows as JSON.
 <A NAME="17"></A> *
 <A NAME="18"></A> * GET /workflow-list
-<A NAME="19"></A> * ----
+<A NAME="19"></A> * ==
 <A NAME="20"></A> * {
 <A NAME="21"></A> *   "ids": [ "workflow-1", "workflow-2" ]
 <A NAME="22"></A> * }
@@ -44,7 +44,7 @@
 <A NAME="27"></A>    <FONT ID="Protected">protected</FONT> <FONT ID="Void">void</FONT> doGet(HttpServletRequest req, HttpServletResponse res) <FONT ID="Throws">throws</FONT> ServletException {
 <A NAME="28"></A>        <FONT ID="Try">try</FONT> {
 <A NAME="29"></A>            <A HREF="../../../../com/collective/celos/Scheduler.java.html">Scheduler</A> sch = getOrCreateCachedScheduler();
-<A NAME="30"></A>            <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/WorkflowConfiguration.html">WorkflowConfiguration</A> cfg = sch.getWorkflowConfiguration();
+<A NAME="30"></A>            <A HREF="../../../../com/collective/celos/WorkflowConfiguration.java.html">WorkflowConfiguration</A> cfg = sch.getWorkflowConfiguration();
 <A NAME="31"></A>            ObjectNode object = createJSONObject(cfg);
 <A NAME="32"></A>            writer.writeValue(res.getOutputStream(), object);
 <A NAME="33"></A>        } <FONT ID="Catch">catch</FONT>(Exception e) {
@@ -52,7 +52,7 @@
 <A NAME="35"></A>        }
 <A NAME="36"></A>    }
 <A NAME="37"></A>
-<A NAME="38"></A>    ObjectNode createJSONObject(<A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/WorkflowConfiguration.html">WorkflowConfiguration</A> cfg) {
+<A NAME="38"></A>    ObjectNode createJSONObject(<A HREF="../../../../com/collective/celos/WorkflowConfiguration.java.html">WorkflowConfiguration</A> cfg) {
 <A NAME="39"></A>        <FONT ID="SingleLineComment">// Make sure the IDs are sorted
 <A NAME="40"></A></FONT>        SortedSet&lt;String&gt; ids = <FONT ID="New">new</FONT> TreeSet&lt;String&gt;();
 <A NAME="41"></A>        <FONT ID="For">for</FONT> (<A HREF="../../../../com/collective/celos/Workflow.java.html">Workflow</A> wf : cfg.getWorkflows()) {

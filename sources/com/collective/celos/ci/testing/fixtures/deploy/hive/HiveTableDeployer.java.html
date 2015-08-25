@@ -1,0 +1,244 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../../../../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.ci.testing.fixtures.deploy.hive.HiveTableDeployer (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">HiveTableDeployer.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos.ci.testing.fixtures.deploy.hive;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> au.com.bytecode.opencsv.CSVWriter;
+<A NAME="4"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../../../com/collective/celos/DatabaseName.java.html">com.collective.celos.DatabaseName</A>;
+<A NAME="5"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../../../com/collective/celos/ci/mode/test/TestRun.java.html">com.collective.celos.ci.mode.test.TestRun</A>;
+<A NAME="6"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">com.collective.celos.ci.testing.fixtures.create.FixObjectCreator</A>;
+<A NAME="7"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../../../com/collective/celos/ci/testing/fixtures/deploy/CelosCiDirtyStateException.java.html">com.collective.celos.ci.testing.fixtures.deploy.CelosCiDirtyStateException</A>;
+<A NAME="8"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../../../com/collective/celos/ci/testing/fixtures/deploy/FixtureDeployer.java.html">com.collective.celos.ci.testing.fixtures.deploy.FixtureDeployer</A>;
+<A NAME="9"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFile.java.html">com.collective.celos.ci.testing.structure.fixobject.FixFile</A>;
+<A NAME="10"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixTable.java.html">com.collective.celos.ci.testing.structure.fixobject.FixTable</A>;
+<A NAME="11"></A><FONT ID="Import">import</FONT> com.google.common.collect.Lists;
+<A NAME="12"></A><FONT ID="Import">import</FONT> org.apache.commons.io.IOUtils;
+<A NAME="13"></A><FONT ID="Import">import</FONT> org.apache.commons.lang.StringUtils;
+<A NAME="14"></A><FONT ID="Import">import</FONT> org.apache.hadoop.fs.FSDataOutputStream;
+<A NAME="15"></A><FONT ID="Import">import</FONT> org.apache.hadoop.fs.FileSystem;
+<A NAME="16"></A><FONT ID="Import">import</FONT> org.apache.hadoop.fs.Path;
+<A NAME="17"></A><FONT ID="Import">import</FONT> org.apache.hadoop.fs.permission.FsAction;
+<A NAME="18"></A><FONT ID="Import">import</FONT> org.apache.hadoop.fs.permission.FsPermission;
+<A NAME="19"></A>
+<A NAME="20"></A><FONT ID="Import">import</FONT> java.io.IOException;
+<A NAME="21"></A><FONT ID="Import">import</FONT> java.io.OutputStreamWriter;
+<A NAME="22"></A><FONT ID="Import">import</FONT> java.sql.*;
+<A NAME="23"></A><FONT ID="Import">import</FONT> java.util.List;
+<A NAME="24"></A><FONT ID="Import">import</FONT> java.util.UUID;
+<A NAME="25"></A>
+<A NAME="26"></A><FONT ID="FormalComment">/**
+<A NAME="27"></A> * Created by akonopko on 16.01.15.
+<A NAME="28"></A> */</FONT>
+<A NAME="29"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> HiveTableDeployer <FONT ID="Implements">implements</FONT> <A HREF="../../../../../../../../com/collective/celos/ci/testing/fixtures/deploy/FixtureDeployer.java.html">FixtureDeployer</A> {
+<A NAME="30"></A>
+<A NAME="31"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String CREATE_TEMP_TABLE_PATTERN = <FONT ID="StringLiteral">"CREATE TABLE %s.%s_temp(%s) ROW FORMAT DELIMITED FIELDS TERMINATED BY '\\t' STORED AS TEXTFILE"</FONT>;
+<A NAME="32"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String PARTITION_PATTERN = <FONT ID="StringLiteral">"PARTITION(%s)"</FONT>;
+<A NAME="33"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String DESCRIBE_TABLE_PATTERN = <FONT ID="StringLiteral">"DESCRIBE %s.%s"</FONT>;
+<A NAME="34"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String CREATE_DB_PATTERN = <FONT ID="StringLiteral">"CREATE DATABASE IF NOT EXISTS %s"</FONT>;
+<A NAME="35"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String USE_DB_PATTERN = <FONT ID="StringLiteral">"USE %s"</FONT>;
+<A NAME="36"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String DROP_DB_PATTERN = <FONT ID="StringLiteral">"DROP DATABASE IF EXISTS %s CASCADE"</FONT>;
+<A NAME="37"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String LOAD_TMP_DATA_PATTERN = <FONT ID="StringLiteral">"LOAD DATA INPATH '%s' OVERWRITE INTO TABLE %s.%s_temp"</FONT>;
+<A NAME="38"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String LOAD_DATA_PATTERN = <FONT ID="StringLiteral">"INSERT INTO TABLE %s %s SELECT * FROM %s_temp"</FONT>;
+<A NAME="39"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String SANDBOX_PARAM = <FONT ID="StringLiteral">"${SANDBOX}"</FONT>;
+<A NAME="40"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String PARTITION_INFORMATION_MARKER = <FONT ID="StringLiteral">"# Partition Information"</FONT>;
+<A NAME="41"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String SET_PARTITION_MODE_NONSTRICT = <FONT ID="StringLiteral">"set hive.exec.dynamic.partition.mode=nonstrict;"</FONT>;
+<A NAME="42"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String SHOW_DATABASES = <FONT ID="StringLiteral">"SHOW DATABASES LIKE '%s'"</FONT>;
+<A NAME="43"></A>
+<A NAME="44"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> <FONT ID="Boolean">boolean</FONT> driverLoaded = tryLoadDriverClass();
+<A NAME="45"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> <A HREF="../../../../../../../../com/collective/celos/DatabaseName.java.html">DatabaseName</A> databaseName;
+<A NAME="46"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> String tableName;
+<A NAME="47"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> <A HREF="../../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">FixObjectCreator</A>&lt;<A HREF="../../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixTable.java.html">FixTable</A>&gt; dataFileCreator;
+<A NAME="48"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> <A HREF="../../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">FixObjectCreator</A>&lt;<A HREF="../../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFile.java.html">FixFile</A>&gt; tableCreationScriptFile;
+<A NAME="49"></A>
+<A NAME="50"></A>    <FONT ID="Public">public</FONT> HiveTableDeployer(<A HREF="../../../../../../../../com/collective/celos/DatabaseName.java.html">DatabaseName</A> databaseName, String tableName, <A HREF="../../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">FixObjectCreator</A>&lt;<A HREF="../../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFile.java.html">FixFile</A>&gt; tableCreationScriptFile, <A HREF="../../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">FixObjectCreator</A>&lt;<A HREF="../../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixTable.java.html">FixTable</A>&gt; dataFileCreator) <FONT ID="Throws">throws</FONT> <A HREF="../../../../../../../../com/collective/celos/ci/testing/fixtures/deploy/CelosCiDirtyStateException.java.html">Exception</A> {
+<A NAME="51"></A>        <FONT ID="If">if</FONT> (!driverLoaded) {
+<A NAME="52"></A>            <FONT ID="Throw">throw</FONT> <FONT ID="New">new</FONT> IllegalStateException(<FONT ID="StringLiteral">"Hive JDBC driver was not found"</FONT>);
+<A NAME="53"></A>        }
+<A NAME="54"></A>        <FONT ID="This">this</FONT>.databaseName = databaseName;
+<A NAME="55"></A>        <FONT ID="This">this</FONT>.tableName = tableName;
+<A NAME="56"></A>        <FONT ID="This">this</FONT>.dataFileCreator = dataFileCreator;
+<A NAME="57"></A>        <FONT ID="This">this</FONT>.tableCreationScriptFile = tableCreationScriptFile;
+<A NAME="58"></A>    }
+<A NAME="59"></A>
+<A NAME="60"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Boolean">boolean</FONT> tryLoadDriverClass() {
+<A NAME="61"></A>        <FONT ID="Try">try</FONT> {
+<A NAME="62"></A>            Class.forName(<FONT ID="StringLiteral">"org.apache.hive.jdbc.HiveDriver"</FONT>);
+<A NAME="63"></A>        } <FONT ID="Catch">catch</FONT> (ClassNotFoundException e) {
+<A NAME="64"></A>            <FONT ID="Return">return</FONT> <FONT ID="False">false</FONT>;
+<A NAME="65"></A>        }
+<A NAME="66"></A>        <FONT ID="Return">return</FONT> <FONT ID="True">true</FONT>;
+<A NAME="67"></A>    }
+<A NAME="68"></A>
+<A NAME="69"></A>    @Override
+<A NAME="70"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> deploy(<A HREF="../../../../../../../../com/collective/celos/ci/mode/test/TestRun.java.html">TestRun</A> testRun) <FONT ID="Throws">throws</FONT> <A HREF="../../../../../../../../com/collective/celos/ci/testing/fixtures/deploy/CelosCiDirtyStateException.java.html">Exception</A> {
+<A NAME="71"></A>
+<A NAME="72"></A>        Connection connection = getConnection(testRun);
+<A NAME="73"></A>        Statement statement = connection.createStatement();
+<A NAME="74"></A>
+<A NAME="75"></A>        String mockedName = databaseName.getMockedName(testRun.getTestUUID());
+<A NAME="76"></A>        System.out.println(testRun.getTestCase().getName() + <FONT ID="StringLiteral">": Creating Hive DB "</FONT> + mockedName);
+<A NAME="77"></A>
+<A NAME="78"></A>        createMockedDatabase(statement, mockedName);
+<A NAME="79"></A>        <FONT ID="If">if</FONT> (tableName != <FONT ID="Null">null</FONT>) {
+<A NAME="80"></A>            System.out.println(testRun.getTestCase().getName() + <FONT ID="StringLiteral">": Deploying "</FONT> + tableName + <FONT ID="StringLiteral">" to "</FONT> + mockedName);
+<A NAME="81"></A>            createMockedTable(statement, mockedName, testRun);
+<A NAME="82"></A>
+<A NAME="83"></A>            <FONT ID="If">if</FONT> (dataFileCreator != <FONT ID="Null">null</FONT>) {
+<A NAME="84"></A>                <A HREF="../../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixTable.java.html">FixTable</A> fixTable = dataFileCreator.create(testRun);
+<A NAME="85"></A>                Path tempHdfsFile = createTempHdfsFileForInsertion(fixTable, testRun);
+<A NAME="86"></A>
+<A NAME="87"></A>                loadDataToMockedTable(statement, mockedName, tempHdfsFile, tableName);
+<A NAME="88"></A>            }
+<A NAME="89"></A>        }
+<A NAME="90"></A>    }
+<A NAME="91"></A>
+<A NAME="92"></A>    @Override
+<A NAME="93"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> undeploy(<A HREF="../../../../../../../../com/collective/celos/ci/mode/test/TestRun.java.html">TestRun</A> testRun) <FONT ID="Throws">throws</FONT> <A HREF="../../../../../../../../com/collective/celos/ci/testing/fixtures/deploy/CelosCiDirtyStateException.java.html">Exception</A> {
+<A NAME="94"></A>
+<A NAME="95"></A>        Connection connection = getConnection(testRun);
+<A NAME="96"></A>        Statement statement = connection.createStatement();
+<A NAME="97"></A>        String createMockedDb = String.format(DROP_DB_PATTERN, databaseName.getMockedName(testRun.getTestUUID()));
+<A NAME="98"></A>        statement.execute(createMockedDb);
+<A NAME="99"></A>    }
+<A NAME="100"></A>
+<A NAME="101"></A>    @Override
+<A NAME="102"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> validate(<A HREF="../../../../../../../../com/collective/celos/ci/mode/test/TestRun.java.html">TestRun</A> testRun) <FONT ID="Throws">throws</FONT> <A HREF="../../../../../../../../com/collective/celos/ci/testing/fixtures/deploy/CelosCiDirtyStateException.java.html">Exception</A> {
+<A NAME="103"></A>        Connection connection = getConnection(testRun); Statement statement = connection.createStatement();
+<A NAME="104"></A>        String mockedName = databaseName.getMockedName(testRun.getTestUUID());
+<A NAME="105"></A>
+<A NAME="106"></A>        String createMockedDb = String.format(SHOW_DATABASES, mockedName);
+<A NAME="107"></A>        ResultSet rs = statement.executeQuery(createMockedDb);
+<A NAME="108"></A>        <FONT ID="If">if</FONT> (rs.next()) {
+<A NAME="109"></A>            <FONT ID="Throw">throw</FONT> <FONT ID="New">new</FONT> <A HREF="../../../../../../../../com/collective/celos/ci/testing/fixtures/deploy/CelosCiDirtyStateException.java.html">CelosCiDirtyStateException</A>(<FONT ID="StringLiteral">"Celos-CI temporary Hive DB still exists: "</FONT> + mockedName);
+<A NAME="110"></A>        }
+<A NAME="111"></A>    }
+<A NAME="112"></A>
+<A NAME="113"></A>    <FONT ID="Public">public</FONT> <A HREF="../../../../../../../../com/collective/celos/DatabaseName.java.html">DatabaseName</A> getDatabaseName() {
+<A NAME="114"></A>        <FONT ID="Return">return</FONT> databaseName;
+<A NAME="115"></A>    }
+<A NAME="116"></A>
+<A NAME="117"></A>    <FONT ID="Public">public</FONT> String getTableName() {
+<A NAME="118"></A>        <FONT ID="Return">return</FONT> tableName;
+<A NAME="119"></A>    }
+<A NAME="120"></A>
+<A NAME="121"></A>
+<A NAME="122"></A>    <FONT ID="Private">private</FONT> Connection getConnection(<A HREF="../../../../../../../../com/collective/celos/ci/mode/test/TestRun.java.html">TestRun</A> testRun) <FONT ID="Throws">throws</FONT> SQLException {
+<A NAME="123"></A>        <FONT ID="Return">return</FONT> DriverManager.getConnection(testRun.getCiContext().getTarget().getHiveJdbc().toString());
+<A NAME="124"></A>    }
+<A NAME="125"></A>
+<A NAME="126"></A>    <FONT ID="Private">private</FONT> Path createTempHdfsFileForInsertion(<A HREF="../../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixTable.java.html">FixTable</A> fixTable, <A HREF="../../../../../../../../com/collective/celos/ci/mode/test/TestRun.java.html">TestRun</A> testRun) <FONT ID="Throws">throws</FONT> <A HREF="../../../../../../../../com/collective/celos/ci/testing/fixtures/deploy/CelosCiDirtyStateException.java.html">Exception</A> {
+<A NAME="127"></A>
+<A NAME="128"></A>        Path pathToParent = <FONT ID="New">new</FONT> Path(testRun.getHdfsPrefix(), <FONT ID="StringLiteral">".hive"</FONT>);
+<A NAME="129"></A>        Path pathTo = <FONT ID="New">new</FONT> Path(pathToParent, UUID.randomUUID().toString());
+<A NAME="130"></A>        FileSystem fileSystem = testRun.getCiContext().getFileSystem();
+<A NAME="131"></A>        fileSystem.mkdirs(pathTo.getParent());
+<A NAME="132"></A>        FSDataOutputStream outputStream = fileSystem.create(pathTo);
+<A NAME="133"></A>
+<A NAME="134"></A>        CSVWriter writer = <FONT ID="New">new</FONT> CSVWriter(<FONT ID="New">new</FONT> OutputStreamWriter(outputStream), <FONT ID="CharacerLiteral">'\t'</FONT>, CSVWriter.NO_QUOTE_CHARACTER);
+<A NAME="135"></A>
+<A NAME="136"></A>        <FONT ID="For">for</FONT> (<A HREF="../../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixTable.java.html">FixTable.FixRow</A> fixRow : fixTable.getRows()) {
+<A NAME="137"></A>            List&lt;String&gt; rowData = Lists.newArrayList();
+<A NAME="138"></A>            <FONT ID="For">for</FONT> (String colName : fixTable.getColumnNames()) {
+<A NAME="139"></A>                rowData.add(fixRow.getCells().get(colName));
+<A NAME="140"></A>            }
+<A NAME="141"></A>            String[] dataArray = rowData.toArray(<FONT ID="New">new</FONT> String[rowData.size()]);
+<A NAME="142"></A>            writer.writeNext(dataArray);
+<A NAME="143"></A>        }
+<A NAME="144"></A>
+<A NAME="145"></A>        writer.close();
+<A NAME="146"></A>
+<A NAME="147"></A>        fileSystem.setPermission(pathToParent, <FONT ID="New">new</FONT> FsPermission(FsAction.ALL, FsAction.ALL, FsAction.ALL));
+<A NAME="148"></A>        fileSystem.setPermission(pathTo, <FONT ID="New">new</FONT> FsPermission(FsAction.ALL, FsAction.ALL, FsAction.ALL));
+<A NAME="149"></A>        <FONT ID="Return">return</FONT> pathTo;
+<A NAME="150"></A>    }
+<A NAME="151"></A>
+<A NAME="152"></A>    <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> loadDataToMockedTable(Statement statement, String mockedDatabase, Path dataFile, String tableName) <FONT ID="Throws">throws</FONT> SQLException, IOException {
+<A NAME="153"></A>
+<A NAME="154"></A>        List&lt;String&gt; columnDef = Lists.newArrayList();
+<A NAME="155"></A>        List&lt;String&gt; partDef = Lists.newArrayList();
+<A NAME="156"></A>        parseTableDefinition(columnDef, partDef, mockedDatabase, statement);
+<A NAME="157"></A>
+<A NAME="158"></A>        String createMockedTbl = String.format(CREATE_TEMP_TABLE_PATTERN, mockedDatabase, tableName, StringUtils.join(columnDef, <FONT ID="StringLiteral">",\n"</FONT>));
+<A NAME="159"></A>        statement.executeUpdate(createMockedTbl);
+<A NAME="160"></A>
+<A NAME="161"></A>        String loadDataTmp = String.format(LOAD_TMP_DATA_PATTERN, dataFile.toString(), mockedDatabase, tableName);
+<A NAME="162"></A>        statement.executeUpdate(loadDataTmp);
+<A NAME="163"></A>
+<A NAME="164"></A>        loadFromTempToRealDb(statement, tableName, partDef);
+<A NAME="165"></A>    }
+<A NAME="166"></A>
+<A NAME="167"></A>    <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> loadFromTempToRealDb(Statement statement, String tableName, List&lt;String&gt; partDef) <FONT ID="Throws">throws</FONT> SQLException {
+<A NAME="168"></A>        String partitions;
+<A NAME="169"></A>        <FONT ID="If">if</FONT> (partDef.isEmpty()) {
+<A NAME="170"></A>            partitions = <FONT ID="StringLiteral">""</FONT>;
+<A NAME="171"></A>        } <FONT ID="Else">else</FONT> {
+<A NAME="172"></A>            partitions = String.format(PARTITION_PATTERN, StringUtils.join(partDef, <FONT ID="StringLiteral">", "</FONT>));
+<A NAME="173"></A>        }
+<A NAME="174"></A>
+<A NAME="175"></A>        statement.execute(SET_PARTITION_MODE_NONSTRICT);
+<A NAME="176"></A>        String loadData = String.format(LOAD_DATA_PATTERN, tableName, partitions, tableName);
+<A NAME="177"></A>        statement.executeUpdate(loadData);
+<A NAME="178"></A>    }
+<A NAME="179"></A>
+<A NAME="180"></A>    <FONT ID="Void">void</FONT> parseTableDefinition(List&lt;String&gt; columns, List&lt;String&gt; partColumns, String mockedDatabase, Statement statement) <FONT ID="Throws">throws</FONT> SQLException {
+<A NAME="181"></A>
+<A NAME="182"></A>        String describeQuery = String.format(DESCRIBE_TABLE_PATTERN, mockedDatabase, tableName);
+<A NAME="183"></A>        ResultSet res = statement.executeQuery(describeQuery);
+<A NAME="184"></A>
+<A NAME="185"></A>        <FONT ID="Boolean">boolean</FONT> partitionInfo = <FONT ID="False">false</FONT>;
+<A NAME="186"></A>        <FONT ID="While">while</FONT> (res.next()) {
+<A NAME="187"></A>            String column = res.getString(<FONT ID="IntegerLiteral">1</FONT>);
+<A NAME="188"></A>            String type = res.getString(<FONT ID="IntegerLiteral">2</FONT>);
+<A NAME="189"></A>            <FONT ID="If">if</FONT> (PARTITION_INFORMATION_MARKER.equals(column)) {
+<A NAME="190"></A>                partitionInfo = <FONT ID="True">true</FONT>;
+<A NAME="191"></A>            } <FONT ID="Else">else</FONT> {
+<A NAME="192"></A>                <FONT ID="If">if</FONT> (column != <FONT ID="Null">null</FONT> &amp;&amp; type != <FONT ID="Null">null</FONT> &amp;&amp; !column.startsWith(<FONT ID="StringLiteral">"#"</FONT>)) {
+<A NAME="193"></A>                    <FONT ID="If">if</FONT> (partitionInfo) {
+<A NAME="194"></A>                        partColumns.add(column.trim());
+<A NAME="195"></A>                    } <FONT ID="Else">else</FONT> {
+<A NAME="196"></A>                        columns.add(column.trim() + <FONT ID="StringLiteral">" "</FONT> + type.trim());
+<A NAME="197"></A>                    }
+<A NAME="198"></A>                }
+<A NAME="199"></A>            }
+<A NAME="200"></A>        }
+<A NAME="201"></A>    }
+<A NAME="202"></A>
+<A NAME="203"></A>    <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> createMockedDatabase(Statement statement, String mockedDatabase) <FONT ID="Throws">throws</FONT> <A HREF="../../../../../../../../com/collective/celos/ci/testing/fixtures/deploy/CelosCiDirtyStateException.java.html">Exception</A> {
+<A NAME="204"></A>
+<A NAME="205"></A>        String createMockedDb = String.format(CREATE_DB_PATTERN, mockedDatabase);
+<A NAME="206"></A>        statement.execute(createMockedDb);
+<A NAME="207"></A>    }
+<A NAME="208"></A>
+<A NAME="209"></A>    <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> createMockedTable(Statement statement, String mockedDatabase, <A HREF="../../../../../../../../com/collective/celos/ci/mode/test/TestRun.java.html">TestRun</A> testRun) <FONT ID="Throws">throws</FONT> <A HREF="../../../../../../../../com/collective/celos/ci/testing/fixtures/deploy/CelosCiDirtyStateException.java.html">Exception</A> {
+<A NAME="210"></A>        statement.execute(String.format(USE_DB_PATTERN, mockedDatabase));
+<A NAME="211"></A>        <A HREF="../../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFile.java.html">FixFile</A> scriptFile = tableCreationScriptFile.create(testRun);
+<A NAME="212"></A>        String creationScript = IOUtils.toString(scriptFile.getContent());
+<A NAME="213"></A>        creationScript = creationScript.replace(SANDBOX_PARAM, testRun.getCiContext().getFileSystem().getUri() + testRun.getHdfsPrefix());
+<A NAME="214"></A>        statement.execute(creationScript);
+<A NAME="215"></A>    }
+<A NAME="216"></A>
+<A NAME="217"></A>    <FONT ID="Public">public</FONT> <A HREF="../../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">FixObjectCreator</A>&lt;<A HREF="../../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixTable.java.html">FixTable</A>&gt; getDataFileCreator() {
+<A NAME="218"></A>        <FONT ID="Return">return</FONT> dataFileCreator;
+<A NAME="219"></A>    }
+<A NAME="220"></A>
+<A NAME="221"></A>    <FONT ID="Public">public</FONT> <A HREF="../../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">FixObjectCreator</A>&lt;<A HREF="../../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFile.java.html">FixFile</A>&gt; getTableCreationScriptFile() {
+<A NAME="222"></A>        <FONT ID="Return">return</FONT> tableCreationScriptFile;
+<A NAME="223"></A>    }
+<A NAME="224"></A>}
+<A NAME="225"></A></pre>
+</BODY>
+</HTML>

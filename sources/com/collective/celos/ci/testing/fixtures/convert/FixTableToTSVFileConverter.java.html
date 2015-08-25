@@ -1,0 +1,44 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../../../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.ci.testing.fixtures.convert.FixTableToTSVFileConverter (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">FixTableToTSVFileConverter.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos.ci.testing.fixtures.convert;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../../com/collective/celos/ci/mode/test/TestRun.java.html">com.collective.celos.ci.mode.test.TestRun</A>;
+<A NAME="4"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/AbstractFixObjectConverter.java.html">com.collective.celos.ci.testing.structure.fixobject.AbstractFixObjectConverter</A>;
+<A NAME="5"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFile.java.html">com.collective.celos.ci.testing.structure.fixobject.FixFile</A>;
+<A NAME="6"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixTable.java.html">com.collective.celos.ci.testing.structure.fixobject.FixTable</A>;
+<A NAME="7"></A><FONT ID="Import">import</FONT> org.apache.commons.io.IOUtils;
+<A NAME="8"></A><FONT ID="Import">import</FONT> org.apache.commons.lang.StringUtils;
+<A NAME="9"></A>
+<A NAME="10"></A><FONT ID="Import">import</FONT> java.util.ArrayList;
+<A NAME="11"></A><FONT ID="Import">import</FONT> java.util.List;
+<A NAME="12"></A>
+<A NAME="13"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> FixTableToTSVFileConverter <FONT ID="Extends">extends</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/AbstractFixObjectConverter.java.html">AbstractFixObjectConverter</A>&lt;<A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixTable.java.html">FixTable</A>,<A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFile.java.html">FixFile</A>&gt; {
+<A NAME="14"></A>
+<A NAME="15"></A>    @Override
+<A NAME="16"></A>    <FONT ID="Public">public</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFile.java.html">FixFile</A> convert(<A HREF="../../../../../../../com/collective/celos/ci/mode/test/TestRun.java.html">TestRun</A> tr, <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixTable.java.html">FixTable</A> table) <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="17"></A>        List&lt;String&gt; lines = <FONT ID="New">new</FONT> ArrayList&lt;String&gt;();
+<A NAME="18"></A>        <FONT ID="For">for</FONT> (<A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixTable.java.html">FixTable.FixRow</A> row : table.getRows()) {
+<A NAME="19"></A>            lines.add(StringUtils.join(row.getOrderedColumns(table.getColumnNames()), <FONT ID="StringLiteral">"\t"</FONT>));
+<A NAME="20"></A>        }
+<A NAME="21"></A>        <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFile.java.html">FixFile</A>(IOUtils.toInputStream(StringUtils.join(lines, <FONT ID="StringLiteral">"\n"</FONT>) + <FONT ID="StringLiteral">"\n"</FONT>));
+<A NAME="22"></A>    }
+<A NAME="23"></A>    
+<A NAME="24"></A>}
+<A NAME="25"></A></pre>
+</BODY>
+</HTML>

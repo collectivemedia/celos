@@ -1,0 +1,931 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.SchedulerTest (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">SchedulerTest.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> org.joda.time.DateTime;
+<A NAME="4"></A><FONT ID="Import">import</FONT> org.joda.time.DateTimeZone;
+<A NAME="5"></A><FONT ID="Import">import</FONT> org.junit.Assert;
+<A NAME="6"></A><FONT ID="Import">import</FONT> org.junit.Before;
+<A NAME="7"></A><FONT ID="Import">import</FONT> org.junit.Test;
+<A NAME="8"></A><FONT ID="Import">import</FONT> org.mockito.InOrder;
+<A NAME="9"></A>
+<A NAME="10"></A><FONT ID="Import">import</FONT> java.util.*;
+<A NAME="11"></A>
+<A NAME="12"></A><FONT ID="Import">import</FONT> <FONT ID="Static">static</FONT> org.mockito.Matchers.anyListOf;
+<A NAME="13"></A><FONT ID="Import">import</FONT> <FONT ID="Static">static</FONT> org.mockito.Mockito.*;
+<A NAME="14"></A>
+<A NAME="15"></A><FONT ID="FormalComment">/**
+<A NAME="16"></A> * TODO: test exception handling and logging
+<A NAME="17"></A> * TODO: more fine-grained tests like multipleSlotsTest
+<A NAME="18"></A> */</FONT>
+<A NAME="19"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> SchedulerTest {
+<A NAME="20"></A>
+<A NAME="21"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <A HREF="../../../com/collective/celos/WorkflowInfo.java.html">WorkflowInfo</A> emptyWorkflowInfo = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowInfo.java.html">WorkflowInfo</A>(<FONT ID="Null">null</FONT>, Collections.&lt;<A HREF="../../../com/collective/celos/WorkflowInfo.java.html">WorkflowInfo.ContactsInfo</A>&gt;emptyList());
+<A NAME="22"></A>
+<A NAME="23"></A>    <FONT ID="MultiLineComment">/*
+<A NAME="24"></A>     * I prefer setting up test data in the test method, using local variables,
+<A NAME="25"></A>     * but a scheduler call needs a lot of data, and the objects model is quite
+<A NAME="26"></A>     * intertwined. So, rather than bloat each test method with a lot of object
+<A NAME="27"></A>     * creation, I've promoted common state to instance variables, initialized
+<A NAME="28"></A>     * in the setUp() method.
+<A NAME="29"></A>     * 
+<A NAME="30"></A>     * Some of these instance variables are mocks. Each interaction-based test
+<A NAME="31"></A>     * will have to configure the mocks as appropriate.
+<A NAME="32"></A>     */</FONT>
+<A NAME="33"></A>    
+<A NAME="34"></A>    <FONT ID="SingleLineComment">// Mocks
+<A NAME="35"></A></FONT>    <FONT ID="Private">private</FONT> <A HREF="../../../com/collective/celos/StateDatabase.java.html">StateDatabase</A> stateDatabase;
+<A NAME="36"></A>    <FONT ID="Private">private</FONT> <A HREF="../../../com/collective/celos/Trigger.java.html">Trigger</A> trigger;
+<A NAME="37"></A>    <FONT ID="Private">private</FONT> <A HREF="../../../com/collective/celos/Schedule.java.html">Schedule</A> schedule;
+<A NAME="38"></A>    <FONT ID="Private">private</FONT> <A HREF="../../../com/collective/celos/SchedulingStrategy.java.html">SchedulingStrategy</A> schedulingStrategy;
+<A NAME="39"></A>    <FONT ID="Private">private</FONT> <A HREF="../../../com/collective/celos/ExternalService.java.html">ExternalService</A> externalService;
+<A NAME="40"></A>    
+<A NAME="41"></A>    <FONT ID="SingleLineComment">// Lots of tests need these objects, so create them once in the setUp
+<A NAME="42"></A></FONT>    <FONT ID="Private">private</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A> workflowId;
+<A NAME="43"></A>    <FONT ID="Private">private</FONT> <A HREF="../../../com/collective/celos/Workflow.java.html">Workflow</A> wf;
+<A NAME="44"></A>    <FONT ID="Private">private</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> scheduledTime;
+<A NAME="45"></A>    <FONT ID="Private">private</FONT> <A HREF="../../../com/collective/celos/Scheduler.java.html">Scheduler</A> scheduler;
+<A NAME="46"></A>    <FONT ID="Private">private</FONT> <A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A> slotId;
+<A NAME="47"></A>
+<A NAME="48"></A>    @Before
+<A NAME="49"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> setUp() {
+<A NAME="50"></A>        <FONT ID="SingleLineComment">// Mocks
+<A NAME="51"></A></FONT>        stateDatabase = mock(<A HREF="../../../com/collective/celos/StateDatabase.java.html">StateDatabase</A>.<FONT ID="Class">class</FONT>);
+<A NAME="52"></A>        trigger = mock(<A HREF="../../../com/collective/celos/Trigger.java.html">Trigger</A>.<FONT ID="Class">class</FONT>);
+<A NAME="53"></A>        schedule = mock(<A HREF="../../../com/collective/celos/Schedule.java.html">Schedule</A>.<FONT ID="Class">class</FONT>);
+<A NAME="54"></A>        schedulingStrategy = mock(<A HREF="../../../com/collective/celos/SchedulingStrategy.java.html">SchedulingStrategy</A>.<FONT ID="Class">class</FONT>);
+<A NAME="55"></A>        externalService = mock(<A HREF="../../../com/collective/celos/ExternalService.java.html">ExternalService</A>.<FONT ID="Class">class</FONT>);
+<A NAME="56"></A>        <FONT ID="Int">int</FONT> maxRetryCount = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="57"></A>
+<A NAME="58"></A>        <FONT ID="SingleLineComment">// Objects
+<A NAME="59"></A></FONT>        workflowId = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"workflow-id"</FONT>);
+<A NAME="60"></A>        wf = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/Workflow.java.html">Workflow</A>(workflowId, schedule, schedulingStrategy, trigger,
+<A NAME="61"></A>                externalService, maxRetryCount, Workflow.DEFAULT_START_TIME, Workflow.DEFAULT_WAIT_TIMEOUT_SECONDS, emptyWorkflowInfo);
+<A NAME="62"></A>        scheduledTime = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-11-26T15:00Z"</FONT>);
+<A NAME="63"></A>        slotId = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A>(workflowId, scheduledTime);
+<A NAME="64"></A>
+<A NAME="65"></A>        <FONT ID="SingleLineComment">// The object under test
+<A NAME="66"></A></FONT>        scheduler = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/Scheduler.java.html">Scheduler</A>(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowConfiguration.java.html">WorkflowConfiguration</A>(), stateDatabase, <FONT ID="IntegerLiteral">1</FONT>);
+<A NAME="67"></A>    }
+<A NAME="68"></A>    
+<A NAME="69"></A>    @Test
+<A NAME="70"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> runExternalWorkflowsNoCandidates() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="71"></A>        List&lt;<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>&gt; slotStates = <FONT ID="New">new</FONT> ArrayList&lt;<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>&gt;();
+<A NAME="72"></A>        scheduler.runExternalWorkflows(wf, slotStates);
+<A NAME="73"></A>        verifyNoMoreInteractions(stateDatabase);
+<A NAME="74"></A>    }
+<A NAME="75"></A>    
+<A NAME="76"></A>    @Test(expected = IllegalStateException.<FONT ID="Class">class</FONT>)
+<A NAME="77"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> runExternalWorkflowsWaitingCandidate() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="78"></A>        runExternalWorkflowsWithInvalidCandidate(SlotState.Status.WAITING);
+<A NAME="79"></A>    }
+<A NAME="80"></A>    
+<A NAME="81"></A>    @Test(expected = IllegalStateException.<FONT ID="Class">class</FONT>)
+<A NAME="82"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> runExternalWorkflowsRunningCandidate() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="83"></A>        runExternalWorkflowsWithInvalidCandidate(SlotState.Status.RUNNING);
+<A NAME="84"></A>    }
+<A NAME="85"></A>    
+<A NAME="86"></A>    @Test(expected = IllegalStateException.<FONT ID="Class">class</FONT>)
+<A NAME="87"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> runExternalWorkflowsSuccessCandidate() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="88"></A>        runExternalWorkflowsWithInvalidCandidate(SlotState.Status.SUCCESS);
+<A NAME="89"></A>    }
+<A NAME="90"></A>    
+<A NAME="91"></A>    @Test(expected = IllegalStateException.<FONT ID="Class">class</FONT>)
+<A NAME="92"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> runExternalWorkflowsFailureCandidate() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="93"></A>        runExternalWorkflowsWithInvalidCandidate(SlotState.Status.FAILURE);
+<A NAME="94"></A>    }
+<A NAME="95"></A>    
+<A NAME="96"></A>    @Test(expected = IllegalStateException.<FONT ID="Class">class</FONT>)
+<A NAME="97"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> runExternalWorkflowsFailureAndReadyCandidates() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="98"></A>        runExternalWorkflowsWithInvalidCandidate(SlotState.Status.FAILURE,
+<A NAME="99"></A>                SlotState.Status.READY);
+<A NAME="100"></A>    }
+<A NAME="101"></A>    
+<A NAME="102"></A>    <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> runExternalWorkflowsWithInvalidCandidate(<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState.Status</A>... statuses) <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="103"></A>        List&lt;<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>&gt; slotStates = candidate(statuses);
+<A NAME="104"></A>        scheduler.runExternalWorkflows(wf, slotStates);
+<A NAME="105"></A>        verifyNoMoreInteractions(stateDatabase);
+<A NAME="106"></A>    }
+<A NAME="107"></A>    
+<A NAME="108"></A>    @Test
+<A NAME="109"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> runExternalWorkflowsReadyCandidate() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="110"></A>        List&lt;<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>&gt; slotStates = candidate(SlotState.Status.READY);
+<A NAME="111"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> nextSlotState = slotStates.get(<FONT ID="IntegerLiteral">0</FONT>).transitionToRunning(<FONT ID="StringLiteral">"externalId"</FONT>);
+<A NAME="112"></A>        when(externalService.submit(slotId)).thenReturn(<FONT ID="StringLiteral">"externalId"</FONT>);
+<A NAME="113"></A>        scheduler.runExternalWorkflows(wf, slotStates);
+<A NAME="114"></A>        verify(stateDatabase).putSlotState(nextSlotState);
+<A NAME="115"></A>        verifyNoMoreInteractions(stateDatabase);
+<A NAME="116"></A>    }
+<A NAME="117"></A>    
+<A NAME="118"></A>    @Test
+<A NAME="119"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> runExternalWorkflowsCallsSchedulerCorrectly() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="120"></A>        List&lt;<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>&gt; slotStates = candidate(SlotState.Status.READY);
+<A NAME="121"></A>        when(externalService.submit(slotId)).thenReturn(<FONT ID="StringLiteral">"externalId"</FONT>);
+<A NAME="122"></A>        scheduler.runExternalWorkflows(wf, slotStates);
+<A NAME="123"></A>        
+<A NAME="124"></A>        InOrder inOrder = inOrder(externalService);
+<A NAME="125"></A>        inOrder.verify(externalService).submit(slotStates.get(<FONT ID="IntegerLiteral">0</FONT>).getSlotID());
+<A NAME="126"></A>        inOrder.verify(externalService).start(slotId, <FONT ID="StringLiteral">"externalId"</FONT>);
+<A NAME="127"></A>        verifyNoMoreInteractions(externalService);
+<A NAME="128"></A>    }
+<A NAME="129"></A>    
+<A NAME="130"></A>    @Test
+<A NAME="131"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> runExternalWorkflowsMultipleReadyCandidates() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="132"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> slotState1 = makeReadySlotStateForTime(<FONT ID="StringLiteral">"2013-11-26T15:01Z"</FONT>);
+<A NAME="133"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> slotState2 = makeReadySlotStateForTime(<FONT ID="StringLiteral">"2013-11-26T15:02Z"</FONT>);
+<A NAME="134"></A>
+<A NAME="135"></A>        List&lt;<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>&gt; slotStates = <FONT ID="New">new</FONT> ArrayList&lt;<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>&gt;();
+<A NAME="136"></A>        slotStates.add(slotState1);
+<A NAME="137"></A>        slotStates.add(slotState2);
+<A NAME="138"></A>
+<A NAME="139"></A>        stubAsSchedulingCandidates(slotStates);
+<A NAME="140"></A>
+<A NAME="141"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> nextSlotState1 = slotState1.transitionToRunning(<FONT ID="StringLiteral">"externalId1"</FONT>);
+<A NAME="142"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> nextSlotState2 = slotState2.transitionToRunning(<FONT ID="StringLiteral">"externalId2"</FONT>);
+<A NAME="143"></A>        
+<A NAME="144"></A>        when(externalService.submit(slotState1.getSlotID())).thenReturn(<FONT ID="StringLiteral">"externalId1"</FONT>);
+<A NAME="145"></A>        when(externalService.submit(slotState2.getSlotID())).thenReturn(<FONT ID="StringLiteral">"externalId2"</FONT>);
+<A NAME="146"></A>        
+<A NAME="147"></A>        scheduler.runExternalWorkflows(wf, slotStates);
+<A NAME="148"></A>        verify(stateDatabase).putSlotState(nextSlotState1);
+<A NAME="149"></A>        verify(stateDatabase).putSlotState(nextSlotState2);
+<A NAME="150"></A>        verifyNoMoreInteractions(stateDatabase);
+<A NAME="151"></A>    }
+<A NAME="152"></A>
+<A NAME="153"></A>    <FONT ID="Private">private</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> makeReadySlotStateForTime(String timeString) {
+<A NAME="154"></A>        <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> time = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(timeString);
+<A NAME="155"></A>        <A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A> slotId = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A>(workflowId, time);
+<A NAME="156"></A>        <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(slotId, SlotState.Status.READY);
+<A NAME="157"></A>    }
+<A NAME="158"></A>    
+<A NAME="159"></A>    <FONT ID="Private">private</FONT> List&lt;<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>&gt; candidate(<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState.Status</A>... statuses) {
+<A NAME="160"></A>        List&lt;<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>&gt; result = <FONT ID="New">new</FONT> ArrayList&lt;<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>&gt;();
+<A NAME="161"></A>        <FONT ID="For">for</FONT> (<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState.Status</A> status : statuses) {
+<A NAME="162"></A>            result.add(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(slotId, status));
+<A NAME="163"></A>        }
+<A NAME="164"></A>        stubAsSchedulingCandidates(result);
+<A NAME="165"></A>        <FONT ID="Return">return</FONT> result;
+<A NAME="166"></A>    }
+<A NAME="167"></A>
+<A NAME="168"></A>    <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> stubAsSchedulingCandidates(List&lt;<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>&gt; slotStates) {
+<A NAME="169"></A>        when(
+<A NAME="170"></A>                schedulingStrategy
+<A NAME="171"></A>                        .getSchedulingCandidates(anyListOf(<A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>.<FONT ID="Class">class</FONT>)))
+<A NAME="172"></A>                .thenReturn(slotStates);
+<A NAME="173"></A>    }
+<A NAME="174"></A>    
+<A NAME="175"></A>    @Test
+<A NAME="176"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> updateSlotStateWaitingAvailable() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="177"></A>
+<A NAME="178"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> slotState = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(slotId, SlotState.Status.WAITING);
+<A NAME="179"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> nextSlotState = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(slotId, SlotState.Status.READY);
+<A NAME="180"></A>
+<A NAME="181"></A>        <FONT ID="SingleLineComment">// The trigger should report the data as available
+<A NAME="182"></A></FONT>        <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> now = ScheduledTime.now();
+<A NAME="183"></A>        when(trigger.isDataAvailable(scheduler, now, scheduledTime)).thenReturn(<FONT ID="True">true</FONT>);
+<A NAME="184"></A>
+<A NAME="185"></A>        scheduler.updateSlotState(wf, slotState, now);
+<A NAME="186"></A>
+<A NAME="187"></A>        verify(stateDatabase).putSlotState(nextSlotState);
+<A NAME="188"></A>        verifyNoMoreInteractions(stateDatabase);
+<A NAME="189"></A>    }
+<A NAME="190"></A>
+<A NAME="191"></A>    @Test
+<A NAME="192"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> updateSlotStateWaitingNotAvailable() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="193"></A>
+<A NAME="194"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> slotState = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(slotId, SlotState.Status.WAITING);
+<A NAME="195"></A>
+<A NAME="196"></A>        <FONT ID="SingleLineComment">// The trigger should report the data as not available
+<A NAME="197"></A></FONT>        <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> now = ScheduledTime.now();
+<A NAME="198"></A>        when(trigger.isDataAvailable(scheduler, now, scheduledTime)).thenReturn(<FONT ID="False">false</FONT>);
+<A NAME="199"></A>
+<A NAME="200"></A>        scheduler.updateSlotState(wf, slotState, now);
+<A NAME="201"></A>
+<A NAME="202"></A>        verifyNoMoreInteractions(stateDatabase);
+<A NAME="203"></A>    }
+<A NAME="204"></A>
+<A NAME="205"></A>    @Test
+<A NAME="206"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> updateSlotStateReady() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="207"></A>
+<A NAME="208"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> slotState = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(slotId, SlotState.Status.READY);
+<A NAME="209"></A>
+<A NAME="210"></A>        scheduler.updateSlotState(wf, slotState, ScheduledTime.now());
+<A NAME="211"></A>
+<A NAME="212"></A>        verifyNoMoreInteractions(stateDatabase);
+<A NAME="213"></A>    }
+<A NAME="214"></A>
+<A NAME="215"></A>    @Test
+<A NAME="216"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> updateSlotStateRunningExternalIsRunning() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="217"></A>
+<A NAME="218"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> slotState = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(slotId, SlotState.Status.RUNNING);
+<A NAME="219"></A>
+<A NAME="220"></A>        <FONT ID="SingleLineComment">// The external service should report the status as success
+<A NAME="221"></A></FONT>        <A HREF="../../../com/collective/celos/ExternalStatus.java.html">ExternalStatus</A> running = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/MockExternalService.java.html">MockExternalService.MockExternalStatusRunning</A>();
+<A NAME="222"></A>        when(externalService.getStatus(slotId, slotState.getExternalID())).thenReturn(running);
+<A NAME="223"></A>
+<A NAME="224"></A>        scheduler.updateSlotState(wf, slotState, ScheduledTime.now());
+<A NAME="225"></A>
+<A NAME="226"></A>        verifyNoMoreInteractions(stateDatabase);
+<A NAME="227"></A>    }
+<A NAME="228"></A>
+<A NAME="229"></A>    @Test
+<A NAME="230"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> updateSlotStateRunningExternalIsSuccess() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="231"></A>
+<A NAME="232"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> slotState = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(slotId, SlotState.Status.RUNNING);
+<A NAME="233"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> nextSlotState = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(slotId, SlotState.Status.SUCCESS);
+<A NAME="234"></A>
+<A NAME="235"></A>        <FONT ID="SingleLineComment">// The external service should report the status as success
+<A NAME="236"></A></FONT>        <A HREF="../../../com/collective/celos/ExternalStatus.java.html">ExternalStatus</A> success = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/MockExternalService.java.html">MockExternalService.MockExternalStatusSuccess</A>();
+<A NAME="237"></A>        when(externalService.getStatus(slotId, slotState.getExternalID())).thenReturn(success);
+<A NAME="238"></A>
+<A NAME="239"></A>        scheduler.updateSlotState(wf, slotState, ScheduledTime.now());
+<A NAME="240"></A>
+<A NAME="241"></A>        verify(stateDatabase).putSlotState(nextSlotState);
+<A NAME="242"></A>        verifyNoMoreInteractions(stateDatabase);
+<A NAME="243"></A>    }
+<A NAME="244"></A>
+<A NAME="245"></A>    @Test
+<A NAME="246"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> updateSlotStateRunningExternalIsFailure() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="247"></A>
+<A NAME="248"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> slotState = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(slotId, SlotState.Status.RUNNING);
+<A NAME="249"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> nextSlotState = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(slotId, SlotState.Status.FAILURE);
+<A NAME="250"></A>
+<A NAME="251"></A>        <FONT ID="SingleLineComment">// The external service should report the status as failure
+<A NAME="252"></A></FONT>        <A HREF="../../../com/collective/celos/ExternalStatus.java.html">ExternalStatus</A> failure = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/MockExternalService.java.html">MockExternalService.MockExternalStatusFailure</A>();
+<A NAME="253"></A>        when(externalService.getStatus(slotId, slotState.getExternalID())).thenReturn(failure);
+<A NAME="254"></A>
+<A NAME="255"></A>        scheduler.updateSlotState(wf, slotState, ScheduledTime.now());
+<A NAME="256"></A>
+<A NAME="257"></A>        verify(stateDatabase).putSlotState(nextSlotState);
+<A NAME="258"></A>        verifyNoMoreInteractions(stateDatabase);
+<A NAME="259"></A>    }
+<A NAME="260"></A>
+<A NAME="261"></A>    @Test
+<A NAME="262"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> updateSlotStateSuccess() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="263"></A>
+<A NAME="264"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> slotState = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(slotId, SlotState.Status.SUCCESS);
+<A NAME="265"></A>
+<A NAME="266"></A>        scheduler.updateSlotState(wf, slotState, ScheduledTime.now());
+<A NAME="267"></A>
+<A NAME="268"></A>        verifyNoMoreInteractions(stateDatabase);
+<A NAME="269"></A>    }
+<A NAME="270"></A>
+<A NAME="271"></A>    @Test
+<A NAME="272"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> updateSlotStateFailure() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="273"></A>
+<A NAME="274"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> slotState = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(slotId, SlotState.Status.FAILURE);
+<A NAME="275"></A>
+<A NAME="276"></A>        scheduler.updateSlotState(wf, slotState, ScheduledTime.now());
+<A NAME="277"></A>
+<A NAME="278"></A>        verifyNoMoreInteractions(stateDatabase);
+<A NAME="279"></A>    }
+<A NAME="280"></A>
+<A NAME="281"></A>    @Test(expected=IllegalArgumentException.<FONT ID="Class">class</FONT>)
+<A NAME="282"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> slidingWindowHoursPositive1() {
+<A NAME="283"></A>        <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/Scheduler.java.html">Scheduler</A>(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowConfiguration.java.html">WorkflowConfiguration</A>(), <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/MemoryStateDatabase.java.html">MemoryStateDatabase</A>(), <FONT ID="IntegerLiteral">0</FONT>);
+<A NAME="284"></A>    }
+<A NAME="285"></A>    
+<A NAME="286"></A>    @Test(expected=IllegalArgumentException.<FONT ID="Class">class</FONT>)
+<A NAME="287"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> slidingWindowHoursPositive2() {
+<A NAME="288"></A>        <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/Scheduler.java.html">Scheduler</A>(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowConfiguration.java.html">WorkflowConfiguration</A>(), <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/MemoryStateDatabase.java.html">MemoryStateDatabase</A>(), -<FONT ID="IntegerLiteral">23</FONT>);
+<A NAME="289"></A>    }
+<A NAME="290"></A>
+<A NAME="291"></A>    @Test(expected=NullPointerException.<FONT ID="Class">class</FONT>)
+<A NAME="292"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> configurationCannotBeNull() {
+<A NAME="293"></A>        <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/Scheduler.java.html">Scheduler</A>(<FONT ID="Null">null</FONT>, <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/MemoryStateDatabase.java.html">MemoryStateDatabase</A>(), <FONT ID="IntegerLiteral">1</FONT>);
+<A NAME="294"></A>    }
+<A NAME="295"></A>
+<A NAME="296"></A>    @Test(expected=NullPointerException.<FONT ID="Class">class</FONT>)
+<A NAME="297"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> databaseCannotBeNull() {
+<A NAME="298"></A>        <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/Scheduler.java.html">Scheduler</A>(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowConfiguration.java.html">WorkflowConfiguration</A>(), <FONT ID="Null">null</FONT>, <FONT ID="IntegerLiteral">1</FONT>);
+<A NAME="299"></A>    }
+<A NAME="300"></A>    
+<A NAME="301"></A>    @Test
+<A NAME="302"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> slidingWindowSizeWorks() {
+<A NAME="303"></A>        <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> t = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-11-26T20:00Z"</FONT>);
+<A NAME="304"></A>        <FONT ID="Int">int</FONT> hours = <FONT ID="IntegerLiteral">5</FONT>;
+<A NAME="305"></A>        <A HREF="../../../com/collective/celos/Scheduler.java.html">Scheduler</A> scheduler = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/Scheduler.java.html">Scheduler</A>(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowConfiguration.java.html">WorkflowConfiguration</A>(), <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/MemoryStateDatabase.java.html">MemoryStateDatabase</A>(), hours);
+<A NAME="306"></A>        Assert.assertEquals(scheduler.getSlidingWindowStartTime(t), <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-11-26T15:00Z"</FONT>));
+<A NAME="307"></A>    }
+<A NAME="308"></A>    
+<A NAME="309"></A>    <FONT ID="FormalComment">/**
+<A NAME="310"></A>     * Create a workflow with a hourly schedule and an always trigger.
+<A NAME="311"></A>     * 
+<A NAME="312"></A>     * Step the workflow a single time.
+<A NAME="313"></A>     * 
+<A NAME="314"></A>     * Ensure that all hourly slots have been changed to ready.
+<A NAME="315"></A>     */</FONT>
+<A NAME="316"></A>    @Test
+<A NAME="317"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> updatesWaitingSlotsToReady() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="318"></A>        <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A> wfID1 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"wf1"</FONT>);
+<A NAME="319"></A>        <A HREF="../../../com/collective/celos/Schedule.java.html">Schedule</A> sch1 = makeHourlySchedule();
+<A NAME="320"></A>        <A HREF="../../../com/collective/celos/SchedulingStrategy.java.html">SchedulingStrategy</A> str1 = makeSerialSchedulingStrategy();
+<A NAME="321"></A>        <A HREF="../../../com/collective/celos/Trigger.java.html">Trigger</A> tr1 = makeAlwaysTrigger();
+<A NAME="322"></A>        <A HREF="../../../com/collective/celos/ExternalService.java.html">ExternalService</A> srv1 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/MockExternalService.java.html">MockExternalService</A>(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/MockExternalService.java.html">MockExternalService.MockExternalStatusRunning</A>());
+<A NAME="323"></A>        <FONT ID="Int">int</FONT> maxRetryCount = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="324"></A>        <A HREF="../../../com/collective/celos/Workflow.java.html">Workflow</A> wf1 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/Workflow.java.html">Workflow</A>(wfID1, sch1, str1, tr1, srv1, maxRetryCount, Workflow.DEFAULT_START_TIME, Workflow.DEFAULT_WAIT_TIMEOUT_SECONDS, emptyWorkflowInfo);
+<A NAME="325"></A>        
+<A NAME="326"></A>        <A HREF="../../../com/collective/celos/WorkflowConfiguration.java.html">WorkflowConfiguration</A> cfg = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowConfiguration.java.html">WorkflowConfiguration</A>();
+<A NAME="327"></A>        cfg.addWorkflow(wf1);
+<A NAME="328"></A>        
+<A NAME="329"></A>        <A HREF="../../../com/collective/celos/MemoryStateDatabase.java.html">MemoryStateDatabase</A> db = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/MemoryStateDatabase.java.html">MemoryStateDatabase</A>();
+<A NAME="330"></A>
+<A NAME="331"></A>        <FONT ID="Int">int</FONT> slidingWindowHours = <FONT ID="IntegerLiteral">24</FONT>;
+<A NAME="332"></A>        DateTime current = DateTime.parse(<FONT ID="StringLiteral">"2013-11-27T15:01Z"</FONT>);
+<A NAME="333"></A>        DateTime currentFullHour = Util.toFullHour(current);
+<A NAME="334"></A>        
+<A NAME="335"></A>        <A HREF="../../../com/collective/celos/Scheduler.java.html">Scheduler</A> sched = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/Scheduler.java.html">Scheduler</A>(cfg, db, slidingWindowHours);
+<A NAME="336"></A>        sched.step(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(current));
+<A NAME="337"></A>        
+<A NAME="338"></A>        Assert.assertEquals(slidingWindowHours, db.size());
+<A NAME="339"></A>        
+<A NAME="340"></A>        <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> i = <FONT ID="IntegerLiteral">0</FONT>; i &lt; slidingWindowHours; i++) {
+<A NAME="341"></A>            <A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A> id = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A>(wfID1, <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(currentFullHour.minusHours(i)));
+<A NAME="342"></A>            <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> state = db.getSlotState(id);
+<A NAME="343"></A>            <FONT ID="If">if</FONT> (state == <FONT ID="Null">null</FONT>) {
+<A NAME="344"></A>                <FONT ID="Throw">throw</FONT> <FONT ID="New">new</FONT> AssertionError(<FONT ID="StringLiteral">"Slot "</FONT> + id + <FONT ID="StringLiteral">" not found."</FONT>);
+<A NAME="345"></A>            }
+<A NAME="346"></A>            Assert.assertEquals(SlotState.Status.READY, state.getStatus());
+<A NAME="347"></A>        }
+<A NAME="348"></A>        
+<A NAME="349"></A>    }
+<A NAME="350"></A>    
+<A NAME="351"></A>    <FONT ID="FormalComment">/**
+<A NAME="352"></A>     * Create a workflow with a hourly schedule and a never trigger.
+<A NAME="353"></A>     * 
+<A NAME="354"></A>     * Step the workflow a single time.
+<A NAME="355"></A>     * 
+<A NAME="356"></A>     * Ensure that no hourly slots have been changed to ready, and in fact,
+<A NAME="357"></A>     * that no slots have been updated in the database.
+<A NAME="358"></A>     */</FONT>
+<A NAME="359"></A>    @Test
+<A NAME="360"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> doesNotUpdateWaitingSlotsToReadyWhenNoDataAvailability() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="361"></A>        <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A> wfID1 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"wf1"</FONT>);
+<A NAME="362"></A>        <A HREF="../../../com/collective/celos/Schedule.java.html">Schedule</A> sch1 = makeHourlySchedule();
+<A NAME="363"></A>        <A HREF="../../../com/collective/celos/SchedulingStrategy.java.html">SchedulingStrategy</A> str1 = makeSerialSchedulingStrategy();
+<A NAME="364"></A>        <A HREF="../../../com/collective/celos/Trigger.java.html">Trigger</A> tr1 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/NeverTrigger.java.html">NeverTrigger</A>();
+<A NAME="365"></A>        <A HREF="../../../com/collective/celos/ExternalService.java.html">ExternalService</A> srv1 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/MockExternalService.java.html">MockExternalService</A>(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/MockExternalService.java.html">MockExternalService.MockExternalStatusRunning</A>());
+<A NAME="366"></A>        <FONT ID="Int">int</FONT> maxRetryCount = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="367"></A>        <A HREF="../../../com/collective/celos/Workflow.java.html">Workflow</A> wf1 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/Workflow.java.html">Workflow</A>(wfID1, sch1, str1, tr1, srv1, maxRetryCount, Workflow.DEFAULT_START_TIME, Workflow.DEFAULT_WAIT_TIMEOUT_SECONDS, emptyWorkflowInfo);
+<A NAME="368"></A>        
+<A NAME="369"></A>        <A HREF="../../../com/collective/celos/WorkflowConfiguration.java.html">WorkflowConfiguration</A> cfg = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowConfiguration.java.html">WorkflowConfiguration</A>();
+<A NAME="370"></A>        cfg.addWorkflow(wf1);
+<A NAME="371"></A>        
+<A NAME="372"></A>        <A HREF="../../../com/collective/celos/MemoryStateDatabase.java.html">MemoryStateDatabase</A> db = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/MemoryStateDatabase.java.html">MemoryStateDatabase</A>();
+<A NAME="373"></A>
+<A NAME="374"></A>        <FONT ID="Int">int</FONT> slidingWindowHours = <FONT ID="IntegerLiteral">24</FONT>;
+<A NAME="375"></A>        DateTime current = DateTime.parse(<FONT ID="StringLiteral">"2013-11-27T15:01Z"</FONT>);
+<A NAME="376"></A>        
+<A NAME="377"></A>        <A HREF="../../../com/collective/celos/Scheduler.java.html">Scheduler</A> sched = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/Scheduler.java.html">Scheduler</A>(cfg, db, slidingWindowHours);
+<A NAME="378"></A>        sched.step(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(current));
+<A NAME="379"></A>        
+<A NAME="380"></A>        Assert.assertEquals(<FONT ID="IntegerLiteral">0</FONT>, db.size());
+<A NAME="381"></A>    }
+<A NAME="382"></A>    
+<A NAME="383"></A>    @Test
+<A NAME="384"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> updatesWaitingSlotsToWaitTimeout() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="385"></A>        <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A> wfID1 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"wf1"</FONT>);
+<A NAME="386"></A>        <A HREF="../../../com/collective/celos/Schedule.java.html">Schedule</A> sch1 = makeHourlySchedule();
+<A NAME="387"></A>        <A HREF="../../../com/collective/celos/SchedulingStrategy.java.html">SchedulingStrategy</A> str1 = makeSerialSchedulingStrategy();
+<A NAME="388"></A>        <A HREF="../../../com/collective/celos/Trigger.java.html">Trigger</A> tr1 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/NeverTrigger.java.html">NeverTrigger</A>();
+<A NAME="389"></A>        <A HREF="../../../com/collective/celos/ExternalService.java.html">ExternalService</A> srv1 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/MockExternalService.java.html">MockExternalService</A>(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/MockExternalService.java.html">MockExternalService.MockExternalStatusRunning</A>());
+<A NAME="390"></A>        <FONT ID="Int">int</FONT> maxRetryCount = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="391"></A>        <FONT ID="Int">int</FONT> waitTimeoutSeconds = <FONT ID="IntegerLiteral">20</FONT>;
+<A NAME="392"></A>        <A HREF="../../../com/collective/celos/Workflow.java.html">Workflow</A> wf1 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/Workflow.java.html">Workflow</A>(wfID1, sch1, str1, tr1, srv1, maxRetryCount, Workflow.DEFAULT_START_TIME, waitTimeoutSeconds, emptyWorkflowInfo);
+<A NAME="393"></A>        
+<A NAME="394"></A>        <A HREF="../../../com/collective/celos/WorkflowConfiguration.java.html">WorkflowConfiguration</A> cfg = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowConfiguration.java.html">WorkflowConfiguration</A>();
+<A NAME="395"></A>        cfg.addWorkflow(wf1);
+<A NAME="396"></A>        
+<A NAME="397"></A>        <A HREF="../../../com/collective/celos/MemoryStateDatabase.java.html">MemoryStateDatabase</A> db = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/MemoryStateDatabase.java.html">MemoryStateDatabase</A>();
+<A NAME="398"></A>        
+<A NAME="399"></A>        <A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A> id1 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A>(wfID1, <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-11-27T22:00:00Z"</FONT>));
+<A NAME="400"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> slot1 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(id1, SlotState.Status.WAITING);
+<A NAME="401"></A>        db.putSlotState(slot1);
+<A NAME="402"></A>
+<A NAME="403"></A>        <FONT ID="Int">int</FONT> slidingWindowHours = <FONT ID="IntegerLiteral">24</FONT>;
+<A NAME="404"></A>        
+<A NAME="405"></A>        <A HREF="../../../com/collective/celos/Scheduler.java.html">Scheduler</A> sched = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/Scheduler.java.html">Scheduler</A>(cfg, db, slidingWindowHours);
+<A NAME="406"></A>        
+<A NAME="407"></A>        sched.step(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-11-27T22:00:19Z"</FONT>));
+<A NAME="408"></A>        Assert.assertEquals(SlotState.Status.WAITING, db.getSlotState(id1).getStatus());
+<A NAME="409"></A>        sched.step(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-11-27T22:00:20Z"</FONT>));
+<A NAME="410"></A>        Assert.assertEquals(SlotState.Status.WAITING, db.getSlotState(id1).getStatus());
+<A NAME="411"></A>        sched.step(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-11-27T22:00:21Z"</FONT>));
+<A NAME="412"></A>        Assert.assertEquals(SlotState.Status.WAIT_TIMEOUT, db.getSlotState(id1).getStatus());
+<A NAME="413"></A>    }
+<A NAME="414"></A>
+<A NAME="415"></A>    <FONT ID="FormalComment">/**
+<A NAME="416"></A>     * Creates running slots in memory database, with mock external service
+<A NAME="417"></A>     * that always says the external jobs are still running.
+<A NAME="418"></A>     * 
+<A NAME="419"></A>     * Makes sure that the slots are still marked as running after step.
+<A NAME="420"></A>     */</FONT>
+<A NAME="421"></A>    @Test
+<A NAME="422"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> leavesRunningSlotsAsIsIfStillRunning() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="423"></A>        runningSlotUtil(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/MockExternalService.java.html">MockExternalService.MockExternalStatusRunning</A>(), SlotState.Status.RUNNING);
+<A NAME="424"></A>    }
+<A NAME="425"></A>    
+<A NAME="426"></A>    <FONT ID="FormalComment">/**
+<A NAME="427"></A>     * Creates running slots in memory database, with mock external service
+<A NAME="428"></A>     * that always says the external jobs are successful.
+<A NAME="429"></A>     * 
+<A NAME="430"></A>     * Makes sure that the slots are marked as successful after step.
+<A NAME="431"></A>     */</FONT>
+<A NAME="432"></A>    @Test
+<A NAME="433"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> marksRunningSlotsAsSuccessfulIfExternalStatusIsSuccess() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="434"></A>        runningSlotUtil(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/MockExternalService.java.html">MockExternalService.MockExternalStatusSuccess</A>(), SlotState.Status.SUCCESS);
+<A NAME="435"></A>    }
+<A NAME="436"></A>    
+<A NAME="437"></A>    <FONT ID="FormalComment">/**
+<A NAME="438"></A>     * Creates running slots in memory database, with mock external service
+<A NAME="439"></A>     * that always says the external jobs are failed.
+<A NAME="440"></A>     * 
+<A NAME="441"></A>     * Makes sure that the slots are marked as failed after step.
+<A NAME="442"></A>     */</FONT>
+<A NAME="443"></A>    @Test
+<A NAME="444"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> marksRunningSlotsAsFailedIfExternalStatusIsFailure() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="445"></A>        runningSlotUtil(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/MockExternalService.java.html">MockExternalService.MockExternalStatusFailure</A>(), SlotState.Status.FAILURE);
+<A NAME="446"></A>    }
+<A NAME="447"></A>
+<A NAME="448"></A>    <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> runningSlotUtil(<A HREF="../../../com/collective/celos/ExternalStatus.java.html">ExternalStatus</A> externalStatus, <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState.Status</A> expectedSlotStatus) <FONT ID="Throws">throws</FONT> Exception, AssertionError {
+<A NAME="449"></A>        <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A> wfID1 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"wf1"</FONT>);
+<A NAME="450"></A>        <A HREF="../../../com/collective/celos/Schedule.java.html">Schedule</A> sch1 = makeHourlySchedule();
+<A NAME="451"></A>        <A HREF="../../../com/collective/celos/SchedulingStrategy.java.html">SchedulingStrategy</A> str1 = makeSerialSchedulingStrategy();
+<A NAME="452"></A>        <A HREF="../../../com/collective/celos/Trigger.java.html">Trigger</A> tr1 = makeAlwaysTrigger();
+<A NAME="453"></A>        <A HREF="../../../com/collective/celos/ExternalService.java.html">ExternalService</A> srv1 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/MockExternalService.java.html">MockExternalService</A>(externalStatus);
+<A NAME="454"></A>        <FONT ID="Int">int</FONT> maxRetryCount = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="455"></A>        <A HREF="../../../com/collective/celos/Workflow.java.html">Workflow</A> wf1 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/Workflow.java.html">Workflow</A>(wfID1, sch1, str1, tr1, srv1, maxRetryCount, Workflow.DEFAULT_START_TIME, Workflow.DEFAULT_WAIT_TIMEOUT_SECONDS, emptyWorkflowInfo);
+<A NAME="456"></A>        
+<A NAME="457"></A>        <A HREF="../../../com/collective/celos/WorkflowConfiguration.java.html">WorkflowConfiguration</A> cfg = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowConfiguration.java.html">WorkflowConfiguration</A>();
+<A NAME="458"></A>        cfg.addWorkflow(wf1);
+<A NAME="459"></A>        
+<A NAME="460"></A>        <A HREF="../../../com/collective/celos/MemoryStateDatabase.java.html">MemoryStateDatabase</A> db = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/MemoryStateDatabase.java.html">MemoryStateDatabase</A>();
+<A NAME="461"></A>
+<A NAME="462"></A>        <FONT ID="Int">int</FONT> slidingWindowHours = <FONT ID="IntegerLiteral">24</FONT>;
+<A NAME="463"></A>        DateTime current = DateTime.parse(<FONT ID="StringLiteral">"2013-11-27T15:01Z"</FONT>);
+<A NAME="464"></A>        DateTime currentFullHour = Util.toFullHour(current);
+<A NAME="465"></A>
+<A NAME="466"></A>        <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> i = <FONT ID="IntegerLiteral">0</FONT>; i &lt; slidingWindowHours; i++) {
+<A NAME="467"></A>            <A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A> id = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A>(wfID1, <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(currentFullHour.minusHours(i)));
+<A NAME="468"></A>            <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> state = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(id, SlotState.Status.READY).transitionToRunning(<FONT ID="StringLiteral">"fake-external-ID"</FONT>);
+<A NAME="469"></A>            db.putSlotState(state);
+<A NAME="470"></A>        }
+<A NAME="471"></A>        
+<A NAME="472"></A>        <A HREF="../../../com/collective/celos/Scheduler.java.html">Scheduler</A> sched = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/Scheduler.java.html">Scheduler</A>(cfg, db, slidingWindowHours);
+<A NAME="473"></A>        sched.step(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(current));
+<A NAME="474"></A>        
+<A NAME="475"></A>        Assert.assertEquals(slidingWindowHours, db.size());
+<A NAME="476"></A>        
+<A NAME="477"></A>        <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> i = <FONT ID="IntegerLiteral">0</FONT>; i &lt; slidingWindowHours; i++) {
+<A NAME="478"></A>            <A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A> id = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A>(wfID1, <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(currentFullHour.minusHours(i)));
+<A NAME="479"></A>            <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> state = db.getSlotState(id);
+<A NAME="480"></A>            <FONT ID="If">if</FONT> (state == <FONT ID="Null">null</FONT>) {
+<A NAME="481"></A>                <FONT ID="Throw">throw</FONT> <FONT ID="New">new</FONT> AssertionError(<FONT ID="StringLiteral">"Slot "</FONT> + id + <FONT ID="StringLiteral">" not found."</FONT>);
+<A NAME="482"></A>            }
+<A NAME="483"></A>            Assert.assertEquals(expectedSlotStatus, state.getStatus());
+<A NAME="484"></A>        }
+<A NAME="485"></A>    }
+<A NAME="486"></A>
+<A NAME="487"></A>    <FONT ID="FormalComment">/**
+<A NAME="488"></A>     * Creates ready slots in memory database.
+<A NAME="489"></A>     * 
+<A NAME="490"></A>     * Uses trivial scheduling strategy so all ready slots will be used.
+<A NAME="491"></A>     * 
+<A NAME="492"></A>     * Makes sure all are running after step, and have been submitted to external service.
+<A NAME="493"></A>     */</FONT>
+<A NAME="494"></A>    @Test
+<A NAME="495"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> updatesReadySlotsToRunningAndSubmitsThemToExternalSystem() <FONT ID="Throws">throws</FONT> Exception, AssertionError {
+<A NAME="496"></A>        <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A> wfID1 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"wf1"</FONT>);
+<A NAME="497"></A>        <A HREF="../../../com/collective/celos/Schedule.java.html">Schedule</A> sch1 = makeHourlySchedule();
+<A NAME="498"></A>        <A HREF="../../../com/collective/celos/SchedulingStrategy.java.html">SchedulingStrategy</A> str1 = makeTrivialSchedulingStrategy();
+<A NAME="499"></A>        <A HREF="../../../com/collective/celos/Trigger.java.html">Trigger</A> tr1 = makeAlwaysTrigger();
+<A NAME="500"></A>        <A HREF="../../../com/collective/celos/MockExternalService.java.html">MockExternalService</A> srv1 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/MockExternalService.java.html">MockExternalService</A>(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/MockExternalService.java.html">MockExternalService.MockExternalStatusRunning</A>());
+<A NAME="501"></A>        <FONT ID="Int">int</FONT> maxRetryCount = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="502"></A>        <A HREF="../../../com/collective/celos/Workflow.java.html">Workflow</A> wf1 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/Workflow.java.html">Workflow</A>(wfID1, sch1, str1, tr1, srv1, maxRetryCount, Workflow.DEFAULT_START_TIME, Workflow.DEFAULT_WAIT_TIMEOUT_SECONDS, emptyWorkflowInfo);
+<A NAME="503"></A>        
+<A NAME="504"></A>        <A HREF="../../../com/collective/celos/WorkflowConfiguration.java.html">WorkflowConfiguration</A> cfg = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowConfiguration.java.html">WorkflowConfiguration</A>();
+<A NAME="505"></A>        cfg.addWorkflow(wf1);
+<A NAME="506"></A>        
+<A NAME="507"></A>        <A HREF="../../../com/collective/celos/MemoryStateDatabase.java.html">MemoryStateDatabase</A> db = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/MemoryStateDatabase.java.html">MemoryStateDatabase</A>();
+<A NAME="508"></A>
+<A NAME="509"></A>        <FONT ID="Int">int</FONT> slidingWindowHours = <FONT ID="IntegerLiteral">24</FONT>;
+<A NAME="510"></A>        DateTime current = DateTime.parse(<FONT ID="StringLiteral">"2013-11-27T15:01Z"</FONT>);
+<A NAME="511"></A>        DateTime currentFullHour = Util.toFullHour(current);
+<A NAME="512"></A>
+<A NAME="513"></A>        <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> i = <FONT ID="IntegerLiteral">0</FONT>; i &lt; slidingWindowHours; i++) {
+<A NAME="514"></A>            <A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A> id = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A>(wfID1, <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(currentFullHour.minusHours(i)));
+<A NAME="515"></A>            <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> state = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(id, SlotState.Status.READY);
+<A NAME="516"></A>            db.putSlotState(state);
+<A NAME="517"></A>        }
+<A NAME="518"></A>        
+<A NAME="519"></A>        <A HREF="../../../com/collective/celos/Scheduler.java.html">Scheduler</A> sched = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/Scheduler.java.html">Scheduler</A>(cfg, db, slidingWindowHours);
+<A NAME="520"></A>        sched.step(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(current));
+<A NAME="521"></A>        
+<A NAME="522"></A>        Assert.assertEquals(slidingWindowHours, db.size());
+<A NAME="523"></A>        Assert.assertEquals(slidingWindowHours, srv1.getSlots2ExternalID().size());
+<A NAME="524"></A>        
+<A NAME="525"></A>        <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> i = <FONT ID="IntegerLiteral">0</FONT>; i &lt; slidingWindowHours; i++) {
+<A NAME="526"></A>            <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> scheduledTime = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(currentFullHour.minusHours(i));
+<A NAME="527"></A>            <A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A> id = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A>(wfID1, scheduledTime);
+<A NAME="528"></A>            <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> state = db.getSlotState(id);
+<A NAME="529"></A>            <FONT ID="If">if</FONT> (state == <FONT ID="Null">null</FONT>) {
+<A NAME="530"></A>                <FONT ID="Throw">throw</FONT> <FONT ID="New">new</FONT> AssertionError(<FONT ID="StringLiteral">"Slot "</FONT> + id + <FONT ID="StringLiteral">" not found."</FONT>);
+<A NAME="531"></A>            }
+<A NAME="532"></A>            Assert.assertEquals(SlotState.Status.RUNNING, state.getStatus());
+<A NAME="533"></A>            String externalID = state.getExternalID();
+<A NAME="534"></A>            Assert.assertNotNull(externalID);
+<A NAME="535"></A>            Assert.assertEquals(externalID, srv1.getSlots2ExternalID().get(id));
+<A NAME="536"></A>        }
+<A NAME="537"></A>    }
+<A NAME="538"></A>
+<A NAME="539"></A>    <FONT ID="FormalComment">/**
+<A NAME="540"></A>     * Use a serial scheduling strategy.
+<A NAME="541"></A>     * 
+<A NAME="542"></A>     * Create one waiting and two ready slots.
+<A NAME="543"></A>     * 
+<A NAME="544"></A>     * Make sure that after a step:
+<A NAME="545"></A>     * 
+<A NAME="546"></A>     * - the waiting slot is ready
+<A NAME="547"></A>     * 
+<A NAME="548"></A>     * - the first ready slot is running
+<A NAME="549"></A>     * 
+<A NAME="550"></A>     * - the second ready slot is still ready
+<A NAME="551"></A>     * 
+<A NAME="552"></A>     * - the running slot's external ID matches the one handed out by the mock external service
+<A NAME="553"></A>     */</FONT>
+<A NAME="554"></A>    @Test
+<A NAME="555"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> multipleSlotsTest() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="556"></A>        <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A> wfID1 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"wf1"</FONT>);
+<A NAME="557"></A>        <A HREF="../../../com/collective/celos/Schedule.java.html">Schedule</A> sch1 = makeHourlySchedule();
+<A NAME="558"></A>        <A HREF="../../../com/collective/celos/SchedulingStrategy.java.html">SchedulingStrategy</A> str1 = makeSerialSchedulingStrategy();
+<A NAME="559"></A>        <A HREF="../../../com/collective/celos/Trigger.java.html">Trigger</A> tr1 = makeAlwaysTrigger();
+<A NAME="560"></A>        <A HREF="../../../com/collective/celos/MockExternalService.java.html">MockExternalService</A> srv1 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/MockExternalService.java.html">MockExternalService</A>(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/MockExternalService.java.html">MockExternalService.MockExternalStatusRunning</A>());
+<A NAME="561"></A>        <FONT ID="Int">int</FONT> maxRetryCount = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="562"></A>        <A HREF="../../../com/collective/celos/Workflow.java.html">Workflow</A> wf1 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/Workflow.java.html">Workflow</A>(wfID1, sch1, str1, tr1, srv1, maxRetryCount, Workflow.DEFAULT_START_TIME, Workflow.DEFAULT_WAIT_TIMEOUT_SECONDS, emptyWorkflowInfo);
+<A NAME="563"></A>        
+<A NAME="564"></A>        <A HREF="../../../com/collective/celos/WorkflowConfiguration.java.html">WorkflowConfiguration</A> cfg = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowConfiguration.java.html">WorkflowConfiguration</A>();
+<A NAME="565"></A>        cfg.addWorkflow(wf1);
+<A NAME="566"></A>        
+<A NAME="567"></A>        <A HREF="../../../com/collective/celos/MemoryStateDatabase.java.html">MemoryStateDatabase</A> db = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/MemoryStateDatabase.java.html">MemoryStateDatabase</A>();
+<A NAME="568"></A>
+<A NAME="569"></A>        <A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A> id1 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A>(wfID1, <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-11-27T20:00Z"</FONT>));
+<A NAME="570"></A>        <A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A> id2 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A>(wfID1, <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-11-27T21:00Z"</FONT>));
+<A NAME="571"></A>        <A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A> id3 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A>(wfID1, <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-11-27T22:00Z"</FONT>));
+<A NAME="572"></A>        
+<A NAME="573"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> slot1 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(id1, SlotState.Status.WAITING);
+<A NAME="574"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> slot2 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(id2, SlotState.Status.WAITING).transitionToReady();
+<A NAME="575"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> slot3 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(id3, SlotState.Status.WAITING).transitionToReady();
+<A NAME="576"></A>        
+<A NAME="577"></A>        db.putSlotState(slot1);
+<A NAME="578"></A>        db.putSlotState(slot2);
+<A NAME="579"></A>        db.putSlotState(slot3);
+<A NAME="580"></A>        
+<A NAME="581"></A>        <FONT ID="Int">int</FONT> slidingWindowHours = <FONT ID="IntegerLiteral">3</FONT>;
+<A NAME="582"></A>        DateTime current = DateTime.parse(<FONT ID="StringLiteral">"2013-11-27T22:01Z"</FONT>);
+<A NAME="583"></A>
+<A NAME="584"></A>        <A HREF="../../../com/collective/celos/Scheduler.java.html">Scheduler</A> sched = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/Scheduler.java.html">Scheduler</A>(cfg, db, slidingWindowHours);
+<A NAME="585"></A>        sched.step(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(current));
+<A NAME="586"></A>        
+<A NAME="587"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> slot1After = db.getSlotState(id1);
+<A NAME="588"></A>        Assert.assertEquals(SlotState.Status.READY, slot1After.getStatus());
+<A NAME="589"></A>        
+<A NAME="590"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> slot2After = db.getSlotState(id2);
+<A NAME="591"></A>        Assert.assertEquals(SlotState.Status.RUNNING, slot2After.getStatus());
+<A NAME="592"></A>
+<A NAME="593"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> slot3After = db.getSlotState(id3);
+<A NAME="594"></A>        Assert.assertEquals(SlotState.Status.READY, slot3After.getStatus());
+<A NAME="595"></A>        
+<A NAME="596"></A>        String externalID = slot2After.getExternalID();
+<A NAME="597"></A>        Assert.assertNotNull(externalID);
+<A NAME="598"></A>        Assert.assertEquals(externalID, srv1.getSlots2ExternalID().get(slot2.getSlotID()));
+<A NAME="599"></A>    }
+<A NAME="600"></A>
+<A NAME="601"></A>    <FONT ID="FormalComment">/**
+<A NAME="602"></A>     * Create a workflow with a start time 3 days in the past.
+<A NAME="603"></A>     * 
+<A NAME="604"></A>     * Run scheduler for past 7 days.
+<A NAME="605"></A>     * 
+<A NAME="606"></A>     * Ensure that only slots for the past three days have been created in the DB.
+<A NAME="607"></A>     */</FONT>
+<A NAME="608"></A>    @Test
+<A NAME="609"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> workflowStartTimeTest() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="610"></A>        <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A> wfID1 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"wf1"</FONT>);
+<A NAME="611"></A>        <A HREF="../../../com/collective/celos/Schedule.java.html">Schedule</A> sch1 = makeHourlySchedule();
+<A NAME="612"></A>        <A HREF="../../../com/collective/celos/SchedulingStrategy.java.html">SchedulingStrategy</A> str1 = makeSerialSchedulingStrategy();
+<A NAME="613"></A>        <A HREF="../../../com/collective/celos/Trigger.java.html">Trigger</A> tr1 = makeAlwaysTrigger();
+<A NAME="614"></A>        <A HREF="../../../com/collective/celos/MockExternalService.java.html">MockExternalService</A> srv1 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/MockExternalService.java.html">MockExternalService</A>(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/MockExternalService.java.html">MockExternalService.MockExternalStatusRunning</A>());
+<A NAME="615"></A>        <FONT ID="Int">int</FONT> maxRetryCount = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="616"></A>        DateTime currentDT = DateTime.now(DateTimeZone.UTC);
+<A NAME="617"></A>        <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> startTime = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(currentDT.minusDays(<FONT ID="IntegerLiteral">3</FONT>));
+<A NAME="618"></A>        
+<A NAME="619"></A>        <A HREF="../../../com/collective/celos/Workflow.java.html">Workflow</A> wf1 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/Workflow.java.html">Workflow</A>(wfID1, sch1, str1, tr1, srv1, maxRetryCount, startTime, Workflow.DEFAULT_WAIT_TIMEOUT_SECONDS, emptyWorkflowInfo);
+<A NAME="620"></A>        
+<A NAME="621"></A>        <A HREF="../../../com/collective/celos/WorkflowConfiguration.java.html">WorkflowConfiguration</A> cfg = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowConfiguration.java.html">WorkflowConfiguration</A>();
+<A NAME="622"></A>        cfg.addWorkflow(wf1);
+<A NAME="623"></A>        
+<A NAME="624"></A>        <A HREF="../../../com/collective/celos/MemoryStateDatabase.java.html">MemoryStateDatabase</A> db = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/MemoryStateDatabase.java.html">MemoryStateDatabase</A>();
+<A NAME="625"></A>
+<A NAME="626"></A>        <A HREF="../../../com/collective/celos/Scheduler.java.html">Scheduler</A> sched = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/Scheduler.java.html">Scheduler</A>(cfg, db, <FONT ID="IntegerLiteral">7</FONT> * <FONT ID="IntegerLiteral">24</FONT>);
+<A NAME="627"></A>        sched.step(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(currentDT));
+<A NAME="628"></A>        
+<A NAME="629"></A>        Assert.assertEquals(<FONT ID="IntegerLiteral">3</FONT> * <FONT ID="IntegerLiteral">24</FONT>, db.size());
+<A NAME="630"></A>    }
+<A NAME="631"></A>    
+<A NAME="632"></A>    <FONT ID="FormalComment">/**
+<A NAME="633"></A>     * Make sure all slots have been processed if workflow start time is before sliding window start time.
+<A NAME="634"></A>     */</FONT>
+<A NAME="635"></A>    @Test
+<A NAME="636"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> workflowStartTimeTest2() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="637"></A>        <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A> wfID1 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"wf1"</FONT>);
+<A NAME="638"></A>        <A HREF="../../../com/collective/celos/Schedule.java.html">Schedule</A> sch1 = makeHourlySchedule();
+<A NAME="639"></A>        <A HREF="../../../com/collective/celos/SchedulingStrategy.java.html">SchedulingStrategy</A> str1 = makeSerialSchedulingStrategy();
+<A NAME="640"></A>        <A HREF="../../../com/collective/celos/Trigger.java.html">Trigger</A> tr1 = makeAlwaysTrigger();
+<A NAME="641"></A>        <A HREF="../../../com/collective/celos/MockExternalService.java.html">MockExternalService</A> srv1 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/MockExternalService.java.html">MockExternalService</A>(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/MockExternalService.java.html">MockExternalService.MockExternalStatusRunning</A>());
+<A NAME="642"></A>        <FONT ID="Int">int</FONT> maxRetryCount = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="643"></A>        DateTime currentDT = DateTime.now(DateTimeZone.UTC);
+<A NAME="644"></A>        <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> startTime = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(currentDT.minusDays(<FONT ID="IntegerLiteral">10</FONT>));
+<A NAME="645"></A>        
+<A NAME="646"></A>        <A HREF="../../../com/collective/celos/Workflow.java.html">Workflow</A> wf1 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/Workflow.java.html">Workflow</A>(wfID1, sch1, str1, tr1, srv1, maxRetryCount, startTime, Workflow.DEFAULT_WAIT_TIMEOUT_SECONDS, emptyWorkflowInfo);
+<A NAME="647"></A>        
+<A NAME="648"></A>        <A HREF="../../../com/collective/celos/WorkflowConfiguration.java.html">WorkflowConfiguration</A> cfg = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowConfiguration.java.html">WorkflowConfiguration</A>();
+<A NAME="649"></A>        cfg.addWorkflow(wf1);
+<A NAME="650"></A>        
+<A NAME="651"></A>        <A HREF="../../../com/collective/celos/MemoryStateDatabase.java.html">MemoryStateDatabase</A> db = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/MemoryStateDatabase.java.html">MemoryStateDatabase</A>();
+<A NAME="652"></A>
+<A NAME="653"></A>        <A HREF="../../../com/collective/celos/Scheduler.java.html">Scheduler</A> sched = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/Scheduler.java.html">Scheduler</A>(cfg, db, <FONT ID="IntegerLiteral">7</FONT> * <FONT ID="IntegerLiteral">24</FONT>);
+<A NAME="654"></A>        sched.step(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(currentDT));
+<A NAME="655"></A>        
+<A NAME="656"></A>        Assert.assertEquals(<FONT ID="IntegerLiteral">7</FONT> * <FONT ID="IntegerLiteral">24</FONT>, db.size());
+<A NAME="657"></A>    }
+<A NAME="658"></A>    
+<A NAME="659"></A>    <FONT ID="FormalComment">/**
+<A NAME="660"></A>     * Make sure no slots have been processed if workflow start time is in the future.
+<A NAME="661"></A>     */</FONT>
+<A NAME="662"></A>    @Test
+<A NAME="663"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> workflowStartTimeTest3() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="664"></A>        <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A> wfID1 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"wf1"</FONT>);
+<A NAME="665"></A>        <A HREF="../../../com/collective/celos/Schedule.java.html">Schedule</A> sch1 = makeHourlySchedule();
+<A NAME="666"></A>        <A HREF="../../../com/collective/celos/SchedulingStrategy.java.html">SchedulingStrategy</A> str1 = makeSerialSchedulingStrategy();
+<A NAME="667"></A>        <A HREF="../../../com/collective/celos/Trigger.java.html">Trigger</A> tr1 = makeAlwaysTrigger();
+<A NAME="668"></A>        <A HREF="../../../com/collective/celos/MockExternalService.java.html">MockExternalService</A> srv1 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/MockExternalService.java.html">MockExternalService</A>(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/MockExternalService.java.html">MockExternalService.MockExternalStatusRunning</A>());
+<A NAME="669"></A>        <FONT ID="Int">int</FONT> maxRetryCount = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="670"></A>        DateTime currentDT = DateTime.now(DateTimeZone.UTC);
+<A NAME="671"></A>        <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> startTime = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(currentDT.plusDays(<FONT ID="IntegerLiteral">10</FONT>));
+<A NAME="672"></A>        
+<A NAME="673"></A>        <A HREF="../../../com/collective/celos/Workflow.java.html">Workflow</A> wf1 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/Workflow.java.html">Workflow</A>(wfID1, sch1, str1, tr1, srv1, maxRetryCount, startTime, Workflow.DEFAULT_WAIT_TIMEOUT_SECONDS, emptyWorkflowInfo);
+<A NAME="674"></A>        
+<A NAME="675"></A>        <A HREF="../../../com/collective/celos/WorkflowConfiguration.java.html">WorkflowConfiguration</A> cfg = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowConfiguration.java.html">WorkflowConfiguration</A>();
+<A NAME="676"></A>        cfg.addWorkflow(wf1);
+<A NAME="677"></A>        
+<A NAME="678"></A>        <A HREF="../../../com/collective/celos/MemoryStateDatabase.java.html">MemoryStateDatabase</A> db = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/MemoryStateDatabase.java.html">MemoryStateDatabase</A>();
+<A NAME="679"></A>
+<A NAME="680"></A>        <A HREF="../../../com/collective/celos/Scheduler.java.html">Scheduler</A> sched = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/Scheduler.java.html">Scheduler</A>(cfg, db, <FONT ID="IntegerLiteral">7</FONT> * <FONT ID="IntegerLiteral">24</FONT>);
+<A NAME="681"></A>        sched.step(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(currentDT));
+<A NAME="682"></A>        
+<A NAME="683"></A>        Assert.assertEquals(<FONT ID="IntegerLiteral">0</FONT>, db.size());
+<A NAME="684"></A>    }
+<A NAME="685"></A>    
+<A NAME="686"></A>    <FONT ID="FormalComment">/**
+<A NAME="687"></A>     * External service that fails a configurable number of times and then succeeds.
+<A NAME="688"></A>     */</FONT>
+<A NAME="689"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Class">class</FONT> RepeatedlyFailingExternalService <FONT ID="Implements">implements</FONT> <A HREF="../../../com/collective/celos/ExternalService.java.html">ExternalService</A> {
+<A NAME="690"></A>
+<A NAME="691"></A>        <FONT ID="Private">private</FONT> <FONT ID="Int">int</FONT> failuresLeft;
+<A NAME="692"></A>        
+<A NAME="693"></A>        <FONT ID="Public">public</FONT> RepeatedlyFailingExternalService(<FONT ID="Int">int</FONT> failures) {
+<A NAME="694"></A>            <FONT ID="This">this</FONT>.failuresLeft = failures;
+<A NAME="695"></A>        }
+<A NAME="696"></A>        
+<A NAME="697"></A>        @Override
+<A NAME="698"></A>        <FONT ID="Public">public</FONT> String submit(<A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A> id) <FONT ID="Throws">throws</FONT> <A HREF="../../../com/collective/celos/ExternalServiceException.java.html">ExternalServiceException</A> {
+<A NAME="699"></A>            <FONT ID="Return">return</FONT> <FONT ID="StringLiteral">"fake-external-id"</FONT>;
+<A NAME="700"></A>        }
+<A NAME="701"></A>
+<A NAME="702"></A>        @Override
+<A NAME="703"></A>        <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> start(<A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A> id, String externalID) <FONT ID="Throws">throws</FONT> <A HREF="../../../com/collective/celos/ExternalServiceException.java.html">ExternalServiceException</A> {
+<A NAME="704"></A>            Assert.assertEquals(<FONT ID="StringLiteral">"fake-external-id"</FONT>, externalID);
+<A NAME="705"></A>            failuresLeft--;
+<A NAME="706"></A>        }
+<A NAME="707"></A>
+<A NAME="708"></A>        @Override
+<A NAME="709"></A>        <FONT ID="Public">public</FONT> <A HREF="../../../com/collective/celos/ExternalStatus.java.html">ExternalStatus</A> getStatus(<A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A> id, String externalWorkflowID) <FONT ID="Throws">throws</FONT> <A HREF="../../../com/collective/celos/ExternalServiceException.java.html">ExternalServiceException</A> {
+<A NAME="710"></A>            <FONT ID="If">if</FONT> (failuresLeft &lt; <FONT ID="IntegerLiteral">0</FONT>) {
+<A NAME="711"></A>                <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/MockExternalService.java.html">MockExternalService.MockExternalStatusSuccess</A>();
+<A NAME="712"></A>            } <FONT ID="Else">else</FONT> {
+<A NAME="713"></A>                <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/MockExternalService.java.html">MockExternalService.MockExternalStatusFailure</A>();
+<A NAME="714"></A>            }
+<A NAME="715"></A>        }
+<A NAME="716"></A>        
+<A NAME="717"></A>    }
+<A NAME="718"></A>    
+<A NAME="719"></A>    @Test
+<A NAME="720"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testRepeatedlyFailingExternalService() <FONT ID="Throws">throws</FONT> <A HREF="../../../com/collective/celos/ExternalServiceException.java.html">ExternalServiceException</A> {
+<A NAME="721"></A>        <A HREF="../../../com/collective/celos/ExternalService.java.html">ExternalService</A> srv = <FONT ID="New">new</FONT> RepeatedlyFailingExternalService(<FONT ID="IntegerLiteral">2</FONT>);
+<A NAME="722"></A>        srv.start(slotId, <FONT ID="StringLiteral">"fake-external-id"</FONT>);
+<A NAME="723"></A>        Assert.assertFalse(srv.getStatus(slotId, <FONT ID="StringLiteral">"fake-external-id"</FONT>).isSuccess());
+<A NAME="724"></A>        srv.start(slotId, <FONT ID="StringLiteral">"fake-external-id"</FONT>);
+<A NAME="725"></A>        Assert.assertFalse(srv.getStatus(slotId, <FONT ID="StringLiteral">"fake-external-id"</FONT>).isSuccess());
+<A NAME="726"></A>        srv.start(slotId, <FONT ID="StringLiteral">"fake-external-id"</FONT>);
+<A NAME="727"></A>        Assert.assertTrue(srv.getStatus(slotId, <FONT ID="StringLiteral">"fake-external-id"</FONT>).isSuccess());
+<A NAME="728"></A>    }
+<A NAME="729"></A>    
+<A NAME="730"></A>    
+<A NAME="731"></A>    <FONT ID="FormalComment">/**
+<A NAME="732"></A>     * Set up workflow with max retry count of 10.
+<A NAME="733"></A>     * 
+<A NAME="734"></A>     * Use repeatedly failing external service that fails 2 times.
+<A NAME="735"></A>     * 
+<A NAME="736"></A>     * Ensure that slot is rerun 2 times and then moves to success state.
+<A NAME="737"></A>     */</FONT>
+<A NAME="738"></A>    @Test
+<A NAME="739"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> retryTest() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="740"></A>        <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A> wfID1 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"wf1"</FONT>);
+<A NAME="741"></A>        <A HREF="../../../com/collective/celos/Schedule.java.html">Schedule</A> sch1 = makeHourlySchedule();
+<A NAME="742"></A>        <A HREF="../../../com/collective/celos/SchedulingStrategy.java.html">SchedulingStrategy</A> str1 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/TrivialSchedulingStrategy.java.html">TrivialSchedulingStrategy</A>();
+<A NAME="743"></A>        <A HREF="../../../com/collective/celos/Trigger.java.html">Trigger</A> tr1 = makeAlwaysTrigger();
+<A NAME="744"></A>        <A HREF="../../../com/collective/celos/ExternalService.java.html">ExternalService</A> srv1 = <FONT ID="New">new</FONT> RepeatedlyFailingExternalService(<FONT ID="IntegerLiteral">2</FONT>);
+<A NAME="745"></A>        <FONT ID="Int">int</FONT> maxRetryCount = <FONT ID="IntegerLiteral">10</FONT>;
+<A NAME="746"></A>        <A HREF="../../../com/collective/celos/Workflow.java.html">Workflow</A> wf1 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/Workflow.java.html">Workflow</A>(wfID1, sch1, str1, tr1, srv1, maxRetryCount, Workflow.DEFAULT_START_TIME, Workflow.DEFAULT_WAIT_TIMEOUT_SECONDS, emptyWorkflowInfo);
+<A NAME="747"></A>        
+<A NAME="748"></A>        <A HREF="../../../com/collective/celos/WorkflowConfiguration.java.html">WorkflowConfiguration</A> cfg = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowConfiguration.java.html">WorkflowConfiguration</A>();
+<A NAME="749"></A>        cfg.addWorkflow(wf1);
+<A NAME="750"></A>        
+<A NAME="751"></A>        <A HREF="../../../com/collective/celos/MemoryStateDatabase.java.html">MemoryStateDatabase</A> db = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/MemoryStateDatabase.java.html">MemoryStateDatabase</A>();
+<A NAME="752"></A>
+<A NAME="753"></A>        <A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A> id1 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A>(wfID1, <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-11-27T20:00Z"</FONT>));
+<A NAME="754"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> initial = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(id1, SlotState.Status.READY);
+<A NAME="755"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> running1 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(id1, SlotState.Status.RUNNING, <FONT ID="StringLiteral">"fake-external-id"</FONT>, <FONT ID="IntegerLiteral">0</FONT>);
+<A NAME="756"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> retry1 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(id1, SlotState.Status.WAITING, <FONT ID="Null">null</FONT>, <FONT ID="IntegerLiteral">1</FONT>);
+<A NAME="757"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> ready1 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(id1, SlotState.Status.READY, <FONT ID="Null">null</FONT>, <FONT ID="IntegerLiteral">1</FONT>);
+<A NAME="758"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> running2 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(id1, SlotState.Status.RUNNING, <FONT ID="StringLiteral">"fake-external-id"</FONT>, <FONT ID="IntegerLiteral">1</FONT>);
+<A NAME="759"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> retry2 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(id1, SlotState.Status.WAITING, <FONT ID="Null">null</FONT>, <FONT ID="IntegerLiteral">2</FONT>);
+<A NAME="760"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> ready2 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(id1, SlotState.Status.READY, <FONT ID="Null">null</FONT>, <FONT ID="IntegerLiteral">2</FONT>);
+<A NAME="761"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> running3 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(id1, SlotState.Status.RUNNING, <FONT ID="StringLiteral">"fake-external-id"</FONT>, <FONT ID="IntegerLiteral">2</FONT>);
+<A NAME="762"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> success = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(id1, SlotState.Status.SUCCESS, <FONT ID="StringLiteral">"fake-external-id"</FONT>, <FONT ID="IntegerLiteral">2</FONT>);
+<A NAME="763"></A>        
+<A NAME="764"></A>        db.putSlotState(initial);
+<A NAME="765"></A>        
+<A NAME="766"></A>        <A HREF="../../../com/collective/celos/Scheduler.java.html">Scheduler</A> sch = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/Scheduler.java.html">Scheduler</A>(cfg, db, <FONT ID="IntegerLiteral">1</FONT>);
+<A NAME="767"></A>        sch.step(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-11-27T20:01Z"</FONT>));
+<A NAME="768"></A>        Assert.assertEquals(running1, db.getSlotState(id1));
+<A NAME="769"></A>        sch.step(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-11-27T20:01Z"</FONT>));
+<A NAME="770"></A>        Assert.assertEquals(retry1, db.getSlotState(id1));
+<A NAME="771"></A>        sch.step(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-11-27T20:01Z"</FONT>));
+<A NAME="772"></A>        Assert.assertEquals(ready1, db.getSlotState(id1));
+<A NAME="773"></A>        sch.step(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-11-27T20:01Z"</FONT>));
+<A NAME="774"></A>        Assert.assertEquals(running2, db.getSlotState(id1));
+<A NAME="775"></A>        sch.step(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-11-27T20:01Z"</FONT>));
+<A NAME="776"></A>        Assert.assertEquals(retry2, db.getSlotState(id1));
+<A NAME="777"></A>        sch.step(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-11-27T20:01Z"</FONT>));
+<A NAME="778"></A>        Assert.assertEquals(ready2, db.getSlotState(id1));
+<A NAME="779"></A>        sch.step(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-11-27T20:01Z"</FONT>));
+<A NAME="780"></A>        Assert.assertEquals(running3, db.getSlotState(id1));
+<A NAME="781"></A>        sch.step(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-11-27T20:01Z"</FONT>));
+<A NAME="782"></A>        Assert.assertEquals(success, db.getSlotState(id1));
+<A NAME="783"></A>    }
+<A NAME="784"></A>
+<A NAME="785"></A>    <FONT ID="FormalComment">/**
+<A NAME="786"></A>     * Set up workflow with max retry count of 2.
+<A NAME="787"></A>     * 
+<A NAME="788"></A>     * Use repeatedly failing external service that fails 3 times.
+<A NAME="789"></A>     * 
+<A NAME="790"></A>     * Ensure that slot is rerun 2 (max retry count) times and then moves to failure state.
+<A NAME="791"></A>     */</FONT>
+<A NAME="792"></A>    @Test
+<A NAME="793"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> retryTestWithTooSmallMaxRetryCount() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="794"></A>        <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A> wfID1 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"wf1"</FONT>);
+<A NAME="795"></A>        <A HREF="../../../com/collective/celos/Schedule.java.html">Schedule</A> sch1 = makeHourlySchedule();
+<A NAME="796"></A>        <A HREF="../../../com/collective/celos/SchedulingStrategy.java.html">SchedulingStrategy</A> str1 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/TrivialSchedulingStrategy.java.html">TrivialSchedulingStrategy</A>();
+<A NAME="797"></A>        <A HREF="../../../com/collective/celos/Trigger.java.html">Trigger</A> tr1 = makeAlwaysTrigger();
+<A NAME="798"></A>        <A HREF="../../../com/collective/celos/ExternalService.java.html">ExternalService</A> srv1 = <FONT ID="New">new</FONT> RepeatedlyFailingExternalService(<FONT ID="IntegerLiteral">3</FONT>);
+<A NAME="799"></A>        <FONT ID="Int">int</FONT> maxRetryCount = <FONT ID="IntegerLiteral">2</FONT>;
+<A NAME="800"></A>        <A HREF="../../../com/collective/celos/Workflow.java.html">Workflow</A> wf1 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/Workflow.java.html">Workflow</A>(wfID1, sch1, str1, tr1, srv1, maxRetryCount, Workflow.DEFAULT_START_TIME, Workflow.DEFAULT_WAIT_TIMEOUT_SECONDS, emptyWorkflowInfo);
+<A NAME="801"></A>        
+<A NAME="802"></A>        <A HREF="../../../com/collective/celos/WorkflowConfiguration.java.html">WorkflowConfiguration</A> cfg = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowConfiguration.java.html">WorkflowConfiguration</A>();
+<A NAME="803"></A>        cfg.addWorkflow(wf1);
+<A NAME="804"></A>        
+<A NAME="805"></A>        <A HREF="../../../com/collective/celos/MemoryStateDatabase.java.html">MemoryStateDatabase</A> db = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/MemoryStateDatabase.java.html">MemoryStateDatabase</A>();
+<A NAME="806"></A>
+<A NAME="807"></A>        <A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A> id1 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A>(wfID1, <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-11-27T20:00Z"</FONT>));
+<A NAME="808"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> initial = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(id1, SlotState.Status.READY);
+<A NAME="809"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> running1 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(id1, SlotState.Status.RUNNING, <FONT ID="StringLiteral">"fake-external-id"</FONT>, <FONT ID="IntegerLiteral">0</FONT>);
+<A NAME="810"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> retry1 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(id1, SlotState.Status.WAITING, <FONT ID="Null">null</FONT>, <FONT ID="IntegerLiteral">1</FONT>);
+<A NAME="811"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> ready1 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(id1, SlotState.Status.READY, <FONT ID="Null">null</FONT>, <FONT ID="IntegerLiteral">1</FONT>);
+<A NAME="812"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> running2 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(id1, SlotState.Status.RUNNING, <FONT ID="StringLiteral">"fake-external-id"</FONT>, <FONT ID="IntegerLiteral">1</FONT>);
+<A NAME="813"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> retry2 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(id1, SlotState.Status.WAITING, <FONT ID="Null">null</FONT>, <FONT ID="IntegerLiteral">2</FONT>);
+<A NAME="814"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> ready2 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(id1, SlotState.Status.READY, <FONT ID="Null">null</FONT>, <FONT ID="IntegerLiteral">2</FONT>);
+<A NAME="815"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> running3 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(id1, SlotState.Status.RUNNING, <FONT ID="StringLiteral">"fake-external-id"</FONT>, <FONT ID="IntegerLiteral">2</FONT>);
+<A NAME="816"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> failure = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(id1, SlotState.Status.FAILURE, <FONT ID="StringLiteral">"fake-external-id"</FONT>, <FONT ID="IntegerLiteral">2</FONT>);
+<A NAME="817"></A>        
+<A NAME="818"></A>        db.putSlotState(initial);
+<A NAME="819"></A>        
+<A NAME="820"></A>        <A HREF="../../../com/collective/celos/Scheduler.java.html">Scheduler</A> sch = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/Scheduler.java.html">Scheduler</A>(cfg, db, <FONT ID="IntegerLiteral">1</FONT>);
+<A NAME="821"></A>        sch.step(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-11-27T20:01Z"</FONT>));
+<A NAME="822"></A>        Assert.assertEquals(running1, db.getSlotState(id1));
+<A NAME="823"></A>        sch.step(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-11-27T20:01Z"</FONT>));
+<A NAME="824"></A>        Assert.assertEquals(retry1, db.getSlotState(id1));
+<A NAME="825"></A>        sch.step(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-11-27T20:01Z"</FONT>));
+<A NAME="826"></A>        Assert.assertEquals(ready1, db.getSlotState(id1));
+<A NAME="827"></A>        sch.step(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-11-27T20:01Z"</FONT>));
+<A NAME="828"></A>        Assert.assertEquals(running2, db.getSlotState(id1));
+<A NAME="829"></A>        sch.step(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-11-27T20:01Z"</FONT>));
+<A NAME="830"></A>        Assert.assertEquals(retry2, db.getSlotState(id1));
+<A NAME="831"></A>        sch.step(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-11-27T20:01Z"</FONT>));
+<A NAME="832"></A>        Assert.assertEquals(ready2, db.getSlotState(id1));
+<A NAME="833"></A>        sch.step(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-11-27T20:01Z"</FONT>));
+<A NAME="834"></A>        Assert.assertEquals(running3, db.getSlotState(id1));
+<A NAME="835"></A>        sch.step(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-11-27T20:01Z"</FONT>));
+<A NAME="836"></A>        Assert.assertEquals(failure, db.getSlotState(id1));
+<A NAME="837"></A>    }
+<A NAME="838"></A>    
+<A NAME="839"></A>    <FONT ID="FormalComment">/**
+<A NAME="840"></A>     * Set up two identical workflows but tell scheduler to only schedule the first one.
+<A NAME="841"></A>     * 
+<A NAME="842"></A>     * Check that second workflow's slot is not touched and stays in WAITING.
+<A NAME="843"></A>     */</FONT>
+<A NAME="844"></A>    @Test
+<A NAME="845"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> schedulingOnlySubsetOfWorkflowsWorks() <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="846"></A>        <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A> wfID1 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"wf1"</FONT>);
+<A NAME="847"></A>        <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A> wfID2 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(<FONT ID="StringLiteral">"wf2"</FONT>);
+<A NAME="848"></A>        <A HREF="../../../com/collective/celos/Schedule.java.html">Schedule</A> sch1 = makeHourlySchedule();
+<A NAME="849"></A>        <A HREF="../../../com/collective/celos/SchedulingStrategy.java.html">SchedulingStrategy</A> str1 = makeSerialSchedulingStrategy();
+<A NAME="850"></A>        <A HREF="../../../com/collective/celos/Trigger.java.html">Trigger</A> tr1 = makeAlwaysTrigger();
+<A NAME="851"></A>        <A HREF="../../../com/collective/celos/MockExternalService.java.html">MockExternalService</A> srv1 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/MockExternalService.java.html">MockExternalService</A>(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/MockExternalService.java.html">MockExternalService.MockExternalStatusRunning</A>());
+<A NAME="852"></A>        <FONT ID="Int">int</FONT> maxRetryCount = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="853"></A>        <A HREF="../../../com/collective/celos/Workflow.java.html">Workflow</A> wf1 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/Workflow.java.html">Workflow</A>(wfID1, sch1, str1, tr1, srv1, maxRetryCount, Workflow.DEFAULT_START_TIME, Workflow.DEFAULT_WAIT_TIMEOUT_SECONDS, emptyWorkflowInfo);
+<A NAME="854"></A>        <A HREF="../../../com/collective/celos/Workflow.java.html">Workflow</A> wf2 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/Workflow.java.html">Workflow</A>(wfID2, sch1, str1, tr1, srv1, maxRetryCount, Workflow.DEFAULT_START_TIME, Workflow.DEFAULT_WAIT_TIMEOUT_SECONDS, emptyWorkflowInfo);
+<A NAME="855"></A>        
+<A NAME="856"></A>        <A HREF="../../../com/collective/celos/WorkflowConfiguration.java.html">WorkflowConfiguration</A> cfg = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/WorkflowConfiguration.java.html">WorkflowConfiguration</A>();
+<A NAME="857"></A>        cfg.addWorkflow(wf1);
+<A NAME="858"></A>        cfg.addWorkflow(wf2);
+<A NAME="859"></A>        
+<A NAME="860"></A>        <A HREF="../../../com/collective/celos/MemoryStateDatabase.java.html">MemoryStateDatabase</A> db = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/MemoryStateDatabase.java.html">MemoryStateDatabase</A>();
+<A NAME="861"></A>
+<A NAME="862"></A>        <A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A> id1 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A>(wfID1, <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-11-27T20:00Z"</FONT>));
+<A NAME="863"></A>        <A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A> id2 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotID.java.html">SlotID</A>(wfID2, <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2013-11-27T20:00Z"</FONT>));
+<A NAME="864"></A>        
+<A NAME="865"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> slot1 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(id1, SlotState.Status.WAITING);
+<A NAME="866"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> slot2 = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A>(id2, SlotState.Status.WAITING);
+<A NAME="867"></A>        
+<A NAME="868"></A>        db.putSlotState(slot1);
+<A NAME="869"></A>        db.putSlotState(slot2);
+<A NAME="870"></A>        
+<A NAME="871"></A>        Set&lt;<A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>&gt; subset = <FONT ID="New">new</FONT> HashSet&lt;<A HREF="../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>&gt;();
+<A NAME="872"></A>        subset.add(wfID1);
+<A NAME="873"></A>        
+<A NAME="874"></A>        <FONT ID="Int">int</FONT> slidingWindowHours = <FONT ID="IntegerLiteral">3</FONT>;
+<A NAME="875"></A>        DateTime current = DateTime.parse(<FONT ID="StringLiteral">"2013-11-27T22:01Z"</FONT>);
+<A NAME="876"></A>
+<A NAME="877"></A>        <A HREF="../../../com/collective/celos/Scheduler.java.html">Scheduler</A> sched = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/Scheduler.java.html">Scheduler</A>(cfg, db, slidingWindowHours);
+<A NAME="878"></A>        sched.step(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(current), subset);
+<A NAME="879"></A>        
+<A NAME="880"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> slot1After = db.getSlotState(id1);
+<A NAME="881"></A>        Assert.assertEquals(SlotState.Status.READY, slot1After.getStatus());
+<A NAME="882"></A>        
+<A NAME="883"></A>        <A HREF="../../../com/collective/celos/SlotState.java.html">SlotState</A> slot2After = db.getSlotState(id2);
+<A NAME="884"></A>        Assert.assertEquals(SlotState.Status.WAITING, slot2After.getStatus());
+<A NAME="885"></A>    }
+<A NAME="886"></A>
+<A NAME="887"></A>    @Test
+<A NAME="888"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testTimeoutCalculation() {
+<A NAME="889"></A>        Assert.assertTrue(Scheduler.isSlotTimedOut(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2015-03-05T00:00:00Z"</FONT>), <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2015-03-05T00:00:21Z"</FONT>), <FONT ID="IntegerLiteral">20</FONT>));
+<A NAME="890"></A>        Assert.assertFalse(Scheduler.isSlotTimedOut(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2015-03-05T00:00:00Z"</FONT>), <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2015-03-05T00:00:20Z"</FONT>), <FONT ID="IntegerLiteral">20</FONT>));
+<A NAME="891"></A>        Assert.assertFalse(Scheduler.isSlotTimedOut(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2015-03-05T00:00:00Z"</FONT>), <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2014-03-05T00:00:20Z"</FONT>), <FONT ID="IntegerLiteral">20</FONT>));
+<A NAME="892"></A>        Assert.assertTrue(Scheduler.isSlotTimedOut(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2015-03-05T00:00:00Z"</FONT>), <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2016-03-05T00:00:21Z"</FONT>), <FONT ID="IntegerLiteral">20</FONT>));
+<A NAME="893"></A>    }
+<A NAME="894"></A>        
+<A NAME="895"></A>    <FONT ID="Private">private</FONT> <A HREF="../../../com/collective/celos/AlwaysTrigger.java.html">AlwaysTrigger</A> makeAlwaysTrigger() {
+<A NAME="896"></A>        <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/AlwaysTrigger.java.html">AlwaysTrigger</A>();
+<A NAME="897"></A>    }
+<A NAME="898"></A>
+<A NAME="899"></A>    <FONT ID="Private">private</FONT> <A HREF="../../../com/collective/celos/SerialSchedulingStrategy.java.html">SerialSchedulingStrategy</A> makeSerialSchedulingStrategy() {
+<A NAME="900"></A>        <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/SerialSchedulingStrategy.java.html">SerialSchedulingStrategy</A>(<FONT ID="IntegerLiteral">1</FONT>);
+<A NAME="901"></A>    }
+<A NAME="902"></A>
+<A NAME="903"></A>    <FONT ID="Private">private</FONT> <A HREF="../../../com/collective/celos/TrivialSchedulingStrategy.java.html">TrivialSchedulingStrategy</A> makeTrivialSchedulingStrategy() {
+<A NAME="904"></A>        <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/TrivialSchedulingStrategy.java.html">TrivialSchedulingStrategy</A>();
+<A NAME="905"></A>    }
+<A NAME="906"></A>    
+<A NAME="907"></A>    <FONT ID="Private">private</FONT> <A HREF="../../../com/collective/celos/HourlySchedule.java.html">HourlySchedule</A> makeHourlySchedule() {
+<A NAME="908"></A>        <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/HourlySchedule.java.html">HourlySchedule</A>();
+<A NAME="909"></A>    }
+<A NAME="910"></A>
+<A NAME="911"></A>}
+<A NAME="912"></A></pre>
+</BODY>
+</HTML>

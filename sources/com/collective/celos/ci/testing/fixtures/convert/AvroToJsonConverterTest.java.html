@@ -21,8 +21,8 @@
 <A NAME="4"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../../com/collective/celos/ci/mode/test/TestRun.java.html">com.collective.celos.ci.mode.test.TestRun</A>;
 <A NAME="5"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/compare/FixObjectCompareResult.java.html">com.collective.celos.ci.testing.fixtures.compare.FixObjectCompareResult</A>;
 <A NAME="6"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/compare/PlainFileComparer.java.html">com.collective.celos.ci.testing.fixtures.compare.PlainFileComparer</A>;
-<A NAME="7"></A><FONT ID="Import">import</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/fixtures/convert/AvroToJsonConverter.html">com.collective.celos.ci.testing.fixtures.convert.AvroToJsonConverter</A>;
-<A NAME="8"></A><FONT ID="Import">import</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/fixtures/convert/JsonToAvroConverter.html">com.collective.celos.ci.testing.fixtures.convert.JsonToAvroConverter</A>;
+<A NAME="7"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/convert/AvroToJsonConverter.java.html">com.collective.celos.ci.testing.fixtures.convert.AvroToJsonConverter</A>;
+<A NAME="8"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/convert/JsonToAvroConverter.java.html">com.collective.celos.ci.testing.fixtures.convert.JsonToAvroConverter</A>;
 <A NAME="9"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">com.collective.celos.ci.testing.fixtures.create.FixObjectCreator</A>;
 <A NAME="10"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFile.java.html">com.collective.celos.ci.testing.structure.fixobject.FixFile</A>;
 <A NAME="11"></A><FONT ID="Import">import</FONT> org.junit.Assert;
@@ -51,7 +51,7 @@
 <A NAME="34"></A>
 <A NAME="35"></A>    @Test
 <A NAME="36"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> testEmptyFileConvert() <FONT ID="Throws">throws</FONT> IOException {
-<A NAME="37"></A>        <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/fixtures/convert/AvroToJsonConverter.html">AvroToJsonConverter</A> avroToJsonConverter = <FONT ID="New">new</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/fixtures/convert/AvroToJsonConverter.html">AvroToJsonConverter</A>();
+<A NAME="37"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/convert/AvroToJsonConverter.java.html">AvroToJsonConverter</A> avroToJsonConverter = <FONT ID="New">new</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/convert/AvroToJsonConverter.java.html">AvroToJsonConverter</A>();
 <A NAME="38"></A>        avroToJsonConverter.convert(testRun, <FONT ID="New">new</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFile.java.html">FixFile</A>(<FONT ID="New">new</FONT> ByteArrayInputStream(<FONT ID="New">new</FONT> <FONT ID="Byte">byte</FONT>[<FONT ID="IntegerLiteral">0</FONT>])));
 <A NAME="39"></A>    }
 <A NAME="40"></A>
@@ -63,7 +63,7 @@
 <A NAME="46"></A>
 <A NAME="47"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">FixObjectCreator</A>&lt;<A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFile.java.html">FixFile</A>&gt; schemaCreator = Utils.wrap(<FONT ID="New">new</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFile.java.html">FixFile</A>(Thread.currentThread().getContextClassLoader().getResourceAsStream(<FONT ID="StringLiteral">"com/collective/celos/ci/fixtures/avro/avro.schema"</FONT>)));
 <A NAME="48"></A>
-<A NAME="49"></A>        <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/fixtures/convert/JsonToAvroConverter.html">JsonToAvroConverter</A> jsonToAvroConverter = <FONT ID="New">new</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/fixtures/convert/JsonToAvroConverter.html">JsonToAvroConverter</A>(schemaCreator);
+<A NAME="49"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/convert/JsonToAvroConverter.java.html">JsonToAvroConverter</A> jsonToAvroConverter = <FONT ID="New">new</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/convert/JsonToAvroConverter.java.html">JsonToAvroConverter</A>(schemaCreator);
 <A NAME="50"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFile.java.html">FixFile</A> fixFile = jsonToAvroConverter.convert(testRun, ff);
 <A NAME="51"></A>    }
 <A NAME="52"></A>
@@ -73,7 +73,7 @@
 <A NAME="56"></A>
 <A NAME="57"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFile.java.html">FixFile</A> ff = <FONT ID="New">new</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFile.java.html">FixFile</A>(<FONT ID="New">new</FONT> ByteArrayInputStream(<FONT ID="New">new</FONT> <FONT ID="Byte">byte</FONT>[<FONT ID="IntegerLiteral">0</FONT>]));
 <A NAME="58"></A>
-<A NAME="59"></A>        <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/fixtures/convert/AvroToJsonConverter.html">AvroToJsonConverter</A> jsonToAvroConverter = <FONT ID="New">new</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/fixtures/convert/AvroToJsonConverter.html">AvroToJsonConverter</A>();
+<A NAME="59"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/convert/AvroToJsonConverter.java.html">AvroToJsonConverter</A> jsonToAvroConverter = <FONT ID="New">new</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/convert/AvroToJsonConverter.java.html">AvroToJsonConverter</A>();
 <A NAME="60"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFile.java.html">FixFile</A> fixFile = jsonToAvroConverter.convert(testRun, ff);
 <A NAME="61"></A>    }
 <A NAME="62"></A>
@@ -84,10 +84,10 @@
 <A NAME="67"></A>
 <A NAME="68"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/create/FixObjectCreator.java.html">FixObjectCreator</A>&lt;<A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFile.java.html">FixFile</A>&gt; schemaCreator = Utils.wrap(<FONT ID="New">new</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFile.java.html">FixFile</A>(Thread.currentThread().getContextClassLoader().getResourceAsStream(<FONT ID="StringLiteral">"com/collective/celos/ci/fixtures/avro/avro.schema"</FONT>)));
 <A NAME="69"></A>
-<A NAME="70"></A>        <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/fixtures/convert/JsonToAvroConverter.html">JsonToAvroConverter</A> jsonToAvroConverter = <FONT ID="New">new</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/fixtures/convert/JsonToAvroConverter.html">JsonToAvroConverter</A>(schemaCreator);
+<A NAME="70"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/convert/JsonToAvroConverter.java.html">JsonToAvroConverter</A> jsonToAvroConverter = <FONT ID="New">new</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/convert/JsonToAvroConverter.java.html">JsonToAvroConverter</A>(schemaCreator);
 <A NAME="71"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFile.java.html">FixFile</A> fixFile = jsonToAvroConverter.convert(testRun, ff);
 <A NAME="72"></A>
-<A NAME="73"></A>        <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/fixtures/convert/AvroToJsonConverter.html">AvroToJsonConverter</A> avroToJsonConverter = <FONT ID="New">new</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/ci/testing/fixtures/convert/AvroToJsonConverter.html">AvroToJsonConverter</A>();
+<A NAME="73"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/convert/AvroToJsonConverter.java.html">AvroToJsonConverter</A> avroToJsonConverter = <FONT ID="New">new</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/convert/AvroToJsonConverter.java.html">AvroToJsonConverter</A>();
 <A NAME="74"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFile.java.html">FixFile</A> jsonFixFile = avroToJsonConverter.convert(testRun, fixFile);
 <A NAME="75"></A>
 <A NAME="76"></A>        <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/compare/FixObjectCompareResult.java.html">FixObjectCompareResult</A> result = <FONT ID="New">new</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/fixtures/compare/PlainFileComparer.java.html">PlainFileComparer</A>(jsonFixFile.getContent(), getJsonFixFile()).check(<FONT ID="Null">null</FONT>);

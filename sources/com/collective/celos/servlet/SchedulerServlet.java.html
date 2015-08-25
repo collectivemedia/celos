@@ -1,0 +1,69 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.servlet.SchedulerServlet (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">SchedulerServlet.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos.servlet;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> <A HREF="../../../../com/collective/celos/ScheduledTime.java.html">com.collective.celos.ScheduledTime</A>;
+<A NAME="4"></A><FONT ID="Import">import</FONT> <A HREF="../../../../com/collective/celos/Scheduler.java.html">com.collective.celos.Scheduler</A>;
+<A NAME="5"></A><FONT ID="Import">import</FONT> <A HREF="../../../../com/collective/celos/WorkflowID.java.html">com.collective.celos.WorkflowID</A>;
+<A NAME="6"></A>
+<A NAME="7"></A><FONT ID="Import">import</FONT> javax.servlet.ServletException;
+<A NAME="8"></A><FONT ID="Import">import</FONT> javax.servlet.http.HttpServletRequest;
+<A NAME="9"></A><FONT ID="Import">import</FONT> javax.servlet.http.HttpServletResponse;
+<A NAME="10"></A><FONT ID="Import">import</FONT> java.util.Collections;
+<A NAME="11"></A><FONT ID="Import">import</FONT> java.util.HashSet;
+<A NAME="12"></A><FONT ID="Import">import</FONT> java.util.Set;
+<A NAME="13"></A>
+<A NAME="14"></A><FONT ID="FormalComment">/**
+<A NAME="15"></A> * Posting to this servlet triggers a scheduler step.
+<A NAME="16"></A> * 
+<A NAME="17"></A> * If the "time" parameter is supplied, the step is performed for that time. 
+<A NAME="18"></A> */</FONT>
+<A NAME="19"></A>@SuppressWarnings(<FONT ID="StringLiteral">"serial"</FONT>)
+<A NAME="20"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> SchedulerServlet <FONT ID="Extends">extends</FONT> <A HREF="../../../../com/collective/celos/servlet/AbstractServlet.java.html">AbstractServlet</A> {
+<A NAME="21"></A>
+<A NAME="22"></A>    <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String IDS_PARAM = <FONT ID="StringLiteral">"ids"</FONT>;
+<A NAME="23"></A>
+<A NAME="24"></A>    <FONT ID="Protected">protected</FONT> <FONT ID="Void">void</FONT> doPost(HttpServletRequest req, HttpServletResponse res) <FONT ID="Throws">throws</FONT> ServletException {
+<A NAME="25"></A>        <FONT ID="Try">try</FONT> {
+<A NAME="26"></A>            <A HREF="../../../../com/collective/celos/Scheduler.java.html">Scheduler</A> scheduler = createAndCacheScheduler();
+<A NAME="27"></A>            <A HREF="../../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A> current = getRequestTime(req);
+<A NAME="28"></A>            Set&lt;<A HREF="../../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>&gt; workflowIDs = getWorkflowIDs(req);
+<A NAME="29"></A>            scheduler.step(current, workflowIDs);
+<A NAME="30"></A>        } <FONT ID="Catch">catch</FONT>(Exception e) {
+<A NAME="31"></A>            <FONT ID="Throw">throw</FONT> <FONT ID="New">new</FONT> RuntimeException(e);
+<A NAME="32"></A>        }
+<A NAME="33"></A>    }
+<A NAME="34"></A>
+<A NAME="35"></A>    Set&lt;<A HREF="../../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>&gt; getWorkflowIDs(HttpServletRequest req) {
+<A NAME="36"></A>        String idString = req.getParameter(IDS_PARAM);
+<A NAME="37"></A>        <FONT ID="If">if</FONT> (idString == <FONT ID="Null">null</FONT>) {
+<A NAME="38"></A>            <FONT ID="Return">return</FONT> Collections.&lt;<A HREF="../../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>&gt;emptySet();
+<A NAME="39"></A>        } <FONT ID="Else">else</FONT> {
+<A NAME="40"></A>            String[] idArray = idString.split(<FONT ID="StringLiteral">","</FONT>);
+<A NAME="41"></A>            Set&lt;<A HREF="../../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>&gt; workflowIDs = <FONT ID="New">new</FONT> HashSet&lt;<A HREF="../../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>&gt;();
+<A NAME="42"></A>            <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> i = <FONT ID="IntegerLiteral">0</FONT>; i &lt; idArray.length; i++) {
+<A NAME="43"></A>                workflowIDs.add(<FONT ID="New">new</FONT> <A HREF="../../../../com/collective/celos/WorkflowID.java.html">WorkflowID</A>(idArray[i]));
+<A NAME="44"></A>            }
+<A NAME="45"></A>            <FONT ID="Return">return</FONT> workflowIDs;
+<A NAME="46"></A>        }
+<A NAME="47"></A>    }
+<A NAME="48"></A>
+<A NAME="49"></A>}
+<A NAME="50"></A></pre>
+</BODY>
+</HTML>

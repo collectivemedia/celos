@@ -29,28 +29,28 @@
 <A NAME="12"></A>    
 <A NAME="13"></A>    @Test
 <A NAME="14"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> returnsTrueWhenAllSubTriggersReturnTrue() <FONT ID="Throws">throws</FONT> Exception {
-<A NAME="15"></A>        <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/OrTrigger.html">OrTrigger</A> trigger = <FONT ID="New">new</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/OrTrigger.html">OrTrigger</A>(Arrays.asList(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/Trigger.java.html">Trigger</A>[] { createAlwaysTrigger(), createAlwaysTrigger(), createAlwaysTrigger() }));
+<A NAME="15"></A>        <A HREF="../../../com/collective/celos/OrTrigger.java.html">OrTrigger</A> trigger = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/OrTrigger.java.html">OrTrigger</A>(Arrays.asList(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/Trigger.java.html">Trigger</A>[] { createAlwaysTrigger(), createAlwaysTrigger(), createAlwaysTrigger() }));
 <A NAME="16"></A>        <A HREF="../../../com/collective/celos/Scheduler.java.html">Scheduler</A> scheduler = mock(<A HREF="../../../com/collective/celos/Scheduler.java.html">Scheduler</A>.<FONT ID="Class">class</FONT>);
 <A NAME="17"></A>        Assert.assertTrue(trigger.isDataAvailable(scheduler, ScheduledTime.now(), <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2014-02-26T16:13:00Z"</FONT>)));
 <A NAME="18"></A>    }
 <A NAME="19"></A>    
 <A NAME="20"></A>    @Test
 <A NAME="21"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> returnsTrueWhenOnlyOneSubTriggerReturnsTrue() <FONT ID="Throws">throws</FONT> Exception {
-<A NAME="22"></A>        <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/OrTrigger.html">OrTrigger</A> trigger = <FONT ID="New">new</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/OrTrigger.html">OrTrigger</A>(Arrays.asList(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/Trigger.java.html">Trigger</A>[] { createNeverTrigger(), createAlwaysTrigger(), createNeverTrigger() }));
+<A NAME="22"></A>        <A HREF="../../../com/collective/celos/OrTrigger.java.html">OrTrigger</A> trigger = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/OrTrigger.java.html">OrTrigger</A>(Arrays.asList(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/Trigger.java.html">Trigger</A>[] { createNeverTrigger(), createAlwaysTrigger(), createNeverTrigger() }));
 <A NAME="23"></A>        <A HREF="../../../com/collective/celos/Scheduler.java.html">Scheduler</A> scheduler = mock(<A HREF="../../../com/collective/celos/Scheduler.java.html">Scheduler</A>.<FONT ID="Class">class</FONT>);
 <A NAME="24"></A>        Assert.assertTrue(trigger.isDataAvailable(scheduler, ScheduledTime.now(), <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2014-02-26T16:13:00Z"</FONT>)));
 <A NAME="25"></A>    }
 <A NAME="26"></A>
 <A NAME="27"></A>    @Test
 <A NAME="28"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> returnsFalseWhenNoSubTriggersReturnsTrue() <FONT ID="Throws">throws</FONT> Exception {
-<A NAME="29"></A>        <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/OrTrigger.html">OrTrigger</A> trigger = <FONT ID="New">new</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/OrTrigger.html">OrTrigger</A>(Arrays.asList(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/Trigger.java.html">Trigger</A>[] { createNeverTrigger(), createNeverTrigger(), createNeverTrigger() }));
+<A NAME="29"></A>        <A HREF="../../../com/collective/celos/OrTrigger.java.html">OrTrigger</A> trigger = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/OrTrigger.java.html">OrTrigger</A>(Arrays.asList(<FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/Trigger.java.html">Trigger</A>[] { createNeverTrigger(), createNeverTrigger(), createNeverTrigger() }));
 <A NAME="30"></A>        <A HREF="../../../com/collective/celos/Scheduler.java.html">Scheduler</A> scheduler = mock(<A HREF="../../../com/collective/celos/Scheduler.java.html">Scheduler</A>.<FONT ID="Class">class</FONT>);
 <A NAME="31"></A>        Assert.assertFalse(trigger.isDataAvailable(scheduler, ScheduledTime.now(), <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2014-02-26T16:13:00Z"</FONT>)));
 <A NAME="32"></A>    }
 <A NAME="33"></A>    
 <A NAME="34"></A>    @Test
 <A NAME="35"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> returnsFalseWhenThereAreNoSubTriggers() <FONT ID="Throws">throws</FONT> Exception {
-<A NAME="36"></A>        <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/OrTrigger.html">OrTrigger</A> trigger = <FONT ID="New">new</FONT> <A HREF="file:////Users/obaskakov/IdeaProjects/celos/javadoc/com/collective/celos/OrTrigger.html">OrTrigger</A>(Collections.&lt;<A HREF="../../../com/collective/celos/Trigger.java.html">Trigger</A>&gt;emptyList());
+<A NAME="36"></A>        <A HREF="../../../com/collective/celos/OrTrigger.java.html">OrTrigger</A> trigger = <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/OrTrigger.java.html">OrTrigger</A>(Collections.&lt;<A HREF="../../../com/collective/celos/Trigger.java.html">Trigger</A>&gt;emptyList());
 <A NAME="37"></A>        <A HREF="../../../com/collective/celos/Scheduler.java.html">Scheduler</A> scheduler = mock(<A HREF="../../../com/collective/celos/Scheduler.java.html">Scheduler</A>.<FONT ID="Class">class</FONT>);
 <A NAME="38"></A>        Assert.assertFalse(trigger.isDataAvailable(scheduler, ScheduledTime.now(), <FONT ID="New">new</FONT> <A HREF="../../../com/collective/celos/ScheduledTime.java.html">ScheduledTime</A>(<FONT ID="StringLiteral">"2014-02-26T16:13:00Z"</FONT>)));
 <A NAME="39"></A>    }

@@ -1,0 +1,76 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../../../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.ci.testing.structure.fixobject.FixTable (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">FixTable.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos.ci.testing.structure.fixobject;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../../com/collective/celos/ValueObject.java.html">com.collective.celos.ValueObject</A>;
+<A NAME="4"></A>
+<A NAME="5"></A><FONT ID="Import">import</FONT> java.util.*;
+<A NAME="6"></A>
+<A NAME="7"></A><FONT ID="FormalComment">/**
+<A NAME="8"></A> * Created by akonopko on 22.01.15.
+<A NAME="9"></A> */</FONT>
+<A NAME="10"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> FixTable <FONT ID="Extends">extends</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixObject.java.html">FixObject</A> {
+<A NAME="11"></A>
+<A NAME="12"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> List&lt;String&gt; columnNames;
+<A NAME="13"></A>
+<A NAME="14"></A>    <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> List&lt;FixRow&gt; rows;
+<A NAME="15"></A>
+<A NAME="16"></A>    <FONT ID="Public">public</FONT> FixTable(List&lt;String&gt; columnNames, List&lt;FixRow&gt; rows) {
+<A NAME="17"></A>        <FONT ID="This">this</FONT>.columnNames = columnNames;
+<A NAME="18"></A>        <FONT ID="This">this</FONT>.rows = rows;
+<A NAME="19"></A>    }
+<A NAME="20"></A>
+<A NAME="21"></A>    <FONT ID="Public">public</FONT> List&lt;String&gt; getColumnNames() {
+<A NAME="22"></A>        <FONT ID="Return">return</FONT> Collections.unmodifiableList(columnNames);
+<A NAME="23"></A>    }
+<A NAME="24"></A>
+<A NAME="25"></A>    <FONT ID="Public">public</FONT> List&lt;FixRow&gt; getRows() {
+<A NAME="26"></A>        <FONT ID="Return">return</FONT> Collections.unmodifiableList(rows);
+<A NAME="27"></A>    }
+<A NAME="28"></A>
+<A NAME="29"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Class">class</FONT> FixRow <FONT ID="Extends">extends</FONT> <A HREF="../../../../../../../com/collective/celos/ValueObject.java.html">ValueObject</A> {
+<A NAME="30"></A>
+<A NAME="31"></A>        <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> Map&lt;String, String&gt; cells;
+<A NAME="32"></A>
+<A NAME="33"></A>        <FONT ID="Public">public</FONT> FixRow(Map&lt;String, String&gt; cells) {
+<A NAME="34"></A>            <FONT ID="For">for</FONT> (Map.Entry&lt;String, String&gt; cell: cells.entrySet()) {
+<A NAME="35"></A>                <FONT ID="If">if</FONT> (cell.getValue() == <FONT ID="Null">null</FONT> || cell.getKey() == <FONT ID="Null">null</FONT>) {
+<A NAME="36"></A>                    <FONT ID="Throw">throw</FONT> <FONT ID="New">new</FONT> IllegalStateException(<FONT ID="StringLiteral">"Cannot create FixRow out of Map that contains nulls"</FONT>);
+<A NAME="37"></A>                }
+<A NAME="38"></A>            }
+<A NAME="39"></A>            <FONT ID="This">this</FONT>.cells = <FONT ID="New">new</FONT> TreeMap&lt;String, String&gt;(cells);
+<A NAME="40"></A>        }
+<A NAME="41"></A>
+<A NAME="42"></A>        <FONT ID="Public">public</FONT> Map&lt;String, String&gt; getCells() {
+<A NAME="43"></A>            <FONT ID="Return">return</FONT> Collections.unmodifiableMap(cells);
+<A NAME="44"></A>        }
+<A NAME="45"></A>        
+<A NAME="46"></A>        <FONT ID="SingleLineComment">// Utility to get columns in the order they are declared in a table
+<A NAME="47"></A></FONT>        <FONT ID="Public">public</FONT> List&lt;String&gt; getOrderedColumns(List&lt;String&gt; columnNames) {
+<A NAME="48"></A>            List&lt;String&gt; values = <FONT ID="New">new</FONT> ArrayList&lt;String&gt;(columnNames.size());
+<A NAME="49"></A>            <FONT ID="For">for</FONT> (String name : columnNames) {
+<A NAME="50"></A>                values.add(cells.get(name));
+<A NAME="51"></A>            }
+<A NAME="52"></A>            <FONT ID="Return">return</FONT> values;
+<A NAME="53"></A>        }
+<A NAME="54"></A>    }
+<A NAME="55"></A>
+<A NAME="56"></A>}
+<A NAME="57"></A></pre>
+</BODY>
+</HTML>

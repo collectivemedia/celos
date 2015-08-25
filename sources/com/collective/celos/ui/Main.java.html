@@ -1,0 +1,49 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.ui.Main (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">Main.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos.ui;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> <A HREF="../../../../com/collective/celos/JettyServer.java.html">com.collective.celos.JettyServer</A>;
+<A NAME="4"></A>
+<A NAME="5"></A><FONT ID="Import">import</FONT> java.util.HashMap;
+<A NAME="6"></A><FONT ID="Import">import</FONT> java.util.Map;
+<A NAME="7"></A>
+<A NAME="8"></A><FONT ID="FormalComment">/**
+<A NAME="9"></A> * Created by akonopko on 24.07.15.
+<A NAME="10"></A> */</FONT>
+<A NAME="11"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> Main {
+<A NAME="12"></A>    
+<A NAME="13"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> String CELOS_URL_ATTR = <FONT ID="StringLiteral">"CELOS_URL"</FONT>;
+<A NAME="14"></A>
+<A NAME="15"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Void">void</FONT> main(String... args) <FONT ID="Throws">throws</FONT> Exception {
+<A NAME="16"></A>        <A HREF="../../../../com/collective/celos/ui/UICommandLineParser.java.html">UICommandLineParser</A> UICommandLineParser = <FONT ID="New">new</FONT> <A HREF="../../../../com/collective/celos/ui/UICommandLineParser.java.html">UICommandLineParser</A>();
+<A NAME="17"></A>        <A HREF="../../../../com/collective/celos/ui/UICommandLine.java.html">UICommandLine</A> commandLine = UICommandLineParser.parse(args);
+<A NAME="18"></A>        <A HREF="../../../../com/collective/celos/JettyServer.java.html">JettyServer</A> jettyServer = <FONT ID="New">new</FONT> <A HREF="../../../../com/collective/celos/JettyServer.java.html">JettyServer</A>();
+<A NAME="19"></A>        jettyServer.start(commandLine.getPort());
+<A NAME="20"></A>        jettyServer.setupContext(getAttributes(commandLine), <FONT ID="New">new</FONT> HashMap&lt;String, String&gt;());
+<A NAME="21"></A>    }
+<A NAME="22"></A>
+<A NAME="23"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> Map&lt;String, Object&gt; getAttributes(<A HREF="../../../../com/collective/celos/ui/UICommandLine.java.html">UICommandLine</A> commandLine) {
+<A NAME="24"></A>        Map&lt;String, Object&gt; attrs = <FONT ID="New">new</FONT> HashMap&lt;String, Object&gt;();
+<A NAME="25"></A>        attrs.put(CELOS_URL_ATTR, commandLine.getCelosUrl());
+<A NAME="26"></A>        <FONT ID="Return">return</FONT> attrs;
+<A NAME="27"></A>    }
+<A NAME="28"></A>    
+<A NAME="29"></A>}
+<A NAME="30"></A></pre>
+</BODY>
+</HTML>

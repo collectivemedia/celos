@@ -1,0 +1,69 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../../../../../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>com.collective.celos.ci.testing.fixtures.convert.AvroToJsonConverter (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">AvroToJsonConverter.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> com.collective.celos.ci.testing.fixtures.convert;
+<A NAME="2"></A>
+<A NAME="3"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../../com/collective/celos/ci/mode/test/TestRun.java.html">com.collective.celos.ci.mode.test.TestRun</A>;
+<A NAME="4"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/AbstractFixObjectConverter.java.html">com.collective.celos.ci.testing.structure.fixobject.AbstractFixObjectConverter</A>;
+<A NAME="5"></A><FONT ID="Import">import</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFile.java.html">com.collective.celos.ci.testing.structure.fixobject.FixFile</A>;
+<A NAME="6"></A><FONT ID="Import">import</FONT> org.apache.avro.Schema;
+<A NAME="7"></A><FONT ID="Import">import</FONT> org.apache.avro.file.DataFileReader;
+<A NAME="8"></A><FONT ID="Import">import</FONT> org.apache.avro.file.FileReader;
+<A NAME="9"></A><FONT ID="Import">import</FONT> org.apache.avro.file.SeekableByteArrayInput;
+<A NAME="10"></A><FONT ID="Import">import</FONT> org.apache.avro.generic.GenericDatumReader;
+<A NAME="11"></A><FONT ID="Import">import</FONT> org.apache.avro.generic.GenericDatumWriter;
+<A NAME="12"></A><FONT ID="Import">import</FONT> org.apache.avro.io.DatumWriter;
+<A NAME="13"></A><FONT ID="Import">import</FONT> org.apache.avro.io.EncoderFactory;
+<A NAME="14"></A><FONT ID="Import">import</FONT> org.apache.avro.io.JsonEncoder;
+<A NAME="15"></A><FONT ID="Import">import</FONT> org.apache.commons.io.IOUtils;
+<A NAME="16"></A>
+<A NAME="17"></A><FONT ID="Import">import</FONT> java.io.ByteArrayInputStream;
+<A NAME="18"></A><FONT ID="Import">import</FONT> java.io.ByteArrayOutputStream;
+<A NAME="19"></A><FONT ID="Import">import</FONT> java.io.IOException;
+<A NAME="20"></A>
+<A NAME="21"></A><FONT ID="FormalComment">/**
+<A NAME="22"></A> * Created by akonopko on 9/29/14.
+<A NAME="23"></A> */</FONT>
+<A NAME="24"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> AvroToJsonConverter <FONT ID="Extends">extends</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/AbstractFixObjectConverter.java.html">AbstractFixObjectConverter</A>&lt;<A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFile.java.html">FixFile</A>, <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFile.java.html">FixFile</A>&gt; {
+<A NAME="25"></A>
+<A NAME="26"></A>    @Override
+<A NAME="27"></A>    <FONT ID="Public">public</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFile.java.html">FixFile</A> convert(<A HREF="../../../../../../../com/collective/celos/ci/mode/test/TestRun.java.html">TestRun</A> testRun, <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFile.java.html">FixFile</A> ff) <FONT ID="Throws">throws</FONT> IOException {
+<A NAME="28"></A>        <FONT ID="Byte">byte</FONT>[] bytes = IOUtils.toByteArray(ff.getContent());
+<A NAME="29"></A>        <FONT ID="If">if</FONT> (bytes.length == <FONT ID="IntegerLiteral">0</FONT>) {
+<A NAME="30"></A>            <FONT ID="Return">return</FONT> ff;
+<A NAME="31"></A>        }
+<A NAME="32"></A>        ByteArrayOutputStream os = <FONT ID="New">new</FONT> ByteArrayOutputStream();
+<A NAME="33"></A>        GenericDatumReader&lt;Object&gt; reader = <FONT ID="New">new</FONT> GenericDatumReader&lt;Object&gt;();
+<A NAME="34"></A>        FileReader&lt;Object&gt; fileReader =  DataFileReader.openReader(<FONT ID="New">new</FONT> SeekableByteArrayInput(bytes), reader);
+<A NAME="35"></A>        <FONT ID="Try">try</FONT> {
+<A NAME="36"></A>            Schema schema = fileReader.getSchema();
+<A NAME="37"></A>            DatumWriter&lt;Object&gt; writer = <FONT ID="New">new</FONT> GenericDatumWriter&lt;Object&gt;(schema);
+<A NAME="38"></A>            JsonEncoder encoder = EncoderFactory.get().jsonEncoder(schema, os);
+<A NAME="39"></A>
+<A NAME="40"></A>            <FONT ID="For">for</FONT> (Object datum : fileReader) {
+<A NAME="41"></A>                writer.write(datum, encoder);
+<A NAME="42"></A>            }
+<A NAME="43"></A>            encoder.flush();
+<A NAME="44"></A>        } <FONT ID="Finally">finally</FONT> {
+<A NAME="45"></A>            fileReader.close();
+<A NAME="46"></A>        }
+<A NAME="47"></A>        <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> <A HREF="../../../../../../../com/collective/celos/ci/testing/structure/fixobject/FixFile.java.html">FixFile</A>(<FONT ID="New">new</FONT> ByteArrayInputStream(os.toByteArray()));
+<A NAME="48"></A>    }
+<A NAME="49"></A>}
+<A NAME="50"></A></pre>
+</BODY>
+</HTML>
