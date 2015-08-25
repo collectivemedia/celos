@@ -45,7 +45,7 @@ A **scheduling strategy** picks the order in which slots are run.  The
 usual *serial scheduling strategy* simply always picks the oldest slot
 and runs it, but it would also be possible to define scheduling
 strategies that pick the newest slot, or a random slot, or a number of
-slots in parallel.
+slots in parallel. 
 
 An **external service** is responsible for actually running workflows.
 Currently only Oozie is supported, but Celos is extensible to submit
