@@ -14,10 +14,11 @@ import com.collective.celos.Constants;
 
 public class ServerCommandLineParser {
 
-    private static final String CLI_WF_DIR = "workflowsDir";
-    private static final String CLI_DEFAULTS_DIR = "defaultsDir";
-    private static final String CLI_STATE_DB_DIR = "stateDir";
-    private static final String CLI_LOG_DIR = "logDir";
+    private static final String CLI_WF_DIR = "workflows";
+    private static final String CLI_DEFAULTS_DIR = "defaults";
+    private static final String CLI_STATE_DB_DIR = "db";
+    private static final String CLI_LOG_DIR = "logs";
+    private static final String CLI_AUTOSCHEDULE = "autoschedule";
     private static final String CLI_PORT = "port";
 
     private static final Logger LOGGER = Logger.getLogger(ServerCommandLineParser.class);
@@ -37,10 +38,10 @@ public class ServerCommandLineParser {
         String defaultsDir = getDefault(commandLine, CLI_DEFAULTS_DIR, Constants.DEFAULT_DEFAULTS_DIR);
         String workflowsDir = getDefault(commandLine, CLI_WF_DIR, Constants.DEFAULT_WORKFLOWS_DIR);
         String logDir = getDefault(commandLine, CLI_LOG_DIR, Constants.DEFAULT_LOG_DIR);
-
+        Boolean autoSchedule = commandLine.hasOption(CLI_AUTOSCHEDULE);
         Integer port = Integer.valueOf(commandLine.getOptionValue(CLI_PORT));
 
-        return new ServerCommandLine(workflowsDir, defaultsDir, stateDbDir, logDir, port);
+        return new ServerCommandLine(workflowsDir, defaultsDir, stateDbDir, logDir, port, autoSchedule);
     }
 
     private String getDefault(CommandLine commandLine, String optionName, String defaultValue) {
@@ -59,7 +60,8 @@ public class ServerCommandLineParser {
                 .addOption(CLI_DEFAULTS_DIR, CLI_DEFAULTS_DIR, true, "Path to DEFAULTS dir")
                 .addOption(CLI_STATE_DB_DIR, CLI_STATE_DB_DIR, true, "Path to STATE DATABASE dir")
                 .addOption(CLI_PORT, CLI_PORT, true, "Celos Server port")
-                .addOption(CLI_LOG_DIR, CLI_LOG_DIR, true, "Celos logs dir");
+                .addOption(CLI_LOG_DIR, CLI_LOG_DIR, true, "Celos logs dir")
+                .addOption(CLI_AUTOSCHEDULE, CLI_AUTOSCHEDULE, false, "Automatically run Scheduler");
         return options;
     }
 
