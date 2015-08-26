@@ -95,6 +95,14 @@
         <url-pattern>/version</url-pattern>
     </servlet-mapping>
 
+    <servlet>
+        <servlet-name>TriggerStatusServlet</servlet-name>
+        <servlet-class>com.collective.celos.servlet.TriggerStatusServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>TriggerStatusServlet</servlet-name>
+        <url-pattern>/trigger-status</url-pattern>
+    </servlet-mapping>
 
 
 </web-app>

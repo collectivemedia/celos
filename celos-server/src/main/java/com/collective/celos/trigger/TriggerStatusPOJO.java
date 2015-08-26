@@ -6,7 +6,9 @@ public class TriggerStatusPOJO {
 
     public TriggerStatusPOJO(boolean ready, String description, List<TriggerStatusPOJO> subStatuses) {
         this.ready = ready;
+        assert null != description;
         this.description = description;
+        assert null != subStatuses;
         this.subStatuses = subStatuses;
     }
 

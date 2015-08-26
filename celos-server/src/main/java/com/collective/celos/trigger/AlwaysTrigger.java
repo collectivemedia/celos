@@ -16,15 +16,9 @@ public class AlwaysTrigger extends Trigger {
     }
 
     @Override
-    public TriggerStatusPOJO makeStatusObject(Scheduler scheduler, ScheduledTime now, ScheduledTime scheduledTime) {
+    public TriggerStatusPOJO makeStatusObject(Scheduler scheduler, ScheduledTime now, ScheduledTime scheduledTime) throws Exception {
         return new TriggerStatusPOJO(true, this.description(), Collections.<TriggerStatusPOJO>emptyList());
     }
-
-    @Override
-    public boolean isDataAvailable(Scheduler scheduler, ScheduledTime now, ScheduledTime scheduledTime) {
-        return true;
-    }
-
 
 
 }

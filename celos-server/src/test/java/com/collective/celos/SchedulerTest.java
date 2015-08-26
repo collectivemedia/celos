@@ -1,22 +1,19 @@
 package com.collective.celos;
 
-import static org.mockito.Matchers.anyListOf;
-import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
-
-import java.util.*;
-
 import com.collective.celos.trigger.AlwaysTrigger;
 import com.collective.celos.trigger.Trigger;
+import com.collective.celos.trigger.TriggerStatusPOJO;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InOrder;
+
+import java.util.*;
+
+import static org.mockito.Matchers.anyListOf;
+import static org.mockito.Mockito.*;
 
 /**
  * TODO: test exception handling and logging
@@ -186,7 +183,8 @@ public class SchedulerTest {
 
         // The trigger should report the data as available
         ScheduledTime now = ScheduledTime.now();
-        when(trigger.isDataAvailable(scheduler, now, scheduledTime)).thenReturn(true);
+        final TriggerStatusPOJO statusPOJO = new TriggerStatusPOJO(true, "", Collections.<TriggerStatusPOJO>emptyList());
+        when(trigger.makeStatusObject(scheduler, now, scheduledTime)).thenReturn(statusPOJO);
 
         scheduler.updateSlotState(wf, slotState, now);
 
@@ -201,7 +199,8 @@ public class SchedulerTest {
 
         // The trigger should report the data as not available
         ScheduledTime now = ScheduledTime.now();
-        when(trigger.isDataAvailable(scheduler, now, scheduledTime)).thenReturn(false);
+        final TriggerStatusPOJO statusPOJO = new TriggerStatusPOJO(false, "", Collections.<TriggerStatusPOJO>emptyList());
+        when(trigger.makeStatusObject(scheduler, now, scheduledTime)).thenReturn(statusPOJO);
 
         scheduler.updateSlotState(wf, slotState, now);
 

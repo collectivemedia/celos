@@ -18,7 +18,7 @@ public abstract class Trigger {
         return "";
     }
 
-    public boolean isDataAvailable(Scheduler scheduler, ScheduledTime now, ScheduledTime scheduledTime) throws Exception {
+    public final boolean isDataAvailable(Scheduler scheduler, ScheduledTime now, ScheduledTime scheduledTime) throws Exception {
         return makeStatusObject(scheduler, now, scheduledTime).isReady();
     }
 
