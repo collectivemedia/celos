@@ -21,22 +21,22 @@ public class CelosCiContext {
     private final String workflowName;
     private final FileSystem fileSystem;
     private final String hdfsPrefix;
-    private final Configuration configuration;
+    private final String hdfsRoot;
 
     public CelosCiContext(CelosCiTarget target,
                           String userName,
                           Mode mode,
                           File deployDir,
                           String workflowName,
-                          String hdfsPrefix) throws Exception {
+                          String hdfsPrefix, String hdfsRoot) throws Exception {
+        this.hdfsRoot = hdfsRoot;
         this.target = Util.requireNonNull(target);
         this.userName = Util.requireNonNull(userName);
         this.mode = Util.requireNonNull(mode);
         this.deployDir = Util.requireNonNull(deployDir);
         this.workflowName = Util.requireNonNull(workflowName);
         this.hdfsPrefix = Util.requireNonNull(hdfsPrefix);
-        this.configuration = setupConfiguration(userName, target);
-        this.fileSystem = FileSystem.get(this.configuration);
+        this.fileSystem = FileSystem.get(this.setupConfiguration(userName, target));
     }
 
     private Configuration setupConfiguration(String username, CelosCiTarget target) throws Exception {
@@ -83,8 +83,7 @@ public class CelosCiContext {
         return hdfsPrefix;
     }
 
-    public Configuration getConfiguration() {
-        return configuration;
+    public String getHdfsRoot() {
+        return hdfsRoot;
     }
-
 }

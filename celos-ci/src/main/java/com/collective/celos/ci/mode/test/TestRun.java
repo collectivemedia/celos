@@ -51,7 +51,7 @@ public class TestRun {
         }
 
         CelosCiTarget testTarget = new CelosCiTarget(target.getPathToHdfsSite(), target.getPathToCoreSite(), celosServerMode.getCelosWorkflowDir(), celosServerMode.getCelosDefaultsDir(), target.getHiveJdbc());
-        this.ciContext = new CelosCiContext(testTarget, commandLine.getUserName(), CelosCiContext.Mode.TEST, commandLine.getDeployDir(), commandLine.getWorkflowName(), celosServerMode.getHdfsPrefix());
+        this.ciContext = new CelosCiContext(testTarget, commandLine.getUserName(), CelosCiContext.Mode.TEST, commandLine.getDeployDir(), commandLine.getWorkflowName(), celosServerMode.getHdfsPrefix(), commandLine.getHdfsRoot());
 
         this.wfDeployer = new WorkflowFilesDeployer(ciContext);
         this.hdfsDeployer = new HdfsDeployer(ciContext);

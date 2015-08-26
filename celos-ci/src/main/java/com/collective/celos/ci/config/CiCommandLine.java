@@ -5,11 +5,14 @@ import com.collective.celos.ci.config.deploy.CelosCiContext;
 
 import java.io.File;
 import java.net.URI;
+import java.util.regex.Pattern;
 
 /**
  * Created by akonopko on 9/30/14.
  */
 public class CiCommandLine {
+
+    private static final Pattern hdfsRootPattern = Pattern.compile("/[^/]?(.*)[^/]");
 
     private final URI targetUri;
     private final CelosCiContext.Mode mode;
@@ -19,8 +22,10 @@ public class CiCommandLine {
     private final String userName;
     private final boolean keepTempData;
     private final URI celosServerUrl;
+    private final String hdfsRoot;
 
-    public CiCommandLine(String targetUri, String mode, String deployDir, String workflowName, String testCasesDir, String userName, boolean keepTempData, String celosServerUrl) {
+    public CiCommandLine(String targetUri, String mode, String deployDir, String workflowName, String testCasesDir, String userName, boolean keepTempData, String celosServerUrl, String hdfsRoot) {
+        this.hdfsRoot = getValidateHdfsRoot(hdfsRoot);
         this.celosServerUrl = celosServerUrl == null ? null : URI.create(celosServerUrl);
         this.userName = Util.requireNonNull(userName);
         this.keepTempData = keepTempData;
@@ -31,7 +36,15 @@ public class CiCommandLine {
         this.testCasesDir = getValidateTestCasesDir(this.mode, testCasesDir);
     }
 
-    File getValidateTestCasesDir(CelosCiContext.Mode mode, String testCasesDir) {
+    private String getValidateHdfsRoot(String hdfsRoot) {
+        if (hdfsRootPattern.matcher(hdfsRoot).matches()) {
+            return hdfsRoot;
+        } else {
+            throw new IllegalArgumentException("HDFS root should start with single '/' symbol, and should end with no '/' symbol");
+        }
+    }
+
+    private File getValidateTestCasesDir(CelosCiContext.Mode mode, String testCasesDir) {
         if (mode == CelosCiContext.Mode.TEST) {
             File file = new File(Util.requireNonNull(testCasesDir));
             if (!file.isDirectory()) {
@@ -72,5 +85,9 @@ public class CiCommandLine {
 
     public URI getCelosServerUrl() {
         return celosServerUrl;
+    }
+
+    public String getHdfsRoot() {
+        return hdfsRoot;
     }
 }

@@ -9,7 +9,7 @@ import java.io.File;
 
 public class HdfsDeployer {
 
-    private static final String REMOTE_HDFS_PATTERN = "%s/user/celos/app/%s";
+    private static final String REMOTE_HDFS_PATTERN = "%s%s/%s";
     private static final String LOCAL_HDFS_PATTERN = "%s/hdfs";
 
     private final CelosCiContext context;
@@ -26,7 +26,7 @@ public class HdfsDeployer {
     }
 
     Path getDestinationHdfsPath() {
-        return new Path(String.format(REMOTE_HDFS_PATTERN, context.getHdfsPrefix(), context.getWorkflowName()));
+        return new Path(String.format(REMOTE_HDFS_PATTERN, context.getHdfsPrefix(), context.getHdfsRoot(), context.getWorkflowName()));
     }
 
     public void deploy() throws Exception {

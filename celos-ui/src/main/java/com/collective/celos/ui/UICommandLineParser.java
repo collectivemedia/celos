@@ -9,7 +9,7 @@ import java.net.URL;
 
 public class UICommandLineParser {
 
-    private static final String CLI_CELOS_ADDRESS = "celosAddr";
+    private static final String CLI_CELOS_ADDRESS = "celos";
     private static final String CLI_PORT = "port";
 
     private static final Logger LOGGER = Logger.getLogger(UICommandLineParser.class);
