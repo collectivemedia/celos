@@ -56,7 +56,8 @@ public class CiCommandLineParser {
         options.addOption(CLI_TARGET, CLI_TARGET, true, "Path to target JSON")
                 .addOption(CLI_MODE, CLI_MODE, true, "Mode. Defaults to DEPLOY")
                 .addOption(CLI_DEPLOY_DIR, CLI_DEPLOY_DIR, true, "Deploy directory. Path to workflow you want to deploy")
-                .addOption(CLI_WORKFLOW_NAME, CLI_WORKFLOW_NAME, true, "Workflow JS file name");
+                .addOption(CLI_WORKFLOW_NAME, CLI_WORKFLOW_NAME, true, "Workflow JS file name")
+                .addOption(CLI_HDFS_ROOT, CLI_HDFS_ROOT, true, "HDFS root. Defaults to " + Constants.DEFAULT_HDFS_ROOT);
         return options;
     }
 
