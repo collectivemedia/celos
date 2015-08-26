@@ -46,8 +46,9 @@ else
     # runsv starts new service with delay,
     # so this needs to fix 'fail: $SERVICE_NAME: runsv not running'
     i=0
-    while (( i <= ${SV_TIMEOUT} )) && ! ${SV} status ${SERVICE_NAME} 2> /dev/null
+    while (( i <= ${SV_TIMEOUT} )) && ! ${SV} status ${SERVICE_NAME} &> /dev/null
     do
+        : runsv not running, wait one more second
         (( i += 1 ))
         sleep 1
     done
