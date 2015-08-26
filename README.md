@@ -170,12 +170,12 @@ and start defining your own workflows with Celos. It's fun!
 ### Prerequisites
 
 * JDK 1.7 or higher
-* Buildr 1.4.12 or higher
+* ansible 1.9.1 or higher
 
 ### Unit testing and packaging
 
-* `buildr test` runs the unit test suite.
-* `buildr package` packages the WAR file under `target/`.
+* `./gradlew test` runs the unit test suite.
+* `./gradlew jar` packages the JAR file under `{{service_name}}/build/`.
 
 ### Integration testing
 
