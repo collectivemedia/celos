@@ -89,6 +89,10 @@ public class CelosClient {
         return getWorkflowStatus(workflowID, null, null);
     }
 
+    public void iterateScheduler() throws Exception {
+        iterateScheduler(null);
+    }
+
     public void iterateScheduler(ScheduledTime scheduledTime) throws Exception {
         iterateScheduler(scheduledTime, Collections.<WorkflowID>emptySet());
     }
@@ -99,7 +103,9 @@ public class CelosClient {
         if (!workflowIDs.isEmpty()) {
             uriBuilder.addParameter(IDS_PARAM, StringUtils.join(workflowIDs, ","));
         }
-        uriBuilder.addParameter(TIME_PARAM, timeFormatter.formatPretty(scheduledTime));
+        if (scheduledTime != null) {
+            uriBuilder.addParameter(TIME_PARAM, timeFormatter.formatPretty(scheduledTime));
+        }
         executePost(uriBuilder.build());
     }
 
