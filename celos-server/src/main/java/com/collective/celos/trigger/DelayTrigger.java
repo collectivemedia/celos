@@ -4,6 +4,8 @@ import com.collective.celos.ScheduledTime;
 import com.collective.celos.Scheduler;
 import org.joda.time.DateTime;
 
+import java.util.Collections;
+
 /**
  * A trigger that signals data availability for a given scheduled time
  * only if it is a configurable number of seconds past the current time.
@@ -18,18 +20,20 @@ import org.joda.time.DateTime;
  * var oneDay = 60 * 60 * 24;
  * andTrigger(delayTrigger(oneDay), hdfsCheckTrigger("/${year}/${month}/${day}/..."))
 */
-public class DelayTrigger implements Trigger {
+public class DelayTrigger extends Trigger {
 
     private final int seconds;
     
     public DelayTrigger(int seconds) throws Exception {
         this.seconds = seconds;
     }
-    
-    public boolean isDataAvailable(Scheduler scheduler, ScheduledTime now, ScheduledTime t) throws Exception {
+
+    @Override
+    public TriggerStatusPOJO makeStatusObject(Scheduler scheduler, ScheduledTime now, ScheduledTime scheduledTime) throws Exception {
         DateTime nowDT = now.getDateTime();
-        DateTime waitUntilDT = t.getDateTime().plusSeconds(getSeconds());
-        return nowDT.isAfter(waitUntilDT);
+        DateTime waitUntilDT = scheduledTime.getDateTime().plusSeconds(getSeconds());
+        final boolean ready = nowDT.isAfter(waitUntilDT);
+        return new TriggerStatusPOJO(ready, this.description(), Collections.<TriggerStatusPOJO>emptyList());
     }
 
     public int getSeconds() {

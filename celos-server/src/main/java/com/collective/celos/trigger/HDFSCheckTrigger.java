@@ -12,13 +12,14 @@ import org.apache.log4j.Logger;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.net.URI;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
  * Check in HDFS for a data dependency.
  */
-public class HDFSCheckTrigger implements Trigger {
+public class HDFSCheckTrigger extends Trigger {
 
     private static final Map<String, FileSystem> cachedFSs = new HashMap<>();
     private final ScheduledTimeFormatter formatter = new ScheduledTimeFormatter();
@@ -55,11 +56,13 @@ public class HDFSCheckTrigger implements Trigger {
         }
     }
 
+
     @Override
-    public boolean isDataAvailable(Scheduler scheduler, ScheduledTime now, ScheduledTime t) throws Exception {
-        Path path = new Path(formatter.replaceTimeTokens(getRawPathString(), t));
+    public TriggerStatusPOJO makeStatusObject(Scheduler scheduler, ScheduledTime now, ScheduledTime scheduledTime) throws Exception {
+        Path path = new Path(formatter.replaceTimeTokens(getRawPathString(), scheduledTime));
         LOGGER.info("Checking HDFS path: " + path);
-        return getFs().exists(path);
+        final boolean ready = getFs().exists(path);
+        return new TriggerStatusPOJO(ready, this.description(), Collections.<TriggerStatusPOJO>emptyList());
     }
 
 

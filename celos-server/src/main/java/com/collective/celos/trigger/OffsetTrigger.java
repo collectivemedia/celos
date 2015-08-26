@@ -4,11 +4,13 @@ import com.collective.celos.ScheduledTime;
 import com.collective.celos.Scheduler;
 import com.collective.celos.Util;
 
+import java.util.Collections;
+
 /**
  * var oneDay = 60 * 60 * 24;
  * andTrigger(offsetTrigger(oneDay, hdfsCheckTrigger("/${year}/${month}/${day}/..."))
 */
-public class OffsetTrigger implements Trigger {
+public class OffsetTrigger extends Trigger {
 
     private final int seconds;
     private final Trigger trigger;
@@ -18,9 +20,12 @@ public class OffsetTrigger implements Trigger {
         this.trigger = Util.requireNonNull(trigger);
     }
 
-    public boolean isDataAvailable(Scheduler scheduler, ScheduledTime now, ScheduledTime t) throws Exception {
-        return trigger.isDataAvailable(scheduler, now, t.plusSeconds(seconds));
+    @Override
+    public TriggerStatusPOJO makeStatusObject(Scheduler scheduler, ScheduledTime now, ScheduledTime scheduledTime) throws Exception {
+        final TriggerStatusPOJO statusPOJO = trigger.makeStatusObject(scheduler, now, scheduledTime.plusSeconds(seconds));
+        return new TriggerStatusPOJO(statusPOJO.isReady(), this.description(), Collections.singletonList(statusPOJO));
     }
+
 
     public int getSeconds() {
         return seconds;
@@ -29,4 +34,5 @@ public class OffsetTrigger implements Trigger {
     public Trigger getTrigger() {
         return trigger;
     }
+
 }

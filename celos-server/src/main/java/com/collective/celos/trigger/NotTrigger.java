@@ -5,17 +5,21 @@ import com.collective.celos.ScheduledTime;
 import com.collective.celos.Scheduler;
 import com.collective.celos.Util;
 
-public class NotTrigger implements Trigger {
+import java.util.Collections;
+
+public class NotTrigger extends Trigger {
 
     private final Trigger trigger;
     
     public NotTrigger(Trigger trigger) throws Exception {
         this.trigger = Util.requireNonNull(trigger);
     }
-    
+
     @Override
-    public boolean isDataAvailable(Scheduler scheduler, ScheduledTime now, ScheduledTime scheduledTime) throws Exception {
-        return !trigger.isDataAvailable(scheduler, now, scheduledTime);
+    public TriggerStatusPOJO makeStatusObject(Scheduler scheduler, ScheduledTime now, ScheduledTime scheduledTime) throws Exception {
+        final TriggerStatusPOJO statusPOJO = trigger.makeStatusObject(scheduler, now, scheduledTime);
+        final boolean ready = !statusPOJO.isReady();
+        return new TriggerStatusPOJO(ready, this.description(), Collections.singletonList(statusPOJO));
     }
 
     public Trigger getTrigger() {

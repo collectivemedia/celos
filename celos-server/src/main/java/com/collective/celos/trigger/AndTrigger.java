@@ -3,10 +3,11 @@ package com.collective.celos.trigger;
 import com.collective.celos.ScheduledTime;
 import com.collective.celos.Scheduler;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-public class AndTrigger implements Trigger {
+public class AndTrigger extends Trigger {
 
     private final List<Trigger> triggers = new LinkedList<>();
     
@@ -14,14 +15,23 @@ public class AndTrigger implements Trigger {
         this.triggers.addAll(triggers);
     }
     
-    @Override
-    public boolean isDataAvailable(Scheduler sched, ScheduledTime now, ScheduledTime t) throws Exception {
-        for (Trigger trigger : triggers) {
-            if (!trigger.isDataAvailable(sched, now, t)) {
+    private boolean checkTrigger(List<TriggerStatusPOJO> subStatuses) throws Exception {
+        for (TriggerStatusPOJO stat : subStatuses) {
+            if (!stat.isReady()) {
                 return false;
             }
         }
         return true;
+    }
+
+    @Override
+    public TriggerStatusPOJO makeStatusObject(Scheduler scheduler, ScheduledTime now, ScheduledTime scheduledTime) throws Exception {
+        final List<TriggerStatusPOJO> subStatuses = new ArrayList<>();
+        for (Trigger trigger : triggers) {
+            subStatuses.add(trigger.makeStatusObject(scheduler, now, scheduledTime));
+        }
+        boolean ready = this.checkTrigger(subStatuses);
+        return new TriggerStatusPOJO(ready, this.description(), subStatuses);
     }
 
     public List<Trigger> getTriggers() {

@@ -1,5 +1,12 @@
 package com.collective.celos;
 
+import com.collective.celos.trigger.Trigger;
+import com.collective.celos.trigger.TriggerStatusPOJO;
+import com.google.common.collect.ImmutableMap;
+import org.junit.Assert;
+import org.junit.Test;
+import org.mozilla.javascript.NativeJavaObject;
+
 import java.io.File;
 import java.io.StringReader;
 import java.net.URI;
@@ -7,12 +14,6 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
 import java.util.SortedSet;
-
-import com.collective.celos.trigger.Trigger;
-import com.google.common.collect.ImmutableMap;
-import org.junit.Assert;
-import org.junit.Test;
-import org.mozilla.javascript.NativeJavaObject;
 
 public class WorkflowConfigurationParserTest {
 
@@ -55,10 +56,11 @@ public class WorkflowConfigurationParserTest {
         }
     }
         
-    public static class TestTrigger implements Trigger {
+    public static class TestTrigger extends Trigger {
+
         @Override
-        public boolean isDataAvailable(Scheduler scheduler, ScheduledTime now, ScheduledTime t) throws Exception {
-            return false;
+        public TriggerStatusPOJO makeStatusObject(Scheduler scheduler, ScheduledTime now, ScheduledTime scheduledTime) throws Exception {
+            return new TriggerStatusPOJO(false, "", null);
         }
     }
 
