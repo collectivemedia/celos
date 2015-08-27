@@ -15,7 +15,7 @@ public class ServerCommandLineParserTest {
     
     @Test(expected=IllegalArgumentException.class)
     public void testPortIsRequiredEvenIfOtherArgsAreSupplied() throws Exception {
-        new ServerCommandLineParser().parse(new String[] {"--defaultsDir", "/foo"});
+        new ServerCommandLineParser().parse(new String[] {"--defaults", "/foo"});
     }
     
     @Test
@@ -29,7 +29,7 @@ public class ServerCommandLineParserTest {
     
     @Test
     public void testOverrideDefaults() throws Exception {
-        ServerCommandLine cmdLine = new ServerCommandLineParser().parse(new String[] {"--port", "1337", "--workflowsDir", "/wf", "--stateDir", "/db", "--defaultsDir", "/defaults"});
+        ServerCommandLine cmdLine = new ServerCommandLineParser().parse(new String[] {"--port", "1337", "--workflows", "/wf", "--db", "/db", "--defaults", "/defaults"});
         Assert.assertEquals(1337, cmdLine.getPort());
         Assert.assertEquals(new File("/wf"), cmdLine.getWorkflowsDir());
         Assert.assertEquals(new File("/defaults"), cmdLine.getDefaultsDir());
