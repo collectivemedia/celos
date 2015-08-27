@@ -33,10 +33,10 @@ java -classpath 'celos-server.jar:{hadoop_conf_directory}' com.collective.celos.
 
 Where
 
-````hadoop_conf_directory```` is a directory where hadoop-site.xml and core-site.xml files are located. Usually it's /etc/hadoop/conf if your machine has hadoop installed
-````defaults_directory````, ````workflows_directory````, ````logs_directory````, ````database_directory```` directories that were created previously
-````port```` the port where Celos server should operate on
-````autoschedule```` if specified, Celos server will trigger Scheduler with this period
+* `hadoop_conf_directory` is a directory where hadoop-site.xml and core-site.xml files are located. Usually it's /etc/hadoop/conf if your machine has hadoop installed
+* `defaults_directory`, `workflows_directory`, `logs_directory`, `database_directory` directories that were created previously
+* `port` the port where Celos server should operate on
+* `autoschedule` if specified, Celos server will trigger Scheduler with this period
 
 ## Build wordcount example 
 
