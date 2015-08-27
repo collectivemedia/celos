@@ -1,32 +1,34 @@
-# Celos demo
+# Celos workflow demo
 
 This example was created to give an idea what typical Celos workflow can look like  
-Required steps are following
+We took wordcount example for this  
+
+So, first you need to  
 
 ## Build celos 
-You can build Celos with its tools by running
+You can do this easily by running
 ````
 scripts\build-celos
 ```` 
+script in celos root directory
 
 ## Prepare Celos server environment
 
 There are several requirements that should be met in order to get Celos successfully run:
 
-Create following directories:
+You have to create following directories:
 * `workflows` directory, where Celos will store it's workflows
 * `defaults` directory, where Celos will look for defaults files
 * `db` directory, where Celos will store it's database
 * `logs` directory, where Celos wiil write logs to
 
-
-Place all required defaults file to defaults dir
+After that, place all required defaults file to defaults dir
 
 (describe what is a defaults file?)
 
 ## Run Celos server
 
-Typical Celos command line looks like this:
+Typical Celos server startup command looks like this:
 ````
 java -classpath 'celos-server.jar:{hadoop_conf_directory}' com.collective.celos.server.Main --defaults {defaults_directory} --workflows {workflows_directory} --logs {logs_directory} --db {database_directory} --port {port} --autoschedule {millis}
 ````
@@ -49,7 +51,7 @@ Build wordcount jar with
 ## Prepare deploy directory
 
 You can prepare deploy directory by calling ./gradlew prepareDeployDir  
-Basically, script creates following file structure
+Basically, script creates following file structure by copying required files from `src` and `build` directories
 
 ````
 build/
@@ -61,11 +63,10 @@ build/
     workflow.js                 # here you place celos.js file, which will be put to Celos workflow dir
 ````
 
-
 ## Prepare target file
 
-Target file is a JSON file, that describes Celos-CI "target": cluster HDFS and Celos Server paths
-Typical target.json looks like this: 
+Target file is a JSON file which describes Celos environment. Namely HDFS and Celos server directories  
+Typical target.json looks something like this: 
 
 ````
 {
@@ -77,10 +78,9 @@ Typical target.json looks like this:
 ````
 Each path can be either relative path or sftp URI
 
+## Deploy workflow
 
-## Deploy workflow 
-
-You can easily deploy worklfow with celos-ci DEPLOY MODE, which is called like this:
+Easy way to deploy worklfow is use celos-ci tool DEPLOY MODE:
 ````
 java -jar celos-ci-fat.jar --deployDir {celos_deploy} --mode DEPLOY --workflowName wordcount --target {target.json} --hdfsRoot {hdfsRoot}
 ````
@@ -94,7 +94,35 @@ Where
 
 ## Place input data to be read by wordcount 
 
+In this example, data is expected to appear at `/input/wordcount`,  and HdfsCheckTrigger expects files named like `2015-10-01T12:00.txt` so you should place some of them to hdfs:///input/wordcount in order to get workflow run   
+
+workflow.js:
+````
+addWorkflow({
+    "id": "wordcount",
+    "schedule": hourlySchedule(),
+    "schedulingStrategy": serialSchedulingStrategy(),
+    "trigger": **hdfsCheckTrigger("/input/wordcount/${year}-${month}-${day}T${hour}00.txt")**,
+    "externalService": oozieExternalService({
+        "oozie.wf.application.path": "/user/celos/app/wordcount/workflow.xml",
+        "inputDir": **"/input/wordcount"**,
+        "outputDir": "/output/wordcount"
+    })
+});
+````
+
 ## Check that output data was generated
 
+After workflow succeeds you are expected to find result files at
+````
+        "outputDir": **"/output/wordcount"**
+````
+
+
 ## Undeploy workflow with celos-ci
-java -jar celos-ci-fat.jar --deployDir /home/akonopko/work/celos/samples/wordcount/build/celos_deploy --mode UNDEPLOY --workflowName wordcount --target /home/akonopko/work/celos/samples/wordcount/target_test.json --hdfsRoot /user/akonopko/app
+
+Undeploy command is quite similar to deploy. The only difference is that you change `--mode` parameter to `DEPLOY`
+
+````
+java -jar celos-ci-fat.jar --deployDir {celos_deploy} **--mode DEPLOY** --workflowName wordcount --target {target.json} --hdfsRoot {hdfsRoot}
+````
