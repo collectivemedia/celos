@@ -18,6 +18,7 @@ git checkout .
 ${JAVADOC} -encoding UTF8 -protected -splitindex ${INDEXES} -classpath ${CLASSES} -sourcepath ${SOURCES} -d ${DIR}/javadoc
 git add ./javadoc
 git stash
+git branch -D gh-pages
 git checkout gh-pages
 git clean -f -d
 git reset --quiet .
