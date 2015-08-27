@@ -1,6 +1,6 @@
 # Celos demo
 
-This example was created to give an idea what typical Celos workflow can look like
+This example was created to give an idea what typical Celos workflow can look like..
 Required steps are following
 
 ## Build celos 
@@ -48,7 +48,7 @@ Build wordcount jar with
 
 ## Prepare deploy directory
 
-You can prepare deploy directory by calling ./gradlew prepareDeployDir
+You can prepare deploy directory by calling ./gradlew prepareDeployDir..
 Basically, script creates following file structure
 
 ````
