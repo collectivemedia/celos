@@ -1,19 +1,18 @@
 package com.collective.celos.servlet;
 
-import java.util.List;
+import com.collective.celos.*;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import com.collective.celos.*;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import java.util.List;
 
 /**
  * Returns information about the slot states of a single workflow as JSON.
  * 
  * GET /workflow?id=workflow-1
- * ==>
+ * ==
  * {
  *   "slots": {
  *     "2013-12-07T13:00:00.000Z": { "status": "RUNNING", "externalID": "237982137-371832798321-W", retryCount: 5 },
