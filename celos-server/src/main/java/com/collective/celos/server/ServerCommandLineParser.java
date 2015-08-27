@@ -38,7 +38,7 @@ public class ServerCommandLineParser {
         String defaultsDir = getDefault(commandLine, CLI_DEFAULTS_DIR, Constants.DEFAULT_DEFAULTS_DIR);
         String workflowsDir = getDefault(commandLine, CLI_WF_DIR, Constants.DEFAULT_WORKFLOWS_DIR);
         String logDir = getDefault(commandLine, CLI_LOG_DIR, Constants.DEFAULT_LOG_DIR);
-        Boolean autoSchedule = commandLine.hasOption(CLI_AUTOSCHEDULE);
+        Integer autoSchedule = Integer.valueOf(getDefault(commandLine, CLI_AUTOSCHEDULE, "-1"));
         Integer port = Integer.valueOf(commandLine.getOptionValue(CLI_PORT));
 
         return new ServerCommandLine(workflowsDir, defaultsDir, stateDbDir, logDir, port, autoSchedule);
@@ -61,7 +61,7 @@ public class ServerCommandLineParser {
                 .addOption(CLI_STATE_DB_DIR, CLI_STATE_DB_DIR, true, "Path to STATE DATABASE dir")
                 .addOption(CLI_PORT, CLI_PORT, true, "Celos Server port")
                 .addOption(CLI_LOG_DIR, CLI_LOG_DIR, true, "Celos logs dir")
-                .addOption(CLI_AUTOSCHEDULE, CLI_AUTOSCHEDULE, false, "Automatically run Scheduler");
+                .addOption(CLI_AUTOSCHEDULE, CLI_AUTOSCHEDULE, true, "Time period to automatically run Scheduler. If not specified, Scheduler will not be automatically run");
         return options;
     }
 

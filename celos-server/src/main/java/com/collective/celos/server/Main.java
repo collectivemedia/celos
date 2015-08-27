@@ -21,9 +21,9 @@ public class Main {
                 commandLine.getDefaultsDir(),
                 commandLine.getStateDatabase());
 
-        if (commandLine.isAutoSchedule()) {
+        if (commandLine.getAutoSchedule() > 0) {
             Timer timer = new Timer(true);
-            timer.schedule(createTimerTask(commandLine.getPort()), 0, Constants.MINUTE_MS);
+            timer.schedule(createTimerTask(commandLine.getPort()), 0, commandLine.getAutoSchedule());
         }
 
         Util.setupLogging(commandLine.getLogDir());

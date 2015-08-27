@@ -14,9 +14,9 @@ public class ServerCommandLine {
     private final File stateDatabase;
     private final File logDir;
     private final int port;
-    private final boolean autoSchedule;
+    private final int autoSchedule;
 
-    public ServerCommandLine(String workflowsDir, String defaultsDir, String stateDatabase, String logDir, int port, boolean autoSchedule) {
+    public ServerCommandLine(String workflowsDir, String defaultsDir, String stateDatabase, String logDir, int port, int autoSchedule) {
         this.autoSchedule = autoSchedule;
         this.workflowsDir = new File(Util.requireNonNull(workflowsDir));
         this.defaultsDir = new File(Util.requireNonNull(defaultsDir));
@@ -25,7 +25,7 @@ public class ServerCommandLine {
         this.logDir = new File(Util.requireNonNull(logDir));
     }
 
-    public boolean isAutoSchedule() {
+    public int getAutoSchedule() {
         return autoSchedule;
     }
 
