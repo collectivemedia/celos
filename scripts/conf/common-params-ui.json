@@ -1,0 +1,5 @@
+{
+  "jar_path": "../celos-ui/build/libs/celos-ui.jar",
+  "main_class": "com.collective.celos.ui.Main",
+  "service_args": "--celos http://{{ celos_server_host }}:{{ server_service_port }}"
+}

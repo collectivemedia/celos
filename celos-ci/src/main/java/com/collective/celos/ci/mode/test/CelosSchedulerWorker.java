@@ -1,9 +1,9 @@
 package com.collective.celos.ci.mode.test;
 
+import com.collective.celos.CelosClient;
 import com.collective.celos.ScheduledTime;
 import com.collective.celos.SlotState;
 import com.collective.celos.WorkflowID;
-import com.collective.celos.ci.mode.test.client.CelosClient;
 import com.google.common.collect.Sets;
 import org.apache.commons.lang.StringUtils;
 
@@ -23,6 +23,8 @@ public class CelosSchedulerWorker {
 
     public void runCelosScheduler(TestCase testCase) throws Exception {
         Set<WorkflowID> workflowList;
+        client.clearCache();
+
         if (testCase.getTargetWorkflows().isEmpty()) {
             workflowList = client.getWorkflowList();
         } else {
@@ -33,12 +35,22 @@ public class CelosSchedulerWorker {
         ScheduledTime actualTime = startTime;
         ScheduledTime endTime = testCase.getSampleTimeEnd().plusSeconds(1);
 
+        if (!workflowList.isEmpty()) {
+            startScheduler(testCase, workflowList, actualTime, endTime);
+        } else {
+            System.out.println(testCase.getName() + ": there are no workflows to run");
+        }
+    }
+
+    private void startScheduler(TestCase testCase, Set<WorkflowID> workflowList, ScheduledTime actualTime, ScheduledTime endTime) throws Exception {
         System.out.println(testCase.getName() + ": Starting scheduler for: " + StringUtils.join(workflowList, ", "));
         client.iterateScheduler(actualTime, testCase.getTargetWorkflows());
 
         while (!actualTime.getDateTime().isAfter(endTime.getDateTime())) {
             String workflowStatuses = StringUtils.join(getWorkflowStatusesInfo(workflowList, actualTime), " ");
-            System.out.println(testCase.getName() + ": Workflow statuses: " + workflowStatuses);
+            if (!workflowStatuses.trim().isEmpty()) {
+                System.out.println(testCase.getName() + ": Workflow statuses: " + workflowStatuses);
+            }
             if (!isThereAnyRunningWorkflows(workflowList, actualTime)) {
                 actualTime = new ScheduledTime(actualTime.getDateTime().plusHours(1));
             } else {

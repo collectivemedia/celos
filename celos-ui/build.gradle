@@ -1,0 +1,43 @@
+mainClassName = 'com.collective.celos.ui.Main'
+version = '0.1'
+
+jar {
+    baseName "celos-ui"
+    manifest {
+        attributes("Main-Class": mainClassName)
+    }
+}
+
+sourceSets {
+    main {
+        java {
+            srcDir 'src/main/java'
+        }
+        resources {
+            srcDir 'src/main/resources'
+            srcDir 'src/main/webapp'
+        }
+    }
+    test {
+        java {
+            srcDir 'src/test/java'
+        }
+    }
+}
+
+dependencies {
+    compile project(':celos-common')
+    testCompile("junit:junit:4.8.2")
+    testCompile("org.powermock:powermock-module-junit4:1.5.5") {
+       exclude module: 'junit'
+    }
+    testCompile("org.powermock:powermock-api-mockito:1.5.5") {
+       exclude module: 'junit'
+    }
+    testCompile("org.mockito:mockito-all:1.9.5")
+}
+
+jar {
+    from configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+    archiveName "celos-ui.jar"
+}

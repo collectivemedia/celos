@@ -1,6 +1,6 @@
 package com.collective.celos.ci.mode;
 
-import com.collective.celos.ci.config.CelosCiCommandLine;
+import com.collective.celos.ci.config.CiCommandLine;
 import com.collective.celos.ci.config.deploy.CelosCiContext;
 import com.google.common.collect.Sets;
 import org.junit.Assert;
@@ -44,7 +44,7 @@ public class DeployTaskTest {
         stream.write(targetFileStr.getBytes());
         stream.flush();
 
-        CelosCiCommandLine commandLine = new CelosCiCommandLine(targetFile.toURI().toString(), "DEPLOY", "deploydir", "workflow", "testDir", "uname", false);
+        CiCommandLine commandLine = new CiCommandLine(targetFile.toURI().toString(), "DEPLOY", "deploydir", "workflow", "testDir", "uname", false, null, "/some/hdfs/root");
         DeployTask deployTask = new DeployTask(commandLine);
 
         CelosCiContext context = deployTask.getCiContext();
@@ -84,7 +84,7 @@ public class DeployTaskTest {
         stream.write(targetFileStr.getBytes());
         stream.flush();
 
-        CelosCiCommandLine commandLine = new CelosCiCommandLine(targetFile.toURI().toString(), "DEPLOY", deployDir.getAbsolutePath(), "workflow", "testDir", "uname", false);
+        CiCommandLine commandLine = new CiCommandLine(targetFile.toURI().toString(), "DEPLOY", deployDir.getAbsolutePath(), "workflow", "testDir", "uname", false, null, "/some/hdfs/root");
 
         DeployTask deployTask = new DeployTask(commandLine);
 
@@ -93,7 +93,7 @@ public class DeployTaskTest {
 
         deployTask.start();
         Assert.assertArrayEquals(celosWfDir.list(), new String[] {"workflow.js"});
-        Set<String> resultSet = getFilesWithoutCrc(new File(hdfsDir, "user/celos/app/workflow"));
+        Set<String> resultSet = getFilesWithoutCrc(new File(hdfsDir, "some/hdfs/root/workflow"));
         Assert.assertEquals(Sets.newHashSet("file1", "file2"), resultSet);
 
     }
