@@ -1,18 +1,16 @@
 package com.collective.celos.servlet;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import com.collective.celos.WorkflowID;
+import org.junit.Assert;
+import org.junit.Test;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.servlet.http.HttpServletRequest;
-
-import org.junit.Assert;
-import org.junit.Test;
-
-import com.collective.celos.WorkflowID;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class SchedulerServletTest {
 
