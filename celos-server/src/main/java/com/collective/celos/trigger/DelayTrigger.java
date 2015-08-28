@@ -33,7 +33,13 @@ public class DelayTrigger extends Trigger {
         DateTime nowDT = now.getDateTime();
         DateTime waitUntilDT = scheduledTime.getDateTime().plusSeconds(getSeconds());
         final boolean ready = nowDT.isAfter(waitUntilDT);
-        return new TriggerStatusPOJO(ready, this.description(), Collections.<TriggerStatusPOJO>emptyList());
+        final String description = this.humanReadableDescription(ready, scheduledTime);
+        return new TriggerStatusPOJO(ready, description, Collections.<TriggerStatusPOJO>emptyList());
+    }
+
+    @Override
+    public String humanReadableDescription(boolean ready, ScheduledTime scheduledTime) {
+        return "Delay " + seconds + "seconds";
     }
 
     public int getSeconds() {

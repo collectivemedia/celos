@@ -14,9 +14,7 @@ public abstract class Trigger {
     public abstract TriggerStatusPOJO makeStatusObject(Scheduler scheduler, ScheduledTime now, ScheduledTime scheduledTime) throws Exception;
 
 
-    public String description() {
-        return "";
-    }
+    public abstract String humanReadableDescription(boolean ready, ScheduledTime scheduledTime);
 
     public final boolean isDataAvailable(Scheduler scheduler, ScheduledTime now, ScheduledTime scheduledTime) throws Exception {
         return makeStatusObject(scheduler, now, scheduledTime).isReady();

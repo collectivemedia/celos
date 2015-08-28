@@ -62,7 +62,20 @@ public class HDFSCheckTrigger extends Trigger {
         Path path = new Path(formatter.replaceTimeTokens(getRawPathString(), scheduledTime));
         LOGGER.info("Checking HDFS path: " + path);
         final boolean ready = getFs().exists(path);
-        return new TriggerStatusPOJO(ready, this.description(), Collections.<TriggerStatusPOJO>emptyList());
+        final String description = this.humanReadableDescription(ready, scheduledTime);
+        return new TriggerStatusPOJO(ready, description, Collections.<TriggerStatusPOJO>emptyList());
+    }
+
+    @Override
+    public String humanReadableDescription(boolean ready, ScheduledTime scheduledTime) {
+        Path path = new Path(formatter.replaceTimeTokens(getRawPathString(), scheduledTime));
+        if (ready) {
+
+            return "HDFS path " + path.toString() + "is ready";
+        } else {
+            return "HDFS path " + path.toString() + "is not ready";
+        }
+
     }
 
 

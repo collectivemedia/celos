@@ -7,31 +7,38 @@ import java.util.Collections;
 
 public class SuccessTrigger extends Trigger {
 
-    private WorkflowID triggerWorkflowId;
+    private WorkflowID triggerWorkflowID;
 
     public SuccessTrigger(String workflowName) throws Exception {
-        triggerWorkflowId = new WorkflowID(workflowName);
+        this.triggerWorkflowID = new WorkflowID(workflowName);
     }
 
-    private boolean checkTrigger(Scheduler scheduler, ScheduledTime now, ScheduledTime scheduledTime) throws Exception {
-        SlotID slotId = new SlotID(triggerWorkflowId, scheduledTime);
-        final SlotState slotState = scheduler.getStateDatabase().getSlotState(slotId);
+    private boolean checkTrigger(Scheduler scheduler, ScheduledTime scheduledTime) throws Exception {
+        StateDatabase stateDatabase = scheduler.getStateDatabase();
+        SlotID slotId = new SlotID(triggerWorkflowID, scheduledTime);
+        final SlotState slotState = stateDatabase.getSlotState(slotId);
         return slotState != null && SlotState.Status.SUCCESS == slotState.getStatus();
     }
 
     @Override
     public TriggerStatusPOJO makeStatusObject(Scheduler scheduler, ScheduledTime now, ScheduledTime scheduledTime) throws Exception {
-        boolean ready = checkTrigger(scheduler, now, scheduledTime);
-        return new TriggerStatusPOJO(ready, this.description(), Collections.<TriggerStatusPOJO>emptyList());
+        boolean ready = checkTrigger(scheduler, scheduledTime);
+        String description = this.humanReadableDescription(ready, scheduledTime);
+        return new TriggerStatusPOJO(ready, description, Collections.<TriggerStatusPOJO>emptyList());
     }
 
     @Override
-    public String description() {
-        return "";
+    public String humanReadableDescription(boolean ready, ScheduledTime scheduledTime) {
+        SlotID slotId = new SlotID(triggerWorkflowID, scheduledTime);
+        if (ready) {
+            return "Workflow slot " + slotId.toString() + " is ready";
+        } else {
+            return "Workflow slot " + slotId.toString() + " is not ready";
+        }
     }
 
     public WorkflowID getTriggerWorkflowId() {
-        return triggerWorkflowId;
+        return triggerWorkflowID;
     }
 
 }

@@ -20,7 +20,14 @@ public class OnDateTrigger extends Trigger {
 
     @Override
     public TriggerStatusPOJO makeStatusObject(Scheduler scheduler, ScheduledTime now, ScheduledTime time) throws Exception {
-        return new TriggerStatusPOJO(time.equals(scheduledTime), this.description(), Collections.<TriggerStatusPOJO>emptyList());
+        final boolean ready = time.equals(scheduledTime);
+        final String description = this.humanReadableDescription(ready, scheduledTime);
+        return new TriggerStatusPOJO(ready, description, Collections.<TriggerStatusPOJO>emptyList());
+    }
+
+    @Override
+    public String humanReadableDescription(boolean ready, ScheduledTime scheduledTime) {
+        return "OnDateTrigger";
     }
 
 

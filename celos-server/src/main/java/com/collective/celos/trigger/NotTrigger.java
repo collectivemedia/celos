@@ -19,7 +19,13 @@ public class NotTrigger extends Trigger {
     public TriggerStatusPOJO makeStatusObject(Scheduler scheduler, ScheduledTime now, ScheduledTime scheduledTime) throws Exception {
         final TriggerStatusPOJO statusPOJO = trigger.makeStatusObject(scheduler, now, scheduledTime);
         final boolean ready = !statusPOJO.isReady();
-        return new TriggerStatusPOJO(ready, this.description(), Collections.singletonList(statusPOJO));
+        final String description = this.humanReadableDescription(ready, scheduledTime);
+        return new TriggerStatusPOJO(ready, description, Collections.singletonList(statusPOJO));
+    }
+
+    @Override
+    public String humanReadableDescription(boolean ready, ScheduledTime scheduledTime) {
+        return "NOT";
     }
 
     public Trigger getTrigger() {

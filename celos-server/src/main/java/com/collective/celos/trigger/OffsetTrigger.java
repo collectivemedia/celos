@@ -23,9 +23,15 @@ public class OffsetTrigger extends Trigger {
     @Override
     public TriggerStatusPOJO makeStatusObject(Scheduler scheduler, ScheduledTime now, ScheduledTime scheduledTime) throws Exception {
         final TriggerStatusPOJO statusPOJO = trigger.makeStatusObject(scheduler, now, scheduledTime.plusSeconds(seconds));
-        return new TriggerStatusPOJO(statusPOJO.isReady(), this.description(), Collections.singletonList(statusPOJO));
+        final boolean ready = statusPOJO.isReady();
+        final String description = this.humanReadableDescription(ready, scheduledTime);
+        return new TriggerStatusPOJO(ready, description, Collections.singletonList(statusPOJO));
     }
 
+    @Override
+    public String humanReadableDescription(boolean ready, ScheduledTime scheduledTime) {
+        return "Offset " + Integer.toString(seconds) + " seconds";
+    }
 
     public int getSeconds() {
         return seconds;

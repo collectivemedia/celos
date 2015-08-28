@@ -25,8 +25,8 @@ public class OrTrigger extends Trigger {
     }
 
     @Override
-    public String description() {
-        return "";
+    public String humanReadableDescription(boolean ready, ScheduledTime scheduledTime) {
+        return "OR";
     }
 
     @Override
@@ -36,7 +36,8 @@ public class OrTrigger extends Trigger {
             subStatuses.add(trigger.makeStatusObject(scheduler, now, scheduledTime));
         }
         boolean ready = this.checkTrigger(subStatuses);
-        return new TriggerStatusPOJO(ready, this.description(), subStatuses);
+        final String description = this.humanReadableDescription(ready, scheduledTime);
+        return new TriggerStatusPOJO(ready, description, subStatuses);
     }
 
 

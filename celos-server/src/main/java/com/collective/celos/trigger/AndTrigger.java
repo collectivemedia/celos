@@ -31,7 +31,13 @@ public class AndTrigger extends Trigger {
             subStatuses.add(trigger.makeStatusObject(scheduler, now, scheduledTime));
         }
         boolean ready = this.checkTrigger(subStatuses);
-        return new TriggerStatusPOJO(ready, this.description(), subStatuses);
+        final String description = this.humanReadableDescription(ready, scheduledTime);
+        return new TriggerStatusPOJO(ready, description, subStatuses);
+    }
+
+    @Override
+    public String humanReadableDescription(boolean ready, ScheduledTime scheduledTime) {
+        return "AND";
     }
 
     public List<Trigger> getTriggers() {

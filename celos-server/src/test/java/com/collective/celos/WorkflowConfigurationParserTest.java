@@ -62,6 +62,11 @@ public class WorkflowConfigurationParserTest {
         public TriggerStatusPOJO makeStatusObject(Scheduler scheduler, ScheduledTime now, ScheduledTime scheduledTime) throws Exception {
             return new TriggerStatusPOJO(false, "", null);
         }
+
+        @Override
+        public String humanReadableDescription(boolean ready, ScheduledTime scheduledTime) {
+            return "TestTrigger";
+        }
     }
 
     @Test
