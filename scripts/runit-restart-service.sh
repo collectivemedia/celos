@@ -48,10 +48,11 @@ else
     i=0
     while (( i <= ${SV_TIMEOUT} )) && ! ${SV} status ${SERVICE_NAME} &> /dev/null
     do
-        : "wait 1 sec for runsv startup"
+        : runsv not running, wait one more second
         (( i += 1 ))
         sleep 1
     done
+    sleep 1
     ${SV} -w ${SV_TIMEOUT} start ${SERVICE_NAME}/log
     ${SV} -w ${SV_TIMEOUT} start ${SERVICE_NAME}
 fi

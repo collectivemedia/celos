@@ -89,32 +89,48 @@ public class CiCommandLineParserTest {
 
     @Test (expected = IllegalArgumentException.class)
     public void testNoDirComes() throws Exception {
-        new CiCommandLine("target", "TEST", "deployDir", "workflowName", "testCasesDir", "userName", true, null);
+        new CiCommandLine("target", "TEST", "deployDir", "workflowName", "testCasesDir", "userName", true, null, "/hdfsRoot");
     }
 
     @Test (expected = NullPointerException.class)
     public void testNoDirComesNull() throws Exception {
-        new CiCommandLine("target", "TEST", "deployDir", "workflowName", null, "userName", true, null);
+        new CiCommandLine("target", "TEST", "deployDir", "workflowName", null, "userName", true, null, "/hdfsRoot");
     }
 
     @Test
     public void testDeployNoDirComes() throws Exception {
-        new CiCommandLine("target", "DEPLOY", "deployDir", "workflowName", "testCasesDir", "userName", true, null);
+        new CiCommandLine("target", "DEPLOY", "deployDir", "workflowName", "testCasesDir", "userName", true, null, "/hdfsRoot");
     }
 
     @Test
     public void testDeployNoDirComesNull() throws Exception {
-        new CiCommandLine("target", "DEPLOY", "deployDir", "workflowName", null, "userName", true, null);
+        new CiCommandLine("target", "DEPLOY", "deployDir", "workflowName", null, "userName", true, null, "/hdfsRoot");
     }
 
     @Test
     public void testUndeployNoDirComes() throws Exception {
-        new CiCommandLine("target", "UNDEPLOY", "deployDir", "workflowName", "testCasesDir", "userName", true, null);
+        new CiCommandLine("target", "UNDEPLOY", "deployDir", "workflowName", "testCasesDir", "userName", true, null, "/hdfsRoot");
     }
 
     @Test
     public void testUndeployNoDirComesNull() throws Exception {
-        new CiCommandLine("target", "UNDEPLOY", "deployDir", "workflowName", null, "userName", true, null);
+        new CiCommandLine("target", "UNDEPLOY", "deployDir", "workflowName", null, "userName", true, null, "/hdfsRoot");
     }
+
+    @Test
+    public void testHdfsRootSeveralSlashesInMiddle() throws Exception {
+        new CiCommandLine("target", "UNDEPLOY", "deployDir", "workflowName", null, "userName", true, null, "/hdfs/Some/Root");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testHdfsRootNoStartSlash() throws Exception {
+        new CiCommandLine("target", "UNDEPLOY", "deployDir", "workflowName", null, "userName", true, null, "hdfsRoot");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testHdfsRootEndsWithSlash() throws Exception {
+        new CiCommandLine("target", "UNDEPLOY", "deployDir", "workflowName", null, "userName", true, null, "/hdfsRoot/");
+    }
+
 
 }

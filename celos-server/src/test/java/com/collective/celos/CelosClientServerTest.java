@@ -1,6 +1,7 @@
 package com.collective.celos;
 
 import com.collective.celos.server.CelosServer;
+import com.collective.celos.server.Main;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -48,10 +49,8 @@ public class CelosClientServerTest {
         defaultsDir.mkdirs();
         this.slotDbDir.mkdirs();
 
-        Integer port = Util.getFreePort();
-
         this.celosServer = new CelosServer();
-        celosServer.startServer(port, ImmutableMap.<String, String>of(), workflowsDir, defaultsDir, slotDbDir);
+        int port = celosServer.startServer(ImmutableMap.<String, String>of(), workflowsDir, defaultsDir, slotDbDir);
         this.celosClient = new CelosClient(URI.create("http://localhost:" + port));
     }
 
@@ -143,7 +142,7 @@ public class CelosClientServerTest {
         File src = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/client/wf-list").toURI());
         FileUtils.copyDirectory(src, workflowsDir);
 
-        celosClient.iterateScheduler(ScheduledTime.now());
+        celosClient.iterateScheduler();
         List<SlotState> slotStates = celosClient.getWorkflowStatus(new WorkflowID("workflow-2")).getSlotStates();
         Assert.assertEquals(slotStates.size(), SLOTS_IN_CELOS_SERVER_SLIDING_WINDOW);
 
@@ -160,7 +159,7 @@ public class CelosClientServerTest {
         File src = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/client/wf-list").toURI());
         FileUtils.copyDirectory(src, workflowsDir);
 
-        celosClient.iterateScheduler(ScheduledTime.now());
+        celosClient.iterateScheduler();
         WorkflowStatus status = celosClient.getWorkflowStatus(new WorkflowID("workflow-1"));
         Assert.assertNull(status.getInfo().getUrl());
         Assert.assertTrue(status.getInfo().getContacts().isEmpty());
@@ -172,7 +171,7 @@ public class CelosClientServerTest {
         File src = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/client/wf-list").toURI());
         FileUtils.copyDirectory(src, workflowsDir);
 
-        celosClient.iterateScheduler(ScheduledTime.now());
+        celosClient.iterateScheduler();
         WorkflowStatus status = celosClient.getWorkflowStatus(new WorkflowID("workflow-2"));
 
         Assert.assertEquals(new URL("http://collective.com"), status.getInfo().getUrl());
@@ -188,8 +187,8 @@ public class CelosClientServerTest {
         File src = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/client/wf-list").toURI());
         FileUtils.copyDirectory(src, workflowsDir);
 
-        celosClient.iterateScheduler(ScheduledTime.now());
-        celosClient.iterateScheduler(ScheduledTime.now());
+        celosClient.iterateScheduler();
+        celosClient.iterateScheduler();
         List<SlotState> slotStates = celosClient.getWorkflowStatus(new WorkflowID("workflow-1")).getSlotStates();
         Assert.assertEquals(slotStates.size(), SLOTS_IN_CELOS_SERVER_SLIDING_WINDOW);
 
@@ -206,8 +205,8 @@ public class CelosClientServerTest {
         File src = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/client/wf-list").toURI());
         FileUtils.copyDirectory(src, workflowsDir);
 
-        celosClient.iterateScheduler(ScheduledTime.now());
-        celosClient.iterateScheduler(ScheduledTime.now());
+        celosClient.iterateScheduler();
+        celosClient.iterateScheduler();
         List<SlotState> slotStates = celosClient.getWorkflowStatus(new WorkflowID("workflow-2")).getSlotStates();
         Assert.assertEquals(slotStates.size(), SLOTS_IN_CELOS_SERVER_SLIDING_WINDOW);
 
@@ -230,9 +229,9 @@ public class CelosClientServerTest {
         File src = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/client/wf-list").toURI());
         FileUtils.copyDirectory(src, workflowsDir);
 
-        celosClient.iterateScheduler(ScheduledTime.now());
-        celosClient.iterateScheduler(ScheduledTime.now());
-        celosClient.iterateScheduler(ScheduledTime.now());
+        celosClient.iterateScheduler();
+        celosClient.iterateScheduler();
+        celosClient.iterateScheduler();
 
         List<SlotState> slotStates = celosClient.getWorkflowStatus(new WorkflowID("workflow-2")).getSlotStates();
         Assert.assertEquals(slotStates.size(), SLOTS_IN_CELOS_SERVER_SLIDING_WINDOW);
@@ -256,10 +255,10 @@ public class CelosClientServerTest {
         File src = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/client/wf-list").toURI());
         FileUtils.copyDirectory(src, workflowsDir);
 
-        celosClient.iterateScheduler(ScheduledTime.now());
-        celosClient.iterateScheduler(ScheduledTime.now());
-        celosClient.iterateScheduler(ScheduledTime.now());
-        celosClient.iterateScheduler(ScheduledTime.now());
+        celosClient.iterateScheduler();
+        celosClient.iterateScheduler();
+        celosClient.iterateScheduler();
+        celosClient.iterateScheduler();
 
         List<SlotState> slotStates = celosClient.getWorkflowStatus(new WorkflowID("workflow-2")).getSlotStates();
         Assert.assertEquals(slotStates.size(), SLOTS_IN_CELOS_SERVER_SLIDING_WINDOW);
@@ -289,9 +288,9 @@ public class CelosClientServerTest {
         File src = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/client/wf-list").toURI());
         FileUtils.copyDirectory(src, workflowsDir);
 
-        celosClient.iterateScheduler(ScheduledTime.now());
-        celosClient.iterateScheduler(ScheduledTime.now());
-        celosClient.iterateScheduler(ScheduledTime.now());
+        celosClient.iterateScheduler();
+        celosClient.iterateScheduler();
+        celosClient.iterateScheduler();
 
         List<SlotState> slotStates = celosClient.getWorkflowStatus(new WorkflowID("workflow-Iñtërnâtiônàlizætiøn")).getSlotStates();
         Assert.assertEquals(slotStates.size(), SLOTS_IN_CELOS_SERVER_SLIDING_WINDOW);
@@ -364,8 +363,7 @@ public class CelosClientServerTest {
 
     @Test
     public void testServerRespondsToScheduler() throws Exception {
-        ScheduledTime time1 = new ScheduledTime("2014-10-27T14:00:00.000Z");
-        celosClient.iterateScheduler(time1);
+        celosClient.iterateScheduler();
     }
 
     @Test
@@ -600,9 +598,9 @@ public class CelosClientServerTest {
         File src = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/client/wf-list").toURI());
         FileUtils.copyDirectory(src, workflowsDir);
 
-        celosClient.iterateScheduler(ScheduledTime.now());
-        celosClient.iterateScheduler(ScheduledTime.now());
-        celosClient.iterateScheduler(ScheduledTime.now());
+        celosClient.iterateScheduler();
+        celosClient.iterateScheduler();
+        celosClient.iterateScheduler();
 
         WorkflowID workflowID = new WorkflowID("workflow-Iñtërnâtiônàlizætiøn");
 

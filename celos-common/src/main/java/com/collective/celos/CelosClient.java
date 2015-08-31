@@ -89,6 +89,10 @@ public class CelosClient {
         return getWorkflowStatus(workflowID, null, null);
     }
 
+    public void iterateScheduler() throws Exception {
+        iterateScheduler(ScheduledTime.now());
+    }
+
     public void iterateScheduler(ScheduledTime scheduledTime) throws Exception {
         iterateScheduler(scheduledTime, Collections.<WorkflowID>emptySet());
     }

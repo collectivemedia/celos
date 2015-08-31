@@ -45,7 +45,7 @@ A **scheduling strategy** picks the order in which slots are run.  The
 usual *serial scheduling strategy* simply always picks the oldest slot
 and runs it, but it would also be possible to define scheduling
 strategies that pick the newest slot, or a random slot, or a number of
-slots in parallel.
+slots in parallel. 
 
 An **external service** is responsible for actually running workflows.
 Currently only Oozie is supported, but Celos is extensible to submit
@@ -170,12 +170,12 @@ and start defining your own workflows with Celos. It's fun!
 ### Prerequisites
 
 * JDK 1.7 or higher
-* Buildr 1.4.12 or higher
+* ansible 1.9.1 or higher
 
 ### Unit testing and packaging
 
-* `buildr test` runs the unit test suite.
-* `buildr package` packages the WAR file under `target/`.
+* `./gradlew test` runs the unit test suite.
+* `./gradlew jar` packages the JAR file under `{{service_name}}/build/`.
 
 ### Integration testing
 
@@ -795,3 +795,4 @@ watch -n 10 curl -X POST "$CELOS/scheduler?ids=workflow-1&time=2014-02-10T21:00Z
 # While watch is running, check slot status with this command
 curl "${CELOS}/workflow-slots?id=workflow-1&time=2014-02-10T21:00Z"
 </pre>
+
