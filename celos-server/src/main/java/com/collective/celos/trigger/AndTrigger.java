@@ -15,8 +15,8 @@ public class AndTrigger extends Trigger {
         this.triggers.addAll(triggers);
     }
     
-    private boolean checkTrigger(List<TriggerStatusPOJO> subStatuses) throws Exception {
-        for (TriggerStatusPOJO stat : subStatuses) {
+    private boolean checkTrigger(List<TriggerStatus> subStatuses) throws Exception {
+        for (TriggerStatus stat : subStatuses) {
             if (!stat.isReady()) {
                 return false;
             }
@@ -25,18 +25,17 @@ public class AndTrigger extends Trigger {
     }
 
     @Override
-    public TriggerStatusPOJO makeStatusObject(Scheduler scheduler, ScheduledTime now, ScheduledTime scheduledTime) throws Exception {
-        final List<TriggerStatusPOJO> subStatuses = new ArrayList<>();
+    public TriggerStatus getTriggerStatus(Scheduler scheduler, ScheduledTime now, ScheduledTime scheduledTime) throws Exception {
+        final List<TriggerStatus> subStatuses = new ArrayList<>();
         for (Trigger trigger : triggers) {
-            subStatuses.add(trigger.makeStatusObject(scheduler, now, scheduledTime));
+            subStatuses.add(trigger.getTriggerStatus(scheduler, now, scheduledTime));
         }
         boolean ready = this.checkTrigger(subStatuses);
         final String description = this.humanReadableDescription(ready, scheduledTime);
-        return new TriggerStatusPOJO(ready, description, subStatuses);
+        return new TriggerStatus(ready, description, subStatuses);
     }
 
-    @Override
-    public String humanReadableDescription(boolean ready, ScheduledTime scheduledTime) {
+    private String humanReadableDescription(boolean ready, ScheduledTime scheduledTime) {
         return "AND";
     }
 

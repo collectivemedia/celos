@@ -2,7 +2,7 @@ package com.collective.celos;
 
 import com.collective.celos.trigger.AlwaysTrigger;
 import com.collective.celos.trigger.Trigger;
-import com.collective.celos.trigger.TriggerStatusPOJO;
+import com.collective.celos.trigger.TriggerStatus;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.junit.Assert;
@@ -183,8 +183,8 @@ public class SchedulerTest {
 
         // The trigger should report the data as available
         ScheduledTime now = ScheduledTime.now();
-        final TriggerStatusPOJO statusPOJO = new TriggerStatusPOJO(true, "", Collections.<TriggerStatusPOJO>emptyList());
-        when(trigger.makeStatusObject(scheduler, now, scheduledTime)).thenReturn(statusPOJO);
+        final TriggerStatus statusPOJO = new TriggerStatus(true, "", Collections.<TriggerStatus>emptyList());
+        when(trigger.getTriggerStatus(scheduler, now, scheduledTime)).thenReturn(statusPOJO);
 
         scheduler.updateSlotState(wf, slotState, now);
 
@@ -199,8 +199,8 @@ public class SchedulerTest {
 
         // The trigger should report the data as not available
         ScheduledTime now = ScheduledTime.now();
-        final TriggerStatusPOJO statusPOJO = new TriggerStatusPOJO(false, "", Collections.<TriggerStatusPOJO>emptyList());
-        when(trigger.makeStatusObject(scheduler, now, scheduledTime)).thenReturn(statusPOJO);
+        final TriggerStatus statusPOJO = new TriggerStatus(false, "", Collections.<TriggerStatus>emptyList());
+        when(trigger.getTriggerStatus(scheduler, now, scheduledTime)).thenReturn(statusPOJO);
 
         scheduler.updateSlotState(wf, slotState, now);
 

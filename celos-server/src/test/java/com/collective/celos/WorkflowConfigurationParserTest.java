@@ -1,7 +1,7 @@
 package com.collective.celos;
 
 import com.collective.celos.trigger.Trigger;
-import com.collective.celos.trigger.TriggerStatusPOJO;
+import com.collective.celos.trigger.TriggerStatus;
 import com.google.common.collect.ImmutableMap;
 import org.junit.Assert;
 import org.junit.Test;
@@ -59,14 +59,10 @@ public class WorkflowConfigurationParserTest {
     public static class TestTrigger extends Trigger {
 
         @Override
-        public TriggerStatusPOJO makeStatusObject(Scheduler scheduler, ScheduledTime now, ScheduledTime scheduledTime) throws Exception {
-            return new TriggerStatusPOJO(false, "", null);
+        public TriggerStatus getTriggerStatus(Scheduler scheduler, ScheduledTime now, ScheduledTime scheduledTime) throws Exception {
+            return new TriggerStatus(false, "TestTrigger", null);
         }
 
-        @Override
-        public String humanReadableDescription(boolean ready, ScheduledTime scheduledTime) {
-            return "TestTrigger";
-        }
     }
 
     @Test

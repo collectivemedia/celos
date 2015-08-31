@@ -1,7 +1,7 @@
 package com.collective.celos;
 
 import com.collective.celos.trigger.Trigger;
-import com.collective.celos.trigger.TriggerStatusPOJO;
+import com.collective.celos.trigger.TriggerStatus;
 
 import java.util.Collections;
 
@@ -19,15 +19,10 @@ public class OnDateTrigger extends Trigger {
 
 
     @Override
-    public TriggerStatusPOJO makeStatusObject(Scheduler scheduler, ScheduledTime now, ScheduledTime time) throws Exception {
+    public TriggerStatus getTriggerStatus(Scheduler scheduler, ScheduledTime now, ScheduledTime time) throws Exception {
         final boolean ready = time.equals(scheduledTime);
-        final String description = this.humanReadableDescription(ready, scheduledTime);
-        return new TriggerStatusPOJO(ready, description, Collections.<TriggerStatusPOJO>emptyList());
-    }
-
-    @Override
-    public String humanReadableDescription(boolean ready, ScheduledTime scheduledTime) {
-        return "OnDateTrigger";
+        final String description = "OnDateTrigger";
+        return new TriggerStatus(ready, description, Collections.<TriggerStatus>emptyList());
     }
 
 

@@ -4,9 +4,9 @@ import com.collective.celos.Util;
 
 import java.util.List;
 
-public class TriggerStatusPOJO {
+public final class TriggerStatus {
 
-    public TriggerStatusPOJO(boolean ready, String description, List<TriggerStatusPOJO> subStatuses) {
+    public TriggerStatus(boolean ready, String description, List<TriggerStatus> subStatuses) {
         this.ready = ready;
         this.description = Util.requireNonNull(description);
         this.subStatuses = Util.requireNonNull(subStatuses);
@@ -21,12 +21,12 @@ public class TriggerStatusPOJO {
         return description;
     }
 
-    public List<TriggerStatusPOJO> getSubStatuses() {
+    public List<TriggerStatus> getSubStatuses() {
         return subStatuses;
     }
 
     boolean ready;
     String description;
-    List<TriggerStatusPOJO> subStatuses;
+    List<TriggerStatus> subStatuses;
 
 }

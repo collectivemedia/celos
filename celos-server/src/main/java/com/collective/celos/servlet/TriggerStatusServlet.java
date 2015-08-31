@@ -5,7 +5,7 @@ import com.collective.celos.Scheduler;
 import com.collective.celos.Workflow;
 import com.collective.celos.WorkflowID;
 import com.collective.celos.trigger.Trigger;
-import com.collective.celos.trigger.TriggerStatusPOJO;
+import com.collective.celos.trigger.TriggerStatus;
 import org.apache.log4j.Logger;
 
 import javax.servlet.ServletException;
@@ -55,7 +55,7 @@ public class TriggerStatusServlet extends AbstractJSONServlet {
         ScheduledTime time = getRequestTime(req);
         ScheduledTime now = ScheduledTime.now();
         final Trigger trigger = wf.getTrigger();
-        final TriggerStatusPOJO statusObject = trigger.makeStatusObject(scheduler, now, time);
+        final TriggerStatus statusObject = trigger.getTriggerStatus(scheduler, now, time);
         // convert user object to json string, and save to a file
         return mapper.writeValueAsString(statusObject);
     }

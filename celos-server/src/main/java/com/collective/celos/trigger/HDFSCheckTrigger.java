@@ -58,16 +58,15 @@ public class HDFSCheckTrigger extends Trigger {
 
 
     @Override
-    public TriggerStatusPOJO makeStatusObject(Scheduler scheduler, ScheduledTime now, ScheduledTime scheduledTime) throws Exception {
+    public TriggerStatus getTriggerStatus(Scheduler scheduler, ScheduledTime now, ScheduledTime scheduledTime) throws Exception {
         Path path = new Path(formatter.replaceTimeTokens(getRawPathString(), scheduledTime));
         LOGGER.info("Checking HDFS path: " + path);
         final boolean ready = getFs().exists(path);
         final String description = this.humanReadableDescription(ready, scheduledTime);
-        return new TriggerStatusPOJO(ready, description, Collections.<TriggerStatusPOJO>emptyList());
+        return new TriggerStatus(ready, description, Collections.<TriggerStatus>emptyList());
     }
 
-    @Override
-    public String humanReadableDescription(boolean ready, ScheduledTime scheduledTime) {
+    private String humanReadableDescription(boolean ready, ScheduledTime scheduledTime) {
         Path path = new Path(formatter.replaceTimeTokens(getRawPathString(), scheduledTime));
         if (ready) {
 

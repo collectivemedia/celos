@@ -16,13 +16,12 @@ public class AlwaysTrigger extends Trigger {
     }
 
     @Override
-    public TriggerStatusPOJO makeStatusObject(Scheduler scheduler, ScheduledTime now, ScheduledTime scheduledTime) throws Exception {
+    public TriggerStatus getTriggerStatus(Scheduler scheduler, ScheduledTime now, ScheduledTime scheduledTime) throws Exception {
         final String description = this.humanReadableDescription(true, scheduledTime);
-        return new TriggerStatusPOJO(true, description, Collections.<TriggerStatusPOJO>emptyList());
+        return new TriggerStatus(true, description, Collections.<TriggerStatus>emptyList());
     }
 
-    @Override
-    public String humanReadableDescription(boolean ready, ScheduledTime scheduledTime) {
+    private String humanReadableDescription(boolean ready, ScheduledTime scheduledTime) {
         return "Always succeed";
     }
 
