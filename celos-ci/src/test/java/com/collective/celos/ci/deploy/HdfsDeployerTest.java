@@ -55,8 +55,9 @@ public class HdfsDeployerTest {
         doReturn(localFolder).when(context).getDeployDir();
         doReturn(remoteHdfsFolder.getAbsolutePath()).when(context).getHdfsPrefix();
         doReturn("workflow").when(context).getWorkflowName();
+        doReturn("/some/hdfs/root").when(context).getHdfsRoot();
 
-        File targetDir = new File(remoteHdfsFolder, "user/celos/app/workflow");
+        File targetDir = new File(remoteHdfsFolder, "some/hdfs/root/workflow");
 
         deployer.deploy();
 
@@ -81,8 +82,9 @@ public class HdfsDeployerTest {
         doReturn(localFolder).when(context).getDeployDir();
         doReturn(remoteHdfsFolder.getAbsolutePath()).when(context).getHdfsPrefix();
         doReturn("workflow").when(context).getWorkflowName();
+        doReturn("/some/hdfs/root").when(context).getHdfsRoot();
 
-        File targetDir = new File(remoteHdfsFolder, "user/celos/app/workflow");
+        File targetDir = new File(remoteHdfsFolder, "some/hdfs/root/workflow");
         targetDir.mkdirs();
         new File(targetDir, "file3").createNewFile();
         new File(targetDir, "file4").createNewFile();
@@ -112,10 +114,11 @@ public class HdfsDeployerTest {
         File remoteHdfsFolder = tempDir.newFolder();
         doReturn(remoteHdfsFolder.getAbsolutePath()).when(context).getHdfsPrefix();
         doReturn("workflow").when(context).getWorkflowName();
+        doReturn("/some/hdfs/root").when(context).getHdfsRoot();
 
         HdfsDeployer deployer = new HdfsDeployer(context);
         Path path = deployer.getDestinationHdfsPath();
-        Assert.assertEquals(path, new Path(new File(remoteHdfsFolder, "user/celos/app/workflow").getAbsolutePath()));
+        Assert.assertEquals(path, new Path(new File(remoteHdfsFolder, "some/hdfs/root/workflow").getAbsolutePath()));
     }
 
     @Test
@@ -127,8 +130,9 @@ public class HdfsDeployerTest {
         doReturn(LocalFileSystem.get(new Configuration())).when(context).getFileSystem();
         doReturn(remoteHdfsFolder.getAbsolutePath()).when(context).getHdfsPrefix();
         doReturn("workflow").when(context).getWorkflowName();
-
-        File remoteDir = new File(remoteHdfsFolder, "user/celos/app/workflow");
+        doReturn("/some/hdfs/root").when(context).getHdfsRoot();
+        
+        File remoteDir = new File(remoteHdfsFolder, "some/hdfs/root/workflow");
         remoteDir.mkdirs();
         new File(remoteDir, "file").createNewFile();
 

@@ -42,7 +42,7 @@ public class UndeployTaskTest {
         stream.write(targetFileStr.getBytes());
         stream.flush();
 
-        CiCommandLine commandLine = new CiCommandLine(targetFile.toURI().toString(), "UNDEPLOY", "deploydir", "workflow", "testDir", "uname", false, null);
+        CiCommandLine commandLine = new CiCommandLine(targetFile.toURI().toString(), "UNDEPLOY", "deploydir", "workflow", "testDir", "uname", false, null, "/hdfsRoot");
         UndeployTask celosCiDeploy = new UndeployTask(commandLine);
 
         CelosCiContext context = celosCiDeploy.getCiContext();
@@ -82,7 +82,7 @@ public class UndeployTaskTest {
         stream.write(targetFileStr.getBytes());
         stream.flush();
 
-        CiCommandLine commandLine = new CiCommandLine(targetFile.toURI().toString(), "UNDEPLOY", deployDir.getAbsolutePath(), "workflow", "testDir", "uname", false, null);
+        CiCommandLine commandLine = new CiCommandLine(targetFile.toURI().toString(), "UNDEPLOY", deployDir.getAbsolutePath(), "workflow", "testDir", "uname", false, null, "/some/hdfs/root");
 
         UndeployTask undeployTask = new UndeployTask(commandLine);
 
@@ -92,7 +92,7 @@ public class UndeployTaskTest {
         File workflowFile = new File(celosWfDir, "workflow.js");
         workflowFile.createNewFile();
 
-        File hdfsDirFullPath = new File(hdfsDir, "user/celos/app/workflow");
+        File hdfsDirFullPath = new File(hdfsDir, "some/hdfs/root/workflow");
         hdfsDirFullPath.mkdirs();
         new File(hdfsDirFullPath, "file1").createNewFile();
         new File(hdfsDirFullPath, "file2").createNewFile();

@@ -18,7 +18,7 @@ public class UndeployTask extends CelosCi {
     public UndeployTask(CiCommandLine commandLine) throws Exception {
         CelosCiTargetParser parser = new CelosCiTargetParser(commandLine.getUserName());
         CelosCiTarget target = parser.parse(commandLine.getTargetUri());
-        this.ciContext = new CelosCiContext(target, commandLine.getUserName(), commandLine.getMode(), commandLine.getDeployDir(), commandLine.getWorkflowName(), "");
+        this.ciContext = new CelosCiContext(target, commandLine.getUserName(), commandLine.getMode(), commandLine.getDeployDir(), commandLine.getWorkflowName(), "", commandLine.getHdfsRoot());
     }
 
     public CelosCiContext getCiContext() {

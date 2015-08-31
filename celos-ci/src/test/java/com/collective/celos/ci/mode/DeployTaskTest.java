@@ -44,7 +44,7 @@ public class DeployTaskTest {
         stream.write(targetFileStr.getBytes());
         stream.flush();
 
-        CiCommandLine commandLine = new CiCommandLine(targetFile.toURI().toString(), "DEPLOY", "deploydir", "workflow", "testDir", "uname", false, null);
+        CiCommandLine commandLine = new CiCommandLine(targetFile.toURI().toString(), "DEPLOY", "deploydir", "workflow", "testDir", "uname", false, null, "/some/hdfs/root");
         DeployTask deployTask = new DeployTask(commandLine);
 
         CelosCiContext context = deployTask.getCiContext();
@@ -84,7 +84,7 @@ public class DeployTaskTest {
         stream.write(targetFileStr.getBytes());
         stream.flush();
 
-        CiCommandLine commandLine = new CiCommandLine(targetFile.toURI().toString(), "DEPLOY", deployDir.getAbsolutePath(), "workflow", "testDir", "uname", false, null);
+        CiCommandLine commandLine = new CiCommandLine(targetFile.toURI().toString(), "DEPLOY", deployDir.getAbsolutePath(), "workflow", "testDir", "uname", false, null, "/some/hdfs/root");
 
         DeployTask deployTask = new DeployTask(commandLine);
 
@@ -93,7 +93,7 @@ public class DeployTaskTest {
 
         deployTask.start();
         Assert.assertArrayEquals(celosWfDir.list(), new String[] {"workflow.js"});
-        Set<String> resultSet = getFilesWithoutCrc(new File(hdfsDir, "user/celos/app/workflow"));
+        Set<String> resultSet = getFilesWithoutCrc(new File(hdfsDir, "some/hdfs/root/workflow"));
         Assert.assertEquals(Sets.newHashSet("file1", "file2"), resultSet);
 
     }

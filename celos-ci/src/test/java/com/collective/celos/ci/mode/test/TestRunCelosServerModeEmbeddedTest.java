@@ -1,7 +1,6 @@
 package com.collective.celos.ci.mode.test;
 
 import com.collective.celos.ci.config.CiCommandLine;
-import com.collective.celos.ci.config.deploy.CelosCiTarget;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -10,7 +9,6 @@ import org.junit.rules.TemporaryFolder;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
 import java.util.Arrays;
 import java.util.UUID;
 
@@ -48,7 +46,7 @@ public class TestRunCelosServerModeEmbeddedTest {
         File otherDefFile2 = new File(remoteFolderDef, "some-defaults2.js");
         otherDefFile2.createNewFile();
 
-        CiCommandLine commandLine = new CiCommandLine("", "TEST", deployDir.getAbsolutePath(), "myworkflow", tmpDirFile.getAbsolutePath(), "uname", false, null);
+        CiCommandLine commandLine = new CiCommandLine("", "TEST", deployDir.getAbsolutePath(), "myworkflow", tmpDirFile.getAbsolutePath(), "uname", false, null, "/hdfsRoot");
 
         TestRunCelosServerModeEmbedded modeEmbedded = new TestRunCelosServerModeEmbedded(commandLine, tmpDirFile, UUID.randomUUID());
 
@@ -74,7 +72,7 @@ public class TestRunCelosServerModeEmbeddedTest {
         File remoteFolderDef = tempDir.newFolder();
         remoteFolderDef.mkdirs();
 
-        CiCommandLine commandLine = new CiCommandLine("", "TEST", deployDir.getAbsolutePath(), "myworkflow", tmpDirFile.getAbsolutePath(), "uname", false, null);
+        CiCommandLine commandLine = new CiCommandLine("", "TEST", deployDir.getAbsolutePath(), "myworkflow", tmpDirFile.getAbsolutePath(), "uname", false, null, "/hdfsRoot");
 
         TestRunCelosServerModeEmbedded modeEmbedded = new TestRunCelosServerModeEmbedded(commandLine, tmpDirFile, UUID.randomUUID());
 
