@@ -70,17 +70,11 @@ public class ServerMainTest {
 //          Test conditions were copied from CelosClientServerTest.testGetWorkflowStatusTransitionToSuccess
             testPassed &= slotStates.size() == SLOTS_IN_CELOS_SERVER_SLIDING_WINDOW;
 
-            SlotState slotStateLst = slotStates.get(slotStates.size() - 1);
-            testPassed &= slotStateLst.getStatus().equals(SlotState.Status.SUCCESS);
-            testPassed &= slotStateLst.getExternalID() != null;
-            testPassed &= slotStateLst.getRetryCount() == 0;
+            SlotState slotStateLast = slotStates.get(slotStates.size() - 1);
+            testPassed &= slotStateLast.getStatus().equals(SlotState.Status.SUCCESS);
+            testPassed &= slotStateLast.getExternalID() != null;
+            testPassed &= slotStateLast.getRetryCount() == 0;
 
-            slotStates = slotStates.subList(0, slotStates.size() - 1);
-            for (SlotState slotState : slotStates) {
-                testPassed &= slotState.getStatus() == SlotState.Status.READY;
-                testPassed &= slotState.getExternalID() == null;
-                testPassed &= slotState.getRetryCount() == 0;
-            }
             if (testPassed) {
                 return testPassed;
             }
