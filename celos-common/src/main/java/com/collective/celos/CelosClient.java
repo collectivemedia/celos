@@ -90,7 +90,7 @@ public class CelosClient {
     }
 
     public void iterateScheduler() throws Exception {
-        iterateScheduler(null);
+        iterateScheduler(ScheduledTime.now());
     }
 
     public void iterateScheduler(ScheduledTime scheduledTime) throws Exception {
@@ -103,9 +103,7 @@ public class CelosClient {
         if (!workflowIDs.isEmpty()) {
             uriBuilder.addParameter(IDS_PARAM, StringUtils.join(workflowIDs, ","));
         }
-        if (scheduledTime != null) {
-            uriBuilder.addParameter(TIME_PARAM, timeFormatter.formatPretty(scheduledTime));
-        }
+        uriBuilder.addParameter(TIME_PARAM, timeFormatter.formatPretty(scheduledTime));
         executePost(uriBuilder.build());
     }
 

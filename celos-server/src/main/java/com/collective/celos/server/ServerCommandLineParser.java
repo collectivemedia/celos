@@ -61,7 +61,7 @@ public class ServerCommandLineParser {
                 .addOption(CLI_STATE_DB_DIR, CLI_STATE_DB_DIR, true, "Path to STATE DATABASE dir")
                 .addOption(CLI_PORT, CLI_PORT, true, "Celos Server port")
                 .addOption(CLI_LOG_DIR, CLI_LOG_DIR, true, "Celos logs dir")
-                .addOption(CLI_AUTOSCHEDULE, CLI_AUTOSCHEDULE, true, "Time period to automatically run Scheduler. If not specified, Scheduler will not be automatically run");
+                .addOption(CLI_AUTOSCHEDULE, CLI_AUTOSCHEDULE, true, "Time period in seconds to automatically run Scheduler. If not specified, Scheduler will not be automatically run");
         return options;
     }
 
