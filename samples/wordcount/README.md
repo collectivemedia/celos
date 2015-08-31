@@ -1,94 +1,126 @@
-# Celos-CI demo
+# Celos workflow demo
 
-Celos-CI makes it quick and easy to add fixture-based tests to Celos workflows.
+This example was created to give an idea what typical Celos workflow can look like  
+We took wordcount example for this  
 
-Our example is a MapReduce word count workflow.
+So, first you need to  
 
-## Running the Celos-CI demo
+## Build celos 
+You can do this easily by running
+````
+scripts\build-celos
+```` 
+script in celos root directory
 
-Make sure you are `kinit`-ed.
+## Prepare Celos server environment
 
-`./scripts/ci` (in this `samples/wordcount` directory) will test the workflow.
+There are several requirements that should be met in order to get Celos successfully run:
 
-If your local username is different from your Kerberos one you need to specifiy your Kerberos username like this:
+You have to create following directories:
+* `workflows` directory, where Celos will store it's workflows
+* `defaults` directory, where Celos will look for defaults files
+* `db` directory, where Celos will store it's database
+* `logs` directory, where Celos wiil write logs to
 
-`username=manuel ./scripts/ci`
+After that, place all required defaults file to defaults dir
 
-## How it works
+## Run Celos server
 
-To test a workflow you need to do the following steps:
+Typical Celos server startup command looks like this:
+````
+java -classpath 'celos-server.jar:{hadoop_conf_directory}' com.collective.celos.server.Main --defaults {defaults_directory} --workflows {workflows_directory} --logs {logs_directory} --db {database_directory} --port {port} --autoschedule {millis}
+````
 
-* Use the `hdfsPath()` utility function in your `workflow.js`
+Where
 
-* Add test cases to `src/test/celos-ci`
+* `hadoop_conf_directory` is a directory where hadoop-site.xml and core-site.xml files are located. Usually it's `/etc/hadoop/conf` if your machine has hadoop installed
+* `defaults_directory`, `workflows_directory`, `logs_directory`, `database_directory` directories that were created previously
+* `port` the port where Celos server should operate on
+* `autoschedule` if specified, Celos server will trigger Scheduler with this period
 
-* Call `celos-ci.jar` from your build process
+## Build wordcount example 
 
-Let's look at the steps:
+Build wordcount jar with 
 
-### Use the `hdfsPath()` utility function
+````
+./gradlew jar
+````
 
-Here's the [`workflow.js`](src/main/celos/workflow.js) for the word count workflow.
+## Prepare deploy directory
 
-Note that all references to HDFS paths use the `hdfsPath()` function.
+You can prepare deploy directory by calling ./gradlew prepareDeployDir  
+Basically, script creates following file structure by copying required files from `src` and `build` directories
 
-````javascript
-importDefaults("collective");
+````
+build/
+  celos-deploy/
+    hdfs/                       # this directory will be enrirely placed to cluster HDFS
+      lib/
+        wordcount-0.1.jar       # here you place your jars
+      workflow.xml              # here you place your workflow.xml
+    workflow.js                 # here you place celos.js file, which will be put to Celos workflow dir
+````
 
+## Prepare target file
+
+Target file is a JSON file which describes Celos environment. Namely HDFS and Celos server directories  
+Typical target.json looks something like this: 
+
+````
+{
+    "hadoop.hdfs-site.xml": "sftp://remote.net/etc/hadoop/conf/hdfs-site.xml", # Hadoop hdfs-site.xml file URI
+    "hadoop.core-site.xml": "sftp://remote.net/etc/hadoop/conf/core-site.xml", # Hadoop core-site.xml file URI
+    "defaults.dir.uri": "/home/user/celos/defaults",                           # Path to Celos defaults dir
+    "workflows.dir.uri": "/home/user/celos/workflows"                          # Path to Celos workflows dir
+}
+````
+Each path can be either relative path or sftp URI
+
+## Deploy workflow
+
+Easy way to deploy worklfow is use celos-ci tool DEPLOY MODE:
+````
+java -jar celos-ci-fat.jar --deployDir {celos_deploy} --mode DEPLOY --workflowName wordcount --target {target.json} --hdfsRoot {hdfsRoot}
+````
+
+Where
+
+* `celos_deploy` is a path to previously prepared celos deploy dir
+* `target.json` is a path (relative or SFTP URI) to JSON target file
+* `hdfsRoot` if specified, Celos-CI will use provided `hdfsRoot` value to place all workflow data. Defaults to `/user/celos/app`
+
+
+## Place input data to be read by wordcount 
+
+In this example, data is expected to appear at `/input/wordcount`,  and HdfsCheckTrigger expects files named like `2015-10-01T12:00.txt` so you should place some of them to hdfs:///input/wordcount in order to get workflow run   
+
+workflow.js:
+````
 addWorkflow({
     "id": "wordcount",
     "schedule": hourlySchedule(),
     "schedulingStrategy": serialSchedulingStrategy(),
-    "trigger": hdfsCheckTrigger(hdfsPath("/input/wordcount/${year}-${month}-${day}T${hour}00.txt")),
+    "trigger": **hdfsCheckTrigger("/input/wordcount/${year}-${month}-${day}T${hour}00.txt")**,
     "externalService": oozieExternalService({
-        "oozie.wf.application.path": hdfsPath("/user/celos/app/wordcount/workflow.xml"),
-        "inputDir": hdfsPath("/input/wordcount"),
-        "outputDir": hdfsPath("/output/wordcount")
+        "oozie.wf.application.path": "/user/celos/app/wordcount/workflow.xml",
+        "inputDir": **"/input/wordcount"**,
+        "outputDir": "/output/wordcount"
     })
 });
 ````
 
-### Add test cases to `src/test/celos-ci`
+## Check that output data was generated
 
-A Celos-CI test case describes a set of inputs and the outputs that the workflow is expected to produce for those inputs.
-
-In the word count case, the inputs are text files, and the outputs are their word counts.
-
-For example, there's an [input file containing "Hello World!"](src/test/celos-ci/test-1/input/plain/input/wordcount/2013-12-20T1700.txt) and the [corresponding output file](src/test/celos-ci/test-1/output/plain/output/wordcount/2013-12-20T1700/part-00000), that contains the word counts:
-
+After workflow succeeds you are expected to find result files at
 ````
-Hello	1
-World!	1
+        "outputDir": **"/output/wordcount"**
 ````
 
-In general, the test cases directory layout looks like this:
+
+## Undeploy workflow with celos-ci
+
+Undeploy command is quite similar to deploy. The only difference is that you change `--mode` parameter to `DEPLOY`
 
 ````
-src/
-  test/
-    celos-ci/
-      test-1/                   # there can be any number of test cases
-        test-config.json
-        input/                  # contains test inputs
-          plain/                # "plain" means the files are copied to HDFS as-is
-            foo/
-              test-input.txt
-        output/                 # contains expected outputs
-          plain/
-            bar/
-              test-output.txt
+java -jar celos-ci-fat.jar --deployDir {celos_deploy} **--mode DEPLOY** --workflowName wordcount --target {target.json} --hdfsRoot {hdfsRoot}
 ````
-
-The per-test [`test-config.json`](src/test/celos-ci/test-1/test-config.json) file contains the start and end time of the fixtures, so that the test scheduler knows which hourly jobs to run.
-
-### Call `celos-ci.jar` from the build process
-
-The build file should put together a deployment directory, containing the Celos, Oozie, and Java artifacts.
-
-After that, the `celos-ci.jar`'s main class is invoked.  The JAR comes from the local Maven repo.
-
-[`build.gradle`](build.gradle) shows the needed Gradle tasks for that (around 15 lines of code).
-
-## Status
-
-Right now Celos-CI can test workflows that use plain HDFS inputs and outputs, but we're planning to support Hive, SFTP and more fixtures shortly.

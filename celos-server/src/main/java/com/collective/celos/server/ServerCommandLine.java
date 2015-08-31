@@ -14,13 +14,19 @@ public class ServerCommandLine {
     private final File stateDatabase;
     private final File logDir;
     private final int port;
+    private final int autoSchedule;
 
-    public ServerCommandLine(String workflowsDir, String defaultsDir, String stateDatabase, String logDir, int port) {
+    public ServerCommandLine(String workflowsDir, String defaultsDir, String stateDatabase, String logDir, int port, int autoSchedule) {
+        this.autoSchedule = autoSchedule;
         this.workflowsDir = new File(Util.requireNonNull(workflowsDir));
         this.defaultsDir = new File(Util.requireNonNull(defaultsDir));
         this.stateDatabase = new File(Util.requireNonNull(stateDatabase));
         this.port = port;
         this.logDir = new File(Util.requireNonNull(logDir));
+    }
+
+    public int getAutoSchedule() {
+        return autoSchedule;
     }
 
     public File getWorkflowsDir() {
