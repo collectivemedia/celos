@@ -795,3 +795,4 @@ watch -n 10 curl -X POST "$CELOS/scheduler?ids=workflow-1&time=2014-02-10T21:00Z
 # While watch is running, check slot status with this command
 curl "${CELOS}/workflow-slots?id=workflow-1&time=2014-02-10T21:00Z"
 </pre>
+
