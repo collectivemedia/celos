@@ -23,7 +23,7 @@ public class Main {
 
         if (commandLine.getAutoSchedule() > 0) {
             Timer timer = new Timer(true);
-            timer.schedule(createTimerTask(commandLine.getPort()), 0, commandLine.getAutoSchedule() * Constants.MINUTE_MS);
+            timer.schedule(createTimerTask(commandLine.getPort()), 0, commandLine.getAutoSchedule() * Constants.SECOND_MS);
         }
 
         Util.setupLogging(commandLine.getLogDir());
