@@ -1,15 +1,15 @@
 package com.collective.celos.trigger;
 
+import com.collective.celos.Util;
+
 import java.util.List;
 
 public class TriggerStatusPOJO {
 
     public TriggerStatusPOJO(boolean ready, String description, List<TriggerStatusPOJO> subStatuses) {
         this.ready = ready;
-        assert null != description;
-        this.description = description;
-        assert null != subStatuses;
-        this.subStatuses = subStatuses;
+        this.description = Util.requireNonNull(description);
+        this.subStatuses = Util.requireNonNull(subStatuses);
     }
 
 
