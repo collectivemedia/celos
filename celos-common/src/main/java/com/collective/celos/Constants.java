@@ -16,4 +16,5 @@ public class Constants {
     public static final String STATE_DATABASE_PATH_ATTR = "state.database.path";
     public static final String ADDITIONAL_JS_VARIABLES = "additional.js.variables";
 
+    public static final Integer SECOND_MS = 1000;
 }
