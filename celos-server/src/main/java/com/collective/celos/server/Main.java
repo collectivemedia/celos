@@ -21,12 +21,16 @@ public class Main {
                 commandLine.getDefaultsDir(),
                 commandLine.getStateDatabase());
 
-        if (commandLine.getAutoSchedule() > 0) {
-            Timer timer = new Timer(true);
-            timer.schedule(createTimerTask(commandLine.getPort()), 0, commandLine.getAutoSchedule() * Constants.SECOND_MS);
-        }
+        setupAutoschedule(commandLine.getPort(), commandLine.getAutoSchedule());
 
         Util.setupLogging(commandLine.getLogDir());
+    }
+
+    static void setupAutoschedule(int port, int autoSchedule) {
+        if (autoSchedule > 0) {
+            Timer timer = new Timer(true);
+            timer.schedule(createTimerTask(port), 0, autoSchedule * Constants.SECOND_MS);
+        }
     }
 
     private static TimerTask createTimerTask(final int port) {

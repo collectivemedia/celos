@@ -18,7 +18,7 @@ public class ServerCommandLineParser {
     private static final String CLI_DEFAULTS_DIR = "defaults";
     private static final String CLI_STATE_DB_DIR = "db";
     private static final String CLI_LOG_DIR = "logs";
-    private static final String CLI_AUTOSCHEDULE = "autoschedule";
+    private static final String CLI_AUTOSCHEDULE = "autoSchedule";
     private static final String CLI_PORT = "port";
 
     private static final Logger LOGGER = Logger.getLogger(ServerCommandLineParser.class);
