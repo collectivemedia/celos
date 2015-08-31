@@ -24,8 +24,6 @@ You have to create following directories:
 
 After that, place all required defaults file to defaults dir
 
-(describe what is a defaults file?)
-
 ## Run Celos server
 
 Typical Celos server startup command looks like this:
