@@ -1,6 +1,5 @@
 package com.collective.celos;
 
-import com.collective.celos.*;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang.StringUtils;

@@ -1,20 +1,20 @@
 importDefaults("collective");
 
-addWorkflow({
+celos.addWorkflow({
 
     "id": "file-copy-with-bad-output",
 
     "maxRetryCount": 0,
 
-    "schedule": hourlySchedule(),
+    "schedule": celos.hourlySchedule(),
 
-    "schedulingStrategy": serialSchedulingStrategy(),
+    "schedulingStrategy": celos.serialSchedulingStrategy(),
 
-    "trigger": hdfsCheckTrigger(
+    "trigger": celos.hdfsCheckTrigger(
         "/user/celos/samples/file-copy-with-bad-output/input/${year}-${month}-${day}T${hour}00.txt"
     ),
 
-    "externalService": oozieExternalService(
+    "externalService": celos.oozieExternalService(
         {
             "user.name": "celos",
             "oozie.wf.application.path": "/user/celos/samples/file-copy-with-bad-output/workflow/workflow.xml",

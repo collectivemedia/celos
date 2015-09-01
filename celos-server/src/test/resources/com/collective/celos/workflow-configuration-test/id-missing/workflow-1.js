@@ -1,4 +1,4 @@
-addWorkflow({
+celos.addWorkflow({
     "schedule": new WorkflowConfigurationParserTest$TestSchedule(),
     "schedulingStrategy": new WorkflowConfigurationParserTest$TestSchedulingStrategy(),
     "trigger": new WorkflowConfigurationParserTest$TestTrigger(),

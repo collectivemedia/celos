@@ -1,23 +1,22 @@
 package com.collective.celos.servlet;
 
-import java.util.SortedSet;
-import java.util.TreeSet;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import com.collective.celos.Scheduler;
 import com.collective.celos.Workflow;
 import com.collective.celos.WorkflowConfiguration;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.SortedSet;
+import java.util.TreeSet;
+
 /**
  * Returns list of IDs of configured workflows as JSON.
  *
  * GET /workflow-list
- * ==>
+ * ==
  * {
  *   "ids": [ "workflow-1", "workflow-2" ]
  * }

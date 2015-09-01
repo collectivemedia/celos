@@ -1,7 +1,7 @@
 package com.collective.celos.ci;
 
-import com.collective.celos.ci.config.CiCommandLine;
 import com.collective.celos.ci.config.CiCommandLineParser;
+import com.collective.celos.ci.config.CiCommandLine;
 import com.collective.celos.ci.config.deploy.CelosCiContext;
 import com.collective.celos.ci.mode.DeployTask;
 import com.collective.celos.ci.mode.TestTask;

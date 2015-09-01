@@ -1,4 +1,4 @@
-package com.collective.celos.examples.wordcount;
+package com.collective.celosexamples.wordcount;
 
 import java.io.IOException;
 import java.util.*;
