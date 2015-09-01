@@ -30,7 +30,7 @@ public class CiCommandLine {
         this.userName = Util.requireNonNull(userName);
         this.keepTempData = keepTempData;
         this.targetUri = URI.create(Util.requireNonNull(targetUri));
-        this.mode = CelosCiContext.Mode.valueOf(Util.requireNonNull(mode));
+        this.mode = CelosCiContext.Mode.valueOf(Util.requireNonNull(mode).toUpperCase());
         this.deployDir = new File(Util.requireNonNull(deployDir));
         this.workflowName = Util.requireNonNull(workflowName);
         this.testCasesDir = getValidateTestCasesDir(this.mode, testCasesDir);
