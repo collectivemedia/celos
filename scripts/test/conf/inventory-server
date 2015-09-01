@@ -1,5 +1,5 @@
 [host]
-oj001.ny7.collective-media.net
+oj002.ewr004.collective-media.net
 
 [host:vars]
 celos_workflows_dir={{ celos_wrk_dir }}/workflows

@@ -1,7 +1,0 @@
-{
-    "hadoop.hdfs-site.xml": "sftp://oj001.ny7.collective-media.net/etc/hadoop/conf/hdfs-site.xml",
-    "hadoop.core-site.xml": "sftp://oj001.ny7.collective-media.net/etc/hadoop/conf/core-site.xml",
-    "defaults.dir.uri": "sftp://oj001.ny7.collective-media.net/home/celos-ci/integration/defaults",
-    "workflows.dir.uri": "sftp://oj001.ny7.collective-media.net/home/celos-ci/integration/workflows",
-    "hive.jdbc.url" : "jdbc:hive2://hive002.ny7.collective-media.net:10000/default;principal=hive/hive002.ny7.collective-media.net@COLLECTIVE-MEDIA.NET"
-}
