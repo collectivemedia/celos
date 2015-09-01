@@ -24,7 +24,7 @@ Celos uses a small number of concepts:
 A **workflow** is a recurring job for some specific purpose, and has a
 unique identifier, e.g. `my-workflow`.  A workflow's "meat" is an
 [Oozie `workflow.xml` file](http://oozie.apache.org/docs/3.2.0-incubating/WorkflowFunctionalSpec.html)
-that describes the tasks to perform. 
+that describes the tasks to perform.
 
 A **slot** is a single invocation of a workflow at a particular time
 and is identified by the workflow ID and time,
