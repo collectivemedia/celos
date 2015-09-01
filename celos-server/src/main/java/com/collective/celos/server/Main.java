@@ -1,4 +1,4 @@
-package com.collective.celosserver;
+package com.collective.celos.server;
 
 import com.collective.celos.Util;
 

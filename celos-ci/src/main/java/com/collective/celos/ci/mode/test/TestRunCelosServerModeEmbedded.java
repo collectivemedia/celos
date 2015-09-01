@@ -4,7 +4,7 @@ import com.collective.celos.Util;
 import com.collective.celos.ci.config.CiCommandLine;
 import com.collective.celos.ci.deploy.JScpWorker;
 import com.collective.celos.ci.deploy.WorkflowFilesDeployer;
-import com.collective.celosserver.CelosServer;
+import com.collective.celos.server.CelosServer;
 import com.google.common.collect.ImmutableMap;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemException;
