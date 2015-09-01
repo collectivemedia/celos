@@ -41,6 +41,21 @@ public class CiCommandLineParserTest {
         Assert.assertEquals(commandLine.getWorkflowName(), "workflow");
     }
 
+    @Test
+    public void testContextParserTestSupportLowercase() throws Exception {
+        CiCommandLineParser contextParser = new CiCommandLineParser();
+
+        String[] clParams = ("--testDir " + tmpDir.getAbsolutePath() + " --target target --mode test --deployDir deploydir --workflowName workflow").split(" ");
+
+        CiCommandLine commandLine = contextParser.parse(clParams);
+
+        Assert.assertEquals(commandLine.getDeployDir(), new File("deploydir"));
+        Assert.assertEquals(commandLine.getMode(), CelosCiContext.Mode.TEST);
+        Assert.assertEquals(commandLine.getTargetUri(), URI.create("target"));
+        Assert.assertEquals(commandLine.getUserName(), getUsername());
+        Assert.assertEquals(commandLine.getWorkflowName(), "workflow");
+    }
+
     private String getUsername() {
         String userName = System.getenv(CiCommandLineParser.USERNAME_ENV_VAR);
         if (userName == null) {
