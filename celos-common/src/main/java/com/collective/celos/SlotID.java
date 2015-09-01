@@ -9,8 +9,10 @@ public class SlotID extends ValueObject {
     protected final ScheduledTime scheduledTime;
 
     public SlotID(WorkflowID workflowID, ScheduledTime scheduledTime) {
-        this.workflowID = Util.requireNonNull(workflowID);
-        this.scheduledTime = Util.requireNonNull(scheduledTime);
+        assert workflowID != null;
+        this.workflowID = workflowID;
+        assert scheduledTime != null;
+        this.scheduledTime = scheduledTime;
     }
     
     public WorkflowID getWorkflowID() {

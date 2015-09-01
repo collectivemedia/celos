@@ -17,8 +17,8 @@ public class JSONWorkflowListServletTest {
                 WorkflowConfigurationParserTest.parseDir("json-workflow-list-servlet-test");
         ObjectMapper mapper = new ObjectMapper();
         ArrayNode list = mapper.createArrayNode();
-        list.add(new String("workflow-1"));
-        list.add(new String("workflow-2"));
+        list.add("workflow-1");
+        list.add("workflow-2");
         ObjectNode obj = mapper.createObjectNode();
         obj.put("ids", list);
         Assert.assertEquals(obj, new JSONWorkflowListServlet().createJSONObject(cfg));

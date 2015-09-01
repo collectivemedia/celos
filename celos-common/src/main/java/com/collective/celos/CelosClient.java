@@ -36,15 +36,15 @@ public class CelosClient {
     private static final String ID_PARAM = "id";
     private static final String IDS_PARAM = "ids";
 
+    private static final ScheduledTimeFormatter FORMATTER = new ScheduledTimeFormatter();
+
     private final HttpClient client;
-    private final ScheduledTimeFormatter timeFormatter;
     private final URI address;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     public CelosClient(URI address) {
         this.address = Util.requireNonNull(address);
         this.client = new DefaultHttpClient();
-        this.timeFormatter = new ScheduledTimeFormatter();
     }
 
     public URI getAddress() {
@@ -66,10 +66,10 @@ public class CelosClient {
         URIBuilder uriBuilder = new URIBuilder(address);
         uriBuilder.setPath(uriBuilder.getPath() + WORKFLOW_SLOTS_PATH);
         if (endTime != null) {
-            uriBuilder.addParameter(END_TIME_PARAM, timeFormatter.formatPretty(endTime));
+            uriBuilder.addParameter(END_TIME_PARAM, FORMATTER.formatPretty(endTime));
         }
         if (startTime != null) {
-            uriBuilder.addParameter(START_TIME_PARAM, timeFormatter.formatPretty(startTime));
+            uriBuilder.addParameter(START_TIME_PARAM, FORMATTER.formatPretty(startTime));
         }
         uriBuilder.addParameter(ID_PARAM, workflowID.toString());
         URI uri = uriBuilder.build();
@@ -102,7 +102,7 @@ public class CelosClient {
         if (!workflowIDs.isEmpty()) {
             uriBuilder.addParameter(IDS_PARAM, StringUtils.join(workflowIDs, ","));
         }
-        uriBuilder.addParameter(TIME_PARAM, timeFormatter.formatPretty(scheduledTime));
+        uriBuilder.addParameter(TIME_PARAM, FORMATTER.formatPretty(scheduledTime));
         executePost(uriBuilder.build());
     }
 

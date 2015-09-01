@@ -8,7 +8,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  * The execution status of a slot.
  */
 public class SlotState extends ValueObject {
-    
+
     /** Never null. */
     protected final SlotID slotID;
     /** Never null. */
@@ -24,7 +24,7 @@ public class SlotState extends ValueObject {
     private static final String STATUS_PROP = "status";
     private static final String EXTERNAL_ID_PROP = "externalID";
     private static final String RETRY_COUNT_PROP = "retryCount";
-    
+
     public enum StatusType {
         SUCCESS,
         INDETERMINATE,
