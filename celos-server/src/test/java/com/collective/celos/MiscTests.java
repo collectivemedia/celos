@@ -98,7 +98,7 @@ public class MiscTests {
     }
     
     @Test
-    public void tooTrivialButStill_addWorkflowalwaysTriggerAlwaysTriggers() {
+    public void tooTrivialButStill_alwaysTriggerAlwaysTriggers() {
         Scheduler scheduler = mock(Scheduler.class);
         Assert.assertTrue(new AlwaysTrigger().isDataAvailable(scheduler, ScheduledTime.now(), new ScheduledTime("2013-11-21T20:00Z")));
     }

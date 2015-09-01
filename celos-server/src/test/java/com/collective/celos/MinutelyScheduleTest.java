@@ -11,7 +11,7 @@ import org.junit.Test;
 public class MinutelyScheduleTest {
 
     @Test
-    public void addWorkflowminutelyScheduleEmpty() {
+    public void minutelyScheduleEmpty() {
         // Start time equals end time
         // -> empty schedule
         Schedule sch = makeMinutelySchedule();
@@ -21,7 +21,7 @@ public class MinutelyScheduleTest {
     }
 
     @Test
-    public void addWorkflowminutelyScheduleOneMinute() {
+    public void minutelyScheduleOneMinute() {
         // Start time is full minute, end time one minute later
         // -> start time is the single minute in schedule
         Schedule sch = makeMinutelySchedule();
@@ -32,7 +32,7 @@ public class MinutelyScheduleTest {
     }
     
     @Test
-    public void addWorkflowminutelyScheduleOneMinuteWithSeconds() {
+    public void minutelyScheduleOneMinuteWithSeconds() {
         // Start time is non-full minute with some seconds,
         // end time one minute later
         // -> empty schedule
@@ -44,7 +44,7 @@ public class MinutelyScheduleTest {
     }
 
     @Test
-    public void addWorkflowminutelyScheduleSomeMinutes() {
+    public void minutelyScheduleSomeMinutes() {
         // Start time is non-full minute
         // End time is a couple of minutes later
         // -> schedule contains all full minutes after start and before end
@@ -60,7 +60,7 @@ public class MinutelyScheduleTest {
     }
     
     @Test
-    public void addWorkflowminutelyScheduleSomeMinutesWithStartingFullMinute() {
+    public void minutelyScheduleSomeMinutesWithStartingFullMinute() {
         // Start time is full minute
         // End time is a couple of minutes later
         // -> schedule contains all full minutes after (and including) start and before end

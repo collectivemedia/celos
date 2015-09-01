@@ -227,7 +227,7 @@ public class JavaScriptFunctionsTest {
     }
     
     @Test
-    public void addWorkflowreplaceTimeVariablesWorks() throws Exception {
+    public void replaceTimeVariablesWorks() throws Exception {
         String s = (String) runJS("celos.replaceTimeVariables('${year}-${month}-${day}T${hour}:${minute}:${second}Z ${year}', new Packages.com.collective.celos.ScheduledTime('2014-05-12T19:33:01Z'))");
         Assert.assertEquals("2014-05-12T19:33:01Z 2014", s);
     }
