@@ -16,7 +16,7 @@ import java.util.List;
 /**
  * Created by akonopko on 31.08.15.
  */
-public class ServerMainTest {
+public class AutoScheduleTest {
 
     public static final String WORKFLOWS_DIR = "workflows";
     public static final String DEFAULTS_DIR = "defaults";
