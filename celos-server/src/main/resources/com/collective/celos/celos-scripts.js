@@ -91,7 +91,7 @@ celos.alwaysTrigger = function () {
 }
 
 celos.hdfsCheck = function (path, slotID, fs) {
-    var trigger = hdfsCheckTrigger(path, fs);
+    var trigger = celos.hdfsCheckTrigger(path, fs);
     var scheduledTime;
 
     if (!slotID) {
@@ -243,24 +243,4 @@ celos.isRunningInTestMode = function() {
     return (typeof HDFS_PREFIX_JS_VAR !== "undefined");
 }
 
-var addWorkflow = celos.addWorkflow;
 var importDefaults = celos.importDefaults;
-var hourlySchedule = celos.hourlySchedule;
-var minutelySchedule = celos.minutelySchedule;
-var cronSchedule = celos.cronSchedule;
-var dependentSchedule = celos.dependentSchedule;
-var serialSchedulingStrategy = celos.serialSchedulingStrategy;
-var alwaysTrigger = celos.alwaysTrigger;
-var hdfsCheck = celos.hdfsCheck;
-var hdfsCheckTrigger = celos.hdfsCheckTrigger;
-var andTrigger = celos.andTrigger;
-var orTrigger = celos.orTrigger;
-var notTrigger = celos.notTrigger;
-var delayTrigger = celos.delayTrigger;
-var offsetTrigger = celos.offsetTrigger;
-var successTrigger = celos.successTrigger;
-var mergeProperties = celos.mergeProperties;
-var hdfsPath = celos.hdfsPath;
-var oozieExternalService = celos.oozieExternalService;
-var replaceTimeVariables = celos.replaceTimeVariables;
-var databaseName = celos.databaseName;

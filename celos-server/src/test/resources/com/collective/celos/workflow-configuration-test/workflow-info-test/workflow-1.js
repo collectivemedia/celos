@@ -1,6 +1,6 @@
 importPackage(Packages.com.collective.celos);
 
-addWorkflow({
+celos.addWorkflow({
     "id": "workflow-1",
     "schedule": new WorkflowConfigurationParserTest$TestSchedule(),
     "schedulingStrategy": new WorkflowConfigurationParserTest$TestSchedulingStrategy(),
@@ -9,7 +9,7 @@ addWorkflow({
     "maxRetryCount": 55
 });
 
-addWorkflow({
+celos.addWorkflow({
     "id": "workflow-2",
     "schedule": new WorkflowConfigurationParserTest$TestSchedule(),
     "schedulingStrategy": new WorkflowConfigurationParserTest$TestSchedulingStrategy(),
@@ -21,7 +21,7 @@ addWorkflow({
     "startTime": "2014-03-10T12:34:56.789Z"
 });
 
-addWorkflow({
+celos.addWorkflow({
     "id": "workflow-3",
     "schedule": new WorkflowConfigurationParserTest$TestSchedule(),
     "schedulingStrategy": new WorkflowConfigurationParserTest$TestSchedulingStrategy(),
@@ -33,7 +33,7 @@ addWorkflow({
     "startTime": "2014-03-10T12:34:56.789Z"
 });
 
-addWorkflow({
+celos.addWorkflow({
     "id": "workflow-4",
     "schedule": new WorkflowConfigurationParserTest$TestSchedule(),
     "schedulingStrategy": new WorkflowConfigurationParserTest$TestSchedulingStrategy(),
@@ -45,7 +45,7 @@ addWorkflow({
     "startTime": "2014-03-10T12:34:56.789Z"
 });
 
-addWorkflow({
+celos.addWorkflow({
     "id": "workflow-5",
     "schedule": new WorkflowConfigurationParserTest$TestSchedule(),
     "schedulingStrategy": new WorkflowConfigurationParserTest$TestSchedulingStrategy(),

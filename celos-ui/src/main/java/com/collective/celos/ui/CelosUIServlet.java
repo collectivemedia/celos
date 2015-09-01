@@ -16,16 +16,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.collective.celos.*;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
-import com.collective.celos.CelosClient;
-import com.collective.celos.ScheduledTime;
-import com.collective.celos.SlotState;
-import com.collective.celos.Util;
-import com.collective.celos.WorkflowID;
-import com.collective.celos.WorkflowStatus;
 import com.google.common.collect.ImmutableList;
 
 /**

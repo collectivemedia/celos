@@ -4,7 +4,7 @@ import org.joda.time.DateTime;
 
 /**
  * var oneDay = 60 * 60 * 24;
- * andTrigger(offsetTrigger(oneDay, hdfsCheckTrigger("/${year}/${month}/${day}/..."))
+ * celos.andTrigger(celos.offsetTrigger(oneDay, celos.hdfsCheckTrigger("/${year}/${month}/${day}/..."))
 */
 public class OffsetTrigger implements Trigger {
 
