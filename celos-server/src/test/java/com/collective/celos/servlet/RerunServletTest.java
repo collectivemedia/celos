@@ -2,7 +2,6 @@ package com.collective.celos.servlet;
 
 import com.collective.celos.*;
 import com.collective.celos.SlotState.Status;
-import com.collective.celos.ScheduledTime;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -25,10 +24,12 @@ public class RerunServletTest {
 
     private void failsOnWrongStatusTest(Status status) throws Exception {
         StateDatabase db = new MemoryStateDatabase();
-        SlotID id = new SlotID(new WorkflowID("foo"), new ScheduledTime("2014-02-08T20:00Z"));
+        final ScheduledTime current = new ScheduledTime("2014-02-08T20:00Z");
+        final WorkflowID workflowID = new WorkflowID("foo");
+        SlotID id = new SlotID(workflowID, current);
         SlotState state = new SlotState(id, status);
         db.putSlotState(state);
-        new RerunServlet().updateSlotToRerun(state, db);
+        db.updateSlotToRerun(id, current);
     }
 
     @Test
@@ -43,10 +44,11 @@ public class RerunServletTest {
 
     private void succeedsOnRightStatusTest(Status status) throws Exception {
         StateDatabase db = new MemoryStateDatabase();
-        SlotID id = new SlotID(new WorkflowID("foo"), new ScheduledTime("2014-02-08T20:00Z"));
+        final ScheduledTime time = new ScheduledTime("2014-02-08T20:00Z");
+        SlotID id = new SlotID(new WorkflowID("foo"), time);
         SlotState state = new SlotState(id, status);
         db.putSlotState(state);
-        new RerunServlet().updateSlotToRerun(state, db);
+        db.updateSlotToRerun(id, time);
         SlotState dbState = db.getSlotState(id);
         Assert.assertEquals(state.transitionToRerun(), dbState);
     }
