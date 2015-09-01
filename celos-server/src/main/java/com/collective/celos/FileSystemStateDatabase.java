@@ -85,6 +85,7 @@ public class FileSystemStateDatabase implements StateDatabase {
     @Override
     public void putSlotState(SlotState state) throws Exception {
         final Path file = getSlotFile(state.getSlotID());
+        LOGGER.warn(file);
         writeJsonableToPath(state.toJSONNode(), file);
     }
 

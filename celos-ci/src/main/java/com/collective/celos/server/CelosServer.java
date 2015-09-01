@@ -36,7 +36,6 @@ public class CelosServer {
         context.setAttribute(AbstractServlet.ADDITIONAL_JS_VARIABLES, jsVariables);
         context.setInitParameter(AbstractServlet.WORKFLOW_CONFIGURATION_PATH_ATTR, workflowsDir.getAbsolutePath());
         context.setInitParameter(AbstractServlet.DEFAULTS_CONFIGURATION_PATH_ATTR, defaultsDir.getAbsolutePath());
-        context.setInitParameter(AbstractServlet.RERUN_DATABASE_PATH_ATTR, rerunDatabase.getAbsolutePath());
         context.setInitParameter(AbstractServlet.STATE_DATABASE_PATH_ATTR, stateDatabase.getAbsolutePath());
 
         return connector.getLocalPort();

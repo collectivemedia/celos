@@ -37,7 +37,6 @@ public class CelosClientServerTest {
 
     private File workflowsDir;
     private File slotDbDir;
-    private File slotRerunDir;
     private File uiDir;
     private CelosServer celosServer;
     private CelosClient celosClient;
@@ -400,7 +399,6 @@ public class CelosClientServerTest {
 
         File src2 = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/server/slot-db-1").toURI());
         FileUtils.copyDirectory(src2, slotDbDir);
-        FileUtils.copyDirectory(src2, slotRerunDir);
 
         celosClient.getWorkflowStatus(new WorkflowID("workflow-1"), new ScheduledTime("2013-12-02T20:00Z"));
     }

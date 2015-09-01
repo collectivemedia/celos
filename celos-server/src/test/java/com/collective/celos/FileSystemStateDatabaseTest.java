@@ -100,7 +100,7 @@ public class FileSystemStateDatabaseTest {
             defaultDatabase.putSlotState(state);
         }
 
-        if (diff(getDatabaseDir().toFile(), getResourceDir())) {
+        if (diff(getDatabaseDir().resolve("state").toFile(), getResourceDir().toPath().resolve("state").toFile())) {
             throw new AssertionError("Database differs from resource database.");
         }
     }
