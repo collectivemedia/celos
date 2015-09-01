@@ -1,13 +1,13 @@
 package com.collective.celos.servlet;
 
-import javax.servlet.http.HttpServletRequest;
-
 import com.collective.celos.ScheduledTime;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
+
+import javax.servlet.http.HttpServletRequest;
 
 public class AbstractServletTest {
 

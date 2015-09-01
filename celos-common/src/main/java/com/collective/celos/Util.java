@@ -1,6 +1,7 @@
 package com.collective.celos;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -19,8 +20,11 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.Charset;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Map;
-import java.util.UUID;
 
 public class Util {
 
@@ -194,5 +198,29 @@ public class Util {
         Logger.getRootLogger().addAppender(appender);
         Logger.getRootLogger().setLevel(Level.INFO);
     }
+
+    private static final ObjectMapper MAPPER = new ObjectMapper();
+    private static final Charset CHARSET = Charset.forName("UTF-8");
+
+    public static void writeJsonableToPath(JsonNode obj, Path path) throws Exception {
+        assert path != null;
+        Files.createDirectories(path.getParent());
+        final String json = MAPPER.writeValueAsString(obj);
+        Files.write(path, json.getBytes(CHARSET));
+    }
+
+    public static JsonNode readJsonFromPath(Path path) throws Exception {
+        assert path != null;
+        assert Files.isRegularFile(path);
+        String jsonData = new String(Files.readAllBytes(path), CHARSET);
+        return MAPPER.readTree(jsonData);
+    }
+
+    public static boolean isDirectoryEmpty(final Path directory) throws IOException {
+        try(DirectoryStream<Path> dirStream = Files.newDirectoryStream(directory)) {
+            return !dirStream.iterator().hasNext();
+        }
+    }
+
 
 }

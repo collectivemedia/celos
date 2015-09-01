@@ -21,7 +21,7 @@ public class ServerMainTest {
     public static final String WORKFLOWS_DIR = "workflows";
     public static final String DEFAULTS_DIR = "defaults";
     public static final String DB_DIR = "db";
-    public static final int SLOTS_IN_CELOS_SERVER_SLIDING_WINDOW = SchedulerConfiguration.SLIDING_WINDOW_DAYS * 24;
+    public static final int SLOTS_IN_CELOS_SERVER_SLIDING_WINDOW = SchedulerConfiguration.DEFAULT_SLIDING_WINDOW_DAYS * 24;
 
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();

@@ -1,17 +1,16 @@
 package com.collective.celos.servlet;
 
-import java.util.LinkedList;
-import java.util.List;
-
 import com.collective.celos.ScheduledTime;
-import org.junit.Assert;
-import org.junit.Test;
-
 import com.collective.celos.SlotID;
 import com.collective.celos.SlotState;
 import com.collective.celos.WorkflowID;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.junit.Assert;
+import org.junit.Test;
+
+import java.util.LinkedList;
+import java.util.List;
 
 public class JSONWorkflowServletTest {
 

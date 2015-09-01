@@ -24,9 +24,25 @@ import java.util.UUID;
  */
 public class TestRun {
 
+    public static final String CELOS_USER_JS_VAR = "CELOS_USER_JS_VAR";
+
+    private static final String HDFS_PREFIX_PATTERN = "/user/%s/.celos-ci/%s/%s";
+    private static final String HDFS_PREFIX_JS_VAR = "HDFS_PREFIX_JS_VAR";
+    private static final String TEST_UUID_JS_VAR = "TEST_UUID_JS_VAR";
+    private static final String WORKFLOW_DIR_CELOS_PATH = "workflows";
+    private static final String DEFAULTS_DIR_CELOS_PATH = "defaults";
+    private static final String DB_DIR_CELOS_PATH = "db";
+    private static final String RERUN_DIR_CELOS_PATH = "rerun";
+    private static final String UI_DIR_CELOS_PATH = "ui";
+
     private final WorkflowFilesDeployer wfDeployer;
     private final HdfsDeployer hdfsDeployer;
     private final CelosCiContext ciContext;
+    private final File celosWorkflowDir;
+    private final File celosDefaultsDir;
+    private final File celosDbDir;
+    private final File celosRerunDir;
+    private final File celosUiDir;
     private final File testCaseTempDir;
     private final TestCase testCase;
     private final File testCasesDir;
@@ -42,6 +58,12 @@ public class TestRun {
 
         this.testUUID = UUID.randomUUID();
         this.testCaseTempDir = new File(celosCiTempDir, testUUID.toString());
+
+        this.celosWorkflowDir = new File(testCaseTempDir, WORKFLOW_DIR_CELOS_PATH);
+        this.celosDefaultsDir = new File(testCaseTempDir, DEFAULTS_DIR_CELOS_PATH);
+        this.celosDbDir = new File(testCaseTempDir, DB_DIR_CELOS_PATH);
+        this.celosRerunDir = new File(testCaseTempDir, RERUN_DIR_CELOS_PATH);
+        this.celosUiDir = new File(testCaseTempDir, UI_DIR_CELOS_PATH);
 
         this.originalTarget = target;
         if (commandLine.getCelosServerUrl() != null) {
