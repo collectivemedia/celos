@@ -124,7 +124,8 @@ public class SlotState extends ValueObject {
     }
 
     private boolean isRerunnable() {
-        return status.equals(Status.SUCCESS) || status.equals(Status.FAILURE) || status.equals(Status.WAIT_TIMEOUT);
+        return status.equals(Status.SUCCESS) || status.equals(Status.WAITING) ||
+                status.equals(Status.FAILURE) || status.equals(Status.WAIT_TIMEOUT);
     }
     
     private void assertStatus(Status st) {

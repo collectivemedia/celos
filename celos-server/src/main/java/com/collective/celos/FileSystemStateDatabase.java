@@ -150,7 +150,7 @@ public class FileSystemStateDatabase implements StateDatabase {
                     LOGGER.warn("rerun file " + file.getAbsolutePath() + " expired");
                     Files.deleteIfExists(file.toPath());
                 } else {
-                    final SlotID slotId = new SlotID(st.getWorkflowId(), st.getSlotTime());
+                    final SlotID slotId = new SlotID(st.getWorkflowId(), st.getScheduledTime());
                     res.add(slotId);
                 }
             }

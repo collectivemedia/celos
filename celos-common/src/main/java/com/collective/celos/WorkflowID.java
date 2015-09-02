@@ -25,5 +25,8 @@ public class WorkflowID extends ValueObject implements Comparable<WorkflowID> {
     public int compareTo(WorkflowID o) {
         return this.id.compareTo(o.id);
     }
-    
+
+    public String getId() {
+        return id;
+    }
 }

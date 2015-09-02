@@ -27,9 +27,10 @@ public class SlotStateTest {
         Assert.assertEquals(retry, running.transitionToRetry());        
     }
     
-    @Test(expected = IllegalStateException.class)
-    public void rerunFailsAsExpectedForWaiting() {
-        new SlotState(id, SlotState.Status.WAITING).transitionToRerun();
+    @Test
+    public void rerunDoNotFailsAsExpectedForWaiting() {
+        final SlotState slotState = new SlotState(id, SlotState.Status.WAITING).transitionToRerun();
+        Assert.assertEquals(SlotState.Status.WAITING, slotState.getStatus());
     }
     
     @Test(expected = IllegalStateException.class)
