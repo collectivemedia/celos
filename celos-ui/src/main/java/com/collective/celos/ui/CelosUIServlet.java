@@ -263,20 +263,6 @@ public class CelosUIServlet extends HttpServlet {
         return STATUS_TO_SHORT_NAME.get(next.getStatus());
     }
 
-    static Map<ScheduledTime, Set<SlotState>> bucketSlotsByTime(List<SlotState> slotStates, int zoomLevelMinutes) {
-        Map<ScheduledTime, Set<SlotState>> buckets = new HashMap<>();
-        for (SlotState slot : slotStates) {
-            ScheduledTime bucketTime = bucketTime(slot.getScheduledTime(), zoomLevelMinutes);
-            Set<SlotState> slotsForBucket = buckets.get(bucketTime);
-            if (slotsForBucket == null) {
-                slotsForBucket = new HashSet<>();
-                buckets.put(bucketTime, slotsForBucket);
-            }
-            slotsForBucket.add(slot);
-        }
-        return buckets;
-    }
-
     private Map<WorkflowID, WorkflowStatus> fetchStatuses(CelosClient client, Set<WorkflowID> workflows, ScheduledTime start, ScheduledTime end) throws Exception {
         Map<WorkflowID, WorkflowStatus> statuses = new HashMap<>();
         for (WorkflowID id : workflows) {

@@ -82,20 +82,6 @@ public class UIServletTest {
     }
     
     @Test
-    public void testBucketSlotsByTime() {
-        WorkflowID id = new WorkflowID("foo");
-        SlotState s1 = new SlotState(new SlotID(id, new ScheduledTime("2015-08-06T19:27Z")), SlotState.Status.SUCCESS);
-        SlotState s2 = new SlotState(new SlotID(id, new ScheduledTime("2015-08-06T19:31Z")), SlotState.Status.SUCCESS);
-        SlotState s3 = new SlotState(new SlotID(id, new ScheduledTime("2015-08-06T19:35Z")), SlotState.Status.SUCCESS);
-        List<SlotState> states = ImmutableList.of(s1, s2, s3);
-        Set<SlotState> bucket1 = ImmutableSet.of(s1);
-        Set<SlotState> bucket2 = ImmutableSet.of(s2, s3);
-        Map<ScheduledTime, Set<SlotState>> expected =
-            ImmutableMap.of(new ScheduledTime("2015-08-06T19:30Z"), bucket1, new ScheduledTime("2015-08-06T19:35Z"), bucket2);
-        Assert.assertEquals(expected, CelosUIServlet.bucketSlotsByTime(states, 5));    
-    }
-    
-    @Test
     public void testZoomLevelParam() {
         Assert.assertEquals(CelosUIServlet.DEFAULT_ZOOM_LEVEL_MINUTES, CelosUIServlet.getZoomLevel(null));
         Assert.assertEquals(12, CelosUIServlet.getZoomLevel("12"));
