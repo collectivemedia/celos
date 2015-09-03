@@ -115,7 +115,7 @@ public class UIServletTest {
         WorkflowID id = new WorkflowID("foo");
         List<WorkflowGroup> groups = ImmutableList.of(new WorkflowGroup("All workflows", ImmutableList.of(id)));
         WorkflowInfo workflowInfo = new WorkflowInfo(new URL("http://example.com"), ImmutableList.of());
-        SlotState state1 = new SlotState(new SlotID(id, new ScheduledTime("2015-09-03T13:16Z")), SlotState.Status.READY);
+        SlotState state1 = new SlotState(new SlotID(id, new ScheduledTime("2015-09-03T13:16Z")), SlotState.Status.FAILURE);
         SlotState state2 = new SlotState(new SlotID(id, new ScheduledTime("2015-09-03T13:12Z")), SlotState.Status.WAITING);
         List<SlotState> slotStates = ImmutableList.of(state1, state2);
         Map<WorkflowID, WorkflowStatus> statuses = ImmutableMap.of(id, new WorkflowStatus(workflowInfo, slotStates));
@@ -127,7 +127,7 @@ public class UIServletTest {
         // Some basic sanity checking
         
         List<HtmlTableDataCell> slotCells = (List<HtmlTableDataCell>) page.getByXPath("//td[contains(@class, 'slot')]");
-        Assert.assertEquals("rdy&nbsp;", slotCells.get(0).getTextContent());
+        Assert.assertEquals("fail", slotCells.get(0).getTextContent());
         Assert.assertEquals("wait", slotCells.get(1).getTextContent());
         
         List<HtmlTableDataCell> hourCells = (List<HtmlTableDataCell>) page.getByXPath("//td[contains(@class, 'hour')]");
@@ -136,6 +136,8 @@ public class UIServletTest {
         
         List<HtmlTableDataCell> workflowCells = (List<HtmlTableDataCell>) page.getByXPath("//td[@class='workflow']");
         Assert.assertEquals("foo", workflowCells.get(0).getTextContent());
+        
+        System.out.println(response.getContentAsString());
     }
     
 }

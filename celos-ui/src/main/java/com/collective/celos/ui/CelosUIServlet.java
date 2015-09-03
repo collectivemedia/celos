@@ -8,6 +8,7 @@ import static j2html.TagCreator.table;
 import static j2html.TagCreator.td;
 import static j2html.TagCreator.title;
 import static j2html.TagCreator.tr;
+import static j2html.TagCreator.unsafeHtml;
 import j2html.tags.Tag;
 
 import java.io.IOException;
@@ -137,7 +138,7 @@ public class CelosUIServlet extends HttpServlet {
     }
 
     private static Tag makeHead() {
-        return head().with(title("Celos"), style().withType("text/css").withText(CSS));
+        return head().with(title("Celos"), style().withType("text/css").with(unsafeHtml(CSS)));
     }
 
     private static Tag makeBody(UIConfiguration conf) {
@@ -157,7 +158,7 @@ public class CelosUIServlet extends HttpServlet {
 
     private static Tag makeDayHeader(UIConfiguration conf) {
         List<Tag> cells = new LinkedList<>();
-        cells.add(td("&nbsp;"));
+        cells.add(td().with(unsafeHtml("&nbsp;")));
         for (ScheduledTime time : conf.getTileTimes().descendingSet()) {
             cells.add(makeDay(time));
         }
@@ -166,9 +167,9 @@ public class CelosUIServlet extends HttpServlet {
 
     private static Tag makeDay(ScheduledTime time) {
         if (Util.isFullDay(time.getDateTime())) {
-            return td("&nbsp;" + DAY_FORMAT.print(time.getDateTime()) + "&nbsp;").withClass("day");
+            return td().with(unsafeHtml("&nbsp;" + DAY_FORMAT.print(time.getDateTime()) + "&nbsp;")).withClass("day");
         } else {
-            return td("&nbsp;&nbsp;&nbsp;&nbsp;").withClass("noDay");
+            return td().with(unsafeHtml("&nbsp;&nbsp;&nbsp;&nbsp;")).withClass("noDay");
         }
     }
     
@@ -209,7 +210,7 @@ public class CelosUIServlet extends HttpServlet {
         for (ScheduledTime tileTime : conf.getTileTimes().descendingSet()) {
             Set<SlotState> slots = buckets.get(tileTime);
             String slotClass = "slot " + printTileClass(slots);
-            cells.add(td(printTile(slots)).withClass(slotClass));
+            cells.add(td().with(unsafeHtml(printTile(slots))).withClass(slotClass));
         }
         return tr().with(cells);
     }
