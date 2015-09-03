@@ -1,5 +1,6 @@
 package com.collective.celos.ui;
 
+import static j2html.TagCreator.a;
 import static j2html.TagCreator.body;
 import static j2html.TagCreator.head;
 import static j2html.TagCreator.html;
@@ -13,6 +14,7 @@ import j2html.tags.Tag;
 
 import java.io.IOException;
 import java.net.URI;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -47,8 +49,9 @@ public class CelosUIServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         try {
-            String celosURL = Util.requireNonNull(getServletContext().getAttribute(Main.CELOS_URL_ATTR).toString());
-            CelosClient client = new CelosClient(new URI(celosURL));
+            URL celosURL = (URL) Util.requireNonNull(getServletContext().getAttribute(Main.CELOS_URL_ATTR));
+            URL hueURL = (URL) getServletContext().getAttribute(Main.HUE_URL_ATTR);
+            CelosClient client = new CelosClient(celosURL.toURI());
             res.setContentType("text/html;charset=utf-8");
             res.setStatus(HttpServletResponse.SC_OK);
             ScheduledTime end = getDisplayTime(req.getParameter(TIME_PARAM));
@@ -58,7 +61,7 @@ public class CelosUIServlet extends HttpServlet {
             Set<WorkflowID> workflowIDs = client.getWorkflowList();
             List<WorkflowGroup> groups = getGroups(workflowIDs);
             Map<WorkflowID, WorkflowStatus> statuses = fetchStatuses(client, workflowIDs, start, end);
-            UIConfiguration conf = new UIConfiguration(start, end, tileTimes, groups, statuses);
+            UIConfiguration conf = new UIConfiguration(start, end, tileTimes, groups, statuses, hueURL);
             res.getWriter().append(render(conf));
         } catch (Exception e) {
             throw new ServletException(e);
@@ -210,7 +213,7 @@ public class CelosUIServlet extends HttpServlet {
         for (ScheduledTime tileTime : conf.getTileTimes().descendingSet()) {
             Set<SlotState> slots = buckets.get(tileTime);
             String slotClass = "slot " + printTileClass(slots);
-            cells.add(td().with(unsafeHtml(printTile(slots))).withClass(slotClass));
+            cells.add(td().with(printTile(conf, slots)).withClass(slotClass));
         }
         return tr().with(cells);
     }
@@ -241,27 +244,36 @@ public class CelosUIServlet extends HttpServlet {
         }
     }
 
-    private static String printTile(Set<SlotState> slots) {
+    private static Tag printTile(UIConfiguration conf, Set<SlotState> slots) {
         if (slots == null) {
-            return "&nbsp;&nbsp;&nbsp;&nbsp;";
+            return unsafeHtml("&nbsp;&nbsp;&nbsp;&nbsp;");
         } else if (slots.size() == 1) {
-            return printSingleSlot(slots.iterator().next());
+            return printSingleSlot(conf, slots.iterator().next());
         } else {
-            return printMultiSlot(slots.size());
+            return printMultiSlot(conf, slots.size());
         }
     }
 
-    static String printMultiSlot(int slotsCount) {
+    static Tag printMultiSlot(UIConfiguration conf, int slotsCount) {
         String num = Integer.toString(slotsCount);
         if (num.length() > 4) {
-            return "999+";
+            return unsafeHtml("999+");
         } else {
-            return num;
+            return unsafeHtml(num);
         }
     }
 
-    private static String printSingleSlot(SlotState next) {
-        return STATUS_TO_SHORT_NAME.get(next.getStatus());
+    private static Tag printSingleSlot(UIConfiguration conf, SlotState state) {
+        Tag label = unsafeHtml(STATUS_TO_SHORT_NAME.get(state.getStatus()));
+        if (conf.getHueURL() != null && state.getExternalID() != null) {
+            return a().withHref(makeWorkflowURL(conf, state)).with(label);
+        } else {
+            return label;
+        }
+    }
+
+    private static String makeWorkflowURL(UIConfiguration conf, SlotState state) {
+        return conf.getHueURL().toString() + "/list_oozie_workflow/" + state.getExternalID();
     }
 
     private Map<WorkflowID, WorkflowStatus> fetchStatuses(CelosClient client, Set<WorkflowID> workflows, ScheduledTime start, ScheduledTime end) throws Exception {

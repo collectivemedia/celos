@@ -1,5 +1,6 @@
 package com.collective.celos.ui;
 
+import java.net.URL;
 import java.util.List;
 import java.util.Map;
 import java.util.NavigableSet;
@@ -16,13 +17,15 @@ public class UIConfiguration {
     private final NavigableSet<ScheduledTime> tileTimes;
     private final List<WorkflowGroup> groups;
     private final Map<WorkflowID, WorkflowStatus> statuses;
+    private final URL hueURL; // may be null
     
-    public UIConfiguration(ScheduledTime start, ScheduledTime end, NavigableSet<ScheduledTime> tileTimes, List<WorkflowGroup> groups, Map<WorkflowID, WorkflowStatus> statuses) {
+    public UIConfiguration(ScheduledTime start, ScheduledTime end, NavigableSet<ScheduledTime> tileTimes, List<WorkflowGroup> groups, Map<WorkflowID, WorkflowStatus> statuses, URL hueURL) {
         this.start = Util.requireNonNull(start);
         this.end = Util.requireNonNull(end);
         this.tileTimes = Util.requireNonNull(tileTimes);
         this.groups = Util.requireNonNull(groups);
         this.statuses = Util.requireNonNull(statuses);
+        this.hueURL = hueURL;
     }
     
     public ScheduledTime getStart() {
@@ -43,6 +46,10 @@ public class UIConfiguration {
 
     public Map<WorkflowID, WorkflowStatus> getStatuses() {
         return statuses;
+    }
+
+    public URL getHueURL() {
+        return hueURL;
     }
 
 }

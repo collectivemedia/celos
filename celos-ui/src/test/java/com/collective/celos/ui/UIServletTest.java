@@ -119,7 +119,7 @@ public class UIServletTest {
         SlotState state2 = new SlotState(new SlotID(id, new ScheduledTime("2015-09-03T13:12Z")), SlotState.Status.WAITING);
         List<SlotState> slotStates = ImmutableList.of(state1, state2);
         Map<WorkflowID, WorkflowStatus> statuses = ImmutableMap.of(id, new WorkflowStatus(workflowInfo, slotStates));
-        UIConfiguration conf = new UIConfiguration(start, end, tileTimes, groups, statuses);
+        UIConfiguration conf = new UIConfiguration(start, end, tileTimes, groups, statuses, new URL("http://example.com"));
         
         StringWebResponse response = new StringWebResponse(CelosUIServlet.render(conf), new URL("http://example.com"));
         HtmlPage page = HTMLParser.parse(response, new TopLevelWindow("top", new WebClient()));

@@ -1,19 +1,10 @@
 package com.collective.celos.ui;
 
-import junit.framework.Assert;
-import org.apache.commons.cli.*;
-import org.apache.log4j.Logger;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
+
+import org.junit.Assert;
+import org.junit.Test;
 
 public class UICommandLineParserTest {
 
@@ -24,6 +15,19 @@ public class UICommandLineParserTest {
 
         UICommandLine commandLine = parser.parse(clParams);
         Assert.assertEquals(commandLine.getCelosUrl(), new URL("http://localhost:8888"));
+        Assert.assertEquals(commandLine.getHueUrl(), null);
+        Assert.assertEquals(commandLine.getPort(), 1234);
+
+    }
+    
+    @Test
+    public void testParsesHueURL() throws Exception {
+        UICommandLineParser parser = new UICommandLineParser();
+        String[] clParams = ("--celos http://localhost:8888 --port 1234 --hue http://example.com").split(" ");
+
+        UICommandLine commandLine = parser.parse(clParams);
+        Assert.assertEquals(commandLine.getCelosUrl(), new URL("http://localhost:8888"));
+        Assert.assertEquals(commandLine.getHueUrl(), new URL("http://example.com"));
         Assert.assertEquals(commandLine.getPort(), 1234);
 
     }

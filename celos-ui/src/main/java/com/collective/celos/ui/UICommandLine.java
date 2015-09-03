@@ -10,10 +10,12 @@ import java.net.URL;
 public class UICommandLine {
 
     private final URL celosUrl;
+    private final URL hueUrl;
     private final int port;
 
-    public UICommandLine(URL celosUrl, int port) {
+    public UICommandLine(URL celosUrl, URL hueURL, int port) {
         this.celosUrl =  Util.requireNonNull(celosUrl);
+        this.hueUrl = hueURL;
         this.port = port;
     }
 
@@ -23,5 +25,9 @@ public class UICommandLine {
 
     public int getPort() {
         return port;
+    }
+
+    public URL getHueUrl() {
+        return hueUrl;
     }
 }
