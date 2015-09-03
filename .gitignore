@@ -6,4 +6,4 @@ provisioner/tmp/
 .gradle/
 .idea/
 *.iml
-./javadoc-tmp/
+javadoc-tmp/

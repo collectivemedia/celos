@@ -13,7 +13,7 @@ set -x
 git clean -fd
 rm -rf ./javadoc
 rm -rf ./javadoc-tmp
-${JAVADOC} -encoding UTF8 -protected -splitindex ${INDEXES} -sourcepath ${SOURCES} -d ${DIR}/javadoc
+${JAVADOC} -notimestamp -encoding UTF8 -protected -splitindex ${INDEXES} -sourcepath ${SOURCES} -d ${DIR}/javadoc
 mv ./javadoc ./javadoc-tmp
 git branch -D gh-pages || :
 git checkout gh-pages
