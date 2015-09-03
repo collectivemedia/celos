@@ -19,12 +19,16 @@ public class NotTrigger extends Trigger {
     public TriggerStatus getTriggerStatus(Scheduler scheduler, ScheduledTime now, ScheduledTime scheduledTime) throws Exception {
         final TriggerStatus statusPOJO = trigger.getTriggerStatus(scheduler, now, scheduledTime);
         final boolean ready = !statusPOJO.isReady();
-        final String description = this.humanReadableDescription(ready, scheduledTime);
+        final String description = this.humanReadableDescription(ready);
         return new TriggerStatus(ready, description, Collections.singletonList(statusPOJO));
     }
 
-    private String humanReadableDescription(boolean ready, ScheduledTime scheduledTime) {
-        return "NOT";
+    private String humanReadableDescription(boolean ready) {
+        if (ready) {
+            return "OK, nested trigger aren't ready";
+        } else {
+            return "Nested trigger still ready";
+        }
     }
 
     public Trigger getTrigger() {

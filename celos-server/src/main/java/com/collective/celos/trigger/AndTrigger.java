@@ -31,12 +31,16 @@ public class AndTrigger extends Trigger {
             subStatuses.add(trigger.getTriggerStatus(scheduler, now, scheduledTime));
         }
         boolean ready = this.checkTrigger(subStatuses);
-        final String description = this.humanReadableDescription(ready, scheduledTime);
+        final String description = this.humanReadableDescription(ready);
         return new TriggerStatus(ready, description, subStatuses);
     }
 
-    private String humanReadableDescription(boolean ready, ScheduledTime scheduledTime) {
-        return "AND";
+    private String humanReadableDescription(boolean ready) {
+        if (ready) {
+            return "All nested triggers are ready";
+        } else {
+            return "Not all nested triggers are ready";
+        }
     }
 
     public List<Trigger> getTriggers() {

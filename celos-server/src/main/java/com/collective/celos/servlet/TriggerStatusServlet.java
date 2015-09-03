@@ -57,6 +57,6 @@ public class TriggerStatusServlet extends AbstractJSONServlet {
         final Trigger trigger = wf.getTrigger();
         final TriggerStatus statusObject = trigger.getTriggerStatus(scheduler, now, time);
         // convert user object to json string, and save to a file
-        return mapper.writeValueAsString(statusObject);
+        return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(statusObject);
     }
 }

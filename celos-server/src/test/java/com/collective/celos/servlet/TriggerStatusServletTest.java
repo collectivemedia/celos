@@ -39,6 +39,11 @@ public class TriggerStatusServletTest {
         when(workflow.getTrigger()).thenReturn(new AlwaysTrigger());
 
         String result = new TriggerStatusServlet().getStatus(request, response, scheduler, workflow);
-        Assert.assertEquals(result, "{\"ready\":true,\"description\":\"Always succeed\",\"subStatuses\":[]}");
+        Assert.assertEquals("{\n" +
+                "  \"ready\" : true,\n" +
+                "  \"description\" : \"Always succeed\",\n" +
+                "  \"subStatuses\" : [ ]\n" +
+                "}",
+                result);
     }
 }

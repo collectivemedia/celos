@@ -24,8 +24,12 @@ public class OrTrigger extends Trigger {
         return false;
     }
 
-    private String humanReadableDescription(boolean ready, ScheduledTime scheduledTime) {
-        return "OR";
+    private String humanReadableDescription(boolean ready) {
+        if (ready) {
+            return "One or more nested triggers are ready";
+        } else {
+            return "None of the nested triggers are ready";
+        }
     }
 
     @Override
@@ -35,7 +39,7 @@ public class OrTrigger extends Trigger {
             subStatuses.add(trigger.getTriggerStatus(scheduler, now, scheduledTime));
         }
         boolean ready = this.checkTrigger(subStatuses);
-        final String description = this.humanReadableDescription(ready, scheduledTime);
+        final String description = this.humanReadableDescription(ready);
         return new TriggerStatus(ready, description, subStatuses);
     }
 
