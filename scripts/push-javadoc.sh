@@ -9,8 +9,10 @@ JAVADOC=${JAVA_HOME:-"/usr/java/latest"}/bin/javadoc
 set -e
 set -x
 
-rm -rf ./javadoc-tmp
 [ $(git rev-parse --abbrev-ref HEAD) == "gh-pages" ] && exit 1
+git clean -fd
+rm -rf ./javadoc
+rm -rf ./javadoc-tmp
 ${JAVADOC} -encoding UTF8 -protected -splitindex ${INDEXES} -sourcepath ${SOURCES} -d ${DIR}/javadoc
 mv ./javadoc ./javadoc-tmp
 git branch -D gh-pages || :
