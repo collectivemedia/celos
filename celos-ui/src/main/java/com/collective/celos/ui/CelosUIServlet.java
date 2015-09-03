@@ -120,7 +120,7 @@ public class CelosUIServlet extends HttpServlet {
     private static String CSS;
     static {
         StringBuffer css = new StringBuffer();
-        css.append("html { font-family: sans; background-color: #fff; }\n");
+        css.append("html { font-family: sans; background-color: #fff; font-size: 50%; }\n");
         css.append("a { text-decoration: none; }\n");
         css.append(".mainTable {}\n");
         css.append(".workflowGroup { text-align: right; font-size: large; font-weight: bold; padding-top: 1em; padding-right: 20px; white-space: nowrap; }\n");
