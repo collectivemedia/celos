@@ -3,7 +3,7 @@ var celos = {
         $("a.slotLink").click(function(event) {
             if (event.altKey) {
                 event.preventDefault();
-                alert(event.target.data("slot-id"));
+                alert($(event.target).data("slot-id"));
             }
         });
     }
