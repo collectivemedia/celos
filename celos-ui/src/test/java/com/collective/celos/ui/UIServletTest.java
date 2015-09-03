@@ -122,7 +122,9 @@ public class UIServletTest {
         UIConfiguration conf = new UIConfiguration(start, end, tileTimes, groups, statuses, new URL("http://example.com"));
         
         StringWebResponse response = new StringWebResponse(CelosUIServlet.render(conf), new URL("http://example.com"));
-        HtmlPage page = HTMLParser.parse(response, new TopLevelWindow("top", new WebClient()));
+        WebClient webClient = new WebClient();
+        webClient.setThrowExceptionOnFailingStatusCode(false);
+        HtmlPage page = HTMLParser.parse(response, new TopLevelWindow("top", webClient));
         
         // Some basic sanity checking
         
