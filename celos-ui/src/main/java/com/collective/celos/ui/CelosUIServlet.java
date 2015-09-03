@@ -4,7 +4,7 @@ import static j2html.TagCreator.a;
 import static j2html.TagCreator.body;
 import static j2html.TagCreator.head;
 import static j2html.TagCreator.html;
-import static j2html.TagCreator.style;
+import static j2html.TagCreator.link;
 import static j2html.TagCreator.table;
 import static j2html.TagCreator.td;
 import static j2html.TagCreator.title;
@@ -122,7 +122,7 @@ public class CelosUIServlet extends HttpServlet {
     }
 
     private static Tag makeHead() {
-        return head().with(title("Celos"), style().withType("text/css").withHref("/static/style.css"));
+        return head().with(title("Celos"), link().withType("text/css").withRel("stylesheet").withHref("/static/style.css"));
     }
 
     private static Tag makeBody(UIConfiguration conf) {
