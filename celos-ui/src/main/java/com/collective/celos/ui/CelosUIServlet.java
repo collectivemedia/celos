@@ -123,8 +123,8 @@ public class CelosUIServlet extends HttpServlet {
         css.append("html { font-family: sans; background-color: #fff; }\n");
         css.append("a { text-decoration: none; }\n");
         css.append(".mainTable {}\n");
-        css.append(".workflowGroup { text-align: right; font-size: large; font-weight: bold; padding-top: 1em; padding-right: 20px; }\n");
-        css.append(".workflow { text-align: right; padding-right: 20px; font-weight: normal; }\n");
+        css.append(".workflowGroup { text-align: right; font-size: large; font-weight: bold; padding-top: 1em; padding-right: 20px; white-space: nowrap; }\n");
+        css.append(".workflow { text-align: right; padding-right: 20px; font-weight: normal; white-space: nowrap; }\n");
         css.append(".hour, .day, .noDay, .dayHeader { font-family: monospace; text-align: center; }\n");
         css.append(".day { background-color: black; color: white; font-weight: bold; }\n");
         css.append(".currentDate { font-family: monospace; text-align: right; padding-right: 20px; font-weight: bold; }\n");
