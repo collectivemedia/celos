@@ -22,18 +22,17 @@ public class OffsetTrigger extends Trigger {
 
     @Override
     public TriggerStatus getTriggerStatus(Scheduler scheduler, ScheduledTime now, ScheduledTime scheduledTime) throws Exception {
-        final ScheduledTime waitUntilDT = scheduledTime.plusSeconds(seconds);
-        final TriggerStatus statusPOJO = trigger.getTriggerStatus(scheduler, now, waitUntilDT);
+        final TriggerStatus statusPOJO = trigger.getTriggerStatus(scheduler, now, scheduledTime.plusSeconds(seconds));
         final boolean ready = statusPOJO.isReady();
-        final String description = this.humanReadableDescription(ready, waitUntilDT);
+        final String description = this.humanReadableDescription(ready);
         return new TriggerStatus(ready, description, Collections.singletonList(statusPOJO));
     }
 
-    private String humanReadableDescription(boolean ready, ScheduledTime waitUntilDT) {
+    private String humanReadableDescription(boolean ready) {
         if (ready) {
-            return "Nested trigger ready since " + waitUntilDT.toString();
+            return "Nested trigger offset by " + seconds + " seconds ready";
         } else {
-            return "Nested trigger " + waitUntilDT.toString() + " aren't ready with offset " + Integer.toString(seconds) + " seconds";
+            return  "Nested trigger offset by " + seconds + " seconds not ready";
         }
     }
 

@@ -66,7 +66,7 @@ public class OffsetTriggerTest {
         final TriggerStatus triggerStatus = offsetTriggerPlus.getTriggerStatus(scheduler, now.plusHours(2), now);
         final String description = triggerStatus.getDescription();
         Assert.assertFalse(triggerStatus.isReady());
-        Assert.assertEquals("Nested trigger 2014-01-01T06:00:00.000Z aren't ready with offset 3600 seconds", description);
+        Assert.assertEquals("Nested trigger offset by 3600 seconds not ready", description);
     }
 
 
