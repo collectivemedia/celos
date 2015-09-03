@@ -1,6 +1,11 @@
 var celos = {
     load: function() {
-	alert("ready!");
+        $("a.slotLink").click(function(event) {
+            if (event.altKey) {
+                event.preventDefault();
+                alert(event.target.data("slot-id"));
+            }
+        });
     }
 }
 $(document).ready(celos.load);

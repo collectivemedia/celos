@@ -251,7 +251,7 @@ public class CelosUIServlet extends HttpServlet {
     private static Tag makeSingleSlot(UIConfiguration conf, SlotState state) {
         Tag label = unsafeHtml(STATUS_TO_SHORT_NAME.get(state.getStatus()));
         if (conf.getHueURL() != null && state.getExternalID() != null) {
-            return a().withHref(printWorkflowURL(conf, state)).withClass("slotLink").attr("slotID", state.getSlotID().toString()).with(label);
+            return a().withHref(printWorkflowURL(conf, state)).withClass("slotLink").attr("data-slot-id", state.getSlotID().toString()).with(label);
         } else {
             return label;
         }
