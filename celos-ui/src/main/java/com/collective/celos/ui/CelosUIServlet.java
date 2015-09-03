@@ -117,31 +117,12 @@ public class CelosUIServlet extends HttpServlet {
     private static final DateTimeFormatter HEADER_FORMAT = DateTimeFormat.forPattern("HHmm");
     private static final DateTimeFormatter FULL_FORMAT = DateTimeFormat.forPattern("YYYY-MM-dd HH:mm");
     
-    private static String CSS;
-    static {
-        StringBuffer css = new StringBuffer();
-        css.append("html { font-family: sans; background-color: #fff; font-size: 50%; }\n");
-        css.append("a { text-decoration: none; }\n");
-        css.append(".mainTable {}\n");
-        css.append(".workflowGroup { text-align: right; font-size: large; font-weight: bold; padding-top: 1em; padding-right: 20px; white-space: nowrap; }\n");
-        css.append(".workflow { text-align: right; padding-right: 20px; font-weight: normal; white-space: nowrap; }\n");
-        css.append(".hour, .day, .noDay, .dayHeader { font-family: monospace; text-align: center; }\n");
-        css.append(".day { background-color: black; color: white; font-weight: bold; }\n");
-        css.append(".currentDate { font-family: monospace; text-align: right; padding-right: 20px; font-weight: bold; }\n");
-        css.append(".slot { font-family: monospace; font-size: small; }\n");
-        css.append(".RUNNING, .READY { background-color: #ffc; }\n");
-        css.append(".SUCCESS { background-color: #cfc; }\n");
-        css.append(".WAITING { background-color: #ccf; }\n");
-        css.append(".FAILURE, .WAIT_TIMEOUT { background-color: #fcc; }\n");
-        CSS = css.toString();
-    }
-    
     static String render(UIConfiguration conf) throws Exception {
         return html().with(makeHead(), makeBody(conf)).render();
     }
 
     private static Tag makeHead() {
-        return head().with(title("Celos"), style().withType("text/css").with(unsafeHtml(CSS)));
+        return head().with(title("Celos"), style().withType("text/css").withHref("/static/style.css"));
     }
 
     private static Tag makeBody(UIConfiguration conf) {
