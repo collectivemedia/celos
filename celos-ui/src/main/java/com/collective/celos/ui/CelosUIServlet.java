@@ -194,11 +194,11 @@ public class CelosUIServlet extends HttpServlet {
     private static Tag makeWorkflowRow(UIConfiguration conf, WorkflowID id) {
         List<Tag> cells = new LinkedList<>();
         cells.add(td(id.toString()).withClass("workflow"));
-        Map<ScheduledTime, Set<SlotState>> buckets = bucketByTime(conf.getStatuses().get(id).getSlotStates(), conf.getTileTimes());
+        Map<ScheduledTime, Set<SlotState>> buckets = bucketSlotsByTime(conf.getStatuses().get(id).getSlotStates(), conf.getTileTimes());
         for (ScheduledTime tileTime : conf.getTileTimes().descendingSet()) {
             Set<SlotState> slots = buckets.get(tileTime);
             String slotClass = "slot " + printTileClass(slots);
-            cells.add(td().with(printTile(conf, slots)).withClass(slotClass));
+            cells.add(td().with(makeTile(conf, slots)).withClass(slotClass));
         }
         return tr().with(cells);
     }
@@ -229,17 +229,17 @@ public class CelosUIServlet extends HttpServlet {
         }
     }
 
-    private static Tag printTile(UIConfiguration conf, Set<SlotState> slots) {
+    private static Tag makeTile(UIConfiguration conf, Set<SlotState> slots) {
         if (slots == null) {
             return unsafeHtml("&nbsp;&nbsp;&nbsp;&nbsp;");
         } else if (slots.size() == 1) {
-            return printSingleSlot(conf, slots.iterator().next());
+            return makeSingleSlot(conf, slots.iterator().next());
         } else {
-            return printMultiSlot(conf, slots.size());
+            return makeMultiSlot(conf, slots.size());
         }
     }
 
-    static Tag printMultiSlot(UIConfiguration conf, int slotsCount) {
+    static Tag makeMultiSlot(UIConfiguration conf, int slotsCount) {
         String num = Integer.toString(slotsCount);
         if (num.length() > 4) {
             return unsafeHtml("999+");
@@ -248,16 +248,16 @@ public class CelosUIServlet extends HttpServlet {
         }
     }
 
-    private static Tag printSingleSlot(UIConfiguration conf, SlotState state) {
+    private static Tag makeSingleSlot(UIConfiguration conf, SlotState state) {
         Tag label = unsafeHtml(STATUS_TO_SHORT_NAME.get(state.getStatus()));
         if (conf.getHueURL() != null && state.getExternalID() != null) {
-            return a().withHref(makeWorkflowURL(conf, state)).with(label);
+            return a().withHref(printWorkflowURL(conf, state)).with(label);
         } else {
             return label;
         }
     }
 
-    private static String makeWorkflowURL(UIConfiguration conf, SlotState state) {
+    private static String printWorkflowURL(UIConfiguration conf, SlotState state) {
         return conf.getHueURL().toString() + "/list_oozie_workflow/" + state.getExternalID();
     }
 
@@ -270,7 +270,7 @@ public class CelosUIServlet extends HttpServlet {
         return statuses;
     }
 
-    static Map<ScheduledTime, Set<SlotState>> bucketByTime(List<SlotState> slotStates, NavigableSet<ScheduledTime> tileTimes) {
+    static Map<ScheduledTime, Set<SlotState>> bucketSlotsByTime(List<SlotState> slotStates, NavigableSet<ScheduledTime> tileTimes) {
         Map<ScheduledTime, Set<SlotState>> buckets = new HashMap<>();
         for (SlotState state : slotStates) {
             ScheduledTime bucketTime = tileTimes.floor(state.getScheduledTime());

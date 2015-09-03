@@ -78,7 +78,7 @@ public class UIServletTest {
         Set<SlotState> bucket2 = ImmutableSet.of(s2, s3);
         Map<ScheduledTime, Set<SlotState>> expected =
             ImmutableMap.of(new ScheduledTime("2015-08-06T19:25Z"), bucket1, new ScheduledTime("2015-08-06T19:30Z"), bucket2);
-        Assert.assertEquals(expected, CelosUIServlet.bucketByTime(states, CelosUIServlet.getTileTimesSet(new ScheduledTime("2015-08-06T19:30Z"), 5, 1000, 2)));    
+        Assert.assertEquals(expected, CelosUIServlet.bucketSlotsByTime(states, CelosUIServlet.getTileTimesSet(new ScheduledTime("2015-08-06T19:30Z"), 5, 1000, 2)));    
     }
     
     @Test
