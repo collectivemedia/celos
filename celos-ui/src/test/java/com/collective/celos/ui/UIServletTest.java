@@ -32,39 +32,39 @@ public class UIServletTest {
     @Test
     public void testGetFirstTileTime() {
         ScheduledTime t = new ScheduledTime("2015-09-02T20:19:23Z");
-        Assert.assertEquals(new ScheduledTime("2015-09-02T00:00Z"), CelosUIServlet.getFirstTileTime(t, 60*24));
-        Assert.assertEquals(new ScheduledTime("2015-09-02T18:00Z"), CelosUIServlet.getFirstTileTime(t, 60*6));
-        Assert.assertEquals(new ScheduledTime("2015-09-02T20:00Z"), CelosUIServlet.getFirstTileTime(t, 60*2));
-        Assert.assertEquals(new ScheduledTime("2015-09-02T20:00Z"), CelosUIServlet.getFirstTileTime(t, 60));
-        Assert.assertEquals(new ScheduledTime("2015-09-02T20:15Z"), CelosUIServlet.getFirstTileTime(t, 15));
-        Assert.assertEquals(new ScheduledTime("2015-09-02T20:15Z"), CelosUIServlet.getFirstTileTime(t, 5));
-        Assert.assertEquals(new ScheduledTime("2015-09-02T20:19Z"), CelosUIServlet.getFirstTileTime(t, 1));
+        Assert.assertEquals(new ScheduledTime("2015-09-02T00:00Z"), UIServlet.getFirstTileTime(t, 60*24));
+        Assert.assertEquals(new ScheduledTime("2015-09-02T18:00Z"), UIServlet.getFirstTileTime(t, 60*6));
+        Assert.assertEquals(new ScheduledTime("2015-09-02T20:00Z"), UIServlet.getFirstTileTime(t, 60*2));
+        Assert.assertEquals(new ScheduledTime("2015-09-02T20:00Z"), UIServlet.getFirstTileTime(t, 60));
+        Assert.assertEquals(new ScheduledTime("2015-09-02T20:15Z"), UIServlet.getFirstTileTime(t, 15));
+        Assert.assertEquals(new ScheduledTime("2015-09-02T20:15Z"), UIServlet.getFirstTileTime(t, 5));
+        Assert.assertEquals(new ScheduledTime("2015-09-02T20:19Z"), UIServlet.getFirstTileTime(t, 1));
         // Test full day
-        Assert.assertEquals(new ScheduledTime("2015-09-02T00:00Z"), CelosUIServlet.getFirstTileTime(new ScheduledTime("2015-09-02T00:00Z"), 60*24));
+        Assert.assertEquals(new ScheduledTime("2015-09-02T00:00Z"), UIServlet.getFirstTileTime(new ScheduledTime("2015-09-02T00:00Z"), 60*24));
     }
     
     @Test
     public void testNumTiles() {
         // At zoom level of 1 day, display at most 7 tiles
-        Assert.assertEquals(7, CelosUIServlet.getNumTiles(60*24, 60*24*7, 48));
+        Assert.assertEquals(7, UIServlet.getNumTiles(60*24, 60*24*7, 48));
         // At zoom level of 1 hour, display at most 48 tiles
-        Assert.assertEquals(48, CelosUIServlet.getNumTiles(60, 60*24*7, 48));
+        Assert.assertEquals(48, UIServlet.getNumTiles(60, 60*24*7, 48));
         // At zoom level of 1 minute, display at most 48 tiles
-        Assert.assertEquals(48, CelosUIServlet.getNumTiles(1, 60*24*7, 48));
+        Assert.assertEquals(48, UIServlet.getNumTiles(1, 60*24*7, 48));
     }
     
     @Test
     public void testTileTimesSet1() {
         SortedSet<ScheduledTime> expected = 
                 new TreeSet(ImmutableSet.of(new ScheduledTime("2015-08-06T18:00Z"), new ScheduledTime("2015-08-06T19:00Z"), new ScheduledTime("2015-08-06T20:00Z")));
-        Assert.assertEquals(expected, CelosUIServlet.getTileTimesSet(new ScheduledTime("2015-08-06T20:00Z"), 60, 1000, 3));
+        Assert.assertEquals(expected, UIServlet.getTileTimesSet(new ScheduledTime("2015-08-06T20:00Z"), 60, 1000, 3));
     }
     
     @Test
     public void testTileTimesSet2() {
         SortedSet<ScheduledTime> expected = 
                 new TreeSet(ImmutableSet.of(new ScheduledTime("2015-08-06T19:50Z"), new ScheduledTime("2015-08-06T19:55Z"), new ScheduledTime("2015-08-06T20:00Z")));
-        Assert.assertEquals(expected, CelosUIServlet.getTileTimesSet(new ScheduledTime("2015-08-06T20:00Z"), 5, 1000, 3));
+        Assert.assertEquals(expected, UIServlet.getTileTimesSet(new ScheduledTime("2015-08-06T20:00Z"), 5, 1000, 3));
     }
 
     @Test
@@ -78,15 +78,15 @@ public class UIServletTest {
         Set<SlotState> bucket2 = ImmutableSet.of(s2, s3);
         Map<ScheduledTime, Set<SlotState>> expected =
             ImmutableMap.of(new ScheduledTime("2015-08-06T19:25Z"), bucket1, new ScheduledTime("2015-08-06T19:30Z"), bucket2);
-        Assert.assertEquals(expected, CelosUIServlet.bucketSlotsByTime(states, CelosUIServlet.getTileTimesSet(new ScheduledTime("2015-08-06T19:30Z"), 5, 1000, 2)));    
+        Assert.assertEquals(expected, UIServlet.bucketSlotsByTime(states, UIServlet.getTileTimesSet(new ScheduledTime("2015-08-06T19:30Z"), 5, 1000, 2)));    
     }
     
     @Test
     public void testZoomLevelParam() {
-        Assert.assertEquals(CelosUIServlet.DEFAULT_ZOOM_LEVEL_MINUTES, CelosUIServlet.getZoomLevel(null));
-        Assert.assertEquals(12, CelosUIServlet.getZoomLevel("12"));
-        Assert.assertEquals(CelosUIServlet.MAX_ZOOM_LEVEL_MINUTES, CelosUIServlet.getZoomLevel("1000000"));
-        Assert.assertEquals(CelosUIServlet.MIN_ZOOM_LEVEL_MINUTES, CelosUIServlet.getZoomLevel("-1"));
+        Assert.assertEquals(UIServlet.DEFAULT_ZOOM_LEVEL_MINUTES, UIServlet.getZoomLevel(null));
+        Assert.assertEquals(12, UIServlet.getZoomLevel("12"));
+        Assert.assertEquals(UIServlet.MAX_ZOOM_LEVEL_MINUTES, UIServlet.getZoomLevel("1000000"));
+        Assert.assertEquals(UIServlet.MIN_ZOOM_LEVEL_MINUTES, UIServlet.getZoomLevel("-1"));
     }
     
     @Test
@@ -96,15 +96,15 @@ public class UIServletTest {
         SlotState fail = new SlotState(new SlotID(id, new ScheduledTime("2015-08-06T19:31Z")), SlotState.Status.FAILURE);
         SlotState wait = new SlotState(new SlotID(id, new ScheduledTime("2015-08-06T19:35Z")), SlotState.Status.WAITING);
 
-        Assert.assertEquals("SUCCESS", CelosUIServlet.printTileClass(ImmutableSet.of(succ)));
-        Assert.assertEquals("SUCCESS", CelosUIServlet.printTileClass(ImmutableSet.of(succ, succ, succ)));
-        Assert.assertEquals("WAITING", CelosUIServlet.printTileClass(ImmutableSet.of(succ, wait, succ)));
-        Assert.assertEquals("WAITING", CelosUIServlet.printTileClass(ImmutableSet.of(wait)));
-        Assert.assertEquals("WAITING", CelosUIServlet.printTileClass(ImmutableSet.of(wait, wait, wait)));
-        Assert.assertEquals("FAILURE", CelosUIServlet.printTileClass(ImmutableSet.of(fail)));
-        Assert.assertEquals("FAILURE", CelosUIServlet.printTileClass(ImmutableSet.of(succ, fail)));
-        Assert.assertEquals("FAILURE", CelosUIServlet.printTileClass(ImmutableSet.of(succ, fail, wait)));
-        Assert.assertEquals("FAILURE", CelosUIServlet.printTileClass(ImmutableSet.of(wait, wait, fail, wait, succ)));
+        Assert.assertEquals("SUCCESS", UIServlet.printTileClass(ImmutableSet.of(succ)));
+        Assert.assertEquals("SUCCESS", UIServlet.printTileClass(ImmutableSet.of(succ, succ, succ)));
+        Assert.assertEquals("WAITING", UIServlet.printTileClass(ImmutableSet.of(succ, wait, succ)));
+        Assert.assertEquals("WAITING", UIServlet.printTileClass(ImmutableSet.of(wait)));
+        Assert.assertEquals("WAITING", UIServlet.printTileClass(ImmutableSet.of(wait, wait, wait)));
+        Assert.assertEquals("FAILURE", UIServlet.printTileClass(ImmutableSet.of(fail)));
+        Assert.assertEquals("FAILURE", UIServlet.printTileClass(ImmutableSet.of(succ, fail)));
+        Assert.assertEquals("FAILURE", UIServlet.printTileClass(ImmutableSet.of(succ, fail, wait)));
+        Assert.assertEquals("FAILURE", UIServlet.printTileClass(ImmutableSet.of(wait, wait, fail, wait, succ)));
     }
     
     @Test
@@ -121,7 +121,7 @@ public class UIServletTest {
         Map<WorkflowID, WorkflowStatus> statuses = ImmutableMap.of(id, new WorkflowStatus(workflowInfo, slotStates));
         UIConfiguration conf = new UIConfiguration(start, end, tileTimes, groups, statuses, new URL("http://example.com"));
         
-        StringWebResponse response = new StringWebResponse(CelosUIServlet.render(conf), new URL("http://example.com"));
+        StringWebResponse response = new StringWebResponse(UIServlet.render(conf), new URL("http://example.com"));
         WebClient webClient = new WebClient();
         webClient.setThrowExceptionOnFailingStatusCode(false);
         HtmlPage page = HTMLParser.parse(response, new TopLevelWindow("top", webClient));

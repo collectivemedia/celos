@@ -3,7 +3,16 @@ var celos = {
         $("a.slotLink").click(function(event) {
             if (event.altKey) {
                 event.preventDefault();
-                alert($(event.target).data("slot-id"));
+                var slotID = $(event.target).data("slot-id");
+                $.ajax({
+                    type: "POST",
+                    url: "rerun?id=" + encodeURIComponent(slotID),
+                    success: function() { $(event.target).html("rrun"); },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        alert("Error when rerunning slot " + slotID + ": " + textStatus + " (check console)");
+                        console.log(errorThrown);
+                    }
+                });
             }
         });
     }

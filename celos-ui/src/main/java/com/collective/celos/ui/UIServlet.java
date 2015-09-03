@@ -42,7 +42,7 @@ import com.collective.celos.WorkflowID;
 import com.collective.celos.WorkflowStatus;
 import com.google.common.collect.ImmutableList;
 
-public class CelosUIServlet extends HttpServlet {
+public class UIServlet extends HttpServlet {
 
     private static final String ZOOM_PARAM = "zoom";
     private static final String TIME_PARAM = "time";

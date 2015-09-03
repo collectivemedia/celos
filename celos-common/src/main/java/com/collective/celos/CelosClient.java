@@ -123,7 +123,11 @@ public class CelosClient {
         InputStream content = getResponse.getEntity().getContent();
         return SlotState.fromJSONNode(workflowID, objectMapper.readValue(content, ObjectNode.class));
     }
-
+    
+    public void rerunSlot(SlotID slotID) throws Exception {
+        rerunSlot(slotID.getWorkflowID(), slotID.getScheduledTime());
+    }
+    
     public void rerunSlot(WorkflowID workflowID, ScheduledTime scheduledTime) throws Exception {
         URIBuilder uriBuilder = new URIBuilder(address);
         uriBuilder.setPath(uriBuilder.getPath() + RERUN_PATH);
