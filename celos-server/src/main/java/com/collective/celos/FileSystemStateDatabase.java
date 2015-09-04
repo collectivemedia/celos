@@ -9,18 +9,28 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * Brutally simple persistent implementation of StateDatabase that stores slot
- * states as JSON files in the file system.
+ * Brutally simple persistent implementation of StateDatabase
+ * that stores slot states as JSON files in the file system.
  * 
  * The database has a top-level directory, with one sub directory, called state.
  * 
- * Inside the state directory, there is a subdirectory for each workflow. Inside
- * each workflow directory is one directory per day. Inside each day directory
- * is one JSON file per workflow run.
+ * Inside the state directory, there is a subdirectory for each workflow. 
+ * Inside each workflow directory is one directory per day.  Inside each 
+ * day directory is one JSON file per workflow run.
  * 
- * / workflow-1/ 2013-12-02/ 16:00:00.000Z 17:00:00.000Z ... workflow-2/
- * 2013-12-02/ 16:00:00.000Z 17:00:00.000Z ... ...
- * 
+ * state/
+ *   workflow-1/
+ *     2013-12-02/
+ *       16:00:00.000Z
+ *       17:00:00.000Z
+ *     ...
+ *   workflow-2/
+ *     2013-12-02/
+ *       16:00:00.000Z
+ *       17:00:00.000Z
+ *     ...
+ *   ...
+ *   
  * A JSON file looks like this:
  * 
  * {"status":"WAITING"}
