@@ -190,7 +190,7 @@
     when: result.content != lookup('file', 'test_files/trigger-status.json')
     fail:
 
-  -  - name: Check log file contains info about workflow-1 loaded above
+  - name: Check log file contains info about workflow-1 loaded above
     shell: grep 'INFO :.*Loading file.*workflow-1.js' {{celos_log_dir}}/celos.log
 
   - name: Run file-copy CCI test
