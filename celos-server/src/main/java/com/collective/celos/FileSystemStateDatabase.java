@@ -1,23 +1,24 @@
 package com.collective.celos;
 
-import java.io.File;
-import java.io.IOException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import org.apache.commons.io.FileUtils;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import java.io.File;
+import java.io.IOException;
 
 /**
  * Brutally simple persistent implementation of StateDatabase
  * that stores slot states as JSON files in the file system.
  * 
- * The database has a top-level directory.  Inside it, there
- * is a subdirectory for each workflow.  Inside each workflow directory
- * is one directory per day.  Inside each day directory is one JSON file
- * per workflow run.
+ * The database has a top-level directory, with one sub directory, called state.
  * 
- * /
+ * Inside the state directory, there is a subdirectory for each workflow. 
+ * Inside each workflow directory is one directory per day.  Inside each 
+ * day directory is one JSON file per workflow run.
+ * 
+ * state/
  *   workflow-1/
  *     2013-12-02/
  *       16:00:00.000Z
@@ -41,19 +42,22 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 public class FileSystemStateDatabase implements StateDatabase {
 
     private static final String CHARSET = "UTF-8";
+    private static final String STATE_DIR_NAME = "state";
 
     private final ObjectMapper mapper = new ObjectMapper();
     private final ScheduledTimeFormatter formatter = new ScheduledTimeFormatter();
-    private final File dir;
+    private final File toplevelDir;
+    private final File stateDir;
     
     /**
      * Creates a new DB that stores data in the given directory, which must exist.
      */
     public FileSystemStateDatabase(File dir) throws IOException {
-        this.dir = Util.requireNonNull(dir);
-        if (!dir.exists()) {
-            throw new IOException("Database directory " + dir + " doesn't exist.");
+        this.toplevelDir = Util.requireNonNull(dir);
+        if (!toplevelDir.exists()) {
+            throw new IOException("Database directory " + toplevelDir + " doesn't exist.");
         }
+        stateDir = new File(dir, STATE_DIR_NAME);
     }
 
     @Override
@@ -88,7 +92,7 @@ public class FileSystemStateDatabase implements StateDatabase {
 
     /** Returns the directory containing all data for the slot's workflow. */
     private File getWorkflowDir(SlotID slotID) {
-        return new File(dir, slotID.getWorkflowID().toString());
+        return new File(stateDir, slotID.getWorkflowID().toString());
     }
     
     private String getSlotFileName(SlotID slotID) {
