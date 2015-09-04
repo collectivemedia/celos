@@ -1,12 +1,11 @@
 package com.collective.celos;
 
-import java.io.File;
-import java.io.IOException;
-
-import org.apache.commons.io.FileUtils;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.apache.commons.io.FileUtils;
+
+import java.io.File;
+import java.io.IOException;
 
 /**
  * Brutally simple persistent implementation of StateDatabase
@@ -88,7 +87,7 @@ public class FileSystemStateDatabase implements StateDatabase {
 
     /** Returns the directory containing all data for the slot's workflow. */
     private File getWorkflowDir(SlotID slotID) {
-        return new File(dir, slotID.getWorkflowID().toString());
+        return dir.toPath().resolve("state").resolve(slotID.getWorkflowID().toString()).toFile();
     }
     
     private String getSlotFileName(SlotID slotID) {
