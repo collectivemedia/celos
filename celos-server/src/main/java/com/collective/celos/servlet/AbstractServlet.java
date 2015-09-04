@@ -42,7 +42,6 @@ public abstract class AbstractServlet extends HttpServlet {
         synchronized(LOCK) {
             try {
                 super.service(req, res);
-                res.setHeader("Access-Control-Allow-Origin", "*");
             } catch(ServletException|IOException|RuntimeException e) {
                 LOGGER.error(e.getMessage(), e);
                 throw e;
