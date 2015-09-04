@@ -25,4 +25,13 @@ public class SlotID extends ValueObject {
         return workflowID + "@" + scheduledTime;
     }
     
+    public static SlotID fromString(String idStr) {
+        Util.requireNonNull(idStr);
+        String[] parts = idStr.split("@");
+        if (!(parts.length == 2)) {
+            throw new IllegalArgumentException("Malformed slot ID: " + idStr);
+        }
+        return new SlotID(new WorkflowID(parts[0]), new ScheduledTime(parts[1]));
+    }
+    
 }
