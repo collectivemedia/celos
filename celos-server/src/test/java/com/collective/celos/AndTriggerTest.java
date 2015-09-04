@@ -3,6 +3,9 @@ package com.collective.celos;
 import java.util.Arrays;
 import java.util.Collections;
 
+import com.collective.celos.trigger.AlwaysTrigger;
+import com.collective.celos.trigger.AndTrigger;
+import com.collective.celos.trigger.Trigger;
 import org.junit.Assert;
 import org.junit.Test;
 

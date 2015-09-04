@@ -3,6 +3,7 @@ package com.collective.celos;
 import java.util.Collections;
 import java.util.SortedSet;
 
+import com.collective.celos.trigger.AlwaysTrigger;
 import org.junit.Assert;
 import org.junit.Test;
 

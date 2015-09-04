@@ -1,23 +1,25 @@
-package com.collective.celos;
+package com.collective.celos.trigger;
 
+import com.collective.celos.ScheduledTime;
+import com.collective.celos.ScheduledTimeFormatter;
+import com.collective.celos.Scheduler;
+import com.collective.celos.Util;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.security.UserGroupInformation;
 import org.apache.log4j.Logger;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.net.URI;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
  * Check in HDFS for a data dependency.
  */
-public class HDFSCheckTrigger implements Trigger {
+public class HDFSCheckTrigger extends Trigger {
 
     private static final Map<String, FileSystem> cachedFSs = new HashMap<>();
     private final ScheduledTimeFormatter formatter = new ScheduledTimeFormatter();
@@ -54,11 +56,25 @@ public class HDFSCheckTrigger implements Trigger {
         }
     }
 
+
     @Override
-    public boolean isDataAvailable(Scheduler scheduler, ScheduledTime now, ScheduledTime t) throws Exception {
-        Path path = new Path(formatter.replaceTimeTokens(getRawPathString(), t));
+    public TriggerStatus getTriggerStatus(Scheduler scheduler, ScheduledTime now, ScheduledTime scheduledTime) throws Exception {
+        Path path = new Path(formatter.replaceTimeTokens(getRawPathString(), scheduledTime));
         LOGGER.info("Checking HDFS path: " + path);
-        return getFs().exists(path);
+        final boolean ready = getFs().exists(path);
+        final String description = this.humanReadableDescription(ready, scheduledTime);
+        return new TriggerStatus(ready, description, Collections.<TriggerStatus>emptyList());
+    }
+
+    private String humanReadableDescription(boolean ready, ScheduledTime scheduledTime) {
+        Path path = new Path(formatter.replaceTimeTokens(getRawPathString(), scheduledTime));
+        if (ready) {
+
+            return "HDFS path " + path.toString() + "is ready";
+        } else {
+            return "HDFS path " + path.toString() + "is not ready";
+        }
+
     }
 
 

@@ -1,5 +1,6 @@
 package com.collective.celos;
 
+import com.collective.celos.trigger.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.ImmutableMap;
@@ -12,7 +13,6 @@ import org.mozilla.javascript.NativeJavaObject;
 
 import java.io.File;
 import java.io.StringReader;
-import java.util.Arrays;
 import java.util.Properties;
 
 public class JavaScriptFunctionsTest {

@@ -1,6 +1,11 @@
 package com.collective.celos;
 
-public class OnDateTrigger implements Trigger {
+import com.collective.celos.trigger.Trigger;
+import com.collective.celos.trigger.TriggerStatus;
+
+import java.util.Collections;
+
+public class OnDateTrigger extends Trigger {
 
     private final ScheduledTime scheduledTime;
 
@@ -12,8 +17,13 @@ public class OnDateTrigger implements Trigger {
         this.scheduledTime = scheduledTime;
     }
 
+
     @Override
-    public boolean isDataAvailable(Scheduler scheduler, ScheduledTime now, ScheduledTime t) throws Exception {
-        return t.equals(scheduledTime);
+    public TriggerStatus getTriggerStatus(Scheduler scheduler, ScheduledTime now, ScheduledTime time) throws Exception {
+        final boolean ready = time.equals(scheduledTime);
+        final String description = "OnDateTrigger";
+        return new TriggerStatus(ready, description, Collections.<TriggerStatus>emptyList());
     }
+
+
 }
