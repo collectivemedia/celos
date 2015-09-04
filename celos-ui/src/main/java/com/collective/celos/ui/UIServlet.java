@@ -61,8 +61,8 @@ public class UIServlet extends HttpServlet {
 
             Map<WorkflowID, WorkflowStatus> statuses = fetchStatuses(client, workflowIDs, start, end);
 
-            UIConfigurationCreator uiConfigurationCreator = new UIConfigurationCreator(hueURL, configFile, end, tileTimes, start, workflowIDs, statuses);
-            UIConfiguration conf = uiConfigurationCreator.create();
+            UIConfigurationCreator uiConfigurationCreator = new UIConfigurationCreator();
+            UIConfiguration conf = uiConfigurationCreator.create(hueURL, configFile, end, tileTimes, start, workflowIDs, statuses);
             res.getWriter().append(render(conf));
         } catch (Exception e) {
             throw new ServletException(e);
