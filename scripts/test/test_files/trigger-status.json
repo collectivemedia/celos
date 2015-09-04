@@ -1,1 +1,6 @@
-foo!
+{
+  "type" : "HDFSCheckTrigger",
+  "ready" : false,
+  "description" : "HDFS path foo is not ready",
+  "subStatuses" : [ ]
+}
