@@ -183,7 +183,7 @@ public class SchedulerTest {
 
         // The trigger should report the data as available
         ScheduledTime now = ScheduledTime.now();
-        final TriggerStatus status = new TriggerStatus(true, "", Collections.<TriggerStatus>emptyList());
+        final TriggerStatus status = new TriggerStatus("", true, "", Collections.<TriggerStatus>emptyList());
         when(trigger.getTriggerStatus(scheduler, now, scheduledTime)).thenReturn(status);
 
         scheduler.updateSlotState(wf, slotState, now);
@@ -199,7 +199,7 @@ public class SchedulerTest {
 
         // The trigger should report the data as not available
         ScheduledTime now = ScheduledTime.now();
-        final TriggerStatus status = new TriggerStatus(false, "", Collections.<TriggerStatus>emptyList());
+        final TriggerStatus status = new TriggerStatus("", false, "", Collections.<TriggerStatus>emptyList());
         when(trigger.getTriggerStatus(scheduler, now, scheduledTime)).thenReturn(status);
 
         scheduler.updateSlotState(wf, slotState, now);

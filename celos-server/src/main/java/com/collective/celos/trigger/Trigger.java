@@ -25,7 +25,7 @@ public abstract class Trigger {
     }
 
     protected final TriggerStatus makeTriggerStatus(boolean ready, String description, List<TriggerStatus> subStatuses) {
-        return new TriggerStatus(ready, description, subStatuses);
+        return new TriggerStatus(this.getClass().getName(), ready, description, subStatuses);
     }
     
     protected final TriggerStatus makeTriggerStatus(boolean ready, String description) {

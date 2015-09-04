@@ -6,11 +6,13 @@ import java.util.List;
 
 public final class TriggerStatus {
 
-    final boolean ready;
-    final String description;
-    final List<TriggerStatus> subStatuses;
+    private final boolean ready;
+    private final String description;
+    private final List<TriggerStatus> subStatuses;
+    private final String type;
 
-    public TriggerStatus(boolean ready, String description, List<TriggerStatus> subStatuses) {
+    public TriggerStatus(String triggerClassName, boolean ready, String description, List<TriggerStatus> subStatuses) {
+        this.type = Util.requireNonNull(triggerClassName);
         this.ready = ready;
         this.description = Util.requireNonNull(description);
         this.subStatuses = Util.requireNonNull(subStatuses);
@@ -26,6 +28,10 @@ public final class TriggerStatus {
 
     public List<TriggerStatus> getSubStatuses() {
         return subStatuses;
+    }
+
+    public String getTriggerClassName() {
+        return type;
     }
 
 }
