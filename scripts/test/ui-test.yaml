@@ -6,8 +6,12 @@
 - hosts: host
   gather_facts: no
   vars:
-    root: "../.."
-    tests_dir: "{{root}}/celos-server/src/test/resources/com/collective/celos/workflow-configuration-test"
     service_url: "http://{{inventory_hostname}}:{{service_port}}"
 
   tasks:
+
+  - name: Check static content is served
+    local_action:
+      module: uri
+      status_code: 200
+      url: "{{service_url}}/static/style.css"
