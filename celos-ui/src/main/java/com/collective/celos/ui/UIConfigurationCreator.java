@@ -14,7 +14,7 @@ import java.util.*;
 
 public class UIConfigurationCreator {
 
-    public static final String WORKFLOW_TO_SLOT_MAP_TAG = "workflowToSlotMap";
+    public static final String WORKFLOW_TO_SLOT_MAP_TAG = "groups";
     public static final String WORKFLOWS_TAG = "workflows";
     public static final String NAME_TAG = "name";
     public static final String UNLISTED_WORKFLOWS_CAPTION = "Unlisted workflows";
