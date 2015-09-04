@@ -12,6 +12,7 @@ public class Main {
     
     public static String CELOS_URL_ATTR = "CELOS_URL";
     public static String HUE_URL_ATTR = "HUE_URL";
+    public static String CONFIG_FILE_ATTR = "CONFIG_FILE";
 
     public static void main(String... args) throws Exception {
         UICommandLineParser UICommandLineParser = new UICommandLineParser();
@@ -25,6 +26,7 @@ public class Main {
         Map<String, Object> attrs = new HashMap<>();
         attrs.put(CELOS_URL_ATTR, commandLine.getCelosUrl());
         attrs.put(HUE_URL_ATTR, commandLine.getHueUrl());
+        attrs.put(CONFIG_FILE_ATTR, commandLine.getConfigFile());
         return attrs;
     }
     
