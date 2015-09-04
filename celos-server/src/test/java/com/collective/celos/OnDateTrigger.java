@@ -20,9 +20,7 @@ public class OnDateTrigger extends Trigger {
 
     @Override
     public TriggerStatus getTriggerStatus(Scheduler scheduler, ScheduledTime now, ScheduledTime time) throws Exception {
-        final boolean ready = time.equals(scheduledTime);
-        final String description = "OnDateTrigger";
-        return new TriggerStatus(ready, description, Collections.<TriggerStatus>emptyList());
+        return makeTriggerStatus(time.equals(scheduledTime), "unused", Collections.<TriggerStatus>emptyList());
     }
 
 

@@ -6,12 +6,15 @@ import java.util.List;
 
 public final class TriggerStatus {
 
+    final boolean ready;
+    final String description;
+    final List<TriggerStatus> subStatuses;
+
     public TriggerStatus(boolean ready, String description, List<TriggerStatus> subStatuses) {
         this.ready = ready;
         this.description = Util.requireNonNull(description);
         this.subStatuses = Util.requireNonNull(subStatuses);
     }
-
 
     public boolean isReady() {
         return ready;
@@ -24,9 +27,5 @@ public final class TriggerStatus {
     public List<TriggerStatus> getSubStatuses() {
         return subStatuses;
     }
-
-    boolean ready;
-    String description;
-    List<TriggerStatus> subStatuses;
 
 }

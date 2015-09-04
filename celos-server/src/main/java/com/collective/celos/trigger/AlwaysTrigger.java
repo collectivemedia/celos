@@ -17,12 +17,7 @@ public class AlwaysTrigger extends Trigger {
 
     @Override
     public TriggerStatus getTriggerStatus(Scheduler scheduler, ScheduledTime now, ScheduledTime scheduledTime) throws Exception {
-        final String description = this.humanReadableDescription(true, scheduledTime);
-        return new TriggerStatus(true, description, Collections.<TriggerStatus>emptyList());
-    }
-
-    private String humanReadableDescription(boolean ready, ScheduledTime scheduledTime) {
-        return "Always succeed";
+        return makeTriggerStatus(true, "Always ready");
     }
 
 }

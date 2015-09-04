@@ -60,7 +60,7 @@ public class WorkflowConfigurationParserTest {
 
         @Override
         public TriggerStatus getTriggerStatus(Scheduler scheduler, ScheduledTime now, ScheduledTime scheduledTime) throws Exception {
-            return new TriggerStatus(false, "TestTrigger", null);
+            return makeTriggerStatus(false, "TestTrigger");
         }
 
     }

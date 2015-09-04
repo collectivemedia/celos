@@ -15,7 +15,7 @@ public class OrTrigger extends Trigger {
         this.triggers.addAll(triggers);
     }
 
-    private boolean checkTrigger(List<TriggerStatus> subStatuses) throws Exception {
+    private boolean checkSubTriggers(List<TriggerStatus> subStatuses) throws Exception {
         for (TriggerStatus status : subStatuses) {
             if (status.isReady()) {
                 return true;
@@ -24,6 +24,16 @@ public class OrTrigger extends Trigger {
         return false;
     }
 
+    @Override
+    public TriggerStatus getTriggerStatus(Scheduler scheduler, ScheduledTime now, ScheduledTime scheduledTime) throws Exception {
+        final List<TriggerStatus> subStatuses = new ArrayList<>();
+        for (Trigger trigger : triggers) {
+            subStatuses.add(trigger.getTriggerStatus(scheduler, now, scheduledTime));
+        }
+        boolean ready = this.checkSubTriggers(subStatuses);
+        return makeTriggerStatus(ready, humanReadableDescription(ready), subStatuses);
+    }
+    
     private String humanReadableDescription(boolean ready) {
         if (ready) {
             return "One or more nested triggers are ready";
@@ -31,18 +41,6 @@ public class OrTrigger extends Trigger {
             return "None of the nested triggers are ready";
         }
     }
-
-    @Override
-    public TriggerStatus getTriggerStatus(Scheduler scheduler, ScheduledTime now, ScheduledTime scheduledTime) throws Exception {
-        final List<TriggerStatus> subStatuses = new ArrayList<>();
-        for (Trigger trigger : triggers) {
-            subStatuses.add(trigger.getTriggerStatus(scheduler, now, scheduledTime));
-        }
-        boolean ready = this.checkTrigger(subStatuses);
-        final String description = this.humanReadableDescription(ready);
-        return new TriggerStatus(ready, description, subStatuses);
-    }
-
 
     public List<Trigger> getTriggers() {
         return triggers;

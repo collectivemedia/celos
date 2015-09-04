@@ -56,27 +56,21 @@ public class HDFSCheckTrigger extends Trigger {
         }
     }
 
-
     @Override
     public TriggerStatus getTriggerStatus(Scheduler scheduler, ScheduledTime now, ScheduledTime scheduledTime) throws Exception {
         Path path = new Path(formatter.replaceTimeTokens(getRawPathString(), scheduledTime));
         LOGGER.info("Checking HDFS path: " + path);
-        final boolean ready = getFs().exists(path);
-        final String description = this.humanReadableDescription(ready, scheduledTime);
-        return new TriggerStatus(ready, description, Collections.<TriggerStatus>emptyList());
+        boolean ready = getFs().exists(path);
+        return makeTriggerStatus(ready, humanReadableDescription(ready, path));
     }
 
-    private String humanReadableDescription(boolean ready, ScheduledTime scheduledTime) {
-        Path path = new Path(formatter.replaceTimeTokens(getRawPathString(), scheduledTime));
+    private String humanReadableDescription(boolean ready, Path path) {
         if (ready) {
-
-            return "HDFS path " + path.toString() + "is ready";
+            return "HDFS path " + path.toString() + " is ready";
         } else {
-            return "HDFS path " + path.toString() + "is not ready";
+            return "HDFS path " + path.toString() + " is not ready";
         }
-
     }
-
 
     public String getRawPathString() {
         return rawPathString;

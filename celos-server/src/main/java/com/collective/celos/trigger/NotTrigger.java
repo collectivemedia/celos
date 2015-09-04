@@ -17,17 +17,16 @@ public class NotTrigger extends Trigger {
 
     @Override
     public TriggerStatus getTriggerStatus(Scheduler scheduler, ScheduledTime now, ScheduledTime scheduledTime) throws Exception {
-        final TriggerStatus statusPOJO = trigger.getTriggerStatus(scheduler, now, scheduledTime);
-        final boolean ready = !statusPOJO.isReady();
-        final String description = this.humanReadableDescription(ready);
-        return new TriggerStatus(ready, description, Collections.singletonList(statusPOJO));
+        TriggerStatus status = trigger.getTriggerStatus(scheduler, now, scheduledTime);
+        boolean ready = !status.isReady();
+        return makeTriggerStatus(ready, humanReadableDescription(ready), Collections.singletonList(status));
     }
 
     private String humanReadableDescription(boolean ready) {
         if (ready) {
-            return "OK, nested trigger aren't ready";
+            return "Ready, nested trigger isn't ready";
         } else {
-            return "Nested trigger still ready";
+            return "Not ready, nested trigger is ready";
         }
     }
 

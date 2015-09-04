@@ -32,9 +32,8 @@ public class DelayTrigger extends Trigger {
     public TriggerStatus getTriggerStatus(Scheduler scheduler, ScheduledTime now, ScheduledTime scheduledTime) throws Exception {
         DateTime nowDT = now.getDateTime();
         DateTime waitUntilDT = scheduledTime.getDateTime().plusSeconds(getSeconds());
-        final boolean ready = nowDT.isAfter(waitUntilDT);
-        final String description = this.humanReadableDescription(ready, waitUntilDT);
-        return new TriggerStatus(ready, description, Collections.<TriggerStatus>emptyList());
+        boolean ready = nowDT.isAfter(waitUntilDT);
+        return makeTriggerStatus(ready, humanReadableDescription(ready, waitUntilDT));
     }
 
     private String humanReadableDescription(boolean ready, DateTime waitUntilDT) {

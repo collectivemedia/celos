@@ -15,9 +15,9 @@ public class AndTrigger extends Trigger {
         this.triggers.addAll(triggers);
     }
     
-    private boolean checkTrigger(List<TriggerStatus> subStatuses) throws Exception {
-        for (TriggerStatus stat : subStatuses) {
-            if (!stat.isReady()) {
+    private boolean checkSubTriggers(List<TriggerStatus> subStatuses) throws Exception {
+        for (TriggerStatus status : subStatuses) {
+            if (!status.isReady()) {
                 return false;
             }
         }
@@ -30,9 +30,8 @@ public class AndTrigger extends Trigger {
         for (Trigger trigger : triggers) {
             subStatuses.add(trigger.getTriggerStatus(scheduler, now, scheduledTime));
         }
-        boolean ready = this.checkTrigger(subStatuses);
-        final String description = this.humanReadableDescription(ready);
-        return new TriggerStatus(ready, description, subStatuses);
+        boolean ready = this.checkSubTriggers(subStatuses);
+        return makeTriggerStatus(ready, humanReadableDescription(ready), subStatuses);
     }
 
     private String humanReadableDescription(boolean ready) {

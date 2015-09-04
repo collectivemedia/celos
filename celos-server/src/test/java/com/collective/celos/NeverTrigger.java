@@ -12,9 +12,7 @@ public class NeverTrigger extends Trigger {
 
     @Override
     public TriggerStatus getTriggerStatus(Scheduler scheduler, ScheduledTime now, ScheduledTime scheduledTime) throws Exception {
-        final boolean ready = false;
-        final String description = "NeverTrigger";
-        return new TriggerStatus(ready, description, Collections.<TriggerStatus>emptyList());
+        return makeTriggerStatus(false, "Never ready");
     }
 
 }

@@ -22,17 +22,16 @@ public class OffsetTrigger extends Trigger {
 
     @Override
     public TriggerStatus getTriggerStatus(Scheduler scheduler, ScheduledTime now, ScheduledTime scheduledTime) throws Exception {
-        final TriggerStatus statusPOJO = trigger.getTriggerStatus(scheduler, now, scheduledTime.plusSeconds(seconds));
-        final boolean ready = statusPOJO.isReady();
-        final String description = this.humanReadableDescription(ready);
-        return new TriggerStatus(ready, description, Collections.singletonList(statusPOJO));
+        TriggerStatus status = trigger.getTriggerStatus(scheduler, now, scheduledTime.plusSeconds(seconds));
+        boolean ready = status.isReady();
+        return makeTriggerStatus(ready, humanReadableDescription(ready), Collections.singletonList(status));
     }
 
     private String humanReadableDescription(boolean ready) {
         if (ready) {
-            return "Nested trigger offset by " + seconds + " seconds ready";
+            return "Nested trigger offset by " + getSeconds() + " seconds ready";
         } else {
-            return  "Nested trigger offset by " + seconds + " seconds not ready";
+            return  "Nested trigger offset by " + getSeconds() + " seconds not ready";
         }
     }
 
