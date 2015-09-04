@@ -15,4 +15,5 @@ com.collective.celos.ci.testing.structure.fixobject
 com.collective.celos.ci.testing.structure.tree
 com.collective.celos.server
 com.collective.celos.servlet
+com.collective.celos.trigger
 com.collective.celos.ui

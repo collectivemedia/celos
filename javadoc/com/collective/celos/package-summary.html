@@ -108,12 +108,6 @@
 <td class="colFirst"><a href="../../../com/collective/celos/StateDatabase.html" title="interface in com.collective.celos">StateDatabase</a></td>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr class="altColor">
-<td class="colFirst"><a href="../../../com/collective/celos/Trigger.html" title="interface in com.collective.celos">Trigger</a></td>
-<td class="colLast">
-<div class="block">A trigger is called to determine data availability for a workflow.</div>
-</td>
-</tr>
 </tbody>
 </table>
 </li>
@@ -125,18 +119,6 @@
 <th class="colLast" scope="col">Description</th>
 </tr>
 <tbody>
-<tr class="altColor">
-<td class="colFirst"><a href="../../../com/collective/celos/AlwaysTrigger.html" title="class in com.collective.celos">AlwaysTrigger</a></td>
-<td class="colLast">
-<div class="block">Trivial trigger that always signals data availability,
- for use when a workflow doesn't have any data dependencies
- and simply needs to run at every scheduled time.</div>
-</td>
-</tr>
-<tr class="rowColor">
-<td class="colFirst"><a href="../../../com/collective/celos/AndTrigger.html" title="class in com.collective.celos">AndTrigger</a></td>
-<td class="colLast">&nbsp;</td>
-</tr>
 <tr class="altColor">
 <td class="colFirst"><a href="../../../com/collective/celos/CelosClient.html" title="class in com.collective.celos">CelosClient</a></td>
 <td class="colLast">
@@ -160,29 +142,16 @@
 </td>
 </tr>
 <tr class="altColor">
-<td class="colFirst"><a href="../../../com/collective/celos/DelayTrigger.html" title="class in com.collective.celos">DelayTrigger</a></td>
-<td class="colLast">
-<div class="block">A trigger that signals data availability for a given scheduled time
- only if it is a configurable number of seconds past the current time.</div>
-</td>
-</tr>
-<tr class="rowColor">
 <td class="colFirst"><a href="../../../com/collective/celos/DependentSchedule.html" title="class in com.collective.celos">DependentSchedule</a></td>
 <td class="colLast">
 <div class="block">Makes a workflow use the same schedule as another workflow.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><a href="../../../com/collective/celos/FileSystemStateDatabase.html" title="class in com.collective.celos">FileSystemStateDatabase</a></td>
 <td class="colLast">
 <div class="block">Brutally simple persistent implementation of StateDatabase
  that stores slot states as JSON files in the file system.</div>
-</td>
-</tr>
-<tr class="rowColor">
-<td class="colFirst"><a href="../../../com/collective/celos/HDFSCheckTrigger.html" title="class in com.collective.celos">HDFSCheckTrigger</a></td>
-<td class="colLast">
-<div class="block">Check in HDFS for a data dependency.</div>
 </td>
 </tr>
 <tr class="altColor">
@@ -204,17 +173,6 @@
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr class="altColor">
-<td class="colFirst"><a href="../../../com/collective/celos/NotTrigger.html" title="class in com.collective.celos">NotTrigger</a></td>
-<td class="colLast">&nbsp;</td>
-</tr>
-<tr class="rowColor">
-<td class="colFirst"><a href="../../../com/collective/celos/OffsetTrigger.html" title="class in com.collective.celos">OffsetTrigger</a></td>
-<td class="colLast">
-<div class="block">var oneDay = 60 * 60 * 24;
- celos.andTrigger(celos.offsetTrigger(oneDay, celos.hdfsCheckTrigger("/${year}/${month}/${day}/..."))</div>
-</td>
-</tr>
-<tr class="altColor">
 <td class="colFirst"><a href="../../../com/collective/celos/OozieExternalService.html" title="class in com.collective.celos">OozieExternalService</a></td>
 <td class="colLast">&nbsp;</td>
 </tr>
@@ -223,51 +181,43 @@
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr class="altColor">
-<td class="colFirst"><a href="../../../com/collective/celos/OrTrigger.html" title="class in com.collective.celos">OrTrigger</a></td>
-<td class="colLast">&nbsp;</td>
-</tr>
-<tr class="rowColor">
 <td class="colFirst"><a href="../../../com/collective/celos/ScheduledTime.html" title="class in com.collective.celos">ScheduledTime</a></td>
 <td class="colLast">
 <div class="block">Scheduled time of a workflow run in UTC.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><a href="../../../com/collective/celos/ScheduledTimeFormatter.html" title="class in com.collective.celos">ScheduledTimeFormatter</a></td>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><a href="../../../com/collective/celos/Scheduler.html" title="class in com.collective.celos">Scheduler</a></td>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><a href="../../../com/collective/celos/SchedulerConfiguration.html" title="class in com.collective.celos">SchedulerConfiguration</a></td>
 <td class="colLast">
 <div class="block">Reads configuration and database from filesystem at well-known paths.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><a href="../../../com/collective/celos/SerialSchedulingStrategy.html" title="class in com.collective.celos">SerialSchedulingStrategy</a></td>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><a href="../../../com/collective/celos/SlotID.html" title="class in com.collective.celos">SlotID</a></td>
 <td class="colLast">
 <div class="block">A slot is uniquely identified by its workflow ID and the scheduled time.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><a href="../../../com/collective/celos/SlotState.html" title="class in com.collective.celos">SlotState</a></td>
 <td class="colLast">
 <div class="block">The execution status of a slot.</div>
 </td>
 </tr>
-<tr class="altColor">
-<td class="colFirst"><a href="../../../com/collective/celos/SlotStateStatusPredicate.html" title="class in com.collective.celos">SlotStateStatusPredicate</a></td>
-<td class="colLast">&nbsp;</td>
-</tr>
 <tr class="rowColor">
-<td class="colFirst"><a href="../../../com/collective/celos/SuccessTrigger.html" title="class in com.collective.celos">SuccessTrigger</a></td>
+<td class="colFirst"><a href="../../../com/collective/celos/SlotStateStatusPredicate.html" title="class in com.collective.celos">SlotStateStatusPredicate</a></td>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr class="altColor">
