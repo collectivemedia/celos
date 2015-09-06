@@ -6,5 +6,6 @@ celos_workflows_dir={{ celos_wrk_dir }}/workflows
 celos_defaults_dir={{ celos_wrk_dir }}/defaults
 celos_db_dir={{ celos_wrk_dir }}/db
 celos_log_dir={{ celos_wrk_dir }}/logs
+jetty_tmp_dir={{ celos_wrk_dir }}/jetty-tmp
 service_name={{server_service_name}}
 service_port={{server_service_port}}

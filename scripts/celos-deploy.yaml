@@ -41,6 +41,9 @@
     shell: "/sbin/sv stop {{service_name}} && /sbin/sv stop {{service_name}}/log"
     ignore_errors: yes
 
+  - file: dest={{ jetty_tmp_dir }} state=absent
+  - file: dest={{ jetty_tmp_dir }} state=directory
+
   - file: state=directory dest={{ prefix }}/bin
   - template: src=templates/service-start.tpl dest={{ start_script_path }} owner={{ service_user }} mode=0755
 
