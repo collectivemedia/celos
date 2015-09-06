@@ -8,7 +8,7 @@ So, first you need to
 ## Build celos 
 You can do this easily by running
 ````
-scripts\build-celos
+scripts\build.sh
 ```` 
 script in celos root directory
 
