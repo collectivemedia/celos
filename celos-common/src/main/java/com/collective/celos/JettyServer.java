@@ -36,6 +36,8 @@ public class JettyServer {
         uriBuilder.setPath(Paths.get(url.getPath()).getParent().toString());
 
         context = new WebAppContext(uriBuilder.toString() + "/", "/");
+        
+        context.setPersistTempDirectory(false);
 
         server.setHandler(context);
         server.start();
