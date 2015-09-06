@@ -43,8 +43,6 @@ public class JettyServer {
             context.setTempDirectory(new File(jettyTmp));
         }
 
-        context.setExtractWar(false);
-
         server.setHandler(context);
         server.start();
     }
