@@ -1,7 +1,7 @@
 var celos = {
     load: function() {
         $("a.slotLink").click(function(event) {
-            if (event.altKey) {
+            if (event.shiftKey) {
                 event.preventDefault();
                 var slotID = $(event.target).data("slot-id");
                 $.ajax({

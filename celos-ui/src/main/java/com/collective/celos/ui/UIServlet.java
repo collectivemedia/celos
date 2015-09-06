@@ -132,7 +132,7 @@ public class UIServlet extends HttpServlet {
     }
 
     private static Tag makeBody(UIConfiguration conf) {
-        return body().with(makeTable(conf), div().with(text("(Alt-click a slot to rerun it.)")));
+        return body().with(makeTable(conf), div().with(text("(Shift-click a slot to rerun it.)")));
     }
 
     private static Tag makeTable(UIConfiguration conf) {
