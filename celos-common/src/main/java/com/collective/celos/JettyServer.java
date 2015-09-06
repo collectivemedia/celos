@@ -37,6 +37,8 @@ public class JettyServer {
 
         context = new WebAppContext(uriBuilder.toString() + "/", "/");
 
+        context.setExtractWAR(false);
+
         server.setHandler(context);
         server.start();
     }
