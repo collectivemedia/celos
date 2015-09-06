@@ -37,7 +37,13 @@ public class JettyServer {
 
         context = new WebAppContext(uriBuilder.toString() + "/", "/");
         
-        context.setPersistTempDirectory(false);
+        // Workaround for Jetty not deleting the tmp dir
+        String jettyTmp = System.getenv("CELOS_JETTY_TMP");
+        if (jettyTmp != null) {
+            context.setTempDirectory(new File(jettyTmp));
+        }
+
+        context.setExtractWar(false);
 
         server.setHandler(context);
         server.start();
