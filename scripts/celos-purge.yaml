@@ -31,6 +31,8 @@
     file: state=absent path={{ celos_workflows_dir }}
   - when: celos_db_dir is defined
     file: state=absent path={{ celos_db_dir }}
+  - when: jetty_tmp_dir is defined
+    file: state=absent path={{ jetty_tmp_dir }}
 
   - when: celos_wrk_dir is defined
     file: state=absent path={{ celos_wrk_dir }}
