@@ -1,7 +1,7 @@
 package com.collective.celos;
 
 /**
- * Status of a workflow in an external system.
+ * Status of a workflow in an external service.
  */
 public interface ExternalStatus {
 

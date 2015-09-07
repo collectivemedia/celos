@@ -8,7 +8,7 @@ import com.collective.celos.Util;
 import java.util.Collections;
 
 /**
- * Trigger that takes a nested triggers and does a logical NOT.
+ * Trigger that takes a nested trigger and does a logical NOT.
  */
 public class NotTrigger extends Trigger {
 
