@@ -194,7 +194,7 @@
     shell: grep 'INFO :.*Loading file.*workflow-1.js' {{celos_log_dir}}/celos.log
 
   - name: Deploy file-copy workflow
-    local_action: command {{ root }}/samples/file-copy-celos-provided/scripts/ci-deploy {{ ansible_ssh_user }} {{ root }}
+    local_action: command {{ root }}/samples/file-copy-celos-provided/scripts/ci-deploy {{ root }}
 
   - register: result
     local_action: command hadoop fs -cat /user/{{ ansible_ssh_user }}/celos-int-test/file-copy/workflow.xml
@@ -203,7 +203,7 @@
     fail:
 
   - name: Undeploy file-copy workflow
-    local_action: command {{ root }}/samples/file-copy-celos-provided/scripts/ci-undeploy {{ ansible_ssh_user }} {{ root }}
+    local_action: command {{ root }}/samples/file-copy-celos-provided/scripts/ci-undeploy {{ root }}
 
   - register: result
     local_action: command hadoop fs -cat /user/{{ ansible_ssh_user }}/celos-int-test/file-copy/workflow.xml
