@@ -17,7 +17,7 @@
     catch(err) {
     }
 //-->
-var methods = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10};
+var methods = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -155,29 +155,39 @@ extends java.lang.Object</pre>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../com/collective/celos/Scheduler.html#getSlotStates-com.collective.celos.Workflow-com.collective.celos.ScheduledTime-com.collective.celos.ScheduledTime-">getSlotStates</a></span>(<a href="../../../com/collective/celos/Workflow.html" title="class in com.collective.celos">Workflow</a>&nbsp;wf,
              <a href="../../../com/collective/celos/ScheduledTime.html" title="class in com.collective.celos">ScheduledTime</a>&nbsp;start,
              <a href="../../../com/collective/celos/ScheduledTime.html" title="class in com.collective.celos">ScheduledTime</a>&nbsp;end)</code>
-<div class="block">Get the slot states of all slots of the workflow from within the window defined by start (inclusive) and end (exclusive)</div>
+<div class="block">Get the slot states of all slots of the workflow from within the window defined by start (inclusive) and end (exclusive).</div>
 </td>
 </tr>
 <tr id="i2" class="altColor">
+<td class="colFirst"><code>java.util.List&lt;<a href="../../../com/collective/celos/SlotState.html" title="class in com.collective.celos">SlotState</a>&gt;</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../com/collective/celos/Scheduler.html#getSlotStatesIncludingMarkedForRerun-com.collective.celos.Workflow-com.collective.celos.ScheduledTime-com.collective.celos.ScheduledTime-com.collective.celos.ScheduledTime-">getSlotStatesIncludingMarkedForRerun</a></span>(<a href="../../../com/collective/celos/Workflow.html" title="class in com.collective.celos">Workflow</a>&nbsp;wf,
+                                    <a href="../../../com/collective/celos/ScheduledTime.html" title="class in com.collective.celos">ScheduledTime</a>&nbsp;current,
+                                    <a href="../../../com/collective/celos/ScheduledTime.html" title="class in com.collective.celos">ScheduledTime</a>&nbsp;start,
+                                    <a href="../../../com/collective/celos/ScheduledTime.html" title="class in com.collective.celos">ScheduledTime</a>&nbsp;end)</code>
+<div class="block">Get the slot states of all slots of the workflow from within the window defined by start (inclusive) and end (exclusive),
+ as well as the slots states of all slots marked for rerun in the database.</div>
+</td>
+</tr>
+<tr id="i3" class="rowColor">
 <td class="colFirst"><code><a href="../../../com/collective/celos/StateDatabase.html" title="interface in com.collective.celos">StateDatabase</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../com/collective/celos/Scheduler.html#getStateDatabase--">getStateDatabase</a></span>()</code>&nbsp;</td>
 </tr>
-<tr id="i3" class="rowColor">
+<tr id="i4" class="altColor">
 <td class="colFirst"><code><a href="../../../com/collective/celos/WorkflowConfiguration.html" title="class in com.collective.celos">WorkflowConfiguration</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../com/collective/celos/Scheduler.html#getWorkflowConfiguration--">getWorkflowConfiguration</a></span>()</code>&nbsp;</td>
 </tr>
-<tr id="i4" class="altColor">
+<tr id="i5" class="rowColor">
 <td class="colFirst"><code><a href="../../../com/collective/celos/ScheduledTime.html" title="class in com.collective.celos">ScheduledTime</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../com/collective/celos/Scheduler.html#getWorkflowStartTime-com.collective.celos.Workflow-com.collective.celos.ScheduledTime-">getWorkflowStartTime</a></span>(<a href="../../../com/collective/celos/Workflow.html" title="class in com.collective.celos">Workflow</a>&nbsp;wf,
                     <a href="../../../com/collective/celos/ScheduledTime.html" title="class in com.collective.celos">ScheduledTime</a>&nbsp;current)</code>&nbsp;</td>
 </tr>
-<tr id="i5" class="rowColor">
+<tr id="i6" class="altColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../com/collective/celos/Scheduler.html#step-com.collective.celos.ScheduledTime-">step</a></span>(<a href="../../../com/collective/celos/ScheduledTime.html" title="class in com.collective.celos">ScheduledTime</a>&nbsp;current)</code>
 <div class="block">Main method, called every minute.</div>
 </td>
 </tr>
-<tr id="i6" class="altColor">
+<tr id="i7" class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../com/collective/celos/Scheduler.html#step-com.collective.celos.ScheduledTime-java.util.Set-">step</a></span>(<a href="../../../com/collective/celos/ScheduledTime.html" title="class in com.collective.celos">ScheduledTime</a>&nbsp;current,
     java.util.Set&lt;<a href="../../../com/collective/celos/WorkflowID.html" title="class in com.collective.celos">WorkflowID</a>&gt;&nbsp;workflowIDs)</code>
@@ -250,6 +260,25 @@ extends java.lang.Object</pre>
  Otherwise, schedule only workflows in the set.</div>
 </li>
 </ul>
+<a name="getSlotStatesIncludingMarkedForRerun-com.collective.celos.Workflow-com.collective.celos.ScheduledTime-com.collective.celos.ScheduledTime-com.collective.celos.ScheduledTime-">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getSlotStatesIncludingMarkedForRerun</h4>
+<pre>public&nbsp;java.util.List&lt;<a href="../../../com/collective/celos/SlotState.html" title="class in com.collective.celos">SlotState</a>&gt;&nbsp;getSlotStatesIncludingMarkedForRerun(<a href="../../../com/collective/celos/Workflow.html" title="class in com.collective.celos">Workflow</a>&nbsp;wf,
+                                                                      <a href="../../../com/collective/celos/ScheduledTime.html" title="class in com.collective.celos">ScheduledTime</a>&nbsp;current,
+                                                                      <a href="../../../com/collective/celos/ScheduledTime.html" title="class in com.collective.celos">ScheduledTime</a>&nbsp;start,
+                                                                      <a href="../../../com/collective/celos/ScheduledTime.html" title="class in com.collective.celos">ScheduledTime</a>&nbsp;end)
+                                                               throws java.lang.Exception</pre>
+<div class="block">Get the slot states of all slots of the workflow from within the window defined by start (inclusive) and end (exclusive),
+ as well as the slots states of all slots marked for rerun in the database.</div>
+<dl>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code>java.lang.Exception</code></dd>
+</dl>
+</li>
+</ul>
 <a name="getSlotStates-com.collective.celos.Workflow-com.collective.celos.ScheduledTime-com.collective.celos.ScheduledTime-">
 <!--   -->
 </a>
@@ -260,7 +289,8 @@ extends java.lang.Object</pre>
                                                <a href="../../../com/collective/celos/ScheduledTime.html" title="class in com.collective.celos">ScheduledTime</a>&nbsp;start,
                                                <a href="../../../com/collective/celos/ScheduledTime.html" title="class in com.collective.celos">ScheduledTime</a>&nbsp;end)
                                         throws java.lang.Exception</pre>
-<div class="block">Get the slot states of all slots of the workflow from within the window defined by start (inclusive) and end (exclusive)</div>
+<div class="block">Get the slot states of all slots of the workflow from within the window defined by start (inclusive) and end (exclusive).
+ This is used for servlets that return the slot states within the window, and don't care about rerun slots.</div>
 <dl>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code>java.lang.Exception</code></dd>

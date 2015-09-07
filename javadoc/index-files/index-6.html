@@ -296,6 +296,8 @@
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="../com/collective/celos/servlet/AbstractServlet.html#getRequestTime-HttpServletRequest-">getRequestTime(HttpServletRequest)</a></span> - Method in class com.collective.celos.servlet.<a href="../com/collective/celos/servlet/AbstractServlet.html" title="class in com.collective.celos.servlet">AbstractServlet</a></dt>
 <dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="../com/collective/celos/RerunState.html#getRerunTime--">getRerunTime()</a></span> - Method in class com.collective.celos.<a href="../com/collective/celos/RerunState.html" title="class in com.collective.celos">RerunState</a></dt>
+<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="../com/collective/celos/SlotState.html#getRetryCount--">getRetryCount()</a></span> - Method in class com.collective.celos.<a href="../com/collective/celos/SlotState.html" title="class in com.collective.celos">SlotState</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="../com/collective/celos/ci/testing/structure/fixobject/FixTable.html#getRows--">getRows()</a></span> - Method in class com.collective.celos.ci.testing.structure.fixobject.<a href="../com/collective/celos/ci/testing/structure/fixobject/FixTable.html" title="class in com.collective.celos.ci.testing.structure.fixobject">FixTable</a></dt>
@@ -355,10 +357,15 @@
 </dd>
 <dt><span class="memberNameLink"><a href="../com/collective/celos/Scheduler.html#getSlotStates-com.collective.celos.Workflow-com.collective.celos.ScheduledTime-com.collective.celos.ScheduledTime-">getSlotStates(Workflow, ScheduledTime, ScheduledTime)</a></span> - Method in class com.collective.celos.<a href="../com/collective/celos/Scheduler.html" title="class in com.collective.celos">Scheduler</a></dt>
 <dd>
-<div class="block">Get the slot states of all slots of the workflow from within the window defined by start (inclusive) and end (exclusive)</div>
+<div class="block">Get the slot states of all slots of the workflow from within the window defined by start (inclusive) and end (exclusive).</div>
 </dd>
 <dt><span class="memberNameLink"><a href="../com/collective/celos/WorkflowStatus.html#getSlotStates--">getSlotStates()</a></span> - Method in class com.collective.celos.<a href="../com/collective/celos/WorkflowStatus.html" title="class in com.collective.celos">WorkflowStatus</a></dt>
 <dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="../com/collective/celos/Scheduler.html#getSlotStatesIncludingMarkedForRerun-com.collective.celos.Workflow-com.collective.celos.ScheduledTime-com.collective.celos.ScheduledTime-com.collective.celos.ScheduledTime-">getSlotStatesIncludingMarkedForRerun(Workflow, ScheduledTime, ScheduledTime, ScheduledTime)</a></span> - Method in class com.collective.celos.<a href="../com/collective/celos/Scheduler.html" title="class in com.collective.celos">Scheduler</a></dt>
+<dd>
+<div class="block">Get the slot states of all slots of the workflow from within the window defined by start (inclusive) and end (exclusive),
+ as well as the slots states of all slots marked for rerun in the database.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="../com/collective/celos/ui/UIConfiguration.html#getStart--">getStart()</a></span> - Method in class com.collective.celos.ui.<a href="../com/collective/celos/ui/UIConfiguration.html" title="class in com.collective.celos.ui">UIConfiguration</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="../com/collective/celos/Workflow.html#getStartTime--">getStartTime()</a></span> - Method in class com.collective.celos.<a href="../com/collective/celos/Workflow.html" title="class in com.collective.celos">Workflow</a></dt>
@@ -409,6 +416,12 @@
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="../com/collective/celos/ui/UIConfiguration.html#getTileTimes--">getTileTimes()</a></span> - Method in class com.collective.celos.ui.<a href="../com/collective/celos/ui/UIConfiguration.html" title="class in com.collective.celos.ui">UIConfiguration</a></dt>
 <dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="../com/collective/celos/FileSystemStateDatabase.html#getTimesMarkedForRerun-com.collective.celos.WorkflowID-com.collective.celos.ScheduledTime-">getTimesMarkedForRerun(WorkflowID, ScheduledTime)</a></span> - Method in class com.collective.celos.<a href="../com/collective/celos/FileSystemStateDatabase.html" title="class in com.collective.celos">FileSystemStateDatabase</a></dt>
+<dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="../com/collective/celos/StateDatabase.html#getTimesMarkedForRerun-com.collective.celos.WorkflowID-com.collective.celos.ScheduledTime-">getTimesMarkedForRerun(WorkflowID, ScheduledTime)</a></span> - Method in interface com.collective.celos.<a href="../com/collective/celos/StateDatabase.html" title="interface in com.collective.celos">StateDatabase</a></dt>
+<dd>
+<div class="block">Returns the list of scheduled times of the given workflow that have been marked for rerun.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="../com/collective/celos/trigger/NotTrigger.html#getTrigger--">getTrigger()</a></span> - Method in class com.collective.celos.trigger.<a href="../com/collective/celos/trigger/NotTrigger.html" title="class in com.collective.celos.trigger">NotTrigger</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="../com/collective/celos/trigger/NotTrigger.html#getTrigger--">getTrigger()</a></span> - Method in class com.collective.celos.trigger.<a href="../com/collective/celos/trigger/NotTrigger.html" title="class in com.collective.celos.trigger">NotTrigger</a></dt>

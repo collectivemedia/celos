@@ -17,7 +17,7 @@
     catch(err) {
     }
 //-->
-var methods = {"i0":6,"i1":6};
+var methods = {"i0":6,"i1":6,"i2":6,"i3":6};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],4:["t3","Abstract Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -129,6 +129,20 @@ var activeTableTab = "activeTableTab";
 </td>
 </tr>
 <tr id="i1" class="rowColor">
+<td class="colFirst"><code>java.util.SortedSet&lt;<a href="../../../com/collective/celos/ScheduledTime.html" title="class in com.collective.celos">ScheduledTime</a>&gt;</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../com/collective/celos/StateDatabase.html#getTimesMarkedForRerun-com.collective.celos.WorkflowID-com.collective.celos.ScheduledTime-">getTimesMarkedForRerun</a></span>(<a href="../../../com/collective/celos/WorkflowID.html" title="class in com.collective.celos">WorkflowID</a>&nbsp;workflowID,
+                      <a href="../../../com/collective/celos/ScheduledTime.html" title="class in com.collective.celos">ScheduledTime</a>&nbsp;now)</code>
+<div class="block">Returns the list of scheduled times of the given workflow that have been marked for rerun.</div>
+</td>
+</tr>
+<tr id="i2" class="altColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../com/collective/celos/StateDatabase.html#markSlotForRerun-com.collective.celos.SlotID-com.collective.celos.ScheduledTime-">markSlotForRerun</a></span>(<a href="../../../com/collective/celos/SlotID.html" title="class in com.collective.celos">SlotID</a>&nbsp;slot,
+                <a href="../../../com/collective/celos/ScheduledTime.html" title="class in com.collective.celos">ScheduledTime</a>&nbsp;now)</code>
+<div class="block">Marks the slot for rerun at the current wallclock time.</div>
+</td>
+</tr>
+<tr id="i3" class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../com/collective/celos/StateDatabase.html#putSlotState-com.collective.celos.SlotState-">putSlotState</a></span>(<a href="../../../com/collective/celos/SlotState.html" title="class in com.collective.celos">SlotState</a>&nbsp;state)</code>
 <div class="block">Updates the state of the given slot.</div>
@@ -167,12 +181,46 @@ var activeTableTab = "activeTableTab";
 <a name="putSlotState-com.collective.celos.SlotState-">
 <!--   -->
 </a>
-<ul class="blockListLast">
+<ul class="blockList">
 <li class="blockList">
 <h4>putSlotState</h4>
 <pre>void&nbsp;putSlotState(<a href="../../../com/collective/celos/SlotState.html" title="class in com.collective.celos">SlotState</a>&nbsp;state)
            throws java.lang.Exception</pre>
-<div class="block">Updates the state of the given slot.</div>
+<div class="block">Updates the state of the given slot.
+ 
+ If this is a rerun, then markSlotForRerun() must be used in addition.</div>
+<dl>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code>java.lang.Exception</code></dd>
+</dl>
+</li>
+</ul>
+<a name="markSlotForRerun-com.collective.celos.SlotID-com.collective.celos.ScheduledTime-">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>markSlotForRerun</h4>
+<pre>void&nbsp;markSlotForRerun(<a href="../../../com/collective/celos/SlotID.html" title="class in com.collective.celos">SlotID</a>&nbsp;slot,
+                      <a href="../../../com/collective/celos/ScheduledTime.html" title="class in com.collective.celos">ScheduledTime</a>&nbsp;now)
+               throws java.lang.Exception</pre>
+<div class="block">Marks the slot for rerun at the current wallclock time.</div>
+<dl>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code>java.lang.Exception</code></dd>
+</dl>
+</li>
+</ul>
+<a name="getTimesMarkedForRerun-com.collective.celos.WorkflowID-com.collective.celos.ScheduledTime-">
+<!--   -->
+</a>
+<ul class="blockListLast">
+<li class="blockList">
+<h4>getTimesMarkedForRerun</h4>
+<pre>java.util.SortedSet&lt;<a href="../../../com/collective/celos/ScheduledTime.html" title="class in com.collective.celos">ScheduledTime</a>&gt;&nbsp;getTimesMarkedForRerun(<a href="../../../com/collective/celos/WorkflowID.html" title="class in com.collective.celos">WorkflowID</a>&nbsp;workflowID,
+                                                          <a href="../../../com/collective/celos/ScheduledTime.html" title="class in com.collective.celos">ScheduledTime</a>&nbsp;now)
+                                                   throws java.lang.Exception</pre>
+<div class="block">Returns the list of scheduled times of the given workflow that have been marked for rerun.</div>
 <dl>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code>java.lang.Exception</code></dd>
