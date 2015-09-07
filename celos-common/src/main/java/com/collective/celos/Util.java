@@ -168,13 +168,6 @@ public class Util {
         return path;
     }
 
-    public static int getFreePort() throws IOException {
-        ServerSocket s = new ServerSocket(0);
-        int port = s.getLocalPort();
-        s.close();
-        return port;
-    }
-
     public static void setupLogging(File logDir) {
         System.getProperties().setProperty("log4j.defaultInitOverride", "true");
 

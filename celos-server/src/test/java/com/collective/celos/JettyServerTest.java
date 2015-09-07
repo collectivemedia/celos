@@ -9,6 +9,9 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 import org.junit.Test;
 
+import java.io.IOException;
+import java.net.ServerSocket;
+
 /**
  * Created by akonopko on 22.12.14.
  */
@@ -16,7 +19,7 @@ public class JettyServerTest {
 
     @Test
     public void testServerStartsSpecifyPort() throws Exception {
-        int port = Util.getFreePort();
+        int port = getFreePort();
 
         JettyServer jettyServer = new JettyServer();
         jettyServer.start(port);
@@ -32,7 +35,7 @@ public class JettyServerTest {
 
     @Test(expected = HttpHostConnectException.class)
     public void testServerStopsSpecifyPort() throws Exception {
-        int port = Util.getFreePort();
+        int port = getFreePort();
 
         JettyServer jettyServer = new JettyServer();
         jettyServer.start(port);
@@ -46,6 +49,16 @@ public class JettyServerTest {
         jettyServer.stop();
 
         httpClient.execute(workflowListGet);
+    }
+
+    /**
+     * We dont use this method in production code now, cause it seems that sometimes port is left closed afterwards and Celos fails to setup Jetty instance with it
+     */
+    private int getFreePort() throws IOException {
+        ServerSocket s = new ServerSocket(0);
+        int port = s.getLocalPort();
+        s.close();
+        return port;
     }
 
 }
