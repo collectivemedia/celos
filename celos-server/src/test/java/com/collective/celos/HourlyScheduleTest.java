@@ -1,9 +1,6 @@
 package com.collective.celos;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -57,11 +54,27 @@ public class HourlyScheduleTest {
         Set<ScheduledTime> hours = sch.getScheduledTimes(null, t1, t2);
         List<ScheduledTime> expectedHours =
                 Arrays.asList(new ScheduledTime("2013-11-25T20:00Z"),
-                              new ScheduledTime("2013-11-25T21:00Z"),
-                              new ScheduledTime("2013-11-25T22:00Z"),
-                              new ScheduledTime("2013-11-25T23:00Z"));
+                        new ScheduledTime("2013-11-25T21:00Z"),
+                        new ScheduledTime("2013-11-25T22:00Z"),
+                        new ScheduledTime("2013-11-25T23:00Z"));
         Assert.assertEquals(new TreeSet<ScheduledTime>(expectedHours), hours);
     }
+
+    @Test
+    public void testTimeFrameResultsSameNumberSlots() {
+        Schedule sch = makeHourlySchedule();
+
+        ScheduledTime start = new ScheduledTime("2013-11-18T00:00:00.100Z");
+        ScheduledTime end = new ScheduledTime("2013-11-25T00:00:00.100Z");
+        SortedSet<ScheduledTime> times1 = sch.getScheduledTimes(null, start, end);
+
+        ScheduledTime startPlusSecond = start.plusSeconds(1);
+        ScheduledTime endPlusSecond = end.plusSeconds(1);
+        SortedSet<ScheduledTime> times2 = sch.getScheduledTimes(null, startPlusSecond, endPlusSecond);
+
+        Assert.assertEquals(times1.size(), times2.size());
+    }
+
 
     private HourlySchedule makeHourlySchedule() {
         return new HourlySchedule();
