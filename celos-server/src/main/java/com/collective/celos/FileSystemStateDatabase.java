@@ -123,7 +123,7 @@ public class FileSystemStateDatabase implements StateDatabase {
     public void markSlotForRerun(SlotID slotID, ScheduledTime now) throws Exception {
         RerunState st = new RerunState(now);
         File file = getSlotRerunFile(slotID);
-        writeJson(st, file);
+        writeJson(st.toJSONNode(), file);
     }
 
     @Override
@@ -133,7 +133,8 @@ public class FileSystemStateDatabase implements StateDatabase {
         if (wfDir.exists()) {
             for (File dayDir : wfDir.listFiles()) {
                 for (File rerunFile : dayDir.listFiles()) {
-                    RerunState st = mapper.readValue(new FileInputStream(rerunFile), RerunState.class);
+                    String json = FileUtils.readFileToString(rerunFile, CHARSET);
+                    RerunState st = RerunState.fromJSONNode((ObjectNode) mapper.readTree(json));
                     ScheduledTime t = new ScheduledTime(dayDir.getName() + "T" + rerunFile.getName());
                     res.add(t);
                     if (st.isExpired(now)) {
