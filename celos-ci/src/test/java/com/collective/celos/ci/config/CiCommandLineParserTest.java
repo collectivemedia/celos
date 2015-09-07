@@ -30,11 +30,11 @@ public class CiCommandLineParserTest {
     public void testContextParserTest() throws Exception {
         CiCommandLineParser contextParser = new CiCommandLineParser();
 
-        String[] clParams = ("--testDir " + tmpDir.getAbsolutePath() + " --target target --mode TEST --deployDir deploydir --workflowName workflow").split(" ");
+        String[] clParams = ("--testDir " + tmpDir.getAbsolutePath() + " --target target --mode TEST --deployDir "  + tmpDir.getAbsolutePath() + "  --workflowName workflow").split(" ");
 
         CiCommandLine commandLine = contextParser.parse(clParams);
 
-        Assert.assertEquals(commandLine.getDeployDir(), new File("deploydir"));
+        Assert.assertEquals(commandLine.getDeployDir(), tmpDir);
         Assert.assertEquals(commandLine.getMode(), CelosCiContext.Mode.TEST);
         Assert.assertEquals(commandLine.getTargetUri(), URI.create("target"));
         Assert.assertEquals(commandLine.getUserName(), getUsername());
@@ -45,11 +45,11 @@ public class CiCommandLineParserTest {
     public void testContextParserTestSupportLowercase() throws Exception {
         CiCommandLineParser contextParser = new CiCommandLineParser();
 
-        String[] clParams = ("--testDir " + tmpDir.getAbsolutePath() + " --target target --mode test --deployDir deploydir --workflowName workflow").split(" ");
+        String[] clParams = ("--testDir " + tmpDir.getAbsolutePath() + " --target target --mode test --deployDir " + tmpDir.getAbsolutePath() + " --workflowName workflow").split(" ");
 
         CiCommandLine commandLine = contextParser.parse(clParams);
 
-        Assert.assertEquals(commandLine.getDeployDir(), new File("deploydir"));
+        Assert.assertEquals(commandLine.getDeployDir(), tmpDir);
         Assert.assertEquals(commandLine.getMode(), CelosCiContext.Mode.TEST);
         Assert.assertEquals(commandLine.getTargetUri(), URI.create("target"));
         Assert.assertEquals(commandLine.getUserName(), getUsername());
@@ -67,11 +67,11 @@ public class CiCommandLineParserTest {
     @Test
     public void testContextParserDeploy() throws Exception {
         CiCommandLineParser contextParser = new CiCommandLineParser();
-        String[] clParams = ("--target target --mode DEPLOY --deployDir deploydir --workflowName workflow").split(" ");
+        String[] clParams = ("--target target --mode DEPLOY --deployDir " + tmpDir.getAbsolutePath() + " --workflowName workflow").split(" ");
 
         CiCommandLine commandLine = contextParser.parse(clParams);
 
-        Assert.assertEquals(commandLine.getDeployDir(), new File("deploydir"));
+        Assert.assertEquals(commandLine.getDeployDir(), tmpDir);
         Assert.assertEquals(commandLine.getMode(), CelosCiContext.Mode.DEPLOY);
         Assert.assertEquals(commandLine.getTargetUri(), URI.create("target"));
         Assert.assertEquals(commandLine.getUserName(), getUsername());
@@ -82,11 +82,11 @@ public class CiCommandLineParserTest {
     public void testContextParserUndeploy() throws Exception {
         CiCommandLineParser contextParser = new CiCommandLineParser();
 
-        String[] clParams = ("--target target --mode UNDEPLOY --deployDir deploydir --workflowName workflow").split(" ");
+        String[] clParams = ("--target target --mode UNDEPLOY --workflowName workflow").split(" ");
 
         CiCommandLine commandLine = contextParser.parse(clParams);
 
-        Assert.assertEquals(commandLine.getDeployDir(), new File("deploydir"));
+        Assert.assertNull(commandLine.getDeployDir());
         Assert.assertEquals(commandLine.getMode(), CelosCiContext.Mode.UNDEPLOY);
         Assert.assertEquals(commandLine.getTargetUri(), URI.create("target"));
         Assert.assertEquals(commandLine.getUserName(), getUsername());
@@ -97,54 +97,54 @@ public class CiCommandLineParserTest {
     @Test(expected = IllegalArgumentException.class)
     public void testContextParserTestFailsNoTestDir() throws Exception {
         CiCommandLineParser contextParser = new CiCommandLineParser();
-        String[] clParams = "--target target --mode TEST --deployDir deploydir --workflowName workflow".split(" ");
+        String[] clParams = ("--target target --mode TEST --deployDir " + tmpDir.getAbsolutePath() + " --workflowName workflow").split(" ");
 
         contextParser.parse(clParams);
     }
 
     @Test (expected = IllegalArgumentException.class)
     public void testNoDirComes() throws Exception {
-        new CiCommandLine("target", "TEST", "deployDir", "workflowName", "testCasesDir", "userName", true, null, "/hdfsRoot");
+        new CiCommandLine("target", "TEST", tmpDir.getAbsolutePath(), "workflowName", "testCasesDir", "userName", true, null, "/hdfsRoot");
     }
 
     @Test (expected = NullPointerException.class)
     public void testNoDirComesNull() throws Exception {
-        new CiCommandLine("target", "TEST", "deployDir", "workflowName", null, "userName", true, null, "/hdfsRoot");
+        new CiCommandLine("target", "TEST", tmpDir.getAbsolutePath(), "workflowName", null, "userName", true, null, "/hdfsRoot");
     }
 
     @Test
     public void testDeployNoDirComes() throws Exception {
-        new CiCommandLine("target", "DEPLOY", "deployDir", "workflowName", "testCasesDir", "userName", true, null, "/hdfsRoot");
+        new CiCommandLine("target", "DEPLOY", tmpDir.getAbsolutePath(), "workflowName", "testCasesDir", "userName", true, null, "/hdfsRoot");
     }
 
     @Test
     public void testDeployNoDirComesNull() throws Exception {
-        new CiCommandLine("target", "DEPLOY", "deployDir", "workflowName", null, "userName", true, null, "/hdfsRoot");
+        new CiCommandLine("target", "DEPLOY", tmpDir.getAbsolutePath(), "workflowName", null, "userName", true, null, "/hdfsRoot");
     }
 
     @Test
     public void testUndeployNoDirComes() throws Exception {
-        new CiCommandLine("target", "UNDEPLOY", "deployDir", "workflowName", "testCasesDir", "userName", true, null, "/hdfsRoot");
+        new CiCommandLine("target", "UNDEPLOY", tmpDir.getAbsolutePath(), "workflowName", "testCasesDir", "userName", true, null, "/hdfsRoot");
     }
 
     @Test
     public void testUndeployNoDirComesNull() throws Exception {
-        new CiCommandLine("target", "UNDEPLOY", "deployDir", "workflowName", null, "userName", true, null, "/hdfsRoot");
+        new CiCommandLine("target", "UNDEPLOY", tmpDir.getAbsolutePath(), "workflowName", null, "userName", true, null, "/hdfsRoot");
     }
 
     @Test
     public void testHdfsRootSeveralSlashesInMiddle() throws Exception {
-        new CiCommandLine("target", "UNDEPLOY", "deployDir", "workflowName", null, "userName", true, null, "/hdfs/Some/Root");
+        new CiCommandLine("target", "UNDEPLOY", tmpDir.getAbsolutePath(), "workflowName", null, "userName", true, null, "/hdfs/Some/Root");
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testHdfsRootNoStartSlash() throws Exception {
-        new CiCommandLine("target", "UNDEPLOY", "deployDir", "workflowName", null, "userName", true, null, "hdfsRoot");
+        new CiCommandLine("target", "UNDEPLOY", tmpDir.getAbsolutePath(), "workflowName", null, "userName", true, null, "hdfsRoot");
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testHdfsRootEndsWithSlash() throws Exception {
-        new CiCommandLine("target", "UNDEPLOY", "deployDir", "workflowName", null, "userName", true, null, "/hdfsRoot/");
+        new CiCommandLine("target", "UNDEPLOY", tmpDir.getAbsolutePath(), "workflowName", null, "userName", true, null, "/hdfsRoot/");
     }
 
 
