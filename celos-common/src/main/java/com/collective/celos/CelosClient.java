@@ -121,7 +121,7 @@ public class CelosClient {
         HttpGet workflowListGet = new HttpGet(uriBuilder.build());
         HttpResponse getResponse = execute(workflowListGet);
         InputStream content = getResponse.getEntity().getContent();
-        return SlotState.fromJSONNode(workflowID, objectMapper.readValue(content, ObjectNode.class));
+        return SlotState.fromJSONNode(new SlotID(workflowID, scheduledTime), objectMapper.readValue(content, ObjectNode.class));
     }
     
     public void rerunSlot(SlotID slotID) throws Exception {

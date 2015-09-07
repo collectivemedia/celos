@@ -20,11 +20,12 @@ public class SlotState extends ValueObject {
     
     // JSON support
     private static final ObjectMapper MAPPER = new ObjectMapper();
-    private static final String TIME_PROP = "time";
     private static final String STATUS_PROP = "status";
     private static final String EXTERNAL_ID_PROP = "externalID";
     private static final String RETRY_COUNT_PROP = "retryCount";
-    
+    private static final String TIME_PROP = "time";
+
+
     public enum StatusType {
         SUCCESS,
         INDETERMINATE,
@@ -133,9 +134,17 @@ public class SlotState extends ValueObject {
         }
     }
 
-    public ObjectNode toJSONNode() {
+    public ObjectNode toJSONNodeWithTime() {
         ObjectNode node = MAPPER.createObjectNode();
         node.put(TIME_PROP, this.getScheduledTime().toString());
+        return fillCommonJSONProps(node);
+    }
+
+    public ObjectNode toJSONNode() {
+        return fillCommonJSONProps(MAPPER.createObjectNode());
+    }
+
+    private ObjectNode fillCommonJSONProps(ObjectNode node) {
         node.put(STATUS_PROP, this.getStatus().toString());
         node.put(EXTERNAL_ID_PROP, this.getExternalID());
         node.put(RETRY_COUNT_PROP, this.getRetryCount());
