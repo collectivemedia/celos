@@ -82,7 +82,7 @@ public class UndeployTaskTest {
         stream.write(targetFileStr.getBytes());
         stream.flush();
 
-        CiCommandLine commandLine = new CiCommandLine(targetFile.toURI().toString(), "UNDEPLOY", deployDir.getAbsolutePath(), "workflow", "testDir", "uname", false, null, "/some/hdfs/root");
+        CiCommandLine commandLine = new CiCommandLine(targetFile.toURI().toString(), "UNDEPLOY", null, "workflow", "testDir", "uname", false, null, "/some/hdfs/root");
 
         UndeployTask undeployTask = new UndeployTask(commandLine);
 

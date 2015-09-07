@@ -37,7 +37,7 @@ public class TestRunTest {
         URI hadoopCoreUrl = Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/ci/testing/config/core-site.xml").toURI();
         URI hadoopHdfsUrl = Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/ci/testing/config/hdfs-site.xml").toURI();
 
-        CiCommandLine commandLine = new CiCommandLine("", "TEST", "deploydir", "workflow", tmpDirFile.getAbsolutePath(), "uname", false, null, "/hdfsRoot");
+        CiCommandLine commandLine = new CiCommandLine("", "TEST", tmpDirFile.getAbsolutePath(), "workflow", tmpDirFile.getAbsolutePath(), "uname", false, null, "/hdfsRoot");
         CelosCiTarget target = new CelosCiTarget(hadoopHdfsUrl, hadoopCoreUrl, URI.create("celoswfdir"), URI.create("defdir"), URI.create(""));
         TestCase testCase = new TestCase("tc1", "2013-12-20T16:00Z", "2013-12-20T16:00Z");
         TestRun testRunContext = new TestRun(target, commandLine, testCase, tempDir.newFolder());
@@ -69,7 +69,7 @@ public class TestRunTest {
         URI hadoopCoreUrl = Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/ci/testing/config/core-site.xml").toURI();
         URI hadoopHdfsUrl = Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/ci/testing/config/hdfs-site.xml").toURI();
 
-        CiCommandLine commandLine = new CiCommandLine("", "TEST", "deploydir", "workflow", tmpDirFile.getAbsolutePath(), "uname", false, "http://localhost:1234", "/hdfsRoot");
+        CiCommandLine commandLine = new CiCommandLine("", "TEST", tmpDirFile.getAbsolutePath(), "workflow", tmpDirFile.getAbsolutePath(), "uname", false, "http://localhost:1234", "/hdfsRoot");
         CelosCiTarget target = new CelosCiTarget(hadoopHdfsUrl, hadoopCoreUrl, URI.create("celoswfdir"), URI.create("defdir"), URI.create(""));
         TestCase testCase = new TestCase("tc1", "2013-12-20T16:00Z", "2013-12-20T16:00Z");
         TestRun testRunContext = new TestRun(target, commandLine, testCase, tempDir.newFolder());

@@ -33,7 +33,7 @@ public class CelosCiContext {
         this.target = Util.requireNonNull(target);
         this.userName = Util.requireNonNull(userName);
         this.mode = Util.requireNonNull(mode);
-        this.deployDir = Util.requireNonNull(deployDir);
+        this.deployDir = deployDir;
         this.workflowName = Util.requireNonNull(workflowName);
         this.hdfsPrefix = Util.requireNonNull(hdfsPrefix);
         this.fileSystem = FileSystem.get(this.setupConfiguration(userName, target));
