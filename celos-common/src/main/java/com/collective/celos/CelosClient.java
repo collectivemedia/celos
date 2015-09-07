@@ -176,9 +176,7 @@ public class CelosClient {
         Iterator<JsonNode> elems = node.get(SLOTS_NODE).elements();
         List<SlotState> result = Lists.newArrayList();
         while (elems.hasNext()) {
-            JsonNode nextNode = elems.next();
-            ScheduledTime time = new ScheduledTime(nextNode.get(Constants.SLOT_STATE_JSON_TIME_PROP).textValue());
-            result.add(SlotState.fromJSONNode(new SlotID(workflowID, time), nextNode));
+            result.add(SlotState.fromJSONNode(workflowID, elems.next()));
         }
         return new WorkflowStatus(info, result);
     }

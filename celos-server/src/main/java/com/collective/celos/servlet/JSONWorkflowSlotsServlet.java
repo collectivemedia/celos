@@ -74,9 +74,7 @@ public class JSONWorkflowSlotsServlet extends AbstractJSONServlet {
             List<SlotState> slotStates = scheduler.getSlotStates(wf, startTime, endTime);
             List<JsonNode> objectNodes = Lists.newArrayList();
             for (SlotState state : Lists.reverse(slotStates)) {
-                ObjectNode node = state.toJSONNode();
-                node.put(Constants.SLOT_STATE_JSON_TIME_PROP, state.getScheduledTime().toString());
-                objectNodes.add(node);
+                objectNodes.add(state.toJSONNodeWithTime());
             }
 
             ObjectNode node = mapper.createObjectNode();
