@@ -34,13 +34,7 @@ public class FileSystemStateDatabaseTest {
     }
 
     @Test
-    public void emptyDatabaseReturnsEmptyRerunSet() throws Exception {
-        StateDatabase db = new FileSystemStateDatabase(makeDatabaseDir());
-        Assert.assertEquals(new TreeSet<>(), db.getTimesMarkedForRerun(new WorkflowID("workflow-1"), new ScheduledTime("2013-12-02T13:37Z")));
-    }
-
-    @Test
-    public void testRerun() throws Exception {
+    public void testRerunExpiration() throws Exception {
         WorkflowID wf1 = new WorkflowID("foo");
         WorkflowID wf2 = new WorkflowID("bar");
         StateDatabase db = new FileSystemStateDatabase(makeDatabaseDir());
@@ -61,6 +55,7 @@ public class FileSystemStateDatabaseTest {
         Assert.assertEquals(new TreeSet<>(), db.getTimesMarkedForRerun(wf1, new ScheduledTime("2015-12-02T15:00Z")));
         // wf2 still in there
         Assert.assertEquals(new TreeSet<>(ImmutableSet.of(time1)), db.getTimesMarkedForRerun(wf2, new ScheduledTime("2013-12-02T15:00Z")));
+        // Now call wf2 with much later current time and make sure files got expired after first call
         Assert.assertEquals(new TreeSet<>(ImmutableSet.of(time1)), db.getTimesMarkedForRerun(wf2, new ScheduledTime("2015-12-02T15:00Z")));
         Assert.assertEquals(new TreeSet<>(), db.getTimesMarkedForRerun(wf2, new ScheduledTime("2015-12-02T15:00Z")));
     }
