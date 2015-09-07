@@ -57,9 +57,7 @@ public class TestRunCelosServerModeEmbedded implements TestRunCelosServerMode {
         defaultsDir.mkdirs();
         stateDatabase.mkdirs();
 
-        Integer port = Util.getFreePort();
-
-        celosServer.startServer(port, additionalJSParams, workflowsDir, defaultsDir, stateDatabase);
+        Integer port = celosServer.startServer(additionalJSParams, workflowsDir, defaultsDir, stateDatabase);
 
         logJsFileExists(WorkflowFilesDeployer.WORKFLOW_FILENAME, testRun);
         logJsFileExists(WorkflowFilesDeployer.DEFAULTS_FILENAME, testRun);
