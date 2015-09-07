@@ -32,7 +32,7 @@ public class CiCommandLine {
         this.keepTempData = keepTempData;
         this.targetUri = URI.create(Util.requireNonNull(targetUri));
         this.mode = CelosCiContext.Mode.valueOf(Util.requireNonNull(mode).toUpperCase());
-        this.deployDir = new File(Util.requireNonNull(deployDir));
+        this.deployDir = getValidateDeployDir(this.mode, deployDir);
         this.workflowName = Util.requireNonNull(workflowName);
         this.testCasesDir = getValidateTestCasesDir(this.mode, testCasesDir);
     }
@@ -43,6 +43,17 @@ public class CiCommandLine {
         } else {
             throw new IllegalArgumentException("HDFS root should start with single '/' symbol, and should end with no '/' symbol");
         }
+    }
+
+    private File getValidateDeployDir(CelosCiContext.Mode mode, String testCasesDir) {
+        if (mode == CelosCiContext.Mode.TEST || mode == CelosCiContext.Mode.DEPLOY) {
+            File file = new File(Util.requireNonNull(testCasesDir));
+            if (!file.isDirectory()) {
+                throw new IllegalArgumentException("Deploy directory was not found on default path " + file.getAbsolutePath() + ", please specify --testDir parameter");
+            }
+            return file;
+        }
+        return null;
     }
 
     private File getValidateTestCasesDir(CelosCiContext.Mode mode, String testCasesDir) {
