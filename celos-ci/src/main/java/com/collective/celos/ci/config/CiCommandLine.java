@@ -45,11 +45,11 @@ public class CiCommandLine {
         }
     }
 
-    private File getValidateDeployDir(CelosCiContext.Mode mode, String testCasesDir) {
+    private File getValidateDeployDir(CelosCiContext.Mode mode, String deployDir) {
         if (mode == CelosCiContext.Mode.TEST || mode == CelosCiContext.Mode.DEPLOY) {
-            File file = new File(Util.requireNonNull(testCasesDir));
+            File file = new File(Util.requireNonNull(deployDir));
             if (!file.isDirectory()) {
-                throw new IllegalArgumentException("Deploy directory was not found on default path " + file.getAbsolutePath() + ", please specify --testDir parameter");
+                throw new IllegalArgumentException("Deploy directory was not found on default path " + file.getAbsolutePath() + ", please specify --deployDir parameter");
             }
             return file;
         }
