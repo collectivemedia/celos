@@ -53,6 +53,7 @@ public class RerunServlet extends AbstractServlet {
         LOGGER.info("Scheduling Slot for rerun: " + state.getSlotID());
         SlotState newState = state.transitionToRerun();
         db.putSlotState(newState);
+        db.markSlotForRerun(state.getSlotID(), ScheduledTime.now());
     }
 
 }
