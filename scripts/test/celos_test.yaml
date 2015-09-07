@@ -199,7 +199,7 @@
   - register: result
     local_action: command hadoop fs -cat /user/{{ ansible_ssh_user }}/celos-int-test/file-copy/workflow.xml
   - name: Check workflow was successfully deployed
-    when: result.content != lookup('file', '{{ root }}/samples/file-copy-celos-provided/src/main/oozie/workflow.xml')
+    when: result.stdout != lookup('file', '{{ root }}/samples/file-copy-celos-provided/src/main/oozie/workflow.xml')
     fail:
 
   - name: Undeploy file-copy workflow
