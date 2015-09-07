@@ -15,8 +15,8 @@ public class RerunStateTest {
         RerunState st = new RerunState(new ScheduledTime("2015-09-07T00:00Z"));
         Assert.assertTrue(st.isExpired(new ScheduledTime("2015-10-07T00:00Z")));
         Assert.assertFalse(st.isExpired(new ScheduledTime("2015-09-14T00:00Z")));
+        Assert.assertFalse(st.isExpired(new ScheduledTime("2014-09-14T00:00Z")));
     }
-    
     
     @Test
     public void testJSON() throws IOException {

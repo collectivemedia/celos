@@ -1,7 +1,6 @@
 package com.collective.celos;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -10,6 +9,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
@@ -147,7 +147,7 @@ public class FileSystemStateDatabase implements StateDatabase {
         return res;
     }
 
-    private void writeJson(Object obj, File file) throws JsonProcessingException, IOException {
+    private void writeJson(JsonNode obj, File file) throws JsonProcessingException, IOException {
         String json = mapper.writeValueAsString(obj);
         FileUtils.forceMkdir(file.getParentFile());
         FileUtils.write(file, json, CHARSET);
