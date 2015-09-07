@@ -20,7 +20,6 @@ public class SlotState extends ValueObject {
     
     // JSON support
     private static final ObjectMapper MAPPER = new ObjectMapper();
-    private static final String TIME_PROP = "time";
     private static final String STATUS_PROP = "status";
     private static final String EXTERNAL_ID_PROP = "externalID";
     private static final String RETRY_COUNT_PROP = "retryCount";
@@ -135,16 +134,10 @@ public class SlotState extends ValueObject {
 
     public ObjectNode toJSONNode() {
         ObjectNode node = MAPPER.createObjectNode();
-        node.put(TIME_PROP, this.getScheduledTime().toString());
         node.put(STATUS_PROP, this.getStatus().toString());
         node.put(EXTERNAL_ID_PROP, this.getExternalID());
         node.put(RETRY_COUNT_PROP, this.getRetryCount());
         return node;
-    }
-
-    public static SlotState fromJSONNode(WorkflowID id, JsonNode node) {
-        ScheduledTime time = new ScheduledTime(node.get(TIME_PROP).textValue());
-        return fromJSONNode(new SlotID(id, time), node);
     }
 
     public static SlotState fromJSONNode(SlotID id, JsonNode node) {

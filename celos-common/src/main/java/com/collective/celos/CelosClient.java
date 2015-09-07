@@ -121,7 +121,7 @@ public class CelosClient {
         HttpGet workflowListGet = new HttpGet(uriBuilder.build());
         HttpResponse getResponse = execute(workflowListGet);
         InputStream content = getResponse.getEntity().getContent();
-        return SlotState.fromJSONNode(workflowID, objectMapper.readValue(content, ObjectNode.class));
+        return SlotState.fromJSONNode(new SlotID(workflowID, scheduledTime), objectMapper.readValue(content, ObjectNode.class));
     }
     
     public void rerunSlot(SlotID slotID) throws Exception {
@@ -176,7 +176,9 @@ public class CelosClient {
         Iterator<JsonNode> elems = node.get(SLOTS_NODE).elements();
         List<SlotState> result = Lists.newArrayList();
         while (elems.hasNext()) {
-            result.add(SlotState.fromJSONNode(workflowID, elems.next()));
+            JsonNode nextNode = elems.next();
+            ScheduledTime time = new ScheduledTime(nextNode.get(Constants.SLOT_STATE_JSON_TIME_PROP).textValue());
+            result.add(SlotState.fromJSONNode(new SlotID(workflowID, time), nextNode));
         }
         return new WorkflowStatus(info, result);
     }
