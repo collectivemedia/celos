@@ -5,7 +5,7 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
 /**
- * Scheduled time of a workflow run in UTC.
+ * Time of a workflow run in UTC.
  */
 public class ScheduledTime extends ValueObject implements Comparable<ScheduledTime> {
 

@@ -2,6 +2,9 @@ package com.collective.celos;
 
 import com.collective.celos.trigger.Trigger;
 
+/**
+ * A periodical task.
+ */
 public class Workflow {
 
     public static final ScheduledTime DEFAULT_START_TIME = new ScheduledTime("1970-01-01T00:00:00.000Z");

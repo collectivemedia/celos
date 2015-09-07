@@ -1,5 +1,8 @@
 package com.collective.celos;
 
+/**
+ * Stores all state needed by the scheduler.
+ */
 public interface StateDatabase {
 
     /**

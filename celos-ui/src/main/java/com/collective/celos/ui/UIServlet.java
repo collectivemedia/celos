@@ -44,6 +44,9 @@ import com.collective.celos.WorkflowID;
 import com.collective.celos.WorkflowStatus;
 import com.google.common.collect.ImmutableList;
 
+/**
+ * Renders the UI HTML.
+ */
 public class UIServlet extends HttpServlet {
 
     private static final String ZOOM_PARAM = "zoom";

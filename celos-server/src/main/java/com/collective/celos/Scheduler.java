@@ -9,6 +9,9 @@ import java.util.SortedSet;
 import com.collective.celos.trigger.Trigger;
 import org.apache.log4j.Logger;
 
+/**
+ * Master control program.
+ */
 public class Scheduler {
 
     private final int slidingWindowHours;

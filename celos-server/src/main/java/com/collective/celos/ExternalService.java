@@ -1,5 +1,8 @@
 package com.collective.celos;
 
+/**
+ * Execution engine for workflows.
+ */
 public interface ExternalService {
 
     /**

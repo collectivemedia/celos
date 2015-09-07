@@ -8,11 +8,8 @@ import org.apache.commons.collections.Predicate;
 
 import com.collective.celos.SlotState.Status;
 
-/*
- * Predicate that compares the status of a SlotState object to a set of target
- * values.
- * 
- * Instances of this predicate are for use with CollectionUtils methods.
+/**
+ * Ivor who's a Scala wonk did this.
  */
 public class SlotStateStatusPredicate implements Predicate {
     

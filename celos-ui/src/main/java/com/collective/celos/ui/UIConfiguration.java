@@ -10,6 +10,9 @@ import com.collective.celos.Util;
 import com.collective.celos.WorkflowID;
 import com.collective.celos.WorkflowStatus;
 
+/**
+ * All data required by the UI for rendering.
+ */
 public class UIConfiguration {
 
     private final ScheduledTime start;

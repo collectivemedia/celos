@@ -7,6 +7,9 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.URL;
 
+/**
+ * Parses for UI command-line options.
+ */
 public class UICommandLineParser {
 
     private static final String CLI_CELOS_ADDRESS = "celos";

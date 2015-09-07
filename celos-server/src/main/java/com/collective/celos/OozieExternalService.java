@@ -10,7 +10,9 @@ import org.apache.oozie.client.WorkflowJob;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-// TODO: mock AuthOozieClient and check that its methods are called with the right args
+/**
+ * Oozie external service.
+ */
 public class OozieExternalService implements ExternalService {
     
     public static final String YEAR_PROP = "year";

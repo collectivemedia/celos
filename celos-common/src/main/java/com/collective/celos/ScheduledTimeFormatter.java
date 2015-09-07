@@ -2,6 +2,9 @@ package com.collective.celos;
 
 import org.joda.time.DateTime;
 
+/**
+ * Formatting utilities for times.
+ */
 public class ScheduledTimeFormatter {
 
     public String replaceTimeTokens(String string, ScheduledTime t) {

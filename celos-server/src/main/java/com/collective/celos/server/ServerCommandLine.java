@@ -5,7 +5,7 @@ import com.collective.celos.Util;
 import java.io.File;
 
 /**
- * Created by akonopko on 9/30/14.
+ * Command-line options for the scheduler server.
  */
 public class ServerCommandLine {
 

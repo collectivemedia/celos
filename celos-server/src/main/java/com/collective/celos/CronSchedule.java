@@ -9,6 +9,9 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.quartz.CronExpression;
 
+/**
+ * Schedule implementation that uses cron-like syntax.
+ */
 public class CronSchedule implements Schedule {
 
     private CronExpression cronExpression;

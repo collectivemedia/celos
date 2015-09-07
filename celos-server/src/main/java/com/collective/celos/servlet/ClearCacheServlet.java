@@ -6,6 +6,8 @@ import javax.servlet.http.HttpServletResponse;
 
 /**
  * Posting to this servlet clears the scheduler cache.
+ * 
+ * This is mostly for internal use during testing.
  */
 @SuppressWarnings("serial")
 public class ClearCacheServlet extends AbstractServlet {

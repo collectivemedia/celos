@@ -3,7 +3,7 @@ package com.collective.celos;
 import java.util.UUID;
 
 /**
- * Created by akonopko on 04.02.15.
+ * Utility class for Celos CI that wraps a database name.
  */
 public class DatabaseName extends ValueObject {
 

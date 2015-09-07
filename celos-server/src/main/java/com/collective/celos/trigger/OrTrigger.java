@@ -7,6 +7,9 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * Trigger that takes N nested triggers and does a logical OR.
+ */
 public class OrTrigger extends Trigger {
 
     private final List<Trigger> triggers = new LinkedList<>();
