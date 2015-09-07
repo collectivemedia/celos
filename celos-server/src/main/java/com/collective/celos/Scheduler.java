@@ -7,6 +7,7 @@ import java.util.Set;
 import java.util.SortedSet;
 
 import com.collective.celos.trigger.Trigger;
+
 import org.apache.log4j.Logger;
 
 public class Scheduler {
@@ -76,7 +77,7 @@ public class Scheduler {
      */
     private void stepWorkflow(Workflow wf, ScheduledTime current) throws Exception {
         LOGGER.info("Processing workflow: " + wf.getID() + " at: " + current);
-        List<SlotState> slotStates = getSlotStates(wf, getWorkflowStartTime(wf, current), current);
+        List<SlotState> slotStates = getSlotStatesIncludingMarkedForRerun(wf, current, getWorkflowStartTime(wf, current), current);
         runExternalWorkflows(wf, slotStates);
         for (SlotState slotState : slotStates) {
             updateSlotState(wf, slotState, current);
@@ -84,10 +85,25 @@ public class Scheduler {
     }
 
     /**
-     * Get the slot states of all slots of the workflow from within the window defined by start (inclusive) and end (exclusive)
+     * Get the slot states of all slots of the workflow from within the window defined by start (inclusive) and end (exclusive),
+     * as well as the slots states of all slots marked for rerun in the database.
+     */
+    public List<SlotState> getSlotStatesIncludingMarkedForRerun(Workflow wf, ScheduledTime current, ScheduledTime start, ScheduledTime end) throws Exception {
+        SortedSet<ScheduledTime> scheduledTimes = wf.getSchedule().getScheduledTimes(this, start, end);
+        scheduledTimes.addAll(database.getTimesMarkedForRerun(wf.getID(), current));
+        return fetchSlotStates(wf, scheduledTimes);
+    }
+
+    /**
+     * Get the slot states of all slots of the workflow from within the window defined by start (inclusive) and end (exclusive).
+     * This is used for servlets that return the slot states within the window, and don't care about rerun slots.
      */
     public List<SlotState> getSlotStates(Workflow wf, ScheduledTime start, ScheduledTime end) throws Exception {
-        SortedSet<ScheduledTime> scheduledTimes =  wf.getSchedule().getScheduledTimes(this, start, end);
+        SortedSet<ScheduledTime> scheduledTimes = wf.getSchedule().getScheduledTimes(this, start, end);
+        return fetchSlotStates(wf, scheduledTimes);
+    }
+
+    private List<SlotState> fetchSlotStates(Workflow wf, SortedSet<ScheduledTime> scheduledTimes) throws Exception {
         List<SlotState> slotStates = new ArrayList<SlotState>(scheduledTimes.size());
         for (ScheduledTime t : scheduledTimes) {
             SlotID slotID = new SlotID(wf.getID(), t);

@@ -77,7 +77,7 @@ public class JSONWorkflowSlotsServlet extends AbstractJSONServlet {
             }
 
             ObjectNode node = mapper.createObjectNode();
-            node.put(INFO_PARAM, mapper.valueToTree(wf.getWorkflowInfo()));
+            node.put(INFO_PARAM, (JsonNode) mapper.valueToTree(wf.getWorkflowInfo()));
             node.putArray(SLOTS_PARAM).addAll(objectNodes);
             writer.writeValue(res.getOutputStream(), node);
         } catch (Exception e) {

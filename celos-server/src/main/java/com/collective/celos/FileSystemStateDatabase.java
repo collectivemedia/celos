@@ -1,12 +1,17 @@
 package com.collective.celos;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.log4j.Logger;
 
-import java.io.File;
-import java.io.IOException;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
  * Brutally simple persistent implementation of StateDatabase
@@ -28,41 +33,51 @@ import java.io.IOException;
  *     2013-12-02/
  *       16:00:00.000Z
  *       17:00:00.000Z
+ * rerun/
+ *   workflow-1/
+ *     2013-12-02/
+ *       16:00:00.000Z
+ *     ...
+ *   workflow-2/
+ *     2013-12-02/
+ *       17:00:00.000Z
  *     ...
  *   ...
  *   
- * A JSON file looks like this:
- * 
- * {"status":"WAITING"}
- * 
- * or
+ * A JSON state file looks like this:
  * 
  * {"status":"RUNNING","externalID":"23873218-13202130978213-W"}
+ * 
+ * A JSON rerun file looks like this:
+ * 
+ * {"rerunTime":"2015-09-06T20:21Z"}
  */
 public class FileSystemStateDatabase implements StateDatabase {
 
     private static final String CHARSET = "UTF-8";
     private static final String STATE_DIR_NAME = "state";
+    private static final String RERUN_DIR_NAME = "rerun";
+    private static final Logger LOGGER = Logger.getLogger(FileSystemStateDatabase.class);
 
     private final ObjectMapper mapper = new ObjectMapper();
     private final ScheduledTimeFormatter formatter = new ScheduledTimeFormatter();
-    private final File toplevelDir;
     private final File stateDir;
+    private final File rerunDir;
     
     /**
      * Creates a new DB that stores data in the given directory, which must exist.
      */
     public FileSystemStateDatabase(File dir) throws IOException {
-        this.toplevelDir = Util.requireNonNull(dir);
-        if (!toplevelDir.exists()) {
-            throw new IOException("Database directory " + toplevelDir + " doesn't exist.");
+        if (!Util.requireNonNull(dir).exists()) {
+            throw new IOException("Database directory " + dir + " doesn't exist.");
         }
         stateDir = new File(dir, STATE_DIR_NAME);
+        rerunDir = new File(dir, RERUN_DIR_NAME);
     }
 
     @Override
     public SlotState getSlotState(SlotID id) throws Exception {
-        File file = getSlotFile(id);
+        File file = getSlotStateFile(id);
         if (!file.exists()) {
             return null;
         } else {
@@ -73,30 +88,66 @@ public class FileSystemStateDatabase implements StateDatabase {
 
     @Override
     public void putSlotState(SlotState state) throws Exception {
-        String json = mapper.writeValueAsString(state.toJSONNode());
-        File file = getSlotFile(state.getSlotID());
-        FileUtils.forceMkdir(file.getParentFile());
-        FileUtils.write(file, json, CHARSET);
+        File file = getSlotStateFile(state.getSlotID());
+        writeJson(state.toJSONNode(), file);
+    }
+    
+    /** Returns the directory containing state for the slot's workflow. */
+    private File getWorkflowStateDir(WorkflowID id) {
+        return new File(stateDir, id.toString());
+    }
+    
+    /** Returns the directory containing rerun info for the slot's workflow. */
+    private File getWorkflowRerunDir(WorkflowID id) {
+        return new File(rerunDir, id.toString());
     }
 
-    private File getSlotFile(SlotID slotID) {
-        return new File(getDayDir(slotID), getSlotFileName(slotID));
+    private File getSlotStateFile(SlotID slotID) {
+        return new File(getDayDir(getWorkflowStateDir(slotID.getWorkflowID()), slotID), getFileName(slotID));
+    }
+    
+    private File getSlotRerunFile(SlotID slotID) {
+        return new File(getDayDir(getWorkflowRerunDir(slotID.getWorkflowID()), slotID), getFileName(slotID));
     }
 
     /** Returns the directory containing a day's data inside the workflow dir. */
-    private File getDayDir(SlotID slotID) {
-        File workflowDir = getWorkflowDir(slotID);
-        File dayDir = new File(workflowDir, formatter.formatDatestamp(slotID.getScheduledTime()));
-        return dayDir;
+    private File getDayDir(File superDir, SlotID slotID) {
+        return new File(superDir, formatter.formatDatestamp(slotID.getScheduledTime()));
     }
 
-    /** Returns the directory containing all data for the slot's workflow. */
-    private File getWorkflowDir(SlotID slotID) {
-        return new File(stateDir, slotID.getWorkflowID().toString());
-    }
-    
-    private String getSlotFileName(SlotID slotID) {
+    private String getFileName(SlotID slotID) {
         return formatter.formatTimestamp(slotID.getScheduledTime());
+    }
+
+    @Override
+    public void markSlotForRerun(SlotID slotID, ScheduledTime now) throws Exception {
+        RerunState st = new RerunState(now);
+        File file = getSlotRerunFile(slotID);
+        writeJson(st, file);
+    }
+
+    @Override
+    public SortedSet<ScheduledTime> getTimesMarkedForRerun(WorkflowID workflowID, ScheduledTime now) throws Exception {
+        SortedSet<ScheduledTime> res = new TreeSet<>();
+        File wfDir = getWorkflowRerunDir(workflowID);
+        for (File dayDir : wfDir.listFiles()) {
+            for (File rerunFile : dayDir.listFiles()) {
+                RerunState st = mapper.readValue(new FileInputStream(rerunFile), RerunState.class);
+                ScheduledTime t = new ScheduledTime(dayDir.getName() + "T" + rerunFile.getName());
+                res.add(t);
+                if (st.isExpired(now)) {
+                    LOGGER.info("Expiring rerun file: " + rerunFile);
+                    rerunFile.delete();
+                }
+            }
+        }
+        return res;
+    }
+
+    private void writeJson(Object obj, File file) throws JsonProcessingException, IOException {
+        String json = mapper.writeValueAsString(obj);
+        FileUtils.forceMkdir(file.getParentFile());
+        FileUtils.write(file, json, CHARSET);
     }
 
 }
