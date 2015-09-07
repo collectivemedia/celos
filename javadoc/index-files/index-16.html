@@ -78,7 +78,7 @@
 </dd>
 <dt><a href="../com/collective/celos/ScheduledTime.html" title="class in com.collective.celos"><span class="typeNameLink">ScheduledTime</span></a> - Class in <a href="../com/collective/celos/package-summary.html">com.collective.celos</a></dt>
 <dd>
-<div class="block">Scheduled time of a workflow run in UTC.</div>
+<div class="block">Time of a workflow run in UTC.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="../com/collective/celos/ScheduledTime.html#ScheduledTime-java.lang.String-">ScheduledTime(String)</a></span> - Constructor for class com.collective.celos.<a href="../com/collective/celos/ScheduledTime.html" title="class in com.collective.celos">ScheduledTime</a></dt>
 <dd>&nbsp;</dd>
@@ -87,11 +87,15 @@
 <dt><span class="memberNameLink"><a href="../com/collective/celos/SlotID.html#scheduledTime">scheduledTime</a></span> - Variable in class com.collective.celos.<a href="../com/collective/celos/SlotID.html" title="class in com.collective.celos">SlotID</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="../com/collective/celos/ScheduledTimeFormatter.html" title="class in com.collective.celos"><span class="typeNameLink">ScheduledTimeFormatter</span></a> - Class in <a href="../com/collective/celos/package-summary.html">com.collective.celos</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Formatting utilities for times.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="../com/collective/celos/ScheduledTimeFormatter.html#ScheduledTimeFormatter--">ScheduledTimeFormatter()</a></span> - Constructor for class com.collective.celos.<a href="../com/collective/celos/ScheduledTimeFormatter.html" title="class in com.collective.celos">ScheduledTimeFormatter</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="../com/collective/celos/Scheduler.html" title="class in com.collective.celos"><span class="typeNameLink">Scheduler</span></a> - Class in <a href="../com/collective/celos/package-summary.html">com.collective.celos</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Master control program.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="../com/collective/celos/Scheduler.html#Scheduler-com.collective.celos.WorkflowConfiguration-com.collective.celos.StateDatabase-int-">Scheduler(WorkflowConfiguration, StateDatabase, int)</a></span> - Constructor for class com.collective.celos.<a href="../com/collective/celos/Scheduler.html" title="class in com.collective.celos">Scheduler</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="../com/collective/celos/SchedulerConfiguration.html" title="class in com.collective.celos"><span class="typeNameLink">SchedulerConfiguration</span></a> - Class in <a href="../com/collective/celos/package-summary.html">com.collective.celos</a></dt>
@@ -117,17 +121,21 @@
 <dt><span class="memberNameLink"><a href="../com/collective/celos/OozieExternalService.html#SECOND_PROP">SECOND_PROP</a></span> - Static variable in class com.collective.celos.<a href="../com/collective/celos/OozieExternalService.html" title="class in com.collective.celos">OozieExternalService</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="../com/collective/celos/SerialSchedulingStrategy.html" title="class in com.collective.celos"><span class="typeNameLink">SerialSchedulingStrategy</span></a> - Class in <a href="../com/collective/celos/package-summary.html">com.collective.celos</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Submits workflow slots oldest first with a configurable concurrency level.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="../com/collective/celos/SerialSchedulingStrategy.html#SerialSchedulingStrategy-int-">SerialSchedulingStrategy(int)</a></span> - Constructor for class com.collective.celos.<a href="../com/collective/celos/SerialSchedulingStrategy.html" title="class in com.collective.celos">SerialSchedulingStrategy</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="../com/collective/celos/server/ServerCommandLine.html" title="class in com.collective.celos.server"><span class="typeNameLink">ServerCommandLine</span></a> - Class in <a href="../com/collective/celos/server/package-summary.html">com.collective.celos.server</a></dt>
 <dd>
-<div class="block">Created by akonopko on 9/30/14.</div>
+<div class="block">Command-line options for the scheduler server.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="../com/collective/celos/server/ServerCommandLine.html#ServerCommandLine-java.lang.String-java.lang.String-java.lang.String-java.lang.String-int-int-">ServerCommandLine(String, String, String, String, int, int)</a></span> - Constructor for class com.collective.celos.server.<a href="../com/collective/celos/server/ServerCommandLine.html" title="class in com.collective.celos.server">ServerCommandLine</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="../com/collective/celos/server/ServerCommandLineParser.html" title="class in com.collective.celos.server"><span class="typeNameLink">ServerCommandLineParser</span></a> - Class in <a href="../com/collective/celos/server/package-summary.html">com.collective.celos.server</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Parses the server command-line options.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="../com/collective/celos/server/ServerCommandLineParser.html#ServerCommandLineParser--">ServerCommandLineParser()</a></span> - Constructor for class com.collective.celos.server.<a href="../com/collective/celos/server/ServerCommandLineParser.html" title="class in com.collective.celos.server">ServerCommandLineParser</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="../com/collective/celos/servlet/AbstractServlet.html#service-HttpServletRequest-HttpServletResponse-">service(HttpServletRequest, HttpServletResponse)</a></span> - Method in class com.collective.celos.servlet.<a href="../com/collective/celos/servlet/AbstractServlet.html" title="class in com.collective.celos.servlet">AbstractServlet</a></dt>
@@ -140,7 +148,7 @@
 <dd>&nbsp;</dd>
 <dt><a href="../com/collective/celos/SlotID.html" title="class in com.collective.celos"><span class="typeNameLink">SlotID</span></a> - Class in <a href="../com/collective/celos/package-summary.html">com.collective.celos</a></dt>
 <dd>
-<div class="block">A slot is uniquely identified by its workflow ID and the scheduled time.</div>
+<div class="block">A single execution of a workflow at a given time.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="../com/collective/celos/SlotID.html#SlotID-com.collective.celos.WorkflowID-com.collective.celos.ScheduledTime-">SlotID(WorkflowID, ScheduledTime)</a></span> - Constructor for class com.collective.celos.<a href="../com/collective/celos/SlotID.html" title="class in com.collective.celos">SlotID</a></dt>
 <dd>&nbsp;</dd>
@@ -161,7 +169,9 @@
 <dt><a href="../com/collective/celos/SlotState.StatusType.html" title="enum in com.collective.celos"><span class="typeNameLink">SlotState.StatusType</span></a> - Enum in <a href="../com/collective/celos/package-summary.html">com.collective.celos</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="../com/collective/celos/SlotStateStatusPredicate.html" title="class in com.collective.celos"><span class="typeNameLink">SlotStateStatusPredicate</span></a> - Class in <a href="../com/collective/celos/package-summary.html">com.collective.celos</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Ivor who's a Scala wonk did this.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="../com/collective/celos/SlotStateStatusPredicate.html#SlotStateStatusPredicate-com.collective.celos.SlotState.Status...-">SlotStateStatusPredicate(SlotState.Status...)</a></span> - Constructor for class com.collective.celos.<a href="../com/collective/celos/SlotStateStatusPredicate.html" title="class in com.collective.celos">SlotStateStatusPredicate</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="../com/collective/celos/ci/CelosCi.html#start--">start()</a></span> - Method in class com.collective.celos.ci.<a href="../com/collective/celos/ci/CelosCi.html" title="class in com.collective.celos.ci">CelosCi</a></dt>
@@ -195,7 +205,9 @@
 <dt><span class="memberNameLink"><a href="../com/collective/celos/Constants.html#STATE_DATABASE_PATH_ATTR">STATE_DATABASE_PATH_ATTR</a></span> - Static variable in class com.collective.celos.<a href="../com/collective/celos/Constants.html" title="class in com.collective.celos">Constants</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="../com/collective/celos/StateDatabase.html" title="interface in com.collective.celos"><span class="typeNameLink">StateDatabase</span></a> - Interface in <a href="../com/collective/celos/package-summary.html">com.collective.celos</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Stores all state needed by the scheduler.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="../com/collective/celos/SlotState.html#status">status</a></span> - Variable in class com.collective.celos.<a href="../com/collective/celos/SlotState.html" title="class in com.collective.celos">SlotState</a></dt>
 <dd>
 <div class="block">Never null.</div>
@@ -231,9 +243,13 @@
 <dt><span class="memberNameLink"><a href="../com/collective/celos/ci/testing/fixtures/compare/FixObjectCompareResult.html#SUCCESS">SUCCESS</a></span> - Static variable in class com.collective.celos.ci.testing.fixtures.compare.<a href="../com/collective/celos/ci/testing/fixtures/compare/FixObjectCompareResult.html" title="class in com.collective.celos.ci.testing.fixtures.compare">FixObjectCompareResult</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="../com/collective/celos/trigger/SuccessTrigger.html" title="class in com.collective.celos.trigger"><span class="typeNameLink">SuccessTrigger</span></a> - Class in <a href="../com/collective/celos/trigger/package-summary.html">com.collective.celos.trigger</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Trigger that checks another workflow's slot (at the same scheduled time) for success.</div>
+</dd>
 <dt><a href="../com/collective/celos/trigger/SuccessTrigger.html" title="class in com.collective.celos.trigger"><span class="typeNameLink">SuccessTrigger</span></a> - Class in <a href="../com/collective/celos/trigger/package-summary.html">com.collective.celos.trigger</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Trigger that checks another workflow's slot (at the same scheduled time) for success.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="../com/collective/celos/trigger/SuccessTrigger.html#SuccessTrigger-java.lang.String-">SuccessTrigger(String)</a></span> - Constructor for class com.collective.celos.trigger.<a href="../com/collective/celos/trigger/SuccessTrigger.html" title="class in com.collective.celos.trigger">SuccessTrigger</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="../com/collective/celos/trigger/SuccessTrigger.html#SuccessTrigger-java.lang.String-">SuccessTrigger(String)</a></span> - Constructor for class com.collective.celos.trigger.<a href="../com/collective/celos/trigger/SuccessTrigger.html" title="class in com.collective.celos.trigger">SuccessTrigger</a></dt>
