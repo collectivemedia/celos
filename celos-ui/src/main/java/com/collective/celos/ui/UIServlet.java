@@ -16,11 +16,13 @@ import static j2html.TagCreator.unsafeHtml;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.Sets;
 import j2html.tags.Tag;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.*;
 
@@ -45,7 +47,7 @@ public class UIServlet extends HttpServlet {
 
     private static final String ZOOM_PARAM = "zoom";
     private static final String TIME_PARAM = "time";
-    private static final String WORKFLOW_TO_SLOT_MAP_TAG = "groups";
+    private static final String GROUPS_TAG = "groups";
     private static final String WORKFLOWS_TAG = "workflows";
     private static final String NAME_TAG = "name";
     private static final String UNLISTED_WORKFLOWS_CAPTION = "Unlisted workflows";
@@ -74,8 +76,7 @@ public class UIServlet extends HttpServlet {
             List<WorkflowGroup> groups;
 
             if (configFile != null) {
-                JsonNode mainNode = objectMapper.readValue(new FileInputStream(configFile), JsonNode.class);
-                groups = getWorkflowGroups(mainNode, workflowIDs);
+                groups = getWorkflowGroups(new FileInputStream(configFile), workflowIDs);
             } else {
                 groups = getDefaultGroups(workflowIDs);
             }
@@ -357,11 +358,12 @@ public class UIServlet extends HttpServlet {
         return times;
     }
 
-    private List<WorkflowGroup> getWorkflowGroups(JsonNode mainNode, Set<WorkflowID> workflowIDs) throws com.fasterxml.jackson.core.JsonProcessingException {
+    List<WorkflowGroup> getWorkflowGroups(InputStream configFileIS, Set<WorkflowID> expectedWfs) throws IOException {
+        JsonNode mainNode = objectMapper.readValue(configFileIS, JsonNode.class);
         List<WorkflowGroup> configWorkflowGroups = new ArrayList();
         Set<WorkflowID> listedWfs = new TreeSet<>();
 
-        for(JsonNode workflowGroupNode: mainNode.get(WORKFLOW_TO_SLOT_MAP_TAG)) {
+        for(JsonNode workflowGroupNode: mainNode.get(GROUPS_TAG)) {
             String[] workflowNames = objectMapper.treeToValue(workflowGroupNode.get(WORKFLOWS_TAG), String[].class);
 
             List<WorkflowID> ids = new ArrayList<>();
@@ -374,9 +376,10 @@ public class UIServlet extends HttpServlet {
             listedWfs.addAll(ids);
         }
 
-        listedWfs.removeAll(workflowIDs);
-        configWorkflowGroups.add(new WorkflowGroup(UNLISTED_WORKFLOWS_CAPTION, new ArrayList<>(listedWfs)));
-
+        Sets.SetView<WorkflowID> diff = Sets.difference(expectedWfs, listedWfs);
+        if (!diff.isEmpty()) {
+            configWorkflowGroups.add(new WorkflowGroup(UNLISTED_WORKFLOWS_CAPTION, new ArrayList<>(diff)));
+        }
         return configWorkflowGroups;
     }
 

@@ -1,13 +1,12 @@
 package com.collective.celos.ui;
 
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.net.URL;
-import java.util.List;
-import java.util.Map;
-import java.util.NavigableSet;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.*;
 
+import com.google.common.collect.*;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -23,9 +22,7 @@ import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.HTMLParser;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.gargoylesoftware.htmlunit.html.HtmlTableDataCell;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
+import sun.security.ssl.HandshakeInStream;
 
 public class UIServletTest {
 
@@ -141,5 +138,98 @@ public class UIServletTest {
         
         System.out.println(response.getContentAsString());
     }
-    
+
+    @Test
+    public void testUIConfig() throws IOException {
+        UIServlet uiServlet = new UIServlet();
+
+        String input = "{\n" +
+                "  \"groups\": [\n" +
+                "    {\n" +
+                "      \"name\": \"Group1\",\n" +
+                "      \"workflows\": [\n" +
+                "        \"Group1-1\",\n" +
+                "        \"Group1-2\",\n" +
+                "        \"Group1-3\"\n" +
+                "      ]\n" +
+                "    },\n" +
+                "    {\n" +
+                "      \"name\": \"Group2\",\n" +
+                "      \"workflows\": [\n" +
+                "        \"Group2-1\"\n" +
+                "      ]\n" +
+                "    },\n" +
+                "    {\n" +
+                "      \"name\": \"Group3\",\n" +
+                "      \"workflows\": [\n" +
+                "      ]\n" +
+                "    }\n" +
+                "  ]\n" +
+                "}\n";
+
+        List<WorkflowGroup> groups = uiServlet.getWorkflowGroups(new ByteArrayInputStream(input.getBytes()), new HashSet<>());
+
+        Assert.assertEquals(groups.size(), 3);
+
+        WorkflowGroup group1 = groups.get(0);
+        List<WorkflowID> exp1 = new ArrayList<>();
+        exp1.add(new WorkflowID("Group1-1"));
+        exp1.add(new WorkflowID("Group1-2"));
+        exp1.add(new WorkflowID("Group1-3"));
+        Assert.assertEquals(group1.getWorkflows(), exp1);
+        Assert.assertEquals(group1.getName(), "Group1");
+
+        WorkflowGroup group2 = groups.get(1);
+        List<WorkflowID> exp2 = new ArrayList<>();
+        exp2.add(new WorkflowID("Group2-1"));
+        Assert.assertEquals(group2.getWorkflows(), exp2);
+        Assert.assertEquals(group2.getName(), "Group2");
+
+        WorkflowGroup group3 = groups.get(2);
+        List<WorkflowID> exp3 = new ArrayList<>();
+        Assert.assertEquals(group3.getWorkflows(), exp3);
+        Assert.assertEquals(group3.getName(), "Group3");
+    }
+
+    @Test
+    public void testUIConfigMissingWorkflows() throws IOException {
+        UIServlet uiServlet = new UIServlet();
+
+        String input = "{\n" +
+                "  \"groups\": [\n" +
+                "    {\n" +
+                "      \"name\": \"Group3\",\n" +
+                "      \"workflows\": [\n" +
+                "        \"Group3-1\",\n" +
+                "        \"Group3-2\"\n" +
+                "      ]\n" +
+                "    }\n" +
+                "  ]\n" +
+                "}\n";
+
+        Set<WorkflowID> missingWfs = new HashSet<>();
+        HashSet<WorkflowID> expectedWorkflows = new HashSet<>();
+        expectedWorkflows.add(new WorkflowID("Group3-2"));
+        missingWfs.add(new WorkflowID("MissingWf1"));
+        missingWfs.add(new WorkflowID("MissingWf2"));
+
+        expectedWorkflows.addAll(missingWfs);
+        List<WorkflowGroup> groups = uiServlet.getWorkflowGroups(new ByteArrayInputStream(input.getBytes()), expectedWorkflows);
+
+        Assert.assertEquals(groups.size(), 2);
+
+        WorkflowGroup group1 = groups.get(0);
+        List<WorkflowID> exp1 = new ArrayList<>();
+        exp1.add(new WorkflowID("Group3-1"));
+        exp1.add(new WorkflowID("Group3-2"));
+        Assert.assertEquals(group1.getWorkflows(), exp1);
+        Assert.assertEquals(group1.getName(), "Group3");
+
+        WorkflowGroup missingGroup = groups.get(1);
+        exp1.add(new WorkflowID("Group3-1"));
+        Assert.assertEquals(new HashSet<>(missingGroup.getWorkflows()), missingWfs);
+        Assert.assertEquals(missingGroup.getName(), "Unlisted workflows");
+
+    }
+
 }
