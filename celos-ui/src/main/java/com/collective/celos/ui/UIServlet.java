@@ -13,19 +13,18 @@ import static j2html.TagCreator.td;
 import static j2html.TagCreator.title;
 import static j2html.TagCreator.tr;
 import static j2html.TagCreator.unsafeHtml;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.Sets;
 import j2html.tags.Tag;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
-import java.net.URI;
+import java.io.InputStream;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.NavigableSet;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -51,12 +50,21 @@ public class UIServlet extends HttpServlet {
 
     private static final String ZOOM_PARAM = "zoom";
     private static final String TIME_PARAM = "time";
+    private static final String GROUPS_TAG = "groups";
+    private static final String WORKFLOWS_TAG = "workflows";
+    private static final String NAME_TAG = "name";
+    private static final String UNLISTED_WORKFLOWS_CAPTION = "Unlisted workflows";
+    private static final String DEFAULT_CAPTION = "All Workflows";
+
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         try {
             URL celosURL = (URL) Util.requireNonNull(getServletContext().getAttribute(Main.CELOS_URL_ATTR));
             URL hueURL = (URL) getServletContext().getAttribute(Main.HUE_URL_ATTR);
+            File configFile = (File) getServletContext().getAttribute(Main.CONFIG_FILE_ATTR);
+
             CelosClient client = new CelosClient(celosURL.toURI());
             res.setContentType("text/html;charset=utf-8");
             res.setStatus(HttpServletResponse.SC_OK);
@@ -65,8 +73,17 @@ public class UIServlet extends HttpServlet {
             NavigableSet<ScheduledTime> tileTimes = getTileTimesSet(getFirstTileTime(end, zoomLevelMinutes), zoomLevelMinutes, MAX_MINUTES_TO_FETCH, MAX_TILES_TO_DISPLAY);
             ScheduledTime start = tileTimes.first();
             Set<WorkflowID> workflowIDs = client.getWorkflowList();
-            List<WorkflowGroup> groups = getGroups(workflowIDs);
+
             Map<WorkflowID, WorkflowStatus> statuses = fetchStatuses(client, workflowIDs, start, end);
+
+            List<WorkflowGroup> groups;
+
+            if (configFile != null) {
+                groups = getWorkflowGroups(new FileInputStream(configFile), workflowIDs);
+            } else {
+                groups = getDefaultGroups(workflowIDs);
+            }
+
             UIConfiguration conf = new UIConfiguration(start, end, tileTimes, groups, statuses, hueURL);
             res.getWriter().append(render(conf));
         } catch (Exception e) {
@@ -343,10 +360,34 @@ public class UIServlet extends HttpServlet {
         }
         return times;
     }
-    
-    private List<WorkflowGroup> getGroups(Set<WorkflowID> workflows) {
-        // For now, stuff all workflows into a single group
-        return ImmutableList.of(new WorkflowGroup("All Workflows", new LinkedList<WorkflowID>(new TreeSet<WorkflowID>(workflows))));
+
+    List<WorkflowGroup> getWorkflowGroups(InputStream configFileIS, Set<WorkflowID> expectedWfs) throws IOException {
+        JsonNode mainNode = objectMapper.readValue(configFileIS, JsonNode.class);
+        List<WorkflowGroup> configWorkflowGroups = new ArrayList();
+        Set<WorkflowID> listedWfs = new TreeSet<>();
+
+        for(JsonNode workflowGroupNode: mainNode.get(GROUPS_TAG)) {
+            String[] workflowNames = objectMapper.treeToValue(workflowGroupNode.get(WORKFLOWS_TAG), String[].class);
+
+            List<WorkflowID> ids = new ArrayList<>();
+            for (String wfName : workflowNames) {
+                ids.add(new WorkflowID(wfName));
+            }
+
+            String name = workflowGroupNode.get(NAME_TAG).textValue();
+            configWorkflowGroups.add(new WorkflowGroup(name, ids));
+            listedWfs.addAll(ids);
+        }
+
+        Sets.SetView<WorkflowID> diff = Sets.difference(expectedWfs, listedWfs);
+        if (!diff.isEmpty()) {
+            configWorkflowGroups.add(new WorkflowGroup(UNLISTED_WORKFLOWS_CAPTION, new ArrayList<>(diff)));
+        }
+        return configWorkflowGroups;
     }
-    
+
+    private List<WorkflowGroup> getDefaultGroups(Set<WorkflowID> workflows) {
+        return ImmutableList.of(new WorkflowGroup(DEFAULT_CAPTION, new LinkedList<WorkflowID>(new TreeSet<WorkflowID>(workflows))));
+    }
+
 }
