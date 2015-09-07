@@ -5,10 +5,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
-
-import com.collective.celos.trigger.Trigger;
+import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
+
+import com.collective.celos.trigger.Trigger;
 
 public class Scheduler {
 
@@ -89,9 +90,10 @@ public class Scheduler {
      * as well as the slots states of all slots marked for rerun in the database.
      */
     public List<SlotState> getSlotStatesIncludingMarkedForRerun(Workflow wf, ScheduledTime current, ScheduledTime start, ScheduledTime end) throws Exception {
-        SortedSet<ScheduledTime> scheduledTimes = wf.getSchedule().getScheduledTimes(this, start, end);
-        scheduledTimes.addAll(database.getTimesMarkedForRerun(wf.getID(), current));
-        return fetchSlotStates(wf, scheduledTimes);
+        SortedSet<ScheduledTime> times = new TreeSet<>();
+        times.addAll(wf.getSchedule().getScheduledTimes(this, start, end));
+        times.addAll(database.getTimesMarkedForRerun(wf.getID(), current));
+        return fetchSlotStates(wf, times);
     }
 
     /**
@@ -99,8 +101,9 @@ public class Scheduler {
      * This is used for servlets that return the slot states within the window, and don't care about rerun slots.
      */
     public List<SlotState> getSlotStates(Workflow wf, ScheduledTime start, ScheduledTime end) throws Exception {
-        SortedSet<ScheduledTime> scheduledTimes = wf.getSchedule().getScheduledTimes(this, start, end);
-        return fetchSlotStates(wf, scheduledTimes);
+        SortedSet<ScheduledTime> times = new TreeSet<>();
+        times.addAll(wf.getSchedule().getScheduledTimes(this, start, end));
+        return fetchSlotStates(wf, times);
     }
 
     private List<SlotState> fetchSlotStates(Workflow wf, SortedSet<ScheduledTime> scheduledTimes) throws Exception {

@@ -43,17 +43,17 @@ public class RerunServlet extends AbstractServlet {
                 res.sendError(HttpServletResponse.SC_NOT_FOUND, "Slot not found: " + slotID);
                 return;
             }
-            updateSlotToRerun(slotID, state, db);
+            updateSlotToRerun(state, db);
         } catch(Exception e) {
             throw new ServletException(e);
         }
     }
 
-    void updateSlotToRerun(SlotID slotID, SlotState state, StateDatabase db) throws Exception {
-        LOGGER.info("Scheduling Slot for rerun: " + slotID);
+    void updateSlotToRerun(SlotState state, StateDatabase db) throws Exception {
+        LOGGER.info("Scheduling Slot for rerun: " + state.getSlotID());
         SlotState newState = state.transitionToRerun();
         db.putSlotState(newState);
-        db.markSlotForRerun(slotID, ScheduledTime.now());
+        db.markSlotForRerun(state.getSlotID(), ScheduledTime.now());
     }
 
 }
