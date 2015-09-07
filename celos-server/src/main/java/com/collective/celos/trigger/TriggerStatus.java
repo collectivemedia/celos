@@ -4,6 +4,9 @@ import com.collective.celos.Util;
 
 import java.util.List;
 
+/**
+ * Human-readable information about the status of a trigger.
+ */
 public final class TriggerStatus {
 
     private final String type;

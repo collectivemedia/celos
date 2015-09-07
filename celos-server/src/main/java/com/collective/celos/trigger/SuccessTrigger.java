@@ -1,10 +1,16 @@
 package com.collective.celos.trigger;
 
 
-import com.collective.celos.*;
+import com.collective.celos.ScheduledTime;
+import com.collective.celos.Scheduler;
+import com.collective.celos.SlotID;
+import com.collective.celos.SlotState;
+import com.collective.celos.StateDatabase;
+import com.collective.celos.WorkflowID;
 
-import java.util.Collections;
-
+/**
+ * Trigger that checks another workflow's slot (at the same scheduled time) for success.
+ */
 public class SuccessTrigger extends Trigger {
 
     private WorkflowID triggerWorkflowID;

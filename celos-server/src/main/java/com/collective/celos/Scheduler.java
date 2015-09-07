@@ -11,6 +11,9 @@ import org.apache.log4j.Logger;
 
 import com.collective.celos.trigger.Trigger;
 
+/**
+ * Master control program.
+ */
 public class Scheduler {
 
     private final int slidingWindowHours;

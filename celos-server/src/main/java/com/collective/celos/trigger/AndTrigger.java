@@ -7,6 +7,9 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * Trigger that takes N nested triggers and does a logical AND.
+ */
 public class AndTrigger extends Trigger {
 
     private final List<Trigger> triggers = new LinkedList<>();

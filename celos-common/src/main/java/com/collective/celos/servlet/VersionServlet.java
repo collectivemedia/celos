@@ -5,6 +5,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+/**
+ * This servlet is used in production to verify that the running instance 
+ * was started from the latest Git commit.
+ */
 @SuppressWarnings("serial")
 public class VersionServlet extends HttpServlet {
 

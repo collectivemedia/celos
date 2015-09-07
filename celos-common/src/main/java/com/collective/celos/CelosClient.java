@@ -20,7 +20,7 @@ import java.net.URI;
 import java.util.*;
 
 /**
- * Created by akonopko on 10.12.14.
+ * Utility class to talk to the Celos server HTTP API.
  */
 public class CelosClient {
 

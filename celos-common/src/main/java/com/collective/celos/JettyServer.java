@@ -10,6 +10,9 @@ import java.net.URL;
 import java.nio.file.Paths;
 import java.util.Map;
 
+/**
+ * Common Jetty code for Celos server and Celos UI.
+ */
 public class JettyServer {
 
     private Server server;

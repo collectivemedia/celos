@@ -12,7 +12,7 @@ import java.io.Reader;
 import java.util.Map;
 
 /**
- * Created by akonopko on 20.11.14.
+ * Massively misnamed, this is in fact a JavaScript evaluator.
  */
 public class JSConfigParser {
 

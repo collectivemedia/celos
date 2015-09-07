@@ -4,6 +4,9 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * The set of all workflows loaded into the scheduler.
+ */
 public class WorkflowConfiguration {
 
     private final Map<WorkflowID, Workflow> workflows = new HashMap<>();

@@ -2,6 +2,9 @@ package com.collective.celos;
 
 import java.util.SortedSet;
 
+/**
+ * Stores all state needed by the scheduler.
+ */
 public interface StateDatabase {
 
     /**

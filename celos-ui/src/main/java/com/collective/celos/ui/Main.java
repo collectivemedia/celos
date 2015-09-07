@@ -6,7 +6,7 @@ import java.util.Map;
 import com.collective.celos.JettyServer;
 
 /**
- * Created by akonopko on 24.07.15.
+ * Main class that launches the Celos UI.
  */
 public class Main {
     

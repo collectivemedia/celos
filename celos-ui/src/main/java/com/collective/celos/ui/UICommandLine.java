@@ -5,7 +5,7 @@ import java.io.File;
 import java.net.URL;
 
 /**
- * Created by akonopko on 9/30/14.
+ * UI command-line options.
  */
 public class UICommandLine {
 

@@ -1,20 +1,20 @@
 package com.collective.celos.trigger;
 
-import com.collective.celos.ScheduledTime;
-import com.collective.celos.ScheduledTimeFormatter;
-import com.collective.celos.Scheduler;
-import com.collective.celos.Util;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.log4j.Logger;
 
-import java.io.FileNotFoundException;
-import java.io.InputStream;
-import java.net.URI;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import com.collective.celos.ScheduledTime;
+import com.collective.celos.ScheduledTimeFormatter;
+import com.collective.celos.Scheduler;
+import com.collective.celos.Util;
 
 /**
  * Check in HDFS for a data dependency.

@@ -1,10 +1,9 @@
 package com.collective.celos.trigger;
 
-import com.collective.celos.ScheduledTime;
-import com.collective.celos.Scheduler;
 import org.joda.time.DateTime;
 
-import java.util.Collections;
+import com.collective.celos.ScheduledTime;
+import com.collective.celos.Scheduler;
 
 /**
  * A trigger that signals data availability for a given scheduled time

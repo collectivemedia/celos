@@ -12,14 +12,8 @@ import org.apache.commons.collections.Predicate;
 
 import com.google.common.collect.Lists;
 
-/*
- * This SchedulingStrategy implementation will be used for Pythia. It runs jobs
- * serially, and only ever runs a single job at a time.
- * 
- * - If there is a RUNNING slot, return an empty list (because a slot is already running).
- * - Otherwise, find slots that are READY.
- * - If any exist, return the first one, in a list.
- * - Otherwise, return an empty list.
+/**
+ * Submits workflow slots oldest first with a configurable concurrency level.
  */
 public class SerialSchedulingStrategy implements SchedulingStrategy {
 

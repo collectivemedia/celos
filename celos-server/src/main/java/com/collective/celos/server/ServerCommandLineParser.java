@@ -12,6 +12,9 @@ import org.apache.log4j.Logger;
 
 import com.collective.celos.Constants;
 
+/**
+ * Parses the server command-line options.
+ */
 public class ServerCommandLineParser {
 
     private static final String CLI_WF_DIR = "workflows";

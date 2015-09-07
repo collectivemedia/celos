@@ -1,7 +1,7 @@
 package com.collective.celos;
 
 /**
- * A slot is uniquely identified by its workflow ID and the scheduled time.
+ * A single execution of a workflow at a given time.
  */
 public class SlotID extends ValueObject {
     

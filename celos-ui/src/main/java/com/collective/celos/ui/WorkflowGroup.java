@@ -6,6 +6,9 @@ import java.util.List;
 import com.collective.celos.Util;
 import com.collective.celos.WorkflowID;
 
+/**
+ * A named group of workflows, for rendering the workflows list.
+ */
 public class WorkflowGroup {
     
     private final String name;

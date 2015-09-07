@@ -1,7 +1,7 @@
 package com.collective.celos;
 
 /**
- * Created by akonopko on 24.07.15.
+ * Miscellaneous constants.
  */
 public class Constants {
     

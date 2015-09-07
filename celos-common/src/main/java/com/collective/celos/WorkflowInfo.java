@@ -4,6 +4,9 @@ import java.net.URI;
 import java.net.URL;
 import java.util.List;
 
+/**
+ * Metadata such as URL and authors of a workflow.
+ */
 public class WorkflowInfo {
 
     public static class ContactsInfo {

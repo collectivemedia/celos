@@ -6,6 +6,9 @@ import static org.apache.oozie.client.WorkflowJob.Status.SUCCEEDED;
 
 import org.apache.oozie.client.WorkflowJob.Status;
 
+/**
+ * Status of Oozie execution of a workflow.
+ */
 public class OozieExternalStatus implements ExternalStatus {
 
     private Status status;

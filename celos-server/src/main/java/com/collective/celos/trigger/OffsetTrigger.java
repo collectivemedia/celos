@@ -7,9 +7,8 @@ import com.collective.celos.Util;
 import java.util.Collections;
 
 /**
- * var oneDay = 60 * 60 * 24;
- * andTrigger(offsetTrigger(oneDay, hdfsCheckTrigger("/${year}/${month}/${day}/..."))
-*/
+ * Trigger that offsets a nested trigger into the past or future.
+ */
 public class OffsetTrigger extends Trigger {
 
     private final int seconds;

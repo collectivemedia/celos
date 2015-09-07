@@ -10,6 +10,9 @@ import com.collective.celos.SlotState;
 import com.collective.celos.WorkflowID;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+/**
+ * Returns JSON information about a single slot.
+ */
 @SuppressWarnings("serial")
 public class JSONSlotStateServlet extends AbstractJSONServlet {
     

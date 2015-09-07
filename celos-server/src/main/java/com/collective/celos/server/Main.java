@@ -9,6 +9,9 @@ import java.util.Collections;
 import java.util.Timer;
 import java.util.TimerTask;
 
+/**
+ * Main entry point to the scheduler server.
+ */
 public class Main {
 
     public static void main(String... args) throws Exception {

@@ -12,6 +12,9 @@ import com.collective.celos.CelosClient;
 import com.collective.celos.SlotID;
 import com.collective.celos.Util;
 
+/**
+ * Called from the browser to rerun a slot.
+ */
 public class UIRerunServlet extends HttpServlet {
     
     private static final String SLOT_ID = "id";
