@@ -205,7 +205,7 @@
   - name: Undeploy file-copy workflow
     local_action: command {{ root }}/samples/file-copy-celos-provided/scripts/ci-undeploy {{ root }}
 
-    register: result
+  - register: result
     shell: hadoop fs -cat /user/{{ ansible_ssh_user }}/celos-int-test/file-copy/workflow.xml
     ignore_errors: True
   - name: Check workflow was successfully undeployed
