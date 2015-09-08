@@ -1,13 +1,13 @@
 importDefaults("collective");
 
-addWorkflow({
+celos.addWorkflow({
     "id": "wordcount",
-    "schedule": hourlySchedule(),
-    "schedulingStrategy": serialSchedulingStrategy(),
-    "trigger": hdfsCheckTrigger(hdfsPath("/input/wordcount/${year}-${month}-${day}T${hour}00.txt")),
-    "externalService": oozieExternalService({
-        "oozie.wf.application.path": hdfsPath("/user/celos/app/wordcount/workflow.xml"),
-        "inputDir": hdfsPath("/input/wordcount"),
-        "outputDir": hdfsPath("/output/wordcount")
+    "schedule": celos.hourlySchedule(),
+    "schedulingStrategy": celos.serialSchedulingStrategy(),
+    "trigger": celos.hdfsCheckTrigger(celos.hdfsPath("/input/wordcount/${year}-${month}-${day}T${hour}00.txt")),
+    "externalService": celos.oozieExternalService({
+        "oozie.wf.application.path": celos.hdfsPath("/user/celos/app/wordcount/workflow.xml"),
+        "inputDir": celos.hdfsPath("/input/wordcount"),
+        "outputDir": celos.hdfsPath("/output/wordcount")
     })
 });

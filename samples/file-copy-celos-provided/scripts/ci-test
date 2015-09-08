@@ -1,0 +1,20 @@
+#!/bin/bash
+set -e
+set -x
+
+CELOS_SERVER=$1
+cd $2
+
+ROOT=$(pwd)
+
+cd $ROOT/samples/file-copy-celos-provided
+# Run integration tests against currently checkout local source on test cluster.
+rm -fr celos_deploy
+mkdir -p celos_deploy/hdfs
+
+cp src/main/celos/* celos_deploy
+cp src/main/oozie/* celos_deploy/hdfs
+
+java -jar ../../celos-ci/build/libs/celos-ci-fat.jar --testDir src/test/celos-ci --deployDir celos_deploy --workflowName file-copy --mode test --target file://$ROOT/scripts/conf/target_int_test.json --celos $CELOS_SERVER
+
+echo You win! All tests OK.

@@ -3,4 +3,12 @@ target/
 provisioner/tmp/
 **/build/*
 **/bin/*
-.gradle
+.gradle/
+.idea/
+*.iml
+javadoc-tmp/
+/bin/
+*~
+**/.classpath
+**/.project
+**/.settings

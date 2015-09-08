@@ -1,0 +1,142 @@
+= Celos Quickstart Example
+
+This small example shows how to set up a simple Celos installation and
+run a MapReduce wordcount workflow.  It is intended to show you the
+ropes of working with Celos, and not as an example of creating a
+production-ready Celos installation or workflow. For that, please
+check out the rest of the Celos documentation.
+
+In particular, in this sample we manually copy the files to Celos
+configuration directories and to HDFS, whereas in production you
+should use Celos CI to automate this.
+
+== Build Celos
+
+In the Celos repository *root directory* do the following to build the
+required JARs:
+
+....
+scripts/build.sh
+....
+
+Then switch to the *samples/quickstart* directory:
+
+....
+cd samples/quickstart
+....
+
+== Create directories required by Celos
+
+We're creating a *samples/quickstart/celos.d* directory that holds all
+the directories required by Celos to run:
+
+* A *workflows* directory containing the JavaScript workflow files.
+* A *defaults* directory containing the JavaScript defaults files.
+* A *logs* directory containing the Celos log outputs.
+* A *db* directory containing Celos' state database.
+
+....
+mkdir celos.d
+mkdir celos.d/workflows
+mkdir celos.d/defaults
+mkdir celos.d/logs
+mkdir celos.d/db
+....
+
+== Edit the defaults.js file
+
+Open *src/main/celos/defaults.js* in an editor and update the settings
+at the top for your Hadoop and Oozie installation.
+
+== Copy the JavaScript files to the proper directories
+
+....
+cp src/main/celos/workflow.js celos.d/workflows/wordcount.js
+cp src/main/celos/defaults.js celos.d/defaults/quickstart-settings.js
+....
+
+== Build the workflow JAR
+
+Compile the Java code in *src/main/java* and produce the JAR in
+*build/libs/wordcount-1.0.jar*
+
+....
+./gradlew jar
+....
+
+== Upload the workflow.xml file and JAR to HDFS
+
+....
+export USER=manuel # Change to your Hadoop username
+hadoop fs -mkdir -p /user/$USER/celos/quickstart/app/lib
+hadoop fs -put -f src/main/oozie/workflow.xml /user/$USER/celos/quickstart/app/workflow.xml
+hadoop fs -put -f build/libs/wordcount-1.0.jar /user/$USER/celos/quickstart/app/lib
+....
+
+== Upload the sample inputs to HDFS
+
+....
+hadoop fs -put src/test/resources/input /user/$USER/celos/quickstart/input
+....
+
+== Start Celos
+
+....
+export CELOS_PORT=11337 # Adapt if needed
+export CELOS=http://localhost:$CELOS_PORT
+export CLASSPATH=../../celos-server/build/libs/celos-server.jar:/etc/hadoop/conf
+java -cp $CLASSPATH com.collective.celos.server.Main --port $CELOS_PORT --workflows celos.d/workflows --defaults celos.d/defaults --logs celos.cd/logs --db celos.d/db --autoSchedule 5 > /dev/null 2>&1 &
+....
+
+== Check that Celos has loaded the wordcount workflow
+
+Do the following:
+
+....
+curl $CELOS/workflow-list
+....
+
+This should print the following:
+
+....
+{
+  "ids" : [ "wordcount" ]
+}
+....
+
+== Mark inputs for rerun
+
+By default, Celos will only look at the slots within a 7 day sliding
+window before the current time.
+
+To have Celos care about the input data do the following:
+
+....
+curl -X POST "$CELOS/rerun?id=wordcount&time=2015-09-01T00:00Z"
+curl -X POST "$CELOS/rerun?id=wordcount&time=2015-09-01T01:00Z"
+curl -X POST "$CELOS/rerun?id=wordcount&time=2015-09-01T02:00Z"
+....
+
+== Open the UI
+
+....
+export HUE=http://cldmgr001.ewr004.collective-media.net:8888/oozie # Point to your Oozie UI
+java -jar ../../celos-ui/build/libs/celos-ui.jar --port 11338 --celos $CELOS --hue $HUE
+....
+
+Now go to this URL in your browser:
+
+....
+http://localhost:11338/ui?time=2015-09-02T00:00Z
+....
+
+You should see three ready or running slots.  You can click on a
+running slot to see its Oozie information.
+
+== Look at MapReduce outputs in HDFS
+
+After a while, when all slots are green, you can look at the results in HDFS:
+
+....
+hadoop fs -cat /user/$USER/celos/quickstart/output/2015-09-01/0000/part-00000
+....

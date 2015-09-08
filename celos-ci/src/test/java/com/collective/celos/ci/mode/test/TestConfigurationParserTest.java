@@ -457,7 +457,7 @@ public class TestConfigurationParserTest {
         NativeJavaObject creatorObj = (NativeJavaObject) parser.evaluateTestConfig(new StringReader(js), "string");
         OutputFixDirFromHdfsCreator creator = (OutputFixDirFromHdfsCreator) creatorObj.unwrap();
 
-        Assert.assertEquals(creator.getPath(), new Path("foo")); // OutputFixDirFromHdfsCreator strips initial /
+        Assert.assertEquals(creator.getPath(), new Path("/foo")); // OutputFixDirFromHdfsCreator strips initial /
     }
 
     @Test(expected = JavaScriptException.class)

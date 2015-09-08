@@ -1,0 +1,19 @@
+apply plugin: 'application'
+apply plugin: 'java'
+apply plugin: 'idea'
+
+sourceCompatibility = 1.7
+version = '1.0'
+jar.baseName = 'wordcount'
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    maven { url "http://repo1.maven.org/maven2" }
+    maven { url "https://repository.cloudera.com/artifactory/cloudera-repos" }
+}
+
+dependencies {
+    compile("org.apache.hadoop:hadoop-client:2.5.0")
+}
+

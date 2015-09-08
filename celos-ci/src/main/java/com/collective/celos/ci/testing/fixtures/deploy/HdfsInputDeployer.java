@@ -1,5 +1,6 @@
 package com.collective.celos.ci.testing.fixtures.deploy;
 
+import com.collective.celos.Util;
 import com.collective.celos.ci.mode.test.TestRun;
 import com.collective.celos.ci.testing.fixtures.create.FixObjectCreator;
 import com.collective.celos.ci.testing.structure.fixobject.FixFile;
@@ -25,7 +26,7 @@ public class HdfsInputDeployer implements FixtureDeployer {
 
     public HdfsInputDeployer(FixObjectCreator<FixFsObject> fixObjectCreator, String path) {
         this.fixObjectCreator = fixObjectCreator;
-        this.path = new Path(StringUtils.removeStart(path, "/"));
+        this.path = new Path(path);
     }
 
     @Override
@@ -40,7 +41,7 @@ public class HdfsInputDeployer implements FixtureDeployer {
         CollectFilesAndPathsProcessor pathToFile = new CollectFilesAndPathsProcessor();
         TreeObjectProcessor.process(fixObjectCreator.create(testRun), pathToFile);
 
-        Path pathPrefixed = new Path(testRun.getHdfsPrefix(), path);
+        Path pathPrefixed = new Path(Util.augmentHdfsPath(testRun.getHdfsPrefix(), path.toString()));
         for (java.nio.file.Path childPath: pathToFile.pathToFiles.keySet()) {
             Path pathTo = new Path(pathPrefixed, childPath.toString());
             fileSystem.mkdirs(pathTo.getParent());

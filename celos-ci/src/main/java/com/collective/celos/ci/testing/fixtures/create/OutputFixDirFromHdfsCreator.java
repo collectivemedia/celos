@@ -1,5 +1,6 @@
 package com.collective.celos.ci.testing.fixtures.create;
 
+import com.collective.celos.Util;
 import com.collective.celos.ci.config.deploy.CelosCiContext;
 import com.collective.celos.ci.mode.test.TestRun;
 import com.collective.celos.ci.testing.structure.fixobject.FixDir;
@@ -10,6 +11,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.Path;
 
+import java.net.URISyntaxException;
 import java.util.Map;
 
 /**
@@ -20,7 +22,7 @@ public class OutputFixDirFromHdfsCreator implements FixObjectCreator<FixDir> {
     private final Path path;
 
     public OutputFixDirFromHdfsCreator(String path) {
-        this(new Path(StringUtils.removeStart(path, "/")));
+        this(new Path(path));
     }
 
     public OutputFixDirFromHdfsCreator(Path path) {
@@ -32,13 +34,13 @@ public class OutputFixDirFromHdfsCreator implements FixObjectCreator<FixDir> {
     }
 
     public FixDir create(TestRun testRun) throws Exception {
-        Path fullPath = new Path(testRun.getCiContext().getHdfsPrefix(), path);
+        Path fullPath = new Path(Util.augmentHdfsPath(testRun.getCiContext().getHdfsPrefix(), path.toString()));
         return read(fullPath, testRun.getCiContext()).asDir();
     }
 
     @Override
-    public String getDescription(TestRun testRun) {
-        return new Path(testRun.getCiContext().getHdfsPrefix(), path).toString();
+    public String getDescription(TestRun testRun) throws URISyntaxException {
+        return Util.augmentHdfsPath(testRun.getCiContext().getHdfsPrefix(), path.toString());
     }
 
     private FixFsObject read(Path path, CelosCiContext context) throws Exception {
