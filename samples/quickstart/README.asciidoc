@@ -85,7 +85,7 @@ hadoop fs -put src/test/resources/input /user/$USER/celos/quickstart/input
 export CELOS_PORT=11337 # Adapt if needed
 export CELOS=http://localhost:$CELOS_PORT
 export CLASSPATH=../../celos-server/build/libs/celos-server.jar:/etc/hadoop/conf
-java -cp $CLASSPATH com.collective.celos.server.Main --port $CELOS_PORT --workflows celos.d/workflows --defaults celos.d/defaults --logs celos.cd/logs --db celos.d/db --autoSchedule 5 > /dev/null 2>&1 &
+java -cp $CLASSPATH com.collective.celos.server.Main --port $CELOS_PORT --workflows celos.d/workflows --defaults celos.d/defaults --logs celos.d/logs --db celos.d/db --autoSchedule 5 > /dev/null 2>&1 &
 ....
 
 == Check that Celos has loaded the wordcount workflow
