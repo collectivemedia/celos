@@ -244,3 +244,5 @@ celos.isRunningInTestMode = function() {
 }
 
 var importDefaults = celos.importDefaults;
+//FIXME: left here for back compatibility with collective.js defaults, should be removed later
+celos.addWorkflow = celos.defineWorkflow ;
