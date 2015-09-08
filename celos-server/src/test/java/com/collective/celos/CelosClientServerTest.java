@@ -129,7 +129,7 @@ public class CelosClientServerTest {
         List<SlotState> slotStates = celosClient.getWorkflowStatus(new WorkflowID("workflow-2")).getSlotStates();
         Assert.assertEquals(slotStates.size(), SLOTS_IN_CELOS_SERVER_SLIDING_WINDOW);
 
-        for (int i = 0; i < slotStates.size() - 1; i ++ ) {
+        for (int i = 0; i < slotStates.size() - 1; i++) {
             SlotState slotState = slotStates.get(i);
             SlotState nextSlotState = slotStates.get(i + 1);
             Assert.assertTrue(!slotState.getScheduledTime().getDateTime().isBefore(nextSlotState.getScheduledTime().getDateTime()));
@@ -392,7 +392,7 @@ public class CelosClientServerTest {
         Assert.assertEquals(response.getStatusLine().getReasonPhrase(), "id parameter missing.");
     }
 
-    @Test (expected = IOException.class)
+    @Test(expected = IOException.class)
     public void testCantGetStatusFromDBOnly() throws Exception {
 
         File src2 = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/server/slot-db-1").toURI());
@@ -481,7 +481,7 @@ public class CelosClientServerTest {
         celosClient.getWorkflowStatus(new WorkflowID("workflow-1"), reqTimeStart, reqTimeEnd);
     }
 
-    @Test (expected = IOException.class)
+    @Test(expected = IOException.class)
     public void testNotWorksfor25Days() throws Exception {
         File src = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/client/wf-list").toURI());
         FileUtils.copyDirectory(src, workflowsDir);
@@ -617,5 +617,34 @@ public class CelosClientServerTest {
         Assert.assertEquals(slotStateUpdated.getStatus(), SlotState.Status.WAITING);
     }
 
+    @Test
+    public void testRerunSlotWorksNoError() throws Exception {
+
+        File src = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/client/wf-list").toURI());
+        FileUtils.copyDirectory(src, workflowsDir);
+
+        WorkflowID workflowID = new WorkflowID("workflow-2");
+        celosClient.rerunSlot(workflowID, new ScheduledTime("2013-11-20T12:00Z"));
+    }
+
+    @Test(expected = IOException.class)
+    public void testRerunSlotFailsNoWorkflow() throws Exception {
+
+        File src = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/client/wf-list").toURI());
+        FileUtils.copyDirectory(src, workflowsDir);
+
+        WorkflowID workflowID = new WorkflowID("unknown-workflow");
+        celosClient.rerunSlot(workflowID, ScheduledTime.now());
+    }
+
+    @Test(expected = IOException.class)
+    public void testRerunSlotFailsNoSlot() throws Exception {
+
+        File src = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/client/wf-list").toURI());
+        FileUtils.copyDirectory(src, workflowsDir);
+
+        WorkflowID workflowID = new WorkflowID("workflow-2");
+        celosClient.rerunSlot(workflowID, new ScheduledTime("2013-11-20T12:34Z"));
+    }
 
 }
