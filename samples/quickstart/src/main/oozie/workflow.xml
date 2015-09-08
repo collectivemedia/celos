@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<workflow-app name="${celosWorkflowName}" xmlns="uri:oozie:workflow:0.4">
+  <start to="main"/>
+  <action name="main">
+    <java>
+        <job-tracker>${jobTracker}</job-tracker>
+        <name-node>${nameNode}</name-node>
+        <main-class>com.example.WordCount</main-class>
+        <arg>${inputPath}</arg>
+        <arg>${outputPath}</arg>
+    </java>
+    <ok to="end"/>
+    <error to="kill"/>
+  </action>
+  <kill name="kill">
+    <message>${wf:errorCode("failed")}</message>
+  </kill>
+  <end name="end"/>
+</workflow-app>
