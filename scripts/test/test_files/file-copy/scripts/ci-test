@@ -7,7 +7,7 @@ cd $2
 
 ROOT=$(pwd)
 
-cd $ROOT/samples/file-copy-celos-provided
+cd $ROOT/scripts/test/test_files/file-copy
 # Run integration tests against currently checkout local source on test cluster.
 rm -fr celos_deploy
 mkdir -p celos_deploy/hdfs
