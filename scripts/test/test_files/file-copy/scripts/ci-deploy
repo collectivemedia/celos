@@ -14,6 +14,6 @@ mkdir -p celos_deploy/hdfs
 cp src/main/celos/* celos_deploy
 cp src/main/oozie/* celos_deploy/hdfs
 
-java -jar ../../celos-ci/build/libs/celos-ci-fat.jar --deployDir celos_deploy --workflowName file-copy --mode deploy --target file://$ROOT/scripts/conf/target_int_test.json --hdfsRoot /user/celos-ci/celos-int-test
+java -jar $ROOT/celos-ci/build/libs/celos-ci-fat.jar --deployDir celos_deploy --workflowName file-copy --mode deploy --target file://$ROOT/scripts/conf/target_int_test.json --hdfsRoot /user/celos-ci/celos-int-test
 
 echo You win! All tests OK.
