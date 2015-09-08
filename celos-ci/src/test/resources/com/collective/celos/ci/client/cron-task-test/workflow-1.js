@@ -1,4 +1,4 @@
-celos.addWorkflow({
+celos.defineWorkflow({
     "id": "workflow-1",
     "schedule": celos.cronSchedule("0 12 * * * ?"),
     "schedulingStrategy": celos.serialSchedulingStrategy(),
