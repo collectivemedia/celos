@@ -618,14 +618,4 @@ public class CelosClientServerTest {
     }
 
 
-    @Test(expected = IOException.class)
-    public void testRerunSlotFails() throws Exception {
-
-        File src = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/client/wf-list").toURI());
-        FileUtils.copyDirectory(src, workflowsDir);
-
-        WorkflowID workflowID = new WorkflowID("unknown-workflow");
-        celosClient.rerunSlot(workflowID, ScheduledTime.now());
-    }
-
 }
