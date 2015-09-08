@@ -3,7 +3,7 @@ celos.importDefaults("quickstart-settings");
 var INPUT_PATH = "/user/" + CELOS_USER + "/celos/quickstart/input/${year}-${month}-${day}/${hour}00";
 var OUTPUT_PATH = "/user/" + CELOS_USER + "/celos/quickstart/output/${year}-${month}-${day}/${hour}00";
 
-celos.addWorkflow({
+celos.defineWorkflow({
     "id": "wordcount",
     "schedule": celos.hourlySchedule(),
     "schedulingStrategy": celos.serialSchedulingStrategy(),

@@ -1,6 +1,6 @@
 importPackage(Packages.com.collective.celos);
 
-celos.addWorkflow({
+celos.defineWorkflow({
     "id": "workflow-1",
     "schedule": new WorkflowConfigurationParserTest$TestSchedule(),
     "schedulingStrategy": new WorkflowConfigurationParserTest$TestSchedulingStrategy(),
@@ -9,7 +9,7 @@ celos.addWorkflow({
     "maxRetryCount": 55
 });
 
-celos.addWorkflow({
+celos.defineWorkflow({
     "id": "workflow-2",
     "schedule": new WorkflowConfigurationParserTest$TestSchedule(),
     "schedulingStrategy": new WorkflowConfigurationParserTest$TestSchedulingStrategy(),

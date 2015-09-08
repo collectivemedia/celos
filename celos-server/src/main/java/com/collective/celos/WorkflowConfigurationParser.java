@@ -16,9 +16,9 @@ import java.util.Map;
  * The JS engine has one variable defined, celosWorkflowConfigurationParser, which
  * points to the parser instance.
  * 
- * The helper script celos-scripts.js defines the utility function celos.addWorkflow(object),
+ * The helper script celos-scripts.js defines the utility function celos.defineWorkflow(object),
  * which stringifies the input JS object, and passes the string to the parser's
- * celos.addWorkflowFromJSONString method.
+ * celos.defineWorkflowFromJSONString method.
  */
 public class WorkflowConfigurationParser {
 

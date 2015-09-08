@@ -1,6 +1,6 @@
 importDefaults("collective");
 
-celos.addWorkflow({
+celos.defineWorkflow({
     "id": "wordcount",
     "schedule": celos.hourlySchedule(),
     "schedulingStrategy": celos.serialSchedulingStrategy(),

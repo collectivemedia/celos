@@ -5,7 +5,7 @@ var celos = {};
 
 // FIXME: temporary solution: until all utility functions return real Java objects,
 // allow JSON also and create instances from it using the JSONInstanceCreator.
-celos.addWorkflow = function (json) {
+celos.defineWorkflow = function (json) {
 
     function createWorkflowInfo(json) {
         var contacts = new Packages.java.util.ArrayList();

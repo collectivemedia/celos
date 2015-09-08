@@ -1,6 +1,6 @@
 importDefaults("collective");
 
-celos.addWorkflow({
+celos.defineWorkflow({
     "id": "file-copy",
     "maxRetryCount": 0,
     "schedule": celos.hourlySchedule(),

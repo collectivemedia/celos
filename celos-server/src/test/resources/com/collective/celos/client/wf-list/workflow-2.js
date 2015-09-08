@@ -1,4 +1,4 @@
-celos.addWorkflow({
+celos.defineWorkflow({
     "id": "workflow-2",
     "schedule": celos.hourlySchedule(),
     "schedulingStrategy": celos.serialSchedulingStrategy(),
@@ -9,7 +9,7 @@ celos.addWorkflow({
     "maxRetryCount": 0
 });
 
-celos.addWorkflow({
+celos.defineWorkflow({
     "id": "workflow-Iñtërnâtiônàlizætiøn",
     "schedule": celos.hourlySchedule(),
     "schedulingStrategy": celos.serialSchedulingStrategy(),
@@ -18,7 +18,7 @@ celos.addWorkflow({
     "maxRetryCount": 0
 });
 
-celos.addWorkflow({
+celos.defineWorkflow({
     "id": "workflow-4",
     "schedule": celos.hourlySchedule(),
     "schedulingStrategy": celos.serialSchedulingStrategy(),
