@@ -1,6 +1,6 @@
 importDefaults("collective");
 
-celos.addWorkflow({
+celos.defineWorkflow({
 
     "id": "file-copy-with-missing-output",
 
