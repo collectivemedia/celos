@@ -39,11 +39,11 @@ public class RerunServlet extends AbstractServlet {
             SlotID slot = new SlotID(new WorkflowID(id), time);
             StateDatabase db = getOrCreateCachedScheduler().getStateDatabase();
             SlotState state = db.getSlotState(slot);
-            if (state == null) {
-                res.sendError(HttpServletResponse.SC_NOT_FOUND, "Slot not found: " + slot);
-                return;
+            if (state != null) {
+                updateSlotToRerun(state, db);
             }
-            updateSlotToRerun(state, db);
+            // FIXME: verify that slot is a valid slot wrt the schedule
+            db.markSlotForRerun(slot, ScheduledTime.now());
         } catch(Exception e) {
             throw new ServletException(e);
         }
@@ -53,7 +53,6 @@ public class RerunServlet extends AbstractServlet {
         LOGGER.info("Scheduling Slot for rerun: " + state.getSlotID());
         SlotState newState = state.transitionToRerun();
         db.putSlotState(newState);
-        db.markSlotForRerun(state.getSlotID(), ScheduledTime.now());
     }
 
 }
