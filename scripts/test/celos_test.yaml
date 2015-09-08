@@ -194,16 +194,16 @@
     shell: grep 'INFO :.*Loading file.*workflow-1.js' {{celos_log_dir}}/celos.log
 
   - name: Deploy file-copy workflow
-    local_action: command {{ root }}/samples/file-copy-celos-provided/scripts/ci-deploy {{ root }}
+    local_action: command {{ root }}/scripts/test/test_files/file-copy/scripts/ci-deploy {{ root }}
 
   - register: result
     shell: hadoop fs -cat /user/{{ ansible_ssh_user }}/celos-int-test/file-copy/workflow.xml
   - name: Check workflow was successfully deployed
-    when: result.stdout != lookup('file', '{{ root }}/samples/file-copy-celos-provided/src/main/oozie/workflow.xml')
+    when: result.stdout != lookup('file', '{{ root }}/scripts/test/test_files/file-copy/src/main/oozie/workflow.xml')
     fail:
 
   - name: Undeploy file-copy workflow
-    local_action: command {{ root }}/samples/file-copy-celos-provided/scripts/ci-undeploy {{ root }}
+    local_action: command {{ root }}/scripts/test/test_files/file-copy/scripts/ci-undeploy {{ root }}
 
   - register: result
     shell: hadoop fs -cat /user/{{ ansible_ssh_user }}/celos-int-test/file-copy/workflow.xml
@@ -213,7 +213,7 @@
     fail:
 
   - name: Run file-copy CCI test
-    local_action: command {{ root }}/samples/file-copy-celos-provided/scripts/ci-test {{ service_url }} {{ root }}
+    local_action: command {{ root }}/scripts/test/test_files/file-copy/scripts/ci-test {{ service_url }} {{ root }}
 
   - name: Clean logs dir
     shell: rm -rf {{celos_log_dir}}/*
