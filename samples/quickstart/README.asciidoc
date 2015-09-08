@@ -1,5 +1,7 @@
 = Celos Quickstart Example
 
+== About
+
 This small example shows how to set up a simple Celos installation and
 run a MapReduce wordcount workflow.  It is intended to show you the
 ropes of working with Celos, and not as an example of creating a
@@ -9,6 +11,22 @@ check out the rest of the Celos documentation.
 In particular, in this sample we manually copy the files to Celos
 configuration directories and to HDFS, whereas in production you
 should use Celos CI to automate this.
+
+== Overview over the files
+
+* src/
+** main/
+*** celos/
+**** link:src/main/celos/workflow.js[workflow.js]: The main Celos workflow definition
+**** link:src/main/celos/defaults.js[defaults.js]: Settings that can be imported by this or other workflows
+*** java/com/example/
+**** link:src/main/java/com/example/WordCount.java[WordCount.java]: The Java MapReduce main we're going to use
+*** oozie/
+**** link:src/main/oozie/workflow.xml[workflow.xml]: The Oozie workflow definition
+** test/
+*** resources/
+**** link:src/test/resources/input/[input/]: Some hourly-bucketed input files we're going to process
+* link:build.gradle[build.gradle]: Simple build file building a JAR of the WordCount class
 
 == Build Celos
 
@@ -45,26 +63,41 @@ mkdir celos.d/db
 
 == Edit the defaults.js file
 
-Open *src/main/celos/defaults.js* in an editor and update the settings
+Open link:src/main/celos/defaults.js[src/main/celos/defaults.js] in an editor and update the settings
 at the top for your Hadoop and Oozie installation.
 
 == Copy the JavaScript files to the proper directories
 
 ....
 cp src/main/celos/workflow.js celos.d/workflows/wordcount.js
-cp src/main/celos/defaults.js celos.d/defaults/quickstart-settings.js
+cp src/main/celos/defaults.js celos.d/defaults/wordcount.js
 ....
+
+As you can see, in src/main/celos we use the canonical names
+(workflow.js and defaults.js) for the files, whereas in the
+celos.d/workflows and celos.d/defaults directories, we rename them to
+wordcount.js.
 
 == Build the workflow JAR
 
 Compile the Java code in *src/main/java* and produce the JAR in
-*build/libs/wordcount-1.0.jar*
+*build/libs/wordcount-1.0.jar*:
 
 ....
 ./gradlew jar
 ....
 
 == Upload the workflow.xml file and JAR to HDFS
+
+Oozie expects the workflow.xml and related JARs to live in a HDFS
+directory with this layout:
+
+* /
+** workflow.xml
+** lib/
+*** wordcount-1.0.jar
+
+All JARs in lib/ will be available on the classpath.
 
 ....
 export USER=manuel # Change to your Hadoop username
@@ -80,6 +113,15 @@ hadoop fs -put src/test/resources/input /user/$USER/celos/quickstart/input
 ....
 
 == Start Celos
+
+Note that we need to put /etc/hadoop/conf on the classpath, so Celos
+has access to the core-site.xml and hdfs-site.xml Hadoop configuration
+files.
+
+Also note that we're running Celos with `--autoSchedule 5`, which
+means that the scheduler will run automatically every 5 seconds. In
+production, we usually don't use `--autoSchedule`, and instead call
+the scheduler from cron.
 
 ....
 export CELOS_PORT=11337 # Adapt if needed
@@ -117,7 +159,7 @@ curl -X POST "$CELOS/rerun?id=wordcount&time=2015-09-01T01:00Z"
 curl -X POST "$CELOS/rerun?id=wordcount&time=2015-09-01T02:00Z"
 ....
 
-== Open the UI
+== Run the UI
 
 ....
 export HUE=http://cldmgr001.ewr004.collective-media.net:8888/oozie # Point to your Oozie UI
