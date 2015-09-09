@@ -150,7 +150,7 @@ This builds the class and puts it into build/libs/wordcount-1.0.jar:
 ./gradlew jar
 ....
 
-== Prepare the MapReduce code
+== Put the workflow.xml and JAR into HDFS for Oozie
 
 Celos uses Oozie to do the actual execution of jobs, Celos only
 schedules them.
