@@ -1,11 +1,13 @@
 celos.importDefaults("example-settings");
 
+var ROOT = "/user/" + CELOS_USER + "/celos/quickstart";
+
 function inputPathForDataCenter(dc) {
-    return "/user/" + CELOS_USER + "/celos/quickstart/input/" + dc + "/${year}-${month}-${day}/${hour}00";
+    return ROOT + "/input/" + dc + "/${year}-${month}-${day}/${hour}00";
 }
 
 function outputPathForDataCenter(dc) {
-    return "/user/" + CELOS_USER + "/celos/quickstart/output/" + dc + "/${year}-${month}-${day}/${hour}00";
+    return ROOT + "/output/" + dc + "/${year}-${month}-${day}/${hour}00";
 }
 
 function defineWordCountWorkflow(dc) {
@@ -17,12 +19,13 @@ function defineWordCountWorkflow(dc) {
         "schedulingStrategy": celos.serialSchedulingStrategy(),
         "trigger": celos.hdfsCheckTrigger(inputPath + "/_READY"),
         "externalService": celos.oozieExternalService({
-            "oozie.wf.application.path": "/user/" + CELOS_USER + "/celos/quickstart/app/workflow.xml",
+            "oozie.wf.application.path": ROOT + "/app/workflow.xml",
             "inputPath": inputPath,
             "outputPath": outputPath
         })
     });
 }
 
-defineWordCountWorkflow("nyc");
 defineWordCountWorkflow("lax");
+defineWordCountWorkflow("nyc");
+
