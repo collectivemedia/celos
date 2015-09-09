@@ -1,1 +1,0 @@
-./gradlew clean build --project-prop target_uri=${CELOS_TEST_TARGET} celos_ci --refresh-dependencies
