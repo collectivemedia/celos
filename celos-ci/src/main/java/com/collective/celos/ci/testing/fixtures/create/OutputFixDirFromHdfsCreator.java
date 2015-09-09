@@ -1,5 +1,21 @@
+/*
+ * Copyright 2015 Collective, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+ * implied.  See the License for the specific language governing
+ * permissions and limitations under the License.
+ */
 package com.collective.celos.ci.testing.fixtures.create;
 
+import com.collective.celos.Util;
 import com.collective.celos.ci.config.deploy.CelosCiContext;
 import com.collective.celos.ci.mode.test.TestRun;
 import com.collective.celos.ci.testing.structure.fixobject.FixDir;
@@ -10,6 +26,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.Path;
 
+import java.net.URISyntaxException;
 import java.util.Map;
 
 /**
@@ -20,7 +37,7 @@ public class OutputFixDirFromHdfsCreator implements FixObjectCreator<FixDir> {
     private final Path path;
 
     public OutputFixDirFromHdfsCreator(String path) {
-        this(new Path(StringUtils.removeStart(path, "/")));
+        this(new Path(path));
     }
 
     public OutputFixDirFromHdfsCreator(Path path) {
@@ -32,13 +49,13 @@ public class OutputFixDirFromHdfsCreator implements FixObjectCreator<FixDir> {
     }
 
     public FixDir create(TestRun testRun) throws Exception {
-        Path fullPath = new Path(testRun.getCiContext().getHdfsPrefix(), path);
+        Path fullPath = new Path(Util.augmentHdfsPath(testRun.getCiContext().getHdfsPrefix(), path.toString()));
         return read(fullPath, testRun.getCiContext()).asDir();
     }
 
     @Override
-    public String getDescription(TestRun testRun) {
-        return new Path(testRun.getCiContext().getHdfsPrefix(), path).toString();
+    public String getDescription(TestRun testRun) throws URISyntaxException {
+        return Util.augmentHdfsPath(testRun.getCiContext().getHdfsPrefix(), path.toString());
     }
 
     private FixFsObject read(Path path, CelosCiContext context) throws Exception {

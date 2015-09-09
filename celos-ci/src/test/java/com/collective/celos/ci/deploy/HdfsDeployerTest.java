@@ -1,3 +1,18 @@
+/*
+ * Copyright 2015 Collective, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+ * implied.  See the License for the specific language governing
+ * permissions and limitations under the License.
+ */
 package com.collective.celos.ci.deploy;
 
 import com.collective.celos.ci.config.deploy.CelosCiContext;
@@ -55,8 +70,9 @@ public class HdfsDeployerTest {
         doReturn(localFolder).when(context).getDeployDir();
         doReturn(remoteHdfsFolder.getAbsolutePath()).when(context).getHdfsPrefix();
         doReturn("workflow").when(context).getWorkflowName();
+        doReturn("/some/hdfs/root").when(context).getHdfsRoot();
 
-        File targetDir = new File(remoteHdfsFolder, "user/celos/app/workflow");
+        File targetDir = new File(remoteHdfsFolder, "some/hdfs/root/workflow");
 
         deployer.deploy();
 
@@ -81,8 +97,9 @@ public class HdfsDeployerTest {
         doReturn(localFolder).when(context).getDeployDir();
         doReturn(remoteHdfsFolder.getAbsolutePath()).when(context).getHdfsPrefix();
         doReturn("workflow").when(context).getWorkflowName();
+        doReturn("/some/hdfs/root").when(context).getHdfsRoot();
 
-        File targetDir = new File(remoteHdfsFolder, "user/celos/app/workflow");
+        File targetDir = new File(remoteHdfsFolder, "some/hdfs/root/workflow");
         targetDir.mkdirs();
         new File(targetDir, "file3").createNewFile();
         new File(targetDir, "file4").createNewFile();
@@ -112,10 +129,11 @@ public class HdfsDeployerTest {
         File remoteHdfsFolder = tempDir.newFolder();
         doReturn(remoteHdfsFolder.getAbsolutePath()).when(context).getHdfsPrefix();
         doReturn("workflow").when(context).getWorkflowName();
+        doReturn("/some/hdfs/root").when(context).getHdfsRoot();
 
         HdfsDeployer deployer = new HdfsDeployer(context);
         Path path = deployer.getDestinationHdfsPath();
-        Assert.assertEquals(path, new Path(new File(remoteHdfsFolder, "user/celos/app/workflow").getAbsolutePath()));
+        Assert.assertEquals(path, new Path(new File(remoteHdfsFolder, "some/hdfs/root/workflow").getAbsolutePath()));
     }
 
     @Test
@@ -127,8 +145,9 @@ public class HdfsDeployerTest {
         doReturn(LocalFileSystem.get(new Configuration())).when(context).getFileSystem();
         doReturn(remoteHdfsFolder.getAbsolutePath()).when(context).getHdfsPrefix();
         doReturn("workflow").when(context).getWorkflowName();
-
-        File remoteDir = new File(remoteHdfsFolder, "user/celos/app/workflow");
+        doReturn("/some/hdfs/root").when(context).getHdfsRoot();
+        
+        File remoteDir = new File(remoteHdfsFolder, "some/hdfs/root/workflow");
         remoteDir.mkdirs();
         new File(remoteDir, "file").createNewFile();
 

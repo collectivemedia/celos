@@ -1,0 +1,217 @@
+Celos: A Scriptable Scheduler for Periodical Hadoop Workflows
+=============================================================
+:toc: macro
+:toclevels: 5
+:toc-title:
+
+toc::[]
+
+== Introduction
+
+Celos is a tool for running recurring workflows that process data in
+Hadoop, such as MapReduce programs or Hive SQL scripts.
+
+image::etc/images/celos-ui.png[Celos UI]
+
+The above screenshot shows the Celos UI.  Each row represents a
+workflow.  The tiles are called slots and are individual executions of
+a workflow for a particular point in time.  Most workflows in the
+screenshot are hourly, and some are daily.  Green slots have already
+run.  Slots in `wait` are still waiting for their preconditions (such
+as data availability in HDFS) to be met.  `rdy` are ready to run, and
+will be scheduled in one of the next scheduler steps.  `run` slots are
+currently running.  `time` slots have timed out after waiting too long
+for their preconditions to be met.  `fail` slots have failed, and have
+no more retries left, so they need to be manually rerun, if desired.
+
+Celos workflows are defined with JavaScript.  An example is here:
+link:samples/quickstart/src/main/celos/workflow.js[].  On each
+scheduler step (which is usually triggered once a minute from cron),
+Celos evaluates all workflow JavaScript files, and then schedules the
+workflows they define.  Celos keeps a database recording the state of
+each slot as small JSON file.
+
+Celos works as frontend to link:https://oozie.apache.org/[Apache
+Oozie], which is the actual execution engine for workflows.  Oozie
+provides a small XML-based DSL for describing the actions a workflow
+should perform (example:
+link:samples/quickstart/src/main/oozie/workflow.xml[]), and
+distributes the jobs across the cluster.
+
+== Prerequisites
+
+* JDK 1.8
+* link:https://hadoop.apache.org/[Apache Hadoop] 2.5.0
+* link:https://oozie.apache.org/[Apache Oozie] 4.1.0
+
+You can probably get away with slightly older Hadoop and Oozie
+versions.
+
+== Getting Started
+
+Head over to link:samples/quickstart[*samples/quickstart*].
+
+== JavaScript API Reference
+=== General
+==== celos.defineWorkflow
+
+Syntax: `celos.defineWorkflow(object)`
+
+This is the main API call that registers a new workflow.  Any number
+of `celos.defineWorkflow` calls may appear in a file.  See
+link:samples/quickstart/src/main/celos/workflow.js[] for a file that
+defines two workflows.
+
+`celos.defineWorkflow` takes as argument an object with the following
+required fields:
+
+* `id`: The identifier string for the workflow, must be unique.
+* `trigger`: The link:#triggers[trigger] that determines data availability for the workflow.
+* `schedule`: The link:#schedules[schedule] that determines the points in time at which the workflow should run.
+* `schedulingStrategy`: The link:#scheduling-strategies[scheduling strategy] that determines when and in which order ready slots should be run.
+* `externalService`: The link:#external-services[external service], actually responsible for executing the job.
+
+The following fields are optional:
+
+* `startTime`: The date when the workflow should start executing (default: beginning of the Unix epoch).
+* `maxRetryCount`: The number of times a slot of this workflow should be automatically retried if it fails (default: 0).
+* `waitTimeoutSeconds`: The number of seconds a workflow should stay waiting until it times out (default: forever).
+
+==== celos.importDefaults
+
+Syntax: `celos.importDefaults(name)`
+
+Evaluates a file from the defaults directory in the current scope, so
+all variables and functions from the file become available in the
+current file.
+
+Example:
+
+[source,javascript]
+....
+celos.importDefaults("foo");
+....
+
+=== Triggers
+
+==== celos.hdfsCheckTrigger
+
+Syntax: `hdfsCheckTrigger(path, [fs])`
+
+Waits for the existence of a file or directory in HDFS.
+
+Parameters:
+
+* `path`: the path in HDFS to check the existence of
+
+* `fs`: the HDFS filesystem namenode.  If the argument is not supplied, the value of the `CELOS_DEFAULT_HDFS` global will be used.
+
+==== celos.successTrigger
+
+
+
+==== celos.andTrigger
+==== celos.orTrigger
+==== celos.notTrigger
+==== celos.offsetTrigger
+==== celos.delayTrigger
+==== celos.alwaysTrigger
+=== Schedules
+==== celos.cronSchedule
+==== celos.hourlySchedule
+==== celos.minutelySchedule
+==== celos.dependentSchedule
+=== Scheduling Strategies
+==== celos.serialSchedulingStrategy
+=== External Services
+==== celos.oozieExternalService
+=== Variables
+==== CELOS_DEFAULT_HDFS
+==== CELOS_DEFAULT_OOZIE
+==== CELOS_DEFAULT_OOZIE_PROPERTIES
+
+== Command Reference
+
+=== celos-server.jar
+
+The celos-server.jar launches Celos.
+
+==== Server command-line arguments
+
+===== --port
+
+This required argument sets the HTTP port under which the server will run.
+
+===== --workflows
+
+This optional argument sets the workflows directory from which Celos
+reads workflow JavaScript files.
+
+If unsupplied, defaults to /etc/celos/workflows.
+
+===== --defaults
+
+This optional argument sets the defaults directory which contains
+defaults JavaScript files that can be imported by workflows.
+
+If unsupplied, defaults to /etc/celos/defaults.
+
+===== --logs
+
+This optional argument sets the directory which contains the log
+files.
+
+If unsupplied, defaults to /var/log/celos.
+
+===== --db
+
+This optional argument sets the directory which contains Celos' state
+database.
+
+If unsupplied, defaults to /var/lib/celos.
+
+===== --autoSchedule
+
+This optional argument sets the interval (in seconds) after which
+Celos should automatically start a scheduler step.
+
+In unsupplied, Celos will not automatically schedule, and wait for
+POSTs to the /scheduler servlet instead.
+
+==== Server servlets
+
+===== /scheduler
+
+POSTing to this servlet initiates a scheduler step.
+
+In production we do this once a minute from cron.
+
+===== /workflow-list
+
+GETting this servlet returns the list of workflows loaded into Celos.
+
+===== /workflow-slots
+
+GETting this servlet returns information about a workflow and a subset
+of its slots.
+
+===== /rerun
+
+POSTing to this servlet instructs Celos to mark a slot for rerun.
+
+=== celos-ci.jar
+==== CI command-line arguments
+===== --mode
+===== --deployDir
+===== --hdfsRoot
+===== --target
+==== CI environment variables
+===== CELOS_CI_USERNAME
+==== Target files
+=== celos-ui.jar
+==== UI command-line arguments
+===== --port
+===== --celos
+===== --hue
+==== UI servlets
+===== /ui

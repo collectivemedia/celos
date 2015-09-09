@@ -1,6 +1,21 @@
+/*
+ * Copyright 2015 Collective, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+ * implied.  See the License for the specific language governing
+ * permissions and limitations under the License.
+ */
 package com.collective.celos.ci.mode;
 
-import com.collective.celos.ci.config.CelosCiCommandLine;
+import com.collective.celos.ci.config.CiCommandLine;
 import com.collective.celos.ci.config.deploy.CelosCiContext;
 import com.google.common.collect.Sets;
 import org.junit.Assert;
@@ -42,7 +57,7 @@ public class UndeployTaskTest {
         stream.write(targetFileStr.getBytes());
         stream.flush();
 
-        CelosCiCommandLine commandLine = new CelosCiCommandLine(targetFile.toURI().toString(), "UNDEPLOY", "deploydir", "workflow", "testDir", "uname", false);
+        CiCommandLine commandLine = new CiCommandLine(targetFile.toURI().toString(), "UNDEPLOY", "deploydir", "workflow", "testDir", "uname", false, null, "/hdfsRoot");
         UndeployTask celosCiDeploy = new UndeployTask(commandLine);
 
         CelosCiContext context = celosCiDeploy.getCiContext();
@@ -82,7 +97,7 @@ public class UndeployTaskTest {
         stream.write(targetFileStr.getBytes());
         stream.flush();
 
-        CelosCiCommandLine commandLine = new CelosCiCommandLine(targetFile.toURI().toString(), "UNDEPLOY", deployDir.getAbsolutePath(), "workflow", "testDir", "uname", false);
+        CiCommandLine commandLine = new CiCommandLine(targetFile.toURI().toString(), "UNDEPLOY", null, "workflow", "testDir", "uname", false, null, "/some/hdfs/root");
 
         UndeployTask undeployTask = new UndeployTask(commandLine);
 
@@ -92,7 +107,7 @@ public class UndeployTaskTest {
         File workflowFile = new File(celosWfDir, "workflow.js");
         workflowFile.createNewFile();
 
-        File hdfsDirFullPath = new File(hdfsDir, "user/celos/app/workflow");
+        File hdfsDirFullPath = new File(hdfsDir, "some/hdfs/root/workflow");
         hdfsDirFullPath.mkdirs();
         new File(hdfsDirFullPath, "file1").createNewFile();
         new File(hdfsDirFullPath, "file2").createNewFile();
