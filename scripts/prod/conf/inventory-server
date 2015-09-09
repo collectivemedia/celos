@@ -2,9 +2,9 @@
 celos002.ewr004.collective-media.net
 
 [host:vars]
-celos_workflows_dir={{ celos_wrk_dir }}/workflows
-celos_defaults_dir={{ celos_wrk_dir }}/defaults
-celos_db_dir={{ celos_wrk_dir }}/db
-celos_log_dir={{ celos_wrk_dir }}/logs
+celos_workflows_dir=/etc/celos/workflows
+celos_defaults_dir=/etc/celos/defaults
+celos_db_dir=/var/lib/celos/db
+celos_log_dir=/var/log/celos
 service_name={{server_service_name}}
 service_port={{server_service_port}}
