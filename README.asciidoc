@@ -55,21 +55,31 @@ Head over to link:samples/quickstart[*samples/quickstart*].
 === General
 ==== celos.defineWorkflow
 
+Syntax: `celos.defineWorkflow(object)`
+
 This is the main API call that registers a new workflow.  Any number
 of `celos.defineWorkflow` calls may appear in a file.  See
 link:samples/quickstart/src/main/celos/workflow.js[] for a file that
 defines two workflows.
 
 `celos.defineWorkflow` takes as argument an object with the following
-fields:
+required fields:
 
-* id: The identifier string for the workflow, must be unique.
-* trigger: The link:#triggers[trigger] that determines data availability for the workflow.
-* schedule: The link:#schedules[schedule] that determines the points in time at which the workflow should run.
-* schedulingStrategy: The link:#scheduling-strategies[scheduling strategy] that determines when and in which order ready slots should be run.
-* externalService: The link:#external-services[external service], actually responsible for executing the job.
+* `id`: The identifier string for the workflow, must be unique.
+* `trigger`: The link:#triggers[trigger] that determines data availability for the workflow.
+* `schedule`: The link:#schedules[schedule] that determines the points in time at which the workflow should run.
+* `schedulingStrategy`: The link:#scheduling-strategies[scheduling strategy] that determines when and in which order ready slots should be run.
+* `externalService`: The link:#external-services[external service], actually responsible for executing the job.
+
+The following fields are optional:
+
+* `startTime`: The date when the workflow should start executing (default: beginning of the Unix epoch).
+* `maxRetryCount`: The number of times a slot of this workflow should be automatically retried if it fails (default: 0).
+* `waitTimeoutSeconds`: The number of seconds a workflow should stay waiting until it times out (default: forever).
 
 ==== celos.importDefaults
+
+Syntax: `celos.importDefaults(name)`
 
 Evaluates a file from the defaults directory in the current scope, so
 all variables and functions from the file become available in the
@@ -85,7 +95,21 @@ celos.importDefaults("foo");
 === Triggers
 
 ==== celos.hdfsCheckTrigger
+
+Syntax: `hdfsCheckTrigger(path, [fs])`
+
+Waits for the existence of a file or directory in HDFS.
+
+Parameters:
+
+* `path`: the path in HDFS to check the existence of
+
+* `fs`: the HDFS filesystem namenode.  If the argument is not supplied, the value of the `CELOS_DEFAULT_HDFS` global will be used.
+
 ==== celos.successTrigger
+
+
+
 ==== celos.andTrigger
 ==== celos.orTrigger
 ==== celos.notTrigger
