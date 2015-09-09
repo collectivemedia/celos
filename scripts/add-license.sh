@@ -7,6 +7,7 @@ do
     then
         echo skipping ${x}
     else
+        echo processing ${x}
         cp ./scripts/templates/license.tpl tmp.txt
         cat ${x} >> tmp.txt
         mv tmp.txt ${x}
