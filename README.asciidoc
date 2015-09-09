@@ -15,13 +15,14 @@ image::etc/images/celos-ui.png[Celos UI]
 
 The above screenshot shows the Celos UI.  Each row represents a
 workflow.  The tiles are called slots and are individual executions of
-a workflow for a particular point in time.  Green slots have already
-run.  Slots in `wait` are still waiting for their preconditions (such
-as data availability in HDFS) to be met.  `rdy` are ready to run, and
-will be scheduled in one of the next scheduler steps.  `run` slots are
-currently running.  `time` slots have timed out after waiting too long
-for their preconditions to be met.  `fail` slots have failed, and have
-no more retries left, so they need to be manually rerun, if desired.
+a workflow for a particular point in time.  Most workflows are hourly,
+and some are daily.  Green slots have already run.  Slots in `wait`
+are still waiting for their preconditions (such as data availability
+in HDFS) to be met.  `rdy` are ready to run, and will be scheduled in
+one of the next scheduler steps.  `run` slots are currently running.
+`time` slots have timed out after waiting too long for their
+preconditions to be met.  `fail` slots have failed, and have no more
+retries left, so they need to be manually rerun, if desired.
 
 == Prerequisites
 
