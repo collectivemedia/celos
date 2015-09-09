@@ -13,35 +13,56 @@
  * implied.  See the License for the specific language governing
  * permissions and limitations under the License.
  */
-package com.collective.celos;
+package com.collective.celos.state;
 
+import com.collective.celos.ScheduledTime;
+import com.collective.celos.SlotID;
+import com.collective.celos.SlotState;
+import com.collective.celos.WorkflowID;
+
+import java.io.File;
+import java.io.IOException;
 import java.util.SortedSet;
 
 /**
  * Stores all state needed by the scheduler.
  */
-public interface StateDatabase {
+public abstract class StateDatabase {
 
     /**
      * Returns the state of the given slot, or null if not found.
      */
-    public SlotState getSlotState(SlotID slot) throws Exception;
+    public abstract SlotState getSlotState(SlotID slot) throws Exception;
 
     /**
      * Updates the state of the given slot.
      * 
      * If this is a rerun, then markSlotForRerun() must be used in addition.
      */
-    public void putSlotState(SlotState state) throws Exception;
+    public abstract void putSlotState(SlotState state) throws Exception;
     
     /**
      * Marks the slot for rerun at the current wallclock time.
      */
-    public void markSlotForRerun(SlotID slot, ScheduledTime now) throws Exception;
+    protected abstract void markSlotForRerun(SlotID slot, ScheduledTime now) throws Exception;
     
     /**
      * Returns the list of scheduled times of the given workflow that have been marked for rerun.
      */
-    public SortedSet<ScheduledTime> getTimesMarkedForRerun(WorkflowID workflowID, ScheduledTime now) throws Exception;
-    
+    public abstract SortedSet<ScheduledTime> getTimesMarkedForRerun(WorkflowID workflowID, ScheduledTime now) throws Exception;
+
+
+    public void updateSlotForRerun(SlotID slotID, ScheduledTime now) throws Exception {
+        SlotState state = getSlotState(slotID);
+        if (state != null) {
+            SlotState newState = state.transitionToRerun();
+            putSlotState(newState);
+        }
+        markSlotForRerun(slotID, now);
+    }
+
+    public static StateDatabase makeFSDatabase(File dir) throws IOException {
+        return new FileSystemStateDatabase(dir);
+    }
+
 }

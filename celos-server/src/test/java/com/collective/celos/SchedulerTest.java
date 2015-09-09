@@ -15,6 +15,9 @@
  */
 package com.collective.celos;
 
+
+import com.collective.celos.state.MemoryStateDatabase;
+import com.collective.celos.state.StateDatabase;
 import com.collective.celos.trigger.AlwaysTrigger;
 import com.collective.celos.trigger.Trigger;
 import com.collective.celos.trigger.TriggerStatus;
@@ -36,7 +39,8 @@ import static org.mockito.Mockito.*;
  */
 public class SchedulerTest {
 
-    private static WorkflowInfo emptyWorkflowInfo = new WorkflowInfo(null, Collections.<WorkflowInfo.ContactsInfo>emptyList());
+    private WorkflowInfo emptyWorkflowInfo = new WorkflowInfo(null, Collections.<WorkflowInfo.ContactsInfo>emptyList());
+    private MemoryStateDatabase db = new MemoryStateDatabase();
 
     /*
      * I prefer setting up test data in the test method, using local variables,
@@ -300,17 +304,17 @@ public class SchedulerTest {
 
     @Test(expected=IllegalArgumentException.class)
     public void slidingWindowHoursPositive1() {
-        new Scheduler(new WorkflowConfiguration(), new MemoryStateDatabase(), 0);
+        new Scheduler(new WorkflowConfiguration(), db, 0);
     }
     
     @Test(expected=IllegalArgumentException.class)
     public void slidingWindowHoursPositive2() {
-        new Scheduler(new WorkflowConfiguration(), new MemoryStateDatabase(), -23);
+        new Scheduler(new WorkflowConfiguration(), db, -23);
     }
 
     @Test(expected=NullPointerException.class)
     public void configurationCannotBeNull() {
-        new Scheduler(null, new MemoryStateDatabase(), 1);
+        new Scheduler(null, db, 1);
     }
 
     @Test(expected=NullPointerException.class)
@@ -322,7 +326,7 @@ public class SchedulerTest {
     public void slidingWindowSizeWorks() {
         ScheduledTime t = new ScheduledTime("2013-11-26T20:00Z");
         int hours = 5;
-        Scheduler scheduler = new Scheduler(new WorkflowConfiguration(), new MemoryStateDatabase(), hours);
+        Scheduler scheduler = new Scheduler(new WorkflowConfiguration(), db, hours);
         Assert.assertEquals(scheduler.getSlidingWindowStartTime(t), new ScheduledTime("2013-11-26T15:00Z"));
     }
     
@@ -345,8 +349,6 @@ public class SchedulerTest {
         
         WorkflowConfiguration cfg = new WorkflowConfiguration();
         cfg.addWorkflow(wf1);
-        
-        MemoryStateDatabase db = new MemoryStateDatabase();
 
         int slidingWindowHours = 24;
         DateTime current = DateTime.parse("2013-11-27T15:01Z");
@@ -387,8 +389,6 @@ public class SchedulerTest {
         
         WorkflowConfiguration cfg = new WorkflowConfiguration();
         cfg.addWorkflow(wf1);
-        
-        MemoryStateDatabase db = new MemoryStateDatabase();
 
         int slidingWindowHours = 24;
         
@@ -427,8 +427,6 @@ public class SchedulerTest {
         WorkflowConfiguration cfg = new WorkflowConfiguration();
         cfg.addWorkflow(wf1);
         
-        MemoryStateDatabase db = new MemoryStateDatabase();
-
         int slidingWindowHours = 24;
         DateTime current = DateTime.parse("2013-11-27T15:01Z");
         
@@ -452,8 +450,7 @@ public class SchedulerTest {
         WorkflowConfiguration cfg = new WorkflowConfiguration();
         cfg.addWorkflow(wf1);
         
-        MemoryStateDatabase db = new MemoryStateDatabase();
-        
+
         SlotID id1 = new SlotID(wfID1, new ScheduledTime("2013-11-27T22:00:00Z"));
         SlotState slot1 = new SlotState(id1, SlotState.Status.WAITING);
         db.putSlotState(slot1);
@@ -515,8 +512,6 @@ public class SchedulerTest {
         WorkflowConfiguration cfg = new WorkflowConfiguration();
         cfg.addWorkflow(wf1);
         
-        MemoryStateDatabase db = new MemoryStateDatabase();
-
         int slidingWindowHours = 24;
         DateTime current = DateTime.parse("2013-11-27T15:01Z");
         DateTime currentFullHour = Util.toFullHour(current);
@@ -562,7 +557,7 @@ public class SchedulerTest {
         WorkflowConfiguration cfg = new WorkflowConfiguration();
         cfg.addWorkflow(wf1);
         
-        MemoryStateDatabase db = new MemoryStateDatabase();
+    
 
         int slidingWindowHours = 24;
         DateTime current = DateTime.parse("2013-11-27T15:01Z");
@@ -622,7 +617,7 @@ public class SchedulerTest {
         WorkflowConfiguration cfg = new WorkflowConfiguration();
         cfg.addWorkflow(wf1);
         
-        MemoryStateDatabase db = new MemoryStateDatabase();
+    
 
         SlotID id1 = new SlotID(wfID1, new ScheduledTime("2013-11-27T20:00Z"));
         SlotID id2 = new SlotID(wfID1, new ScheduledTime("2013-11-27T21:00Z"));
@@ -679,7 +674,7 @@ public class SchedulerTest {
         WorkflowConfiguration cfg = new WorkflowConfiguration();
         cfg.addWorkflow(wf1);
         
-        MemoryStateDatabase db = new MemoryStateDatabase();
+    
 
         Scheduler sched = new Scheduler(cfg, db, 7 * 24);
         sched.step(new ScheduledTime(currentDT));
@@ -706,7 +701,7 @@ public class SchedulerTest {
         WorkflowConfiguration cfg = new WorkflowConfiguration();
         cfg.addWorkflow(wf1);
         
-        MemoryStateDatabase db = new MemoryStateDatabase();
+    
 
         Scheduler sched = new Scheduler(cfg, db, 7 * 24);
         sched.step(new ScheduledTime(currentDT));
@@ -733,7 +728,7 @@ public class SchedulerTest {
         WorkflowConfiguration cfg = new WorkflowConfiguration();
         cfg.addWorkflow(wf1);
         
-        MemoryStateDatabase db = new MemoryStateDatabase();
+    
 
         Scheduler sched = new Scheduler(cfg, db, 7 * 24);
         sched.step(new ScheduledTime(currentDT));
@@ -806,7 +801,7 @@ public class SchedulerTest {
         WorkflowConfiguration cfg = new WorkflowConfiguration();
         cfg.addWorkflow(wf1);
         
-        MemoryStateDatabase db = new MemoryStateDatabase();
+    
 
         SlotID id1 = new SlotID(wfID1, new ScheduledTime("2013-11-27T20:00Z"));
         SlotState initial = new SlotState(id1, SlotState.Status.READY);
@@ -860,7 +855,7 @@ public class SchedulerTest {
         WorkflowConfiguration cfg = new WorkflowConfiguration();
         cfg.addWorkflow(wf1);
         
-        MemoryStateDatabase db = new MemoryStateDatabase();
+    
 
         SlotID id1 = new SlotID(wfID1, new ScheduledTime("2013-11-27T20:00Z"));
         SlotState initial = new SlotState(id1, SlotState.Status.READY);
@@ -915,7 +910,7 @@ public class SchedulerTest {
         cfg.addWorkflow(wf1);
         cfg.addWorkflow(wf2);
         
-        MemoryStateDatabase db = new MemoryStateDatabase();
+    
 
         SlotID id1 = new SlotID(wfID1, new ScheduledTime("2013-11-27T20:00Z"));
         SlotID id2 = new SlotID(wfID2, new ScheduledTime("2013-11-27T20:00Z"));

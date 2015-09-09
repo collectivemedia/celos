@@ -13,20 +13,20 @@
  * implied.  See the License for the specific language governing
  * permissions and limitations under the License.
  */
-package com.collective.celos;
+package com.collective.celos.state;
+
+import com.collective.celos.*;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.apache.commons.io.FileUtils;
+import org.apache.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.SortedSet;
 import java.util.TreeSet;
-
-import org.apache.commons.io.FileUtils;
-import org.apache.log4j.Logger;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
  * Brutally simple persistent implementation of StateDatabase
@@ -67,7 +67,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  * 
  * {"rerunTime":"2015-09-06T20:21Z"}
  */
-public class FileSystemStateDatabase implements StateDatabase {
+class FileSystemStateDatabase extends StateDatabase {
 
     private static final String CHARSET = "UTF-8";
     private static final String STATE_DIR_NAME = "state";

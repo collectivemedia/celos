@@ -13,22 +13,22 @@
  * implied.  See the License for the specific language governing
  * permissions and limitations under the License.
  */
-package com.collective.celos;
+package com.collective.celos.state;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import com.collective.celos.ScheduledTime;
+import com.collective.celos.SlotID;
+import com.collective.celos.SlotState;
+import com.collective.celos.WorkflowID;
+
+import java.util.*;
 
 /**
  * Simple implementation of StateDatabase that stores everything in a Map.
  */
-public class MemoryStateDatabase implements StateDatabase {
+public class MemoryStateDatabase extends StateDatabase {
 
-    protected final Map<SlotID, SlotState> map = new HashMap<SlotID, SlotState>();
-    protected final Set<SlotID> rerun = new HashSet<SlotID>();
+    protected final Map<SlotID, SlotState> map = new HashMap<>();
+    protected final Set<SlotID> rerun = new HashSet<>();
     
     @Override
     public SlotState getSlotState(SlotID id) throws Exception {

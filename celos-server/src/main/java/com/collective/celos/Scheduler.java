@@ -15,16 +15,11 @@
  */
 package com.collective.celos;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
+import com.collective.celos.state.StateDatabase;
+import com.collective.celos.trigger.Trigger;
 import org.apache.log4j.Logger;
 
-import com.collective.celos.trigger.Trigger;
+import java.util.*;
 
 /**
  * Master control program.
