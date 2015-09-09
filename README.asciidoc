@@ -54,8 +54,36 @@ Head over to link:samples/quickstart[*samples/quickstart*].
 == JavaScript API Reference
 === General
 ==== celos.defineWorkflow
+
+This is the main API call that registers a new workflow.  Any number
+of `celos.defineWorkflow` calls may appear in a file.  See
+link:samples/quickstart/src/main/celos/workflow.js[] for a file that
+defines two workflows.
+
+`celos.defineWorkflow` takes as argument an object with the following
+fields:
+
+* id: The identifier string for the workflow, must be unique.
+* trigger: The link:#triggers[trigger] that determines data availability for the workflow.
+* schedule: The link:#schedules[schedule] that determines the points in time at which the workflow should run.
+* schedulingStrategy: The link:#scheduling-strategies[scheduling strategy] that determines when and in which order ready slots should be run.
+* externalService: The link:#external-services[external service], actually responsible for executing the job.
+
 ==== celos.importDefaults
+
+Evaluates a file from the defaults directory in the current scope, so
+all variables and functions from the file become available in the
+current file.
+
+Example:
+
+[source,javascript]
+....
+celos.importDefaults("foo");
+....
+
 === Triggers
+
 ==== celos.hdfsCheckTrigger
 ==== celos.successTrigger
 ==== celos.andTrigger
