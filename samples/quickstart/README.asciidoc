@@ -3,7 +3,7 @@
 == About
 
 This small example shows how to set up a simple Celos installation and
-run a MapReduce wordcount workflow.  It is intended to show you the
+run MapReduce wordcount workflows.  It is intended to show you the
 ropes of working with Celos, and not as an example of creating a
 production-ready Celos installation or workflow. For that, please
 check out the rest of the Celos documentation.
@@ -12,13 +12,13 @@ In particular, in this sample we manually copy the files to Celos
 configuration directories and to HDFS, whereas in production you
 should use Celos CI to automate this.
 
-== Overview over the files
+== Overview over the files used in this example
 
 * src/
 ** main/
 *** celos/
 **** link:src/main/celos/workflow.js[workflow.js]: The main Celos workflow definition
-**** link:src/main/celos/defaults.js[defaults.js]: Settings that can be imported by this or other workflows
+**** link:src/main/celos/example-settings.js[example-settings.js]: Settings that can be imported by this or other workflows
 *** java/com/example/
 **** link:src/main/java/com/example/WordCount.java[WordCount.java]: The Java MapReduce main we're going to use
 *** oozie/
@@ -28,10 +28,10 @@ should use Celos CI to automate this.
 **** link:src/test/resources/input/[input/]: Some hourly-bucketed input files we're going to process
 * link:build.gradle[build.gradle]: Simple build file building a JAR of the WordCount class
 
-== Build Celos
+== Preliminaries
 
-In the Celos repository *root directory* do the following to build the
-required JARs:
+In the Celos repository *root directory* do the following to build
+Celos:
 
 ....
 scripts/build.sh
@@ -43,9 +43,141 @@ Then switch to the *samples/quickstart* directory:
 cd samples/quickstart
 ....
 
+== Scenario
+
+In this example, we're going to do MapReduce wordcounts of hourly
+buckets of text files coming from two different data centers, *nyc*
+and *lax*, that are written into HDFS (say by Flume or Kafka), with
+this directory layout:
+
+....
+input/
+  nyc/
+    2015-09-01/
+      0000/
+        _READY
+        file1.txt
+        file2.txt
+      0100/
+        _READY
+        file1.txt
+        file2.txt
+        file3.txt
+      ...
+    ...
+  lax/
+    2015-09-01/
+      0000/
+        _READY
+        file1.txt
+      0100/
+        _READY
+        file1.txt
+        file2.txt
+        file3.txt
+        file4.txt
+      ...
+    ...
+....
+
+You can look at the sample files here: link:src/test/resources/input[].
+
+A _READY file is placed into each hourly bucket after all files in the
+bucket have been completely written, so we will tell our Celos
+workflow to wait for that file.  (Of course, since this is an example,
+we've manually placed the _READY files there.)
+
+We will produce corresponding wordcount outputs by MapReducing the
+files in each hourly bucket, and placing the outputs into an output
+directory:
+
+....
+output/
+  nyc/
+    2015-09-01/
+      0000/
+        _SUCCESS
+        part-00000
+      0100/
+        _SUCCESS
+        part-00000
+        part-00001
+      ...
+    ...
+  lax/
+    2015-09-01/
+      0000/
+        _SUCCESS
+        part-00000
+        part-00001
+      0100/
+        _SUCCESS
+        part-00000
+        part-00001
+        part-00002
+      ...
+    ...
+....
+
+The part-XXXXX files are created by MapReduce, as are the _SUCCESS
+files once processing is complete.
+
+== Upload the sample inputs to HDFS
+
+The first thing we're going to do is copy the input files into HDFS.
+
+We'll put them into a root directory, under your HDFS home directory,
+at celos/quickstart:
+
+....
+export USER=manuel # Change to your Hadoop username
+export ROOT=/user/$USER/celos/quickstart
+hadoop fs -mkdir -p $ROOT
+hadoop fs -put src/test/resources/input $ROOT/input
+....
+
+== Compile the MapReduce code into a JAR
+
+The file link:src/main/java/com/example/WordCount.java[] is a simple
+Java class with a main method that takes an input directory and an
+output directory as arguments.  It reads all text files in the input
+directory, and writes tab-separated files containing word counts into
+the output directory.
+
+This builds the class and puts it into *build/libs/wordcount-1.0.jar*:
+
+....
+./gradlew jar
+....
+
+== Prepare the MapReduce code
+
+Celos uses Oozie to do the actual execution of jobs, Celos only
+schedules them.
+
+Oozie requires a small XML file, link:src/main/oozie/workflow.xml[]
+that tells it what Java class to run.  Note that the file refers to
+two variables, ${inputPath} and ${outputPath}.  We're going to set
+them from our Celos workflow.
+
+The workflow.xml and the wordcount-1.0.jar must be stored together in
+HDFS (with the JAR in a lib/ subdirectory), from where Oozie will read
+and execute them.
+
+We're going to use $ROOT/app as the directory containing these files:
+
+....
+hadoop fs -mkdir -p $ROOT/app/lib
+hadoop fs -put -f src/main/oozie/workflow.xml $ROOT/app
+hadoop fs -put -f build/libs/wordcount-1.0.jar $ROOT/app/lib
+....
+
 == Create directories required by Celos
 
-We're creating a *samples/quickstart/celos.d* directory that holds all
+Now we have our inputs at $ROOT/input, and our Oozie workflow at
+$ROOT/app, so we can turn to setting up Celos.
+
+We'll create a *samples/quickstart/celos.d* directory that holds all
 the directories required by Celos to run:
 
 * A *workflows* directory containing the JavaScript workflow files.
@@ -61,55 +193,38 @@ mkdir celos.d/logs
 mkdir celos.d/db
 ....
 
-== Edit the defaults.js file
+On each scheduler step, Celos evaluates the JavaScript files in the
+workflows directory.  These files define the workflows that Celos
+runs.
 
-Open link:src/main/celos/defaults.js[src/main/celos/defaults.js] in an editor and update the settings
-at the top for your Hadoop and Oozie installation.
+The defaults directory contains JavaScript files that may contain
+variables and utility functions that can be imported by workflow
+files.
+
+In the logs directory, you'll find the celos.log file containing
+informative output by Celos, as well as more celos-YYYY-MM-DD.log
+files for older outputs.
+
+The db directory contains small JSON files that Celos uses to keep
+track of the execution state of each periodical invocation of a
+workflow.
+
+== Edit the example-settings.js file
+
+Celos must be told about some settings, such as your Hadoop name node,
+job tracker, and Oozie API URL.
+
+Open link:src/main/celos/example-settings.js[] in an editor and update
+the settings at the top for your Hadoop and Oozie installation.
 
 == Copy the JavaScript files to the proper directories
 
+Now we'll copy the workflow.js and example-settings.js from
+src/main/celos in the directories Celos will actually use:
+
 ....
 cp src/main/celos/workflow.js celos.d/workflows/wordcount.js
-cp src/main/celos/defaults.js celos.d/defaults/wordcount.js
-....
-
-As you can see, in src/main/celos we use the canonical names
-(workflow.js and defaults.js) for the files, whereas in the
-celos.d/workflows and celos.d/defaults directories, we rename them to
-wordcount.js.
-
-== Build the workflow JAR
-
-Compile the Java code in *src/main/java* and produce the JAR in
-*build/libs/wordcount-1.0.jar*:
-
-....
-./gradlew jar
-....
-
-== Upload the workflow.xml file and JAR to HDFS
-
-Oozie expects the workflow.xml and related JARs to live in a HDFS
-directory with this layout:
-
-* /
-** workflow.xml
-** lib/
-*** wordcount-1.0.jar
-
-All JARs in lib/ will be available on the classpath.
-
-....
-export USER=manuel # Change to your Hadoop username
-hadoop fs -mkdir -p /user/$USER/celos/quickstart/app/lib
-hadoop fs -put -f src/main/oozie/workflow.xml /user/$USER/celos/quickstart/app/workflow.xml
-hadoop fs -put -f build/libs/wordcount-1.0.jar /user/$USER/celos/quickstart/app/lib
-....
-
-== Upload the sample inputs to HDFS
-
-....
-hadoop fs -put src/test/resources/input /user/$USER/celos/quickstart/input
+cp src/main/celos/example-settings.js celos.d/defaults/example-settings.js
 ....
 
 == Start Celos
@@ -121,11 +236,10 @@ files.
 Also note that we're running Celos with `--autoSchedule 5`, which
 means that the scheduler will run automatically every 5 seconds. In
 production, we usually don't use `--autoSchedule`, and instead call
-the scheduler from cron.
+the scheduler from cron every minute.
 
 ....
 export CELOS_PORT=11337 # Adapt if needed
-export CELOS=http://localhost:$CELOS_PORT
 export CLASSPATH=../../celos-server/build/libs/celos-server.jar:/etc/hadoop/conf
 java -cp $CLASSPATH com.collective.celos.server.Main --port $CELOS_PORT --workflows celos.d/workflows --defaults celos.d/defaults --logs celos.d/logs --db celos.d/db --autoSchedule 5 > /dev/null 2>&1 &
 ....
@@ -135,14 +249,15 @@ java -cp $CLASSPATH com.collective.celos.server.Main --port $CELOS_PORT --workfl
 Do the following:
 
 ....
-curl $CELOS/workflow-list
+export CELOS=http://localhost:$CELOS_PORT
+curl "$CELOS/workflow-list"
 ....
 
 This should print the following:
 
 ....
 {
-  "ids" : [ "wordcount" ]
+  "ids" : [ "wordcount-lax", "wordcount-nyc" ]
 }
 ....
 
@@ -154,9 +269,13 @@ window before the current time.
 To have Celos care about the input data do the following:
 
 ....
-curl -X POST "$CELOS/rerun?id=wordcount&time=2015-09-01T00:00Z"
-curl -X POST "$CELOS/rerun?id=wordcount&time=2015-09-01T01:00Z"
-curl -X POST "$CELOS/rerun?id=wordcount&time=2015-09-01T02:00Z"
+curl -X POST "$CELOS/rerun?id=wordcount-lax&time=2015-09-01T00:00Z"
+curl -X POST "$CELOS/rerun?id=wordcount-lax&time=2015-09-01T01:00Z"
+curl -X POST "$CELOS/rerun?id=wordcount-lax&time=2015-09-01T02:00Z"
+
+curl -X POST "$CELOS/rerun?id=wordcount-nyc&time=2015-09-01T00:00Z"
+curl -X POST "$CELOS/rerun?id=wordcount-nyc&time=2015-09-01T01:00Z"
+curl -X POST "$CELOS/rerun?id=wordcount-nyc&time=2015-09-01T02:00Z"
 ....
 
 == Run the UI
@@ -172,13 +291,14 @@ Now go to this URL in your browser:
 http://localhost:11338/ui?time=2015-09-02T00:00Z
 ....
 
-You should see three ready or running slots.  You can click on a
-running slot to see its Oozie information.
+You should see two workflows each of which has three ready or running
+slots.  You can click on a running slot to see its Oozie information.
 
 == Look at MapReduce outputs in HDFS
 
 After a while, when all slots are green, you can look at the results in HDFS:
 
 ....
-hadoop fs -cat /user/$USER/celos/quickstart/output/2015-09-01/0000/part-00000
+hadoop fs -cat /user/$USER/celos/quickstart/output/lax/2015-09-01/0000/part-00000
+hadoop fs -cat /user/$USER/celos/quickstart/output/nyc/2015-09-01/0000/part-00000
 ....

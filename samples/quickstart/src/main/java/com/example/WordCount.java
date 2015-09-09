@@ -11,8 +11,33 @@ import org.apache.hadoop.util.*;
 
 /**
  * Typical MapReduce wordcount, copied from the web (where?).
+ *
+ * Takes an input directory and an output directory as arguments.
  */
 public class WordCount {
+
+    public static void main(String[] args) throws Exception {
+        String inputPath = args[0];
+        String outputPath = args[1];
+
+        JobConf conf = new JobConf(WordCount.class);
+        conf.setJobName("wordcount");
+
+        conf.setOutputKeyClass(Text.class);
+        conf.setOutputValueClass(IntWritable.class);
+
+        conf.setMapperClass(Map.class);
+        conf.setCombinerClass(Reduce.class);
+        conf.setReducerClass(Reduce.class);
+
+        conf.setInputFormat(TextInputFormat.class);
+        conf.setOutputFormat(TextOutputFormat.class);
+
+        FileInputFormat.setInputPaths(conf, new Path(inputPath));
+        FileOutputFormat.setOutputPath(conf, new Path(outputPath));
+
+        JobClient.runJob(conf);
+    }
 
     public static class Map extends MapReduceBase implements Mapper<LongWritable, Text, Text, IntWritable> {
         private final static IntWritable one = new IntWritable(1);
@@ -38,23 +63,4 @@ public class WordCount {
         }
     }
 
-    public static void main(String[] args) throws Exception {
-        JobConf conf = new JobConf(WordCount.class);
-        conf.setJobName("wordcount");
-
-        conf.setOutputKeyClass(Text.class);
-        conf.setOutputValueClass(IntWritable.class);
-
-        conf.setMapperClass(Map.class);
-        conf.setCombinerClass(Reduce.class);
-        conf.setReducerClass(Reduce.class);
-
-        conf.setInputFormat(TextInputFormat.class);
-        conf.setOutputFormat(TextOutputFormat.class);
-
-        FileInputFormat.setInputPaths(conf, new Path(args[0]));
-        FileOutputFormat.setOutputPath(conf, new Path(args[1]));
-
-        JobClient.runJob(conf);
-    }
 }
