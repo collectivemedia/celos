@@ -25,6 +25,10 @@ function outputPathForDataCenter(dc) {
     return ROOT + "/output/" + dc + "/${year}-${month}-${day}/${hour}00";
 }
 
+/*
+ * This function defines a wordcount workflow for the given data
+ * center.
+ */
 function defineWordCountWorkflow(dc) {
     var inputPath = inputPathForDataCenter(dc);
     var outputPath = outputPathForDataCenter(dc);
@@ -34,6 +38,7 @@ function defineWordCountWorkflow(dc) {
         "schedulingStrategy": celos.serialSchedulingStrategy(),
         "trigger": celos.hdfsCheckTrigger(inputPath + "/_READY"),
         "externalService": celos.oozieExternalService({
+            // These properties are passed to the Oozie job
             "oozie.wf.application.path": ROOT + "/app/workflow.xml",
             "inputPath": inputPath,
             "outputPath": outputPath
@@ -41,6 +46,9 @@ function defineWordCountWorkflow(dc) {
     });
 }
 
+/*
+ * Set up two workflows, one for each data center.
+ */
 defineWordCountWorkflow("lax");
 defineWordCountWorkflow("nyc");
 
