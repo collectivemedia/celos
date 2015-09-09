@@ -15,14 +15,28 @@ image::etc/images/celos-ui.png[Celos UI]
 
 The above screenshot shows the Celos UI.  Each row represents a
 workflow.  The tiles are called slots and are individual executions of
-a workflow for a particular point in time.  Most workflows are hourly,
-and some are daily.  Green slots have already run.  Slots in `wait`
-are still waiting for their preconditions (such as data availability
-in HDFS) to be met.  `rdy` are ready to run, and will be scheduled in
-one of the next scheduler steps.  `run` slots are currently running.
-`time` slots have timed out after waiting too long for their
-preconditions to be met.  `fail` slots have failed, and have no more
-retries left, so they need to be manually rerun, if desired.
+a workflow for a particular point in time.  Most workflows in the
+screenshot are hourly, and some are daily.  Green slots have already
+run.  Slots in `wait` are still waiting for their preconditions (such
+as data availability in HDFS) to be met.  `rdy` are ready to run, and
+will be scheduled in one of the next scheduler steps.  `run` slots are
+currently running.  `time` slots have timed out after waiting too long
+for their preconditions to be met.  `fail` slots have failed, and have
+no more retries left, so they need to be manually rerun, if desired.
+
+Celos workflows are defined with JavaScript.  An example is here:
+link:samples/quickstart/src/main/celos/workflow.js[].  On each
+scheduler step (which is usually triggered once a minute from cron),
+Celos evaluates all workflow JavaScript files, and then schedules the
+workflows they define.  Celos keeps a database recording the state of
+each slot as small JSON file.
+
+Celos works as frontend to link:https://oozie.apache.org/[Apache
+Oozie], which is the actual execution engine for workflows.  Oozie
+provides a small XML-based DSL for describing the actions a workflow
+should perform (example:
+link:samples/quickstart/src/main/oozie/workflow.xml[]), and
+distributes the jobs across the cluster.
 
 == Prerequisites
 
@@ -35,7 +49,7 @@ versions.
 
 == Getting Started
 
-Head over to link:samples/quickstart[samples/quickstart].
+Head over to link:samples/quickstart[*samples/quickstart*].
 
 == JavaScript API Reference
 === General
