@@ -11,6 +11,8 @@ toc::[]
 Celos is a tool for running recurring workflows that process data in
 Hadoop, such as MapReduce programs or Hive SQL scripts.
 
+image::etc/images/celos-ui.png[Celos UI]
+
 == Prerequisites
 
 * JDK 1.8
