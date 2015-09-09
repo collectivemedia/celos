@@ -144,7 +144,7 @@ output directory as arguments.  It reads all text files in the input
 directory, and writes tab-separated files containing word counts into
 the output directory.
 
-This builds the class and puts it into *build/libs/wordcount-1.0.jar*:
+This builds the class and puts it into build/libs/wordcount-1.0.jar:
 
 ....
 ./gradlew jar
@@ -244,7 +244,7 @@ export CLASSPATH=../../celos-server/build/libs/celos-server.jar:/etc/hadoop/conf
 java -cp $CLASSPATH com.collective.celos.server.Main --port $CELOS_PORT --workflows celos.d/workflows --defaults celos.d/defaults --logs celos.d/logs --db celos.d/db --autoSchedule 5 > /dev/null 2>&1 &
 ....
 
-== Check that Celos has loaded the wordcount workflow
+== Check that Celos has loaded the workflows
 
 Do the following:
 
