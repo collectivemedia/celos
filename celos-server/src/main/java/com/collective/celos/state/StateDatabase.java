@@ -36,7 +36,7 @@ public abstract class StateDatabase {
      * 
      * If this is a rerun, then markSlotForRerun() must be used in addition.
      */
-    public abstract void putSlotState(SlotState state) throws Exception;
+    protected abstract void putSlotState(SlotState state) throws Exception;
     
     /**
      * Marks the slot for rerun at the current wallclock time.
@@ -72,6 +72,26 @@ public abstract class StateDatabase {
             putSlotState(newState);
         }
         markSlotForRerun(slotID);
+    }
+
+    public void updateSlotToRunning(SlotState slot, String extId) throws Exception {
+        SlotState newState = slot.transitionToRunning(extId);
+        putSlotState(newState);
+    }
+
+    public void updateSlotToReady(SlotState slot) throws Exception {
+        SlotState newState = slot.transitionToReady();
+        putSlotState(newState);
+    }
+
+    public void updateSlotToWaitTimeout(SlotState slot) throws Exception {
+        SlotState newState = slot.transitionToWaitTimeout();
+        putSlotState(newState);
+    }
+
+    public void updateSlotToRetry(SlotState slot) throws Exception {
+        SlotState newState = slot.transitionToRetry();
+        putSlotState(newState);
     }
 
     public static StateDatabase makeFSDatabase(File dir) throws IOException {

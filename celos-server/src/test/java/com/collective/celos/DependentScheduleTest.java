@@ -30,6 +30,8 @@ public class DependentScheduleTest {
 
     StateDatabase emptyDB = new MemoryStateDatabase();
 
+
+
     @Test
     public void throwsExceptionContainingWorkflowIDIfWorkflowNotFound() {
         WorkflowConfiguration emptyConf = new WorkflowConfiguration();

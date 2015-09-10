@@ -137,9 +137,8 @@ class FileSystemStateDatabase extends StateDatabase {
 
     @Override
     protected void markSlotForRerun(SlotID slotID) throws Exception {
-        RerunState st = new RerunState(slotID.getScheduledTime());
         File file = getSlotRerunFile(slotID);
-        writeJson(st.toJSONNode(), file);
+        writeJson(mapper.createObjectNode(), file);
     }
 
     @Override
@@ -156,7 +155,7 @@ class FileSystemStateDatabase extends StateDatabase {
             for (File dayDir : wfDir.listFiles()) {
                 for (File rerunFile : dayDir.listFiles()) {
                     String json = FileUtils.readFileToString(rerunFile, CHARSET);
-                    RerunState st = RerunState.fromJSONNode((ObjectNode) mapper.readTree(json));
+//                    RerunState st = RerunState.fromJSONNode((ObjectNode) mapper.readTree(json));
                     ScheduledTime t = new ScheduledTime(dayDir.getName() + "T" + rerunFile.getName());
                     res.add(t);
                 }

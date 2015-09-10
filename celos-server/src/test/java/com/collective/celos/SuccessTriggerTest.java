@@ -35,7 +35,7 @@ public class SuccessTriggerTest {
     private WorkflowConfiguration workflowConfiguration = Mockito.mock(WorkflowConfiguration.class);
     private StateDatabase stateDatabase = Mockito.mock(StateDatabase.class);
     private WorkflowID workflowID = new WorkflowID("foo");
-    private StateDatabase msd = new MemoryStateDatabase();
+    private MemoryStateDatabase msd = new MemoryStateDatabase();
 
     @Before
     public void setUp() {

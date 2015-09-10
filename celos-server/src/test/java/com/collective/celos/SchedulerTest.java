@@ -130,10 +130,10 @@ public class SchedulerTest {
     @Test
     public void runExternalWorkflowsReadyCandidate() throws Exception {
         List<SlotState> slotStates = candidate(SlotState.Status.READY);
-        SlotState nextSlotState = slotStates.get(0).transitionToRunning("externalId");
+//        SlotState nextSlotState = slotStates.get(0).transitionToRunning("externalId");
         when(externalService.submit(slotId)).thenReturn("externalId");
         scheduler.runExternalWorkflows(wf, slotStates);
-        verify(stateDatabase).putSlotState(nextSlotState);
+        verify(stateDatabase).updateSlotToRunning(slotStates.get(0), "externalId");
         verifyNoMoreInteractions(stateDatabase);
     }
     
@@ -160,15 +160,15 @@ public class SchedulerTest {
 
         stubAsSchedulingCandidates(slotStates);
 
-        SlotState nextSlotState1 = slotState1.transitionToRunning("externalId1");
-        SlotState nextSlotState2 = slotState2.transitionToRunning("externalId2");
+//        SlotState nextSlotState1 = slotState1.transitionToRunning("externalId1");
+//        SlotState nextSlotState2 = slotState2.transitionToRunning("externalId2");
         
         when(externalService.submit(slotState1.getSlotID())).thenReturn("externalId1");
         when(externalService.submit(slotState2.getSlotID())).thenReturn("externalId2");
         
         scheduler.runExternalWorkflows(wf, slotStates);
-        verify(stateDatabase).putSlotState(nextSlotState1);
-        verify(stateDatabase).putSlotState(nextSlotState2);
+        verify(stateDatabase).updateSlotToRunning(slotState1, "externalId1");
+        verify(stateDatabase).updateSlotToRunning(slotState2, "externalId2");
         verifyNoMoreInteractions(stateDatabase);
     }
 
@@ -198,7 +198,7 @@ public class SchedulerTest {
     public void updateSlotStateWaitingAvailable() throws Exception {
 
         SlotState slotState = new SlotState(slotId, SlotState.Status.WAITING);
-        SlotState nextSlotState = new SlotState(slotId, SlotState.Status.READY);
+//        SlotState nextSlotState = new SlotState(slotId, SlotState.Status.READY);
 
         // The trigger should report the data as available
         ScheduledTime now = ScheduledTime.now();
@@ -207,7 +207,7 @@ public class SchedulerTest {
 
         scheduler.updateSlotState(wf, slotState, now);
 
-        verify(stateDatabase).putSlotState(nextSlotState);
+        verify(stateDatabase).updateSlotToReady(slotState);
         verifyNoMoreInteractions(stateDatabase);
     }
 

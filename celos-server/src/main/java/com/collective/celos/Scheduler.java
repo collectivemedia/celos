@@ -119,7 +119,7 @@ public class Scheduler {
             SlotID slotID = slotState.getSlotID();
             LOGGER.info("Submitting slot to external service: " + slotID);
             String externalID = wf.getExternalService().submit(slotID);
-            database.putSlotState(slotState.transitionToRunning(externalID));
+            database.updateSlotToRunning(slotState, externalID);
             LOGGER.info("Starting slot: " + slotID + " with external ID: " + externalID);
             wf.getExternalService().start(slotID, externalID);
         }
@@ -136,10 +136,10 @@ public class Scheduler {
         if (status.equals(SlotState.Status.WAITING)) {
             if (callTrigger(wf, slotState, current)) {
                 LOGGER.info("Slot is ready: " + slotID);
-                database.putSlotState(slotState.transitionToReady());
+                database.updateSlotToReady(slotState);
             } else if (isSlotTimedOut(slotState.getScheduledTime(), current, wf.getWaitTimeoutSeconds())) {
                 LOGGER.info("Slot timed out waiting: " + slotID);
-                database.putSlotState(slotState.transitionToWaitTimeout());
+                database.updateSlotToWaitTimeout(slotState);
             } else {
                 LOGGER.info("Waiting for slot: " + slotID);
             }
@@ -153,7 +153,7 @@ public class Scheduler {
                 } else {
                     if (slotState.getRetryCount() < wf.getMaxRetryCount()) {
                         LOGGER.info("Slot failed, preparing for retry: " + slotID + " external ID: " + externalID);
-                        database.putSlotState(slotState.transitionToRetry());
+                        database.updateSlotToRetry(slotState);
                     } else {
                         LOGGER.info("Slot failed permanently: " + slotID + " external ID: " + externalID);
                         database.updateSlotToFailure(slotState);
