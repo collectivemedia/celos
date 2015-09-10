@@ -19,7 +19,6 @@ import com.collective.celos.ScheduledTime;
 import com.collective.celos.SlotID;
 import com.collective.celos.SlotState;
 import com.collective.celos.WorkflowID;
-import com.google.common.collect.ImmutableSet;
 import junit.framework.Assert;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
@@ -33,7 +32,6 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.TreeSet;
 
 public class FileSystemStateDatabaseTest {
 
@@ -70,35 +68,6 @@ public class FileSystemStateDatabaseTest {
         StateDatabase db = StateDatabase.makeFSDatabase(makeDatabaseDir());
         Assert.assertNull(db.getSlotState(new SlotID(new WorkflowID("workflow-1"), new ScheduledTime("2013-12-02T13:37Z"))));
     }
-
-    @Test
-    public void testRerunExpiration() throws Exception {
-        WorkflowID wf1 = new WorkflowID("foo");
-        WorkflowID wf2 = new WorkflowID("bar");
-        StateDatabase db = StateDatabase.makeFSDatabase(makeDatabaseDir());
-        Assert.assertEquals(new TreeSet<>(), db.getTimesMarkedForRerun(wf1, new ScheduledTime("2013-12-02T15:00Z")));
-        Assert.assertEquals(new TreeSet<>(), db.getTimesMarkedForRerun(wf2, new ScheduledTime("2013-12-02T15:00Z")));
-        ScheduledTime time1 = new ScheduledTime("2013-12-02T13:00Z");
-        ScheduledTime time2 = new ScheduledTime("2013-12-02T14:00Z");
-        SlotID wf1slot1 = new SlotID(wf1, time1);
-        SlotID wf1slot2 = new SlotID(wf1, time2);
-        SlotID wf2slot1 = new SlotID(wf2, time1);
-        db.markSlotForRerun(wf1slot1, time1);
-        db.markSlotForRerun(wf1slot2, time2);
-        db.markSlotForRerun(wf2slot1, time1);
-        Assert.assertEquals(new TreeSet<>(ImmutableSet.of(time1, time2)), db.getTimesMarkedForRerun(wf1, new ScheduledTime("2013-12-02T15:00Z")));
-        Assert.assertEquals(new TreeSet<>(ImmutableSet.of(time1)), db.getTimesMarkedForRerun(wf2, new ScheduledTime("2013-12-02T15:00Z")));
-        // Now call wf1 with much later current time and make sure files got expired after first call
-        Assert.assertEquals(new TreeSet<>(ImmutableSet.of(time1, time2)), db.getTimesMarkedForRerun(wf1, new ScheduledTime("2015-12-02T15:00Z")));
-        Assert.assertEquals(new TreeSet<>(), db.getTimesMarkedForRerun(wf1, new ScheduledTime("2015-12-02T15:00Z")));
-        // wf2 still in there
-        Assert.assertEquals(new TreeSet<>(ImmutableSet.of(time1)), db.getTimesMarkedForRerun(wf2, new ScheduledTime("2013-12-02T15:00Z")));
-        // Now call wf2 with much later current time and make sure files got expired after first call
-        Assert.assertEquals(new TreeSet<>(ImmutableSet.of(time1)), db.getTimesMarkedForRerun(wf2, new ScheduledTime("2015-12-02T15:00Z")));
-        Assert.assertEquals(new TreeSet<>(), db.getTimesMarkedForRerun(wf2, new ScheduledTime("2015-12-02T15:00Z")));
-    }
-    
-
 
     /**
      * Compare slot states returned by getStates against those under src/test/resources.

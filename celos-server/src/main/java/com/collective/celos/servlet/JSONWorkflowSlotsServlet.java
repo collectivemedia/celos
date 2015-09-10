@@ -26,6 +26,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
+import java.util.SortedSet;
 
 /**
  * Returns information about the slot states of a single workflow as JSON.
@@ -84,8 +85,9 @@ public class JSONWorkflowSlotsServlet extends AbstractJSONServlet {
                 res.sendError(HttpServletResponse.SC_BAD_REQUEST, "Time interval between start and end is limited to: " + scheduler.getSlidingWindowHours() + " hours");
                 return;
             }
+            final SortedSet<ScheduledTime> scheduledTimes = wf.getSchedule().getScheduledTimes(scheduler, startTime, endTime);
+            List<SlotState> slotStates = scheduler.getStateDatabase().fetchSlotStates(wf, scheduledTimes);
 
-            List<SlotState> slotStates = scheduler.getSlotStates(wf, startTime, endTime);
             List<JsonNode> objectNodes = Lists.newArrayList();
             for (SlotState state : Lists.reverse(slotStates)) {
                 objectNodes.add(state.toJSONNode());

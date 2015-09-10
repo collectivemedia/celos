@@ -51,7 +51,7 @@ public class MemoryStateDatabase extends StateDatabase {
     }
 
     @Override
-    public SortedSet<ScheduledTime> getTimesMarkedForRerun(WorkflowID workflowID, ScheduledTime now) throws Exception {
+    protected SortedSet<ScheduledTime> getTimesMarkedForRerun(WorkflowID workflowID) throws Exception {
         SortedSet<ScheduledTime> res = new TreeSet<>();
         for (SlotID slot : rerun) {
             if (slot.getWorkflowID().equals(workflowID)) {

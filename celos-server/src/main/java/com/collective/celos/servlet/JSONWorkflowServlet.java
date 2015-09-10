@@ -22,6 +22,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
+import java.util.SortedSet;
 
 /**
  * Returns information about the slot states of a single workflow as JSON.
@@ -58,7 +59,9 @@ public class JSONWorkflowServlet extends AbstractJSONServlet {
                 res.sendError(HttpServletResponse.SC_NOT_FOUND, "Workflow not found: " + id);
             } else {
                 ScheduledTime time = getRequestTime(req);
-                List<SlotState> slotStates = scheduler.getSlotStates(wf, scheduler.getWorkflowStartTime(wf, time), time);
+                final ScheduledTime startTime = scheduler.getWorkflowStartTime(wf, time);
+                final SortedSet<ScheduledTime> scheduledTimes = wf.getSchedule().getScheduledTimes(scheduler, startTime, time);
+                List<SlotState> slotStates = scheduler.getStateDatabase().fetchSlotStates(wf, scheduledTimes);
                 ObjectNode object = createJSONObject(slotStates);
                 writer.writeValue(res.getOutputStream(), object);
             }

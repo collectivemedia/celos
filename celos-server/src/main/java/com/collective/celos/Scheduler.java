@@ -91,49 +91,14 @@ public class Scheduler {
      */
     private void stepWorkflow(Workflow wf, ScheduledTime current) throws Exception {
         LOGGER.info("Processing workflow: " + wf.getID() + " at: " + current);
-        List<SlotState> slotStates = getSlotStatesIncludingMarkedForRerun(wf, current, getWorkflowStartTime(wf, current), current);
+
+        final ScheduledTime startTime = getWorkflowStartTime(wf, current);
+        final SortedSet<ScheduledTime> scheduledTimes = wf.getSchedule().getScheduledTimes(this, startTime, current);
+        List<SlotState> slotStates = database.fetchSlotStates(wf, scheduledTimes);
         runExternalWorkflows(wf, slotStates);
         for (SlotState slotState : slotStates) {
             updateSlotState(wf, slotState, current);
         }
-    }
-
-    /**
-     * Get the slot states of all slots of the workflow from within the window defined by start (inclusive) and end (exclusive),
-     * as well as the slots states of all slots marked for rerun in the database.
-     */
-    public List<SlotState> getSlotStatesIncludingMarkedForRerun(Workflow wf, ScheduledTime current, ScheduledTime start, ScheduledTime end) throws Exception {
-        SortedSet<ScheduledTime> times = new TreeSet<>();
-        times.addAll(wf.getSchedule().getScheduledTimes(this, start, end));
-        times.addAll(database.getTimesMarkedForRerun(wf.getID(), current));
-        return fetchSlotStates(wf, times);
-    }
-
-    /**
-     * Get the slot states of all slots of the workflow from within the window defined by start (inclusive) and end (exclusive).
-     * This is used for servlets that return the slot states within the window, and don't care about rerun slots.
-     */
-    public List<SlotState> getSlotStates(Workflow wf, ScheduledTime start, ScheduledTime end) throws Exception {
-        SortedSet<ScheduledTime> times = new TreeSet<>();
-        times.addAll(wf.getSchedule().getScheduledTimes(this, start, end));
-        return fetchSlotStates(wf, times);
-    }
-
-    private List<SlotState> fetchSlotStates(Workflow wf, SortedSet<ScheduledTime> scheduledTimes) throws Exception {
-        List<SlotState> slotStates = new ArrayList<SlotState>(scheduledTimes.size());
-        for (ScheduledTime t : scheduledTimes) {
-            SlotID slotID = new SlotID(wf.getID(), t);
-            SlotState slotState = database.getSlotState(slotID);
-            if (slotState != null) {
-                slotStates.add(slotState);
-            } else {
-                // Database doesn't have any info on the slot yet -
-                // synthesize a fresh waiting slot and put it in the list
-                // (not in the database).
-                slotStates.add(new SlotState(slotID, SlotState.Status.WAITING));
-            }
-        }
-        return Collections.unmodifiableList(slotStates);
     }
 
     public ScheduledTime getWorkflowStartTime(Workflow wf, ScheduledTime current) {

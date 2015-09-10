@@ -142,7 +142,7 @@ class FileSystemStateDatabase extends StateDatabase {
     }
 
     @Override
-    public SortedSet<ScheduledTime> getTimesMarkedForRerun(WorkflowID workflowID, ScheduledTime now) throws Exception {
+    public SortedSet<ScheduledTime> getTimesMarkedForRerun(WorkflowID workflowID) throws Exception {
         SortedSet<ScheduledTime> res = new TreeSet<>();
         File wfDir = getWorkflowRerunDir(workflowID);
         if (wfDir.exists()) {
@@ -152,10 +152,6 @@ class FileSystemStateDatabase extends StateDatabase {
                     RerunState st = RerunState.fromJSONNode((ObjectNode) mapper.readTree(json));
                     ScheduledTime t = new ScheduledTime(dayDir.getName() + "T" + rerunFile.getName());
                     res.add(t);
-                    if (st.isExpired(now)) {
-                        LOGGER.info("Expiring rerun file: " + rerunFile);
-                        rerunFile.delete();
-                    }
                 }
             }
         }

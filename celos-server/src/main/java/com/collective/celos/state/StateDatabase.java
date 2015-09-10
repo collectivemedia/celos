@@ -15,14 +15,11 @@
  */
 package com.collective.celos.state;
 
-import com.collective.celos.ScheduledTime;
-import com.collective.celos.SlotID;
-import com.collective.celos.SlotState;
-import com.collective.celos.WorkflowID;
+import com.collective.celos.*;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.SortedSet;
+import java.util.*;
 
 /**
  * Stores all state needed by the scheduler.
@@ -49,7 +46,7 @@ public abstract class StateDatabase {
     /**
      * Returns the list of scheduled times of the given workflow that have been marked for rerun.
      */
-    public abstract SortedSet<ScheduledTime> getTimesMarkedForRerun(WorkflowID workflowID, ScheduledTime now) throws Exception;
+    protected abstract SortedSet<ScheduledTime> getTimesMarkedForRerun(WorkflowID workflowID) throws Exception;
 
 
     public void updateSlotForRerun(SlotID slotID, ScheduledTime now) throws Exception {
@@ -64,5 +61,25 @@ public abstract class StateDatabase {
     public static StateDatabase makeFSDatabase(File dir) throws IOException {
         return new FileSystemStateDatabase(dir);
     }
+
+
+    public List<SlotState> fetchSlotStates(Workflow wf, SortedSet<ScheduledTime> scheduledTimes) throws Exception {
+        scheduledTimes.addAll(getTimesMarkedForRerun(wf.getID()));
+        List<SlotState> slotStates = new ArrayList<SlotState>(scheduledTimes.size());
+        for (ScheduledTime t : scheduledTimes) {
+            SlotID slotID = new SlotID(wf.getID(), t);
+            SlotState slotState = getSlotState(slotID);
+            if (slotState != null) {
+                slotStates.add(slotState);
+            } else {
+                // Database doesn't have any info on the slot yet -
+                // synthesize a fresh waiting slot and put it in the list
+                // (not in the database).
+                slotStates.add(new SlotState(slotID, SlotState.Status.WAITING));
+            }
+        }
+        return Collections.unmodifiableList(slotStates);
+    }
+
 
 }
