@@ -394,7 +394,7 @@ public class UIServlet extends HttpServlet {
             listedWfs.addAll(ids);
         }
 
-        Sets.SetView<WorkflowID> diff = Sets.difference(expectedWfs, listedWfs);
+        TreeSet<WorkflowID> diff = new TreeSet<>(Sets.difference(expectedWfs, listedWfs));
         if (!diff.isEmpty()) {
             configWorkflowGroups.add(new WorkflowGroup(UNLISTED_WORKFLOWS_CAPTION, new ArrayList<>(diff)));
         }
