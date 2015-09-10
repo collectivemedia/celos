@@ -25,6 +25,7 @@ import org.apache.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -135,10 +136,16 @@ class FileSystemStateDatabase extends StateDatabase {
     }
 
     @Override
-    public void markSlotForRerun(SlotID slotID, ScheduledTime now) throws Exception {
-        RerunState st = new RerunState(now);
+    protected void markSlotForRerun(SlotID slotID) throws Exception {
+        RerunState st = new RerunState(slotID.getScheduledTime());
         File file = getSlotRerunFile(slotID);
         writeJson(st.toJSONNode(), file);
+    }
+
+    @Override
+    protected void unMarkSlotForRerun(SlotID slot) throws Exception {
+        File file = getSlotRerunFile(slot);
+        Files.deleteIfExists(file.toPath());
     }
 
     @Override

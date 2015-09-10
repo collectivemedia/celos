@@ -23,7 +23,7 @@ public class RerunState extends ValueObject {
     public static final int EXPIRATION_DAYS = 14;
 
     private static final ObjectMapper MAPPER = new ObjectMapper();
-    private static final String RERUN_TIME_PROP = "rerunTime";
+    private static final String RERUN_TIME_PROP = "scheduledTime";
 
     // The wallclock time at which the slot was marked for rerun
     private final ScheduledTime rerunTime;

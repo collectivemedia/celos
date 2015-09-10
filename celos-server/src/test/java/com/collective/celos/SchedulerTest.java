@@ -254,7 +254,6 @@ public class SchedulerTest {
     public void updateSlotStateRunningExternalIsSuccess() throws Exception {
 
         SlotState slotState = new SlotState(slotId, SlotState.Status.RUNNING);
-        SlotState nextSlotState = new SlotState(slotId, SlotState.Status.SUCCESS);
 
         // The external service should report the status as success
         ExternalStatus success = new MockExternalService.MockExternalStatusSuccess();
@@ -262,7 +261,7 @@ public class SchedulerTest {
 
         scheduler.updateSlotState(wf, slotState, ScheduledTime.now());
 
-        verify(stateDatabase).putSlotState(nextSlotState);
+        verify(stateDatabase).updateSlotToSuccess(slotState);
         verifyNoMoreInteractions(stateDatabase);
     }
 
@@ -270,7 +269,6 @@ public class SchedulerTest {
     public void updateSlotStateRunningExternalIsFailure() throws Exception {
 
         SlotState slotState = new SlotState(slotId, SlotState.Status.RUNNING);
-        SlotState nextSlotState = new SlotState(slotId, SlotState.Status.FAILURE);
 
         // The external service should report the status as failure
         ExternalStatus failure = new MockExternalService.MockExternalStatusFailure();
@@ -278,7 +276,7 @@ public class SchedulerTest {
 
         scheduler.updateSlotState(wf, slotState, ScheduledTime.now());
 
-        verify(stateDatabase).putSlotState(nextSlotState);
+        verify(stateDatabase).updateSlotToFailure(slotState);
         verifyNoMoreInteractions(stateDatabase);
     }
 
@@ -399,7 +397,7 @@ public class SchedulerTest {
         SlotID id = new SlotID(wfID1, new ScheduledTime("2000-11-27T15:01Z"));
         Assert.assertEquals(null, db.getSlotState(id));
         // mark the slot for rerun and verify scheduler cares about it
-        db.markSlotForRerun(id, now);
+        db.updateSlotForRerun(id);
         sched.step(now);
         Assert.assertEquals(SlotState.Status.READY, db.getSlotState(id).getStatus());
         sched.step(now);

@@ -149,14 +149,14 @@ public class Scheduler {
             if (!xStatus.isRunning()) {
                 if (xStatus.isSuccess()) {
                     LOGGER.info("Slot successful: " + slotID + " external ID: " + externalID);
-                    database.putSlotState(slotState.transitionToSuccess());
+                    database.updateSlotToSuccess(slotState);
                 } else {
                     if (slotState.getRetryCount() < wf.getMaxRetryCount()) {
                         LOGGER.info("Slot failed, preparing for retry: " + slotID + " external ID: " + externalID);
                         database.putSlotState(slotState.transitionToRetry());
                     } else {
                         LOGGER.info("Slot failed permanently: " + slotID + " external ID: " + externalID);
-                        database.putSlotState(slotState.transitionToFailure());
+                        database.updateSlotToFailure(slotState);
                     }
                 }
             } else {

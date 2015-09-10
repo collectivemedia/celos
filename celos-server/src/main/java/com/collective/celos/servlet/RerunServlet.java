@@ -66,7 +66,7 @@ public class RerunServlet extends AbstractServlet {
 
             StateDatabase db = scheduler.getStateDatabase();
             LOGGER.info("Scheduling Slot for rerun: " + slot);
-            db.updateSlotForRerun(slot, ScheduledTime.now());
+            db.updateSlotForRerun(slot);
 
         } catch(Exception e) {
             throw new ServletException(e);

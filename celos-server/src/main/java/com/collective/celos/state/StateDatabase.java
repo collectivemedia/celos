@@ -41,21 +41,37 @@ public abstract class StateDatabase {
     /**
      * Marks the slot for rerun at the current wallclock time.
      */
-    protected abstract void markSlotForRerun(SlotID slot, ScheduledTime now) throws Exception;
-    
+    protected abstract void markSlotForRerun(SlotID slot) throws Exception;
+
+    /**
+     * Unmarks the slot for rerun at the current wallclock time.
+     */
+    protected abstract void unMarkSlotForRerun(SlotID slot) throws Exception;
+
     /**
      * Returns the list of scheduled times of the given workflow that have been marked for rerun.
      */
     protected abstract SortedSet<ScheduledTime> getTimesMarkedForRerun(WorkflowID workflowID) throws Exception;
 
+    public void updateSlotToSuccess(SlotState slot) throws Exception {
+        SlotState newState = slot.transitionToSuccess();
+        putSlotState(newState);
+        unMarkSlotForRerun(newState.getSlotID());
+    }
 
-    public void updateSlotForRerun(SlotID slotID, ScheduledTime now) throws Exception {
+    public void updateSlotToFailure(SlotState slot) throws Exception {
+        SlotState newState = slot.transitionToFailure();
+        putSlotState(newState);
+        unMarkSlotForRerun(newState.getSlotID());
+    }
+
+    public void updateSlotForRerun(SlotID slotID) throws Exception {
         SlotState state = getSlotState(slotID);
         if (state != null) {
             SlotState newState = state.transitionToRerun();
             putSlotState(newState);
         }
-        markSlotForRerun(slotID, now);
+        markSlotForRerun(slotID);
     }
 
     public static StateDatabase makeFSDatabase(File dir) throws IOException {

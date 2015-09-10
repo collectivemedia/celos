@@ -39,15 +39,19 @@ public class MemoryStateDatabase extends StateDatabase {
     public void putSlotState(SlotState state) throws Exception {
         map.put(state.getSlotID(), state);
     }
-    
-    public int size() {
-        return map.size();
+
+    @Override
+    protected void markSlotForRerun(SlotID slot) throws Exception {
+        rerun.add(slot);
     }
 
     @Override
-    public void markSlotForRerun(SlotID slot, ScheduledTime now) throws Exception {
-        // Doesn't implement GC for rerun
-        rerun.add(slot);
+    protected void unMarkSlotForRerun(SlotID slot) throws Exception {
+        rerun.remove(slot);
+    }
+
+    public int size() {
+        return map.size();
     }
 
     @Override

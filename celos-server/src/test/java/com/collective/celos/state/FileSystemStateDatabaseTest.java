@@ -180,7 +180,7 @@ public class FileSystemStateDatabaseTest {
         SlotID id = new SlotID(new WorkflowID("foo"), new ScheduledTime("2014-02-08T20:00Z"));
         SlotState state = new SlotState(id, status);
         db.putSlotState(state);
-        db.updateSlotForRerun(state.getSlotID(), ScheduledTime.now());
+        db.updateSlotForRerun(state.getSlotID());
     }
 
     @Test
@@ -197,7 +197,7 @@ public class FileSystemStateDatabaseTest {
         SlotID id = new SlotID(new WorkflowID("foo"), new ScheduledTime("2014-02-08T20:00Z"));
         SlotState state = new SlotState(id, status);
         db.putSlotState(state);
-        db.updateSlotForRerun(state.getSlotID(), ScheduledTime.now());
+        db.updateSlotForRerun(state.getSlotID());
         SlotState dbState = db.getSlotState(id);
         org.junit.Assert.assertEquals(state.transitionToRerun(), dbState);
     }
