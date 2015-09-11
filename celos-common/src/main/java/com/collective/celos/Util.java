@@ -26,14 +26,13 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 import org.apache.log4j.rolling.RollingFileAppender;
 import org.apache.log4j.rolling.TimeBasedRollingPolicy;
-import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormat;
 
 import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Map;
 
 /**
@@ -47,37 +46,21 @@ public class Util {
     }
 
     // DATETIME UTILITIES
-    
-    public static DateTime toFullHour(DateTime dt) {
-        return toFullMinute(dt).withMinuteOfHour(0);
-    }
 
-    public static DateTime toFullMinute(DateTime dt) {
-        return toFullSecond(dt).withSecondOfMinute(0);
+    public static boolean isFullDay(ZonedDateTime dt) {
+        return dt.truncatedTo(ChronoUnit.DAYS).equals(dt);
     }
     
-    public static DateTime toFullSecond(DateTime dt) {
-        return dt.withMillisOfSecond(0);
-    }
-
-    public static boolean isFullDay(DateTime dt) {
-        return isFullHour(dt) && dt.getHourOfDay() == 0;
+    public static boolean isFullHour(ZonedDateTime dt) {
+        return dt.truncatedTo(ChronoUnit.HOURS).equals(dt);
     }
     
-    public static boolean isFullHour(DateTime dt) {
-        return isFullMinute(dt) && dt.getMinuteOfHour() == 0;
+    public static boolean isFullMinute(ZonedDateTime dt) {
+        return dt.truncatedTo(ChronoUnit.MINUTES).equals(dt);
     }
     
-    public static boolean isFullMinute(DateTime dt) {
-        return isFullSecond(dt) && dt.getSecondOfMinute() == 0;
-    }
-    
-    public static boolean isFullSecond(DateTime dt) {
-        return dt.getMillisOfSecond() == 0;
-    }
-
-    public static String toNominalTimeFormat(DateTime dt) {
-        return dt.toString(DateTimeFormat.forPattern("YYYY-MM-dd'T'HH:mm'Z"));
+    public static boolean isFullSecond(ZonedDateTime dt) {
+        return dt.truncatedTo(ChronoUnit.SECONDS).equals(dt);
     }
 
     // JSON UTILITIES

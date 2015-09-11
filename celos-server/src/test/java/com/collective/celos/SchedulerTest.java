@@ -18,13 +18,13 @@ package com.collective.celos;
 import com.collective.celos.trigger.AlwaysTrigger;
 import com.collective.celos.trigger.Trigger;
 import com.collective.celos.trigger.TriggerStatus;
-import org.joda.time.DateTime;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InOrder;
 
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 import static org.mockito.Matchers.anyListOf;
@@ -349,16 +349,16 @@ public class SchedulerTest {
         MemoryStateDatabase db = new MemoryStateDatabase();
 
         int slidingWindowHours = 24;
-        DateTime current = DateTime.parse("2013-11-27T15:01Z");
-        DateTime currentFullHour = Util.toFullHour(current);
-        
+        ZonedDateTime current = ZonedDateTime.parse("2013-11-27T15:01Z");
+        ZonedDateTime currentFullHour = current.truncatedTo(ChronoUnit.HOURS);
+
         Scheduler sched = new Scheduler(cfg, db, slidingWindowHours);
-        sched.step(ZonedDateTime.parse(current.toString()));
+        sched.step(current);
         
         Assert.assertEquals(slidingWindowHours, db.size());
         
         for (int i = 0; i < slidingWindowHours; i++) {
-            SlotID id = new SlotID(wfID1, ZonedDateTime.parse(currentFullHour.toString()).minusHours(i));
+            SlotID id = new SlotID(wfID1, currentFullHour.minusHours(i));
             SlotState state = db.getSlotState(id);
             if (state == null) {
                 throw new AssertionError("Slot " + id + " not found.");
@@ -518,22 +518,22 @@ public class SchedulerTest {
         MemoryStateDatabase db = new MemoryStateDatabase();
 
         int slidingWindowHours = 24;
-        DateTime current = DateTime.parse("2013-11-27T15:01Z");
-        DateTime currentFullHour = Util.toFullHour(current);
+        ZonedDateTime current = ZonedDateTime.parse("2013-11-27T15:01Z");
+        ZonedDateTime currentFullHour = current.truncatedTo(ChronoUnit.HOURS);
 
         for (int i = 0; i < slidingWindowHours; i++) {
-            SlotID id = new SlotID(wfID1, ZonedDateTime.parse(currentFullHour.toString()).minusHours(i));
+            SlotID id = new SlotID(wfID1, currentFullHour.minusHours(i));
             SlotState state = new SlotState(id, SlotState.Status.READY).transitionToRunning("fake-external-ID");
             db.putSlotState(state);
         }
         
         Scheduler sched = new Scheduler(cfg, db, slidingWindowHours);
-        sched.step(ZonedDateTime.parse(current.toString()));
+        sched.step(current);
         
         Assert.assertEquals(slidingWindowHours, db.size());
         
         for (int i = 0; i < slidingWindowHours; i++) {
-            SlotID id = new SlotID(wfID1, ZonedDateTime.parse(currentFullHour.toString()).minusHours(i));
+            SlotID id = new SlotID(wfID1, currentFullHour.minusHours(i));
             SlotState state = db.getSlotState(id);
             if (state == null) {
                 throw new AssertionError("Slot " + id + " not found.");
@@ -565,23 +565,23 @@ public class SchedulerTest {
         MemoryStateDatabase db = new MemoryStateDatabase();
 
         int slidingWindowHours = 24;
-        DateTime current = DateTime.parse("2013-11-27T15:01Z");
-        DateTime currentFullHour = Util.toFullHour(current);
+        ZonedDateTime current = ZonedDateTime.parse("2013-11-27T15:01Z");
+        ZonedDateTime currentFullHour = current.truncatedTo(ChronoUnit.HOURS);
 
         for (int i = 0; i < slidingWindowHours; i++) {
-            SlotID id = new SlotID(wfID1, ZonedDateTime.parse(currentFullHour.toString()).minusHours(i));
+            SlotID id = new SlotID(wfID1, currentFullHour.minusHours(i));
             SlotState state = new SlotState(id, SlotState.Status.READY);
             db.putSlotState(state);
         }
         
         Scheduler sched = new Scheduler(cfg, db, slidingWindowHours);
-        sched.step(ZonedDateTime.parse(current.toString()));
+        sched.step(current);
         
         Assert.assertEquals(slidingWindowHours, db.size());
         Assert.assertEquals(slidingWindowHours, srv1.getSlots2ExternalID().size());
         
         for (int i = 0; i < slidingWindowHours; i++) {
-            ZonedDateTime scheduledTime = ZonedDateTime.parse(currentFullHour.toString()).minusHours(i);
+            ZonedDateTime scheduledTime = currentFullHour.minusHours(i);
             SlotID id = new SlotID(wfID1, scheduledTime);
             SlotState state = db.getSlotState(id);
             if (state == null) {

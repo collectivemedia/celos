@@ -21,9 +21,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
 import j2html.tags.Tag;
-import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -35,6 +32,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 import static j2html.TagCreator.*;
@@ -132,9 +131,9 @@ public class UIServlet extends HttpServlet {
     private static int MAX_MINUTES_TO_FETCH = 7 * 60 * 24;
     private static int MAX_TILES_TO_DISPLAY = 48;
     
-    private static final DateTimeFormatter DAY_FORMAT = DateTimeFormat.forPattern("dd");
-    private static final DateTimeFormatter HEADER_FORMAT = DateTimeFormat.forPattern("HHmm");
-    private static final DateTimeFormatter FULL_FORMAT = DateTimeFormat.forPattern("YYYY-MM-dd HH:mm");
+    private static final DateTimeFormatter DAY_FORMAT = DateTimeFormatter.ofPattern("dd");
+    private static final DateTimeFormatter HEADER_FORMAT = DateTimeFormatter.ofPattern("HHmm");
+    private static final DateTimeFormatter FULL_FORMAT = DateTimeFormatter.ofPattern("YYYY-MM-dd HH:mm");
     
     static String render(UIConfiguration conf) throws Exception {
         return html().with(makeHead(), makeBody(conf)).render();
@@ -166,14 +165,14 @@ public class UIServlet extends HttpServlet {
         List<Tag> cells = new LinkedList<>();
         cells.add(td().with(unsafeHtml("&nbsp;")));
         for (ZonedDateTime time : conf.getTileTimes().descendingSet()) {
-            cells.add(makeDay(new DateTime(time.toString())));
+            cells.add(makeDay(time));
         }
         return tr().with(cells);
     }
 
-    private static Tag makeDay(DateTime time) {
+    private static Tag makeDay(ZonedDateTime time) {
         if (Util.isFullDay(time)) {
-            return td().with(unsafeHtml("&nbsp;" + DAY_FORMAT.print(time) + "&nbsp;")).withClass("day");
+            return td().with(unsafeHtml("&nbsp;" + time.format(DAY_FORMAT) + "&nbsp;")).withClass("day");
         } else {
             return td().with(unsafeHtml("&nbsp;&nbsp;&nbsp;&nbsp;")).withClass("noDay");
         }
@@ -181,7 +180,7 @@ public class UIServlet extends HttpServlet {
     
     private static Tag makeTimeHeader(UIConfiguration conf) {
         List<Tag> cells = new LinkedList<>();
-        cells.add(td(FULL_FORMAT.print(new DateTime(conf.getEnd().toString())) + " UTC").withClass("currentDate"));
+        cells.add(td(conf.getEnd().format(FULL_FORMAT) + " UTC").withClass("currentDate"));
         for (ZonedDateTime time : conf.getTileTimes().descendingSet()) {
             cells.add(makeHour(time));
         }
@@ -189,7 +188,7 @@ public class UIServlet extends HttpServlet {
     }
     
     private static Tag makeHour(ZonedDateTime time) {
-        return td(HEADER_FORMAT.print(new DateTime(time))).withClass("hour");
+        return td(time.format(HEADER_FORMAT)).withClass("hour");
     }
     
     private static List<Tag> makeTableRows(UIConfiguration conf) {
@@ -322,28 +321,23 @@ public class UIServlet extends HttpServlet {
     }
 
     static ZonedDateTime bucketTime(ZonedDateTime t, int zoomLevelMinutes) {
-        DateTime dtNow = new DateTime(t.toString());
-        DateTime dtFullDay = toFullDay(dtNow);
-        DateTime dt = dtFullDay;
-        while(dt.isBefore(dtNow)) {
+        ZonedDateTime dtNow = t;
+        ZonedDateTime dtFullDay = dtNow.truncatedTo(ChronoUnit.DAYS);
+        ZonedDateTime dt = dtFullDay;
+        while (dt.isBefore(dtNow)) {
             dt = dt.plusMinutes(zoomLevelMinutes);
         }
-        return ZonedDateTime.parse(dt.toString());
+        return dt;
     }
 
-    private static DateTime toFullDay(DateTime dt) {
-        return dt.withHourOfDay(0).withMinuteOfHour(0).withSecondOfMinute(0).withMillisOfSecond(0);
-    }
-    
     // Get first tile, e.g. for now=2015-09-01T20:21Z with zoom=5 returns 2015-09-01T20:20Z
     static ZonedDateTime getFirstTileTime(ZonedDateTime now, int zoomLevelMinutes) {
-        DateTime dt = new DateTime(now.toString());
-        DateTime nextDay = toFullDay(dt.plusDays(1));
-        DateTime t = nextDay;
-        while(t.isAfter(dt)) {
+        ZonedDateTime nextDay = now.plusDays(1).truncatedTo(ChronoUnit.DAYS);
+        ZonedDateTime t = nextDay;
+        while(t.isAfter(now)) {
             t = t.minusMinutes(zoomLevelMinutes);
         }
-        return ZonedDateTime.parse(t.toString());
+        return t;
     }
     
     static NavigableSet<ZonedDateTime> getTileTimesSet(ZonedDateTime firstTileTime, int zoomLevelMinutes, int maxMinutesToFetch, int maxTilesToDisplay) {

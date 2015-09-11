@@ -15,29 +15,24 @@
  */
 package com.collective.celos.ui;
 
-import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.net.URL;
-import java.util.*;
-
-import com.google.common.collect.*;
-import org.junit.Assert;
-import org.junit.Test;
-
-import java.time.ZonedDateTime;
-import com.collective.celos.SlotID;
-import com.collective.celos.SlotState;
-import com.collective.celos.WorkflowID;
-import com.collective.celos.WorkflowInfo;
-import com.collective.celos.WorkflowStatus;
+import com.collective.celos.*;
 import com.gargoylesoftware.htmlunit.StringWebResponse;
 import com.gargoylesoftware.htmlunit.TopLevelWindow;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.HTMLParser;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.gargoylesoftware.htmlunit.html.HtmlTableDataCell;
-import sun.security.ssl.HandshakeInStream;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
+import org.junit.Assert;
+import org.junit.Test;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.net.URL;
+import java.time.ZonedDateTime;
+import java.util.*;
 
 public class UIServletTest {
 
@@ -137,7 +132,10 @@ public class UIServletTest {
         WebClient webClient = new WebClient();
         webClient.setThrowExceptionOnFailingStatusCode(false);
         HtmlPage page = HTMLParser.parse(response, new TopLevelWindow("top", webClient));
-        
+
+        final String contentAsString = response.getContentAsString();
+        System.out.println(response.getContentAsString());
+
         // Some basic sanity checking
         
         List<HtmlTableDataCell> slotCells = (List<HtmlTableDataCell>) page.getByXPath("//td[contains(@class, 'slot')]");

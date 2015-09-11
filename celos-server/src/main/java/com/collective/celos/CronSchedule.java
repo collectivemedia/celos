@@ -44,7 +44,7 @@ public class CronSchedule implements Schedule {
 
         DateTime candidate = startDT;
         while((candidate = getNextDateTime(candidate)) != null && candidate.isBefore(endDT)) {
-            // FIXME
+            // FIXME zone offset might be wrong
             zonedDateTimes.add(ZonedDateTime.parse(candidate.toString()));
         }
         
