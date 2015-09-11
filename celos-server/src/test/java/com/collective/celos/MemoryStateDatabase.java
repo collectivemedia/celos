@@ -15,12 +15,8 @@
  */
 package com.collective.celos;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.time.ZonedDateTime;
+import java.util.*;
 
 /**
  * Simple implementation of StateDatabase that stores everything in a Map.
@@ -45,17 +41,17 @@ public class MemoryStateDatabase implements StateDatabase {
     }
 
     @Override
-    public void markSlotForRerun(SlotID slot, ScheduledTime now) throws Exception {
+    public void markSlotForRerun(SlotID slot, ZonedDateTime now) throws Exception {
         // Doesn't implement GC for rerun
         rerun.add(slot);
     }
 
     @Override
-    public SortedSet<ScheduledTime> getTimesMarkedForRerun(WorkflowID workflowID, ScheduledTime now) throws Exception {
-        SortedSet<ScheduledTime> res = new TreeSet<>();
+    public SortedSet<ZonedDateTime> getTimesMarkedForRerun(WorkflowID workflowID, ZonedDateTime now) throws Exception {
+        SortedSet<ZonedDateTime> res = new TreeSet<>();
         for (SlotID slot : rerun) {
             if (slot.getWorkflowID().equals(workflowID)) {
-                res.add(slot.getScheduledTime());
+                res.add(slot.getScheduledDateTime());
             }
         }
         return res;

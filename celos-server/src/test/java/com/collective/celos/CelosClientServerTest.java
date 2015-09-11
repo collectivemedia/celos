@@ -16,7 +16,6 @@
 package com.collective.celos;
 
 import com.collective.celos.server.CelosServer;
-import com.collective.celos.server.Main;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -33,6 +32,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Set;
 
@@ -147,7 +147,7 @@ public class CelosClientServerTest {
         for (int i = 0; i < slotStates.size() - 1; i++) {
             SlotState slotState = slotStates.get(i);
             SlotState nextSlotState = slotStates.get(i + 1);
-            Assert.assertTrue(!slotState.getScheduledTime().getDateTime().isBefore(nextSlotState.getScheduledTime().getDateTime()));
+            Assert.assertTrue(!slotState.getScheduledTime().isBefore(nextSlotState.getScheduledTime()));
         }
     }
 
@@ -319,13 +319,13 @@ public class CelosClientServerTest {
     @Test
     public void testGetWorkflowStatusInPast() throws Exception {
 
-        ScheduledTime timeInPast = new ScheduledTime("2000-12-01T00:00Z");
+        ZonedDateTime timeInPast = ZonedDateTime.parse("2000-12-01T00:00Z");
         File src = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/client/wf-list").toURI());
         FileUtils.copyDirectory(src, workflowsDir);
 
         List<SlotState> slotStates = celosClient.getWorkflowStatus(new WorkflowID("workflow-4")).getSlotStates();
         Assert.assertEquals(slotStates.size(), SLOTS_IN_CELOS_SERVER_SLIDING_WINDOW);
-        Assert.assertTrue(slotStates.get(slotStates.size() - 1).getScheduledTime().getDateTime().isAfter(timeInPast.getDateTime().plusYears(1)));
+        Assert.assertTrue(slotStates.get(slotStates.size() - 1).getScheduledTime().isAfter(timeInPast.plusYears(1)));
 
         slotStates = celosClient.getWorkflowStatus(new WorkflowID("workflow-4"), timeInPast).getSlotStates();
         Assert.assertEquals(slotStates.get(slotStates.size() - 1).getScheduledTime(), timeInPast.minusDays(SchedulerConfiguration.SLIDING_WINDOW_DAYS));
@@ -338,7 +338,7 @@ public class CelosClientServerTest {
     @Test
     public void testSchedulerIteratorPast() throws Exception {
 
-        ScheduledTime timeInPast = new ScheduledTime("2000-12-01T00:00Z");
+        ZonedDateTime timeInPast = ZonedDateTime.parse("2000-12-01T00:00Z");
         File src = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/client/wf-list").toURI());
         FileUtils.copyDirectory(src, workflowsDir);
 
@@ -347,7 +347,7 @@ public class CelosClientServerTest {
 
         celosClient.iterateScheduler(timeInPast);
 
-        ScheduledTime inclusivePeriod = timeInPast.plusSeconds(1);
+        ZonedDateTime inclusivePeriod = timeInPast.plusSeconds(1);
         slotStates = celosClient.getWorkflowStatus(new WorkflowID("workflow-4"), inclusivePeriod).getSlotStates();
 
         for (SlotState slotState : slotStates) {
@@ -413,7 +413,7 @@ public class CelosClientServerTest {
         File src2 = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/server/slot-db-1").toURI());
         FileUtils.copyDirectory(src2, slotDbDir);
 
-        celosClient.getWorkflowStatus(new WorkflowID("workflow-1"), new ScheduledTime("2013-12-02T20:00Z"));
+        celosClient.getWorkflowStatus(new WorkflowID("workflow-1"), ZonedDateTime.parse("2013-12-02T20:00Z"));
     }
 
 
@@ -425,10 +425,10 @@ public class CelosClientServerTest {
         File src2 = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/server/slot-db-1").toURI());
         FileUtils.copyDirectory(src2, slotDbDir);
 
-        ScheduledTime timeStart = new ScheduledTime("2013-11-25T20:00:00.000Z");
-        ScheduledTime waitingSlotsTimeEnd = new ScheduledTime("2013-12-02T19:00:00.000Z");
+        ZonedDateTime timeStart = ZonedDateTime.parse("2013-11-25T20:00:00.000Z");
+        ZonedDateTime waitingSlotsTimeEnd = ZonedDateTime.parse("2013-12-02T19:00:00.000Z");
 
-        ScheduledTime time = waitingSlotsTimeEnd;
+        ZonedDateTime time = waitingSlotsTimeEnd;
 
         List<SlotState> expectedSlotStates = Lists.newArrayList();
         SlotState slotStateRunning = new SlotState(new SlotID(new WorkflowID("workflow-1"), time), SlotState.Status.RUNNING, "foo-bar", 0);
@@ -439,13 +439,13 @@ public class CelosClientServerTest {
         expectedSlotStates.add(slotStateRunning);
         expectedSlotStates.add(slotStateReady);
 
-        while (!time.getDateTime().isBefore(timeStart.getDateTime())) {
+        while (!time.isBefore(timeStart)) {
             SlotState slotState = new SlotState(new SlotID(new WorkflowID("workflow-1"), time), SlotState.Status.WAITING);
             expectedSlotStates.add(slotState);
             time = time.minusHours(1);
         }
 
-        List<SlotState> resultSlotStates = celosClient.getWorkflowStatus(new WorkflowID("workflow-1"), new ScheduledTime("2013-12-02T20:00Z")).getSlotStates();
+        List<SlotState> resultSlotStates = celosClient.getWorkflowStatus(new WorkflowID("workflow-1"), ZonedDateTime.parse("2013-12-02T20:00Z")).getSlotStates();
 
         Assert.assertEquals(expectedSlotStates, resultSlotStates);
     }
@@ -459,10 +459,10 @@ public class CelosClientServerTest {
         File src2 = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/server/slot-db-1").toURI());
         FileUtils.copyDirectory(src2, slotDbDir);
 
-        ScheduledTime timeStart = new ScheduledTime("2013-12-02T10:00:00.000Z");
-        ScheduledTime waitingSlotsTimeEnd = new ScheduledTime("2013-12-02T19:00:00.000Z");
+        ZonedDateTime timeStart = ZonedDateTime.parse("2013-12-02T10:00:00.000Z");
+        ZonedDateTime waitingSlotsTimeEnd = ZonedDateTime.parse("2013-12-02T19:00:00.000Z");
 
-        ScheduledTime time = waitingSlotsTimeEnd;
+        ZonedDateTime time = waitingSlotsTimeEnd;
 
         List<SlotState> expectedSlotStates = Lists.newArrayList();
         SlotState slotStateRunning = new SlotState(new SlotID(new WorkflowID("workflow-1"), time), SlotState.Status.RUNNING, "foo-bar", 0);
@@ -473,14 +473,14 @@ public class CelosClientServerTest {
         expectedSlotStates.add(slotStateRunning);
         expectedSlotStates.add(slotStateReady);
 
-        while (!time.getDateTime().isBefore(timeStart.getDateTime())) {
+        while (!time.isBefore(timeStart)) {
             SlotState slotState = new SlotState(new SlotID(new WorkflowID("workflow-1"), time), SlotState.Status.WAITING);
             expectedSlotStates.add(slotState);
             time = time.minusHours(1);
         }
 
-        ScheduledTime reqTimeEnd = new ScheduledTime("2013-12-02T20:00Z");
-        ScheduledTime reqTimeStart = new ScheduledTime("2013-12-02T10:00Z");
+        ZonedDateTime reqTimeEnd = ZonedDateTime.parse("2013-12-02T20:00Z");
+        ZonedDateTime reqTimeStart = ZonedDateTime.parse("2013-12-02T10:00Z");
         List<SlotState> resultSlotStates = celosClient.getWorkflowStatus(new WorkflowID("workflow-1"), reqTimeStart, reqTimeEnd).getSlotStates();
 
         Assert.assertEquals(expectedSlotStates, resultSlotStates);
@@ -491,8 +491,8 @@ public class CelosClientServerTest {
         File src = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/client/wf-list").toURI());
         FileUtils.copyDirectory(src, workflowsDir);
 
-        ScheduledTime reqTimeEnd = new ScheduledTime("2013-12-07T20:00Z");
-        ScheduledTime reqTimeStart = new ScheduledTime("2013-12-02T10:00Z");
+        ZonedDateTime reqTimeEnd = ZonedDateTime.parse("2013-12-07T20:00Z");
+        ZonedDateTime reqTimeStart = ZonedDateTime.parse("2013-12-02T10:00Z");
         celosClient.getWorkflowStatus(new WorkflowID("workflow-1"), reqTimeStart, reqTimeEnd);
     }
 
@@ -501,8 +501,8 @@ public class CelosClientServerTest {
         File src = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/client/wf-list").toURI());
         FileUtils.copyDirectory(src, workflowsDir);
 
-        ScheduledTime reqTimeEnd = new ScheduledTime("2013-12-27T20:00Z");
-        ScheduledTime reqTimeStart = new ScheduledTime("2013-12-02T10:00Z");
+        ZonedDateTime reqTimeEnd = ZonedDateTime.parse("2013-12-27T20:00Z");
+        ZonedDateTime reqTimeStart = ZonedDateTime.parse("2013-12-02T10:00Z");
         celosClient.getWorkflowStatus(new WorkflowID("workflow-1"), reqTimeStart, reqTimeEnd);
     }
 
@@ -513,8 +513,8 @@ public class CelosClientServerTest {
         File src = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/client/wf-list").toURI());
         FileUtils.copyDirectory(src, workflowsDir);
 
-        ScheduledTime reqTimeEnd = new ScheduledTime("2013-12-02T20:00Z");
-        ScheduledTime reqTimeStart = new ScheduledTime("2013-12-02T21:00Z");
+        ZonedDateTime reqTimeEnd = ZonedDateTime.parse("2013-12-02T20:00Z");
+        ZonedDateTime reqTimeStart = ZonedDateTime.parse("2013-12-02T21:00Z");
         WorkflowStatus workflowStatus = celosClient.getWorkflowStatus(new WorkflowID("workflow-1"), reqTimeStart, reqTimeEnd);
         Assert.assertEquals(workflowStatus.getSlotStates().size(), 0);
     }
@@ -528,10 +528,10 @@ public class CelosClientServerTest {
         File src2 = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/server/slot-db-1").toURI());
         FileUtils.copyDirectory(src2, slotDbDir);
 
-        ScheduledTime timeStart = new ScheduledTime("2013-11-25T20:00:00.000Z");
-        ScheduledTime waitingSlotsTimeEnd = new ScheduledTime("2013-12-02T19:00:00.000Z");
+        ZonedDateTime timeStart = ZonedDateTime.parse("2013-11-25T20:00:00.000Z");
+        ZonedDateTime waitingSlotsTimeEnd = ZonedDateTime.parse("2013-12-02T19:00:00.000Z");
 
-        ScheduledTime time = waitingSlotsTimeEnd;
+        ZonedDateTime time = waitingSlotsTimeEnd;
 
         List<SlotState> expectedSlotStates = Lists.newArrayList();
         SlotState slotStateRunning = new SlotState(new SlotID(new WorkflowID("workflow-2"), time), SlotState.Status.RUNNING, "quux", 2);
@@ -542,13 +542,13 @@ public class CelosClientServerTest {
         expectedSlotStates.add(slotStateRunning);
         expectedSlotStates.add(slotStateReady);
 
-        while (!time.getDateTime().isBefore(timeStart.getDateTime())) {
+        while (!time.isBefore(timeStart)) {
             SlotState slotState = new SlotState(new SlotID(new WorkflowID("workflow-2"), time), SlotState.Status.WAITING);
             expectedSlotStates.add(slotState);
             time = time.minusHours(1);
         }
 
-        List<SlotState> resultSlotStates = celosClient.getWorkflowStatus(new WorkflowID("workflow-2"), new ScheduledTime("2013-12-02T20:00Z")).getSlotStates();
+        List<SlotState> resultSlotStates = celosClient.getWorkflowStatus(new WorkflowID("workflow-2"), ZonedDateTime.parse("2013-12-02T20:00Z")).getSlotStates();
 
         Assert.assertEquals(expectedSlotStates, resultSlotStates);
     }
@@ -564,8 +564,8 @@ public class CelosClientServerTest {
 
         WorkflowID workflowID = new WorkflowID("workflow-1");
 
-        ScheduledTime scheduledTime1 = new ScheduledTime("2013-12-02T19:00Z");
-        ScheduledTime scheduledTime2 = new ScheduledTime("2013-12-02T18:00Z");
+        ZonedDateTime scheduledTime1 = ZonedDateTime.parse("2013-12-02T19:00Z");
+        ZonedDateTime scheduledTime2 = ZonedDateTime.parse("2013-12-02T18:00Z");
 
         SlotState slotState1 = celosClient.getSlotState(workflowID, scheduledTime1);
         SlotState slotState2 = celosClient.getSlotState(workflowID, scheduledTime2);
@@ -587,7 +587,7 @@ public class CelosClientServerTest {
         FileUtils.copyDirectory(src2, slotDbDir);
 
         WorkflowID workflowID = new WorkflowID("workflow-1");
-        ScheduledTime scheduledTime1 = new ScheduledTime("2000-12-02T19:00Z");
+        ZonedDateTime scheduledTime1 = ZonedDateTime.parse("2000-12-02T19:00Z");
 
         celosClient.getSlotState(workflowID, scheduledTime1);
     }
@@ -602,7 +602,7 @@ public class CelosClientServerTest {
         FileUtils.copyDirectory(src2, slotDbDir);
 
         WorkflowID workflowID = new WorkflowID("workflow-doesnt-exist");
-        ScheduledTime scheduledTime1 = new ScheduledTime("2000-12-02T19:00Z");
+        ZonedDateTime scheduledTime1 = ZonedDateTime.parse("2000-12-02T19:00Z");
 
         celosClient.getSlotState(workflowID, scheduledTime1);
     }
@@ -624,7 +624,7 @@ public class CelosClientServerTest {
 
         SlotState slotStateLst = slotStates.get(slotStates.size() - 1);
         Assert.assertEquals(slotStateLst.getStatus(), SlotState.Status.FAILURE);
-        ScheduledTime scheduledTime = slotStateLst.getScheduledTime();
+        ZonedDateTime scheduledTime = slotStateLst.getScheduledTime();
 
         celosClient.rerunSlot(workflowID, scheduledTime);
         SlotState slotStateUpdated = celosClient.getSlotState(workflowID, scheduledTime);
@@ -639,7 +639,7 @@ public class CelosClientServerTest {
         FileUtils.copyDirectory(src, workflowsDir);
 
         WorkflowID workflowID = new WorkflowID("workflow-2");
-        celosClient.rerunSlot(workflowID, new ScheduledTime("2013-11-20T12:00Z"));
+        celosClient.rerunSlot(workflowID, ZonedDateTime.parse("2013-11-20T12:00Z"));
     }
 
     @Test(expected = IOException.class)
@@ -649,7 +649,7 @@ public class CelosClientServerTest {
         FileUtils.copyDirectory(src, workflowsDir);
 
         WorkflowID workflowID = new WorkflowID("unknown-workflow");
-        celosClient.rerunSlot(workflowID, ScheduledTime.now());
+        celosClient.rerunSlot(workflowID, Util.zonedDateTimeNowUTC());
     }
 
     @Test(expected = IOException.class)
@@ -659,7 +659,7 @@ public class CelosClientServerTest {
         FileUtils.copyDirectory(src, workflowsDir);
 
         WorkflowID workflowID = new WorkflowID("workflow-2");
-        celosClient.rerunSlot(workflowID, new ScheduledTime("2013-11-20T12:34Z"));
+        celosClient.rerunSlot(workflowID, ZonedDateTime.parse("2013-11-20T12:34Z"));
     }
 
 }

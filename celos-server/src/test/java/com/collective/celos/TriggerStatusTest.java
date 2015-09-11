@@ -21,6 +21,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 
 import static org.mockito.Mockito.when;
@@ -45,14 +46,14 @@ public class TriggerStatusTest {
 
     @Test
     public void testRequiresWorkflow() throws Exception {
-        final ScheduledTime now = ScheduledTime.now();
+        final ZonedDateTime now = Util.zonedDateTimeNowUTC();
         final int size = new NeverTrigger().getTriggerStatus(scheduler, now, now).getSubStatuses().size();
         Assert.assertEquals(size, 0);
     }
 
     @Test
     public void testSuccessfullyAnd() throws Exception {
-        final ScheduledTime now = ScheduledTime.now();
+        final ZonedDateTime now = Util.zonedDateTimeNowUTC();
         final ArrayList<Trigger> triggers = new ArrayList<>();
         triggers.add(new AlwaysTrigger());
         triggers.add(new AlwaysTrigger());
@@ -65,7 +66,7 @@ public class TriggerStatusTest {
 
     @Test
     public void testSuccessfullyOr() throws Exception {
-        final ScheduledTime now = ScheduledTime.now();
+        final ZonedDateTime now = Util.zonedDateTimeNowUTC();
         final ArrayList<Trigger> triggers = new ArrayList<>();
         final TriggerStatus statusOr0 = new OrTrigger(triggers).getTriggerStatus(scheduler, now, now);
         Assert.assertFalse(statusOr0.isReady());
@@ -90,7 +91,7 @@ public class TriggerStatusTest {
 
     @Test
     public void testSuccessfullySingleton() throws Exception {
-        final ScheduledTime now = ScheduledTime.now();
+        final ZonedDateTime now = Util.zonedDateTimeNowUTC();
         final ArrayList<Trigger> triggers = new ArrayList<>();
         triggers.add(new NeverTrigger());
         final TriggerStatus statusOr0 = new OrTrigger(triggers).getTriggerStatus(scheduler, now, now);

@@ -15,9 +15,11 @@
  */
 package com.collective.celos;
 
-import static org.junit.Assert.assertEquals;
-
 import org.junit.Test;
+
+import java.time.ZonedDateTime;
+
+import static org.junit.Assert.assertEquals;
 
 public class ScheduledTimeFormatterTest {
 
@@ -68,35 +70,29 @@ public class ScheduledTimeFormatterTest {
     @Test
     public void millisecondPaddingTest() {
         ScheduledTimeFormatter formatter = new ScheduledTimeFormatter();
-        assertEquals("001", formatter.formatMillisecond(new ScheduledTime("2014-02-25T01:02:03.001Z")));
-        assertEquals("010", formatter.formatMillisecond(new ScheduledTime("2014-02-25T01:02:03.010Z")));
-        assertEquals("100", formatter.formatMillisecond(new ScheduledTime("2014-02-25T01:02:03.100Z")));
+        assertEquals("001", formatter.formatMillisecond(ZonedDateTime.parse("2014-02-25T01:02:03.001Z")));
+        assertEquals("010", formatter.formatMillisecond(ZonedDateTime.parse("2014-02-25T01:02:03.010Z")));
+        assertEquals("100", formatter.formatMillisecond(ZonedDateTime.parse("2014-02-25T01:02:03.100Z")));
     }
     
     @Test
     public void timestampTest() {
         ScheduledTimeFormatter formatter = new ScheduledTimeFormatter();
-        assertEquals("20:15:00.053Z", formatter.formatTimestamp(new ScheduledTime("2014-02-25T20:15:00.053Z")));
+        assertEquals("20:15:00.053Z", formatter.formatTimestamp(ZonedDateTime.parse("2014-02-25T20:15:00.053Z")));
     }
-    
-    @Test
-    public void datestampTest() {
-        ScheduledTimeFormatter formatter = new ScheduledTimeFormatter();
-        assertEquals("2014-02-25", formatter.formatDatestamp(new ScheduledTime("2014-02-25T20:15:00.053Z")));
-    }
-    
+
     @Test
     public void testReplaceTokensPadding() {
         ScheduledTimeFormatter formatter = new ScheduledTimeFormatter();
         String actual = formatter.replaceTimeTokens(
-                "/${year}/${month}/${day}/${hour}", new ScheduledTime(
+                "/${year}/${month}/${day}/${hour}", ZonedDateTime.parse(
                         "0001-02-03T04:00Z"));
         assertEquals("/0001/02/03/04", actual);
     }
 
     public void testReplaceTokens(String input, String expected) {
         ScheduledTimeFormatter formatter = new ScheduledTimeFormatter();
-        String actual = formatter.replaceTimeTokens(input, new ScheduledTime(
+        String actual = formatter.replaceTimeTokens(input, ZonedDateTime.parse(
                 "2013-11-22T14:00:53.023Z"));
         assertEquals(expected, actual);
     }
@@ -104,12 +100,12 @@ public class ScheduledTimeFormatterTest {
     @Test
     public void testPretty() {
         ScheduledTimeFormatter formatter = new ScheduledTimeFormatter();
-        assertEquals("2014-03-20T00:00Z", formatter.formatPretty(new ScheduledTime("2014-03-20T00:00Z")));
-        assertEquals("2014-03-20T12:00Z", formatter.formatPretty(new ScheduledTime("2014-03-20T12:00Z")));
-        assertEquals("2014-03-20T12:30Z", formatter.formatPretty(new ScheduledTime("2014-03-20T12:30Z")));
-        assertEquals("2014-03-20T12:30:01Z", formatter.formatPretty(new ScheduledTime("2014-03-20T12:30:01Z")));
-        assertEquals("2014-03-20T12:30:00.001Z", formatter.formatPretty(new ScheduledTime("2014-03-20T12:30:00.001Z")));
-        assertEquals("2014-03-20T12:30:01.001Z", formatter.formatPretty(new ScheduledTime("2014-03-20T12:30:01.001Z")));
+        assertEquals("2014-03-20T00:00Z", formatter.formatPretty(ZonedDateTime.parse("2014-03-20T00:00Z")));
+        assertEquals("2014-03-20T12:00Z", formatter.formatPretty(ZonedDateTime.parse("2014-03-20T12:00Z")));
+        assertEquals("2014-03-20T12:30Z", formatter.formatPretty(ZonedDateTime.parse("2014-03-20T12:30Z")));
+        assertEquals("2014-03-20T12:30:01Z", formatter.formatPretty(ZonedDateTime.parse("2014-03-20T12:30:01Z")));
+        assertEquals("2014-03-20T12:30:00.001Z", formatter.formatPretty(ZonedDateTime.parse("2014-03-20T12:30:00.001Z")));
+        assertEquals("2014-03-20T12:30:01.001Z", formatter.formatPretty(ZonedDateTime.parse("2014-03-20T12:30:01.001Z")));
     }
     
 }

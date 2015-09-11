@@ -19,12 +19,12 @@ import com.collective.celos.trigger.AlwaysTrigger;
 import com.collective.celos.trigger.Trigger;
 import com.collective.celos.trigger.TriggerStatus;
 import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InOrder;
 
+import java.time.ZonedDateTime;
 import java.util.*;
 
 import static org.mockito.Matchers.anyListOf;
@@ -59,7 +59,7 @@ public class SchedulerTest {
     // Lots of tests need these objects, so create them once in the setUp
     private WorkflowID workflowId;
     private Workflow wf;
-    private ScheduledTime scheduledTime;
+    private ZonedDateTime scheduledTime;
     private Scheduler scheduler;
     private SlotID slotId;
 
@@ -77,7 +77,7 @@ public class SchedulerTest {
         workflowId = new WorkflowID("workflow-id");
         wf = new Workflow(workflowId, schedule, schedulingStrategy, trigger,
                 externalService, maxRetryCount, Workflow.DEFAULT_START_TIME, Workflow.DEFAULT_WAIT_TIMEOUT_SECONDS, emptyWorkflowInfo);
-        scheduledTime = new ScheduledTime("2013-11-26T15:00Z");
+        scheduledTime = ZonedDateTime.parse("2013-11-26T15:00Z");
         slotId = new SlotID(workflowId, scheduledTime);
 
         // The object under test
@@ -169,7 +169,7 @@ public class SchedulerTest {
     }
 
     private SlotState makeReadySlotStateForTime(String timeString) {
-        ScheduledTime time = new ScheduledTime(timeString);
+        ZonedDateTime time = ZonedDateTime.parse(timeString);
         SlotID slotId = new SlotID(workflowId, time);
         return new SlotState(slotId, SlotState.Status.READY);
     }
@@ -197,7 +197,7 @@ public class SchedulerTest {
         SlotState nextSlotState = new SlotState(slotId, SlotState.Status.READY);
 
         // The trigger should report the data as available
-        ScheduledTime now = ScheduledTime.now();
+        ZonedDateTime now = Util.zonedDateTimeNowUTC();
         final TriggerStatus status = new TriggerStatus("", true, "", Collections.<TriggerStatus>emptyList());
         when(trigger.getTriggerStatus(scheduler, now, scheduledTime)).thenReturn(status);
 
@@ -213,7 +213,7 @@ public class SchedulerTest {
         SlotState slotState = new SlotState(slotId, SlotState.Status.WAITING);
 
         // The trigger should report the data as not available
-        ScheduledTime now = ScheduledTime.now();
+        ZonedDateTime now = Util.zonedDateTimeNowUTC();
         final TriggerStatus status = new TriggerStatus("", false, "", Collections.<TriggerStatus>emptyList());
         when(trigger.getTriggerStatus(scheduler, now, scheduledTime)).thenReturn(status);
 
@@ -227,7 +227,7 @@ public class SchedulerTest {
 
         SlotState slotState = new SlotState(slotId, SlotState.Status.READY);
 
-        scheduler.updateSlotState(wf, slotState, ScheduledTime.now());
+        scheduler.updateSlotState(wf, slotState, Util.zonedDateTimeNowUTC());
 
         verifyNoMoreInteractions(stateDatabase);
     }
@@ -241,7 +241,7 @@ public class SchedulerTest {
         ExternalStatus running = new MockExternalService.MockExternalStatusRunning();
         when(externalService.getStatus(slotId, slotState.getExternalID())).thenReturn(running);
 
-        scheduler.updateSlotState(wf, slotState, ScheduledTime.now());
+        scheduler.updateSlotState(wf, slotState, Util.zonedDateTimeNowUTC());
 
         verifyNoMoreInteractions(stateDatabase);
     }
@@ -256,7 +256,7 @@ public class SchedulerTest {
         ExternalStatus success = new MockExternalService.MockExternalStatusSuccess();
         when(externalService.getStatus(slotId, slotState.getExternalID())).thenReturn(success);
 
-        scheduler.updateSlotState(wf, slotState, ScheduledTime.now());
+        scheduler.updateSlotState(wf, slotState, Util.zonedDateTimeNowUTC());
 
         verify(stateDatabase).putSlotState(nextSlotState);
         verifyNoMoreInteractions(stateDatabase);
@@ -272,7 +272,7 @@ public class SchedulerTest {
         ExternalStatus failure = new MockExternalService.MockExternalStatusFailure();
         when(externalService.getStatus(slotId, slotState.getExternalID())).thenReturn(failure);
 
-        scheduler.updateSlotState(wf, slotState, ScheduledTime.now());
+        scheduler.updateSlotState(wf, slotState, Util.zonedDateTimeNowUTC());
 
         verify(stateDatabase).putSlotState(nextSlotState);
         verifyNoMoreInteractions(stateDatabase);
@@ -283,7 +283,7 @@ public class SchedulerTest {
 
         SlotState slotState = new SlotState(slotId, SlotState.Status.SUCCESS);
 
-        scheduler.updateSlotState(wf, slotState, ScheduledTime.now());
+        scheduler.updateSlotState(wf, slotState, Util.zonedDateTimeNowUTC());
 
         verifyNoMoreInteractions(stateDatabase);
     }
@@ -293,7 +293,7 @@ public class SchedulerTest {
 
         SlotState slotState = new SlotState(slotId, SlotState.Status.FAILURE);
 
-        scheduler.updateSlotState(wf, slotState, ScheduledTime.now());
+        scheduler.updateSlotState(wf, slotState, Util.zonedDateTimeNowUTC());
 
         verifyNoMoreInteractions(stateDatabase);
     }
@@ -320,10 +320,10 @@ public class SchedulerTest {
     
     @Test
     public void slidingWindowSizeWorks() {
-        ScheduledTime t = new ScheduledTime("2013-11-26T20:00Z");
+        ZonedDateTime t = ZonedDateTime.parse("2013-11-26T20:00Z");
         int hours = 5;
         Scheduler scheduler = new Scheduler(new WorkflowConfiguration(), new MemoryStateDatabase(), hours);
-        Assert.assertEquals(scheduler.getSlidingWindowStartTime(t), new ScheduledTime("2013-11-26T15:00Z"));
+        Assert.assertEquals(scheduler.getSlidingWindowStartTime(t), ZonedDateTime.parse("2013-11-26T15:00Z"));
     }
     
     /**
@@ -353,12 +353,12 @@ public class SchedulerTest {
         DateTime currentFullHour = Util.toFullHour(current);
         
         Scheduler sched = new Scheduler(cfg, db, slidingWindowHours);
-        sched.step(new ScheduledTime(current));
+        sched.step(ZonedDateTime.parse(current.toString()));
         
         Assert.assertEquals(slidingWindowHours, db.size());
         
         for (int i = 0; i < slidingWindowHours; i++) {
-            SlotID id = new SlotID(wfID1, new ScheduledTime(currentFullHour.minusHours(i)));
+            SlotID id = new SlotID(wfID1, ZonedDateTime.parse(currentFullHour.toString()).minusHours(i));
             SlotState state = db.getSlotState(id);
             if (state == null) {
                 throw new AssertionError("Slot " + id + " not found.");
@@ -393,10 +393,10 @@ public class SchedulerTest {
         int slidingWindowHours = 24;
         
         Scheduler sched = new Scheduler(cfg, db, slidingWindowHours);
-        ScheduledTime now = new ScheduledTime("2013-11-27T15:01Z");
+        ZonedDateTime now = ZonedDateTime.parse("2013-11-27T15:01Z");
         sched.step(now);
         // very old slot doesn't exist in DB because it's outside of sliding window
-        SlotID id = new SlotID(wfID1, new ScheduledTime("2000-11-27T15:01Z"));
+        SlotID id = new SlotID(wfID1, ZonedDateTime.parse("2000-11-27T15:01Z"));
         Assert.assertEquals(null, db.getSlotState(id));
         // mark the slot for rerun and verify scheduler cares about it
         db.markSlotForRerun(id, now);
@@ -430,10 +430,10 @@ public class SchedulerTest {
         MemoryStateDatabase db = new MemoryStateDatabase();
 
         int slidingWindowHours = 24;
-        DateTime current = DateTime.parse("2013-11-27T15:01Z");
+        ZonedDateTime current = ZonedDateTime.parse("2013-11-27T15:01Z");
         
         Scheduler sched = new Scheduler(cfg, db, slidingWindowHours);
-        sched.step(new ScheduledTime(current));
+        sched.step(current);
         
         Assert.assertEquals(0, db.size());
     }
@@ -454,7 +454,7 @@ public class SchedulerTest {
         
         MemoryStateDatabase db = new MemoryStateDatabase();
         
-        SlotID id1 = new SlotID(wfID1, new ScheduledTime("2013-11-27T22:00:00Z"));
+        SlotID id1 = new SlotID(wfID1, ZonedDateTime.parse("2013-11-27T22:00:00Z"));
         SlotState slot1 = new SlotState(id1, SlotState.Status.WAITING);
         db.putSlotState(slot1);
 
@@ -462,11 +462,11 @@ public class SchedulerTest {
         
         Scheduler sched = new Scheduler(cfg, db, slidingWindowHours);
         
-        sched.step(new ScheduledTime("2013-11-27T22:00:19Z"));
+        sched.step(ZonedDateTime.parse("2013-11-27T22:00:19Z"));
         Assert.assertEquals(SlotState.Status.WAITING, db.getSlotState(id1).getStatus());
-        sched.step(new ScheduledTime("2013-11-27T22:00:20Z"));
+        sched.step(ZonedDateTime.parse("2013-11-27T22:00:20Z"));
         Assert.assertEquals(SlotState.Status.WAITING, db.getSlotState(id1).getStatus());
-        sched.step(new ScheduledTime("2013-11-27T22:00:21Z"));
+        sched.step(ZonedDateTime.parse("2013-11-27T22:00:21Z"));
         Assert.assertEquals(SlotState.Status.WAIT_TIMEOUT, db.getSlotState(id1).getStatus());
     }
 
@@ -522,18 +522,18 @@ public class SchedulerTest {
         DateTime currentFullHour = Util.toFullHour(current);
 
         for (int i = 0; i < slidingWindowHours; i++) {
-            SlotID id = new SlotID(wfID1, new ScheduledTime(currentFullHour.minusHours(i)));
+            SlotID id = new SlotID(wfID1, ZonedDateTime.parse(currentFullHour.toString()).minusHours(i));
             SlotState state = new SlotState(id, SlotState.Status.READY).transitionToRunning("fake-external-ID");
             db.putSlotState(state);
         }
         
         Scheduler sched = new Scheduler(cfg, db, slidingWindowHours);
-        sched.step(new ScheduledTime(current));
+        sched.step(ZonedDateTime.parse(current.toString()));
         
         Assert.assertEquals(slidingWindowHours, db.size());
         
         for (int i = 0; i < slidingWindowHours; i++) {
-            SlotID id = new SlotID(wfID1, new ScheduledTime(currentFullHour.minusHours(i)));
+            SlotID id = new SlotID(wfID1, ZonedDateTime.parse(currentFullHour.toString()).minusHours(i));
             SlotState state = db.getSlotState(id);
             if (state == null) {
                 throw new AssertionError("Slot " + id + " not found.");
@@ -569,19 +569,19 @@ public class SchedulerTest {
         DateTime currentFullHour = Util.toFullHour(current);
 
         for (int i = 0; i < slidingWindowHours; i++) {
-            SlotID id = new SlotID(wfID1, new ScheduledTime(currentFullHour.minusHours(i)));
+            SlotID id = new SlotID(wfID1, ZonedDateTime.parse(currentFullHour.toString()).minusHours(i));
             SlotState state = new SlotState(id, SlotState.Status.READY);
             db.putSlotState(state);
         }
         
         Scheduler sched = new Scheduler(cfg, db, slidingWindowHours);
-        sched.step(new ScheduledTime(current));
+        sched.step(ZonedDateTime.parse(current.toString()));
         
         Assert.assertEquals(slidingWindowHours, db.size());
         Assert.assertEquals(slidingWindowHours, srv1.getSlots2ExternalID().size());
         
         for (int i = 0; i < slidingWindowHours; i++) {
-            ScheduledTime scheduledTime = new ScheduledTime(currentFullHour.minusHours(i));
+            ZonedDateTime scheduledTime = ZonedDateTime.parse(currentFullHour.toString()).minusHours(i);
             SlotID id = new SlotID(wfID1, scheduledTime);
             SlotState state = db.getSlotState(id);
             if (state == null) {
@@ -624,9 +624,9 @@ public class SchedulerTest {
         
         MemoryStateDatabase db = new MemoryStateDatabase();
 
-        SlotID id1 = new SlotID(wfID1, new ScheduledTime("2013-11-27T20:00Z"));
-        SlotID id2 = new SlotID(wfID1, new ScheduledTime("2013-11-27T21:00Z"));
-        SlotID id3 = new SlotID(wfID1, new ScheduledTime("2013-11-27T22:00Z"));
+        SlotID id1 = new SlotID(wfID1, ZonedDateTime.parse("2013-11-27T20:00Z"));
+        SlotID id2 = new SlotID(wfID1, ZonedDateTime.parse("2013-11-27T21:00Z"));
+        SlotID id3 = new SlotID(wfID1, ZonedDateTime.parse("2013-11-27T22:00Z"));
         
         SlotState slot1 = new SlotState(id1, SlotState.Status.WAITING);
         SlotState slot2 = new SlotState(id2, SlotState.Status.WAITING).transitionToReady();
@@ -637,10 +637,9 @@ public class SchedulerTest {
         db.putSlotState(slot3);
         
         int slidingWindowHours = 3;
-        DateTime current = DateTime.parse("2013-11-27T22:01Z");
 
         Scheduler sched = new Scheduler(cfg, db, slidingWindowHours);
-        sched.step(new ScheduledTime(current));
+        sched.step(ZonedDateTime.parse("2013-11-27T22:01Z"));
         
         SlotState slot1After = db.getSlotState(id1);
         Assert.assertEquals(SlotState.Status.READY, slot1After.getStatus());
@@ -671,8 +670,8 @@ public class SchedulerTest {
         Trigger tr1 = makeAlwaysTrigger();
         MockExternalService srv1 = new MockExternalService(new MockExternalService.MockExternalStatusRunning());
         int maxRetryCount = 0;
-        DateTime currentDT = DateTime.now(DateTimeZone.UTC);
-        ScheduledTime startTime = new ScheduledTime(currentDT.minusDays(3));
+        ZonedDateTime currentDT = Util.zonedDateTimeNowUTC();
+        ZonedDateTime startTime = currentDT.minusDays(3);
         
         Workflow wf1 = new Workflow(wfID1, sch1, str1, tr1, srv1, maxRetryCount, startTime, Workflow.DEFAULT_WAIT_TIMEOUT_SECONDS, emptyWorkflowInfo);
         
@@ -682,7 +681,7 @@ public class SchedulerTest {
         MemoryStateDatabase db = new MemoryStateDatabase();
 
         Scheduler sched = new Scheduler(cfg, db, 7 * 24);
-        sched.step(new ScheduledTime(currentDT));
+        sched.step(currentDT);
         
         Assert.assertEquals(3 * 24, db.size());
     }
@@ -698,8 +697,8 @@ public class SchedulerTest {
         Trigger tr1 = makeAlwaysTrigger();
         MockExternalService srv1 = new MockExternalService(new MockExternalService.MockExternalStatusRunning());
         int maxRetryCount = 0;
-        DateTime currentDT = DateTime.now(DateTimeZone.UTC);
-        ScheduledTime startTime = new ScheduledTime(currentDT.minusDays(10));
+        ZonedDateTime currentDT = Util.zonedDateTimeNowUTC();
+        ZonedDateTime startTime = currentDT.minusDays(10);
         
         Workflow wf1 = new Workflow(wfID1, sch1, str1, tr1, srv1, maxRetryCount, startTime, Workflow.DEFAULT_WAIT_TIMEOUT_SECONDS, emptyWorkflowInfo);
         
@@ -709,7 +708,7 @@ public class SchedulerTest {
         MemoryStateDatabase db = new MemoryStateDatabase();
 
         Scheduler sched = new Scheduler(cfg, db, 7 * 24);
-        sched.step(new ScheduledTime(currentDT));
+        sched.step(currentDT);
         
         Assert.assertEquals(7 * 24, db.size());
     }
@@ -725,8 +724,8 @@ public class SchedulerTest {
         Trigger tr1 = makeAlwaysTrigger();
         MockExternalService srv1 = new MockExternalService(new MockExternalService.MockExternalStatusRunning());
         int maxRetryCount = 0;
-        DateTime currentDT = DateTime.now(DateTimeZone.UTC);
-        ScheduledTime startTime = new ScheduledTime(currentDT.plusDays(10));
+        ZonedDateTime currentDT = Util.zonedDateTimeNowUTC();
+        ZonedDateTime startTime = currentDT.plusDays(10);
         
         Workflow wf1 = new Workflow(wfID1, sch1, str1, tr1, srv1, maxRetryCount, startTime, Workflow.DEFAULT_WAIT_TIMEOUT_SECONDS, emptyWorkflowInfo);
         
@@ -736,7 +735,7 @@ public class SchedulerTest {
         MemoryStateDatabase db = new MemoryStateDatabase();
 
         Scheduler sched = new Scheduler(cfg, db, 7 * 24);
-        sched.step(new ScheduledTime(currentDT));
+        sched.step(currentDT);
         
         Assert.assertEquals(0, db.size());
     }
@@ -808,7 +807,7 @@ public class SchedulerTest {
         
         MemoryStateDatabase db = new MemoryStateDatabase();
 
-        SlotID id1 = new SlotID(wfID1, new ScheduledTime("2013-11-27T20:00Z"));
+        SlotID id1 = new SlotID(wfID1, ZonedDateTime.parse("2013-11-27T20:00Z"));
         SlotState initial = new SlotState(id1, SlotState.Status.READY);
         SlotState running1 = new SlotState(id1, SlotState.Status.RUNNING, "fake-external-id", 0);
         SlotState retry1 = new SlotState(id1, SlotState.Status.WAITING, null, 1);
@@ -822,21 +821,21 @@ public class SchedulerTest {
         db.putSlotState(initial);
         
         Scheduler sch = new Scheduler(cfg, db, 1);
-        sch.step(new ScheduledTime("2013-11-27T20:01Z"));
+        sch.step(ZonedDateTime.parse("2013-11-27T20:01Z"));
         Assert.assertEquals(running1, db.getSlotState(id1));
-        sch.step(new ScheduledTime("2013-11-27T20:01Z"));
+        sch.step(ZonedDateTime.parse("2013-11-27T20:01Z"));
         Assert.assertEquals(retry1, db.getSlotState(id1));
-        sch.step(new ScheduledTime("2013-11-27T20:01Z"));
+        sch.step(ZonedDateTime.parse("2013-11-27T20:01Z"));
         Assert.assertEquals(ready1, db.getSlotState(id1));
-        sch.step(new ScheduledTime("2013-11-27T20:01Z"));
+        sch.step(ZonedDateTime.parse("2013-11-27T20:01Z"));
         Assert.assertEquals(running2, db.getSlotState(id1));
-        sch.step(new ScheduledTime("2013-11-27T20:01Z"));
+        sch.step(ZonedDateTime.parse("2013-11-27T20:01Z"));
         Assert.assertEquals(retry2, db.getSlotState(id1));
-        sch.step(new ScheduledTime("2013-11-27T20:01Z"));
+        sch.step(ZonedDateTime.parse("2013-11-27T20:01Z"));
         Assert.assertEquals(ready2, db.getSlotState(id1));
-        sch.step(new ScheduledTime("2013-11-27T20:01Z"));
+        sch.step(ZonedDateTime.parse("2013-11-27T20:01Z"));
         Assert.assertEquals(running3, db.getSlotState(id1));
-        sch.step(new ScheduledTime("2013-11-27T20:01Z"));
+        sch.step(ZonedDateTime.parse("2013-11-27T20:01Z"));
         Assert.assertEquals(success, db.getSlotState(id1));
     }
 
@@ -862,7 +861,7 @@ public class SchedulerTest {
         
         MemoryStateDatabase db = new MemoryStateDatabase();
 
-        SlotID id1 = new SlotID(wfID1, new ScheduledTime("2013-11-27T20:00Z"));
+        SlotID id1 = new SlotID(wfID1, ZonedDateTime.parse("2013-11-27T20:00Z"));
         SlotState initial = new SlotState(id1, SlotState.Status.READY);
         SlotState running1 = new SlotState(id1, SlotState.Status.RUNNING, "fake-external-id", 0);
         SlotState retry1 = new SlotState(id1, SlotState.Status.WAITING, null, 1);
@@ -876,21 +875,21 @@ public class SchedulerTest {
         db.putSlotState(initial);
         
         Scheduler sch = new Scheduler(cfg, db, 1);
-        sch.step(new ScheduledTime("2013-11-27T20:01Z"));
+        sch.step(ZonedDateTime.parse("2013-11-27T20:01Z"));
         Assert.assertEquals(running1, db.getSlotState(id1));
-        sch.step(new ScheduledTime("2013-11-27T20:01Z"));
+        sch.step(ZonedDateTime.parse("2013-11-27T20:01Z"));
         Assert.assertEquals(retry1, db.getSlotState(id1));
-        sch.step(new ScheduledTime("2013-11-27T20:01Z"));
+        sch.step(ZonedDateTime.parse("2013-11-27T20:01Z"));
         Assert.assertEquals(ready1, db.getSlotState(id1));
-        sch.step(new ScheduledTime("2013-11-27T20:01Z"));
+        sch.step(ZonedDateTime.parse("2013-11-27T20:01Z"));
         Assert.assertEquals(running2, db.getSlotState(id1));
-        sch.step(new ScheduledTime("2013-11-27T20:01Z"));
+        sch.step(ZonedDateTime.parse("2013-11-27T20:01Z"));
         Assert.assertEquals(retry2, db.getSlotState(id1));
-        sch.step(new ScheduledTime("2013-11-27T20:01Z"));
+        sch.step(ZonedDateTime.parse("2013-11-27T20:01Z"));
         Assert.assertEquals(ready2, db.getSlotState(id1));
-        sch.step(new ScheduledTime("2013-11-27T20:01Z"));
+        sch.step(ZonedDateTime.parse("2013-11-27T20:01Z"));
         Assert.assertEquals(running3, db.getSlotState(id1));
-        sch.step(new ScheduledTime("2013-11-27T20:01Z"));
+        sch.step(ZonedDateTime.parse("2013-11-27T20:01Z"));
         Assert.assertEquals(failure, db.getSlotState(id1));
     }
     
@@ -917,8 +916,8 @@ public class SchedulerTest {
         
         MemoryStateDatabase db = new MemoryStateDatabase();
 
-        SlotID id1 = new SlotID(wfID1, new ScheduledTime("2013-11-27T20:00Z"));
-        SlotID id2 = new SlotID(wfID2, new ScheduledTime("2013-11-27T20:00Z"));
+        SlotID id1 = new SlotID(wfID1, ZonedDateTime.parse("2013-11-27T20:00Z"));
+        SlotID id2 = new SlotID(wfID2, ZonedDateTime.parse("2013-11-27T20:00Z"));
         
         SlotState slot1 = new SlotState(id1, SlotState.Status.WAITING);
         SlotState slot2 = new SlotState(id2, SlotState.Status.WAITING);
@@ -930,10 +929,8 @@ public class SchedulerTest {
         subset.add(wfID1);
         
         int slidingWindowHours = 3;
-        DateTime current = DateTime.parse("2013-11-27T22:01Z");
-
         Scheduler sched = new Scheduler(cfg, db, slidingWindowHours);
-        sched.step(new ScheduledTime(current), subset);
+        sched.step(ZonedDateTime.parse("2013-11-27T22:01Z"), subset);
         
         SlotState slot1After = db.getSlotState(id1);
         Assert.assertEquals(SlotState.Status.READY, slot1After.getStatus());
@@ -944,10 +941,10 @@ public class SchedulerTest {
 
     @Test
     public void testTimeoutCalculation() {
-        Assert.assertTrue(Scheduler.isSlotTimedOut(new ScheduledTime("2015-03-05T00:00:00Z"), new ScheduledTime("2015-03-05T00:00:21Z"), 20));
-        Assert.assertFalse(Scheduler.isSlotTimedOut(new ScheduledTime("2015-03-05T00:00:00Z"), new ScheduledTime("2015-03-05T00:00:20Z"), 20));
-        Assert.assertFalse(Scheduler.isSlotTimedOut(new ScheduledTime("2015-03-05T00:00:00Z"), new ScheduledTime("2014-03-05T00:00:20Z"), 20));
-        Assert.assertTrue(Scheduler.isSlotTimedOut(new ScheduledTime("2015-03-05T00:00:00Z"), new ScheduledTime("2016-03-05T00:00:21Z"), 20));
+        Assert.assertTrue(Scheduler.isSlotTimedOut(ZonedDateTime.parse("2015-03-05T00:00:00Z"), ZonedDateTime.parse("2015-03-05T00:00:21Z"), 20));
+        Assert.assertFalse(Scheduler.isSlotTimedOut(ZonedDateTime.parse("2015-03-05T00:00:00Z"), ZonedDateTime.parse("2015-03-05T00:00:20Z"), 20));
+        Assert.assertFalse(Scheduler.isSlotTimedOut(ZonedDateTime.parse("2015-03-05T00:00:00Z"), ZonedDateTime.parse("2014-03-05T00:00:20Z"), 20));
+        Assert.assertTrue(Scheduler.isSlotTimedOut(ZonedDateTime.parse("2015-03-05T00:00:00Z"), ZonedDateTime.parse("2016-03-05T00:00:21Z"), 20));
     }
         
     private AlwaysTrigger makeAlwaysTrigger() {

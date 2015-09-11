@@ -15,15 +15,16 @@
  */
 package com.collective.celos;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import java.time.ZonedDateTime;
 
 public class SlotStateTest {
     
-    private final SlotID id = new SlotID(new WorkflowID("foo"), new ScheduledTime("2013-12-04T19:18Z"));
+    private final SlotID id = new SlotID(new WorkflowID("foo"), ZonedDateTime.parse("2013-12-04T19:18Z"));
     
     @Test
     public void transitionsWorkAsExpected() {
@@ -79,8 +80,8 @@ public class SlotStateTest {
     }
     
     @Test
-    public void slotStateGetScheduledTimeWorks() {
-        ScheduledTime t = new ScheduledTime("2013-11-26T13:00Z");
+    public void slotStateGetZonedDateTimeWorks() {
+        ZonedDateTime t = ZonedDateTime.parse("2013-11-26T13:00Z");
         SlotState slotState = new SlotState(new SlotID(new WorkflowID("foo"), t), SlotState.Status.READY);
         Assert.assertEquals(t, slotState.getScheduledTime());
     }

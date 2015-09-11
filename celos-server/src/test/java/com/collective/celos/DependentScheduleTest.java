@@ -15,15 +15,15 @@
  */
 package com.collective.celos;
 
-import java.util.Collections;
-import java.util.SortedSet;
-
+import com.collective.celos.WorkflowInfo.ContactsInfo;
 import com.collective.celos.trigger.AlwaysTrigger;
+import com.google.common.collect.Sets;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.collective.celos.WorkflowInfo.ContactsInfo;
-import com.google.common.collect.Sets;
+import java.time.ZonedDateTime;
+import java.util.Collections;
+import java.util.SortedSet;
 
 public class DependentScheduleTest {
 
@@ -36,7 +36,7 @@ public class DependentScheduleTest {
         String id = "nonexisting-workflow";
         DependentSchedule schedule = new DependentSchedule(new WorkflowID(id));
         try {
-            schedule.getScheduledTimes(scheduler, ScheduledTime.now(), ScheduledTime.now());
+            schedule.getScheduledTimes(scheduler, Util.zonedDateTimeNowUTC(), Util.zonedDateTimeNowUTC());
         } catch(Exception e) {
             if (!e.getMessage().contains(id)) {
                 Assert.assertFalse(true);
@@ -47,9 +47,9 @@ public class DependentScheduleTest {
     @Test
     public void usesScheduleOfOtherWorkflow() {
         
-        ScheduledTime workflowStartTime = new ScheduledTime("2015-02-23T00:00Z");
-        ScheduledTime schedulingStartTime = new ScheduledTime("2015-02-23T10:00Z");
-        ScheduledTime schedulingEndTime = new ScheduledTime("2015-02-23T12:01Z");
+        ZonedDateTime workflowStartTime = ZonedDateTime.parse("2015-02-23T00:00Z");
+        ZonedDateTime schedulingStartTime = ZonedDateTime.parse("2015-02-23T10:00Z");
+        ZonedDateTime schedulingEndTime = ZonedDateTime.parse("2015-02-23T12:01Z");
 
         WorkflowConfiguration conf = new WorkflowConfiguration();
         StateDatabase emptyDB = new MemoryStateDatabase();
@@ -72,8 +72,8 @@ public class DependentScheduleTest {
                         new WorkflowInfo(null, Collections.<ContactsInfo>emptyList())));
         
         DependentSchedule schedule = new DependentSchedule(new WorkflowID(id));
-        SortedSet<ScheduledTime> times = schedule.getScheduledTimes(scheduler, schedulingStartTime, schedulingEndTime);
-        Assert.assertEquals(Sets.newHashSet(new ScheduledTime("2015-02-23T10:00Z"), new ScheduledTime("2015-02-23T11:00Z"), new ScheduledTime("2015-02-23T12:00Z")),
+        SortedSet<ZonedDateTime> times = schedule.getScheduledTimes(scheduler, schedulingStartTime, schedulingEndTime);
+        Assert.assertEquals(Sets.newHashSet(ZonedDateTime.parse("2015-02-23T10:00Z"), ZonedDateTime.parse("2015-02-23T11:00Z"), ZonedDateTime.parse("2015-02-23T12:00Z")),
                             times);
         
     }

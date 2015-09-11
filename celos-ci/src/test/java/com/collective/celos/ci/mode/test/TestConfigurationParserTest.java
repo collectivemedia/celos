@@ -34,7 +34,7 @@ import org.mozilla.javascript.JavaScriptException;
 import org.mozilla.javascript.NativeJavaObject;
 
 import com.collective.celos.DatabaseName;
-import com.collective.celos.ScheduledTime;
+import java.time.ZonedDateTime;
 import com.collective.celos.WorkflowID;
 import com.collective.celos.ci.testing.fixtures.compare.FixTableComparer;
 import com.collective.celos.ci.testing.fixtures.compare.RecursiveFsObjectComparer;
@@ -190,8 +190,8 @@ public class TestConfigurationParserTest {
         TestCase testCase = parser.getTestCases().get(0);
 
         Assert.assertEquals(testCase.getName(), "wordcount test case 1");
-        Assert.assertEquals(testCase.getSampleTimeStart(), new ScheduledTime("2013-11-20T11:00Z"));
-        Assert.assertEquals(testCase.getSampleTimeEnd(), new ScheduledTime("2013-11-20T18:00Z"));
+        Assert.assertEquals(testCase.getSampleTimeStart(), ZonedDateTime.parse("2013-11-20T11:00Z"));
+        Assert.assertEquals(testCase.getSampleTimeEnd(), ZonedDateTime.parse("2013-11-20T18:00Z"));
         Assert.assertEquals(testCase.getTargetWorkflows(), Sets.newHashSet(new WorkflowID("workflow1"), new WorkflowID("workflow2")));
         Assert.assertEquals(testCase.getInputs().size(), 2);
         Assert.assertEquals(testCase.getInputs().get(0).getClass(), HdfsInputDeployer.class);

@@ -25,7 +25,7 @@ import com.google.common.collect.*;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.collective.celos.ScheduledTime;
+import java.time.ZonedDateTime;
 import com.collective.celos.SlotID;
 import com.collective.celos.SlotState;
 import com.collective.celos.WorkflowID;
@@ -43,16 +43,16 @@ public class UIServletTest {
 
     @Test
     public void testGetFirstTileTime() {
-        ScheduledTime t = new ScheduledTime("2015-09-02T20:19:23Z");
-        Assert.assertEquals(new ScheduledTime("2015-09-02T00:00Z"), UIServlet.getFirstTileTime(t, 60*24));
-        Assert.assertEquals(new ScheduledTime("2015-09-02T18:00Z"), UIServlet.getFirstTileTime(t, 60*6));
-        Assert.assertEquals(new ScheduledTime("2015-09-02T20:00Z"), UIServlet.getFirstTileTime(t, 60*2));
-        Assert.assertEquals(new ScheduledTime("2015-09-02T20:00Z"), UIServlet.getFirstTileTime(t, 60));
-        Assert.assertEquals(new ScheduledTime("2015-09-02T20:15Z"), UIServlet.getFirstTileTime(t, 15));
-        Assert.assertEquals(new ScheduledTime("2015-09-02T20:15Z"), UIServlet.getFirstTileTime(t, 5));
-        Assert.assertEquals(new ScheduledTime("2015-09-02T20:19Z"), UIServlet.getFirstTileTime(t, 1));
+        ZonedDateTime t = ZonedDateTime.parse("2015-09-02T20:19:23Z");
+        Assert.assertEquals(ZonedDateTime.parse("2015-09-02T00:00Z"), UIServlet.getFirstTileTime(t, 60*24));
+        Assert.assertEquals(ZonedDateTime.parse("2015-09-02T18:00Z"), UIServlet.getFirstTileTime(t, 60*6));
+        Assert.assertEquals(ZonedDateTime.parse("2015-09-02T20:00Z"), UIServlet.getFirstTileTime(t, 60*2));
+        Assert.assertEquals(ZonedDateTime.parse("2015-09-02T20:00Z"), UIServlet.getFirstTileTime(t, 60));
+        Assert.assertEquals(ZonedDateTime.parse("2015-09-02T20:15Z"), UIServlet.getFirstTileTime(t, 15));
+        Assert.assertEquals(ZonedDateTime.parse("2015-09-02T20:15Z"), UIServlet.getFirstTileTime(t, 5));
+        Assert.assertEquals(ZonedDateTime.parse("2015-09-02T20:19Z"), UIServlet.getFirstTileTime(t, 1));
         // Test full day
-        Assert.assertEquals(new ScheduledTime("2015-09-02T00:00Z"), UIServlet.getFirstTileTime(new ScheduledTime("2015-09-02T00:00Z"), 60*24));
+        Assert.assertEquals(ZonedDateTime.parse("2015-09-02T00:00Z"), UIServlet.getFirstTileTime(ZonedDateTime.parse("2015-09-02T00:00Z"), 60*24));
     }
     
     @Test
@@ -67,30 +67,30 @@ public class UIServletTest {
     
     @Test
     public void testTileTimesSet1() {
-        SortedSet<ScheduledTime> expected = 
-                new TreeSet(ImmutableSet.of(new ScheduledTime("2015-08-06T18:00Z"), new ScheduledTime("2015-08-06T19:00Z"), new ScheduledTime("2015-08-06T20:00Z")));
-        Assert.assertEquals(expected, UIServlet.getTileTimesSet(new ScheduledTime("2015-08-06T20:00Z"), 60, 1000, 3));
+        SortedSet<ZonedDateTime> expected =
+                new TreeSet(ImmutableSet.of(ZonedDateTime.parse("2015-08-06T18:00Z"), ZonedDateTime.parse("2015-08-06T19:00Z"), ZonedDateTime.parse("2015-08-06T20:00Z")));
+        Assert.assertEquals(expected, UIServlet.getTileTimesSet(ZonedDateTime.parse("2015-08-06T20:00Z"), 60, 1000, 3));
     }
     
     @Test
     public void testTileTimesSet2() {
-        SortedSet<ScheduledTime> expected = 
-                new TreeSet(ImmutableSet.of(new ScheduledTime("2015-08-06T19:50Z"), new ScheduledTime("2015-08-06T19:55Z"), new ScheduledTime("2015-08-06T20:00Z")));
-        Assert.assertEquals(expected, UIServlet.getTileTimesSet(new ScheduledTime("2015-08-06T20:00Z"), 5, 1000, 3));
+        SortedSet<ZonedDateTime> expected =
+                new TreeSet(ImmutableSet.of(ZonedDateTime.parse("2015-08-06T19:50Z"), ZonedDateTime.parse("2015-08-06T19:55Z"), ZonedDateTime.parse("2015-08-06T20:00Z")));
+        Assert.assertEquals(expected, UIServlet.getTileTimesSet(ZonedDateTime.parse("2015-08-06T20:00Z"), 5, 1000, 3));
     }
 
     @Test
     public void testBucketByTime() {
         WorkflowID id = new WorkflowID("foo");
-        SlotState s1 = new SlotState(new SlotID(id, new ScheduledTime("2015-08-06T19:27Z")), SlotState.Status.SUCCESS);
-        SlotState s2 = new SlotState(new SlotID(id, new ScheduledTime("2015-08-06T19:31Z")), SlotState.Status.SUCCESS);
-        SlotState s3 = new SlotState(new SlotID(id, new ScheduledTime("2015-08-06T19:34Z")), SlotState.Status.SUCCESS);
+        SlotState s1 = new SlotState(new SlotID(id, ZonedDateTime.parse("2015-08-06T19:27Z")), SlotState.Status.SUCCESS);
+        SlotState s2 = new SlotState(new SlotID(id, ZonedDateTime.parse("2015-08-06T19:31Z")), SlotState.Status.SUCCESS);
+        SlotState s3 = new SlotState(new SlotID(id, ZonedDateTime.parse("2015-08-06T19:34Z")), SlotState.Status.SUCCESS);
         List<SlotState> states = ImmutableList.of(s1, s2, s3);
         Set<SlotState> bucket1 = ImmutableSet.of(s1);
         Set<SlotState> bucket2 = ImmutableSet.of(s2, s3);
-        Map<ScheduledTime, Set<SlotState>> expected =
-            ImmutableMap.of(new ScheduledTime("2015-08-06T19:25Z"), bucket1, new ScheduledTime("2015-08-06T19:30Z"), bucket2);
-        Assert.assertEquals(expected, UIServlet.bucketSlotsByTime(states, UIServlet.getTileTimesSet(new ScheduledTime("2015-08-06T19:30Z"), 5, 1000, 2)));    
+        Map<ZonedDateTime, Set<SlotState>> expected =
+            ImmutableMap.of(ZonedDateTime.parse("2015-08-06T19:25Z"), bucket1, ZonedDateTime.parse("2015-08-06T19:30Z"), bucket2);
+        Assert.assertEquals(expected, UIServlet.bucketSlotsByTime(states, UIServlet.getTileTimesSet(ZonedDateTime.parse("2015-08-06T19:30Z"), 5, 1000, 2)));
     }
     
     @Test
@@ -104,9 +104,9 @@ public class UIServletTest {
     @Test
     public void testTileClass() {
         WorkflowID id = new WorkflowID("foo");
-        SlotState succ = new SlotState(new SlotID(id, new ScheduledTime("2015-08-06T19:27Z")), SlotState.Status.SUCCESS);
-        SlotState fail = new SlotState(new SlotID(id, new ScheduledTime("2015-08-06T19:31Z")), SlotState.Status.FAILURE);
-        SlotState wait = new SlotState(new SlotID(id, new ScheduledTime("2015-08-06T19:35Z")), SlotState.Status.WAITING);
+        SlotState succ = new SlotState(new SlotID(id, ZonedDateTime.parse("2015-08-06T19:27Z")), SlotState.Status.SUCCESS);
+        SlotState fail = new SlotState(new SlotID(id, ZonedDateTime.parse("2015-08-06T19:31Z")), SlotState.Status.FAILURE);
+        SlotState wait = new SlotState(new SlotID(id, ZonedDateTime.parse("2015-08-06T19:35Z")), SlotState.Status.WAITING);
 
         Assert.assertEquals("SUCCESS", UIServlet.printTileClass(ImmutableSet.of(succ)));
         Assert.assertEquals("SUCCESS", UIServlet.printTileClass(ImmutableSet.of(succ, succ, succ)));
@@ -121,14 +121,14 @@ public class UIServletTest {
     
     @Test
     public void testRender() throws Exception {
-        ScheduledTime end = new ScheduledTime("2015-09-03T13:17Z");
-        ScheduledTime start = new ScheduledTime("2015-09-03T13:11Z");
-        NavigableSet<ScheduledTime> tileTimes = new TreeSet<>(ImmutableSet.of(new ScheduledTime("2015-09-03T13:10Z"), new ScheduledTime("2015-09-03T13:15Z")));
+        ZonedDateTime end = ZonedDateTime.parse("2015-09-03T13:17Z");
+        ZonedDateTime start = ZonedDateTime.parse("2015-09-03T13:11Z");
+        NavigableSet<ZonedDateTime> tileTimes = new TreeSet<>(ImmutableSet.of(ZonedDateTime.parse("2015-09-03T13:10Z"), ZonedDateTime.parse("2015-09-03T13:15Z")));
         WorkflowID id = new WorkflowID("foo");
         List<WorkflowGroup> groups = ImmutableList.of(new WorkflowGroup("All workflows", ImmutableList.of(id)));
         WorkflowInfo workflowInfo = new WorkflowInfo(new URL("http://example.com"), ImmutableList.of());
-        SlotState state1 = new SlotState(new SlotID(id, new ScheduledTime("2015-09-03T13:16Z")), SlotState.Status.FAILURE);
-        SlotState state2 = new SlotState(new SlotID(id, new ScheduledTime("2015-09-03T13:12Z")), SlotState.Status.WAITING);
+        SlotState state1 = new SlotState(new SlotID(id, ZonedDateTime.parse("2015-09-03T13:16Z")), SlotState.Status.FAILURE);
+        SlotState state2 = new SlotState(new SlotID(id, ZonedDateTime.parse("2015-09-03T13:12Z")), SlotState.Status.WAITING);
         List<SlotState> slotStates = ImmutableList.of(state1, state2);
         Map<WorkflowID, WorkflowStatus> statuses = ImmutableMap.of(id, new WorkflowStatus(workflowInfo, slotStates));
         UIConfiguration conf = new UIConfiguration(start, end, tileTimes, groups, statuses, new URL("http://example.com"));

@@ -15,18 +15,15 @@
  */
 package com.collective.celos;
 
-import static com.collective.celos.SlotState.Status.FAILURE;
-import static com.collective.celos.SlotState.Status.READY;
-import static com.collective.celos.SlotState.Status.RUNNING;
-import static com.collective.celos.SlotState.Status.SUCCESS;
-import static com.collective.celos.SlotState.Status.WAITING;
-
-import java.util.Arrays;
-import java.util.List;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.time.ZonedDateTime;
+import java.util.Arrays;
+import java.util.List;
+
+import static com.collective.celos.SlotState.Status.*;
 
 public class SerialSchedulingStrategyTest {
 
@@ -50,17 +47,17 @@ public class SerialSchedulingStrategyTest {
     @Before
     public void setUp() {
         workflow = new WorkflowID("foo");
-        slot1 = new SlotID(workflow, new ScheduledTime(
+        slot1 = new SlotID(workflow, ZonedDateTime.parse(
                 "2013-11-18T20:00Z"));
-        slot2 = new SlotID(workflow, new ScheduledTime(
+        slot2 = new SlotID(workflow, ZonedDateTime.parse(
                 "2013-11-18T21:00Z"));
-        slot3 = new SlotID(workflow, new ScheduledTime(
+        slot3 = new SlotID(workflow, ZonedDateTime.parse(
                 "2013-11-18T22:00Z"));
-        slot4 = new SlotID(workflow, new ScheduledTime(
+        slot4 = new SlotID(workflow, ZonedDateTime.parse(
                 "2013-11-18T23:00Z"));
-        slot5 = new SlotID(workflow, new ScheduledTime(
+        slot5 = new SlotID(workflow, ZonedDateTime.parse(
                 "2013-11-19T00:00Z"));
-        slot6 = new SlotID(workflow, new ScheduledTime(
+        slot6 = new SlotID(workflow, ZonedDateTime.parse(
                 "2013-11-19T01:00Z"));
     }
 

@@ -27,6 +27,7 @@ import java.io.StringReader;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.SortedSet;
 
@@ -45,7 +46,7 @@ public class WorkflowConfigurationParserTest {
 
     public static class TestSchedule implements Schedule {
         @Override
-        public SortedSet<ScheduledTime> getScheduledTimes(Scheduler scheduler, ScheduledTime start, ScheduledTime end) {
+        public SortedSet<ZonedDateTime> getScheduledTimes(Scheduler scheduler, ZonedDateTime start, ZonedDateTime end) {
             return null;
         }
     }
@@ -74,7 +75,7 @@ public class WorkflowConfigurationParserTest {
     public static class TestTrigger extends Trigger {
 
         @Override
-        public TriggerStatus getTriggerStatus(Scheduler scheduler, ScheduledTime now, ScheduledTime scheduledTime) throws Exception {
+        public TriggerStatus getTriggerStatus(Scheduler scheduler, ZonedDateTime now, ZonedDateTime scheduledTime) throws Exception {
             return makeTriggerStatus(false, "TestTrigger");
         }
 
@@ -93,7 +94,7 @@ public class WorkflowConfigurationParserTest {
         Workflow wf2 = cfg.findWorkflow(new WorkflowID("workflow-2"));
         Assert.assertEquals("workflow-2", wf2.getID().toString());
         Assert.assertEquals(66, wf2.getMaxRetryCount());
-        Assert.assertEquals(new ScheduledTime("2014-03-10T12:34:56.789Z"), wf2.getStartTime());
+        Assert.assertEquals(ZonedDateTime.parse("2014-03-10T12:34:56.789Z"), wf2.getStartTime());
         Assert.assertEquals(23, wf2.getWaitTimeoutSeconds());
     }
 
