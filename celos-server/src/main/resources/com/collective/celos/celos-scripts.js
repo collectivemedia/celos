@@ -65,7 +65,7 @@ celos.defineWorkflow = function (json) {
             json.trigger,
             json.externalService,
             json.maxRetryCount ? json.maxRetryCount : 0,
-            ZonedDateTime.parse(json.startTime ? json.startTime : "1970-01-01T00:00Z"),
+            Packages.java.time.ZonedDateTime.parse(json.startTime ? json.startTime : "1970-01-01T00:00Z"),
             waitTimeoutSeconds,
             workflowInfo
     );
@@ -236,14 +236,9 @@ celos.oozieExternalService = function (userPropertiesOrFun, oozieURL) {
     return new OozieExternalService(oozieURL, propertiesGen);
 }
 
-celos.replaceTimeVariables = function (string, t) {
-    string = string.replace(/\${year}/g, t.year());
-    string = string.replace(/\${month}/g, t.month());
-    string = string.replace(/\${day}/g, t.day());
-    string = string.replace(/\${hour}/g, t.hour());
-    string = string.replace(/\${minute}/g, t.minute());
-    string = string.replace(/\${second}/g, t.second());
-    return string;                            
+celos.replaceTimeVariables = function (ss, t) {
+    var FORMATTER = new Packages.com.collective.celos.ScheduledTimeFormatter
+    return FORMATTER.replaceTimeTokens(ss, t);
 }
 
 celos.databaseName = function (database) {

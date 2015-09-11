@@ -34,7 +34,7 @@ public class SlotID extends ValueObject {
         return workflowID;
     }
     
-    public ZonedDateTime getScheduledDateTime() {
+    public ZonedDateTime getScheduledTime() {
         return scheduledTime;
     }
     

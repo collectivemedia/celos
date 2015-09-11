@@ -34,18 +34,18 @@ public class UtilTest {
     @Test
     public void isFullHourWorks() {
         Assert.assertTrue(Util.isFullHour(ZonedDateTime.parse("2013-11-27T15:00Z")));
-        Assert.assertFalse(Util.isFullHour(ZonedDateTime.parse("2013-11-27T15:36:00.000Z")));
+        Assert.assertFalse(Util.isFullHour(ZonedDateTime.parse("2013-11-27T15:36Z")));
     }
     
     @Test
     public void isFullMinuteWorks() {
-        Assert.assertTrue(Util.isFullMinute(ZonedDateTime.parse("2013-11-27T15:01:00.000Z")));
+        Assert.assertTrue(Util.isFullMinute(ZonedDateTime.parse("2013-11-27T15:01Z")));
         Assert.assertFalse(Util.isFullMinute(ZonedDateTime.parse("2013-11-27T15:36:01.000Z")));
     }
     
     @Test
     public void isFullSecondWorks() {
-        Assert.assertTrue(Util.isFullSecond(ZonedDateTime.parse("2013-11-27T15:01:00.000Z")));
+        Assert.assertTrue(Util.isFullSecond(ZonedDateTime.parse("2013-11-27T15:01Z")));
         Assert.assertFalse(Util.isFullSecond(ZonedDateTime.parse("2013-11-27T15:36:01.001Z")));
     }
     

@@ -127,11 +127,11 @@ public class FileSystemStateDatabase implements StateDatabase {
 
     /** Returns the directory containing a day's data inside the workflow dir. */
     private File getDayDir(File superDir, SlotID slotID) {
-        return new File(superDir, slotID.getScheduledDateTime().toLocalDate().toString());
+        return new File(superDir, slotID.getScheduledTime().toLocalDate().toString());
     }
 
     private String getFileName(SlotID slotID) {
-        return formatter.formatTimestamp(slotID.getScheduledDateTime());
+        return formatter.formatTimestamp(slotID.getScheduledTime());
     }
 
     @Override

@@ -20,6 +20,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeParseException;
 import java.util.HashMap;
 
 import static org.mockito.Mockito.mock;
@@ -52,7 +53,7 @@ public class MiscTests {
         Assert.assertEquals(new SlotState(slotID1, SlotState.Status.READY),
                             new SlotState(slotID1, SlotState.Status.READY));
         Assert.assertNotSame(new SlotState(slotID1, SlotState.Status.READY),
-                             new SlotState(slotID1, SlotState.Status.WAITING));
+                new SlotState(slotID1, SlotState.Status.WAITING));
         Assert.assertNotSame(new SlotState(slotID1, SlotState.Status.READY),
                              new SlotState(slotID2, SlotState.Status.READY));   
     }
@@ -109,7 +110,7 @@ public class MiscTests {
         new WorkflowID("workflow/1");
     }
 
-    @Test(expected=IllegalArgumentException.class)
+    @Test(expected=DateTimeParseException.class)
     public void scheduledTimeMustBeUTC() {
         ZonedDateTime.parse("2013-11-12T20:00");
     }
