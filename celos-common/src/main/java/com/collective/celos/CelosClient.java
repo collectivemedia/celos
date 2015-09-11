@@ -144,7 +144,7 @@ public class CelosClient {
     }
     
     public void rerunSlot(SlotID slotID) throws Exception {
-        rerunSlot(slotID.getWorkflowID(), slotID.getScheduledTime());
+        rerunSlot(slotID.getWorkflowID(), slotID.getSlotTime());
     }
     
     public void rerunSlot(WorkflowID workflowID, ZonedDateTime scheduledTime) throws Exception {

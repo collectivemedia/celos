@@ -115,7 +115,7 @@ celos.hdfsCheck = function (path, slotID, fs) {
         if (typeof slotID != "object" || slotID.getClass().getName() !== "com.collective.celos.SlotID") {
             throw "slotID should be instance of com.collective.celos.SlotID";
         }
-        scheduledTime = slotID.getScheduledTime();
+        scheduledTime = slotID.getSlotTime();
     }
     return trigger.isDataAvailable(null, Util.zonedDateTimeNowUTC(), scheduledTime);
 }
@@ -238,7 +238,7 @@ celos.oozieExternalService = function (userPropertiesOrFun, oozieURL) {
 
 celos.replaceTimeVariables = function (ss, t) {
     var FORMATTER = new Packages.com.collective.celos.ScheduledTimeFormatter
-    return FORMATTER.replaceTimeTokens(ss, t);
+    return FORMATTER.replaceTimeTokens(ss, Packages.java.time.ZonedDateTime.parse(t.toString()));
 }
 
 celos.databaseName = function (database) {

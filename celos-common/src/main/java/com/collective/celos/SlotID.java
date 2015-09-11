@@ -34,10 +34,14 @@ public class SlotID extends ValueObject {
         return workflowID;
     }
     
-    public ZonedDateTime getScheduledTime() {
+    public ZonedDateTime getSlotTime() {
         return scheduledTime;
     }
-    
+
+    public ScheduledTime getScheduledTime() {
+        return new ScheduledTime(scheduledTime.toString());
+    }
+
     public String toString() {
         return workflowID + "@" + scheduledTime;
     }

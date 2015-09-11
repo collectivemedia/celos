@@ -92,7 +92,7 @@ public class SlotState extends ValueObject {
     }
     
     public ZonedDateTime getScheduledTime() {
-        return slotID.getScheduledTime();
+        return slotID.getSlotTime();
     }
 
     public String getExternalID() {

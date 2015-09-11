@@ -51,7 +51,7 @@ public class MemoryStateDatabase implements StateDatabase {
         SortedSet<ZonedDateTime> res = new TreeSet<>();
         for (SlotID slot : rerun) {
             if (slot.getWorkflowID().equals(workflowID)) {
-                res.add(slot.getScheduledTime());
+                res.add(slot.getSlotTime());
             }
         }
         return res;

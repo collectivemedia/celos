@@ -72,7 +72,7 @@ public class OozieExternalService implements ExternalService {
     }
 
     Properties setupRunProperties(ObjectNode defaults, SlotID id) {
-        ZonedDateTime t = id.getScheduledTime();
+        ZonedDateTime t = id.getSlotTime();
         Properties runProperties = setupDefaultProperties(defaults, t);
         ScheduledTimeFormatter formatter = new ScheduledTimeFormatter();
         runProperties.setProperty(YEAR_PROP, formatter.formatYear(t));
@@ -86,7 +86,7 @@ public class OozieExternalService implements ExternalService {
     }
 
     String getWorkflowName(SlotID id, ScheduledTimeFormatter formatter) {
-        return id.getWorkflowID() + "@" + formatter.formatPretty(id.getScheduledTime());
+        return id.getWorkflowID() + "@" + formatter.formatPretty(id.getSlotTime());
     }
 
     Properties setupDefaultProperties(ObjectNode defaults, ZonedDateTime t) {
