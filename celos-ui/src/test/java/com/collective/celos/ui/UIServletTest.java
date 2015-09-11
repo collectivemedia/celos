@@ -225,8 +225,14 @@ public class UIServletTest {
         Set<WorkflowID> missingWfs = new HashSet<>();
         HashSet<WorkflowID> expectedWorkflows = new HashSet<>();
         expectedWorkflows.add(new WorkflowID("Group3-2"));
-        missingWfs.add(new WorkflowID("MissingWf1"));
-        missingWfs.add(new WorkflowID("MissingWf2"));
+
+        WorkflowID wf1 = new WorkflowID("MissingWf1");
+        WorkflowID wf2 = new WorkflowID("MissingWf2");
+        WorkflowID wf3 = new WorkflowID("MissingWf3");
+
+        missingWfs.add(wf1);
+        missingWfs.add(wf3);
+        missingWfs.add(wf2);
 
         expectedWorkflows.addAll(missingWfs);
         List<WorkflowGroup> groups = uiServlet.getWorkflowGroups(new ByteArrayInputStream(input.getBytes()), expectedWorkflows);
@@ -242,9 +248,13 @@ public class UIServletTest {
 
         WorkflowGroup missingGroup = groups.get(1);
         exp1.add(new WorkflowID("Group3-1"));
-        Assert.assertEquals(new HashSet<>(missingGroup.getWorkflows()), missingWfs);
-        Assert.assertEquals(missingGroup.getName(), "Unlisted workflows");
+        List<WorkflowID> missingWfsSortedList = new ArrayList<>();
+        missingWfsSortedList.add(wf1);
+        missingWfsSortedList.add(wf2);
+        missingWfsSortedList.add(wf3);
 
+        Assert.assertEquals(missingGroup.getWorkflows(), missingWfsSortedList);
+        Assert.assertEquals(missingGroup.getName(), "Unlisted workflows");
     }
 
 }
