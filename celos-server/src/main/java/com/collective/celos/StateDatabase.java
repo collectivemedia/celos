@@ -15,6 +15,7 @@
  */
 package com.collective.celos;
 
+import java.time.ZonedDateTime;
 import java.util.SortedSet;
 
 /**
@@ -37,11 +38,11 @@ public interface StateDatabase {
     /**
      * Marks the slot for rerun at the current wallclock time.
      */
-    public void markSlotForRerun(SlotID slot, ScheduledTime now) throws Exception;
+    public void markSlotForRerun(SlotID slot, ZonedDateTime now) throws Exception;
     
     /**
      * Returns the list of scheduled times of the given workflow that have been marked for rerun.
      */
-    public SortedSet<ScheduledTime> getTimesMarkedForRerun(WorkflowID workflowID, ScheduledTime now) throws Exception;
+    public SortedSet<ZonedDateTime> getTimesMarkedForRerun(WorkflowID workflowID, ZonedDateTime now) throws Exception;
     
 }

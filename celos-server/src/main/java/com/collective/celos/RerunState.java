@@ -18,6 +18,8 @@ package com.collective.celos;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import java.time.ZonedDateTime;
+
 public class RerunState extends ValueObject {
 
     public static final int EXPIRATION_DAYS = 14;
@@ -26,18 +28,18 @@ public class RerunState extends ValueObject {
     private static final String RERUN_TIME_PROP = "rerunTime";
 
     // The wallclock time at which the slot was marked for rerun
-    private final ScheduledTime rerunTime;
+    private final ZonedDateTime rerunTime;
     
-    public RerunState(ScheduledTime rerunTime) {
+    public RerunState(ZonedDateTime rerunTime) {
         this.rerunTime = Util.requireNonNull(rerunTime);
     }
 
-    public ScheduledTime getRerunTime() {
+    public ZonedDateTime getRerunTime() {
         return rerunTime;
     }
 
-    public boolean isExpired(ScheduledTime now) {
-        return rerunTime.plusDays(EXPIRATION_DAYS).getDateTime().isBefore(now.getDateTime());
+    public boolean isExpired(ZonedDateTime now) {
+        return rerunTime.plusDays(EXPIRATION_DAYS).isBefore(now);
     }
     
     public ObjectNode toJSONNode() {
@@ -48,7 +50,7 @@ public class RerunState extends ValueObject {
     
     public static RerunState fromJSONNode(ObjectNode node) {
         String timeStr = node.get(RERUN_TIME_PROP).textValue();
-        return new RerunState(new ScheduledTime(timeStr));
+        return new RerunState(ZonedDateTime.parse(timeStr));
     }
     
 }

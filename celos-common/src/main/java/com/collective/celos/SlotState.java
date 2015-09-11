@@ -19,6 +19,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import java.time.ZonedDateTime;
+
 /**
  * The execution status of a slot.
  */
@@ -89,8 +91,8 @@ public class SlotState extends ValueObject {
         return status;
     }
     
-    public ScheduledTime getScheduledTime() {
-        return slotID.getScheduledTime();
+    public ZonedDateTime getScheduledTime() {
+        return slotID.getScheduledDateTime();
     }
 
     public String getExternalID() {
@@ -158,7 +160,7 @@ public class SlotState extends ValueObject {
     }
 
     public static SlotState fromJSONNode(WorkflowID id, JsonNode node) {
-        ScheduledTime time = new ScheduledTime(node.get(TIME_PROP).textValue());
+        ZonedDateTime time = ZonedDateTime.parse(node.get(TIME_PROP).textValue());
         return fromJSONNode(new SlotID(id, time), node);
     }
 

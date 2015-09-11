@@ -16,7 +16,7 @@
 package com.collective.celos.trigger;
 
 
-import com.collective.celos.ScheduledTime;
+import java.time.ZonedDateTime;
 import com.collective.celos.Scheduler;
 import com.collective.celos.SlotID;
 import com.collective.celos.SlotState;
@@ -35,7 +35,7 @@ public class SuccessTrigger extends Trigger {
     }
     
     @Override
-    public TriggerStatus getTriggerStatus(Scheduler scheduler, ScheduledTime now, ScheduledTime scheduledTime) throws Exception {
+    public TriggerStatus getTriggerStatus(Scheduler scheduler, ZonedDateTime now, ZonedDateTime scheduledTime) throws Exception {
         StateDatabase stateDatabase = scheduler.getStateDatabase();
         SlotID slotId = new SlotID(triggerWorkflowID, scheduledTime);
         final SlotState slotState = stateDatabase.getSlotState(slotId);

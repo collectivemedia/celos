@@ -15,12 +15,16 @@
  */
 package com.collective.celos.servlet;
 
-import com.collective.celos.*;
+import com.collective.celos.Scheduler;
+import com.collective.celos.SlotState;
+import com.collective.celos.Workflow;
+import com.collective.celos.WorkflowID;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 /**
@@ -57,7 +61,7 @@ public class JSONWorkflowServlet extends AbstractJSONServlet {
             if (wf == null) {
                 res.sendError(HttpServletResponse.SC_NOT_FOUND, "Workflow not found: " + id);
             } else {
-                ScheduledTime time = getRequestTime(req);
+                ZonedDateTime time = getRequestTime(req);
                 List<SlotState> slotStates = scheduler.getSlotStates(wf, scheduler.getWorkflowStartTime(wf, time), time);
                 ObjectNode object = createJSONObject(slotStates);
                 writer.writeValue(res.getOutputStream(), object);

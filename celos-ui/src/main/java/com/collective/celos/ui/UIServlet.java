@@ -15,48 +15,29 @@
  */
 package com.collective.celos.ui;
 
-import static j2html.TagCreator.a;
-import static j2html.TagCreator.body;
-import static j2html.TagCreator.div;
-import static j2html.TagCreator.head;
-import static j2html.TagCreator.html;
-import static j2html.TagCreator.text;
-import static j2html.TagCreator.link;
-import static j2html.TagCreator.script;
-import static j2html.TagCreator.table;
-import static j2html.TagCreator.td;
-import static j2html.TagCreator.title;
-import static j2html.TagCreator.tr;
-import static j2html.TagCreator.unsafeHtml;
-
+import com.collective.celos.*;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
 import j2html.tags.Tag;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.util.*;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.time.ZonedDateTime;
+import java.util.*;
 
-import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
-
-import com.collective.celos.CelosClient;
-import com.collective.celos.ScheduledTime;
-import com.collective.celos.SlotState;
-import com.collective.celos.Util;
-import com.collective.celos.WorkflowID;
-import com.collective.celos.WorkflowStatus;
-import com.google.common.collect.ImmutableList;
+import static j2html.TagCreator.*;
 
 /**
  * Renders the UI HTML.
@@ -83,10 +64,10 @@ public class UIServlet extends HttpServlet {
             CelosClient client = new CelosClient(celosURL.toURI());
             res.setContentType("text/html;charset=utf-8");
             res.setStatus(HttpServletResponse.SC_OK);
-            ScheduledTime end = getDisplayTime(req.getParameter(TIME_PARAM));
+            ZonedDateTime end = getDisplayTime(req.getParameter(TIME_PARAM));
             int zoomLevelMinutes = getZoomLevel(req.getParameter(ZOOM_PARAM));
-            NavigableSet<ScheduledTime> tileTimes = getTileTimesSet(getFirstTileTime(end, zoomLevelMinutes), zoomLevelMinutes, MAX_MINUTES_TO_FETCH, MAX_TILES_TO_DISPLAY);
-            ScheduledTime start = tileTimes.first();
+            NavigableSet<ZonedDateTime> tileTimes = getTileTimesSet(getFirstTileTime(end, zoomLevelMinutes), zoomLevelMinutes, MAX_MINUTES_TO_FETCH, MAX_TILES_TO_DISPLAY);
+            ZonedDateTime start = tileTimes.first();
             Set<WorkflowID> workflowIDs = client.getWorkflowList();
 
             Map<WorkflowID, WorkflowStatus> statuses = fetchStatuses(client, workflowIDs, start, end);
@@ -106,11 +87,11 @@ public class UIServlet extends HttpServlet {
         }
     }
 
-    static ScheduledTime getDisplayTime(String timeStr) {
+    static ZonedDateTime getDisplayTime(String timeStr) {
         if (timeStr == null) {
-            return ScheduledTime.now();
+            return Util.zonedDateTimeNowUTC();
         } else {
-            return new ScheduledTime(timeStr);
+            return ZonedDateTime.parse(timeStr);
         }
     }
     
@@ -184,15 +165,15 @@ public class UIServlet extends HttpServlet {
     private static Tag makeDayHeader(UIConfiguration conf) {
         List<Tag> cells = new LinkedList<>();
         cells.add(td().with(unsafeHtml("&nbsp;")));
-        for (ScheduledTime time : conf.getTileTimes().descendingSet()) {
-            cells.add(makeDay(time));
+        for (ZonedDateTime time : conf.getTileTimes().descendingSet()) {
+            cells.add(makeDay(new DateTime(time.toString())));
         }
         return tr().with(cells);
     }
 
-    private static Tag makeDay(ScheduledTime time) {
-        if (Util.isFullDay(time.getDateTime())) {
-            return td().with(unsafeHtml("&nbsp;" + DAY_FORMAT.print(time.getDateTime()) + "&nbsp;")).withClass("day");
+    private static Tag makeDay(DateTime time) {
+        if (Util.isFullDay(time)) {
+            return td().with(unsafeHtml("&nbsp;" + DAY_FORMAT.print(time) + "&nbsp;")).withClass("day");
         } else {
             return td().with(unsafeHtml("&nbsp;&nbsp;&nbsp;&nbsp;")).withClass("noDay");
         }
@@ -200,15 +181,15 @@ public class UIServlet extends HttpServlet {
     
     private static Tag makeTimeHeader(UIConfiguration conf) {
         List<Tag> cells = new LinkedList<>();
-        cells.add(td(FULL_FORMAT.print(conf.getEnd().getDateTime()) + " UTC").withClass("currentDate"));
-        for (ScheduledTime time : conf.getTileTimes().descendingSet()) {
+        cells.add(td(FULL_FORMAT.print(new DateTime(conf.getEnd().toString())) + " UTC").withClass("currentDate"));
+        for (ZonedDateTime time : conf.getTileTimes().descendingSet()) {
             cells.add(makeHour(time));
         }
         return tr().with(cells);
     }
     
-    private static Tag makeHour(ScheduledTime time) {
-        return td(HEADER_FORMAT.print(time.getDateTime())).withClass("hour");
+    private static Tag makeHour(ZonedDateTime time) {
+        return td(HEADER_FORMAT.print(new DateTime(time))).withClass("hour");
     }
     
     private static List<Tag> makeTableRows(UIConfiguration conf) {
@@ -231,8 +212,8 @@ public class UIServlet extends HttpServlet {
     private static Tag makeWorkflowRow(UIConfiguration conf, WorkflowID id) {
         List<Tag> cells = new LinkedList<>();
         cells.add(td(id.toString()).withClass("workflow"));
-        Map<ScheduledTime, Set<SlotState>> buckets = bucketSlotsByTime(conf.getStatuses().get(id).getSlotStates(), conf.getTileTimes());
-        for (ScheduledTime tileTime : conf.getTileTimes().descendingSet()) {
+        Map<ZonedDateTime, Set<SlotState>> buckets = bucketSlotsByTime(conf.getStatuses().get(id).getSlotStates(), conf.getTileTimes());
+        for (ZonedDateTime tileTime : conf.getTileTimes().descendingSet()) {
             Set<SlotState> slots = buckets.get(tileTime);
             String slotClass = "slot " + printTileClass(slots);
             cells.add(td().with(makeTile(conf, slots)).withClass(slotClass));
@@ -298,7 +279,7 @@ public class UIServlet extends HttpServlet {
         return conf.getHueURL().toString() + "/list_oozie_workflow/" + state.getExternalID();
     }
 
-    private Map<WorkflowID, WorkflowStatus> fetchStatuses(CelosClient client, Set<WorkflowID> workflows, ScheduledTime start, ScheduledTime end) throws Exception {
+    private Map<WorkflowID, WorkflowStatus> fetchStatuses(CelosClient client, Set<WorkflowID> workflows, ZonedDateTime start, ZonedDateTime end) throws Exception {
         Map<WorkflowID, WorkflowStatus> statuses = new HashMap<>();
         for (WorkflowID id : workflows) {
             WorkflowStatus status = client.getWorkflowStatus(id, start, end);
@@ -307,10 +288,10 @@ public class UIServlet extends HttpServlet {
         return statuses;
     }
 
-    static Map<ScheduledTime, Set<SlotState>> bucketSlotsByTime(List<SlotState> slotStates, NavigableSet<ScheduledTime> tileTimes) {
-        Map<ScheduledTime, Set<SlotState>> buckets = new HashMap<>();
+    static Map<ZonedDateTime, Set<SlotState>> bucketSlotsByTime(List<SlotState> slotStates, NavigableSet<ZonedDateTime> tileTimes) {
+        Map<ZonedDateTime, Set<SlotState>> buckets = new HashMap<>();
         for (SlotState state : slotStates) {
-            ScheduledTime bucketTime = tileTimes.floor(state.getScheduledTime());
+            ZonedDateTime bucketTime = tileTimes.floor(state.getScheduledTime());
             Set<SlotState> slotsForBucket = buckets.get(bucketTime);
             if (slotsForBucket == null) {
                 slotsForBucket = new HashSet<>();
@@ -321,14 +302,14 @@ public class UIServlet extends HttpServlet {
         return buckets;
     }
     
-    static List<ScheduledTime> getDefaultTileTimes(ScheduledTime now, int zoomLevelMinutes) {
+    static List<ZonedDateTime> getDefaultTileTimes(ZonedDateTime now, int zoomLevelMinutes) {
         return getTileTimes(now, zoomLevelMinutes, MAX_MINUTES_TO_FETCH, MAX_TILES_TO_DISPLAY);
     }
     
-    static List<ScheduledTime> getTileTimes(ScheduledTime now, int zoomLevelMinutes, int maxMinutesToFetch, int maxTilesToDisplay) {
+    static List<ZonedDateTime> getTileTimes(ZonedDateTime now, int zoomLevelMinutes, int maxMinutesToFetch, int maxTilesToDisplay) {
         int numTiles = getNumTiles(zoomLevelMinutes, maxMinutesToFetch, maxTilesToDisplay);
-        List<ScheduledTime> times = new LinkedList<>();
-        ScheduledTime t = now;
+        List<ZonedDateTime> times = new LinkedList<>();
+        ZonedDateTime t = now;
         for (int i = 1; i <= numTiles; i++) {
             times.add(bucketTime(t, zoomLevelMinutes));
             t = t.minusMinutes(zoomLevelMinutes);
@@ -340,14 +321,14 @@ public class UIServlet extends HttpServlet {
         return Math.min(maxMinutesToFetch / zoomLevelMinutes, maxTilesToDisplay);
     }
 
-    static ScheduledTime bucketTime(ScheduledTime t, int zoomLevelMinutes) {
-        DateTime dtNow = t.getDateTime();
+    static ZonedDateTime bucketTime(ZonedDateTime t, int zoomLevelMinutes) {
+        DateTime dtNow = new DateTime(t.toString());
         DateTime dtFullDay = toFullDay(dtNow);
         DateTime dt = dtFullDay;
         while(dt.isBefore(dtNow)) {
             dt = dt.plusMinutes(zoomLevelMinutes);
         }
-        return new ScheduledTime(dt);
+        return ZonedDateTime.parse(dt.toString());
     }
 
     private static DateTime toFullDay(DateTime dt) {
@@ -355,20 +336,20 @@ public class UIServlet extends HttpServlet {
     }
     
     // Get first tile, e.g. for now=2015-09-01T20:21Z with zoom=5 returns 2015-09-01T20:20Z
-    static ScheduledTime getFirstTileTime(ScheduledTime now, int zoomLevelMinutes) {
-        DateTime dt = now.getDateTime();
+    static ZonedDateTime getFirstTileTime(ZonedDateTime now, int zoomLevelMinutes) {
+        DateTime dt = new DateTime(now.toString());
         DateTime nextDay = toFullDay(dt.plusDays(1));
         DateTime t = nextDay;
         while(t.isAfter(dt)) {
             t = t.minusMinutes(zoomLevelMinutes);
         }
-        return new ScheduledTime(t);
+        return ZonedDateTime.parse(t.toString());
     }
     
-    static NavigableSet<ScheduledTime> getTileTimesSet(ScheduledTime firstTileTime, int zoomLevelMinutes, int maxMinutesToFetch, int maxTilesToDisplay) {
+    static NavigableSet<ZonedDateTime> getTileTimesSet(ZonedDateTime firstTileTime, int zoomLevelMinutes, int maxMinutesToFetch, int maxTilesToDisplay) {
         int numTiles = getNumTiles(zoomLevelMinutes, maxMinutesToFetch, maxTilesToDisplay);
-        TreeSet<ScheduledTime> times = new TreeSet<>();
-        ScheduledTime t = firstTileTime;
+        TreeSet<ZonedDateTime> times = new TreeSet<>();
+        ZonedDateTime t = firstTileTime;
         for (int i = 1; i <= numTiles; i++) {
             times.add(t);
             t = t.minusMinutes(zoomLevelMinutes);

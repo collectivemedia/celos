@@ -15,18 +15,18 @@
  */
 package com.collective.celos;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
-import org.apache.commons.io.FileUtils;
-import org.apache.log4j.Logger;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.apache.commons.io.FileUtils;
+import org.apache.log4j.Logger;
+
+import java.io.File;
+import java.io.IOException;
+import java.time.ZonedDateTime;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 /**
  * Brutally simple persistent implementation of StateDatabase
@@ -127,30 +127,30 @@ public class FileSystemStateDatabase implements StateDatabase {
 
     /** Returns the directory containing a day's data inside the workflow dir. */
     private File getDayDir(File superDir, SlotID slotID) {
-        return new File(superDir, formatter.formatDatestamp(slotID.getScheduledTime()));
+        return new File(superDir, slotID.getScheduledDateTime().toLocalDate().toString());
     }
 
     private String getFileName(SlotID slotID) {
-        return formatter.formatTimestamp(slotID.getScheduledTime());
+        return formatter.formatTimestamp(slotID.getScheduledDateTime());
     }
 
     @Override
-    public void markSlotForRerun(SlotID slotID, ScheduledTime now) throws Exception {
+    public void markSlotForRerun(SlotID slotID, ZonedDateTime now) throws Exception {
         RerunState st = new RerunState(now);
         File file = getSlotRerunFile(slotID);
         writeJson(st.toJSONNode(), file);
     }
 
     @Override
-    public SortedSet<ScheduledTime> getTimesMarkedForRerun(WorkflowID workflowID, ScheduledTime now) throws Exception {
-        SortedSet<ScheduledTime> res = new TreeSet<>();
+    public SortedSet<ZonedDateTime> getTimesMarkedForRerun(WorkflowID workflowID, ZonedDateTime now) throws Exception {
+        SortedSet<ZonedDateTime> res = new TreeSet<>();
         File wfDir = getWorkflowRerunDir(workflowID);
         if (wfDir.exists()) {
             for (File dayDir : wfDir.listFiles()) {
                 for (File rerunFile : dayDir.listFiles()) {
                     String json = FileUtils.readFileToString(rerunFile, CHARSET);
                     RerunState st = RerunState.fromJSONNode((ObjectNode) mapper.readTree(json));
-                    ScheduledTime t = new ScheduledTime(dayDir.getName() + "T" + rerunFile.getName());
+                    ZonedDateTime t = ZonedDateTime.parse(dayDir.getName() + "T" + rerunFile.getName());
                     res.add(t);
                     if (st.isExpired(now)) {
                         LOGGER.info("Expiring rerun file: " + rerunFile);

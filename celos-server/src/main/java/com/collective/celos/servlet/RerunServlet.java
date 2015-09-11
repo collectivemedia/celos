@@ -15,13 +15,13 @@
  */
 package com.collective.celos.servlet;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import com.collective.celos.*;
 import org.apache.log4j.Logger;
 
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.time.ZonedDateTime;
 import java.util.Set;
 
 /**
@@ -42,7 +42,7 @@ public class RerunServlet extends AbstractServlet {
 
     protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException {
         try {
-            ScheduledTime time = getRequestTime(req);
+            ZonedDateTime time = getRequestTime(req);
             String id = req.getParameter(ID_PARAM);
             if (id == null) {
                 res.sendError(HttpServletResponse.SC_BAD_REQUEST, ID_PARAM + " parameter missing.");
@@ -58,7 +58,7 @@ public class RerunServlet extends AbstractServlet {
             }
 
             SlotID slot = new SlotID(workflowID, time);
-            Set<ScheduledTime> timeSet = workflow.getSchedule().getScheduledTimes(scheduler, time.minusSeconds(1), time.plusSeconds(1));
+            Set<ZonedDateTime> timeSet = workflow.getSchedule().getScheduledTimes(scheduler, time.minusSeconds(1), time.plusSeconds(1));
             if (!timeSet.contains(time)) {
                 res.sendError(HttpServletResponse.SC_NOT_FOUND, "Slot is not found: " + slot);
                 return;
@@ -69,7 +69,7 @@ public class RerunServlet extends AbstractServlet {
             if (state != null) {
                 updateSlotToRerun(state, db);
             }
-            db.markSlotForRerun(slot, ScheduledTime.now());
+            db.markSlotForRerun(slot, Util.zonedDateTimeNowUTC());
         } catch(Exception e) {
             throw new ServletException(e);
         }

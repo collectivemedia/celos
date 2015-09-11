@@ -15,17 +15,15 @@
  */
 package com.collective.celos.servlet;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.log4j.Logger;
-
-import com.collective.celos.ScheduledTime;
 import com.collective.celos.Scheduler;
+import com.collective.celos.Util;
 import com.collective.celos.Workflow;
 import com.collective.celos.WorkflowID;
 import com.collective.celos.trigger.TriggerStatus;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * Returns information about a trigger.
@@ -54,7 +52,7 @@ public class TriggerStatusServlet extends AbstractJSONServlet {
                 res.sendError(HttpServletResponse.SC_NOT_FOUND, "Workflow not found: " + id);
                 return;
             }
-            TriggerStatus status = wf.getTrigger().getTriggerStatus(scheduler, ScheduledTime.now(), getRequestTime(req));
+            TriggerStatus status = wf.getTrigger().getTriggerStatus(scheduler, Util.zonedDateTimeNowUTC(), getRequestTime(req));
             writer.writeValue(res.getOutputStream(), status);
         } catch (Exception e) {
             throw new ServletException(e);

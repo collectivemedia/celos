@@ -15,6 +15,7 @@
  */
 package com.collective.celos;
 
+import java.time.ZonedDateTime;
 import java.util.SortedSet;
 
 /**
@@ -29,6 +30,6 @@ public interface Schedule {
      * The scheduler parameter is currently only used by DependentSchedule, so tests
      * of other schedules pass null as scheduler, which is a bit of a hack, but works.
      */
-    public SortedSet<ScheduledTime> getScheduledTimes(Scheduler scheduler, ScheduledTime start, ScheduledTime end);
+    public SortedSet<ZonedDateTime> getScheduledTimes(Scheduler scheduler, ZonedDateTime start, ZonedDateTime end);
 
 }

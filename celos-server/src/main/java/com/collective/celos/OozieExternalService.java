@@ -15,15 +15,15 @@
  */
 package com.collective.celos;
 
-import java.util.Iterator;
-import java.util.Properties;
-
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.oozie.client.AuthOozieClient;
 import org.apache.oozie.client.OozieClient;
 import org.apache.oozie.client.OozieClientException;
 import org.apache.oozie.client.WorkflowJob;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import java.time.ZonedDateTime;
+import java.util.Iterator;
+import java.util.Properties;
 
 /**
  * Oozie external service.
@@ -72,7 +72,7 @@ public class OozieExternalService implements ExternalService {
     }
 
     Properties setupRunProperties(ObjectNode defaults, SlotID id) {
-        ScheduledTime t = id.getScheduledTime();
+        ZonedDateTime t = id.getScheduledDateTime();
         Properties runProperties = setupDefaultProperties(defaults, t);
         ScheduledTimeFormatter formatter = new ScheduledTimeFormatter();
         runProperties.setProperty(YEAR_PROP, formatter.formatYear(t));
@@ -86,10 +86,10 @@ public class OozieExternalService implements ExternalService {
     }
 
     String getWorkflowName(SlotID id, ScheduledTimeFormatter formatter) {
-        return id.getWorkflowID() + "@" + formatter.formatPretty(id.getScheduledTime());
+        return id.getWorkflowID() + "@" + formatter.formatPretty(id.getScheduledDateTime());
     }
 
-    Properties setupDefaultProperties(ObjectNode defaults, ScheduledTime t) {
+    Properties setupDefaultProperties(ObjectNode defaults, ZonedDateTime t) {
         Properties props = new Properties();
         ScheduledTimeFormatter formatter = new ScheduledTimeFormatter();
         for (Iterator<String> names = defaults.fieldNames(); names.hasNext();) {

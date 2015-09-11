@@ -65,7 +65,7 @@ celos.defineWorkflow = function (json) {
             json.trigger,
             json.externalService,
             json.maxRetryCount ? json.maxRetryCount : 0,
-            new ScheduledTime(json.startTime ? json.startTime : "1970-01-01T00:00:00.000Z"),
+            ZonedDateTime.parse(json.startTime ? json.startTime : "1970-01-01T00:00:00.000Z"),
             waitTimeoutSeconds,
             workflowInfo
     );
@@ -110,14 +110,14 @@ celos.hdfsCheck = function (path, slotID, fs) {
     var scheduledTime;
 
     if (!slotID) {
-        scheduledTime = ScheduledTime.now();
+        scheduledTime = Util.zonedDateTimeNowUTC();
     } else {
         if (typeof slotID != "object" || slotID.getClass().getName() !== "com.collective.celos.SlotID") {
             throw "slotID should be instance of com.collective.celos.SlotID";
         }
         scheduledTime = slotID.getScheduledTime();
     }
-    return trigger.isDataAvailable(null, ScheduledTime.now(), scheduledTime);
+    return trigger.isDataAvailable(null, Util.zonedDateTimeNowUTC(), scheduledTime);
 }
 
 // Pass fs as last parameter so we can later use a default if parameter not supplied
