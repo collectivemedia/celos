@@ -54,7 +54,7 @@ public class DelayTriggerTest {
         final TriggerStatus triggerStatus = t.getTriggerStatus(scheduler, now.plusHours(2), now);
         final String description = triggerStatus.getDescription();
         Assert.assertTrue(triggerStatus.isReady());
-        Assert.assertEquals("Ready since 2014-01-01T06:00:00.000Z", description);
+        Assert.assertEquals("Ready since 2014-01-01T06:00Z", description);
     }
 
     @Test
@@ -63,7 +63,7 @@ public class DelayTriggerTest {
         final TriggerStatus triggerStatus = t.getTriggerStatus(scheduler, now, now);
         final String description = triggerStatus.getDescription();
         Assert.assertFalse(triggerStatus.isReady());
-        Assert.assertEquals("Delayed until 2014-01-01T06:00:00.000Z", description);
+        Assert.assertEquals("Delayed until 2014-01-01T06:00Z", description);
     }
 
 }

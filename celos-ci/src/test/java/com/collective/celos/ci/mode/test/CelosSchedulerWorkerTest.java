@@ -103,8 +103,8 @@ public class CelosSchedulerWorkerTest {
 
         Set<String> statuses = worker.getWorkflowStatusesInfo(workflowSet, scheduledTime);
         Assert.assertEquals(statuses, Sets.newHashSet(
-                "SlotState[slotID=wf1@2013-12-20T16:00:00.000Z,status=READY,externalID=<null>,retryCount=0]",
-                "SlotState[slotID=wf2@2013-12-20T16:00:00.000Z,status=RUNNING,externalID=<null>,retryCount=0]")
+                "SlotState[slotID=wf1@2013-12-20T16:00Z,status=READY,externalID=<null>,retryCount=0]",
+                "SlotState[slotID=wf2@2013-12-20T16:00Z,status=RUNNING,externalID=<null>,retryCount=0]")
         );
     }
 

@@ -51,13 +51,13 @@ public class CelosClientTest {
                 "\"info\": { \"url\": \"http://myurl\", \"contacts\": [ { \"name\": \"John Doe\", \"email\": \"John.Doe@Gmail.Com\"} ] },\n" +
                 "\"slots\": [\n" +
                 "  {\n" +
-                "    \"time\" : \"2014-10-27T14:00:00.000Z\",\n" +
+                "    \"time\" : \"2014-10-27T14:00Z\",\n" +
                 "    \"status\" : \"SUCCESS\",\n" +
                 "    \"externalID\" : \"0029532-141007123109603-oozie-oozi-W\",\n" +
                 "    \"retryCount\" : 0\n" +
                 "  },\n" +
                 "  {\n" +
-                "    \"time\" : \"2014-10-27T15:00:00.000Z\",\n" +
+                "    \"time\" : \"2014-10-27T15:00Z\",\n" +
                 "    \"status\" : \"FAILURE\",\n" +
                 "    \"externalID\" : \"0029595-141007123109603-oozie-oozi-W\",\n" +
                 "    \"retryCount\" : 2\n" +
@@ -69,8 +69,8 @@ public class CelosClientTest {
         List<SlotState> result = new CelosClient(URI.create("localhost")).parseWorkflowStatus(workflowID, new ByteArrayInputStream(str.getBytes())).getSlotStates();
         Assert.assertEquals(result.size(), 2);
 
-        ZonedDateTime time1 = ZonedDateTime.parse("2014-10-27T14:00:00.000Z");
-        ZonedDateTime time2 = ZonedDateTime.parse("2014-10-27T15:00:00.000Z");
+        ZonedDateTime time1 = ZonedDateTime.parse("2014-10-27T14:00Z");
+        ZonedDateTime time2 = ZonedDateTime.parse("2014-10-27T15:00Z");
 
         SlotState val1 = new SlotState(new SlotID(workflowID, time1), SlotState.Status.SUCCESS, "0029532-141007123109603-oozie-oozi-W", 0);
         SlotState val2 = new SlotState(new SlotID(workflowID, time2), SlotState.Status.FAILURE, "0029595-141007123109603-oozie-oozi-W", 2);

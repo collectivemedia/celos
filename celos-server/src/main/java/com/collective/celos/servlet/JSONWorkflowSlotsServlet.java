@@ -40,8 +40,8 @@ import java.util.List;
  *       ]
  *   },
  *   "slots": [
- *      { "time": "2013-12-07T13:00:00.000Z", "status": "RUNNING", "externalID": "237982137-371832798321-W", retryCount: 5 },
- *      { "time": "2013-12-07T14:00:00.000Z", "status": "READY", "externalID": null, retryCount: 0 },
+ *      { "time": "2013-12-07T13:00Z", "status": "RUNNING", "externalID": "237982137-371832798321-W", retryCount: 5 },
+ *      { "time": "2013-12-07T14:00Z", "status": "READY", "externalID": null, retryCount: 0 },
  *     ...
  *   ]
  * }

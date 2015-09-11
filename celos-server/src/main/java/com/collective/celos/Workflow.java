@@ -24,7 +24,7 @@ import java.time.ZonedDateTime;
  */
 public class Workflow {
 
-    public static final ZonedDateTime DEFAULT_START_TIME = ZonedDateTime.parse("1970-01-01T00:00:00.000Z");
+    public static final ZonedDateTime DEFAULT_START_TIME = ZonedDateTime.parse("1970-01-01T00:00Z");
     public static final int DEFAULT_WAIT_TIMEOUT_SECONDS = Integer.MAX_VALUE;
     
     private final WorkflowID id;

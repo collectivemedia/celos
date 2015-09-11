@@ -38,7 +38,7 @@ public class RerunStateTest {
         ObjectMapper mapper = new ObjectMapper();
         RerunState st = new RerunState(ZonedDateTime.parse("2015-09-07T00:00Z"));
         String json = mapper.writeValueAsString(st.toJSONNode());
-        Assert.assertEquals("{\"rerunTime\":\"2015-09-07T00:00:00.000Z\"}", json);
+        Assert.assertEquals("{\"rerunTime\":\"2015-09-07T00:00Z\"}", json);
         Assert.assertEquals(st, RerunState.fromJSONNode((ObjectNode) mapper.readTree(json)));
     }
     

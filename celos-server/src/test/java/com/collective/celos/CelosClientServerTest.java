@@ -425,8 +425,8 @@ public class CelosClientServerTest {
         File src2 = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/server/slot-db-1").toURI());
         FileUtils.copyDirectory(src2, slotDbDir);
 
-        ZonedDateTime timeStart = ZonedDateTime.parse("2013-11-25T20:00:00.000Z");
-        ZonedDateTime waitingSlotsTimeEnd = ZonedDateTime.parse("2013-12-02T19:00:00.000Z");
+        ZonedDateTime timeStart = ZonedDateTime.parse("2013-11-25T20:00Z");
+        ZonedDateTime waitingSlotsTimeEnd = ZonedDateTime.parse("2013-12-02T19:00Z");
 
         ZonedDateTime time = waitingSlotsTimeEnd;
 
@@ -459,8 +459,8 @@ public class CelosClientServerTest {
         File src2 = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/server/slot-db-1").toURI());
         FileUtils.copyDirectory(src2, slotDbDir);
 
-        ZonedDateTime timeStart = ZonedDateTime.parse("2013-12-02T10:00:00.000Z");
-        ZonedDateTime waitingSlotsTimeEnd = ZonedDateTime.parse("2013-12-02T19:00:00.000Z");
+        ZonedDateTime timeStart = ZonedDateTime.parse("2013-12-02T10:00Z");
+        ZonedDateTime waitingSlotsTimeEnd = ZonedDateTime.parse("2013-12-02T19:00Z");
 
         ZonedDateTime time = waitingSlotsTimeEnd;
 
@@ -528,8 +528,8 @@ public class CelosClientServerTest {
         File src2 = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/server/slot-db-1").toURI());
         FileUtils.copyDirectory(src2, slotDbDir);
 
-        ZonedDateTime timeStart = ZonedDateTime.parse("2013-11-25T20:00:00.000Z");
-        ZonedDateTime waitingSlotsTimeEnd = ZonedDateTime.parse("2013-12-02T19:00:00.000Z");
+        ZonedDateTime timeStart = ZonedDateTime.parse("2013-11-25T20:00Z");
+        ZonedDateTime waitingSlotsTimeEnd = ZonedDateTime.parse("2013-12-02T19:00Z");
 
         ZonedDateTime time = waitingSlotsTimeEnd;
 

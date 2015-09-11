@@ -32,8 +32,8 @@ public class JSONWorkflowServletTest {
 
     @Test
     public void jsonCorrectlyProduced() throws Exception {
-        ZonedDateTime t1 = ZonedDateTime.parse("2013-12-20T20:00:00.000Z");
-        ZonedDateTime t2 = ZonedDateTime.parse("2013-12-20T21:00:00.000Z");
+        ZonedDateTime t1 = ZonedDateTime.parse("2013-12-20T20:00Z");
+        ZonedDateTime t2 = ZonedDateTime.parse("2013-12-20T21:00Z");
         WorkflowID wfID = new WorkflowID("foobar");
         SlotState s1 = new SlotState(new SlotID(wfID, t1), SlotState.Status.READY);
         SlotState s2 = new SlotState(new SlotID(wfID, t2), SlotState.Status.RUNNING, "external-ID", 4);

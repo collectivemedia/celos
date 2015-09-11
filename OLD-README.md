@@ -704,17 +704,17 @@ Returns the list of the given workflow's slots.
 curl http://celos001.ny7.collective-media.net:8080/celos/workflow?id=workflow-1
 ==>
 {
-  "2014-02-10T04:00:00.000Z" : {
+  "2014-02-10T04:00Z" : {
     "status" : "SUCCESS",
     "externalID" : "0001828-140209102019171-oozie-oozi-W",
     "retryCount" : 0
   },
-  "2014-02-10T05:00:00.000Z" : {
+  "2014-02-10T05:00Z" : {
     "status" : "SUCCESS",
     "externalID" : "0001830-140209102019171-oozie-oozi-W",
     "retryCount" : 0
   },
-  "2014-02-10T06:00:00.000Z" : {
+  "2014-02-10T06:00Z" : {
     "status" : "SUCCESS",
     "externalID" : "0001823-140209102019171-oozie-oozi-W",
     "retryCount" : 0

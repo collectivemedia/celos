@@ -33,7 +33,7 @@ public class UtilTest {
 
     @Test
     public void isFullHourWorks() {
-        Assert.assertTrue(Util.isFullHour(ZonedDateTime.parse("2013-11-27T15:00:00.000Z")));
+        Assert.assertTrue(Util.isFullHour(ZonedDateTime.parse("2013-11-27T15:00Z")));
         Assert.assertFalse(Util.isFullHour(ZonedDateTime.parse("2013-11-27T15:36:00.000Z")));
     }
     
