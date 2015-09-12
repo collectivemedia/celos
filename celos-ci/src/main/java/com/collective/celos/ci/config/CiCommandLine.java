@@ -1,3 +1,18 @@
+/*
+ * Copyright 2015 Collective, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+ * implied.  See the License for the specific language governing
+ * permissions and limitations under the License.
+ */
 package com.collective.celos.ci.config;
 
 
@@ -32,7 +47,7 @@ public class CiCommandLine {
         this.keepTempData = keepTempData;
         this.targetUri = URI.create(Util.requireNonNull(targetUri));
         this.mode = CelosCiContext.Mode.valueOf(Util.requireNonNull(mode).toUpperCase());
-        this.deployDir = new File(Util.requireNonNull(deployDir));
+        this.deployDir = getValidateDeployDir(this.mode, deployDir);
         this.workflowName = Util.requireNonNull(workflowName);
         this.testCasesDir = getValidateTestCasesDir(this.mode, testCasesDir);
     }
@@ -43,6 +58,17 @@ public class CiCommandLine {
         } else {
             throw new IllegalArgumentException("HDFS root should start with single '/' symbol, and should end with no '/' symbol");
         }
+    }
+
+    private File getValidateDeployDir(CelosCiContext.Mode mode, String deployDir) {
+        if (mode == CelosCiContext.Mode.TEST || mode == CelosCiContext.Mode.DEPLOY) {
+            File file = new File(Util.requireNonNull(deployDir));
+            if (!file.isDirectory()) {
+                throw new IllegalArgumentException("Deploy directory was not found on default path " + file.getAbsolutePath() + ", please specify --deployDir parameter");
+            }
+            return file;
+        }
+        return null;
     }
 
     private File getValidateTestCasesDir(CelosCiContext.Mode mode, String testCasesDir) {

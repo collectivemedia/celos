@@ -1,3 +1,18 @@
+/*
+ * Copyright 2015 Collective, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+ * implied.  See the License for the specific language governing
+ * permissions and limitations under the License.
+ */
 package com.collective.celos;
 
 import com.collective.celos.trigger.AlwaysTrigger;
@@ -351,6 +366,44 @@ public class SchedulerTest {
             Assert.assertEquals(SlotState.Status.READY, state.getStatus());
         }
         
+    }
+    
+    /**
+     * Make sure that scheduler doesn't care about very old slot.
+     * 
+     * Mark the slot for rerun.
+     * 
+     * Ensure the scheduler now cares about it.
+     */
+    @Test
+    public void rerunTest() throws Exception {
+        WorkflowID wfID1 = new WorkflowID("wf1");
+        Schedule sch1 = makeHourlySchedule();
+        SchedulingStrategy str1 = makeTrivialSchedulingStrategy();
+        Trigger tr1 = makeAlwaysTrigger();
+        ExternalService srv1 = new MockExternalService(new MockExternalService.MockExternalStatusRunning());
+        int maxRetryCount = 0;
+        Workflow wf1 = new Workflow(wfID1, sch1, str1, tr1, srv1, maxRetryCount, Workflow.DEFAULT_START_TIME, Workflow.DEFAULT_WAIT_TIMEOUT_SECONDS, emptyWorkflowInfo);
+        
+        WorkflowConfiguration cfg = new WorkflowConfiguration();
+        cfg.addWorkflow(wf1);
+        
+        MemoryStateDatabase db = new MemoryStateDatabase();
+
+        int slidingWindowHours = 24;
+        
+        Scheduler sched = new Scheduler(cfg, db, slidingWindowHours);
+        ScheduledTime now = new ScheduledTime("2013-11-27T15:01Z");
+        sched.step(now);
+        // very old slot doesn't exist in DB because it's outside of sliding window
+        SlotID id = new SlotID(wfID1, new ScheduledTime("2000-11-27T15:01Z"));
+        Assert.assertEquals(null, db.getSlotState(id));
+        // mark the slot for rerun and verify scheduler cares about it
+        db.markSlotForRerun(id, now);
+        sched.step(now);
+        Assert.assertEquals(SlotState.Status.READY, db.getSlotState(id).getStatus());
+        sched.step(now);
+        Assert.assertEquals(SlotState.Status.RUNNING, db.getSlotState(id).getStatus());
     }
     
     /**

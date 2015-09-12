@@ -19,10 +19,9 @@ git branch -D gh-pages || :
 git checkout gh-pages
 git rm -rf --quiet ${DIR}/javadoc
 mv ./javadoc-tmp ./javadoc
-git reset --quiet .
 git add ./javadoc
 # check current branch name
 [ $(git rev-parse --abbrev-ref HEAD) == "gh-pages" ] || exit 1
-git commit -m "Published documentation to [gh-pages]."
+git commit -m "Published documentation to [gh-pages]." || :
 git push origin gh-pages
 git checkout -

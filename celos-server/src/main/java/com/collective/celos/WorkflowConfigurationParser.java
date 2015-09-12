@@ -1,3 +1,18 @@
+/*
+ * Copyright 2015 Collective, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+ * implied.  See the License for the specific language governing
+ * permissions and limitations under the License.
+ */
 package com.collective.celos;
 
 import com.google.common.collect.Maps;
@@ -16,9 +31,8 @@ import java.util.Map;
  * The JS engine has one variable defined, celosWorkflowConfigurationParser, which
  * points to the parser instance.
  * 
- * The helper script celos-scripts.js defines the utility function celos.addWorkflow(object),
- * which stringifies the input JS object, and passes the string to the parser's
- * celos.addWorkflowFromJSONString method.
+ * The helper script celos-scripts.js defines the utility function celos.defineWorkflow(object)
+ * Reads a set of JS files from a directory and creates a WorkflowConfiguration.
  */
 public class WorkflowConfigurationParser {
 

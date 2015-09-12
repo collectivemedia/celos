@@ -29,10 +29,15 @@
       module: uri
       url: "{{service_url}}/version"
       return_content: yes
-
   - name: Check servlet /version responds
     when: result.content != service_version
     fail:
+
+  - name: Jetty default file listing servlet turned off
+    local_action:
+      module: uri
+      url: "{{service_url}}/"
+      status_code: 403
 
   - name: Check servlet /celos/scheduler responds to POST
     local_action:
@@ -193,8 +198,27 @@
   - name: Check log file contains info about workflow-1 loaded above
     shell: grep 'INFO :.*Loading file.*workflow-1.js' {{celos_log_dir}}/celos.log
 
+  - name: Deploy file-copy workflow
+    local_action: command {{ root }}/scripts/test/test_files/file-copy/scripts/ci-deploy {{ root }}
+
+  - register: result
+    shell: hadoop fs -cat /user/{{ ansible_ssh_user }}/celos-int-test/file-copy/workflow.xml
+  - name: Check workflow was successfully deployed
+    when: result.stdout != lookup('file', '{{ root }}/scripts/test/test_files/file-copy/src/main/oozie/workflow.xml')
+    fail:
+
+  - name: Undeploy file-copy workflow
+    local_action: command {{ root }}/scripts/test/test_files/file-copy/scripts/ci-undeploy {{ root }}
+
+  - register: result
+    shell: hadoop fs -cat /user/{{ ansible_ssh_user }}/celos-int-test/file-copy/workflow.xml
+    ignore_errors: True
+  - name: Check workflow was successfully undeployed
+    when: result.rc == 0
+    fail:
+
   - name: Run file-copy CCI test
-    local_action: command {{ root }}/samples/file-copy-celos-provided/scripts/ci {{ service_url }} {{ root }}
+    local_action: command {{ root }}/scripts/test/test_files/file-copy/scripts/ci-test {{ service_url }} {{ root }}
 
   - name: Clean logs dir
     shell: rm -rf {{celos_log_dir}}/*

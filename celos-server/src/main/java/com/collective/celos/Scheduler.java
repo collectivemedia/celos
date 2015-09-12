@@ -1,3 +1,18 @@
+/*
+ * Copyright 2015 Collective, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+ * implied.  See the License for the specific language governing
+ * permissions and limitations under the License.
+ */
 package com.collective.celos;
 
 import java.util.ArrayList;
@@ -5,10 +20,15 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
+import java.util.TreeSet;
 
-import com.collective.celos.trigger.Trigger;
 import org.apache.log4j.Logger;
 
+import com.collective.celos.trigger.Trigger;
+
+/**
+ * Master control program.
+ */
 public class Scheduler {
 
     private final int slidingWindowHours;
@@ -76,7 +96,7 @@ public class Scheduler {
      */
     private void stepWorkflow(Workflow wf, ScheduledTime current) throws Exception {
         LOGGER.info("Processing workflow: " + wf.getID() + " at: " + current);
-        List<SlotState> slotStates = getSlotStates(wf, getWorkflowStartTime(wf, current), current);
+        List<SlotState> slotStates = getSlotStatesIncludingMarkedForRerun(wf, current, getWorkflowStartTime(wf, current), current);
         runExternalWorkflows(wf, slotStates);
         for (SlotState slotState : slotStates) {
             updateSlotState(wf, slotState, current);
@@ -84,10 +104,27 @@ public class Scheduler {
     }
 
     /**
-     * Get the slot states of all slots of the workflow from within the window defined by start (inclusive) and end (exclusive)
+     * Get the slot states of all slots of the workflow from within the window defined by start (inclusive) and end (exclusive),
+     * as well as the slots states of all slots marked for rerun in the database.
+     */
+    public List<SlotState> getSlotStatesIncludingMarkedForRerun(Workflow wf, ScheduledTime current, ScheduledTime start, ScheduledTime end) throws Exception {
+        SortedSet<ScheduledTime> times = new TreeSet<>();
+        times.addAll(wf.getSchedule().getScheduledTimes(this, start, end));
+        times.addAll(database.getTimesMarkedForRerun(wf.getID(), current));
+        return fetchSlotStates(wf, times);
+    }
+
+    /**
+     * Get the slot states of all slots of the workflow from within the window defined by start (inclusive) and end (exclusive).
+     * This is used for servlets that return the slot states within the window, and don't care about rerun slots.
      */
     public List<SlotState> getSlotStates(Workflow wf, ScheduledTime start, ScheduledTime end) throws Exception {
-        SortedSet<ScheduledTime> scheduledTimes =  wf.getSchedule().getScheduledTimes(this, start, end);
+        SortedSet<ScheduledTime> times = new TreeSet<>();
+        times.addAll(wf.getSchedule().getScheduledTimes(this, start, end));
+        return fetchSlotStates(wf, times);
+    }
+
+    private List<SlotState> fetchSlotStates(Workflow wf, SortedSet<ScheduledTime> scheduledTimes) throws Exception {
         List<SlotState> slotStates = new ArrayList<SlotState>(scheduledTimes.size());
         for (ScheduledTime t : scheduledTimes) {
             SlotID slotID = new SlotID(wf.getID(), t);

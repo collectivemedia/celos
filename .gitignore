@@ -7,3 +7,8 @@ provisioner/tmp/
 .idea/
 *.iml
 javadoc-tmp/
+/bin/
+*~
+**/.classpath
+**/.project
+**/.settings

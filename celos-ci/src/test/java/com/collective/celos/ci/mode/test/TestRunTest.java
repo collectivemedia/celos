@@ -1,3 +1,18 @@
+/*
+ * Copyright 2015 Collective, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+ * implied.  See the License for the specific language governing
+ * permissions and limitations under the License.
+ */
 package com.collective.celos.ci.mode.test;
 
 import com.collective.celos.ci.config.CiCommandLine;
@@ -37,7 +52,7 @@ public class TestRunTest {
         URI hadoopCoreUrl = Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/ci/testing/config/core-site.xml").toURI();
         URI hadoopHdfsUrl = Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/ci/testing/config/hdfs-site.xml").toURI();
 
-        CiCommandLine commandLine = new CiCommandLine("", "TEST", "deploydir", "workflow", tmpDirFile.getAbsolutePath(), "uname", false, null, "/hdfsRoot");
+        CiCommandLine commandLine = new CiCommandLine("", "TEST", tmpDirFile.getAbsolutePath(), "workflow", tmpDirFile.getAbsolutePath(), "uname", false, null, "/hdfsRoot");
         CelosCiTarget target = new CelosCiTarget(hadoopHdfsUrl, hadoopCoreUrl, URI.create("celoswfdir"), URI.create("defdir"), URI.create(""));
         TestCase testCase = new TestCase("tc1", "2013-12-20T16:00Z", "2013-12-20T16:00Z");
         TestRun testRunContext = new TestRun(target, commandLine, testCase, tempDir.newFolder());
@@ -69,7 +84,7 @@ public class TestRunTest {
         URI hadoopCoreUrl = Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/ci/testing/config/core-site.xml").toURI();
         URI hadoopHdfsUrl = Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/ci/testing/config/hdfs-site.xml").toURI();
 
-        CiCommandLine commandLine = new CiCommandLine("", "TEST", "deploydir", "workflow", tmpDirFile.getAbsolutePath(), "uname", false, "http://localhost:1234", "/hdfsRoot");
+        CiCommandLine commandLine = new CiCommandLine("", "TEST", tmpDirFile.getAbsolutePath(), "workflow", tmpDirFile.getAbsolutePath(), "uname", false, "http://localhost:1234", "/hdfsRoot");
         CelosCiTarget target = new CelosCiTarget(hadoopHdfsUrl, hadoopCoreUrl, URI.create("celoswfdir"), URI.create("defdir"), URI.create(""));
         TestCase testCase = new TestCase("tc1", "2013-12-20T16:00Z", "2013-12-20T16:00Z");
         TestRun testRunContext = new TestRun(target, commandLine, testCase, tempDir.newFolder());
