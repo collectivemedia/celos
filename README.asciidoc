@@ -1,7 +1,7 @@
 Celos: A Scriptable Scheduler for Periodical Hadoop Workflows
 =============================================================
 :toc: macro
-:toclevels: 5
+:toclevels: 3
 :toc-title:
 
 toc::[]
@@ -69,7 +69,7 @@ defines two workflows.
 celos.defineWorkflow(options);
 ....
 
-====== Parameters
+===== Parameters
 
 `celos.defineWorkflow` takes as argument an options object with the
 following fields:
@@ -86,6 +86,24 @@ following fields:
 |`maxRetryCount`|Number|No|The number of times a slot of this workflow should be automatically retried if it fails (default: 0).
 |`waitTimeoutSeconds`|Number|No|The number of seconds a workflow should stay waiting until it times out (default: `Integer.MAX_VALUE` (68 years)).
 |===
+
+===== Examples
+
+[source,javascript]
+....
+celos.defineWorkflow({
+    "id": "my-workflow",
+    "schedule": celos.hourlySchedule(),
+    "schedulingStrategy": celos.serialSchedulingStrategy(),
+    "trigger": celos.alwaysTrigger(),
+    "externalService": celos.oozieExternalService({
+        "oozie.wf.application.path": "/my-workflow/workflow.xml",
+        "param1": "Hello",
+        "param2": "World"
+    }),
+    "maxRetryCount": 3
+});
+....
 
 ==== celos.importDefaults
 
