@@ -138,6 +138,10 @@ celos.importDefaults("foo");
 
 === Triggers
 
+A trigger determines (for each point in time at which a workflow runs)
+whether the preconditions for running the workflow (such as data
+availability, or success of upstream workflows are met).
+
 ==== celos.hdfsCheckTrigger
 
 ===== Description
@@ -315,7 +319,7 @@ celos.offsetTrigger(seconds, trigger)
 [source,javascript]
 ....
 // Wait for this hour's and next hour's HDFS file.
-var trigger = celos.hdfsCheckTrigger("${year}-${month}-${day}/${hour}-00/_READY");
+var trigger = celos.hdfsCheckTrigger("/${year}-${month}-${day}/${hour}-00/_READY");
 celos.andTrigger(trigger,
                  celos.offsetTrigger(60 * 60, trigger);
 ....
@@ -378,13 +382,149 @@ celos.alwaysTrigger();
 
 === Schedules
 
+A schedule determines the points in time (slots) at which a workflow should run.
 
 ==== celos.cronSchedule
+
+===== Description
+
+A cron-like schedule.
+
+The full cron syntax is described here:
+http://www.quartz-scheduler.org/documentation/quartz-1.x/tutorials/crontrigger
+
+===== Syntax
+
+[source,javascript]
+....
+celos.cronSchedule(cronExpr)
+....
+
+===== Parameters
+
+[options="header"]
+|===
+|Name|Type|Required|Description
+|`cronExpr`|String|Yes|The link:http://www.quartz-scheduler.org/documentation/quartz-1.x/tutorials/crontrigger[cron expression].
+|===
+
+===== Examples
+
+[source,javascript]
+....
+// Runs a workflow at 10:15am every day.
+celos.cronSchedule("0 15 10 * * ?");
+....
+
 ==== celos.hourlySchedule
+
+===== Description
+
+Runs a workflow every hour.
+
+A shortcut for `celos.cronSchedule("0 0 * * * ?")`.
+
+===== Syntax
+
+[source,javascript]
+....
+celos.hourlySchedule()
+....
+
+===== Examples
+
+[source,javascript]
+....
+celos.hourlySchedule();
+....
+
 ==== celos.minutelySchedule
+
+===== Description
+
+Runs a workflow every minute.
+
+A shortcut for `celos.cronSchedule("0 * * * * ?")`.
+
+===== Syntax
+
+[source,javascript]
+....
+celos.minutelySchedule()
+....
+
+===== Examples
+
+[source,javascript]
+....
+celos.minutelySchedule();
+....
+
 ==== celos.dependentSchedule
+
+===== Description
+
+Runs a workflow with the same schedule as another workflow.
+
+===== Syntax
+
+[source,javascript]
+....
+celos.dependentSchedule(workflowID)
+....
+
+===== Parameters
+
+[options="header"]
+|===
+|Name|Type|Required|Description
+|`workflowID`|String|Yes|The workflow ID of the other workflow.
+|===
+
+===== Examples
+
+[source,javascript]
+....
+// A workflow using this schedule will run with the same schedule as 
+// the workflow with the ID "foo".
+celos.dependentSchedule("foo");
+....
+
 === Scheduling Strategies
+
+A scheduling strategy determines the order in which the ready slots of
+a workflow are executed.
+
 ==== celos.serialSchedulingStrategy
+
+===== Description
+
+Executes slots oldest first, with a configurable concurrency level.
+
+===== Syntax
+
+[source,javascript]
+....
+celos.serialSchedulingStrategy(concurrency?)
+....
+
+===== Parameters
+
+[options="header"]
+|===
+|Name|Type|Required|Description
+|`concurrency`|Number|No|The number of slots to execute at the same time (defaults to 1).
+|===
+
+===== Examples
+
+[source,javascript]
+....
+// A workflow using this scheduling strategy will have 
+// at most three slots executing concurrently.
+celos.serialSchedulingStrategy(3);
+....
+
 === External Services
 ==== celos.oozieExternalService
 === Variables
