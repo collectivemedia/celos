@@ -526,13 +526,67 @@ celos.serialSchedulingStrategy(3);
 ....
 
 === External Services
+
+An external service actually executes a workflow.
+
 ==== celos.oozieExternalService
+
+===== Description
+
+Executes slots with Oozie.
+
+===== Syntax
+
+[source,javascript]
+....
+celos.oozieExternalService(properties, oozieURL?)
+....
+
+===== Parameters
+
+[options="header"]
+|===
+|Name|Type|Required|Description
+|`properties`|Object|Yes|Properties to pass to Oozie.
+|`oozieURL`|String|No|The HTTP URL of the Oozie API.  If not specified, the value of the CELOS_DEFAULT_OOZIE variable will be used.
+|===
+
+Inside property values, the variables `${year}`, `${month}`, `${day}`,
+`${hour}`, `${minute}`, and `${second}`, will be replaced by the
+zero-padded values from the slot's scheduled time.
+
+`year`, `month`, `day`, `hour`, `minute`, and `second` will also be
+set as Oozie properties, so they can be used in the workflow.xml.
+
+Additionally, Celos will set the Oozie property `celosWorkflowName` to
+a string like "my-workflow@2015-09-12T20:00Z", useful for display.
+
+===== Examples
+
+[source,javascript]
+....
+celos.oozieExternalService({
+    "prop1": "Hello. It is the year ${year}!",
+    "prop2": "Just another property."
+});
+....
+
 === Variables
+
 ==== CELOS_DEFAULT_HDFS
+
+The String value of this variable will be used as the default HDFS name node URI.
+
 ==== CELOS_DEFAULT_OOZIE
+
+The String value of this variable will be used as the default Oozie API URL.
+
 ==== CELOS_DEFAULT_OOZIE_PROPERTIES
 
+The members of this Object will be added to the Oozie properties of a workflow.
+
 == Command Reference
+
 === celos-server.jar
 
 The celos-server.jar launches Celos.
