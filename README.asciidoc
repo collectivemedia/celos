@@ -736,7 +736,20 @@ hdfs/
 
 === Target file
 
-A target file describes a Celos and HDFS setup:
+A target file is a JSON file that describes a Celos and HDFS setup.
+
+[options="header"]
+|===
+|Name|Type|Required|Description
+|`hadoop.hdfs-site.xml`|String|Yes|URL of Hadoop hdfs-site.xml File
+|`hadoop.core-site.xml`|String|Yes|URL of Hadoop core-site.xml File
+|`defaults.dir.uri`|String|Yes|URL of Celos defaults directory.
+|`workflows.dir.uri`|String|Yes|URL of Celos workflows directory.
+|===
+
+All fields can be file: or sftp: URLs.
+
+Example:
 
 ....
 {
