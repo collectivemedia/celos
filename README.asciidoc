@@ -586,11 +586,11 @@ API URL by <<celos.oozieExternalService>>.
 The members of this Object will be added to the Oozie properties of a
 workflow by <<celos.oozieExternalService>>.
 
-== celos-server.jar Reference
+== Celos Server Reference
 
 The celos-server.jar launches Celos.
 
-=== Server command-line arguments
+=== celos-server.jar command-line arguments
 
 ==== --port
 
@@ -636,34 +636,113 @@ POSTs to the /scheduler servlet instead.
 
 ==== /scheduler
 
-POSTing to this servlet initiates a scheduler step.
+Doing a POST to this servlet initiates a scheduler step.
 
 In production we do this once a minute from cron.
 
+===== Example
+
+....
+curl -X POST localhost:1234/scheduler
+....
+
 ==== /workflow-list
 
-GETting this servlet returns the list of workflows loaded into Celos.
+Doing a GET to this servlet returns the list of workflows loaded into Celos.
+
+===== Example
+
+....
+curl "localhost:1234/workflow-list"
+....
+
+prints:
+
+....
+{
+  "ids" : [ "workflow-1", "workflow-2", "workflow-3" ]
+}
+....
 
 ==== /workflow-slots
 
-GETting this servlet returns information about a workflow and a subset
-of its slots.
+Doing a GET to this servlet returns the slots of a workflow within a
+time range.
+
+===== Parameters
+
+[options="header"]
+|===
+|Name|Type|Required|Description
+|`id`|String|Yes|ID of the workflow.
+|`end`|String (ISO 8601)|No|Time (exclusive) of most recent slot to return.  Defaults to current time.
+|`start`|String (ISO 8601)|No|Time (inclusive) of earliest slot to return.  Defaults to 1 week before `end`.
+|===
+
+==== Example
+
+....
+curl "localhost:1234/workflow-slots?id=workflow-1"
+....
+
+prints:
+
+....
+{
+  "slots" : [ {
+    "time" : "2015-09-13T13:50:00.000Z",
+    "status" : "READY",
+    "externalID" : null,
+    "retryCount" : 0
+  }, {
+    "time" : "2015-09-13T13:45:00.000Z",
+    "status" : "SUCCESS",
+    "externalID" : "0004806-150911205802478-oozie-oozi-W",
+    "retryCount" : 0
+  }, {
+    "time" : "2015-09-13T13:40:00.000Z",
+    "status" : "SUCCESS",
+    "externalID" : "0004804-150911205802478-oozie-oozi-W",
+    "retryCount" : 0
+  },
+  ...
+  ]
+}
+....
 
 ==== /rerun
 
-POSTing to this servlet instructs Celos to mark a slot for rerun.
+Doing a POST to this servlet instructs Celos to mark a slot for rerun.
 
-== celos-ci.jar
-=== CI command-line arguments
+The slot's state will be reset to <<WAITING>> and its retry count will
+be reset to 0.
+
+===== Parameters
+
+[options="header"]
+|===
+|Name|Type|Required|Description
+|`id`|String|Yes|ID of the workflow.
+|`time`|String (ISO 8601)|Yes|Scheduled time of slot to rerun.
+|===
+
+===== Example
+
+....
+curl -X POST "localhost:1234/rerun?id=workflow-1&time=2015-09-13T13:40Z"
+....
+
+== Celos CI Reference
+=== celos-ci.jar Command-line Arguments
 ==== --mode
 ==== --deployDir
 ==== --hdfsRoot
 ==== --target
-=== CI environment variables
+=== Celos CI Environment Variables
 ==== CELOS_CI_USERNAME
 === Target files
-== celos-ui.jar
-=== UI command-line arguments
+== Celos UI Reference
+=== celos-ui.jar Command-line Arguments
 ==== --port
 ==== --celos
 ==== --hue
