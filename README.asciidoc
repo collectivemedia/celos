@@ -573,17 +573,22 @@ celos.oozieExternalService({
 
 === Variables
 
+If defined, these global variables influence some API functions.
+
 ==== CELOS_DEFAULT_HDFS
 
-The String value of this variable will be used as the default HDFS name node URI.
+The String value of this variable will be used as the default HDFS
+name node URI by <<celos.hdfsCheckTrigger>>.
 
 ==== CELOS_DEFAULT_OOZIE
 
-The String value of this variable will be used as the default Oozie API URL.
+The String value of this variable will be used as the default Oozie
+API URL by <<celos.oozieExternalService>>.
 
 ==== CELOS_DEFAULT_OOZIE_PROPERTIES
 
-The members of this Object will be added to the Oozie properties of a workflow.
+The members of this Object will be added to the Oozie properties of a
+workflow by <<celos.oozieExternalService>>.
 
 == Command Reference
 
