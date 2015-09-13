@@ -3,6 +3,7 @@ a { text-decoration: none; }
 .mainTable {}
 .workflowGroup { text-align: right; font-size: large; font-weight: bold; padding-top: 1em; padding-right: 20px; white-space: nowrap; }
 .workflow { text-align: right; padding-right: 20px; font-weight: normal; white-space: nowrap; }
+.missing { color: red; }
 .hour, .day, .noDay, .dayHeader { font-family: monospace; text-align: center; }
 .day { background-color: black; color: white; font-weight: bold; }
 .currentDate { font-family: monospace; text-align: right; padding-right: 20px; font-weight: bold; }

@@ -229,9 +229,13 @@ public class UIServlet extends HttpServlet {
     }
 
     private static Tag makeWorkflowRow(UIConfiguration conf, WorkflowID id) {
+        WorkflowStatus workflowStatus = conf.getStatuses().get(id);
+        if (workflowStatus == null) {
+            return tr().with(td(id.toString() + " (missing)").withClass("workflow missing"));
+        }
+        Map<ScheduledTime, Set<SlotState>> buckets = bucketSlotsByTime(workflowStatus.getSlotStates(), conf.getTileTimes());
         List<Tag> cells = new LinkedList<>();
         cells.add(td(id.toString()).withClass("workflow"));
-        Map<ScheduledTime, Set<SlotState>> buckets = bucketSlotsByTime(conf.getStatuses().get(id).getSlotStates(), conf.getTileTimes());
         for (ScheduledTime tileTime : conf.getTileTimes().descendingSet()) {
             Set<SlotState> slots = buckets.get(tileTime);
             String slotClass = "slot " + printTileClass(slots);
