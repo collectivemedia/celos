@@ -590,49 +590,20 @@ workflow by <<celos.oozieExternalService>>.
 
 The celos-server.jar launches Celos.
 
-=== celos-server.jar command-line arguments
+=== Server Command-Line Arguments
 
-==== --port
+[options="header"]
+|===
+|Name|Type|Required|Description
+|`--port`|Integer|Yes|HTTP port for server.
+|`--workflows`|Path|No|Workflows directory (defaults to /etc/celos/workflows).
+|`--defaults`|Path|No|Defaults directory (defaults to /etc/celos/defaults).
+|`--logs`|Path|No|Logs directory (defaults to /var/log/celos).
+|`--db`|Path|No|State database directory (defaults to /var/lib/celos/db).
+|`--autoSchedule`|Integer|No|Interval (in seconds) between which scheduler steps.  In unsupplied, Celos will not automatically step the scheduler, and wait for POSTs to the /scheduler servlet instead.
+|===
 
-This required argument sets the HTTP port under which the server will run.
-
-==== --workflows
-
-This optional argument sets the workflows directory from which Celos
-reads workflow JavaScript files.
-
-If unsupplied, defaults to /etc/celos/workflows.
-
-==== --defaults
-
-This optional argument sets the defaults directory which contains
-defaults JavaScript files that can be imported by workflows.
-
-If unsupplied, defaults to /etc/celos/defaults.
-
-==== --logs
-
-This optional argument sets the directory which contains the log
-files.
-
-If unsupplied, defaults to /var/log/celos.
-
-==== --db
-
-This optional argument sets the directory which contains Celos' state
-database.
-
-If unsupplied, defaults to /var/lib/celos.
-
-==== --autoSchedule
-
-This optional argument sets the interval (in seconds) after which
-Celos should automatically start a scheduler step.
-
-In unsupplied, Celos will not automatically schedule, and wait for
-POSTs to the /scheduler servlet instead.
-
-=== Server servlets
+=== Server HTTP API
 
 ==== /scheduler
 
@@ -733,19 +704,43 @@ curl -X POST "localhost:1234/rerun?id=workflow-1&time=2015-09-13T13:40Z"
 ....
 
 == Celos CI Reference
-=== celos-ci.jar Command-line Arguments
-==== --mode
-==== --deployDir
-==== --hdfsRoot
-==== --target
-=== Celos CI Environment Variables
+
+=== CI Command-Line Arguments
+
+[options="header"]
+|===
+|Name|Type|Required|Description
+|`--mode`|String|Yes|`deploy` or `undeploy`
+|`--deployDir`|Path|Yes|Deployment directory (not needed for `undeploy`).
+|`--target`|Path|Yes|The target file.
+|`--hdfsRoot`|Path|No|HDFS data will be placed under this root (defaults to /user/celos/app).
+|===
+
+=== CI Environment Variables
 ==== CELOS_CI_USERNAME
 === Target files
 == Celos UI Reference
-=== celos-ui.jar Command-line Arguments
-==== --port
-==== --celos
-==== --hue
-==== --config
-=== UI servlets
+=== UI Command-Line Arguments
+[options="header"]
+|===
+|Name|Type|Required|Description
+|`--port`|Integer|Yes|HTTP port for UI.
+|`--celos`|URL|Yes|Celos URL.
+|`--hue`|Path|No|URL of Oozie UI.
+|`--config`|Path|No|JSON config file.
+|===
+
+=== UI HTTP API
+
 ==== /ui
+
+Doing a GET to this servlet displays the Celos UI.
+
+===== Parameters
+
+[options="header"]
+|===
+|Name|Type|Required|Description
+|`time`|String (ISO 8601)|Yes|Time of most recent slot to display.
+|`zoom`|String (ISO 8601)|No|Zoom level in minutes (defaults to 60).
+|===
