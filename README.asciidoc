@@ -203,7 +203,7 @@ celos.successTrigger("bar");
 
 ===== Description
 
-Logical AND of one or more nested triggers.
+Logical AND of nested triggers.
 
 ===== Syntax
 
@@ -229,13 +229,156 @@ celos.andTrigger(celos.hdfsCheckTrigger("/foo"),
                  celos.hdfsCheckTrigger("/bar"));
 ....
 
-
 ==== celos.orTrigger
+
+===== Description
+
+Logical OR of nested triggers.
+
+===== Syntax
+
+[source,javascript]
+....
+celos.orTrigger(trigger1, ..., triggerN)
+....
+
+===== Parameters
+
+[options="header"]
+|===
+|Name|Type|Required|Description
+|`trigger1, ..., triggerN`|link:#triggers[Trigger]|No|The nested triggers.
+|===
+
+===== Examples
+
+[source,javascript]
+....
+// Wait for the HDFS paths /foo or /bar
+celos.orTrigger(celos.hdfsCheckTrigger("/foo"),
+                celos.hdfsCheckTrigger("/bar"));
+....
+
 ==== celos.notTrigger
+
+===== Description
+
+Logical NOT of a nested trigger.
+
+===== Syntax
+
+[source,javascript]
+....
+celos.notTrigger(trigger)
+....
+
+===== Parameters
+
+[options="header"]
+|===
+|Name|Type|Required|Description
+|`trigger`|link:#triggers[Trigger]|Yes|The nested trigger to negate.
+|===
+
+===== Examples
+
+[source,javascript]
+....
+// Wait until HDFS path /foo doesn't exist.
+celos.notTrigger(celos.hdfsCheckTrigger("/foo"));
+....
+
 ==== celos.offsetTrigger
+
+===== Description
+
+Offset a nested trigger into the future or past.
+
+===== Syntax
+
+[source,javascript]
+....
+celos.offsetTrigger(seconds, trigger)
+....
+
+===== Parameters
+
+[options="header"]
+|===
+|Name|Type|Required|Description
+|`seconds`|Number|Yes|The number of seconds to offset into the future (if positive) or past (if negative).
+|`trigger`|link:#triggers[Trigger]|Yes|The nested trigger to offset.
+|===
+
+===== Examples
+
+[source,javascript]
+....
+// Wait for this hour's and next hour's HDFS file.
+var trigger = celos.hdfsCheckTrigger("${year}-${month}-${day}/${hour}-00/_READY");
+celos.andTrigger(trigger,
+                 celos.offsetTrigger(60 * 60, trigger);
+....
+
 ==== celos.delayTrigger
+
+===== Description
+
+Waits until a specified amount of time has passed between the slot's
+scheduled time and the current wallclock time.
+
+===== Syntax
+
+[source,javascript]
+....
+celos.delayTrigger(seconds)
+....
+
+===== Parameters
+
+[options="header"]
+|===
+|Name|Type|Required|Description
+|`seconds`|Number|Yes|The number of seconds to wait.
+|===
+
+===== Examples
+
+[source,javascript]
+....
+// Will become ready one hour after its scheduled time.
+celos.delayTrigger(60 * 60);
+
+// Can also be used for e.g. alerting: will trigger if, after 1 hour,
+// workflow "foo" is not successful.
+celos.andTrigger(celos.delayTrigger(60 * 60),
+                 celos.notTrigger(celos.successTrigger("foo")));
+....
+
 ==== celos.alwaysTrigger
+
+===== Description
+
+A trigger that's always ready, to be used when a workflow has no
+preconditions and should simply run at any scheduled time.
+
+===== Syntax
+
+[source,javascript]
+....
+celos.alwaysTrigger()
+....
+
+===== Examples
+
+[source,javascript]
+....
+celos.alwaysTrigger();
+....
+
 === Schedules
+
+
 ==== celos.cronSchedule
 ==== celos.hourlySchedule
 ==== celos.minutelySchedule
