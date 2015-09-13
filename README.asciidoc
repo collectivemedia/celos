@@ -64,7 +64,10 @@ defines two workflows.
 
 ===== Syntax
 
-celos.defineWorkflow(options)
+[source,javascript]
+....
+celos.defineWorkflow(options);
+....
 
 ====== Parameters
 
@@ -82,6 +85,7 @@ following fields:
 |`startTime`|String|No|The date when the workflow should start executing (default: "1970-01-01T00:00Z").
 |`maxRetryCount`|Number|No|The number of times a slot of this workflow should be automatically retried if it fails (default: 0).
 |`waitTimeoutSeconds`|Number|No|The number of seconds a workflow should stay waiting until it times out (default: `Integer.MAX_VALUE` (68 years)).
+|===
 
 ==== celos.importDefaults
 
