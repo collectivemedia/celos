@@ -715,8 +715,8 @@ artefacts automatically.
 |Name|Type|Required|Description
 |`--mode`|String|Yes|`deploy` or `undeploy`
 |`--workflowName`|String|Yes|Name of workflow (or rather, project).
-|`--deployDir`|Path|Yes|The <<deployment directory>> (not needed for `undeploy`).
-|`--target`|Path|Yes|The <<target file>>.
+|`--deployDir`|Path|Yes|The deployment directory (not needed for `undeploy`).
+|`--target`|Path|Yes|The target file.
 |`--hdfsRoot`|Path|No|HDFS data will be placed under this root (defaults to /user/celos/app).
 |===
 
