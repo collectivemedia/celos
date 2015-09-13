@@ -705,20 +705,48 @@ curl -X POST "localhost:1234/rerun?id=workflow-1&time=2015-09-13T13:40Z"
 
 == Celos CI Reference
 
+The celos-ci.jar can be used to deploy workflow, defaults, and HDFS
+artefacts automatically.
+
 === CI Command-Line Arguments
 
 [options="header"]
 |===
 |Name|Type|Required|Description
 |`--mode`|String|Yes|`deploy` or `undeploy`
-|`--deployDir`|Path|Yes|Deployment directory (not needed for `undeploy`).
-|`--target`|Path|Yes|The target file.
+|`--workflowName`|String|Yes|Name of workflow (or rather, project).
+|`--deployDir`|Path|Yes|The <<deployment directory>> (not needed for `undeploy`).
+|`--target`|Path|Yes|The <<target file>>.
 |`--hdfsRoot`|Path|No|HDFS data will be placed under this root (defaults to /user/celos/app).
 |===
 
-=== CI Environment Variables
-==== CELOS_CI_USERNAME
-=== Target files
+=== Deployment directory
+
+A deployment directory must follow a canonical directory layout:
+
+....
+workflow.js
+defaults.js
+hdfs/
+  workflow.xml
+  ...
+  lib/
+    ...
+....
+
+=== Target file
+
+A target file describes a Celos and HDFS setup:
+
+....
+{
+    "hadoop.hdfs-site.xml": "sftp://celos002.ewr004.collective-media.net/etc/hadoop/conf/hdfs-site.xml",
+    "hadoop.core-site.xml": "sftp://celos002.ewr004.collective-media.net/etc/hadoop/conf/core-site.xml",
+    "defaults.dir.uri": "sftp://celos002.ewr004.collective-media.net/etc/celos/defaults",
+    "workflows.dir.uri": "sftp://celos002.ewr004.collective-media.net/etc/celos/workflows",
+}
+....
+
 == Celos UI Reference
 === UI Command-Line Arguments
 [options="header"]
