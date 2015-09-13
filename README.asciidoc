@@ -57,10 +57,7 @@ Head over to link:samples/quickstart[*samples/quickstart*].
 
 ===== Description
 
-This is the main API call that registers a new workflow.  Any number
-of `celos.defineWorkflow` calls may appear in a file.  See
-link:samples/quickstart/src/main/celos/workflow.js[] for a file that
-defines two workflows.
+This is the main API call that registers a new workflow.
 
 ===== Syntax
 
@@ -71,8 +68,7 @@ celos.defineWorkflow(options)
 
 ===== Parameters
 
-`celos.defineWorkflow` takes as argument an options object with the
-following fields:
+The `options` argument is an object with the following fields:
 
 [options="header"]
 |===
@@ -548,7 +544,7 @@ celos.oozieExternalService(properties, oozieURL?)
 |===
 |Name|Type|Required|Description
 |`properties`|Object|Yes|Properties to pass to Oozie.
-|`oozieURL`|String|No|The HTTP URL of the Oozie API.  If not specified, the value of the CELOS_DEFAULT_OOZIE variable will be used.
+|`oozieURL`|String|No|The HTTP URL of the Oozie API.  If not specified, the value of the <<CELOS_DEFAULT_OOZIE>> variable will be used.
 |===
 
 Inside property values, the variables `${year}`, `${month}`, `${day}`,
@@ -590,47 +586,45 @@ API URL by <<celos.oozieExternalService>>.
 The members of this Object will be added to the Oozie properties of a
 workflow by <<celos.oozieExternalService>>.
 
-== Command Reference
-
-=== celos-server.jar
+== celos-server.jar Reference
 
 The celos-server.jar launches Celos.
 
-==== Server command-line arguments
+=== Server command-line arguments
 
-===== --port
+==== --port
 
 This required argument sets the HTTP port under which the server will run.
 
-===== --workflows
+==== --workflows
 
 This optional argument sets the workflows directory from which Celos
 reads workflow JavaScript files.
 
 If unsupplied, defaults to /etc/celos/workflows.
 
-===== --defaults
+==== --defaults
 
 This optional argument sets the defaults directory which contains
 defaults JavaScript files that can be imported by workflows.
 
 If unsupplied, defaults to /etc/celos/defaults.
 
-===== --logs
+==== --logs
 
 This optional argument sets the directory which contains the log
 files.
 
 If unsupplied, defaults to /var/log/celos.
 
-===== --db
+==== --db
 
 This optional argument sets the directory which contains Celos' state
 database.
 
 If unsupplied, defaults to /var/lib/celos.
 
-===== --autoSchedule
+==== --autoSchedule
 
 This optional argument sets the interval (in seconds) after which
 Celos should automatically start a scheduler step.
@@ -638,40 +632,41 @@ Celos should automatically start a scheduler step.
 In unsupplied, Celos will not automatically schedule, and wait for
 POSTs to the /scheduler servlet instead.
 
-==== Server servlets
+=== Server servlets
 
-===== /scheduler
+==== /scheduler
 
 POSTing to this servlet initiates a scheduler step.
 
 In production we do this once a minute from cron.
 
-===== /workflow-list
+==== /workflow-list
 
 GETting this servlet returns the list of workflows loaded into Celos.
 
-===== /workflow-slots
+==== /workflow-slots
 
 GETting this servlet returns information about a workflow and a subset
 of its slots.
 
-===== /rerun
+==== /rerun
 
 POSTing to this servlet instructs Celos to mark a slot for rerun.
 
-=== celos-ci.jar
-==== CI command-line arguments
-===== --mode
-===== --deployDir
-===== --hdfsRoot
-===== --target
-==== CI environment variables
-===== CELOS_CI_USERNAME
-==== Target files
-=== celos-ui.jar
-==== UI command-line arguments
-===== --port
-===== --celos
-===== --hue
-==== UI servlets
-===== /ui
+== celos-ci.jar
+=== CI command-line arguments
+==== --mode
+==== --deployDir
+==== --hdfsRoot
+==== --target
+=== CI environment variables
+==== CELOS_CI_USERNAME
+=== Target files
+== celos-ui.jar
+=== UI command-line arguments
+==== --port
+==== --celos
+==== --hue
+==== --config
+=== UI servlets
+==== /ui
