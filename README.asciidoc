@@ -66,7 +66,7 @@ defines two workflows.
 
 [source,javascript]
 ....
-celos.defineWorkflow(options);
+celos.defineWorkflow(options)
 ....
 
 ===== Parameters
@@ -117,7 +117,7 @@ current file.
 
 [source,javascript]
 ....
-celos.importDefaults(name);
+celos.importDefaults(name)
 ....
 
 ===== Parameters
@@ -137,37 +137,6 @@ celos.importDefaults("foo");
 ....
 
 === Triggers
-
-==== celos.importDefaults
-
-===== Description
-
-Evaluates a file from the defaults directory in the current scope, so
-all variables and functions from the file become available in the
-current file.
-
-===== Syntax
-
-[source,javascript]
-....
-celos.importDefaults(name)
-....
-
-===== Parameters
-
-[options="header"]
-|===
-|Name|Type|Required|Description
-|`name`|String|Yes|The name of the defaults file to import, without the ".js" suffix.
-|===
-
-===== Examples
-
-[source,javascript]
-....
-// Loads the file foo.js from the defaults directory
-celos.importDefaults("foo");
-....
 
 ==== celos.hdfsCheckTrigger
 
@@ -201,9 +170,66 @@ celos.hdfsCheckTrigger("/logs/${year}-${month}-${day}/${hour}-00/_READY");
 
 ==== celos.successTrigger
 
+===== Description
 
+Makes a workflow wait for the success of another workflow at the same
+time.  This is used to define dependencies among workflows.
+
+===== Syntax
+
+[source,javascript]
+....
+celos.successTrigger(workflowID)
+....
+
+===== Parameters
+
+[options="header"]
+|===
+|Name|Type|Required|Description
+|`workflowID`|String|Yes|The ID of the other workflow to wait for.
+|===
+
+===== Examples
+
+[source,javascript]
+....
+// A workflow using this trigger will run at time T only after the
+// workflow "bar" has succeeded at time T.
+celos.successTrigger("bar");
+....
 
 ==== celos.andTrigger
+
+===== Description
+
+Logical AND of one or more nested triggers.
+
+===== Syntax
+
+[source,javascript]
+....
+celos.andTrigger(trigger1, ..., triggerN)
+....
+
+===== Parameters
+
+[options="header"]
+|===
+|Name|Type|Required|Description
+|`trigger1, ..., triggerN`|link:#triggers[Trigger]|No|The nested triggers.
+|===
+
+===== Examples
+
+[source,javascript]
+....
+// Wait for the HDFS paths /foo and /bar
+celos.andTrigger(celos.hdfsCheckTrigger("/foo"),
+                 celos.hdfsCheckTrigger("/bar"));
+....
+
+
 ==== celos.orTrigger
 ==== celos.notTrigger
 ==== celos.offsetTrigger
