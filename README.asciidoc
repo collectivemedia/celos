@@ -679,7 +679,7 @@ time range.
 |`start`|String (ISO 8601)|No|Time (inclusive) of earliest slot to return.  Defaults to 1 week before `end`.
 |===
 
-==== Example
+===== Example
 
 ....
 curl "localhost:1234/workflow-slots?id=workflow-1"
@@ -714,8 +714,8 @@ prints:
 
 Doing a POST to this servlet instructs Celos to mark a slot for rerun.
 
-The slot's state will be reset to <<WAITING>> and its retry count will
-be reset to 0.
+The slot's state will be reset to waiting and its retry count will be
+reset to 0.
 
 ===== Parameters
 
