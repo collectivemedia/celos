@@ -55,56 +55,127 @@ Head over to link:samples/quickstart[*samples/quickstart*].
 === General
 ==== celos.defineWorkflow
 
-Syntax: `celos.defineWorkflow(object)`
+===== Description
 
 This is the main API call that registers a new workflow.  Any number
 of `celos.defineWorkflow` calls may appear in a file.  See
 link:samples/quickstart/src/main/celos/workflow.js[] for a file that
 defines two workflows.
 
-`celos.defineWorkflow` takes as argument an object with the following
-required fields:
+===== Syntax
 
-* `id`: The identifier string for the workflow, must be unique.
-* `trigger`: The link:#triggers[trigger] that determines data availability for the workflow.
-* `schedule`: The link:#schedules[schedule] that determines the points in time at which the workflow should run.
-* `schedulingStrategy`: The link:#scheduling-strategies[scheduling strategy] that determines when and in which order ready slots should be run.
-* `externalService`: The link:#external-services[external service], actually responsible for executing the job.
+celos.defineWorkflow(options)
 
-The following fields are optional:
+====== Parameters
 
-* `startTime`: The date when the workflow should start executing (default: beginning of the Unix epoch).
-* `maxRetryCount`: The number of times a slot of this workflow should be automatically retried if it fails (default: 0).
-* `waitTimeoutSeconds`: The number of seconds a workflow should stay waiting until it times out (default: forever).
+`celos.defineWorkflow` takes as argument an options object with the
+following fields:
+
+[options="header"]
+|===
+|Name|Type|Required|Description
+|`id`|String|Yes|The identifier string for the workflow, must be unique.
+|`trigger`|link:#triggers[Trigger]|Yes|The trigger that determines data availability for the workflow.
+|`schedule`|link:#schedules[Schedule]|Yes|The schedule that determines the points in time at which the workflow should run.
+|`schedulingStrategy`|link:#scheduling-strategies[SchedulingStrategy]|Yes|The scheduling strategy that determines when and in which order ready slots should be run.
+|`externalService`|link:#external-services[ExternalService]|Yes|The external service actually responsible for executing the job.
+|`startTime`|String|No|The date when the workflow should start executing (default: "1970-01-01T00:00Z").
+|`maxRetryCount`|Number|No|The number of times a slot of this workflow should be automatically retried if it fails (default: 0).
+|`waitTimeoutSeconds`|Number|No|The number of seconds a workflow should stay waiting until it times out (default: `Integer.MAX_VALUE` (68 years)).
 
 ==== celos.importDefaults
 
-Syntax: `celos.importDefaults(name)`
+===== Description
 
 Evaluates a file from the defaults directory in the current scope, so
 all variables and functions from the file become available in the
 current file.
 
-Example:
+===== Syntax
 
 [source,javascript]
 ....
+celos.importDefaults(name);
+....
+
+===== Parameters
+
+[options="header"]
+|===
+|Name|Type|Required|Description
+|`name`|String|Yes|The name of the defaults file to import, without the ".js" suffix.
+|===
+
+===== Examples
+
+[source,javascript]
+....
+// Loads the file foo.js from the defaults directory
 celos.importDefaults("foo");
 ....
 
 === Triggers
 
+==== celos.importDefaults
+
+===== Description
+
+Evaluates a file from the defaults directory in the current scope, so
+all variables and functions from the file become available in the
+current file.
+
+===== Syntax
+
+[source,javascript]
+....
+celos.importDefaults(name)
+....
+
+===== Parameters
+
+[options="header"]
+|===
+|Name|Type|Required|Description
+|`name`|String|Yes|The name of the defaults file to import, without the ".js" suffix.
+|===
+
+===== Examples
+
+[source,javascript]
+....
+// Loads the file foo.js from the defaults directory
+celos.importDefaults("foo");
+....
+
 ==== celos.hdfsCheckTrigger
 
-Syntax: `hdfsCheckTrigger(path, [fs])`
+===== Description
 
-Waits for the existence of a file or directory in HDFS.
+Makes a workflow wait for a file or directory in HDFS.  Often used to
+wait for _READY or _SUCCESS files.
 
-Parameters:
+===== Syntax
 
-* `path`: the path in HDFS to check the existence of
+[source,javascript]
+....
+celos.hdfsCheckTrigger(path, fs?)
+....
 
-* `fs`: the HDFS filesystem namenode.  If the argument is not supplied, the value of the `CELOS_DEFAULT_HDFS` global will be used.
+===== Parameters
+
+[options="header"]
+|===
+|Name|Type|Required|Description
+|`path`|String|Yes|The HDFS path to wait for.  May include the variables `${year}`, `${month}`, `${day}`, `${hour}`, `${minute}`, and `${second}`, which will be replaced by the zero-padded values from the slot's scheduled time.
+|`fs`|String|No|The `hdfs://` URI of the HDFS filesystem to use.  If not specified, the value of the CELOS_DEFAULT_HDFS variable will be used.
+|===
+
+===== Examples
+
+[source,javascript]
+....
+celos.hdfsCheckTrigger("/logs/${year}-${month}-${day}/${hour}-00/_READY");
+....
 
 ==== celos.successTrigger
 
@@ -131,7 +202,6 @@ Parameters:
 ==== CELOS_DEFAULT_OOZIE_PROPERTIES
 
 == Command Reference
-
 === celos-server.jar
 
 The celos-server.jar launches Celos.
