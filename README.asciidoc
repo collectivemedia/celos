@@ -605,14 +605,14 @@ workflow by <<celos.oozieExternalService>>.
 
 The celos-server.jar launches Celos.
 
+The celos-server.jar must be run in the following way, due to the need
+to put the Hadoop configuration on the classpath:
+
+....
+java -cp celos-server.jar:/etc/hadoop/conf com.collective.celos.server.Main <arguments...>
+....
+
 === Server Command-Line Arguments
-
-The celos-server.jar must be launched in the following way, due to the
-need to put the Hadoop configuration on the classpath:
-
-....
-java -cp celos-server.jar:/etc/hadoop/conf com.collective.celos.server.Main ...
-....
 
 [options="header"]
 |===
@@ -771,11 +771,11 @@ curl -X POST "localhost:1234/rerun?id=workflow-1&time=2015-09-13T13:40Z"
 The celos-ci-fat.jar can be used to deploy workflow, defaults, and
 HDFS artefacts automatically.
 
-=== CI Command-Line Arguments
+....
+java -jar celos-ci-fat.jar <arguments...>
+....
 
-....
-java -jar celos-ci-fat.jar ...
-....
+=== CI Command-Line Arguments
 
 [options="header"]
 |===
@@ -829,11 +829,13 @@ Example:
 
 == Celos UI Reference
 
-=== UI Command-Line Arguments
+The celos-ui.jar runs the Celos user interface.
 
 ....
-java -jar celos-ui.jar ...
+java -jar celos-ui.jar <arguments...>
 ....
+
+=== UI Command-Line Arguments
 
 [options="header"]
 |===
