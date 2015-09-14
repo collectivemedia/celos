@@ -34,13 +34,12 @@ public class JettyServerTest {
 
     @Test
     public void testServerStartsSpecifyPort() throws Exception {
-        int port = getFreePort();
 
         JettyServer jettyServer = new JettyServer();
-        jettyServer.start(port);
+        int port = jettyServer.start();
 
         HttpClient httpClient = new DefaultHttpClient();
-        HttpGet workflowListGet = new HttpGet("http://localhost:" + port + "/workflow-list");
+        HttpGet workflowListGet = new HttpGet("http://localhost:" + port  + "/workflow-list");
         HttpResponse response = httpClient.execute(workflowListGet);
         EntityUtils.consume(response.getEntity());
 
@@ -50,10 +49,9 @@ public class JettyServerTest {
 
     @Test(expected = HttpHostConnectException.class)
     public void testServerStopsSpecifyPort() throws Exception {
-        int port = getFreePort();
 
         JettyServer jettyServer = new JettyServer();
-        jettyServer.start(port);
+        int port = jettyServer.start();
 
         HttpClient httpClient = new DefaultHttpClient();
         HttpGet workflowListGet = new HttpGet("http://localhost:" + port + "/workflow-list");
@@ -64,16 +62,6 @@ public class JettyServerTest {
         jettyServer.stop();
 
         httpClient.execute(workflowListGet);
-    }
-
-    /**
-     * We dont use this method in production code now, cause it seems that sometimes port is left closed afterwards and Celos fails to setup Jetty instance with it
-     */
-    private int getFreePort() throws IOException {
-        ServerSocket s = new ServerSocket(0);
-        int port = s.getLocalPort();
-        s.close();
-        return port;
     }
 
 }
