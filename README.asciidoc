@@ -607,6 +607,13 @@ The celos-server.jar launches Celos.
 
 === Server Command-Line Arguments
 
+The celos-server.jar must be launched in the following way, due to the
+need to put the Hadoop configuration on the classpath:
+
+....
+java -cp celos-server.jar:/etc/hadoop/conf com.collective.celos.server.Main ...
+....
+
 [options="header"]
 |===
 |Name|Type|Required|Description
@@ -761,10 +768,14 @@ curl -X POST "localhost:1234/rerun?id=workflow-1&time=2015-09-13T13:40Z"
 
 == Celos CI Reference
 
-The celos-ci.jar can be used to deploy workflow, defaults, and HDFS
-artefacts automatically.
+The celos-ci-fat.jar can be used to deploy workflow, defaults, and
+HDFS artefacts automatically.
 
 === CI Command-Line Arguments
+
+....
+java -jar celos-ci-fat.jar ...
+....
 
 [options="header"]
 |===
@@ -817,7 +828,13 @@ Example:
 ....
 
 == Celos UI Reference
+
 === UI Command-Line Arguments
+
+....
+java -jar celos-ui.jar ...
+....
+
 [options="header"]
 |===
 |Name|Type|Required|Description
