@@ -15,10 +15,7 @@
  */
 package com.collective.celos;
 
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.Scriptable;
-import org.mozilla.javascript.ScriptableObject;
-import org.mozilla.javascript.WrapFactory;
+import org.mozilla.javascript.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.mozilla.javascript.tools.shell.Global;
 
@@ -70,6 +67,11 @@ public class JSConfigParser {
 
     public Object evaluateReader(Scriptable scope, Reader fileReader, String fileName) throws IOException {
         return context.evaluateReader(scope, fileReader, fileName, JS_PARSE_START_LINE, null);
+    }
+
+
+    public void validateJsSyntax(Reader fileReader, String fileName) throws IOException {
+        context.compileReader(fileReader, fileName, JS_PARSE_START_LINE, null);
     }
 
 }

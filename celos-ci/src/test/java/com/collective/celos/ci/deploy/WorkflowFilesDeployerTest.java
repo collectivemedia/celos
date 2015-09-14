@@ -23,6 +23,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import org.mozilla.javascript.EvaluatorException;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -79,7 +80,7 @@ public class WorkflowFilesDeployerTest {
         Assert.assertEquals(deployer.getTargetJsFileUri(URI.create("sftp://user@server:999/home")), URI.create("sftp://user@server:999/home/workflow.js"));
     }
 
-    @Test(expected=NullPointerException.class)
+    @Test(expected = NullPointerException.class)
     public void testGetWorkflowJsUri4() throws FileSystemException, URISyntaxException {
         CelosCiContext context = mock(CelosCiContext.class);
         WorkflowFilesDeployer deployer = new WorkflowFilesDeployer(context);
@@ -117,8 +118,8 @@ public class WorkflowFilesDeployerTest {
 
         deployer.deploy();
 
-        Assert.assertArrayEquals(remoteFolderWf.list(), new String[] {"workflow.js"});
-        Assert.assertArrayEquals(remoteFolderDef.list(), new String[] {});
+        Assert.assertArrayEquals(remoteFolderWf.list(), new String[]{"workflow.js"});
+        Assert.assertArrayEquals(remoteFolderDef.list(), new String[]{});
     }
 
     @Test
@@ -131,7 +132,7 @@ public class WorkflowFilesDeployerTest {
         defFile.createNewFile();
 
         OutputStream os = new FileOutputStream(defFile);
-        os.write("newfile".getBytes());
+        os.write("var a = newfile;".getBytes());
         os.flush();
 
         WorkflowFilesDeployer deployer = new WorkflowFilesDeployer(context);
@@ -150,10 +151,39 @@ public class WorkflowFilesDeployerTest {
 
         deployer.deploy();
 
-        Assert.assertArrayEquals(remoteFolderWf.list(), new String[] {});
-        Assert.assertArrayEquals(remoteFolderDef.list(), new String[] {"workflow.js"});
+        Assert.assertArrayEquals(remoteFolderWf.list(), new String[]{});
+        Assert.assertArrayEquals(remoteFolderDef.list(), new String[]{"workflow.js"});
     }
 
+    @Test (expected = EvaluatorException.class)
+    public void testDeployFails() throws Exception{
+        CelosCiContext context = mock(CelosCiContext.class);
+
+        File localFolder = tempDir.newFolder();
+        localFolder.mkdirs();
+        File defFile = new File(localFolder, "defaults.js");
+        defFile.createNewFile();
+
+        OutputStream os = new FileOutputStream(defFile);
+        os.write("var a = newfile var b = c".getBytes());
+        os.flush();
+
+        WorkflowFilesDeployer deployer = new WorkflowFilesDeployer(context);
+
+        File remoteFolderWf = tempDir.newFolder();
+        remoteFolderWf.mkdirs();
+
+        File remoteFolderDef = tempDir.newFolder();
+        remoteFolderDef.mkdirs();
+
+        CelosCiTarget target = new CelosCiTarget(URI.create(""), URI.create(""), remoteFolderWf.toURI(), remoteFolderDef.toURI(), URI.create("hiveJdbc"));
+
+        doReturn(localFolder).when(context).getDeployDir();
+        doReturn(target).when(context).getTarget();
+        doReturn("workflow").when(context).getWorkflowName();
+
+        deployer.deploy();
+    }
 
     @Test
     public void testDeployWorkflowFileNullDefDirURI() throws Exception {
@@ -184,8 +214,8 @@ public class WorkflowFilesDeployerTest {
 
         deployer.deploy();
 
-        Assert.assertArrayEquals(remoteFolderWf.list(), new String[] {"workflow.js"});
-        Assert.assertArrayEquals(remoteFolderDef.list(), new String[] {});
+        Assert.assertArrayEquals(remoteFolderWf.list(), new String[]{"workflow.js"});
+        Assert.assertArrayEquals(remoteFolderDef.list(), new String[]{});
     }
 
     @Test
@@ -217,8 +247,8 @@ public class WorkflowFilesDeployerTest {
 
         deployer.deploy();
 
-        Assert.assertArrayEquals(remoteFolderWf.list(), new String[] {});
-        Assert.assertArrayEquals(remoteFolderDef.list(), new String[] {"workflow.js"});
+        Assert.assertArrayEquals(remoteFolderWf.list(), new String[]{});
+        Assert.assertArrayEquals(remoteFolderDef.list(), new String[]{"workflow.js"});
     }
 
     @Test
@@ -257,8 +287,8 @@ public class WorkflowFilesDeployerTest {
 
         deployer.deploy();
 
-        Assert.assertArrayEquals(remoteFolderWf.list(), new String[] {"workflow.js"});
-        Assert.assertArrayEquals(remoteFolderDef.list(), new String[] {"workflow.js"});
+        Assert.assertArrayEquals(remoteFolderWf.list(), new String[]{"workflow.js"});
+        Assert.assertArrayEquals(remoteFolderDef.list(), new String[]{"workflow.js"});
     }
 
     @Test
@@ -372,11 +402,11 @@ public class WorkflowFilesDeployerTest {
 
         deployer.deploy();
 
-        Assert.assertArrayEquals(remoteFolder.list(), new String[] {"workflow.js"});
+        Assert.assertArrayEquals(remoteFolder.list(), new String[]{"workflow.js"});
         Assert.assertEquals("newfile", readFileContent(destFile));
     }
 
-    private String  readFileContent(File fileExists) throws IOException {
+    private String readFileContent(File fileExists) throws IOException {
         byte[] encoded = Files.readAllBytes(Paths.get(fileExists.toURI()));
         return new String(encoded);
     }
