@@ -17,7 +17,7 @@
     catch(err) {
     }
 //-->
-var methods = {"i0":10,"i1":10,"i2":10};
+var methods = {"i0":10,"i1":10,"i2":10,"i3":10};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -179,6 +179,11 @@ extends java.lang.Object</pre>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../com/collective/celos/JSConfigParser.html#putPropertiesInScope-java.util.Map-Global-">putPropertiesInScope</a></span>(java.util.Map&lt;java.lang.String,java.lang.Object&gt;&nbsp;jsParameters,
                     Global&nbsp;scope)</code>&nbsp;</td>
 </tr>
+<tr id="i3" class="rowColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../com/collective/celos/JSConfigParser.html#validateJsSyntax-java.io.Reader-java.lang.String-">validateJsSyntax</a></span>(java.io.Reader&nbsp;fileReader,
+                java.lang.String&nbsp;fileName)</code>&nbsp;</td>
+</tr>
 </table>
 <ul class="blockList">
 <li class="blockList"><a name="methods.inherited.from.class.java.lang.Object">
@@ -261,13 +266,28 @@ extends java.lang.Object</pre>
 <a name="evaluateReader-Scriptable-java.io.Reader-java.lang.String-">
 <!--   -->
 </a>
-<ul class="blockListLast">
+<ul class="blockList">
 <li class="blockList">
 <h4>evaluateReader</h4>
 <pre>public&nbsp;java.lang.Object&nbsp;evaluateReader(Scriptable&nbsp;scope,
                                        java.io.Reader&nbsp;fileReader,
                                        java.lang.String&nbsp;fileName)
                                 throws java.io.IOException</pre>
+<dl>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code>java.io.IOException</code></dd>
+</dl>
+</li>
+</ul>
+<a name="validateJsSyntax-java.io.Reader-java.lang.String-">
+<!--   -->
+</a>
+<ul class="blockListLast">
+<li class="blockList">
+<h4>validateJsSyntax</h4>
+<pre>public&nbsp;void&nbsp;validateJsSyntax(java.io.Reader&nbsp;fileReader,
+                             java.lang.String&nbsp;fileName)
+                      throws java.io.IOException</pre>
 <dl>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code>java.io.IOException</code></dd>
