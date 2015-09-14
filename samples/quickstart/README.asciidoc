@@ -8,10 +8,6 @@ ropes of working with Celos, and not as an example of creating a
 production-ready Celos installation or workflow. For that, please
 check out the rest of the Celos documentation.
 
-In particular, in this sample we manually copy the files to Celos
-configuration directories and to HDFS, whereas in production you
-should use Celos CI to automate this.
-
 == Overview over the files used in this example
 
 * src/
@@ -131,9 +127,9 @@ at celos/quickstart:
 
 ....
 export USER=manuel # Change to your Hadoop username
-export ROOT=/user/$USER/celos/quickstart
-hadoop fs -mkdir -p $ROOT
-hadoop fs -put src/test/resources/input $ROOT/input
+export HDFS_ROOT=/user/$USER/celos/quickstart
+hadoop fs -mkdir -p $HDFS_ROOT
+hadoop fs -put src/test/resources/input $HDFS_ROOT/input
 ....
 
 == Compile the MapReduce code into a JAR
@@ -164,18 +160,18 @@ The workflow.xml and the wordcount-1.0.jar must be stored together in
 HDFS (with the JAR in a lib/ subdirectory), from where Oozie will read
 and execute them.
 
-We're going to use $ROOT/wordcount as the directory containing these files:
+We're going to use $HDFS_ROOT/wordcount as the directory containing these files:
 
 ....
-hadoop fs -mkdir -p $ROOT/wordcount/lib
-hadoop fs -put -f src/main/oozie/workflow.xml $ROOT/wordcount
-hadoop fs -put -f build/libs/wordcount-1.0.jar $ROOT/wordcount/lib
+hadoop fs -mkdir -p $HDFS_ROOT/wordcount/lib
+hadoop fs -put -f src/main/oozie/workflow.xml $HDFS_ROOT/wordcount
+hadoop fs -put -f build/libs/wordcount-1.0.jar $HDFS_ROOT/wordcount/lib
 ....
 
 == Create directories required by Celos
 
-Now we have our inputs at $ROOT/input, and our Oozie workflow at
-$ROOT/wordcount, so we can turn to setting up Celos.
+Now we have our inputs at $HDFS_ROOT/input, and our Oozie workflow at
+$HDFS_ROOT/wordcount, so we can turn to setting up Celos.
 
 We'll create a *samples/quickstart/celos.d* directory that holds all
 the directories required by Celos to run:
@@ -301,4 +297,31 @@ After a while, when all slots are green, you can look at the results in HDFS:
 ....
 hadoop fs -cat /user/$USER/celos/quickstart/output/lax/2015-09-01/0000/part-00000
 hadoop fs -cat /user/$USER/celos/quickstart/output/nyc/2015-09-01/0000/part-00000
+....
+
+== More: Automatically deploy workflows with Celos CI
+
+So far, we've manually copied the JavaScript files into the workflows
+and defaults directories, and manually copied the workflow.xml and JAR
+to HDFS.  But Celos comes with a tool to automate this, called Celos CI.
+
+To run Celos CI, you create a _deployment directory_, containing the
+JavaScript files and artefacts for HDFS.  The script
+link:ci/deploy.sh[] does that.
+
+Celos CI requires a _target file_ that describes the HDFS and Celos
+installation it should deploy to.  By changing the target file, Celos
+CI can deploy to a different Hadoop cluster and/or different Celos
+installation.
+
+Edit link:ci/target.json[] and make `defaults.dir.uri` and
+`workflows.dir.uri` point to the defaults and workflows dir in your
+celos.d.
+
+In production we set an environment variable that points to the target
+file in our CI server.  The `TARGET_FILE` variable here simulates that:
+
+....
+export TARGET_FILE=file://`pwd`/ci/target.json
+ci/deploy.sh $HDFS_ROOT
 ....

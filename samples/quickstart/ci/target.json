@@ -1,0 +1,6 @@
+{
+    "hadoop.hdfs-site.xml": "file:///etc/hadoop/conf/hdfs-site.xml",
+    "hadoop.core-site.xml": "file:///etc/hadoop/conf/core-site.xml",
+    "defaults.dir.uri": "file:///home/manuel/celos/samples/quickstart/celos.d/defaults",
+    "workflows.dir.uri": "file:///home/manuel/celos/samples/quickstart/celos.d/workflows"
+}
