@@ -1,18 +1,3 @@
-/*
- * Copyright 2015 Collective, Inc.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
- * implied.  See the License for the specific language governing
- * permissions and limitations under the License.
- */
 package com.collective.celos;
 
 import junit.framework.Assert;
@@ -33,6 +18,36 @@ import java.net.ServerSocket;
 public class JettyServerTest {
 
     @Test
+    public void testServerStarts() throws Exception {
+        JettyServer jettyServer = new JettyServer();
+        int port = jettyServer.start();
+
+        HttpClient httpClient = new DefaultHttpClient();
+        HttpGet workflowListGet = new HttpGet("http://localhost:" + port);
+        HttpResponse response = httpClient.execute(workflowListGet);
+        EntityUtils.consume(response.getEntity());
+
+        Assert.assertEquals(response.getStatusLine().getStatusCode(), 403);
+    }
+
+
+    @Test(expected = HttpHostConnectException.class)
+    public void testServerStops() throws Exception {
+        JettyServer jettyServer = new JettyServer();
+        int port = jettyServer.start();
+
+        HttpClient httpClient = new DefaultHttpClient();
+        HttpGet workflowListGet = new HttpGet("http://localhost:" + port);
+        HttpResponse response = httpClient.execute(workflowListGet);
+
+        Assert.assertEquals(response.getStatusLine().getStatusCode(), 403);
+        EntityUtils.consume(response.getEntity());
+        jettyServer.stop();
+
+        httpClient.execute(workflowListGet);
+    }
+
+    @Test
     public void testServerStartsSpecifyPort() throws Exception {
         int port = getFreePort();
 
@@ -40,11 +55,11 @@ public class JettyServerTest {
         jettyServer.start(port);
 
         HttpClient httpClient = new DefaultHttpClient();
-        HttpGet workflowListGet = new HttpGet("http://localhost:" + port + "/version");
+        HttpGet workflowListGet = new HttpGet("http://localhost:" + port);
         HttpResponse response = httpClient.execute(workflowListGet);
         EntityUtils.consume(response.getEntity());
 
-        Assert.assertEquals(response.getStatusLine().getStatusCode(), 200);
+        Assert.assertEquals(response.getStatusLine().getStatusCode(), 403);
     }
 
 
@@ -56,19 +71,16 @@ public class JettyServerTest {
         jettyServer.start(port);
 
         HttpClient httpClient = new DefaultHttpClient();
-        HttpGet workflowListGet = new HttpGet("http://localhost:" + port + "/version");
+        HttpGet workflowListGet = new HttpGet("http://localhost:" + port);
         HttpResponse response = httpClient.execute(workflowListGet);
 
-        Assert.assertEquals(response.getStatusLine().getStatusCode(), 200);
+        Assert.assertEquals(response.getStatusLine().getStatusCode(), 403);
         EntityUtils.consume(response.getEntity());
         jettyServer.stop();
 
         httpClient.execute(workflowListGet);
     }
 
-    /**
-     * We dont use this method in production code now, cause it seems that sometimes port is left closed afterwards and Celos fails to setup Jetty instance with it
-     */
     private int getFreePort() throws IOException {
         ServerSocket s = new ServerSocket(0);
         int port = s.getLocalPort();
