@@ -15,6 +15,7 @@
  */
 package com.collective.celos.ci.deploy;
 
+import com.collective.celos.JSConfigParser;
 import com.collective.celos.Util;
 import com.collective.celos.ci.config.deploy.CelosCiContext;
 
@@ -23,6 +24,8 @@ import org.apache.commons.vfs2.FileSystemException;
 import org.apache.commons.vfs2.Selectors;
 
 import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -34,10 +37,12 @@ public class WorkflowFilesDeployer {
 
     private final JScpWorker jScpWorker;
     private final CelosCiContext config;
+    private final JSConfigParser parser;
 
     public WorkflowFilesDeployer(CelosCiContext context) throws FileSystemException {
         this.config = Util.requireNonNull(context);
         this.jScpWorker = new JScpWorker(context.getUserName());
+        this.parser = new JSConfigParser();
     }
 
     public void undeploy() throws FileSystemException, URISyntaxException {
@@ -52,17 +57,20 @@ public class WorkflowFilesDeployer {
         }
     }
 
-    public void deploy() throws FileSystemException, URISyntaxException {
+    public void deploy() throws IOException, URISyntaxException {
         undeploy();
         deployJSFile(config.getTarget().getWorkflowsDirUri(), WORKFLOW_FILENAME);
         deployJSFile(config.getTarget().getDefaultsDirUri(), DEFAULTS_FILENAME);
     }
 
-    private void deployJSFile(URI dirUri, String fileName) throws URISyntaxException, FileSystemException {
+    private void deployJSFile(URI dirUri, String fileName) throws URISyntaxException, IOException {
         if (dirUri != null) {
             URI fileUri = getTargetJsFileUri(dirUri);
             File localFile = new File(config.getDeployDir(), fileName);
+
             if (localFile.exists()) {
+                parser.validateJsSyntax(new FileReader(localFile), localFile.getName());
+
                 FileObject sftpFile = jScpWorker.getFileObjectByUri(fileUri);
                 FileObject localFileObject = jScpWorker.getFileObjectByUri(localFile.getAbsolutePath());
                 sftpFile.copyFrom(localFileObject, Selectors.SELECT_SELF);
