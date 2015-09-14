@@ -57,11 +57,9 @@ scripts/build.sh
 
 This will build the following JARs:
 
-* celos-server/build/libs/celos-server.jar
-* celos-ci/build/libs/celos-ci-fat.jar
-* celos-ui/build/libs/celos-ui.jar
-
-See link:samples/quickstart[] for examples of how to launch the JARs.
+* celos-server/build/libs/celos-server.jar (see <<Celos Server Reference>>)
+* celos-ci/build/libs/celos-ci-fat.jar (see <<Celos CI Reference>>)
+* celos-ui/build/libs/celos-ui.jar (see <<Celos UI Reference>>)
 
 == Getting Started
 
