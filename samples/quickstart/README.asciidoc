@@ -18,7 +18,7 @@ should use Celos CI to automate this.
 ** main/
 *** celos/
 **** link:src/main/celos/workflow.js[workflow.js]: The main Celos workflow definition
-**** link:src/main/celos/example-settings.js[example-settings.js]: Settings that can be imported by this or other workflows
+**** link:src/main/celos/defaults.js[defaults.js]: Settings that can be imported by this or other workflows
 *** java/com/example/
 **** link:src/main/java/com/example/WordCount.java[WordCount.java]: The Java MapReduce main we're going to use
 *** oozie/
@@ -164,18 +164,18 @@ The workflow.xml and the wordcount-1.0.jar must be stored together in
 HDFS (with the JAR in a lib/ subdirectory), from where Oozie will read
 and execute them.
 
-We're going to use $ROOT/app as the directory containing these files:
+We're going to use $ROOT/wordcount as the directory containing these files:
 
 ....
-hadoop fs -mkdir -p $ROOT/app/lib
-hadoop fs -put -f src/main/oozie/workflow.xml $ROOT/app
-hadoop fs -put -f build/libs/wordcount-1.0.jar $ROOT/app/lib
+hadoop fs -mkdir -p $ROOT/wordcount/lib
+hadoop fs -put -f src/main/oozie/workflow.xml $ROOT/wordcount
+hadoop fs -put -f build/libs/wordcount-1.0.jar $ROOT/wordcount/lib
 ....
 
 == Create directories required by Celos
 
 Now we have our inputs at $ROOT/input, and our Oozie workflow at
-$ROOT/app, so we can turn to setting up Celos.
+$ROOT/wordcount, so we can turn to setting up Celos.
 
 We'll create a *samples/quickstart/celos.d* directory that holds all
 the directories required by Celos to run:
@@ -209,22 +209,22 @@ The db directory contains small JSON files that Celos uses to keep
 track of the execution state of each periodical invocation of a
 workflow.
 
-== Edit the example-settings.js file
+== Edit the defaults.js file
 
 Celos must be told about some settings, such as your Hadoop name node,
 job tracker, and Oozie API URL.
 
-Open link:src/main/celos/example-settings.js[] in an editor and update
+Open link:src/main/celos/defaults.js[] in an editor and update
 the settings at the top for your Hadoop and Oozie installation.
 
 == Copy the JavaScript files to the proper directories
 
-Now we'll copy the workflow.js and example-settings.js from
+Now we'll copy the workflow.js and defaults.js from
 src/main/celos in the directories Celos will actually use:
 
 ....
 cp src/main/celos/workflow.js celos.d/workflows/wordcount.js
-cp src/main/celos/example-settings.js celos.d/defaults/example-settings.js
+cp src/main/celos/defaults.js celos.d/defaults/wordcount.js
 ....
 
 == Start Celos
