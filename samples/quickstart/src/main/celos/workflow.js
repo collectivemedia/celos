@@ -13,7 +13,7 @@
  * implied.  See the License for the specific language governing
  * permissions and limitations under the License.
  */
-celos.importDefaults("example-settings");
+celos.importDefaults("wordcount");
 
 var ROOT = "/user/" + CELOS_USER + "/celos/quickstart";
 
@@ -39,7 +39,7 @@ function defineWordCountWorkflow(dc) {
         "trigger": celos.hdfsCheckTrigger(inputPath + "/_READY"),
         "externalService": celos.oozieExternalService({
             // These properties are passed to the Oozie job
-            "oozie.wf.application.path": ROOT + "/app/workflow.xml",
+            "oozie.wf.application.path": ROOT + "/wordcount/workflow.xml",
             "inputPath": inputPath,
             "outputPath": outputPath
         })
