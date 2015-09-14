@@ -16,7 +16,7 @@
 // Set this to your Hadoop username
 var CELOS_USER = "manuel";
 // Set this to your Oozie API endpoint
-var CELOS_DEFAULT_OOZIE = "http://oozie002.ny7.collective-media.net:11000/oozie";
+var CELOS_DEFAULT_OOZIE = "http://oozie003.ewr004.collective-media.net:11000/oozie";
 // Set this to your HDFS name node
 var CELOS_DEFAULT_HDFS = "hdfs://nameservice1";
 // Set this to your Hadoop job tracker
