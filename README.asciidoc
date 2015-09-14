@@ -38,7 +38,9 @@ should perform (example:
 link:samples/quickstart/src/main/oozie/workflow.xml[]), and
 distributes the jobs across the cluster.
 
-== Prerequisites
+== Building & Running Celos
+
+=== Prerequisites
 
 * JDK 1.8
 * link:https://hadoop.apache.org/[Apache Hadoop] 2.5.0
@@ -47,12 +49,28 @@ distributes the jobs across the cluster.
 You can probably get away with slightly older Hadoop and Oozie
 versions.
 
+=== Building Celos
+
+....
+scripts/build.sh
+....
+
+This will build the following JARs:
+
+* celos-server/build/libs/celos-server.jar
+* celos-ci/build/libs/celos-ci-fat.jar
+* celos-ui/build/libs/celos-ui.jar
+
+See link:samples/quickstart[] for examples of how to launch the JARs.
+
 == Getting Started
 
 Head over to link:samples/quickstart[*samples/quickstart*].
 
 == JavaScript API Reference
+
 === General
+
 ==== celos.defineWorkflow
 
 ===== Description
@@ -756,7 +774,7 @@ artefacts automatically.
 |`--mode`|String|Yes|`deploy` or `undeploy`
 |`--workflowName`|String|Yes|Name of workflow (or rather, project).
 |`--deployDir`|Path|Yes|The deployment directory (not needed for `undeploy`).
-|`--target`|Path|Yes|The target file.
+|`--target`|URL|Yes|The target file (file: or sftp: URL).
 |`--hdfsRoot`|Path|No|HDFS data will be placed under this root (defaults to /user/celos/app).
 |===
 
