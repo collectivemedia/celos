@@ -37,7 +37,7 @@ image::etc/images/celos-ui.png[Celos UI]
 
 _The Celos UI_
 
-=== Oozie
+=== Oozie Overview
 
 Celos works as a frontend to the
 link:https://oozie.apache.org/[_Apache Oozie_] execution engine.
@@ -50,12 +50,12 @@ HDFS, as the following diagram shows:
 
 image::etc/images/oozie.png[Oozie workflow directory]
 
-Oozie requires a small `workflow.xml` file that describes what the job
-should do (in this case call a Java main with some arguments), and
-then runs it on a processing node in the cluster.  Artefacts in the
-`lib` directory are automatically placed on the classpath.  Arguments
-(such as `inputPath` and `outputPath` in the above example) can be
-passed to the job.
+Oozie requires a small XML file that describes what the job should do
+(in this case call a Java main with some arguments), and then runs it
+on a processing node in the cluster.  Artefacts in the `lib` directory
+are automatically placed on the classpath.  Arguments (such as
+`inputPath` and `outputPath` in the above example) can be passed to
+the job.
 
 Oozie XML files support
 link:https://oozie.apache.org/docs/4.2.0/WorkflowFunctionalSpec.html[many
@@ -930,7 +930,8 @@ Inside property values, the variables `${year}`, `${month}`, `${day}`,
 zero-padded values from the slot's scheduled time.
 
 `year`, `month`, `day`, `hour`, `minute`, and `second` will also be
-set as Oozie properties, so they can be used in the workflow.xml.
+set as Oozie properties, so they can be used in the Oozie workflow XML
+file.
 
 Additionally, Celos will set the Oozie property `celosWorkflowName` to
 a string like "my-workflow@2015-09-12T20:00Z", useful for display.
@@ -940,10 +941,19 @@ a string like "my-workflow@2015-09-12T20:00Z", useful for display.
 [source,javascript]
 ....
 celos.oozieExternalService({
+    "oozie.wf.application.path": "/workflow-dir/workflow.xml",
     "prop1": "Hello. It is the year ${year}!",
     "prop2": "Just another property."
 });
 ....
+
+===== Note
+
+`oozie.wf.application.path` is the only property required by Oozie.
+It points to a
+link:https://oozie.apache.org/docs/4.2.0/WorkflowFunctionalSpec.html[Oozie
+workflow XML file] within an Oozie workflow directory.  There can be
+multiple XML files within a single Oozie workflow directory.
 
 === Variables
 
@@ -1258,10 +1268,10 @@ making them effectively lost.
 ===== Errors during job submission to Oozie do not bubble up into the UI
 
 If an error happens during job submission to Oozie (e.g. because the
-Oozie workflow directory is missing, or the workflow.xml contains a
-syntax error), the job will appear to remain stuck in the READY state,
-with no indication of error in the UI.  The log however, will contain
-the error.
+Oozie workflow directory is missing, or the workflow XML file contains
+a syntax error), the job will appear to remain stuck in the READY
+state, with no indication of error in the UI.  The log however, will
+contain the error.
 
 ==== The Celos name
 
