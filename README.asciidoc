@@ -395,14 +395,14 @@ image::etc/images/arch.png[Architecture]
 As of September 2015, Celos has been in use at
 link:http://www.collective.com[Collective] for about two years, and is
 currently running all of our Hadoop processing (hundreds of individual
-workflows across dozens of repositories).
+workflows across dozens of projects).
 
 Celos is productively used by people from different backgrounds, such
 as data science, operations, software engineering, and database
 administration, and has proven to be a welcome improvement on our
 previous Oozie coordinator-based scheduling.
 
-We're proud that in the years of use, not a single bug in Celos has
+We're proud that in two years of use, not a single bug in Celos has
 caused any downtime, which is attributable to the small codebase
 (about 2500 non-blank, non-comment lines of code for core Celos, as
 measured by link:http://cloc.sourceforge.net/[cloc] 1.56) and the

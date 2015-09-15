@@ -310,8 +310,8 @@ slots.  You can click on a running slot to see its Oozie information.
 After a while, when all slots are green, you can look at the results in HDFS:
 
 ....
-hadoop fs -cat /user/$USER/celos/quickstart/output/lax/2015-09-01/0000/part-00000
-hadoop fs -cat /user/$USER/celos/quickstart/output/nyc/2015-09-01/0000/part-00000
+hadoop fs -cat $HDFS_ROOT/output/lax/2015-09-01/0000/part-00000
+hadoop fs -cat $HDFS_ROOT/output/nyc/2015-09-01/0000/part-00000
 ....
 
 == More: Automatically deploy workflows with Celos CI
