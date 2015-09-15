@@ -164,7 +164,7 @@ var strat = celos.serialSchedulingStrategy(3);
 
 === How it works
 
-Celos requires four directories to run:
+The main data sources Celos uses are:
 
 ==== Workflows Directory
 
@@ -179,36 +179,10 @@ workflows/
   yet-another-workflow.js
 ....
 
-==== Defaults Directory
+==== State Database
 
-The defaults directory contains JavaScript files that can be imported
-from workflow files with <<celos.importDefaults>>.
-
-It may look like this:
-
-....
-defaults/
-  production-settings.js
-  some-cool-variables.js
-....
-
-==== Logs Directory
-
-The logs directory contains the file celos.log and older daily log
-files into which Celos writes informative and error output.
-
-It may look like this:
-
-....
-logs/
-  celos.log
-  celos-2015-09-15.log
-....
-
-==== Database Directory
-
-The database directory contains the state of each slot as a small JSON
-file.
+The state database directory contains the state of each slot as a
+small JSON file.
 
 ....
 db/
@@ -228,7 +202,7 @@ db/
 ....
 
 An individual slot file in the state database,
-e.g. db/state/wordcount-lax/2015-09-15/01:00:00.000Z looks like this:
+e.g. db/state/wordcount-lax/2015-09-15/01:00:00.000Z, looks like this:
 
 ....
 {
@@ -241,8 +215,8 @@ e.g. db/state/wordcount-lax/2015-09-15/01:00:00.000Z looks like this:
 The `status` field records the state of the state machine (below) the
 slot is in.
 
-If the slot is running, successful, or failed, the `externalID` field
-contains the Oozie ID of the corresponding Oozie workflow execution
+The `externalID` field contains the Oozie ID of the corresponding
+Oozie workflow execution if the slot is running, successful, or failed
 (otherwise `externalID` is null).
 
 The `retryCount` records how many times the slot has already been
@@ -251,11 +225,11 @@ retried after failure.
 ==== Scheduler Step
 
 On each scheduler step (typically triggered once per minute from
-cron), Celos evaluates all JavaScript files in the <<workflows
-directory>>, yielding a set of uniquely identified workflows.
+cron), Celos evaluates all JavaScript files in the <<Workflows
+Directory>>, yielding a set of uniquely identified workflows.
 
 Then, for each workflow, it will fetch all slot files within a sliding
-window of 7 days before the current date.
+window of 7 days before the current date from the <<State Database>>.
 
 Each slot is a state machine with the following states:
 
@@ -267,27 +241,26 @@ slot:
 [options="header"]
 |===
 |State|Action
-|WAITING|Call the workflow's trigger to determine whether the slot is now ready.
-|READY|Pass the slot as a candidate for scheduling to the workflow's scheduling strategy.
-|RUNNING|Ask Oozie for the status of the execution.
+|WAITING|Call the workflow's trigger to determine whether the slot is now ready.  If the trigger signals readyness, put the slot into the READY state.  If the slot has been waiting for too long, put the slot into the WAIT_TIMEOUT state.  Otherwise, keep the slot in the WAITING state.
+|READY|Pass the slot as a candidate for scheduling to the workflow's scheduling strategy.  If the strategy chooses to execute the slot, submit it to Oozie, and put it into the RUNNING state.  Otherwise, keep the slot in the READY state.
+|RUNNING|Ask Oozie for the status of the execution.  If the slot is still executing, keep it in the RUNNING state.  If the slot has failed, but there are retries left, put the slot into the WAITING state again.  If the slot has failed, and there are no more retries left, put the slot into the FAILURE state.  If the slot has succeeded, put it into the SUCCESS state.
 |SUCCESS|Do nothing.
 |FAILURE|Do nothing.
 |WAIT_TIMEOUT|Do nothing.
 |===
 
-==== Rerunning slots outside the sliding window
-
 The state database contains additional information about slots that
-have been manually <<rerun>>.
+have been manually rerun with the <<rerun>> HTTP API.
 
-In this example, the slots 2015-08-01T01:00Z and 2015-08-01T02:00Z of
-the workflow wordcount-nyc have been rerun.  They are outside the
-sliding window, so the above scheduling algorithm would not look at
-the slots.
+In the following example, the slots 2015-08-01T01:00Z and
+2015-08-01T02:00Z of the workflow wordcount-nyc have been rerun.  They
+are outside the sliding window, so the above scheduling algorithm
+would not look at the slots.
 
-However, rerunning a slot touches an additional file in db/rerun, and
-slots for which such a file exists are fed into the scheduling
-algorithm in addition to the slots from the 7 day sliding window.
+However, rerunning a slot touches an additional file in the `rerun`
+subdirectory of the <<State Database>>, and slots for which such a
+file exists are fed into the scheduling algorithm in addition to the
+slots from the 7 day sliding window.
 
 ....
 db/
