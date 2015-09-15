@@ -70,9 +70,6 @@ You can also view details of a particular job in Hue:
 
 image::etc/images/hue-details.png[Hue details]
 
-(If you are familiar with Oozie: Celos keeps the Oozie _workflow_ part,
-while providing an alternative to the Oozie _coordinator_ part.)
-
 === Celos Concepts
 
 ==== Workflows
@@ -1340,44 +1337,15 @@ Doing a GET to this servlet displays the Celos UI.
 
 == Miscellaneous
 
-=== Notes
-
-==== Security
+=== Security
 
 Celos is intended to be used inside a VPN, and by trusted developers.
 
-==== Time
+=== Time
 
 All times in Celos use the UTC timezone exclusively.
 
-==== Weaknesses
-
-===== Single master
-
-This might not be as bad as it sounds.  The reason is that during
-normal operation, most workflows will usually be mostly successful.
-So even if the Celos host burns down to the ground, a new one can
-quickly be set up, and all workflows redeployed to it from the CI
-server.  Then it will automatically (re)run the last week's workflows,
-which, if they are "purely functional" will bring the system back to a
-mostly normal state.
-
-===== Changing the schedule of a workflow
-
-Changing the schedule of a workflow (e.g. from "at the hour" to "5
-minutes past the hour") means that the existing slot files in the
-state database no longer line up with the workflow's (new) schedule,
-making them effectively lost.
-
-===== Errors during job submission to Oozie do not bubble up into the UI
-
-If an error happens during job submission to Oozie (e.g. because the
-Oozie workflow directory is missing, or the workflow XML file contains
-a syntax error), the job will appear to remain stuck in the READY
-state, with no indication of error in the UI.  The log however, will
-contain the error.
-
-==== The Celos Name
+=== The Celos Name
 
 The link:http://www.quicksilver899.com/Tolkien/LOTR/LOTR_AC.html[_Lord
 of the Rings Dictionary_] defines it as:
