@@ -4,8 +4,7 @@ Celos: A Scriptable Scheduler for Periodical Hadoop Workflows
 :toclevels: 3
 :toc-title:
 
-* Written in Java and scripted using JavaScript (which, depending on
-  your tastes, may be good or bad).
+* Written in Java and scripted using JavaScript.
 
 * Using a general-purpose scripting language for defining workflows
   saves you from configuration hell.
