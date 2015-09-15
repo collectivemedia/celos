@@ -13,30 +13,160 @@ Hadoop, such as MapReduce programs or Hive SQL scripts.
 
 image::etc/images/celos-ui.png[Celos UI]
 
-The above screenshot shows the Celos UI.  Each row represents a
-workflow.  The tiles are called slots and are individual executions of
-a workflow for a particular point in time.  Most workflows in the
-screenshot are hourly, and some are daily.  Green slots have already
-run.  Slots in `wait` are still waiting for their preconditions (such
-as data availability in HDFS) to be met.  `rdy` are ready to run, and
-will be scheduled in one of the next scheduler steps.  `run` slots are
-currently running.  `time` slots have timed out after waiting too long
-for their preconditions to be met.  `fail` slots have failed, and have
-no more retries left, so they need to be manually rerun, if desired.
+=== Oozie
 
-Celos workflows are defined with JavaScript.  An example is here:
-link:samples/quickstart/src/main/celos/workflow.js[].  On each
-scheduler step (which is usually triggered once a minute from cron),
-Celos evaluates all workflow JavaScript files, and then schedules the
-workflows they define.  Celos keeps a database recording the state of
-each slot as small JSON file.
+To explain how Celos works and what it does we first have to talk
+about link:https://oozie.apache.org/[Apache Oozie], because Celos
+works as a frontend to it.
 
-Celos works as frontend to link:https://oozie.apache.org/[Apache
-Oozie], which is the actual execution engine for workflows.  Oozie
-provides a small XML-based DSL for describing the actions a workflow
-should perform (example:
-link:samples/quickstart/src/main/oozie/workflow.xml[]), and
-distributes the jobs across the cluster.
+Oozie is a job execution engine for Hadoop.  You package your code
+into a JAR, upload it to HDFS, and then fill out a small
+workflow.xml file that tells Oozie how to run it.
+
+image::etc/images/oozie.png[Oozie workflow directory]
+
+In the simplest case, as in the diagram above, you simply invoke a
+Java main class, that then e.g. sets up a MapReduce process.  Oozie
+workflow.xml files support
+link:https://oozie.apache.org/docs/4.2.0/WorkflowFunctionalSpec.html[many
+additional kinds of actions], e.g. sending an email, manipulating
+files in HDFS, or loading data into JDBC databases.  Workflow.xml
+files can also launch multiple actions in series or contain `if`-like
+decision nodes.  This is mostly out of scope for this document, but in
+general, Celos workflows can use all features of Oozie.
+
+Oozie fetches your workflow.xml file and related artefacts (from the
+lib directory), executes the workflow on the Hadoop cluster, and
+provides a GUI, called Hue.
+
+Oozie workflows can receive parameters (${inputPath} and {$outputPath}
+in the diagram).
+
+You can view all currently running jobs in Hue:
+
+image::etc/images/hue-index.png[Hue index]
+
+And you can also view details about a particular job:
+
+image::etc/images/hue-details.png[Hue details]
+
+=== Celos Concepts
+
+While Oozie is good at running individual jobs, its support for
+configuring recurring, periodical jobs is a major PITA.  So, after
+throwing our hands into the air one too many times, we decided to
+write an alternative scheduler frontend to Oozie.  Thus Celos was
+born.
+
+(If you know Oozie, Celos replaces Oozie's coordinator mechanism,
+while keeping its workflow mechanism.)
+
+Suppose we have the Oozie workflow to run at /wordcount in HDFS, and
+hourly input data in /input/YYYY-MM-DD/HH00, and want to write output
+data to /output/YYYY-MM-DD/HH00, we can set up a simple Celos workflow
+with the ID "wordcount" like this:
+
+[source,javascript]
+....
+celos.defineWorkflow({
+    "id": "wordcount",
+    "schedule": celos.hourlySchedule(),
+    "schedulingStrategy": celos.serialSchedulingStrategy(),
+    "trigger": celos.hdfsCheckTrigger("/input/${year}-${month}-${day}/${hour}00/_READY"),
+    "externalService": celos.oozieExternalService({
+        "oozie.wf.application.path": "/wordcount/workflow.xml",
+        "inputPath": "/input/${year}-${month}-${day}/${hour}00/",
+        "outputPath": "/output/${year}-${month}-${day}/${hour}00/",
+    })
+});
+....
+
+If we receive data from two datacenters, in /input/nyc and /input/lax
+we can define a helper function, and quickly define two workflows,
+with the IDs "wordcount-nyc" and "wordcount-lax":
+
+[source,javascript]
+....
+function defineWordCountWorkflow(dc) {
+    celos.defineWorkflow({
+        "id": "wordcount-" + dc,
+        "schedule": celos.hourlySchedule(),
+        "schedulingStrategy": celos.serialSchedulingStrategy(),
+        "trigger": celos.hdfsCheckTrigger("/input/" + dc + "/${year}-${month}-${day}/${hour}00/_READY"),
+        "externalService": celos.oozieExternalService({
+            "oozie.wf.application.path": "/wordcount/workflow.xml",
+            "inputPath": "/input/" + dc + "/${year}-${month}-${day}/${hour}00/",
+            "outputPath": "/output/" + dc + "/${year}-${month}-${day}/${hour}00/",
+        })
+    });
+}
+defineWordCountWorkflow("nyc");
+defineWordCountWorkflow("lax");
+....
+
+A Celos workflow consists of a number of configurable parts:
+
+* The workflow's *schedule* determines the points in time (called *slots*) at which the workflow should run, and is expressed with a `cron`-like syntax.
+
+* For each slot, the workflow's *trigger* determines whether the slot is ready to run.  For example, it can check for the existence of a file in HDFS, or the success of another workflow.  Triggers can also be combined with AND, OR, and NOT.  We'll see examples shortly.
+
+* The workflow's *scheduling strategy* determines when and in which order the ready slots of the workflow should be executed.
+
+image::etc/images/slots.png[Celos concepts]
+
+Celos workflows are defined with JavaScript, and there are expressions
+for creating schedules, triggers, and scheduling strategies.
+
+Here are two examples of schedules:
+
+[source,javascript]
+....
+// A workflow using this schedule will run every hour
+var hourlySchedule = celos.cronSchedule("0 0 * * * ?");
+// A workflow using this schedule will run every day
+var dailySchedule = celos.cronSchedule("0 0 0 * * ?");
+....
+
+Triggers form a kind of DSL:
+
+[source,javascript]
+....
+// A workflow using this trigger will wait for a file /foo in HDFS
+var simpleTrigger = celos.hdfsCheckTrigger("/foo");
+
+// A workflow using this trigger will wait for a file of the form /logs/YYYY-MM-DD/HH-00/_READY in HDFS
+var logsReadyTrigger = celos.hdfsCheckTrigger("/logs/${year}-${month}-${day}/${hour}-00/_READY");
+
+// We can combine triggers with AND, so the workflow will wait for both:
+var multipleFilesReadyTrigger = celos.andTrigger(simpleTrigger, logsReadyTrigger);
+
+// We can wait for the success of another workflow:  A workflow using this trigger will wait until foo becomes succesful
+var fooTrigger = celos.successTrigger("foo");
+
+// A workflow using this trigger will run if workflow foo is not successful after one hour:
+var alertTrigger = celos.andTrigger(celos.delayTrigger(60 * 60),
+                                    celos.notTrigger(fooTrigger));
+
+// A workflow using this trigger will wait for this hour's and the next hour's logs
+var twoHoursTrigger = celos.andTrigger(logsReadyTrigger,
+                                       celos.offsetTrigger(60 * 60, logsReadyTrigger));
+....
+
+There's only one scheduling strategy at the moment,
+celos.serialSchedulingStrategy, which executes slots oldest first,
+with a configurable concurrency level.
+
+[source,javascript]
+....
+// A workflow using this scheduling strategy will execute three slots in parallel:
+var strat = celos.serialSchedulingStrategy(3);
+....
+
+=== How it works
+
+Each slot of a workflow is a state machine with the following states:
+
+image::etc/images/states.png[Slot states]
 
 == Building & Running Celos
 
