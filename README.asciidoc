@@ -1156,14 +1156,6 @@ curl -X POST "localhost:1234/rerun?id=workflow-1&time=2015-09-13T13:40Z"
 The celos-ci-fat.jar can be used to deploy workflow and defaults
 JavaScript files, as well as Oozie workflow directories automatically.
 
-The best practice for using Celos CI is putting a target file for each
-Celos installation in a central, SFTP-accessible location, and storing
-the target file's SFTP URL in an environment variable,
-e.g. `TARGET_FILE`.  Deploy scripts using Celos CI should then pass
-this variable as the `--target` argument to Celos CI, making them
-independent of the Celos installation.  See link:samples/quickstart[]
-for an example.
-
 ....
 java -jar celos-ci-fat.jar <arguments...>
 ....
@@ -1236,6 +1228,15 @@ Example:
 }
 ....
 
+The best practice for using Celos CI is putting a target file for each
+Celos installation (e.g. production and staging) in a central,
+SFTP-accessible location, and storing the target file's SFTP URL in an
+environment variable (e.g. `PRODUCTION_TARGET` and `STAGING_TARGET`).
+Deploy scripts using Celos CI should then pass this variable as the
+`--target` argument to Celos CI, making them independent of the Celos
+installation to which the workflow is to be deployed.  See
+link:samples/quickstart[] for an example.
+
 === CI Environment Variables
 
 ==== CELOS_CI_USERNAME
@@ -1276,7 +1277,7 @@ Doing a GET to this servlet displays the Celos UI.
 |`zoom`|String (ISO 8601)|No|Zoom level in minutes (defaults to 60).
 |===
 
-== More
+== Miscellaneous
 
 === Notes
 
@@ -1288,7 +1289,7 @@ Celos is intended to be used inside a VPN, and by trusted developers.
 
 All times in Celos use the UTC timezone exclusively.
 
-==== Weaknesses of the Celos architecture
+==== Weaknesses
 
 ===== Single master
 

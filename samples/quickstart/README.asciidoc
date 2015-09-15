@@ -13,7 +13,7 @@ check out the rest of the Celos documentation.
 * src/
 ** main/
 *** celos/
-**** link:src/main/celos/workflow.js[workflow.js]: The main Celos workflow definition
+**** link:src/main/celos/workflow.js[workflow.js]: The main Celos workflow file, that defines two workflows, `wordcount-nyc` and `wordcount-lax`.
 **** link:src/main/celos/defaults.js[defaults.js]: Settings that can be imported by this or other workflows
 *** java/com/example/
 **** link:src/main/java/com/example/WordCount.java[WordCount.java]: The Java MapReduce main we're going to use
