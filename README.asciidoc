@@ -35,9 +35,11 @@ _The Celos UI_
 
 === Oozie Overview
 
-Celos works as a frontend to the
-link:https://oozie.apache.org/[_Apache Oozie_] execution engine.
-Oozie provides services such as distribution of jobs across the
+Celos works in conjunction with the
+link:https://oozie.apache.org/[_Apache Oozie_] execution engine, so
+we'll quickly describe Oozie before diving into Celos proper.
+
+Oozie provides services such as distribution of jobs across a
 cluster, log aggregation, and command-line and Web UI tools for
 inspecting running jobs.
 
@@ -68,6 +70,9 @@ You can also view details of a particular job in Hue:
 
 image::etc/images/hue-details.png[Hue details]
 
+(If you are familiar with Oozie: Celos keeps the Oozie _workflow_ part,
+while providing an alternative to the Oozie _coordinator_ part.)
+
 === Celos Concepts
 
 ==== Workflows
@@ -91,6 +96,9 @@ celos.defineWorkflow({
     })
 });
 ....
+
+A Celos workflow always has an Oozie workflow
+(`/wordcount/workflow.xml` in this case) as its "meat".
 
 If we were to receive data from two datacenters, in `/input/nyc` and
 `/input/lax`, we can define a helper function and use that to quickly
