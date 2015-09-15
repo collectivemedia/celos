@@ -1059,7 +1059,6 @@ curl "localhost:1234/workflow-list"
 
 prints:
 
-[source,json]
 ....
 {
   "ids" : [ "workflow-1", "workflow-2", "workflow-3" ]
@@ -1090,7 +1089,6 @@ curl "localhost:1234/workflow-slots?id=workflow-1"
 
 prints:
 
-[source,json]
 ....
 {
   "slots" : [ {
@@ -1137,7 +1135,6 @@ curl "localhost:1234/trigger-status?id=workflow-1&time=2015-09-13T13:00Z"
 
 prints:
 
-[source,json]
 ....
 {
   "type" : "AndTrigger",
@@ -1290,23 +1287,8 @@ java -jar celos-ui.jar <arguments...>
 |Name|Type|Required|Description
 |`--port`|Integer|Yes|HTTP port for UI.
 |`--celos`|URL|Yes|Celos URL.
-|`--hue`|Path|No|URL of Oozie UI.
+|`--hue`|URL|No|Hue (Oozie UI) URL.  If specified, slots become linked to Hue.
 |`--config`|Path|No|JSON <<UI Config File>>.
-|===
-
-=== UI HTTP API
-
-==== /ui
-
-Doing a GET to this servlet displays the Celos UI.
-
-===== Parameters
-
-[options="header"]
-|===
-|Name|Type|Required|Description
-|`time`|String (ISO 8601)|No|Time of most recent slot to display (defaults to current time).
-|`zoom`|String (ISO 8601)|No|Zoom level in minutes (defaults to 60).
 |===
 
 === UI Config File
@@ -1340,6 +1322,21 @@ workflows can be hierarchically grouped (one level):
   ]
 }
 ....
+
+=== UI HTTP API
+
+==== /ui
+
+Doing a GET to this servlet displays the Celos UI.
+
+===== Parameters
+
+[options="header"]
+|===
+|Name|Type|Required|Description
+|`time`|String (ISO 8601)|No|Time of most recent slot to display (defaults to current time).
+|`zoom`|String (ISO 8601)|No|Zoom level in minutes (defaults to 60).
+|===
 
 == Miscellaneous
 
