@@ -366,11 +366,11 @@ On the next scheduler step, Celos will pick up the changes.
 
 Bundled with Celos comes a tool called Celos CI (see <<Celos CI Reference>> 
 as well as link:samples/quickstart[]) that automates this
-process, and can be used in conjunction with Github and a CI server
+process, and can be used in conjunction with GitHub and a CI server
 such as link:https://jenkins-ci.org/[Jenkins] for continuous delivery
 of Celos workflows.
 
-For each group of related workflows, we have a Github repository and a
+For each group of related workflows, we have a GitHub repository and a
 Jenkins job that deploys the workflows on push to master using Celos
 CI.  Celos CI copies the JavaScript files to the Celos host with SFTP,
 and uploads the Oozie workflow directory to HDFS.
@@ -466,11 +466,11 @@ The `options` argument is an object with the following fields:
 |===
 |Name|Type|Required|Description
 |`id`|String|Yes|The identifier string for the workflow, must be unique.
-|`trigger`|<<Triggers Reference,Trigger>>|Yes|The trigger that determines data availability for the workflow.
-|`schedule`|<<Schedules Reference,Schedule>>|Yes|The schedule that determines the points in time at which the workflow should run.
-|`schedulingStrategy`|link:#scheduling-strategies[SchedulingStrategy]|Yes|The scheduling strategy that determines when and in which order ready slots should be run.
-|`externalService`|link:#external-services[ExternalService]|Yes|The external service actually responsible for executing the job.
-|`startTime`|String|No|The date when the workflow should start executing (default: "1970-01-01T00:00Z").
+|`trigger`|<<triggers-reference,Trigger>>|Yes|The trigger that determines data availability for the workflow.
+|`schedule`|<<schedules-reference,Schedule>>|Yes|The schedule that determines the points in time at which the workflow should run.
+|`schedulingStrategy`|<<scheduling-strategies-reference,SchedulingStrategy>>|Yes|The scheduling strategy that determines when and in which order ready slots should be run.
+|`externalService`|<<external-services-reference,ExternalService>>|Yes|The external service actually responsible for executing the job.
+|`startTime`|String (ISO 8601)|No|The date when the workflow should start executing (default: "1970-01-01T00:00Z").
 |`maxRetryCount`|Number|No|The number of times a slot of this workflow should be automatically retried if it fails (default: 0).
 |`waitTimeoutSeconds`|Number|No|The number of seconds a workflow should stay waiting until it times out (default: `Integer.MAX_VALUE` (68 years)).
 |===
@@ -523,7 +523,7 @@ celos.importDefaults(name)
 celos.importDefaults("foo");
 ....
 
-=== Triggers
+=== Triggers Reference
 
 A trigger determines (for each point in time at which a workflow runs)
 whether the preconditions for running the workflow (such as data
@@ -608,7 +608,7 @@ celos.andTrigger(trigger1, ..., triggerN)
 [options="header"]
 |===
 |Name|Type|Required|Description
-|`trigger1, ..., triggerN`|link:#triggers[Trigger]|No|The nested triggers.
+|`trigger1, ..., triggerN`|<<triggers-reference,Trigger>>|No|The nested triggers.
 |===
 
 ===== Examples
@@ -638,7 +638,7 @@ celos.orTrigger(trigger1, ..., triggerN)
 [options="header"]
 |===
 |Name|Type|Required|Description
-|`trigger1, ..., triggerN`|link:#triggers[Trigger]|No|The nested triggers.
+|`trigger1, ..., triggerN`|<<triggers-reference,Trigger>>|No|The nested triggers.
 |===
 
 ===== Examples
@@ -668,7 +668,7 @@ celos.notTrigger(trigger)
 [options="header"]
 |===
 |Name|Type|Required|Description
-|`trigger`|link:#triggers[Trigger]|Yes|The nested trigger to negate.
+|`trigger`|<<triggers-reference,Trigger>>|Yes|The nested trigger to negate.
 |===
 
 ===== Examples
@@ -698,7 +698,7 @@ celos.offsetTrigger(seconds, trigger)
 |===
 |Name|Type|Required|Description
 |`seconds`|Number|Yes|The number of seconds to offset into the future (if positive) or past (if negative).
-|`trigger`|link:#triggers[Trigger]|Yes|The nested trigger to offset.
+|`trigger`|<<triggers-reference,Trigger>>|Yes|The nested trigger to offset.
 |===
 
 ===== Examples
@@ -767,7 +767,7 @@ celos.alwaysTrigger()
 celos.alwaysTrigger();
 ....
 
-=== Schedules
+=== Schedules Reference
 
 A schedule determines the points in time (slots) at which a workflow should run.
 
@@ -877,7 +877,7 @@ celos.dependentSchedule(workflowID)
 celos.dependentSchedule("foo");
 ....
 
-=== Scheduling Strategies
+=== Scheduling Strategies Reference
 
 A scheduling strategy determines the order in which the ready slots of
 a workflow are executed.
@@ -912,7 +912,7 @@ celos.serialSchedulingStrategy(concurrency?)
 celos.serialSchedulingStrategy(3);
 ....
 
-=== External Services
+=== External Services Reference
 
 An external service actually executes a workflow.
 
@@ -949,6 +949,12 @@ file.
 Additionally, Celos will set the Oozie property `celosWorkflowName` to
 a string like "my-workflow@2015-09-12T20:00Z", useful for display.
 
+`oozie.wf.application.path` is the only property required by Oozie.
+It points to a
+link:https://oozie.apache.org/docs/4.2.0/WorkflowFunctionalSpec.html[Oozie
+workflow XML file] within an Oozie workflow directory.  There can be
+multiple XML files within a single Oozie workflow directory.
+
 ===== Examples
 
 [source,javascript]
@@ -959,14 +965,6 @@ celos.oozieExternalService({
     "prop2": "Just another property."
 });
 ....
-
-===== Note
-
-`oozie.wf.application.path` is the only property required by Oozie.
-It points to a
-link:https://oozie.apache.org/docs/4.2.0/WorkflowFunctionalSpec.html[Oozie
-workflow XML file] within an Oozie workflow directory.  There can be
-multiple XML files within a single Oozie workflow directory.
 
 === Variables
 
