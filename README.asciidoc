@@ -342,6 +342,9 @@ db/
         02:00:00.000Z
 ....
 
+Rerunning thus serves two purposes: besides the main use of rerunning
+a slot, it can also be used to _backfill_ data.
+
 === Continuous Delivery of Workflows
 
 Changing a workflow definition in Celos is as simple as updating the
@@ -419,7 +422,7 @@ you have questions or comments.
 
 Developers, developers, developers:
 
-* link:http://github.com/manuel[Manuel Simoni], link:mailto:manuel@collective.com[]
+* link:http://github.com/manuel[Manuel Simoni], link:mailto:manuel@collective.com[manuel@collective.com]
 * link:http://github.com/akonopko[Alexander Konopko]
 * link:http://github.com/ollie64[Oleg Baskakov]
 
@@ -1229,11 +1232,13 @@ Celos is intended to be used inside a VPN, and by trusted developers.
 
 === Notes
 
+==== Time
+
 All times in Celos use the UTC timezone exclusively.
 
-=== Weaknesses of the Celos architecture
+==== Weaknesses of the Celos architecture
 
-==== Single master
+===== Single master
 
 This might not be as bad as it sounds.  The reason is that during
 normal operation, most workflows will usually be mostly successful.
@@ -1243,20 +1248,47 @@ server.  Then it will automatically (re)run the last week's workflows,
 which, if they are "purely functional" will bring the system back to a
 mostly normal state.
 
-==== Changing the schedule of a workflow
+===== Changing the schedule of a workflow
 
 Changing the schedule of a workflow (e.g. from "at the hour" to "5
 minutes past the hour") means that the existing slot files in the
 state database no longer line up with the workflow's (new) schedule,
 making them effectively lost.
 
-==== Errors during job submission to Oozie do not bubble up into the UI
+===== Errors during job submission to Oozie do not bubble up into the UI
 
 If an error happens during job submission to Oozie (e.g. because the
 Oozie workflow directory is missing, or the workflow.xml contains a
 syntax error), the job will appear to remain stuck in the READY state,
 with no indication of error in the UI.  The log however, will contain
 the error.
+
+==== The Celos name
+
+The link:http://www.quicksilver899.com/Tolkien/LOTR/LOTR_AC.html[_Lord
+of the Rings dictionary_] defines it as:
+
+....
+Celos S; also Kelos; freshet; kel- flow away [Sil; *kelu-]; one would
+want to choose los snow [Sil] for the final element, but the text of
+Unfinished Tales, Index, entry Celos states the final form derives
+from Q -sse, -ssa, a form of emphasis [some say locative], making the
+definition 'much flowing' or 'freshet', often resulting from melting
+snow; perhaps 'snow' is then implied from the ending; a river in
+Gondor
+....
+
+Alternatively, the
+link:http://programmingisterrible.com/post/65781074112/devils-dictionary-of-programming[_Devil’s
+Dictionary of Programming_] defines it as:
+
+....
+Configurable: It’s your job to make it usable.
+Elegant: The only use case is making me feel smart.
+Lightweight: I don’t understand the use-cases the alternatives solve.
+Opinionated: I don’t believe that your use case exists.
+Simple: It solves my use case.
+....
 
 === Related Tools
 
