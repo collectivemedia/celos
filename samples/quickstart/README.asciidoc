@@ -305,6 +305,8 @@ http://localhost:11338/ui?time=2015-09-02T00:00Z
 You should see two workflows each of which has three ready or running
 slots.  You can click on a running slot to see its Oozie information.
 
+image::../../etc/images/quickstart-ui.png[Celos UI]
+
 == Look at MapReduce outputs in HDFS
 
 After a while, when all slots are green, you can look at the results in HDFS:
