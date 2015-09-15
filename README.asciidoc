@@ -23,7 +23,7 @@ Hadoop.
 
 * Battle-tested for years at
   link:http://www.collective.com[Collective, Inc] and found virtually
-  bug-free.
+  defect-free.
 
 '''
 
@@ -1007,7 +1007,7 @@ java -cp celos-server.jar:/etc/hadoop/conf com.collective.celos.server.Main <arg
 |`--defaults`|Path|No|Defaults directory (defaults to /etc/celos/defaults).
 |`--logs`|Path|No|Logs directory (defaults to /var/log/celos).
 |`--db`|Path|No|State database directory (defaults to /var/lib/celos/db).
-|`--autoSchedule`|Integer|No|Interval (in seconds) between scheduler steps.  In not supplied, Celos will not automatically step the scheduler, and wait for POSTs to the /scheduler servlet instead.
+|`--autoSchedule`|Integer|No|Interval (in seconds) between scheduler steps.  If not supplied, Celos will not automatically step the scheduler, and wait for POSTs to the /scheduler servlet instead.
 |===
 
 === Server HTTP API
@@ -1153,8 +1153,16 @@ curl -X POST "localhost:1234/rerun?id=workflow-1&time=2015-09-13T13:40Z"
 
 == Celos CI Reference
 
-The celos-ci-fat.jar can be used to deploy workflow, defaults, and
-HDFS artefacts automatically.
+The celos-ci-fat.jar can be used to deploy workflow and defaults
+JavaScript files, as well as Oozie workflow directories automatically.
+
+The best practice for using Celos CI is putting a target file for each
+Celos installation in a central, SFTP-accessible location, and storing
+the target file's SFTP URL in an environment variable,
+e.g. `TARGET_FILE`.  Deploy scripts using Celos CI should then pass
+this variable as the `--target` argument to Celos CI, making them
+independent of the Celos installation.  See link:samples/quickstart[]
+for an example.
 
 ....
 java -jar celos-ci-fat.jar <arguments...>
@@ -1186,6 +1194,22 @@ hdfs/
     ...
 ....
 
+* `workflow.js` is the JavaScript file containing workflow definitions.
+* `defaults.js` is a JavaScript defaults file containing variables and utility functions.
+* `hdfs` is the Oozie workflow directory.
+
+If `WORKFLOW_NAME` is the value of the `--workflowName` argument, and
+`HDFS_ROOT` is the value of the `--hdfsRoot` argument, and
+`WORKFLOWS_DIR` and `DEFAULTS_DIR` are the Celos workflows and
+defaults directories specified in the target file, respectively, then
+the files will be deployed to the following locations:
+
+....
+workflow.js -> $WORKFLOWS_DIR/$WORKFLOW_NAME.js
+defaults.js -> $DEFAULTS_DIR/$WORKFLOW_NAME.js
+hdfs/       -> $HDFS_ROOT/$WORKFLOW_NAME
+....
+
 === Target file
 
 A target file is a JSON file that describes a Celos and HDFS setup.
@@ -1193,13 +1217,13 @@ A target file is a JSON file that describes a Celos and HDFS setup.
 [options="header"]
 |===
 |Name|Type|Required|Description
-|`hadoop.hdfs-site.xml`|String|Yes|URL of Hadoop hdfs-site.xml File
-|`hadoop.core-site.xml`|String|Yes|URL of Hadoop core-site.xml File
-|`defaults.dir.uri`|String|Yes|URL of Celos defaults directory.
-|`workflows.dir.uri`|String|Yes|URL of Celos workflows directory.
+|`hadoop.hdfs-site.xml`|URL|Yes|URL of Hadoop hdfs-site.xml File
+|`hadoop.core-site.xml`|URL|Yes|URL of Hadoop core-site.xml File
+|`defaults.dir.uri`|URL|Yes|URL of Celos defaults directory.
+|`workflows.dir.uri`|URL|Yes|URL of Celos workflows directory.
 |===
 
-All fields can be file: or sftp: URLs.
+All fields must be file: or sftp: URLs.
 
 Example:
 
@@ -1211,6 +1235,12 @@ Example:
     "workflows.dir.uri": "sftp://celos002.ewr004.collective-media.net/etc/celos/workflows",
 }
 ....
+
+=== CI Environment Variables
+
+==== CELOS_CI_USERNAME
+
+If defined, overrides the username in sftp: URLs in the target file.
 
 == Celos UI Reference
 
@@ -1248,11 +1278,11 @@ Doing a GET to this servlet displays the Celos UI.
 
 == More
 
-=== Security
+=== Notes
+
+==== Security
 
 Celos is intended to be used inside a VPN, and by trusted developers.
-
-=== Notes
 
 ==== Time
 
