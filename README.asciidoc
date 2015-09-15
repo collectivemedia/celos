@@ -97,10 +97,10 @@ celos.defineWorkflow({
 A Celos workflow always has an Oozie workflow
 (`/wordcount/workflow.xml` in this case) as its "meat".
 
-If we were to receive data from two datacenters, in `/input/nyc` and
-`/input/lax`, we can define a helper function and use that to quickly
-define two workflows, sharing the same Oozie workflow definition, with
-the IDs `wordcount-nyc` and `wordcount-lax`:
+If we were to receive data from two sources, say two datacenters in
+`/input/nyc` and `/input/lax`, we can define a helper function and use
+that to quickly define two workflows with the IDs `wordcount-nyc` and
+`wordcount-lax`:
 
 [source,javascript]
 ....
@@ -1337,13 +1337,13 @@ Doing a GET to this servlet displays the Celos UI.
 
 == Miscellaneous
 
-=== Security
+=== Related Tools
 
-Celos is intended to be used inside a VPN, and by trusted developers.
+Two similar, programmable schedulers:
 
-=== Time
+* link:https://github.com/airbnb/airflow[Airbnb Airflow]
 
-All times in Celos use the UTC timezone exclusively.
+* link:https://github.com/spotify/luigi[Spotify Luigi]
 
 === The Celos Name
 
@@ -1371,14 +1371,6 @@ Lightweight: I don’t understand the use-cases the alternatives solve.
 Opinionated: I don’t believe that your use case exists.
 Simple: It solves my use case.
 ....
-
-=== Related Tools
-
-Two similar, programmable schedulers:
-
-* link:https://github.com/airbnb/airflow[Airbnb Airflow]
-
-* link:https://github.com/spotify/luigi[Spotify Luigi]
 
 === Acknowledgements
 
