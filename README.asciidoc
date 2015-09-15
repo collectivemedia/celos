@@ -340,7 +340,7 @@ db/
 ....
 
 Rerunning thus serves two purposes: besides the main use of rerunning
-a slot, it can also be used to _backfill_ data, by rerunning those
+a slot, it can also be used to _backfill_ data, by using it to mark
 slots outside the sliding window that the scheduler should care about.
 
 ==== Further Directories
