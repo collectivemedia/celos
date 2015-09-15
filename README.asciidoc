@@ -4,39 +4,407 @@ Celos: A Scriptable Scheduler for Periodical Hadoop Workflows
 :toclevels: 3
 :toc-title:
 
+* Written in Java and scripted using JavaScript.
+
+* Using a general-purpose scripting language for defining workflows
+  removes most configuration boilerplate.
+
+* Simple and robust architecture that keeps running even when Hadoop
+  is down and picks up where it left off when it's back up.
+
+* Support for continuous delivery of workflows.
+
+* Parsimonious user interface that nevertheless gives a good overview
+  over hundreds of workflows.
+
+* Battle-tested for years at
+  link:http://www.collective.com[Collective, Inc] and found practically
+  defect-free.
+
+'''
+
 toc::[]
 
-== Introduction
+'''
 
-Celos is a tool for running recurring workflows that process data in
-Hadoop, such as MapReduce programs or Hive SQL scripts.
+== Overview
 
 image::etc/images/celos-ui.png[Celos UI]
 
-The above screenshot shows the Celos UI.  Each row represents a
-workflow.  The tiles are called slots and are individual executions of
-a workflow for a particular point in time.  Most workflows in the
-screenshot are hourly, and some are daily.  Green slots have already
-run.  Slots in `wait` are still waiting for their preconditions (such
-as data availability in HDFS) to be met.  `rdy` are ready to run, and
-will be scheduled in one of the next scheduler steps.  `run` slots are
-currently running.  `time` slots have timed out after waiting too long
-for their preconditions to be met.  `fail` slots have failed, and have
-no more retries left, so they need to be manually rerun, if desired.
+_The Celos UI_
 
-Celos workflows are defined with JavaScript.  An example is here:
-link:samples/quickstart/src/main/celos/workflow.js[].  On each
-scheduler step (which is usually triggered once a minute from cron),
-Celos evaluates all workflow JavaScript files, and then schedules the
-workflows they define.  Celos keeps a database recording the state of
-each slot as small JSON file.
+=== Oozie Overview
 
-Celos works as frontend to link:https://oozie.apache.org/[Apache
-Oozie], which is the actual execution engine for workflows.  Oozie
-provides a small XML-based DSL for describing the actions a workflow
-should perform (example:
-link:samples/quickstart/src/main/oozie/workflow.xml[]), and
-distributes the jobs across the cluster.
+Celos works in conjunction with the
+link:https://oozie.apache.org/[_Apache Oozie_] execution engine, so
+we'll quickly describe Oozie before diving into Celos proper.
+
+Oozie provides services such as distribution of jobs across a
+cluster, log aggregation, and command-line and Web UI tools for
+inspecting running jobs.
+
+To run a job in Oozie it is packaged into a workflow directory and put
+into HDFS, as the following diagram shows:
+
+image::etc/images/oozie.png[Oozie workflow directory]
+
+Oozie requires a small XML file that describes what the job should do
+(in this case call a Java main with some arguments), and then runs it
+on a processing node in the cluster.  Artefacts in the `lib` directory
+are automatically placed on the classpath.  Arguments (such as
+`inputPath` and `outputPath` in the above example) can be passed to
+the job.
+
+Oozie XML files support
+link:https://oozie.apache.org/docs/4.2.0/WorkflowFunctionalSpec.html[many
+different kinds of actions] besides calling Java, such as manipulating
+HDFS, loading data into databases, or sending emails.  This is mostly
+out of scope for this document, but in general, Celos workflows can
+use all features of Oozie.
+
+You can view all currently running jobs in the Oozie Web UI, _Hue_:
+
+image::etc/images/hue-index.png[Hue index]
+
+You can also view details of a particular job in Hue:
+
+image::etc/images/hue-details.png[Hue details]
+
+=== Celos Concepts
+
+==== Workflows
+
+If we have the Oozie workflow directory to run in HDFS at
+`/wordcount`, hourly input data in `/input/YYYY-MM-DD/HH00`, and want
+to write output data to `/output/YYYY-MM-DD/HH00`, we can set up a
+simple Celos workflow with the ID `wordcount` like this:
+
+[source,javascript]
+....
+celos.defineWorkflow({
+    "id": "wordcount",
+    "schedule": celos.hourlySchedule(),
+    "schedulingStrategy": celos.serialSchedulingStrategy(),
+    "trigger": celos.hdfsCheckTrigger("/input/${year}-${month}-${day}/${hour}00/_READY"),
+    "externalService": celos.oozieExternalService({
+        "oozie.wf.application.path": "/wordcount/workflow.xml",
+        "inputPath": "/input/${year}-${month}-${day}/${hour}00/",
+        "outputPath": "/output/${year}-${month}-${day}/${hour}00/",
+    })
+});
+....
+
+A Celos workflow always has an Oozie workflow
+(`/wordcount/workflow.xml` in this case) as its "meat".
+
+If we were to receive data from two sources, say two datacenters in
+`/input/nyc` and `/input/lax`, we can define a helper function and use
+that to quickly define two workflows with the IDs `wordcount-nyc` and
+`wordcount-lax`:
+
+[source,javascript]
+....
+function defineWordCountWorkflow(dc) {
+    celos.defineWorkflow({
+        "id": "wordcount-" + dc,
+        "schedule": celos.hourlySchedule(),
+        "schedulingStrategy": celos.serialSchedulingStrategy(),
+        "trigger": celos.hdfsCheckTrigger("/input/" + dc + "/${year}-${month}-${day}/${hour}00/_READY"),
+        "externalService": celos.oozieExternalService({
+            "oozie.wf.application.path": "/wordcount/workflow.xml",
+            "inputPath": "/input/" + dc + "/${year}-${month}-${day}/${hour}00/",
+            "outputPath": "/output/" + dc + "/${year}-${month}-${day}/${hour}00/",
+        })
+    });
+}
+defineWordCountWorkflow("nyc");
+defineWordCountWorkflow("lax");
+....
+
+Here's an overview over schedules, triggers, and scheduling
+strategies, described below:
+
+image::etc/images/slots.png[Celos concepts]
+
+==== Schedules
+
+Each workflow has a schedule that determines the points in time
+(called _slots_) at which the workflow should run.
+
+Celos supports `cron`-like schedules with <<celos.cronSchedule>>:
+
+[source,javascript]
+....
+// A workflow using this schedule will run every hour.
+celos.cronSchedule("0 0 * * * ?");
+// A workflow using this schedule will run every day at midnight.
+celos.cronSchedule("0 0 0 * * ?");
+// A workflow using this schedule will run every day at 5am.
+celos.cronSchedule("0 0 5 * * ?");
+....
+
+Another type of schedule is <<celos.dependentSchedule>>, which makes a
+workflow use the same schedule as another workflow.  This is useful
+for setting up a downstream workflow that tracks an upstream workflow,
+without having to duplicate the schedule definition.
+
+==== Triggers
+
+For each slot of a workflow, a trigger is used to determine whether
+it's ready to run, or needs to wait.
+
+===== Simple Triggers
+
+Let's look at some commonly used simple triggers.
+
+<<celos.hdfsCheckTrigger>> waits for a file or directory in HDFS:
+
+[source,javascript]
+....
+// A slot at time T will wait for the file /logs/YYYY-MM-DD/HH00/_READY in HDFS.
+celos.hdfsCheckTrigger("/logs/${year}-${month}-${day}/${hour}00/_READY");
+....
+
+<<celos.successTrigger>> waits for the success of another workflow,
+allowing the definition of dependencies among workflows:
+
+[source,javascript]
+....
+// A slot at time T will wait until the slot at time T of 
+// the workflow with the ID "workflow-foo" is successful.
+celos.successTrigger("workflow-foo")
+....
+
+<<celos.delayTrigger>> waits until the current wallclock time is a
+given number of seconds after the slot's time:
+
+[source,javascript]
+....
+// A slot at time T will wait until the current time is one hour after T.
+celos.delayTrigger(60 * 60)
+....
+
+<<celos.offsetTrigger>> lets us offset another trigger a given number
+of seconds into the future or past.
+
+[source,javascript]
+....
+// A slot at time T will wait until the _next hour's_ file is available in HDFS.
+celos.offsetTrigger(60 * 60, celos.hdfsCheckTrigger("/logs/${year}-${month}-${day}/${hour}00/_READY"));
+....
+
+===== Combined Triggers
+
+We can also combine triggers with <<celos.andTrigger>>,	<<celos.orTrigger>>, and <<celos.notTrigger>>:
+
+[source,javascript]
+....
+// A slot at time T will wait until both /input-a/YYYY-MM-DD/HH00/_READY
+// and /input-b/YYYY-MM-DD/HH00/_READY is in HDFS.
+celos.andTrigger(celos.hdfsCheckTrigger("/input-a/${year}-${month}-${day}/${hour}00/_READY"),
+                 celos.hdfsCheckTrigger("/input-b/${year}-${month}-${day}/${hour}00/_READY"));
+....
+
+[source,javascript]
+....
+// A slot at time T will wait until the current hour's file, the next hour's file,
+// and the file for the hour after that are in HDFS.
+var hdfsCheck = celos.hdfsCheckTrigger("/logs/${year}-${month}-${day}/${hour}00/_READY");
+celos.andTrigger(hdfsCheck,
+                 celos.offsetTrigger(60 * 60 * 1, hdfsCheck),
+                 celos.offsetTrigger(60 * 60 * 2, hdfsCheck));
+....
+
+[source,javascript]
+....
+// A slot at time T will be ready if, after one hour, the slot at time T
+// of the other workflow "workflow-bar" is _not_ successful.
+// This can be used to send an alert for example.
+celos.andTrigger(celos.delayTrigger(60 * 60),
+                 celos.notTrigger(celos.successTrigger("workflow-bar"));
+....
+
+This last trigger should be used in conjunction with a
+<<celos.dependentSchedule,`celos.dependentSchedule("workflow-bar")`>>.
+
+==== Scheduling Strategies
+
+A workflow's scheduling strategy determines when and in which order
+the ready slots of the workflow should be run.
+
+There's only one scheduling strategy at the moment,
+<<celos.serialSchedulingStrategy>>, which executes ready slots oldest
+first, with a configurable concurrency level.
+
+[source,javascript]
+....
+// A workflow using this scheduling strategy will run three slots in parallel.
+celos.serialSchedulingStrategy(3);
+....
+
+=== How it Works
+
+The main data sources Celos uses are:
+
+==== Workflows Directory
+
+The workflows directory contains JavaScript files that define workflows.
+
+It may look like this:
+
+....
+workflows/
+  wordcount.js
+  some-other-workflow.js
+  yet-another-workflow.js
+....
+
+==== State Database
+
+The state database directory contains the state of each slot as a
+small JSON file.
+
+....
+db/
+  state/
+    wordcount-lax/
+      2015-09-15/
+        00:00:00.000Z
+        01:00:00.000Z
+        02:00:00.000Z
+        ...
+    wordcount-nyc/
+      2015-09-15/
+        00:00:00.000Z
+        01:00:00.000Z
+        02:00:00.000Z
+        ...
+....
+
+An individual slot file in the state database,
+e.g. `db/state/wordcount-lax/2015-09-15/01:00:00.000Z`, looks like
+this:
+
+....
+{
+  "status": "SUCCESS",
+  "externalID": "0008681-150911205802478-oozie-oozi-W",
+  "retryCount": 0
+}
+....
+
+The `status` field records the state the slot is in.
+
+The `externalID` field contains the Oozie ID of the corresponding
+Oozie workflow execution if the slot is running, successful, or failed
+(otherwise it's null).
+
+The `retryCount` records how many times the slot has already been
+retried after failure.
+
+==== Scheduler Step
+
+On each scheduler step (typically triggered once per minute from
+`cron`), Celos evaluates all JavaScript files in the workflows
+directory, yielding a set of uniquely identified workflows.
+
+Then, for each workflow, Celos fetches all slot files within a sliding
+window of 7 days before the current date from the state database.
+
+Each slot is a state machine with the following states:
+
+image::etc/images/states.png[Slot states]
+
+Celos takes the following action, depending on the state of the slot:
+
+[options="header"]
+|===
+|State|Action
+|WAITING|Call the workflow's trigger to determine whether the slot is ready.  If the trigger signals readiness, put the slot into the READY state.  If the slot has been waiting for too long, put the slot into the WAIT_TIMEOUT state.  Otherwise, keep the slot in the WAITING state.
+|READY|Pass the slot as a candidate for scheduling to the workflow's scheduling strategy.  If the strategy chooses to execute the slot, submit it to Oozie, and put it into the RUNNING state.  Otherwise, keep the slot in the READY state.
+|RUNNING|Ask Oozie for the status of the execution.  If the slot is still executing, keep it in the RUNNING state.    If the slot has succeeded, put it into the SUCCESS state.  If the slot has failed, but there are retries left, put the slot into the WAITING state again.  If the slot has failed, and there are no more retries left, put the slot into the FAILURE state.
+|SUCCESS|Do nothing.
+|FAILURE|Do nothing.
+|WAIT_TIMEOUT|Do nothing.
+|===
+
+The state database contains additional information about slots that
+have been manually rerun with the <<rerun>> HTTP API.
+
+In the following example, the slots `2015-08-01T01:00Z` and
+`2015-08-01T02:00Z` of the workflow `wordcount-nyc` have been rerun.
+They are outside the sliding window, so the above scheduling algorithm
+would not look at the slots.
+
+However, rerunning a slot touches an additional file in the `rerun`
+subdirectory of the state database, and slots for which such a file
+exists are fed into the scheduling algorithm in addition to the slots
+from the 7 day sliding window.
+
+....
+db/
+  state/
+    ... as above ...
+  rerun/
+    wordcount-nyc/
+      2015-08-01/
+        01:00:00.000Z
+        02:00:00.000Z
+....
+
+Rerunning thus serves two purposes: besides the main use of rerunning
+a slot, it can also be used to _backfill_ data, by using it to mark
+slots outside the sliding window that the scheduler should care about.
+
+==== Further Directories
+
+Celos has a *defaults directory* that contains JavaScript files that
+can be imported into a workflow JavaScript file with
+<<celos.importDefaults>>.  Such defaults files are used for sharing
+global variables and utility functions.
+
+Celos writes daily-rotating logs to a *logs directory*.
+
+All directories (workflows, defaults, logs, and database) are
+configurable via <<Server Command-Line Arguments>>.
+
+=== Continuous Delivery of Workflows
+
+Changing a workflow definition in Celos is as simple as updating the
+workflow JavaScript file and/or the Oozie workflow definition in HDFS.
+On the next scheduler step, Celos will pick up the changes.
+
+Bundled with Celos comes a tool called Celos CI (see <<Celos CI Reference>> 
+as well as link:samples/quickstart[]) that automates this
+process, and can be used in conjunction with GitHub and a CI server
+such as link:https://jenkins-ci.org/[Jenkins] for continuous delivery
+of Celos workflows.
+
+For each group of related workflows, we have a GitHub repository and a
+Jenkins job that deploys the workflows on push to master using Celos
+CI.  Celos CI copies the JavaScript files to the Celos host with SFTP,
+and uploads the Oozie workflow directory to HDFS.
+
+image::etc/images/arch.png[Architecture]
+
+=== Experience
+
+As of September 2015, Celos has been in use at
+link:http://www.collective.com[Collective] for about two years, and is
+currently running all of our Hadoop processing (hundreds of individual
+workflows across dozens of projects).
+
+Celos is productively used by people from different backgrounds, such
+as data science, operations, software engineering, and database
+administration, and has proven to be a welcome improvement on our
+previous Oozie coordinator-based scheduling.
+
+We're proud that in two years of use, not a single bug in Celos has
+caused any downtime, which is attributable to the small codebase
+(about 2500 non-blank, non-comment lines of code for core Celos, as
+measured by link:http://cloc.sourceforge.net/[cloc] 1.56) and the
+rigorous test suite (hundreds of unit tests and an extensive
+integration test).
 
 == Building & Running Celos
 
@@ -51,25 +419,42 @@ versions.
 
 === Building Celos
 
+[source,shell]
 ....
 scripts/build.sh
 ....
 
 This will build the following JARs:
 
-* celos-server/build/libs/celos-server.jar
-* celos-ci/build/libs/celos-ci-fat.jar
-* celos-ui/build/libs/celos-ui.jar
+* celos-server/build/libs/celos-server.jar (see <<Celos Server Reference>>)
+* celos-ci/build/libs/celos-ci-fat.jar (see <<Celos CI Reference>>)
+* celos-ui/build/libs/celos-ui.jar (see <<Celos UI Reference>>)
 
-See link:samples/quickstart[] for examples of how to launch the JARs.
-
-== Getting Started
+=== Getting Started
 
 Head over to link:samples/quickstart[*samples/quickstart*].
 
+== Get in Touch
+
+We'd love to help you try out and use Celos!
+
+For now, please use the
+link:https://github.com/collectivemedia/celos/issues[Issue Tracker] if
+you have questions or comments.
+
+=== People
+
+Developers, developers, developers:
+
+* link:http://github.com/manuel[Manuel Simoni], link:mailto:manuel@collective.com[manuel@collective.com]
+* link:http://github.com/akonopko[Alexander Konopko]
+* link:http://github.com/ollie64[Oleg Baskakov]
+
+Head honcho: link:http://github.com/andry1[Chris Ingrassia]
+
 == JavaScript API Reference
 
-=== General
+=== Workflows Reference
 
 ==== celos.defineWorkflow
 
@@ -92,11 +477,11 @@ The `options` argument is an object with the following fields:
 |===
 |Name|Type|Required|Description
 |`id`|String|Yes|The identifier string for the workflow, must be unique.
-|`trigger`|link:#triggers[Trigger]|Yes|The trigger that determines data availability for the workflow.
-|`schedule`|link:#schedules[Schedule]|Yes|The schedule that determines the points in time at which the workflow should run.
-|`schedulingStrategy`|link:#scheduling-strategies[SchedulingStrategy]|Yes|The scheduling strategy that determines when and in which order ready slots should be run.
-|`externalService`|link:#external-services[ExternalService]|Yes|The external service actually responsible for executing the job.
-|`startTime`|String|No|The date when the workflow should start executing (default: "1970-01-01T00:00Z").
+|`trigger`|<<triggers-reference,Trigger>>|Yes|The trigger that determines data availability for the workflow.
+|`schedule`|<<schedules-reference,Schedule>>|Yes|The schedule that determines the points in time at which the workflow should run.
+|`schedulingStrategy`|<<scheduling-strategies-reference,SchedulingStrategy>>|Yes|The scheduling strategy that determines when and in which order ready slots should be run.
+|`externalService`|<<external-services-reference,ExternalService>>|Yes|The external service actually responsible for executing the job.
+|`startTime`|String (ISO 8601)|No|The date when the workflow should start executing (default: "1970-01-01T00:00Z").
 |`maxRetryCount`|Number|No|The number of times a slot of this workflow should be automatically retried if it fails (default: 0).
 |`waitTimeoutSeconds`|Number|No|The number of seconds a workflow should stay waiting until it times out (default: `Integer.MAX_VALUE` (68 years)).
 |===
@@ -149,7 +534,7 @@ celos.importDefaults(name)
 celos.importDefaults("foo");
 ....
 
-=== Triggers
+=== Triggers Reference
 
 A trigger determines (for each point in time at which a workflow runs)
 whether the preconditions for running the workflow (such as data
@@ -175,7 +560,7 @@ celos.hdfsCheckTrigger(path, fs?)
 |===
 |Name|Type|Required|Description
 |`path`|String|Yes|The HDFS path to wait for.  May include the variables `${year}`, `${month}`, `${day}`, `${hour}`, `${minute}`, and `${second}`, which will be replaced by the zero-padded values from the slot's scheduled time.
-|`fs`|String|No|The `hdfs://` URI of the HDFS filesystem to use.  If not specified, the value of the CELOS_DEFAULT_HDFS variable will be used.
+|`fs`|String|No|The `hdfs://` URI of the HDFS filesystem to use.  If not specified, the value of the <<CELOS_DEFAULT_HDFS>> variable will be used.
 |===
 
 ===== Examples
@@ -234,7 +619,7 @@ celos.andTrigger(trigger1, ..., triggerN)
 [options="header"]
 |===
 |Name|Type|Required|Description
-|`trigger1, ..., triggerN`|link:#triggers[Trigger]|No|The nested triggers.
+|`trigger1, ..., triggerN`|<<triggers-reference,Trigger>>|No|The nested triggers.  If no nested triggers are specified, the trigger is always ready.
 |===
 
 ===== Examples
@@ -264,7 +649,7 @@ celos.orTrigger(trigger1, ..., triggerN)
 [options="header"]
 |===
 |Name|Type|Required|Description
-|`trigger1, ..., triggerN`|link:#triggers[Trigger]|No|The nested triggers.
+|`trigger1, ..., triggerN`|<<triggers-reference,Trigger>>|No|The nested triggers.  If no nested triggers are specified, the trigger is never ready.
 |===
 
 ===== Examples
@@ -294,7 +679,7 @@ celos.notTrigger(trigger)
 [options="header"]
 |===
 |Name|Type|Required|Description
-|`trigger`|link:#triggers[Trigger]|Yes|The nested trigger to negate.
+|`trigger`|<<triggers-reference,Trigger>>|Yes|The nested trigger to negate.
 |===
 
 ===== Examples
@@ -324,7 +709,7 @@ celos.offsetTrigger(seconds, trigger)
 |===
 |Name|Type|Required|Description
 |`seconds`|Number|Yes|The number of seconds to offset into the future (if positive) or past (if negative).
-|`trigger`|link:#triggers[Trigger]|Yes|The nested trigger to offset.
+|`trigger`|<<triggers-reference,Trigger>>|Yes|The nested trigger to offset.
 |===
 
 ===== Examples
@@ -393,7 +778,7 @@ celos.alwaysTrigger()
 celos.alwaysTrigger();
 ....
 
-=== Schedules
+=== Schedules Reference
 
 A schedule determines the points in time (slots) at which a workflow should run.
 
@@ -503,7 +888,7 @@ celos.dependentSchedule(workflowID)
 celos.dependentSchedule("foo");
 ....
 
-=== Scheduling Strategies
+=== Scheduling Strategies Reference
 
 A scheduling strategy determines the order in which the ready slots of
 a workflow are executed.
@@ -538,7 +923,7 @@ celos.serialSchedulingStrategy(concurrency?)
 celos.serialSchedulingStrategy(3);
 ....
 
-=== External Services
+=== External Services Reference
 
 An external service actually executes a workflow.
 
@@ -569,16 +954,28 @@ Inside property values, the variables `${year}`, `${month}`, `${day}`,
 zero-padded values from the slot's scheduled time.
 
 `year`, `month`, `day`, `hour`, `minute`, and `second` will also be
-set as Oozie properties, so they can be used in the workflow.xml.
+set as Oozie properties, so they can be used in the Oozie workflow XML
+file.
 
 Additionally, Celos will set the Oozie property `celosWorkflowName` to
 a string like "my-workflow@2015-09-12T20:00Z", useful for display.
+
+`oozie.wf.application.path` is the only property required by Oozie.
+It points to a
+link:https://oozie.apache.org/docs/4.2.0/WorkflowFunctionalSpec.html[Oozie
+workflow XML file] within an Oozie workflow directory.  There can be
+multiple XML files within a single Oozie workflow directory.
+
+If <<CELOS_DEFAULT_OOZIE_PROPERTIES>> is defined and an Object, its
+members are added (before other properties, so they can be overridden)
+to the Oozie properties.
 
 ===== Examples
 
 [source,javascript]
 ....
 celos.oozieExternalService({
+    "oozie.wf.application.path": "/workflow-dir/workflow.xml",
     "prop1": "Hello. It is the year ${year}!",
     "prop2": "Just another property."
 });
@@ -586,7 +983,9 @@ celos.oozieExternalService({
 
 === Variables
 
-If defined, these global variables influence some API functions.
+If defined, these global variables influence some API functions.  It's
+a good idea to set them in a common defaults file imported by all
+workflows.
 
 ==== CELOS_DEFAULT_HDFS
 
@@ -600,12 +999,21 @@ API URL by <<celos.oozieExternalService>>.
 
 ==== CELOS_DEFAULT_OOZIE_PROPERTIES
 
-The members of this Object will be added to the Oozie properties of a
-workflow by <<celos.oozieExternalService>>.
+The members of this Object will be added (before other properties, so
+they can be overridden) to the Oozie properties of a workflow by
+<<celos.oozieExternalService>>.
 
 == Celos Server Reference
 
 The celos-server.jar launches Celos.
+
+The celos-server.jar must be run in the following way, due to the need
+to put the Hadoop configuration on the classpath:
+
+[source,shell]
+....
+java -cp celos-server.jar:/etc/hadoop/conf com.collective.celos.server.Main <arguments...>
+....
 
 === Server Command-Line Arguments
 
@@ -617,7 +1025,7 @@ The celos-server.jar launches Celos.
 |`--defaults`|Path|No|Defaults directory (defaults to /etc/celos/defaults).
 |`--logs`|Path|No|Logs directory (defaults to /var/log/celos).
 |`--db`|Path|No|State database directory (defaults to /var/lib/celos/db).
-|`--autoSchedule`|Integer|No|Interval (in seconds) between which scheduler steps.  In unsupplied, Celos will not automatically step the scheduler, and wait for POSTs to the /scheduler servlet instead.
+|`--autoSchedule`|Integer|No|Interval (in seconds) between scheduler steps.  If not supplied, Celos will not automatically step the scheduler, and wait for POSTs to the /scheduler servlet instead.
 |===
 
 === Server HTTP API
@@ -626,10 +1034,11 @@ The celos-server.jar launches Celos.
 
 Doing a POST to this servlet initiates a scheduler step.
 
-In production we do this once a minute from cron.
+In production we do this once a minute from `cron`.
 
 ===== Example
 
+[source,shell]
 ....
 curl -X POST localhost:1234/scheduler
 ....
@@ -640,6 +1049,7 @@ Doing a GET to this servlet returns the list of workflows loaded into Celos.
 
 ===== Example
 
+[source,shell]
 ....
 curl "localhost:1234/workflow-list"
 ....
@@ -669,6 +1079,7 @@ time range.
 
 ===== Example
 
+[source,shell]
 ....
 curl "localhost:1234/workflow-slots?id=workflow-1"
 ....
@@ -714,6 +1125,7 @@ why a slot is waiting.
 
 ===== Example
 
+[source,shell]
 ....
 curl "localhost:1234/trigger-status?id=workflow-1&time=2015-09-13T13:00Z"
 ....
@@ -757,14 +1169,20 @@ reset to 0.
 
 ===== Example
 
+[source,shell]
 ....
 curl -X POST "localhost:1234/rerun?id=workflow-1&time=2015-09-13T13:40Z"
 ....
 
 == Celos CI Reference
 
-The celos-ci.jar can be used to deploy workflow, defaults, and HDFS
-artefacts automatically.
+The celos-ci-fat.jar can be used to deploy workflow and defaults
+JavaScript files, as well as Oozie workflow directories automatically.
+
+[source,shell]
+....
+java -jar celos-ci-fat.jar <arguments...>
+....
 
 === CI Command-Line Arguments
 
@@ -778,7 +1196,7 @@ artefacts automatically.
 |`--hdfsRoot`|Path|No|HDFS data will be placed under this root (defaults to /user/celos/app).
 |===
 
-=== Deployment directory
+=== Deployment Directory
 
 A deployment directory must follow a canonical directory layout:
 
@@ -792,23 +1210,40 @@ hdfs/
     ...
 ....
 
-=== Target file
+* `workflow.js` is the JavaScript file containing workflow definitions.
+* `defaults.js` is a JavaScript defaults file containing variables and utility functions.
+* `hdfs` is the Oozie workflow directory.
+
+If `WORKFLOW_NAME` is the value of the `--workflowName` argument, and
+`HDFS_ROOT` is the value of the `--hdfsRoot` argument, and
+`WORKFLOWS_DIR` and `DEFAULTS_DIR` are the Celos workflows and
+defaults directories specified in the target file, respectively, then
+the files will be deployed to the following locations:
+
+....
+workflow.js -> $WORKFLOWS_DIR/$WORKFLOW_NAME.js
+defaults.js -> $DEFAULTS_DIR/$WORKFLOW_NAME.js
+hdfs/       -> $HDFS_ROOT/$WORKFLOW_NAME
+....
+
+=== Target File
 
 A target file is a JSON file that describes a Celos and HDFS setup.
 
 [options="header"]
 |===
 |Name|Type|Required|Description
-|`hadoop.hdfs-site.xml`|String|Yes|URL of Hadoop hdfs-site.xml File
-|`hadoop.core-site.xml`|String|Yes|URL of Hadoop core-site.xml File
-|`defaults.dir.uri`|String|Yes|URL of Celos defaults directory.
-|`workflows.dir.uri`|String|Yes|URL of Celos workflows directory.
+|`hadoop.hdfs-site.xml`|URL|Yes|URL of Hadoop hdfs-site.xml File
+|`hadoop.core-site.xml`|URL|Yes|URL of Hadoop core-site.xml File
+|`defaults.dir.uri`|URL|Yes|URL of Celos defaults directory.
+|`workflows.dir.uri`|URL|Yes|URL of Celos workflows directory.
 |===
 
-All fields can be file: or sftp: URLs.
+All fields must be file: or sftp: URLs.
 
 Example:
 
+[source,json]
 ....
 {
     "hadoop.hdfs-site.xml": "sftp://celos002.ewr004.collective-media.net/etc/hadoop/conf/hdfs-site.xml",
@@ -818,16 +1253,72 @@ Example:
 }
 ....
 
+The best practice for using Celos CI is putting a target file for each
+Celos installation (e.g. production and staging) in a central,
+SFTP-accessible location, and storing the target file's SFTP URL in an
+environment variable (e.g. `PRODUCTION_TARGET` and `STAGING_TARGET`).
+Deploy scripts using Celos CI should then pass this variable as the
+`--target` argument to Celos CI, making them independent of the Celos
+installation to which the workflow is to be deployed.  See
+link:samples/quickstart[] for an example.
+
+=== CI Environment Variables
+
+==== CELOS_CI_USERNAME
+
+If defined, overrides the username in sftp: URLs in the target file.
+
 == Celos UI Reference
+
+The celos-ui.jar runs the Celos user interface.
+
+[source,shell]
+....
+java -jar celos-ui.jar <arguments...>
+....
+
 === UI Command-Line Arguments
+
 [options="header"]
 |===
 |Name|Type|Required|Description
 |`--port`|Integer|Yes|HTTP port for UI.
 |`--celos`|URL|Yes|Celos URL.
-|`--hue`|Path|No|URL of Oozie UI.
-|`--config`|Path|No|JSON config file.
+|`--hue`|URL|No|Hue (Oozie UI) URL.  If specified, slots become linked to Hue.
+|`--config`|Path|No|JSON <<UI Config File>>.
 |===
+
+=== UI Config File
+
+If the `--config` argument is not supplied to the UI, it simply
+renders one long list of all loaded workflows.
+
+By supplying a JSON file with the following format to `--config`, the
+workflows can be hierarchically grouped (one level):
+
+[source,javascript]
+....
+{
+  "groups":
+  [
+    { 
+      "name": "Group 1",
+      "workflows":
+      [
+        "workflow-1",
+        "workflow-2"
+      ]
+    },
+    { 
+      "name": "Group 2",
+      "workflows":
+      [
+        "workflow-3"
+      ]
+    }
+  ]
+}
+....
 
 === UI HTTP API
 
@@ -840,6 +1331,49 @@ Doing a GET to this servlet displays the Celos UI.
 [options="header"]
 |===
 |Name|Type|Required|Description
-|`time`|String (ISO 8601)|Yes|Time of most recent slot to display.
+|`time`|String (ISO 8601)|No|Time of most recent slot to display (defaults to current time).
 |`zoom`|String (ISO 8601)|No|Zoom level in minutes (defaults to 60).
 |===
+
+== Miscellaneous
+
+=== Related Tools
+
+Two similar, programmable schedulers:
+
+* link:https://github.com/airbnb/airflow[Airbnb Airflow]
+
+* link:https://github.com/spotify/luigi[Spotify Luigi]
+
+=== The Celos Name
+
+The link:http://www.quicksilver899.com/Tolkien/LOTR/LOTR_AC.html[_Lord
+of the Rings Dictionary_] defines it as:
+
+....
+Celos S; also Kelos; freshet; kel- flow away [Sil; *kelu-]; one would
+want to choose los snow [Sil] for the final element, but the text of
+Unfinished Tales, Index, entry Celos states the final form derives
+from Q -sse, -ssa, a form of emphasis [some say locative], making the
+definition 'much flowing' or 'freshet', often resulting from melting
+snow; perhaps 'snow' is then implied from the ending; a river in
+Gondor
+....
+
+Alternatively, the
+link:http://programmingisterrible.com/post/65781074112/devils-dictionary-of-programming[_Devil’s
+Dictionary of Programming_] defines it as:
+
+....
+Configurable: It’s your job to make it usable.
+Elegant: The only use case is making me feel smart.
+Lightweight: I don’t understand the use-cases the alternatives solve.
+Opinionated: I don’t believe that your use case exists.
+Simple: It solves my use case.
+....
+
+=== Acknowledgements
+
+Thanks to our in-house users and to the developers of the many fine
+open source libraries we're able to use, including but not limited to
+Oozie, Hadoop, Jetty, Rhino, Joda, Jackson, Quartz, and Gradle.
