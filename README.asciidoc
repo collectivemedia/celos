@@ -164,9 +164,141 @@ var strat = celos.serialSchedulingStrategy(3);
 
 === How it works
 
-Each slot of a workflow is a state machine with the following states:
+Celos requires four directories to run:
+
+==== Workflows Directory
+
+The workflows directory contains JavaScript files that define workflows.
+
+It may look like this:
+
+....
+workflows/
+  wordcount.js
+  some-other-workflow.js
+  yet-another-workflow.js
+....
+
+==== Defaults Directory
+
+The defaults directory contains JavaScript files that can be imported
+from workflow files with <<celos.importDefaults>>.
+
+It may look like this:
+
+....
+defaults/
+  production-settings.js
+  some-cool-variables.js
+....
+
+==== Logs Directory
+
+The logs directory contains the file celos.log and older daily log
+files into which Celos writes informative and error output.
+
+It may look like this:
+
+....
+logs/
+  celos.log
+  celos-2015-09-15.log
+....
+
+==== Database Directory
+
+The database directory contains the state of each slot as a small JSON
+file.
+
+....
+db/
+  state/
+    wordcount-lax/
+      2015-09-15/
+        00:00:00.000Z
+        01:00:00.000Z
+        02:00:00.000Z
+        ...
+    wordcount-nyc/
+      2015-09-15/
+        00:00:00.000Z
+        01:00:00.000Z
+        02:00:00.000Z
+        ...
+....
+
+An individual slot file in the state database,
+e.g. db/state/wordcount-lax/2015-09-15/01:00:00.000Z looks like this:
+
+....
+{
+  "status": "SUCCESS",
+  "externalID": "0008681-150911205802478-oozie-oozi-W",
+  "retryCount": 0
+}
+....
+
+The `status` field records the state of the state machine (below) the
+slot is in.
+
+If the slot is running, successful, or failed, the `externalID` field
+contains the Oozie ID of the corresponding Oozie workflow execution
+(otherwise `externalID` is null).
+
+The `retryCount` records how many times the slot has already been
+retried after failure.
+
+==== Scheduler Step
+
+On each scheduler step (typically triggered once per minute from
+cron), Celos evaluates all JavaScript files in the <<workflows
+directory>>, yielding a set of uniquely identified workflows.
+
+Then, for each workflow, it will fetch all slot files within a sliding
+window of 7 days before the current date.
+
+Each slot is a state machine with the following states:
 
 image::etc/images/states.png[Slot states]
+
+Celos will take the following action, depending on the state of the
+slot:
+
+[options="header"]
+|===
+|State|Action
+|WAITING|Call the workflow's trigger to determine whether the slot is now ready.
+|READY|Pass the slot as a candidate for scheduling to the workflow's scheduling strategy.
+|RUNNING|Ask Oozie for the status of the execution.
+|SUCCESS|Do nothing.
+|FAILURE|Do nothing.
+|WAIT_TIMEOUT|Do nothing.
+|===
+
+==== Rerunning slots outside the sliding window
+
+The state database contains additional information about slots that
+have been manually <<rerun>>.
+
+In this example, the slots 2015-08-01T01:00Z and 2015-08-01T02:00Z of
+the workflow wordcount-nyc have been rerun.  They are outside the
+sliding window, so the above scheduling algorithm would not look at
+the slots.
+
+However, rerunning a slot touches an additional file in db/rerun, and
+slots for which such a file exists are fed into the scheduling
+algorithm in addition to the slots from the 7 day sliding window.
+
+....
+db/
+  state/
+    ... as above ...
+  rerun/
+    wordcount-nyc/
+      2015-08-01/
+        01:00:00.000Z
+        02:00:00.000Z
+....
 
 == Building & Running Celos
 
