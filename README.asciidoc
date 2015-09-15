@@ -953,6 +953,10 @@ link:https://oozie.apache.org/docs/4.2.0/WorkflowFunctionalSpec.html[Oozie
 workflow XML file] within an Oozie workflow directory.  There can be
 multiple XML files within a single Oozie workflow directory.
 
+If <<CELOS_DEFAULT_OOZIE_PROPERTIES>> is defined and an Object, its
+members are added (before other properties, so they can be overridden)
+to the Oozie properties.
+
 ===== Examples
 
 [source,javascript]
@@ -966,7 +970,9 @@ celos.oozieExternalService({
 
 === Variables
 
-If defined, these global variables influence some API functions.
+If defined, these global variables influence some API functions.  It's
+a good idea to set them in a common defaults file imported by all
+workflows.
 
 ==== CELOS_DEFAULT_HDFS
 
@@ -1317,7 +1323,7 @@ contain the error.
 ==== The Celos name
 
 The link:http://www.quicksilver899.com/Tolkien/LOTR/LOTR_AC.html[_Lord
-of the Rings dictionary_] defines it as:
+of the Rings Dictionary_] defines it as:
 
 ....
 Celos S; also Kelos; freshet; kel- flow away [Sil; *kelu-]; one would
