@@ -146,6 +146,11 @@ celos.cronSchedule("0 0 0 * * ?");
 celos.cronSchedule("0 0 5 * * ?");
 ....
 
+Another type of schedule is <<celos.dependentSchedule>>, which makes a
+workflow use the same schedule as another workflow.  This is useful
+for setting up a downstream workflow that tracks an upstream workflow,
+without having to duplicate the schedule definition.
+
 ==== Triggers
 
 For each slot of a workflow, a trigger is used to determine whether
@@ -178,7 +183,7 @@ given number of seconds after the slot's time:
 
 [source,javascript]
 ....
-// A slot at time T will wait until the current time is one hour after the slot's time.
+// A slot at time T will wait until the current time is one hour after T.
 celos.delayTrigger(60 * 60)
 ....
 
@@ -197,10 +202,10 @@ We can also combine triggers with <<celos.andTrigger>>,	<<celos.orTrigger>>, and
 
 [source,javascript]
 ....
-// A slot at time T will wait until one of /input-a/YYYY-MM-DD/HH00/_READY
-// or /input-b/YYYY-MM-DD/HH00/_READY is in HDFS.
-celos.orTrigger(celos.hdfsCheckTrigger("/input-a/${year}-${month}-${day}/${hour}00/_READY"),
-                celos.hdfsCheckTrigger("/input-b/${year}-${month}-${day}/${hour}00/_READY"));
+// A slot at time T will wait until both /input-a/YYYY-MM-DD/HH00/_READY
+// and /input-b/YYYY-MM-DD/HH00/_READY is in HDFS.
+celos.andTrigger(celos.hdfsCheckTrigger("/input-a/${year}-${month}-${day}/${hour}00/_READY"),
+                 celos.hdfsCheckTrigger("/input-b/${year}-${month}-${day}/${hour}00/_READY"));
 ....
 
 [source,javascript]
@@ -221,6 +226,9 @@ celos.andTrigger(hdfsCheck,
 celos.andTrigger(celos.delayTrigger(60 * 60),
                  celos.notTrigger(celos.successTrigger("workflow-bar"));
 ....
+
+This last trigger should be used in conjunction with a
+<<celos.dependentSchedule,`celos.dependentSchedule("workflow-bar")`>>.
 
 ==== Scheduling Strategies
 
@@ -315,7 +323,7 @@ Celos takes the following action, depending on the state of the slot:
 [options="header"]
 |===
 |State|Action
-|WAITING|Call the workflow's trigger to determine whether the slot is ready.  If the trigger signals readyness, put the slot into the READY state.  If the slot has been waiting for too long, put the slot into the WAIT_TIMEOUT state.  Otherwise, keep the slot in the WAITING state.
+|WAITING|Call the workflow's trigger to determine whether the slot is ready.  If the trigger signals readiness, put the slot into the READY state.  If the slot has been waiting for too long, put the slot into the WAIT_TIMEOUT state.  Otherwise, keep the slot in the WAITING state.
 |READY|Pass the slot as a candidate for scheduling to the workflow's scheduling strategy.  If the strategy chooses to execute the slot, submit it to Oozie, and put it into the RUNNING state.  Otherwise, keep the slot in the READY state.
 |RUNNING|Ask Oozie for the status of the execution.  If the slot is still executing, keep it in the RUNNING state.    If the slot has succeeded, put it into the SUCCESS state.  If the slot has failed, but there are retries left, put the slot into the WAITING state again.  If the slot has failed, and there are no more retries left, put the slot into the FAILURE state.
 |SUCCESS|Do nothing.
@@ -1366,4 +1374,4 @@ Two similar, programmable schedulers:
 
 Thanks to our in-house users and to the developers of the many fine
 open source libraries we're able to use, including but not limited to
-Oozie, Hadoop, Jetty, Rhino, Joda, Jackson, and Gradle.
+Oozie, Hadoop, Jetty, Rhino, Joda, Jackson, Quartz, and Gradle.
