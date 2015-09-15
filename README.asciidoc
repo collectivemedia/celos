@@ -287,7 +287,7 @@ The `status` field records the state the slot is in.
 
 The `externalID` field contains the Oozie ID of the corresponding
 Oozie workflow execution if the slot is running, successful, or failed
-(otherwise `externalID` is null).
+(otherwise it's null).
 
 The `retryCount` records how many times the slot has already been
 retried after failure.
@@ -343,7 +343,20 @@ db/
 ....
 
 Rerunning thus serves two purposes: besides the main use of rerunning
-a slot, it can also be used to _backfill_ data.
+a slot, it can also be used to _backfill_ data, by rerunning those
+slots outside the sliding window that the scheduler should care about.
+
+==== Further Directories
+
+Celos has a *defaults directory* that contains JavaScript files that
+can be imported into a workflow JavaScript file with
+<<celos.importDefaults>>.  Such defaults files are used for sharing
+global variables and utility functions.
+
+Celos writes daily-rotating logs to a *logs directory*.
+
+All directories (workflows, defaults, logs, and database) are
+configurable via <<Server Command-Line Arguments>>.
 
 === Continuous Delivery of Workflows
 
@@ -453,8 +466,8 @@ The `options` argument is an object with the following fields:
 |===
 |Name|Type|Required|Description
 |`id`|String|Yes|The identifier string for the workflow, must be unique.
-|`trigger`|link:#triggers[Trigger]|Yes|The trigger that determines data availability for the workflow.
-|`schedule`|link:#schedules[Schedule]|Yes|The schedule that determines the points in time at which the workflow should run.
+|`trigger`|<<Triggers Reference,Trigger>>|Yes|The trigger that determines data availability for the workflow.
+|`schedule`|<<Schedules Reference,Schedule>>|Yes|The schedule that determines the points in time at which the workflow should run.
 |`schedulingStrategy`|link:#scheduling-strategies[SchedulingStrategy]|Yes|The scheduling strategy that determines when and in which order ready slots should be run.
 |`externalService`|link:#external-services[ExternalService]|Yes|The external service actually responsible for executing the job.
 |`startTime`|String|No|The date when the workflow should start executing (default: "1970-01-01T00:00Z").
