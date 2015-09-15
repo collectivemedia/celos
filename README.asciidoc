@@ -27,9 +27,13 @@ Hadoop.
 
 image::etc/images/celos-ui.png[Celos UI]
 
+'''
+
 toc::[]
 
-== Introduction
+'''
+
+== Overview
 
 === Oozie
 
@@ -180,7 +184,7 @@ of seconds into the future or past.
 celos.offsetTrigger(60 * 60, celos.hdfsCheckTrigger("/logs/${year}-${month}-${day}/${hour}00/_READY"));
 ....
 
-==== Combined Triggers
+===== Combined Triggers
 
 We can also combine triggers with <<celos.andTrigger>>,	<<celos.orTrigger>>, and <<celos.notTrigger>>:
 
@@ -211,7 +215,7 @@ celos.andTrigger(celos.delayTrigger(60 * 60),
                  celos.notTrigger(celos.successTrigger("workflow-bar"));
 ....
 
-=== Scheduling Strategy
+==== Scheduling Strategies
 
 A workflow's scheduling strategy determines when and in which order
 the ready slots of the workflow should be run.
@@ -397,7 +401,7 @@ This will build the following JARs:
 * celos-ci/build/libs/celos-ci-fat.jar (see <<Celos CI Reference>>)
 * celos-ui/build/libs/celos-ui.jar (see <<Celos UI Reference>>)
 
-== Getting Started
+=== Getting Started
 
 Head over to link:samples/quickstart[*samples/quickstart*].
 
