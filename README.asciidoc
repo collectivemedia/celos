@@ -9,8 +9,8 @@ Celos: A Scriptable Scheduler for Periodical Hadoop Workflows
 * Using a general-purpose scripting language for defining workflows
   saves you from configuration hell.
 
-* Simple and robust architecture, that keeps running even when Hadoop
-  is down, and picks up where it left off when it's back up.
+* Simple and robust architecture that keeps running even when Hadoop
+  is down and picks up where it left off when it's back up.
 
 * Support for continuous delivery of workflows.
 
@@ -422,6 +422,7 @@ versions.
 
 === Building Celos
 
+[source,shell]
 ....
 scripts/build.sh
 ....
@@ -1012,6 +1013,7 @@ The celos-server.jar launches Celos.
 The celos-server.jar must be run in the following way, due to the need
 to put the Hadoop configuration on the classpath:
 
+[source,shell]
 ....
 java -cp celos-server.jar:/etc/hadoop/conf com.collective.celos.server.Main <arguments...>
 ....
@@ -1039,6 +1041,7 @@ In production we do this once a minute from `cron`.
 
 ===== Example
 
+[source,shell]
 ....
 curl -X POST localhost:1234/scheduler
 ....
@@ -1049,12 +1052,14 @@ Doing a GET to this servlet returns the list of workflows loaded into Celos.
 
 ===== Example
 
+[source,shell]
 ....
 curl "localhost:1234/workflow-list"
 ....
 
 prints:
 
+[source,json]
 ....
 {
   "ids" : [ "workflow-1", "workflow-2", "workflow-3" ]
@@ -1078,12 +1083,14 @@ time range.
 
 ===== Example
 
+[source,shell]
 ....
 curl "localhost:1234/workflow-slots?id=workflow-1"
 ....
 
 prints:
 
+[source,json]
 ....
 {
   "slots" : [ {
@@ -1123,12 +1130,14 @@ why a slot is waiting.
 
 ===== Example
 
+[source,shell]
 ....
 curl "localhost:1234/trigger-status?id=workflow-1&time=2015-09-13T13:00Z"
 ....
 
 prints:
 
+[source,json]
 ....
 {
   "type" : "AndTrigger",
@@ -1166,6 +1175,7 @@ reset to 0.
 
 ===== Example
 
+[source,shell]
 ....
 curl -X POST "localhost:1234/rerun?id=workflow-1&time=2015-09-13T13:40Z"
 ....
@@ -1175,6 +1185,7 @@ curl -X POST "localhost:1234/rerun?id=workflow-1&time=2015-09-13T13:40Z"
 The celos-ci-fat.jar can be used to deploy workflow and defaults
 JavaScript files, as well as Oozie workflow directories automatically.
 
+[source,shell]
 ....
 java -jar celos-ci-fat.jar <arguments...>
 ....
@@ -1238,6 +1249,7 @@ All fields must be file: or sftp: URLs.
 
 Example:
 
+[source,json]
 ....
 {
     "hadoop.hdfs-site.xml": "sftp://celos002.ewr004.collective-media.net/etc/hadoop/conf/hdfs-site.xml",
@@ -1266,6 +1278,7 @@ If defined, overrides the username in sftp: URLs in the target file.
 
 The celos-ui.jar runs the Celos user interface.
 
+[source,shell]
 ....
 java -jar celos-ui.jar <arguments...>
 ....
@@ -1278,7 +1291,7 @@ java -jar celos-ui.jar <arguments...>
 |`--port`|Integer|Yes|HTTP port for UI.
 |`--celos`|URL|Yes|Celos URL.
 |`--hue`|Path|No|URL of Oozie UI.
-|`--config`|Path|No|JSON config file.
+|`--config`|Path|No|JSON <<UI Config File>>.
 |===
 
 === UI HTTP API
@@ -1295,6 +1308,38 @@ Doing a GET to this servlet displays the Celos UI.
 |`time`|String (ISO 8601)|No|Time of most recent slot to display (defaults to current time).
 |`zoom`|String (ISO 8601)|No|Zoom level in minutes (defaults to 60).
 |===
+
+=== UI Config File
+
+If the `--config` argument is not supplied to the UI, it simply
+renders one long list of all loaded workflows.
+
+By supplying a JSON file with the following format to `--config`, the
+workflows can be hierarchically grouped (one level):
+
+[source,javascript]
+....
+{
+  "groups":
+  [
+    { 
+      "name": "Group 1",
+      "workflows":
+      [
+        "workflow-1",
+        "workflow-2"
+      ]
+    },
+    { 
+      "name": "Group 2",
+      "workflows":
+      [
+        "workflow-3"
+      ]
+    }
+  ]
+}
+....
 
 == Miscellaneous
 
