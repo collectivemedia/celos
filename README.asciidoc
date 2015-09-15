@@ -4,9 +4,6 @@ Celos: A Scriptable Scheduler for Periodical Hadoop Workflows
 :toclevels: 3
 :toc-title:
 
-Celos is a tool for running periodical workflows that process data in
-Hadoop.
-
 * Written in Java and scripted using JavaScript (which, depending on
   your tastes, may be good or bad).
 
@@ -45,8 +42,8 @@ Oozie provides services such as distribution of jobs across the
 cluster, log aggregation, and command-line and Web UI tools for
 inspecting running jobs.
 
-To run a job in Oozie it is packaged into a directory and put into
-HDFS, as the following diagram shows:
+To run a job in Oozie it is packaged into a workflow directory and put
+into HDFS, as the following diagram shows:
 
 image::etc/images/oozie.png[Oozie workflow directory]
 
@@ -76,10 +73,10 @@ image::etc/images/hue-details.png[Hue details]
 
 ==== Workflows
 
-If we have the Oozie job directory to run in HDFS at `/wordcount`,
-hourly input data in `/input/YYYY-MM-DD/HH00`, and want to write
-output data to `/output/YYYY-MM-DD/HH00`, we can set up a simple Celos
-workflow with the ID `wordcount` like this:
+If we have the Oozie workflow directory to run in HDFS at
+`/wordcount`, hourly input data in `/input/YYYY-MM-DD/HH00`, and want
+to write output data to `/output/YYYY-MM-DD/HH00`, we can set up a
+simple Celos workflow with the ID `wordcount` like this:
 
 [source,javascript]
 ....
@@ -96,9 +93,10 @@ celos.defineWorkflow({
 });
 ....
 
-If we receive data from two datacenters, in `/input/nyc` and
-`/input/lax` we can define a helper function, and use that to quickly
-define two workflows, with the IDs `wordcount-nyc` and `wordcount-lax`:
+If we were to receive data from two datacenters, in `/input/nyc` and
+`/input/lax`, we can define a helper function and use that to quickly
+define two workflows, sharing the same Oozie workflow definition, with
+the IDs `wordcount-nyc` and `wordcount-lax`:
 
 [source,javascript]
 ....
@@ -443,7 +441,7 @@ Head honcho: link:http://github.com/andry1[Chris Ingrassia]
 
 == JavaScript API Reference
 
-=== General
+=== Workflows Reference
 
 ==== celos.defineWorkflow
 
