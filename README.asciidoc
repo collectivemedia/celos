@@ -407,6 +407,24 @@ This will build the following JARs:
 
 Head over to link:samples/quickstart[*samples/quickstart*].
 
+== Get in Touch
+
+We'd love to help you try out and use Celos!
+
+For now, please use the
+link:https://github.com/collectivemedia/celos/issues[Issue Tracker] if
+you have questions or comments.
+
+=== People
+
+Developers, developers, developers:
+
+* link:http://github.com/manuel[Manuel Simoni], link:mailto:manuel@collective.com[]
+* link:http://github.com/akonopko[Alexander Konopko]
+* link:http://github.com/ollie64[Oleg Baskakov]
+
+Head honcho: link:http://github.com/andry1[Chris Ingrassia]
+
 == JavaScript API Reference
 
 === General
@@ -515,7 +533,7 @@ celos.hdfsCheckTrigger(path, fs?)
 |===
 |Name|Type|Required|Description
 |`path`|String|Yes|The HDFS path to wait for.  May include the variables `${year}`, `${month}`, `${day}`, `${hour}`, `${minute}`, and `${second}`, which will be replaced by the zero-padded values from the slot's scheduled time.
-|`fs`|String|No|The `hdfs://` URI of the HDFS filesystem to use.  If not specified, the value of the CELOS_DEFAULT_HDFS variable will be used.
+|`fs`|String|No|The `hdfs://` URI of the HDFS filesystem to use.  If not specified, the value of the <<CELOS_DEFAULT_HDFS>> variable will be used.
 |===
 
 ===== Examples
@@ -964,7 +982,7 @@ java -cp celos-server.jar:/etc/hadoop/conf com.collective.celos.server.Main <arg
 |`--defaults`|Path|No|Defaults directory (defaults to /etc/celos/defaults).
 |`--logs`|Path|No|Logs directory (defaults to /var/log/celos).
 |`--db`|Path|No|State database directory (defaults to /var/lib/celos/db).
-|`--autoSchedule`|Integer|No|Interval (in seconds) between which scheduler steps.  In unsupplied, Celos will not automatically step the scheduler, and wait for POSTs to the /scheduler servlet instead.
+|`--autoSchedule`|Integer|No|Interval (in seconds) between scheduler steps.  In not supplied, Celos will not automatically step the scheduler, and wait for POSTs to the /scheduler servlet instead.
 |===
 
 === Server HTTP API
@@ -973,7 +991,7 @@ java -cp celos-server.jar:/etc/hadoop/conf com.collective.celos.server.Main <arg
 
 Doing a POST to this servlet initiates a scheduler step.
 
-In production we do this once a minute from cron.
+In production we do this once a minute from `cron`.
 
 ===== Example
 
@@ -1202,3 +1220,54 @@ Doing a GET to this servlet displays the Celos UI.
 |`time`|String (ISO 8601)|Yes|Time of most recent slot to display.
 |`zoom`|String (ISO 8601)|No|Zoom level in minutes (defaults to 60).
 |===
+
+== More
+
+=== Security
+
+Celos is intended to be used inside a VPN, and by trusted developers.
+
+=== Notes
+
+All times in Celos use the UTC timezone exclusively.
+
+=== Weaknesses of the Celos architecture
+
+==== Single master
+
+This might not be as bad as it sounds.  The reason is that during
+normal operation, most workflows will usually be mostly successful.
+So even if the Celos host burns down to the ground, a new one can
+quickly be set up, and all workflows redeployed to it from the CI
+server.  Then it will automatically (re)run the last week's workflows,
+which, if they are "purely functional" will bring the system back to a
+mostly normal state.
+
+==== Changing the schedule of a workflow
+
+Changing the schedule of a workflow (e.g. from "at the hour" to "5
+minutes past the hour") means that the existing slot files in the
+state database no longer line up with the workflow's (new) schedule,
+making them effectively lost.
+
+==== Errors during job submission to Oozie do not bubble up into the UI
+
+If an error happens during job submission to Oozie (e.g. because the
+Oozie workflow directory is missing, or the workflow.xml contains a
+syntax error), the job will appear to remain stuck in the READY state,
+with no indication of error in the UI.  The log however, will contain
+the error.
+
+=== Related Tools
+
+Two similar, programmable schedulers:
+
+* link:https://github.com/airbnb/airflow[Airbnb Airflow]
+
+* link:https://github.com/spotify/luigi[Spotify Luigi]
+
+=== Acknowledgements
+
+Thanks to our in-house users and to the developers of the many fine
+open source libraries we're able to use, including but not limited to
+Oozie, Hadoop, Jetty, Rhino, Joda, Jackson, and Gradle.
