@@ -1175,7 +1175,7 @@ java -jar celos-ci-fat.jar <arguments...>
 |`--hdfsRoot`|Path|No|HDFS data will be placed under this root (defaults to /user/celos/app).
 |===
 
-=== Deployment directory
+=== Deployment Directory
 
 A deployment directory must follow a canonical directory layout:
 
@@ -1205,7 +1205,7 @@ defaults.js -> $DEFAULTS_DIR/$WORKFLOW_NAME.js
 hdfs/       -> $HDFS_ROOT/$WORKFLOW_NAME
 ....
 
-=== Target file
+=== Target File
 
 A target file is a JSON file that describes a Celos and HDFS setup.
 
@@ -1319,7 +1319,7 @@ a syntax error), the job will appear to remain stuck in the READY
 state, with no indication of error in the UI.  The log however, will
 contain the error.
 
-==== The Celos name
+==== The Celos Name
 
 The link:http://www.quicksilver899.com/Tolkien/LOTR/LOTR_AC.html[_Lord
 of the Rings Dictionary_] defines it as:
