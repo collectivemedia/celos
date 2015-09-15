@@ -608,7 +608,7 @@ celos.andTrigger(trigger1, ..., triggerN)
 [options="header"]
 |===
 |Name|Type|Required|Description
-|`trigger1, ..., triggerN`|<<triggers-reference,Trigger>>|No|The nested triggers.
+|`trigger1, ..., triggerN`|<<triggers-reference,Trigger>>|No|The nested triggers.  If no nested triggers are specified, the trigger is always ready.
 |===
 
 ===== Examples
@@ -638,7 +638,7 @@ celos.orTrigger(trigger1, ..., triggerN)
 [options="header"]
 |===
 |Name|Type|Required|Description
-|`trigger1, ..., triggerN`|<<triggers-reference,Trigger>>|No|The nested triggers.
+|`trigger1, ..., triggerN`|<<triggers-reference,Trigger>>|No|The nested triggers.  If no nested triggers are specified, the trigger is never ready.
 |===
 
 ===== Examples
@@ -982,8 +982,9 @@ API URL by <<celos.oozieExternalService>>.
 
 ==== CELOS_DEFAULT_OOZIE_PROPERTIES
 
-The members of this Object will be added to the Oozie properties of a
-workflow by <<celos.oozieExternalService>>.
+The members of this Object will be added (before other properties, so
+they can be overridden) to the Oozie properties of a workflow by
+<<celos.oozieExternalService>>.
 
 == Celos Server Reference
 
@@ -1241,7 +1242,7 @@ Doing a GET to this servlet displays the Celos UI.
 [options="header"]
 |===
 |Name|Type|Required|Description
-|`time`|String (ISO 8601)|Yes|Time of most recent slot to display.
+|`time`|String (ISO 8601)|No|Time of most recent slot to display (defaults to current time).
 |`zoom`|String (ISO 8601)|No|Zoom level in minutes (defaults to 60).
 |===
 
