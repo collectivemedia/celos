@@ -1,0 +1,10 @@
+{
+  "name": "celos-ui",
+  "version": "0.0.0",
+  "main": "js/app.js",
+  "dependencies": {
+    "jquery": "3.0.0-alpha1",
+    "react": "0.14.0-rc1",
+    "routie": "~0.3.2"
+  }
+}

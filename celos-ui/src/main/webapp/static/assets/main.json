@@ -1,0 +1,13 @@
+{
+  "currentTime": "2015-09-15 21:50 UTC",
+  "rows": [
+    {
+      "key": 1,
+      "url": "assets/group1.json"
+    },
+    {
+      "key": 2,
+      "url": "assets/group2.json"
+    }
+  ]
+}
