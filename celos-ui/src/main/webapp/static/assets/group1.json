@@ -52,17 +52,42 @@
   ],
   "rows": [
     {
-      "key": 1,
-      "wf": "flume-ready-dc3",
-      "data": [
+      "workflowName": "flume-ready-dc3",
+      "slots": [
+        {
+          "status": "SUCCESS",
+          "url": "http://cldmgr001.ewr004.collective-media.net:8888/oozie/list_oozie_workflow/0000392-150915121135558-oozie-oozi-W"
+        },
+        {
+          "status": "SUCCESS",
+          "url": "http://cldmgr001.ewr004.collective-media.net:8888/oozie/list_oozie_workflow/0000392-150915121135558-oozie-oozi-W"
+
+        },
+        {
+          "status": "WAITING",
+          "url": "http://cldmgr001.ewr004.collective-media.net:8888/oozie/list_oozie_workflow/0000392-150915121135558-oozie-oozi-W"
+        },
+        {
+          "status": "WAITING",
+          "url": "http://cldmgr001.ewr004.collective-media.net:8888/oozie/list_oozie_workflow/0000392-150915121135558-oozie-oozi-W"
+        },
+        {
+          "status": "WAITING",
+          "url": "http://cldmgr001.ewr004.collective-media.net:8888/oozie/list_oozie_workflow/0000392-150915121135558-oozie-oozi-W"
+        }
+      ]
+    },
+    {
+      "workflowName": "flume-ready-sv4",
+      "slots": [
         {
           "status": "wait"
         },
         {
-          "status": "ready"
+          "status": "wait"
         },
         {
-          "status": "ready"
+          "status": "wait"
         },
         {
           "status": "wait"
@@ -73,30 +98,8 @@
       ]
     },
     {
-      "key": 2,
-      "wf": "flume-ready-sv4",
-      "data": [
-        {
-          "status": "wait"
-        },
-        {
-          "status": "wait"
-        },
-        {
-          "status": "wait"
-        },
-        {
-          "status": "wait"
-        },
-        {
-          "status": "wait"
-        }
-      ]
-    },
-    {
-      "key": 3,
-      "fsafas": "flume-tmp-file-closer",
-      "data": [
+      "workflowName": "flume-tmp-file-closer",
+      "slots": [
         {
           "status": "wait"
         },

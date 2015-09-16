@@ -1,91 +1,302 @@
 {
-  "name": "Parquetify",
-  "times": [
-    "2040",
-    "1900",
-    "1720",
-    "1540",
-    "1400",
-    "1220",
-    "1040",
-    "0900",
-    "0720",
-    "0540",
-    "0400",
-    "0220",
-    "0040",
-    "2300",
-    "2120",
-    "1940",
-    "1800",
-    "1620",
-    "1440",
-    "1300",
-    "1120",
-    "0940",
-    "0800",
-    "0620",
-    "0440",
-    "0300",
-    "0120",
-    "2340",
-    "2200",
-    "2020",
-    "1840",
-    "1700",
-    "1520",
-    "1340",
-    "1200",
-    "1020",
-    "0840",
-    "0700",
-    "0520",
-    "0340",
-    "0200",
-    "0020"
-  ],
-  "rows": [
-    {
-      "key": 1,
-      "wf": "flume-ready-dc3",
-      "data": [
-        {
-          "status": "wait"
-        },
-        {
-          "status": "ready"
-        },
-        {
-          "status": "ready"
-        },
-        {
-          "status": "wait"
-        },
-        {
-          "status": "wait"
-        }
-      ]
-    },
-    {
-      "key": 2,
-      "wf": "flume-ready-sv4",
-      "data": [
-        {
-          "status": "wait"
-        },
-        {
-          "status": "wait"
-        },
-        {
-          "status": "wait"
-        },
-        {
-          "status": "wait"
-        },
-        {
-          "status": "wait"
-        }
-      ]
-    }
-  ]
+  "name" : "Flume",
+  "times" : [ "2200", "2100", "2000", "1900", "1800", "1700", "1600", "1500", "1400", "1300", "1200", "1100", "1000", "0900", "0800", "0700", "0600", "0500", "0400", "0300", "0200", "0100", "0000", "2300", "2200", "2100", "2000", "1900", "1800", "1700", "1600", "1500", "1400", "1300", "1200", "1100", "1000", "0900", "0800", "0700", "0600", "0500", "0400", "0300", "0200", "0100", "0000", "2300" ],
+  "rows" : [ {
+    "workflowName" : "TEST",
+    "slots" : [ {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "WAITING"
+    } ]
+  }, {
+    "workflowName" : null,
+    "slots" : [ {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "WAITING"
+    } ]
+  }, {
+    "workflowName" : null,
+    "slots" : [ {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "SUCCESS"
+    }, {
+      "status" : "WAITING"
+    } ]
+  } ]
 }

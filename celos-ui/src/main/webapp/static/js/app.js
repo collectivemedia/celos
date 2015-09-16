@@ -94,65 +94,6 @@ var WorkflowsGroupFetch = React.createClass({
 });
 
 
-var WorkflowsGroup = React.createClass({
-    render: function () {
-        console.log("XXX", this.props.data.rows);
-        return (
-            <table>
-                <thead>
-                <tr>
-                    <th className="workflowGroup">{this.props.data.name}</th>
-                    {this.props.data.times.map(function (tt, i) {
-                        return <th key={i}>{tt}</th>;
-                    })}
-                </tr>
-                </thead>
-                <tbody>
-                {this.props.data.rows.map(function (product, key) {
-                    return <ProductRow data={product} key={key}/>;
-                })}
-                </tbody>
-            </table>
-        );
-    }
-});
-
-
-var ProductRow = React.createClass({
-    render: function () {
-        return (
-            <tr>
-                <th scope="row" className="workflow">{this.props.data.wf}</th>
-                <td className="slot WAITING">wait</td>
-                <td className="slot SUCCESS">2</td>
-                <td className="slot SUCCESS">2</td>
-                <td className="slot SUCCESS">2</td>
-                <TimeSlot
-                    url="http://cldmgr001.ewr004.collective-media.net:8888/oozie/list_oozie_workflow/0000392-150915121135558-oozie-oozi-W"/>
-                <TimeSlot
-                    url="http://cldmgr001.ewr004.collective-media.net:8888/oozie/list_oozie_workflow/0000392-150915121135558-oozie-oozi-W"/>
-                <TimeSlot
-                    url="http://cldmgr001.ewr004.collective-media.net:8888/oozie/list_oozie_workflow/0000392-150915121135558-oozie-oozi-W"/>
-                <TimeSlot
-                    url="http://cldmgr001.ewr004.collective-media.net:8888/oozie/list_oozie_workflow/0000392-150915121135558-oozie-oozi-W"/>
-            </tr>
-        );
-    }
-});
-
-var TimeSlot = React.createClass({
-    render: function () {
-        return (
-            <td>
-            <span className="label label-default">
-                <a href={this.props.url} className="slotLink"
-                   data-slot-id="parquetify-retarget@2015-09-15T18:00:00.000Z">&nbsp;&nbsp;&nbsp;&nbsp;</a>
-            </span>
-            </td>
-        );
-    }
-});
-
 
 console.log("four:", window.location.hash);
 
@@ -160,11 +101,18 @@ console.log("four:", window.location.hash);
 routie('', function () {
     //this gets called when hash == #hello
     ReactDOM.render(
-        <CelosMainFetch url="assets/main.json" pollInterval={0}/>,
+        <CelosMainFetch url="/react" pollInterval={0}/>,
         document.getElementById('content')
     )
 });
 
+routie('test', function () {
+    //this gets called when hash == #test
+    ReactDOM.render(
+        <CelosMainFetch url="assets/main.json" pollInterval={0}/>,
+        document.getElementById('content')
+    )
+});
 
 routie('*', function () {
 
