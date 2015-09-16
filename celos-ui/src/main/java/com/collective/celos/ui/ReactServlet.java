@@ -164,11 +164,11 @@ public class ReactServlet extends HttpServlet {
     }
 
 
-    protected MainUI processMain(UIConfiguration conf) throws IOException {
+    protected MainUI processMain(List<WorkflowGroup> groups) throws IOException {
         final MainUI res = new MainUI();
         res.currentTime = ScheduledTime.now().toString();
         res.rows = new ArrayList<>();
-        for (WorkflowGroup g : conf.getGroups()) {
+        for (WorkflowGroup g : groups) {
             final WorkflowGroupRef group = new WorkflowGroupRef();
             group.name = g.getName();
             final UrlEncoded url = new UrlEncoded();
@@ -200,8 +200,6 @@ public class ReactServlet extends HttpServlet {
             ScheduledTime start = tileTimes.first();
             Set<WorkflowID> workflowIDs = client.getWorkflowList();
 
-            Map<WorkflowID, WorkflowStatus> statuses = fetchStatuses(client, workflowIDs, start, end);
-
             List<WorkflowGroup> groups;
 
             if (configFile != null) {
@@ -210,26 +208,35 @@ public class ReactServlet extends HttpServlet {
                 groups = getDefaultGroups(workflowIDs);
             }
 
-            UIConfiguration conf = new UIConfiguration(start, end, tileTimes, groups, statuses, hueURL);
 
             final String wfGroup = req.getParameter(WF_GROUP_PARAM);
             if (wfGroup != null) {
-                WorkflowGroup workflowGroup = conf.getGroups().get(0);
-                for (WorkflowGroup tmp : conf.getGroups()) {
-                    if (tmp.getName().equals(wfGroup)) {
-                        workflowGroup = tmp;
-                        break;
-                    }
+                WorkflowGroup workflowGroup;
+                final List<WorkflowGroup> tmp = groups.stream()
+                        .filter(u -> u.getName().equals(wfGroup))
+                        .collect(Collectors.toList());
+                if (tmp.isEmpty()) {
+                    throw new ServletException("group not found");
+                } else {
+                    workflowGroup = tmp.get(0);
                 }
+
+                final List<WorkflowID> ids = workflowIDs.stream()
+                        .filter(x -> workflowGroup.getWorkflows().contains(x))
+                        .collect(Collectors.toList());
+
+                Map<WorkflowID, WorkflowStatus> statuses = fetchStatuses(client, ids, start, end);
+                UIConfiguration conf = new UIConfiguration(start, end, tileTimes, groups, statuses, hueURL);
+
                 final WorkflowGroupPOJO pojo = processWorkflowGroup(conf, workflowGroup, res);
                 writer.writeValue(res.getOutputStream(), pojo);
-                return;
+
+            } else {
+
+                final MainUI mainUI = processMain(groups);
+
+                writer.writeValue(res.getOutputStream(), mainUI);
             }
-
-            final MainUI mainUI = processMain(conf);
-
-            writer.writeValue(res.getOutputStream(), mainUI);
-
         } catch (Exception e) {
             throw new ServletException(e);
         }
@@ -431,7 +438,7 @@ public class ReactServlet extends HttpServlet {
         return conf.getHueURL().toString() + "/list_oozie_workflow/" + state.getExternalID();
     }
 
-    private Map<WorkflowID, WorkflowStatus> fetchStatuses(CelosClient client, Set<WorkflowID> workflows, ScheduledTime start, ScheduledTime end) throws Exception {
+    private Map<WorkflowID, WorkflowStatus> fetchStatuses(CelosClient client, List<WorkflowID> workflows, ScheduledTime start, ScheduledTime end) throws Exception {
         Map<WorkflowID, WorkflowStatus> statuses = new HashMap<>();
         for (WorkflowID id : workflows) {
             WorkflowStatus status = client.getWorkflowStatus(id, start, end);
@@ -511,7 +518,7 @@ public class ReactServlet extends HttpServlet {
 
     List<WorkflowGroup> getWorkflowGroups(InputStream configFileIS, Set<WorkflowID> expectedWfs) throws IOException {
         JsonNode mainNode = objectMapper.readValue(configFileIS, JsonNode.class);
-        List<WorkflowGroup> configWorkflowGroups = new ArrayList();
+        List<WorkflowGroup> configWorkflowGroups = new ArrayList<>();
         Set<WorkflowID> listedWfs = new TreeSet<>();
 
         for(JsonNode workflowGroupNode: mainNode.get(GROUPS_TAG)) {
