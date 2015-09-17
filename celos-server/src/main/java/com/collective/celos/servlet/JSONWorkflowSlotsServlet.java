@@ -19,6 +19,7 @@ import com.collective.celos.*;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.Lists;
+import com.sun.xml.bind.v2.runtime.reflect.opt.Const;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
@@ -88,11 +89,11 @@ public class JSONWorkflowSlotsServlet extends AbstractJSONServlet {
             List<SlotState> slotStates = scheduler.getSlotStates(wf, startTime, endTime);
             List<JsonNode> objectNodes = Lists.newArrayList();
             for (SlotState state : Lists.reverse(slotStates)) {
-                objectNodes.add(state.toJSONNode());
+                objectNodes.add(state.toJSONNodeWithTime());
             }
 
             ObjectNode node = mapper.createObjectNode();
-            node.put(INFO_PARAM, (JsonNode) mapper.valueToTree(wf.getWorkflowInfo()));
+            node.put(INFO_PARAM, mapper.<JsonNode>valueToTree(wf.getWorkflowInfo()));
             node.putArray(SLOTS_PARAM).addAll(objectNodes);
             writer.writeValue(res.getOutputStream(), node);
         } catch (Exception e) {
