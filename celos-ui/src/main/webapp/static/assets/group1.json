@@ -53,7 +53,93 @@
   "rows": [
     {
       "workflowName": "flume-ready-dc3",
-      "slots": [
+      "slots": [ {
+        "status" : "SUCCESS"
+      }, {
+        "status" : "SUCCESS"
+      }, {
+        "status" : "SUCCESS"
+      }, {
+        "status" : "SUCCESS"
+      }, {
+        "status" : "SUCCESS"
+      }, {
+        "status" : "SUCCESS"
+      }, {
+        "status" : "SUCCESS"
+      }, {
+        "status" : "SUCCESS"
+      }, {
+        "status" : "SUCCESS"
+      }, {
+        "status" : "SUCCESS"
+      }, {
+        "status" : "SUCCESS"
+      }, {
+        "status" : "SUCCESS"
+      }, {
+        "status" : "SUCCESS"
+      }, {
+        "status" : "SUCCESS"
+      }, {
+        "status" : "SUCCESS"
+      }, {
+        "status" : "SUCCESS"
+      }, {
+        "status" : "SUCCESS"
+      }, {
+        "status" : "SUCCESS"
+      }, {
+        "status" : "SUCCESS"
+      }, {
+        "status" : "SUCCESS"
+      }, {
+        "status" : "SUCCESS"
+      }, {
+        "status" : "SUCCESS"
+      }, {
+        "status" : "SUCCESS"
+      }, {
+        "status" : "SUCCESS"
+      }, {
+        "status" : "SUCCESS"
+      }, {
+        "status" : "SUCCESS"
+      }, {
+        "status" : "SUCCESS"
+      }, {
+        "status" : "SUCCESS"
+      }, {
+        "status" : "SUCCESS"
+      }, {
+        "status" : "SUCCESS"
+      }, {
+        "status" : "SUCCESS"
+      }, {
+        "status" : "SUCCESS"
+      }, {
+        "status" : "SUCCESS"
+      }, {
+        "status" : "SUCCESS"
+      }, {
+        "status" : "SUCCESS"
+      }, {
+        "status" : "SUCCESS"
+      }, {
+        "status" : "SUCCESS"
+      }, {
+        "status" : "SUCCESS"
+      }, {
+        "status" : "SUCCESS"
+      }, {
+        "status" : "SUCCESS"
+      }, {
+        "status" : "SUCCESS"
+      }, {
+        "status" : "SUCCESS"
+      }, {
+        "status" : "SUCCESS"
+      },
         {
           "status": "SUCCESS",
           "url": "http://cldmgr001.ewr004.collective-media.net:8888/oozie/list_oozie_workflow/0000392-150915121135558-oozie-oozi-W"
@@ -79,43 +165,103 @@
     },
     {
       "workflowName": "flume-ready-sv4",
-      "slots": [
-        {
-          "status": "wait"
-        },
-        {
-          "status": "wait"
-        },
-        {
-          "status": "wait"
-        },
-        {
-          "status": "wait"
-        },
-        {
-          "status": "wait"
-        }
-      ]
-    },
-    {
-      "workflowName": "flume-tmp-file-closer",
-      "slots": [
-        {
-          "status": "wait"
-        },
-        {
-          "status": "wait"
-        },
-        {
-          "status": "wait"
-        },
-        {
-          "status": "wait"
-        },
-        {
-          "status": "wait"
-        }
-      ]
+      "slots": [ {
+        "status" : "SUCCESS"
+      }, {
+        "status" : "SUCCESS"
+      }, {
+        "status" : "SUCCESS"
+      }, {
+        "status" : "SUCCESS"
+      }, {
+        "status" : "SUCCESS"
+      }, {
+        "status" : "SUCCESS"
+      }, {
+        "status" : "SUCCESS"
+      }, {
+        "status" : "SUCCESS"
+      }, {
+        "status" : "SUCCESS"
+      }, {
+        "status" : "SUCCESS"
+      }, {
+        "status" : "SUCCESS"
+      }, {
+        "status" : "SUCCESS"
+      }, {
+        "status" : "SUCCESS"
+      }, {
+        "status" : "SUCCESS"
+      }, {
+        "status" : "SUCCESS"
+      }, {
+        "status" : "SUCCESS"
+      }, {
+        "status" : "SUCCESS"
+      }, {
+        "status" : "SUCCESS"
+      }, {
+        "status" : "SUCCESS"
+      }, {
+        "status" : "SUCCESS"
+      }, {
+        "status" : "SUCCESS"
+      }, {
+        "status" : "SUCCESS"
+      }, {
+        "status" : "SUCCESS"
+      }, {
+        "status" : "SUCCESS"
+      }, {
+        "status" : "SUCCESS"
+      }, {
+        "status" : "SUCCESS"
+      }, {
+        "status" : "SUCCESS"
+      }, {
+        "status" : "SUCCESS"
+      }, {
+        "status" : "SUCCESS"
+      }, {
+        "status" : "SUCCESS"
+      }, {
+        "status" : "SUCCESS"
+      }, {
+        "status" : "SUCCESS"
+      }, {
+        "status" : "SUCCESS"
+      }, {
+        "status" : "SUCCESS"
+      }, {
+        "status" : "SUCCESS"
+      }, {
+        "status" : "SUCCESS"
+      }, {
+        "status" : "SUCCESS"
+      }, {
+        "status" : "SUCCESS"
+      }, {
+        "status" : "SUCCESS"
+      }, {
+        "status" : "SUCCESS"
+      }, {
+        "status" : "SUCCESS"
+      }, {
+        "status" : "SUCCESS"
+      }, {
+        "status" : "SUCCESS"
+      }, {
+        "status" : "SUCCESS"
+      }, {
+        "status" : "SUCCESS"
+      }, {
+        "status" : "SUCCESS"
+      }, {
+        "status" : "SUCCESS"
+      }, {
+        "status" : "WAITING"
+      } ]
     }
   ]
 }

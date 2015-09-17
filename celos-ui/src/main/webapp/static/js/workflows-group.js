@@ -14,16 +14,58 @@
  * permissions and limitations under the License.
  */
 
+var slotsNum = Math.trunc(($(window).width() - 250) / (30 + 4)) - 1;
+
+var WorkflowsGroupFetch = React.createClass({
+    getInitialState: function () {
+        return {data: null};
+    },
+    loadCommentsFromServer: function () {
+        $.ajax({
+            url: this.props.url,
+            data: {count: slotsNum},
+            dataType: 'json',
+            cache: false,
+            success: function (data) {
+                this.setState({data: data});
+            }.bind(this),
+            error: function (xhr, status, err) {
+                console.error(this.props.url, status, err.toString());
+            }.bind(this)
+        });
+    },
+    componentDidMount: function () {
+        this.loadCommentsFromServer();
+    },
+
+    render: function () {
+        console.log("WorkflowsGroupFetch", this.state.data);
+        if (this.state.data == null) {
+            return <div />;
+        } else {
+            return (
+                <WorkflowsGroup data={this.state.data}/>
+            );
+        }
+    }
+});
+
+
 var WorkflowsGroup = React.createClass({
     render: function () {
         console.log("XXX", this.props.data.rows);
         return (
-            <table>
+            <table className="workflowTable">
                 <thead>
                 <tr>
-                    <th className="workflowGroup">{this.props.data.name}</th>
-                    {this.props.data.times.map(function (tt, i) {
-                        return <th key={i}>{tt}</th>;
+                    <th className="groupName">
+                    <a href={"#groups/" + encodeURIComponent(this.props.data.name) }>
+                        {this.props.data.name}
+                    </a>
+                    </th>
+
+                    {this.props.data.times.slice(- slotsNum).map(function (tt, i) {
+                        return <th className="timeHeader" key={i}>{tt}</th>;
                     })}
                 </tr>
                 </thead>
@@ -42,9 +84,12 @@ var ProductRow = React.createClass({
     render: function () {
         return (
             <tr>
-                <th scope="row" className="workflow">{this.props.data.workflowName}</th>
-                {this.props.data.slots.map(function(slot, i) {
-                    return <TimeSlot data={slot} />;
+                <th className="workflowName">
+                {this.props.data.workflowName}
+                </th>
+
+                {this.props.data.slots.slice(- slotsNum).map(function(slot, i) {
+                    return <TimeSlot data={slot} key={i} />;
                 })}
             </tr>
         );
@@ -54,11 +99,12 @@ var ProductRow = React.createClass({
 var TimeSlot = React.createClass({
     render: function () {
         return (
-            <td>
-            <span className={"slot " + this.props.data.status}>
-                <a href={this.props.data.url} className="slotLink"
-                   data-slot-id="parquetify-retarget@2015-09-15T18:00:00.000Z">&nbsp;&nbsp;&nbsp;&nbsp;</a>
-            </span>
+            <td className={"slot " + this.props.data.status}>
+                <a href={this.props.data.url} data-slot-id="parquetify-retarget@2015-09-15T18:00:00.000Z">
+                   {(! this.props.data.quantity)
+                   ? <div />
+                   : <div>{this.props.data.quantity}</div> }
+                </a>
             </td>
         );
     }

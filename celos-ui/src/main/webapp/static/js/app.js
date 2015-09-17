@@ -46,54 +46,22 @@ var CelosMain = React.createClass({
     render: function () {
         console.log("CelosMain", this.props.data);
 
-        var rows = [];
-        this.props.data.rows.forEach(function (wfGroup) {
-            rows.push(<WorkflowsGroupFetch url={wfGroup.url} key={wfGroup.key}/>);
-        }.bind(this));
         return (
             <div>
                 <h2>{this.props.data.currentTime}</h2>
-                {rows}
+                {this.props.data.rows.map(function (wfGroup, i) {
+                    return (
+                    <div key={i}>
+                        <WorkflowsGroupFetch url={wfGroup.url}/>
+                        <br />
+                    </div>
+                    );
+                })}
             </div>
         );
     }
 
 });
-
-var WorkflowsGroupFetch = React.createClass({
-    getInitialState: function () {
-        return {data: null};
-    },
-    loadCommentsFromServer: function () {
-        $.ajax({
-            url: this.props.url,
-            dataType: 'json',
-            cache: false,
-            success: function (data) {
-                this.setState({data: data});
-            }.bind(this),
-            error: function (xhr, status, err) {
-                console.error(this.props.url, status, err.toString());
-            }.bind(this)
-        });
-    },
-    componentDidMount: function () {
-        this.loadCommentsFromServer();
-    },
-
-    render: function () {
-        console.log("WorkflowsGroupFetch", this.state.data);
-        if (this.state.data == null) {
-            return <div />;
-        } else {
-            return (
-                <WorkflowsGroup data={this.state.data}/>
-            );
-        }
-    }
-});
-
-
 
 console.log("four:", window.location.hash);
 
@@ -110,6 +78,13 @@ routie('test', function () {
     //this gets called when hash == #test
     ReactDOM.render(
         <CelosMainFetch url="assets/main.json" pollInterval={0}/>,
+        document.getElementById('content')
+    )
+});
+
+routie('groups/:name', function (name) {
+    ReactDOM.render(
+        <WorkflowsGroupFetch url={"/react?group=" + name} pollInterval={0}/>,
         document.getElementById('content')
     )
 });

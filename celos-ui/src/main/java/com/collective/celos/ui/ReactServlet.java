@@ -80,8 +80,9 @@ public class ReactServlet extends HttpServlet {
 
     protected class SlotPOJO {
         public String status;
+        public String url;
+        public Integer quantity;
     }
-
 
     protected final ObjectMapper mapper = new ObjectMapper();
     protected final ObjectWriter writer = mapper.writerWithDefaultPrettyPrinter();
@@ -131,32 +132,48 @@ public class ReactServlet extends HttpServlet {
         writer.writeValue(response.getOutputStream(), zz);
     }
 
-    protected WorkflowGroupPOJO processWorkflowGroup(UIConfiguration conf, WorkflowGroup g, HttpServletResponse response) throws IOException {
+    private SlotPOJO makeSlot(UIConfiguration conf, Set<SlotState> states) {
+        final SlotPOJO slot = new SlotPOJO();
+        if (states == null) {
+            slot.status = "EMPTY";
+        } else if (states.size() == 1) {
+            final SlotState next = states.iterator().next();
+            slot.status = printTileClass(states);
+            if (conf.getHueURL() != null && next.getExternalID() != null) {
+                slot.url = printWorkflowURL(conf, next);
+            }
+        } else {
+            slot.status = printTileClass(states);
+            slot.quantity = states.size();
+        }
+        return slot;
+    }
+
+
+    protected WorkflowGroupPOJO processWorkflowGroup(UIConfiguration conf, String name, HttpServletResponse response, List<WorkflowID> ids) throws IOException {
 
         final WorkflowGroupPOJO group = new WorkflowGroupPOJO();
-        group.name = g.getName();
-        final NavigableSet<ScheduledTime> tileTimes = conf.getTileTimes().descendingSet();
+        group.name = name;
+        final NavigableSet<ScheduledTime> tileTimes = conf.getTileTimes();
         group.times = tileTimes.stream()
                 .map(tileTime -> HEADER_FORMAT.print(tileTime.getDateTime()))
                 .collect(Collectors.toList());
 
         group.rows = new ArrayList<>();
-        for (WorkflowID id : g.getWorkflows()) {
+        for (WorkflowID id : ids) {
             final WorkflowPOJO workflow = new WorkflowPOJO();
             group.rows.add(workflow);
 
             WorkflowStatus workflowStatus = conf.getStatuses().get(id);
+            workflow.workflowName = id.toString();
             if (workflowStatus == null) {
-                workflow.workflowName = id.toString();
                 continue;
             }
             Map<ScheduledTime, Set<SlotState>> buckets = bucketSlotsByTime(workflowStatus.getSlotStates(), tileTimes);
             workflow.slots = new ArrayList<>();
-            for (ScheduledTime tileTime : tileTimes.descendingSet()) {
+            for (ScheduledTime tileTime : tileTimes) {
                 Set<SlotState> slots = buckets.get(tileTime);
-                final SlotPOJO slot = new SlotPOJO();
-                slot.status = slots.iterator().next().getStatus().toString();
-                workflow.slots.add(slot);
+                workflow.slots.add(makeSlot(conf, slots));
             }
         }
 
@@ -228,7 +245,15 @@ public class ReactServlet extends HttpServlet {
                 Map<WorkflowID, WorkflowStatus> statuses = fetchStatuses(client, ids, start, end);
                 UIConfiguration conf = new UIConfiguration(start, end, tileTimes, groups, statuses, hueURL);
 
-                final WorkflowGroupPOJO pojo = processWorkflowGroup(conf, workflowGroup, res);
+//                if (true) {
+//                    final List<String> collect = ids.stream()
+//                            .map(x -> x.toString())
+//                            .collect(Collectors.toList());
+//                    writer.writeValue(res.getOutputStream(), collect);
+//                    return;
+//                }
+
+                final WorkflowGroupPOJO pojo = processWorkflowGroup(conf, workflowGroup.getName(), res, ids);
                 writer.writeValue(res.getOutputStream(), pojo);
 
             } else {
