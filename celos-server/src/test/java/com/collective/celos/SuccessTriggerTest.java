@@ -15,6 +15,9 @@
  */
 package com.collective.celos;
 
+
+import com.collective.celos.state.MemoryStateDatabase;
+import com.collective.celos.state.StateDatabase;
 import com.collective.celos.trigger.SuccessTrigger;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -32,6 +35,7 @@ public class SuccessTriggerTest {
     private WorkflowConfiguration workflowConfiguration = Mockito.mock(WorkflowConfiguration.class);
     private StateDatabase stateDatabase = Mockito.mock(StateDatabase.class);
     private WorkflowID workflowID = new WorkflowID("foo");
+    private MemoryStateDatabase msd = new MemoryStateDatabase();
 
     @Before
     public void setUp() {
@@ -68,7 +72,6 @@ public class SuccessTriggerTest {
     @Test
     public void testIsDataAvailableSuccess() throws Exception {
 
-        MemoryStateDatabase msd = new MemoryStateDatabase();
 
         ScheduledTime scheduledTime = new ScheduledTime(DateTime.now(DateTimeZone.UTC));
         ScheduledTime stNow = new ScheduledTime(DateTime.now(DateTimeZone.UTC).plusMinutes(30));
@@ -84,8 +87,6 @@ public class SuccessTriggerTest {
     @Test
     public void testIsDataAvailableWait() throws Exception {
 
-        MemoryStateDatabase msd = new MemoryStateDatabase();
-
         ScheduledTime scheduledTime = new ScheduledTime(DateTime.now(DateTimeZone.UTC));
         ScheduledTime stNow = new ScheduledTime(DateTime.now(DateTimeZone.UTC).plusMinutes(30));
 
@@ -100,8 +101,6 @@ public class SuccessTriggerTest {
 
     @Test
     public void testIsDataAvailableNoData() throws Exception {
-
-        MemoryStateDatabase msd = new MemoryStateDatabase();
 
         ScheduledTime scheduledTime = new ScheduledTime(DateTime.now(DateTimeZone.UTC));
         ScheduledTime stNow = new ScheduledTime(DateTime.now(DateTimeZone.UTC).plusMinutes(30));

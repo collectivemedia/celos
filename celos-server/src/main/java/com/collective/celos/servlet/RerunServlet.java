@@ -15,13 +15,13 @@
  */
 package com.collective.celos.servlet;
 
+import com.collective.celos.*;
+import com.collective.celos.state.StateDatabase;
+import org.apache.log4j.Logger;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import com.collective.celos.*;
-import org.apache.log4j.Logger;
-
 import java.util.Set;
 
 /**
@@ -65,20 +65,12 @@ public class RerunServlet extends AbstractServlet {
             }
 
             StateDatabase db = scheduler.getStateDatabase();
-            SlotState state = db.getSlotState(slot);
-            if (state != null) {
-                updateSlotToRerun(state, db);
-            }
-            db.markSlotForRerun(slot, ScheduledTime.now());
+            LOGGER.info("Scheduling Slot for rerun: " + slot);
+            db.updateSlotForRerun(slot);
+
         } catch(Exception e) {
             throw new ServletException(e);
         }
-    }
-
-    void updateSlotToRerun(SlotState state, StateDatabase db) throws Exception {
-        LOGGER.info("Scheduling Slot for rerun: " + state.getSlotID());
-        SlotState newState = state.transitionToRerun();
-        db.putSlotState(newState);
     }
 
 }

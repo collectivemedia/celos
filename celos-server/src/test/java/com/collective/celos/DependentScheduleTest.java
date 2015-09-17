@@ -15,22 +15,26 @@
  */
 package com.collective.celos;
 
-import java.util.Collections;
-import java.util.SortedSet;
-
+import com.collective.celos.WorkflowInfo.ContactsInfo;
+import com.collective.celos.state.MemoryStateDatabase;
+import com.collective.celos.state.StateDatabase;
 import com.collective.celos.trigger.AlwaysTrigger;
+import com.google.common.collect.Sets;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.collective.celos.WorkflowInfo.ContactsInfo;
-import com.google.common.collect.Sets;
+import java.util.Collections;
+import java.util.SortedSet;
 
 public class DependentScheduleTest {
+
+    StateDatabase emptyDB = new MemoryStateDatabase();
+
+
 
     @Test
     public void throwsExceptionContainingWorkflowIDIfWorkflowNotFound() {
         WorkflowConfiguration emptyConf = new WorkflowConfiguration();
-        StateDatabase emptyDB = new MemoryStateDatabase();
         int slidingWindowHours = 24;
         Scheduler scheduler = new Scheduler(emptyConf, emptyDB, slidingWindowHours);
         String id = "nonexisting-workflow";
@@ -52,7 +56,6 @@ public class DependentScheduleTest {
         ScheduledTime schedulingEndTime = new ScheduledTime("2015-02-23T12:01Z");
 
         WorkflowConfiguration conf = new WorkflowConfiguration();
-        StateDatabase emptyDB = new MemoryStateDatabase();
         int slidingWindowHours = 24;
         Scheduler scheduler = new Scheduler(conf, emptyDB, slidingWindowHours);
         String id = "other-workflow";

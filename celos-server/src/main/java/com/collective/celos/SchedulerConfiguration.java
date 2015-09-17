@@ -15,6 +15,8 @@
  */
 package com.collective.celos;
 
+import com.collective.celos.state.StateDatabase;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
@@ -50,7 +52,7 @@ public class SchedulerConfiguration {
     }
 
     private StateDatabase makeDefaultStateDatabase() throws IOException {
-        return new FileSystemStateDatabase(stateDatabasePath);
+        return StateDatabase.makeFSDatabase(stateDatabasePath);
     }
 
 }

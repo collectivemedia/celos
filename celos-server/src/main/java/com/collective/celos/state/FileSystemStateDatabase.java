@@ -13,20 +13,21 @@
  * implied.  See the License for the specific language governing
  * permissions and limitations under the License.
  */
-package com.collective.celos;
+package com.collective.celos.state;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
-import org.apache.commons.io.FileUtils;
-import org.apache.log4j.Logger;
-
+import com.collective.celos.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.apache.commons.io.FileUtils;
+import org.apache.log4j.Logger;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 /**
  * Brutally simple persistent implementation of StateDatabase
@@ -67,7 +68,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  * 
  * {"rerunTime":"2015-09-06T20:21Z"}
  */
-public class FileSystemStateDatabase implements StateDatabase {
+class FileSystemStateDatabase extends StateDatabase {
 
     private static final String CHARSET = "UTF-8";
     private static final String STATE_DIR_NAME = "state";
@@ -135,27 +136,28 @@ public class FileSystemStateDatabase implements StateDatabase {
     }
 
     @Override
-    public void markSlotForRerun(SlotID slotID, ScheduledTime now) throws Exception {
-        RerunState st = new RerunState(now);
+    protected void markSlotForRerun(SlotID slotID) throws Exception {
         File file = getSlotRerunFile(slotID);
-        writeJson(st.toJSONNode(), file);
+        writeJson(mapper.createObjectNode(), file);
     }
 
     @Override
-    public SortedSet<ScheduledTime> getTimesMarkedForRerun(WorkflowID workflowID, ScheduledTime now) throws Exception {
+    protected void unMarkSlotForRerun(SlotID slot) throws Exception {
+        File file = getSlotRerunFile(slot);
+        Files.deleteIfExists(file.toPath());
+    }
+
+    @Override
+    public SortedSet<ScheduledTime> getTimesMarkedForRerun(WorkflowID workflowID) throws Exception {
         SortedSet<ScheduledTime> res = new TreeSet<>();
         File wfDir = getWorkflowRerunDir(workflowID);
         if (wfDir.exists()) {
             for (File dayDir : wfDir.listFiles()) {
                 for (File rerunFile : dayDir.listFiles()) {
                     String json = FileUtils.readFileToString(rerunFile, CHARSET);
-                    RerunState st = RerunState.fromJSONNode((ObjectNode) mapper.readTree(json));
+//                    RerunState st = RerunState.fromJSONNode((ObjectNode) mapper.readTree(json));
                     ScheduledTime t = new ScheduledTime(dayDir.getName() + "T" + rerunFile.getName());
                     res.add(t);
-                    if (st.isExpired(now)) {
-                        LOGGER.info("Expiring rerun file: " + rerunFile);
-                        rerunFile.delete();
-                    }
                 }
             }
         }

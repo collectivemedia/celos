@@ -13,17 +13,20 @@
  * implied.  See the License for the specific language governing
  * permissions and limitations under the License.
  */
-package com.collective.celos;
+package com.collective.celos.state;
 
+import com.collective.celos.ScheduledTime;
+import com.collective.celos.SlotID;
+import com.collective.celos.SlotState;
+import com.collective.celos.WorkflowID;
 import junit.framework.Assert;
-
 import org.junit.Test;
 
 public class MemoryStateDatabaseTest {
 
     @Test
     public void getAndPutWorks() throws Exception {
-        MemoryStateDatabase db = new MemoryStateDatabase();
+        StateDatabase db = new MemoryStateDatabase();
         SlotID slotID = new SlotID(new WorkflowID("foo"), new ScheduledTime("2013-11-27T14:50Z"));
         Assert.assertEquals(null, db.getSlotState(slotID));
         SlotState state = new SlotState(slotID, SlotState.Status.READY);

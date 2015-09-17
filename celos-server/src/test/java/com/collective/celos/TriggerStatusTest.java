@@ -15,6 +15,7 @@
  */
 package com.collective.celos;
 
+import com.collective.celos.state.StateDatabase;
 import com.collective.celos.trigger.*;
 import org.junit.Assert;
 import org.junit.Before;

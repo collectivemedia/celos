@@ -13,84 +13,68 @@
  * implied.  See the License for the specific language governing
  * permissions and limitations under the License.
  */
-package com.collective.celos;
+package com.collective.celos.state;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.TreeSet;
-
+import com.collective.celos.ScheduledTime;
+import com.collective.celos.SlotID;
+import com.collective.celos.SlotState;
+import com.collective.celos.WorkflowID;
 import junit.framework.Assert;
-
 import org.apache.commons.io.IOUtils;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import com.google.common.collect.ImmutableSet;
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.util.HashSet;
+import java.util.Set;
 
 public class FileSystemStateDatabaseTest {
 
+
     @Rule
     public TemporaryFolder tempFolder = new TemporaryFolder();
-    
-    @Test(expected=IOException.class)
-    public void directoryMustExist() throws IOException {
-        File dir = getDatabaseDir();
-        new FileSystemStateDatabase(dir);
+
+    private File getDatabaseDir() {
+        return new File(tempFolder.getRoot(), "db");
     }
 
-    @Test
-    public void emptyDatabaseReturnsNull() throws Exception {
-        StateDatabase db = new FileSystemStateDatabase(makeDatabaseDir());
-        Assert.assertNull(db.getSlotState(new SlotID(new WorkflowID("workflow-1"), new ScheduledTime("2013-12-02T13:37Z"))));
-    }
-
-    @Test
-    public void testRerunExpiration() throws Exception {
-        WorkflowID wf1 = new WorkflowID("foo");
-        WorkflowID wf2 = new WorkflowID("bar");
-        StateDatabase db = new FileSystemStateDatabase(makeDatabaseDir());
-        Assert.assertEquals(new TreeSet<>(), db.getTimesMarkedForRerun(wf1, new ScheduledTime("2013-12-02T15:00Z")));
-        Assert.assertEquals(new TreeSet<>(), db.getTimesMarkedForRerun(wf2, new ScheduledTime("2013-12-02T15:00Z")));
-        ScheduledTime time1 = new ScheduledTime("2013-12-02T13:00Z");
-        ScheduledTime time2 = new ScheduledTime("2013-12-02T14:00Z");
-        SlotID wf1slot1 = new SlotID(wf1, time1);
-        SlotID wf1slot2 = new SlotID(wf1, time2);
-        SlotID wf2slot1 = new SlotID(wf2, time1);
-        db.markSlotForRerun(wf1slot1, time1);
-        db.markSlotForRerun(wf1slot2, time2);
-        db.markSlotForRerun(wf2slot1, time1);
-        Assert.assertEquals(new TreeSet<>(ImmutableSet.of(time1, time2)), db.getTimesMarkedForRerun(wf1, new ScheduledTime("2013-12-02T15:00Z")));
-        Assert.assertEquals(new TreeSet<>(ImmutableSet.of(time1)), db.getTimesMarkedForRerun(wf2, new ScheduledTime("2013-12-02T15:00Z")));
-        // Now call wf1 with much later current time and make sure files got expired after first call
-        Assert.assertEquals(new TreeSet<>(ImmutableSet.of(time1, time2)), db.getTimesMarkedForRerun(wf1, new ScheduledTime("2015-12-02T15:00Z")));
-        Assert.assertEquals(new TreeSet<>(), db.getTimesMarkedForRerun(wf1, new ScheduledTime("2015-12-02T15:00Z")));
-        // wf2 still in there
-        Assert.assertEquals(new TreeSet<>(ImmutableSet.of(time1)), db.getTimesMarkedForRerun(wf2, new ScheduledTime("2013-12-02T15:00Z")));
-        // Now call wf2 with much later current time and make sure files got expired after first call
-        Assert.assertEquals(new TreeSet<>(ImmutableSet.of(time1)), db.getTimesMarkedForRerun(wf2, new ScheduledTime("2015-12-02T15:00Z")));
-        Assert.assertEquals(new TreeSet<>(), db.getTimesMarkedForRerun(wf2, new ScheduledTime("2015-12-02T15:00Z")));
-    }
-    
     private File makeDatabaseDir() {
         File dir = getDatabaseDir();
         dir.mkdir();
         return dir;
     }
 
-    private File getDatabaseDir() {
-        return new File(tempFolder.getRoot(), "db");
+    private StateDatabase db;
+
+    @Before
+    public void setUp() throws Exception {
+        db = StateDatabase.makeFSDatabase(makeDatabaseDir());
     }
-    
+
+    @Test(expected=IOException.class)
+    public void directoryMustExist() throws IOException {
+        File dir = getDatabaseDir();
+        Files.delete(dir.toPath());
+        StateDatabase.makeFSDatabase(dir);
+    }
+
+    @Test
+    public void emptyDatabaseReturnsNull() throws Exception {
+        StateDatabase db = StateDatabase.makeFSDatabase(makeDatabaseDir());
+        Assert.assertNull(db.getSlotState(new SlotID(new WorkflowID("workflow-1"), new ScheduledTime("2013-12-02T13:37Z"))));
+    }
+
     /**
      * Compare slot states returned by getStates against those under src/test/resources.
      */
     @Test
     public void canReadFromFileSystem1() throws Exception {
-        StateDatabase db = new FileSystemStateDatabase(getResourceDirNoTimestamp());
+        StateDatabase db = StateDatabase.makeFSDatabase(getResourceDirNoTimestamp());
         for(SlotState state : getStates()) {
             Assert.assertEquals(state, db.getSlotState(state.getSlotID()));
         }
@@ -101,7 +85,7 @@ public class FileSystemStateDatabaseTest {
      */
     @Test
     public void canReadFromFileSystem2() throws Exception {
-        StateDatabase db = new FileSystemStateDatabase(getResourceDir());
+        StateDatabase db = StateDatabase.makeFSDatabase(getResourceDir());
         for(SlotState state : getStates()) {
             Assert.assertEquals(state, db.getSlotState(state.getSlotID()));
         }
@@ -113,7 +97,7 @@ public class FileSystemStateDatabaseTest {
      */
     @Test
     public void canWriteToFileSystem() throws Exception {
-        StateDatabase db = new FileSystemStateDatabase(makeDatabaseDir());
+        StateDatabase db = StateDatabase.makeFSDatabase(makeDatabaseDir());
         for(SlotState state : getStates()) {
             db.putSlotState(state);
         }
@@ -176,5 +160,49 @@ public class FileSystemStateDatabaseTest {
         
         return states;
     }
-    
+
+    @Test(expected = IllegalStateException.class)
+    public void failsOnRunningSlot() throws Exception {
+        failsOnWrongStatusTest(SlotState.Status.RUNNING);
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void failsOnReadySlot() throws Exception {
+        failsOnWrongStatusTest(SlotState.Status.READY);
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void failsOnWaitingSlot() throws Exception {
+        failsOnWrongStatusTest(SlotState.Status.WAITING);
+    }
+
+    private void failsOnWrongStatusTest(SlotState.Status status) throws Exception {
+        SlotID id = new SlotID(new WorkflowID("foo"), new ScheduledTime("2014-02-08T20:00Z"));
+        SlotState state = new SlotState(id, status);
+        db.putSlotState(state);
+        db.updateSlotForRerun(state.getSlotID());
+    }
+
+    @Test
+    public void succeedsOnSuccessSlot() throws Exception {
+        succeedsOnRightStatusTest(SlotState.Status.SUCCESS);
+    }
+
+    @Test
+    public void succeedsOnFailureSlot() throws Exception {
+        succeedsOnRightStatusTest(SlotState.Status.FAILURE);
+    }
+
+    private void succeedsOnRightStatusTest(SlotState.Status status) throws Exception {
+        SlotID id = new SlotID(new WorkflowID("foo"), new ScheduledTime("2014-02-08T20:00Z"));
+        SlotState state = new SlotState(id, status);
+        db.putSlotState(state);
+        db.updateSlotForRerun(state.getSlotID());
+        SlotState dbState = db.getSlotState(id);
+        org.junit.Assert.assertEquals(state.transitionToRerun(), dbState);
+    }
+
+
+
+
 }
