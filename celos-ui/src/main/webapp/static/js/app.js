@@ -16,11 +16,15 @@
 
 var CelosMainFetch = React.createClass({
     getInitialState: function () {
-        return {data: {rows: []}};
+        return {data: {rows: [], navigation: {}}};
     },
     loadCommentsFromServer: function () {
         $.ajax({
             url: this.props.url,
+            data: {
+                zoom: getQueryVariable("zoom"),
+                time: getQueryVariable("time")
+            },
             dataType: 'json',
             cache: false,
             success: function (data) {
@@ -35,9 +39,18 @@ var CelosMainFetch = React.createClass({
         this.loadCommentsFromServer();
     },
     render: function () {
-        console.log("CelosMainFetch", this.state.data);
+        console.log("CelosMainFetch", this.props);
+        tmp = this.state.data;
+        if (this.props.group) {
+            console.log("CelosMainFetch2", this.props);
+            var groupFilter = this.props.group;
+            tmp.rows = tmp.rows.filter(function(x) {
+                                      return groupFilter == x.name;
+                                  });
+        }
+        console.log("CelosMainFetch3", this.props);
         return (
-            <CelosMain data={this.state.data}/>
+            <CelosMain data={tmp}/>
         );
     }
 });
@@ -49,10 +62,13 @@ var CelosMain = React.createClass({
         return (
             <div>
                 <h2>{this.props.data.currentTime}</h2>
+
+                <Navigation data={this.props.data.navigation} />
+
                 {this.props.data.rows.map(function (wfGroup, i) {
                     return (
                     <div key={i}>
-                        <WorkflowsGroupFetch url={wfGroup.url}/>
+                        <WorkflowsGroupFetch url={wfGroup.url} />
                         <br />
                     </div>
                     );
@@ -63,34 +79,48 @@ var CelosMain = React.createClass({
 
 });
 
+var Navigation = React.createClass({
+    render: function () {
+        console.log("Navigation", this.props.data);
+        return (
+            <center className="bigButtons">
+                <a href={this.props.data.left + window.location.hash}> &lt; Prev page </a>
+                <strong> | </strong>
+                <a href={this.props.data.right + window.location.hash}> Next page &gt; </a>
+            <br />
+            <br />
+                <a href={this.props.data.zoomOut + window.location.hash}> Zoom OUT </a>
+                <strong> / </strong>
+                <a href={this.props.data.zoomIn + window.location.hash}> Zoom IN </a>
+            <br />
+            <br />
+            </center>
+        );
+    }
+});
+
+
 console.log("four:", window.location.hash);
 
 
-routie('', function () {
-    //this gets called when hash == #hello
-    ReactDOM.render(
-        <CelosMainFetch url="/react" pollInterval={0}/>,
-        document.getElementById('content')
-    )
-});
+routie({
+    '': function () {
+        ReactDOM.render(
+            <CelosMainFetch url="/react" pollInterval={0}/>,
+            document.getElementById('content')
+        );
+    },
+    'test': function () {
+        ReactDOM.render(
+            <CelosMainFetch url="assets/main.json" pollInterval={0}/>,
+            document.getElementById('content')
+        );
+    },
 
-routie('test', function () {
-    //this gets called when hash == #test
-    ReactDOM.render(
-        <CelosMainFetch url="assets/main.json" pollInterval={0}/>,
-        document.getElementById('content')
-    )
-});
-
-routie('groups/:name', function (name) {
-    ReactDOM.render(
-        <WorkflowsGroupFetch url={"/react?group=" + name} pollInterval={0}/>,
-        document.getElementById('content')
-    )
-});
-
-routie('*', function () {
-
-    alert("ERROR: wrong route!")
-
+    'groups/:name': function (name) {
+        ReactDOM.render(
+            <CelosMainFetch url={"/react"} group={ name } pollInterval={0}/>,
+            document.getElementById('content')
+        );
+    }
 });

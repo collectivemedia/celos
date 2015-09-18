@@ -45,6 +45,10 @@
     text-decoration:none;
 }
 
+.bigButtons {
+    font-size: large;
+}
+
 .RUNNING, .READY { background-color: #ffc; }
 .SUCCESS { background-color: #cfc; }
 .WAITING { background-color: #ccf; }

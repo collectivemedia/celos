@@ -31,10 +31,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.URL;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -57,28 +54,29 @@ public class ReactServlet extends HttpServlet {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    protected class MainUI {
+    protected static class MainUI {
         public String currentTime;
+        public NavigationPOJO navigation;
         public List<WorkflowGroupRef> rows;
     }
 
-    protected class WorkflowGroupRef {
+    protected static class WorkflowGroupRef {
         public String name;
         public String url;
     }
 
-    protected class WorkflowGroupPOJO {
+    protected static class WorkflowGroupPOJO {
         public String name;
         public List<String> times;
         public List<WorkflowPOJO> rows;
     }
 
-    protected class WorkflowPOJO {
+    protected static class WorkflowPOJO {
         public String workflowName;
         public List<SlotPOJO> slots;
     }
 
-    protected class SlotPOJO {
+    protected static class SlotPOJO {
         public String status;
         public String url;
         public Integer quantity;
@@ -86,51 +84,6 @@ public class ReactServlet extends HttpServlet {
 
     protected final ObjectMapper mapper = new ObjectMapper();
     protected final ObjectWriter writer = mapper.writerWithDefaultPrettyPrinter();
-
-    protected void testWorkflowGroup(String groupName, HttpServletResponse response) throws IOException {
-        final WorkflowGroupPOJO xx = new WorkflowGroupPOJO();
-        xx.name = groupName;
-        xx.times = new ArrayList<>();
-        xx.times.add("0000");
-        xx.times.add("0001");
-        xx.times.add("0002");
-        xx.times.add("0003");
-        xx.times.add("0004");
-        xx.times.add("0005");
-        xx.rows = new ArrayList<>();
-        xx.rows.add(new WorkflowPOJO());
-        xx.rows.get(0).workflowName = "wf 1";
-        xx.rows.get(0).slots = new ArrayList<>();
-        xx.rows.get(0).slots.add(new SlotPOJO());
-        xx.rows.get(0).slots.get(0).status = "ready";
-        xx.rows.get(0).slots.add(new SlotPOJO());
-        xx.rows.get(0).slots.get(1).status = "wait";
-        xx.rows.add(new WorkflowPOJO());
-        xx.rows.get(1).workflowName = "wf 1";
-        xx.rows.get(1).slots = new ArrayList<>();
-        xx.rows.get(1).slots.add(new SlotPOJO());
-        xx.rows.get(1).slots.get(0).status = "ready";
-        xx.rows.get(1).slots.add(new SlotPOJO());
-        xx.rows.get(1).slots.get(1).status = "wait";
-
-        writer.writeValue(response.getOutputStream(), xx);
-
-    }
-
-    protected void testMain(String groupName, HttpServletResponse response) throws IOException {
-
-        final MainUI zz = new MainUI();
-        zz.currentTime = "2015-09-15 21:50 UTC";
-        zz.rows = new ArrayList<>();
-        zz.rows.add(new WorkflowGroupRef());
-        zz.rows.get(0).name = "dsada";
-        zz.rows.get(0).url = "/react?wf-group=success";
-        zz.rows.add(new WorkflowGroupRef());
-        zz.rows.get(1).name = "Gr 2";
-        zz.rows.get(1).url = "/react?wf-group=success";
-
-        writer.writeValue(response.getOutputStream(), zz);
-    }
 
     private SlotPOJO makeSlot(UIConfiguration conf, Set<SlotState> states) {
         final SlotPOJO slot = new SlotPOJO();
@@ -149,6 +102,62 @@ public class ReactServlet extends HttpServlet {
         return slot;
     }
 
+//    public static class Pair<L,R> {
+//
+//        private final L left;
+//        private final R right;
+//
+//        public Pair(L left, R right) {
+//            this.left = left;
+//            this.right = right;
+//        }
+//
+//        public L getLeft() {
+//            return left;
+//        }
+//
+//        public R getRight() {
+//            return right;
+//        }
+//    }
+
+    protected static class NavigationPOJO {
+        public String left;
+        public String right;
+        public String zoomIn;
+        public String zoomOut;
+    }
+
+    private static final int PAGE_SIZE = 20;
+
+    private static NavigationPOJO makeNavigationButtons(ScheduledTime shift, int zoom) throws IOException {
+        NavigationPOJO result = new NavigationPOJO();
+        // makePaginationButtons
+        final UrlEncoded urlLeft = new UrlEncoded();
+        urlLeft.put(TIME_PARAM, (shift.minusMinutes(PAGE_SIZE * zoom)).toString());
+        urlLeft.put(ZOOM_PARAM, Integer.toString(zoom));
+        result.left = "?" + urlLeft.encode();
+       // right link
+        final UrlEncoded urlRight = new UrlEncoded();
+        urlRight.put(TIME_PARAM, shift.plusMinutes(PAGE_SIZE * zoom).toString());
+        urlRight.put(ZOOM_PARAM, Integer.toString(zoom));
+        result.right = "?" + urlRight.encode();
+        // makeZoomButtons
+        final int pos = Arrays.binarySearch(ZOOM_LEVEL_MINUTES, zoom);
+        int zoomIn = (pos == 0) ? ZOOM_LEVEL_MINUTES[0] : ZOOM_LEVEL_MINUTES[pos - 1];
+        final UrlEncoded urlIn = new UrlEncoded();
+        urlIn.put(TIME_PARAM, shift.toString());
+        urlIn.put(ZOOM_PARAM, Integer.toString(zoomIn));
+        result.zoomIn = "?" + urlIn.encode();
+        // zoomOut
+        final int last = ZOOM_LEVEL_MINUTES.length - 1;
+        int zoomOut = (pos == last) ? ZOOM_LEVEL_MINUTES[last] : ZOOM_LEVEL_MINUTES[pos + 1];
+        final UrlEncoded urlOut = new UrlEncoded();
+        urlOut.put(TIME_PARAM, shift.toString());
+        urlOut.put(ZOOM_PARAM, Integer.toString(zoomOut));
+        result.zoomOut = "?" + urlOut.encode();
+        return result;
+    }
 
     protected WorkflowGroupPOJO processWorkflowGroup(UIConfiguration conf, String name, HttpServletResponse response, List<WorkflowID> ids) throws IOException {
 
@@ -180,26 +189,24 @@ public class ReactServlet extends HttpServlet {
         return group;
     }
 
-
-    protected MainUI processMain(List<WorkflowGroup> groups) throws IOException {
-        final MainUI res = new MainUI();
-        res.currentTime = ScheduledTime.now().toString();
-        res.rows = new ArrayList<>();
+    protected MainUI processMain(List<WorkflowGroup> groups, ScheduledTime shift, int zoom) throws IOException {
+        final MainUI result = new MainUI();
+        result.currentTime = FULL_FORMAT.print(DateTime.now()) + " UTC";
+        result.navigation = makeNavigationButtons(shift, zoom);
+        result.rows = new ArrayList<>();
         for (WorkflowGroup g : groups) {
             final WorkflowGroupRef group = new WorkflowGroupRef();
             group.name = g.getName();
             final UrlEncoded url = new UrlEncoded();
             url.put("group", g.getName());
             group.url = "/react?" + url.encode();
-            res.rows.add(group);
+            result.rows.add(group);
         }
-
-
-        return res;
+        return result;
     }
 
 
-        @Override
+    @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         try {
             URL celosURL = (URL) Util.requireNonNull(getServletContext().getAttribute(Main.CELOS_URL_ATTR));
@@ -209,11 +216,10 @@ public class ReactServlet extends HttpServlet {
             res.setContentType("application/json;charset=utf-8");
             res.setStatus(HttpServletResponse.SC_OK);
 
-
             CelosClient client = new CelosClient(celosURL.toURI());
-            ScheduledTime end = getDisplayTime(req.getParameter(TIME_PARAM));
+            ScheduledTime timeShift = getDisplayTime(req.getParameter(TIME_PARAM));
             int zoomLevelMinutes = getZoomLevel(req.getParameter(ZOOM_PARAM));
-            NavigableSet<ScheduledTime> tileTimes = getTileTimesSet(getFirstTileTime(end, zoomLevelMinutes), zoomLevelMinutes, MAX_MINUTES_TO_FETCH, MAX_TILES_TO_DISPLAY);
+            NavigableSet<ScheduledTime> tileTimes = getTileTimesSet(getFirstTileTime(timeShift, zoomLevelMinutes), zoomLevelMinutes, MAX_MINUTES_TO_FETCH, MAX_TILES_TO_DISPLAY);
             ScheduledTime start = tileTimes.first();
             Set<WorkflowID> workflowIDs = client.getWorkflowList();
 
@@ -224,7 +230,6 @@ public class ReactServlet extends HttpServlet {
             } else {
                 groups = getDefaultGroups(workflowIDs);
             }
-
 
             final String wfGroup = req.getParameter(WF_GROUP_PARAM);
             if (wfGroup != null) {
@@ -242,23 +247,15 @@ public class ReactServlet extends HttpServlet {
                         .filter(x -> workflowGroup.getWorkflows().contains(x))
                         .collect(Collectors.toList());
 
-                Map<WorkflowID, WorkflowStatus> statuses = fetchStatuses(client, ids, start, end);
-                UIConfiguration conf = new UIConfiguration(start, end, tileTimes, groups, statuses, hueURL);
-
-//                if (true) {
-//                    final List<String> collect = ids.stream()
-//                            .map(x -> x.toString())
-//                            .collect(Collectors.toList());
-//                    writer.writeValue(res.getOutputStream(), collect);
-//                    return;
-//                }
+                Map<WorkflowID, WorkflowStatus> statuses = fetchStatuses(client, ids, start, timeShift);
+                UIConfiguration conf = new UIConfiguration(start, timeShift, tileTimes, groups, statuses, hueURL);
 
                 final WorkflowGroupPOJO pojo = processWorkflowGroup(conf, workflowGroup.getName(), res, ids);
                 writer.writeValue(res.getOutputStream(), pojo);
 
             } else {
 
-                final MainUI mainUI = processMain(groups);
+                final MainUI mainUI = processMain(groups, timeShift, zoomLevelMinutes);
 
                 writer.writeValue(res.getOutputStream(), mainUI);
             }
@@ -268,15 +265,20 @@ public class ReactServlet extends HttpServlet {
     }
 
     static ScheduledTime getDisplayTime(String timeStr) {
-        if (timeStr == null) {
+        if (timeStr == null || timeStr.isEmpty()) {
             return ScheduledTime.now();
         } else {
-            return new ScheduledTime(timeStr);
+            try {
+                return new ScheduledTime(java.net.URLDecoder.decode(timeStr, "UTF-8"));
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+                return ScheduledTime.now();
+            }
         }
     }
     
     static int getZoomLevel(String zoomStr) {
-        if (zoomStr == null) {
+        if (zoomStr == null || zoomStr.isEmpty()) {
             return DEFAULT_ZOOM_LEVEL_MINUTES;
         } else {
             int zoom = Integer.parseInt(zoomStr);

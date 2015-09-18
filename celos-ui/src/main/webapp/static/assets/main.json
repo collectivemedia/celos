@@ -1,5 +1,11 @@
 {
   "currentTime": "2015-09-15 21:50 UTC",
+  "navigation" : {
+    "left" : "/ui?zoom=60&zoom=time=2015-09-18T14:34:12.038Z",
+    "right" : "/ui?zoom=60&zoom=time=2015-09-18T16:34:12.038Z",
+    "zoomIn" : "/ui?time=2015-09-18T15:34:12.038Z&zoom=30",
+    "zoomOut" : "/ui?time=2015-09-18T15:34:12.038Z&zoom=1440"
+  },
   "rows": [
     {
       "key": 1,

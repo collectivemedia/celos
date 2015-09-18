@@ -16,6 +16,18 @@
 
 var slotsNum = Math.trunc(($(window).width() - 250) / (30 + 4)) - 1;
 
+function getQueryVariable(variable) {
+    var query = window.location.search.substring(1);
+    var vars = query.split("&");
+    for (var i=0;i<vars.length;i++) {
+        var pair = vars[i].split("=");
+            if (pair[0] == variable) {
+                return pair[1];
+            }
+        }
+    return null;
+}
+
 var WorkflowsGroupFetch = React.createClass({
     getInitialState: function () {
         return {data: null};
@@ -23,7 +35,11 @@ var WorkflowsGroupFetch = React.createClass({
     loadCommentsFromServer: function () {
         $.ajax({
             url: this.props.url,
-            data: {count: slotsNum},
+            data: {
+                count: slotsNum,
+                zoom: getQueryVariable("zoom"),
+                time: getQueryVariable("time")
+            },
             dataType: 'json',
             cache: false,
             success: function (data) {
@@ -53,7 +69,6 @@ var WorkflowsGroupFetch = React.createClass({
 
 var WorkflowsGroup = React.createClass({
     render: function () {
-        console.log("XXX", this.props.data.rows);
         return (
             <table className="workflowTable">
                 <thead>
