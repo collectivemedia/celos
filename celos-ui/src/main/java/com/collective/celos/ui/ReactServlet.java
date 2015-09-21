@@ -102,24 +102,6 @@ public class ReactServlet extends HttpServlet {
         return slot;
     }
 
-//    public static class Pair<L,R> {
-//
-//        private final L left;
-//        private final R right;
-//
-//        public Pair(L left, R right) {
-//            this.left = left;
-//            this.right = right;
-//        }
-//
-//        public L getLeft() {
-//            return left;
-//        }
-//
-//        public R getRight() {
-//            return right;
-//        }
-//    }
 
     protected static class NavigationPOJO {
         public String left;
@@ -133,29 +115,16 @@ public class ReactServlet extends HttpServlet {
     private static NavigationPOJO makeNavigationButtons(ScheduledTime shift, int zoom) throws IOException {
         NavigationPOJO result = new NavigationPOJO();
         // makePaginationButtons
-        final UrlEncoded urlLeft = new UrlEncoded();
-        urlLeft.put(TIME_PARAM, (shift.minusMinutes(PAGE_SIZE * zoom)).toString());
-        urlLeft.put(ZOOM_PARAM, Integer.toString(zoom));
-        result.left = "?" + urlLeft.encode();
-       // right link
-        final UrlEncoded urlRight = new UrlEncoded();
-        urlRight.put(TIME_PARAM, shift.plusMinutes(PAGE_SIZE * zoom).toString());
-        urlRight.put(ZOOM_PARAM, Integer.toString(zoom));
-        result.right = "?" + urlRight.encode();
+        result.left = shift.minusMinutes(PAGE_SIZE * zoom).toString();
+        // right link
+        result.right = shift.plusMinutes(PAGE_SIZE * zoom).toString();
         // makeZoomButtons
-        final int pos = Arrays.binarySearch(ZOOM_LEVEL_MINUTES, zoom);
-        int zoomIn = (pos == 0) ? ZOOM_LEVEL_MINUTES[0] : ZOOM_LEVEL_MINUTES[pos - 1];
-        final UrlEncoded urlIn = new UrlEncoded();
-        urlIn.put(TIME_PARAM, shift.toString());
-        urlIn.put(ZOOM_PARAM, Integer.toString(zoomIn));
-        result.zoomIn = "?" + urlIn.encode();
-        // zoomOut
         final int last = ZOOM_LEVEL_MINUTES.length - 1;
-        int zoomOut = (pos == last) ? ZOOM_LEVEL_MINUTES[last] : ZOOM_LEVEL_MINUTES[pos + 1];
-        final UrlEncoded urlOut = new UrlEncoded();
-        urlOut.put(TIME_PARAM, shift.toString());
-        urlOut.put(ZOOM_PARAM, Integer.toString(zoomOut));
-        result.zoomOut = "?" + urlOut.encode();
+        final int pos = Math.abs(Arrays.binarySearch(ZOOM_LEVEL_MINUTES, zoom));
+        int zoomIn = (0 < pos && pos <= last) ? ZOOM_LEVEL_MINUTES[pos - 1] : ZOOM_LEVEL_MINUTES[0];
+        result.zoomIn = Integer.toString(zoomIn);
+        int zoomOut = (0 <= pos && pos < last) ? ZOOM_LEVEL_MINUTES[pos + 1] : ZOOM_LEVEL_MINUTES[last];
+        result.zoomOut = Integer.toString(zoomOut);
         return result;
     }
 
@@ -204,6 +173,12 @@ public class ReactServlet extends HttpServlet {
         }
         return result;
     }
+
+
+    private static final int[] ZOOM_LEVEL_MINUTES = new int[]{1, 5, 15, 30, 60, 60*24};
+    static final int DEFAULT_ZOOM_LEVEL_MINUTES = 60;
+    static final int MIN_ZOOM_LEVEL_MINUTES = 1;
+    static final int MAX_ZOOM_LEVEL_MINUTES = 60*24; // Code won't work with higher level, because of toFullDay()
 
 
     @Override
@@ -304,12 +279,7 @@ public class ReactServlet extends HttpServlet {
             throw new Error("STATUS_TO_SHORT_NAME mapping is incomplete");
         }
     }
-    
-    private static final int[] ZOOM_LEVEL_MINUTES = new int[]{1, 5, 15, 30, 60, 60*24};
-    static final int DEFAULT_ZOOM_LEVEL_MINUTES = 60;
-    static final int MIN_ZOOM_LEVEL_MINUTES = 1;
-    static final int MAX_ZOOM_LEVEL_MINUTES = 60*24; // Code won't work with higher level, because of toFullDay()
-    
+
     // We never want to fetch more data than for a week from Celos so as not to overload the server
     private static int MAX_MINUTES_TO_FETCH = 7 * 60 * 24;
     private static int MAX_TILES_TO_DISPLAY = 48;
