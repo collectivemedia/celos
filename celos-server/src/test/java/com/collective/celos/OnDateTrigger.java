@@ -19,6 +19,7 @@ import com.collective.celos.trigger.Trigger;
 import com.collective.celos.trigger.TriggerStatus;
 
 import java.util.Collections;
+import java.util.Set;
 
 public class OnDateTrigger extends Trigger {
 
@@ -36,6 +37,11 @@ public class OnDateTrigger extends Trigger {
     @Override
     public TriggerStatus getTriggerStatus(Scheduler scheduler, ScheduledTime now, ScheduledTime time) throws Exception {
         return makeTriggerStatus(time.equals(scheduledTime), "unused", Collections.<TriggerStatus>emptyList());
+    }
+
+    @Override
+    public Set<SlotID> findDependentSlots(ScheduledTime scheduledTime) {
+        return Collections.emptySet();
     }
 
 

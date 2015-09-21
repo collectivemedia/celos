@@ -17,6 +17,10 @@ package com.collective.celos.trigger;
 
 import com.collective.celos.ScheduledTime;
 import com.collective.celos.Scheduler;
+import com.collective.celos.SlotID;
+
+import java.util.Collections;
+import java.util.Set;
 
 /**
  * Trivial trigger that always signals data availability,
@@ -31,6 +35,11 @@ public class AlwaysTrigger extends Trigger {
     @Override
     public TriggerStatus getTriggerStatus(Scheduler scheduler, ScheduledTime now, ScheduledTime scheduledTime) throws Exception {
         return makeTriggerStatus(true, "Always ready");
+    }
+
+    @Override
+    public Set<SlotID> findDependentSlots(ScheduledTime scheduledTime) {
+        return Collections.emptySet();
     }
 
 }

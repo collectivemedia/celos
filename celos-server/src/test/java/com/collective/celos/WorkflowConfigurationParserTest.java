@@ -28,6 +28,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
+import java.util.Set;
 import java.util.SortedSet;
 
 public class WorkflowConfigurationParserTest {
@@ -76,6 +77,11 @@ public class WorkflowConfigurationParserTest {
         @Override
         public TriggerStatus getTriggerStatus(Scheduler scheduler, ScheduledTime now, ScheduledTime scheduledTime) throws Exception {
             return makeTriggerStatus(false, "TestTrigger");
+        }
+
+        @Override
+        public Set<SlotID> findDependentSlots(ScheduledTime scheduledTime) {
+            return null;
         }
 
     }

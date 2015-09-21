@@ -18,18 +18,16 @@ package com.collective.celos.trigger;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.net.URI;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
+import com.collective.celos.*;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.log4j.Logger;
-
-import com.collective.celos.ScheduledTime;
-import com.collective.celos.ScheduledTimeFormatter;
-import com.collective.celos.Scheduler;
-import com.collective.celos.Util;
 
 /**
  * Check in HDFS for a data dependency.
@@ -77,6 +75,11 @@ public class HDFSCheckTrigger extends Trigger {
         LOGGER.info("Checking HDFS path: " + path);
         boolean ready = getFs().exists(path);
         return makeTriggerStatus(ready, humanReadableDescription(ready, path));
+    }
+
+    @Override
+    public Set<SlotID> findDependentSlots(ScheduledTime scheduledTime) {
+        return Collections.emptySet();
     }
 
     private String humanReadableDescription(boolean ready, Path path) {

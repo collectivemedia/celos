@@ -18,9 +18,11 @@ package com.collective.celos.trigger;
 
 import com.collective.celos.ScheduledTime;
 import com.collective.celos.Scheduler;
+import com.collective.celos.SlotID;
 import com.collective.celos.Util;
 
 import java.util.Collections;
+import java.util.Set;
 
 /**
  * Trigger that takes a nested trigger and does a logical NOT.
@@ -38,6 +40,11 @@ public class NotTrigger extends Trigger {
         TriggerStatus status = trigger.getTriggerStatus(scheduler, now, scheduledTime);
         boolean ready = !status.isReady();
         return makeTriggerStatus(ready, humanReadableDescription(ready), Collections.singletonList(status));
+    }
+
+    @Override
+    public Set<SlotID> findDependentSlots(ScheduledTime scheduledTime) {
+        return trigger.findDependentSlots(scheduledTime);
     }
 
     private String humanReadableDescription(boolean ready) {

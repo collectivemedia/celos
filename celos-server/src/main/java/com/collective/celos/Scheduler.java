@@ -15,13 +15,11 @@
  */
 package com.collective.celos;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.*;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
+import com.collective.celos.trigger.TriggerStatus;
 import org.apache.log4j.Logger;
 
 import com.collective.celos.trigger.Trigger;
@@ -226,6 +224,18 @@ public class Scheduler {
 
     public StateDatabase getStateDatabase() {
         return database;
+    }
+
+    public Set<SlotID> findDependentSlots(SlotID id) throws Exception {
+        Workflow slotWorkflow = configuration.findWorkflow(id.getWorkflowID());
+        Set<SlotID> dependentSlots = slotWorkflow.getTrigger().findDependentSlots(id.getScheduledTime());
+        return dependentSlots.stream().filter(this::slotIsDefined).collect(Collectors.toSet());
+    }
+
+    private boolean slotIsDefined(SlotID slotID) {
+        Workflow workflow = configuration.findWorkflow(slotID.getWorkflowID());
+        Set<ScheduledTime> scheduledTimes = workflow.getSchedule().getScheduledTimes(this, slotID.getScheduledTime(), slotID.getScheduledTime().plusSeconds(1));
+        return scheduledTimes.contains(slotID.getScheduledTime());
     }
 
 }

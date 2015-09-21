@@ -15,10 +15,14 @@
  */
 package com.collective.celos.trigger;
 
+import com.collective.celos.SlotID;
 import org.joda.time.DateTime;
 
 import com.collective.celos.ScheduledTime;
 import com.collective.celos.Scheduler;
+
+import java.util.Collections;
+import java.util.Set;
 
 /**
  * A trigger that signals data availability for a given scheduled time
@@ -48,6 +52,11 @@ public class DelayTrigger extends Trigger {
         DateTime waitUntilDT = scheduledTime.getDateTime().plusSeconds(getSeconds());
         boolean ready = nowDT.isAfter(waitUntilDT);
         return makeTriggerStatus(ready, humanReadableDescription(ready, waitUntilDT));
+    }
+
+    @Override
+    public Set<SlotID> findDependentSlots(ScheduledTime scheduledTime) {
+        return Collections.emptySet();
     }
 
     private String humanReadableDescription(boolean ready, DateTime waitUntilDT) {
