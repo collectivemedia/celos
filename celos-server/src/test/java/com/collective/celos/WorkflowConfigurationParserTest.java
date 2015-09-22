@@ -69,6 +69,11 @@ public class WorkflowConfigurationParserTest {
         public ExternalStatus getStatus(SlotID slotId, String externalWorkflowID) throws ExternalServiceException {
             return null;
         }
+
+        @Override
+        public void kill(SlotID id, String externalID) throws ExternalServiceException {
+
+        }
     }
         
     public static class TestTrigger extends Trigger {

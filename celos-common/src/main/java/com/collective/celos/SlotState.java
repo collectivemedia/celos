@@ -59,7 +59,9 @@ public class SlotState extends ValueObject {
         /** The workflow has succeeded. */
         SUCCESS(StatusType.SUCCESS),
         /** The workflow has failed and will not be retried. */
-        FAILURE(StatusType.FAILURE);
+        FAILURE(StatusType.FAILURE),
+        /** The workflow has been killed. */
+        KILLED(StatusType.FAILURE);
         
         private final StatusType type;
         Status(StatusType type) {
@@ -131,17 +133,20 @@ public class SlotState extends ValueObject {
         return new SlotState(slotID, Status.WAITING, null, retryCount + 1);
     }
 
+    public SlotState transitionToKill() {
+        if (status.getType() != StatusType.INDETERMINATE) {
+            throw new IllegalStateException("Slot must be in indeterminate state, but is: " + status);
+        }
+        return new SlotState(slotID, Status.KILLED, null, 0); // reset retryCount to 0
+    }
+
     public SlotState transitionToRerun() {
-        if (!isRerunnable()) {
-            throw new IllegalStateException("Slot must be successful or failed, but is: " + status);
+        if (status.getType() == StatusType.INDETERMINATE) {
+            throw new IllegalStateException("Slot must be in successful or failed, but is: " + status);
         }
         return new SlotState(slotID, Status.WAITING, null, 0); // reset retryCount to 0
     }
 
-    private boolean isRerunnable() {
-        return status.equals(Status.SUCCESS) || status.equals(Status.FAILURE) || status.equals(Status.WAIT_TIMEOUT);
-    }
-    
     private void assertStatus(Status st) {
         if (!status.equals(st)) {
             throw new IllegalStateException("Expected status " + st + " but was " + status + " (slot: " + this + ")");

@@ -56,30 +56,29 @@ public class KIllServlet extends AbstractServlet {
                 return;
             }
 
-            SlotID slot = new SlotID(workflowID, time);
+            SlotID slotID = new SlotID(workflowID, time);
             Set<ScheduledTime> timeSet = workflow.getSchedule().getScheduledTimes(scheduler, time.minusSeconds(1), time.plusSeconds(1));
             if (!timeSet.contains(time)) {
-                res.sendError(HttpServletResponse.SC_NOT_FOUND, "Slot is not found: " + slot);
+                res.sendError(HttpServletResponse.SC_NOT_FOUND, "Slot is not found: " + slotID);
                 return;
             }
-
-            
-
             StateDatabase db = scheduler.getStateDatabase();
-            SlotState state = db.getSlotState(slot);
-            if (state != null) {
-                updateSlotToRerun(state, db);
+            SlotState state = db.getSlotState(slotID);
+
+            LOGGER.info("Killing slot: " + slotID);
+            if (state == null) {
+                db.putSlotState(new SlotState(slotID, SlotState.Status.KILLED));
+            } else {
+                SlotState newState = state.transitionToKill();
+                db.putSlotState(newState);
+                if (state.getExternalID() != null) {
+                    workflow.getExternalService().kill(slotID, state.getExternalID());
+                }
             }
-            db.markSlotForRerun(slot, ScheduledTime.now());
+
         } catch(Exception e) {
             throw new ServletException(e);
         }
-    }
-
-    void updateSlotToRerun(SlotState state, StateDatabase db) throws Exception {
-        LOGGER.info("Scheduling Slot for rerun: " + state.getSlotID());
-        SlotState newState = state.transitionToRerun();
-        db.putSlotState(newState);
     }
 
 }
