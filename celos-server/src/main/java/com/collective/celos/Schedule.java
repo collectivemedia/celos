@@ -31,7 +31,7 @@ public interface Schedule {
      */
     public SortedSet<ScheduledTime> getScheduledTimes(Scheduler scheduler, ScheduledTime start, ScheduledTime end);
 
-    default boolean isTimeFitsSchedule(ScheduledTime time, Scheduler scheduler) {
+    default boolean isTimeInSchedule(ScheduledTime time, Scheduler scheduler) {
         return getScheduledTimes(scheduler, time, time.plusSeconds(1)).contains(time);
     }
 

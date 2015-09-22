@@ -22,8 +22,6 @@ import javax.servlet.http.HttpServletResponse;
 import com.collective.celos.*;
 import org.apache.log4j.Logger;
 
-import java.util.Set;
-
 /**
  * Posting to this servlet reruns the specified slot.
  * 
@@ -58,7 +56,7 @@ public class RerunServlet extends AbstractServlet {
             }
 
             SlotID slot = new SlotID(workflowID, time);
-            if (!workflow.getSchedule().isTimeFitsSchedule(time, scheduler)) {
+            if (!workflow.getSchedule().isTimeInSchedule(time, scheduler)) {
                 res.sendError(HttpServletResponse.SC_NOT_FOUND, "Slot is not found: " + slot);
                 return;
             }

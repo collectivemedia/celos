@@ -21,7 +21,6 @@ import org.apache.log4j.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Set;
 
 /**
  * Posting to this servlet kills the specified slot's underlying job.
@@ -57,7 +56,7 @@ public class KillServlet extends AbstractServlet {
             }
 
             SlotID slotID = new SlotID(workflowID, time);
-            if (!workflow.getSchedule().isTimeFitsSchedule(time, scheduler)) {
+            if (!workflow.getSchedule().isTimeInSchedule(time, scheduler)) {
                 res.sendError(HttpServletResponse.SC_NOT_FOUND, "Slot is not found: " + slotID);
                 return;
             }
