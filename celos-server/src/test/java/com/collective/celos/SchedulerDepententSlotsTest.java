@@ -107,11 +107,26 @@ public class SchedulerDepententSlotsTest {
         SlotID id4 = new SlotID(new WorkflowID("workflow-4"), scheduledTime);
         SlotID id5 = new SlotID(new WorkflowID("workflow-5"), scheduledTime);
         SlotID id5_offset = new SlotID(new WorkflowID("workflow-5"), scheduledTime.plusHours(1));
+        SlotID id8 = new SlotID(new WorkflowID("workflow-8"), scheduledTime);
 
-        Assert.assertEquals(Sets.newHashSet(id2, id3, id5), scheduler.getDownstreamSlots(id1));
-        Assert.assertEquals(Sets.newHashSet(id3), scheduler.getDownstreamSlots(id2));
-        Assert.assertEquals(Sets.newHashSet(), scheduler.getDownstreamSlots(id3));
-        Assert.assertEquals(Sets.newHashSet(id5_offset), scheduler.getDownstreamSlots(id4));
+        Assert.assertEquals(Sets.newHashSet(id2, id3, id5), scheduler.getDownstreamSlots(id1, false));
+        Assert.assertEquals(Sets.newHashSet(id3), scheduler.getDownstreamSlots(id2, false));
+        Assert.assertEquals(Sets.newHashSet(id8), scheduler.getDownstreamSlots(id3, false));
+        Assert.assertEquals(Sets.newHashSet(id5_offset), scheduler.getDownstreamSlots(id4, false));
+    }
+
+    @Test
+    public void testDownstreamTransitive() throws Exception {
+
+        ScheduledTime scheduledTime = new ScheduledTime("2014-03-10T12:00:00.000Z");
+        SlotID id1 = new SlotID(new WorkflowID("workflow-1"), scheduledTime);
+        SlotID id2 = new SlotID(new WorkflowID("workflow-2"), scheduledTime);
+        SlotID id3 = new SlotID(new WorkflowID("workflow-3"), scheduledTime);
+        SlotID id5 = new SlotID(new WorkflowID("workflow-5"), scheduledTime);
+        SlotID id8 = new SlotID(new WorkflowID("workflow-8"), scheduledTime);
+        SlotID id9 = new SlotID(new WorkflowID("workflow-9"), scheduledTime);
+
+        Assert.assertEquals(Sets.newHashSet(id2, id3, id5, id8, id9), scheduler.getDownstreamSlots(id1, true));
     }
 
     @Test
@@ -122,15 +137,15 @@ public class SchedulerDepententSlotsTest {
         SlotID id6 = new SlotID(new WorkflowID("workflow-6-daily"), scheduledTime);
         SlotID id7 = new SlotID(new WorkflowID("workflow-7-depend-daily"), scheduledTime);
 
-        Set<SlotID> idSet5 = scheduler.getDownstreamSlots(id6);
+        Set<SlotID> idSet5 = scheduler.getDownstreamSlots(id6, false);
         Assert.assertEquals(idSet5, Sets.newHashSet(id7));
 
         SlotID id5_1 = new SlotID(new WorkflowID("workflow-5"), scheduledTime);
-        Set<SlotID> idSet5_1 = scheduler.getDownstreamSlots(id5_1);
+        Set<SlotID> idSet5_1 = scheduler.getDownstreamSlots(id5_1, false);
         Assert.assertEquals(idSet5_1, Sets.newHashSet(id6));
 
         SlotID id5_2 = new SlotID(new WorkflowID("workflow-5"), scheduledTime.plusHours(1));
-        Set<SlotID> idSet5_2 = scheduler.getDownstreamSlots(id5_2);
+        Set<SlotID> idSet5_2 = scheduler.getDownstreamSlots(id5_2, false);
         Assert.assertEquals(idSet5_2, Sets.newHashSet());
     }
 
@@ -140,7 +155,7 @@ public class SchedulerDepententSlotsTest {
         ScheduledTime scheduledTime = new ScheduledTime("2014-03-10T12:00:01.000Z");
 
         SlotID id1 = new SlotID(new WorkflowID("workflow-1"), scheduledTime);
-        Set<SlotID> idSet2 = scheduler.getDownstreamSlots(id1);
+        Set<SlotID> idSet2 = scheduler.getDownstreamSlots(id1, false);
         Assert.assertEquals(idSet2.size(), 0);
     }
 }

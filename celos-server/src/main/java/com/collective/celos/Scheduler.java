@@ -230,13 +230,19 @@ public class Scheduler {
         return dependentSlots.stream().filter(this::slotIsDefined).collect(Collectors.toSet());
     }
 
-    public Set<SlotID> getDownstreamSlots(final SlotID id) throws Exception {
+    public Set<SlotID> getDownstreamSlots(final SlotID id, boolean recursively) throws Exception {
         Set<SlotID> dependentSlots = new HashSet<>();
         for (Workflow workflow: configuration.getWorkflows()) {
             for (ScheduledTime time : workflow.getTrigger().findTimesThatDependOnSlot(id)) {
                 SlotID candidate = new SlotID(workflow.getID(), time);
                 if (slotIsDefined(candidate)) {
-                    dependentSlots.add(candidate);
+                    if (recursively) {
+                        dependentSlots.add(candidate);
+                        dependentSlots.addAll(getDownstreamSlots(candidate, true));
+                    } else {
+                        dependentSlots.add(candidate);
+                    }
+
                 }
             }
         }

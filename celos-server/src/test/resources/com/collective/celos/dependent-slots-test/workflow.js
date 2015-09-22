@@ -75,3 +75,18 @@ celos.defineWorkflow({
     "externalService": new WorkflowConfigurationParserTest$TestExternalService()
 });
 
+celos.defineWorkflow({
+    "id": "workflow-8",
+    "schedule": celos.hourlySchedule(),
+    "schedulingStrategy": celos.serialSchedulingStrategy(),
+    "trigger": celos.successTrigger("workflow-3"),
+    "externalService": new WorkflowConfigurationParserTest$TestExternalService()
+});
+
+celos.defineWorkflow({
+    "id": "workflow-9",
+    "schedule": celos.hourlySchedule(),
+    "schedulingStrategy": celos.serialSchedulingStrategy(),
+    "trigger": celos.successTrigger("workflow-8"),
+    "externalService": new WorkflowConfigurationParserTest$TestExternalService()
+});
