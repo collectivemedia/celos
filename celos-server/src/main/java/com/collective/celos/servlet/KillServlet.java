@@ -15,15 +15,15 @@
  */
 package com.collective.celos.servlet;
 
+import com.collective.celos.*;
+import org.apache.log4j.Logger;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.collective.celos.*;
-import org.apache.log4j.Logger;
-
 /**
- * Posting to this servlet reruns the specified slot.
+ * Posting to this servlet kills the specified slot's underlying job.
  * 
  * Parameters:
  * 
@@ -32,16 +32,18 @@ import org.apache.log4j.Logger;
  * time -- scheduled time of slot
  */
 @SuppressWarnings("serial")
-public class RerunServlet extends AbstractServlet {
+public class KillServlet extends AbstractServlet {
     
-    private static Logger LOGGER = Logger.getLogger(RerunServlet.class);
+    private static Logger LOGGER = Logger.getLogger(KillServlet.class);
+    
+    private static final String ID_PARAM = "id";
 
     protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException {
         try {
             ScheduledTime time = getRequestTime(req);
-            String id = req.getParameter(CelosClient.ID_PARAM);
+            String id = req.getParameter(ID_PARAM);
             if (id == null) {
-                res.sendError(HttpServletResponse.SC_BAD_REQUEST, CelosClient.ID_PARAM + " parameter missing.");
+                res.sendError(HttpServletResponse.SC_BAD_REQUEST, ID_PARAM + " parameter missing.");
                 return;
             }
 
@@ -53,45 +55,28 @@ public class RerunServlet extends AbstractServlet {
                 return;
             }
 
-            SlotID slot = new SlotID(workflowID, time);
+            SlotID slotID = new SlotID(workflowID, time);
             if (!workflow.getSchedule().isTimeInSchedule(time, scheduler)) {
-                res.sendError(HttpServletResponse.SC_NOT_FOUND, "Slot is not found: " + slot);
+                res.sendError(HttpServletResponse.SC_NOT_FOUND, "Slot is not found: " + slotID);
                 return;
             }
-
-            Boolean rerunDownstream = Boolean.parseBoolean(req.getParameter(CelosClient.RERUN_DOWNSTREAM_PARAM));
-            Boolean rerunUpstream = Boolean.parseBoolean(req.getParameter(CelosClient.RERUN_UPSTREAM_PARAM));
-
             StateDatabase db = scheduler.getStateDatabase();
+            SlotState state = db.getSlotState(slotID);
 
-            rerunSlot(db, slot);
-            if (rerunDownstream) {
-                for (SlotID depSlot : scheduler.getDownstreamSlots(slot)) {
-                    rerunSlot(db, depSlot);
+            LOGGER.info("Killing slot: " + slotID);
+            if (state == null) {
+                db.putSlotState(new SlotState(slotID, SlotState.Status.KILLED));
+            } else {
+                if (state.getExternalID() != null) {
+                    workflow.getExternalService().kill(slotID, state.getExternalID());
                 }
+                SlotState newState = state.transitionToKill();
+                db.putSlotState(newState);
             }
-            if (rerunUpstream) {
-                for (SlotID depSlot : scheduler.getUpstreamSlots(slot)) {
-                    rerunSlot(db, depSlot);
-                }
-            }
+
         } catch(Exception e) {
             throw new ServletException(e);
         }
-    }
-
-    private void rerunSlot(StateDatabase db, SlotID slot) throws Exception {
-        SlotState state = db.getSlotState(slot);
-        if (state != null) {
-            updateSlotToRerun(state, db);
-        }
-        db.markSlotForRerun(slot, ScheduledTime.now());
-    }
-
-    void updateSlotToRerun(SlotState state, StateDatabase db) throws Exception {
-        LOGGER.info("Scheduling Slot for rerun: " + state.getSlotID());
-        SlotState newState = state.transitionToRerun();
-        db.putSlotState(newState);
     }
 
 }

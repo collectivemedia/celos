@@ -41,6 +41,8 @@ public class CelosClient {
 
     private static final String SCHEDULER_PATH = "/scheduler";
     private static final String RERUN_PATH = "/rerun";
+    private static final String KILL_PATH = "/kill";
+    private static final String PAUSE_PATH = "/pause";
     private static final String SLOT_STATE_PATH = "/slot-state";
     private static final String CLEAR_CACHE_PATH = "/clear-cache";
     private static final String WORKFLOW_LIST_PATH = "/workflow-list";
@@ -55,6 +57,7 @@ public class CelosClient {
     public static final String RERUN_UPSTREAM_PARAM = "rerunUpstream";
     public static final String WORKFLOW_SLOTS_INFO_NODE = "info";
     public static final String WORKFLOW_SLOTS_SLOTS_NODE = "slots";
+    public static final String WORKFLOW_SLOTS_PAUSED_NODE = "paused";
 
     private final HttpClient client;
     private final ScheduledTimeFormatter timeFormatter;
@@ -170,6 +173,22 @@ public class CelosClient {
         executePost(uriBuilder.build());
     }
 
+    public void setWorkflowPaused(WorkflowID workflowID, Boolean paused) throws Exception {
+        URIBuilder uriBuilder = new URIBuilder(address);
+        uriBuilder.setPath(uriBuilder.getPath() + PAUSE_PATH);
+        uriBuilder.addParameter(ID_PARAM, workflowID.toString());
+        uriBuilder.addParameter(WORKFLOW_SLOTS_PAUSED_NODE, paused.toString());
+        executePost(uriBuilder.build());
+    }
+
+    public void kill(WorkflowID workflowID, ScheduledTime scheduledTime) throws Exception {
+        URIBuilder uriBuilder = new URIBuilder(address);
+        uriBuilder.setPath(uriBuilder.getPath() + KILL_PATH);
+        uriBuilder.addParameter(ID_PARAM, workflowID.toString());
+        uriBuilder.addParameter(TIME_PARAM, scheduledTime.toString());
+        executePost(uriBuilder.build());
+    }
+
     private void executePost(URI request) throws IOException {
         HttpPost post = new HttpPost(request);
         HttpResponse postResponse = execute(post);
@@ -203,13 +222,14 @@ public class CelosClient {
     WorkflowStatus parseWorkflowStatus(WorkflowID workflowID, InputStream content) throws IOException {
         JsonNode node = objectMapper.readValue(content, JsonNode.class);
         WorkflowInfo info = objectMapper.treeToValue(node.get(WORKFLOW_SLOTS_INFO_NODE), WorkflowInfo.class);
+        Boolean paused = node.get(WORKFLOW_SLOTS_PAUSED_NODE).asBoolean();
 
         Iterator<JsonNode> elems = node.get(WORKFLOW_SLOTS_SLOTS_NODE).elements();
         List<SlotState> result = Lists.newArrayList();
         while (elems.hasNext()) {
             result.add(SlotState.fromJSONNode(workflowID, elems.next()));
         }
-        return new WorkflowStatus(info, result);
+        return new WorkflowStatus(info, result, paused);
     }
 
 }

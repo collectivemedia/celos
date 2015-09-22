@@ -326,6 +326,7 @@ Celos takes the following action, depending on the state of the slot:
 |SUCCESS|Do nothing.
 |FAILURE|Do nothing.
 |WAIT_TIMEOUT|Do nothing.
+|KILLED|Do nothing.
 |===
 
 The state database contains additional information about slots that
@@ -1067,6 +1068,9 @@ prints:
 Doing a GET to this servlet returns the slots of a workflow within a
 time range.
 
+It also returns other information about the workflow, such as its
+paused state (see the <<pause>> servlet).
+
 ===== Parameters
 
 [options="header"]
@@ -1088,6 +1092,7 @@ prints:
 
 ....
 {
+  "paused": false,
   "slots" : [ {
     "time" : "2015-09-13T13:50:00.000Z",
     "status" : "READY",
@@ -1172,6 +1177,57 @@ reset to 0.
 [source,shell]
 ....
 curl -X POST "localhost:1234/rerun?id=workflow-1&time=2015-09-13T13:40Z"
+....
+
+==== /kill
+
+Doing a POST to this servlet marks a slot as killed and also kills its
+underlying Oozie job, if any.
+
+===== Parameters
+
+[options="header"]
+|===
+|Name|Type|Required|Description
+|`id`|String|Yes|ID of the workflow.
+|`time`|String (ISO 8601)|Yes|Scheduled time of slot to kill.
+|===
+
+===== Example
+
+[source,shell]
+....
+curl -X POST "localhost:1234/kill?id=workflow-1&time=2015-09-13T13:40Z"
+....
+
+==== /pause
+
+Doing a POST to this servlet pauses or unpauses a workflow.  While a
+workflow is paused, the scheduler will simply ignore it.  This means
+it doesn't check any triggers for the workflow, doesn't submit new
+jobs to the workflow's external service, and doesn't perform any other
+action related to the workflow.
+
+You can check whether a workflow is paused by looking at the `paused`
+field of the result of the <<workflow-slots>> servlet.
+
+===== Parameters
+
+[options="header"]
+|===
+|Name|Type|Required|Description
+|`id`|String|Yes|ID of the workflow.
+|`paused`|Boolean|Yes|Whether to pause (`true`) or unpause (`false`) the workflow.
+|===
+
+===== Example
+
+[source,shell]
+....
+# Pause a workflow
+curl -X POST "localhost:1234/pause?id=workflow-1&paused=true"
+# Unpause a workflow
+curl -X POST "localhost:1234/pause?id=workflow-1&paused=false"
 ....
 
 == Celos CI Reference

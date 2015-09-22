@@ -71,6 +71,15 @@ public class OozieExternalService implements ExternalService {
         }
     }
 
+    @Override
+    public void kill(SlotID unused, String externalID) throws ExternalServiceException {
+        try {
+            client.kill(externalID);
+        } catch (OozieClientException e) {
+            throw new ExternalServiceException(e);
+        }
+    }
+
     Properties setupRunProperties(ObjectNode defaults, SlotID id) {
         ScheduledTime t = id.getScheduledTime();
         Properties runProperties = setupDefaultProperties(defaults, t);

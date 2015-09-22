@@ -40,6 +40,7 @@ import java.util.List;
  *           { "name": "Jack Smith", "email": "Jack.Smith@Gmail.Com"},
  *       ]
  *   },
+ *   "paused": false,
  *   "slots": [
  *      { "time": "2013-12-07T13:00:00.000Z", "status": "RUNNING", "externalID": "237982137-371832798321-W", retryCount: 5 },
  *      { "time": "2013-12-07T14:00:00.000Z", "status": "READY", "externalID": null, retryCount: 0 },
@@ -56,12 +57,6 @@ import java.util.List;
  */
 @SuppressWarnings("serial")
 public class JSONWorkflowSlotsServlet extends AbstractJSONServlet {
-
-//    private static final String ID_PARAM = "id";
-//    private static final String INFO_PARAM = "info";
-//    private static final String SLOTS_PARAM = "slots";
-//    private static final String START_TIME_PARAM = "start";
-//    private static final String END_TIME_PARAM = "end";
 
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException {
         String id = req.getParameter(CelosClient.ID_PARAM);
@@ -92,8 +87,11 @@ public class JSONWorkflowSlotsServlet extends AbstractJSONServlet {
             }
 
             ObjectNode node = mapper.createObjectNode();
+
             node.put(CelosClient.WORKFLOW_SLOTS_INFO_NODE, (JsonNode) mapper.valueToTree(wf.getWorkflowInfo()));
+            node.put(CelosClient.WORKFLOW_SLOTS_PAUSED_NODE, scheduler.getStateDatabase().isPaused(wf.getID()));
             node.putArray(CelosClient.WORKFLOW_SLOTS_SLOTS_NODE).addAll(objectNodes);
+
             writer.writeValue(res.getOutputStream(), node);
         } catch (Exception e) {
             throw new ServletException(e);

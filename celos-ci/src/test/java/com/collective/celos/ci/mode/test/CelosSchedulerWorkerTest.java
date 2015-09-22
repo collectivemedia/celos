@@ -53,7 +53,7 @@ public class CelosSchedulerWorkerTest {
 
     private WorkflowStatus createWfStatus(SlotState... states) {
         WorkflowInfo info = new WorkflowInfo(null, Collections.<WorkflowInfo.ContactsInfo>emptyList());
-        return new WorkflowStatus(info, Arrays.asList(states));
+        return new WorkflowStatus(info, Arrays.asList(states), false);
     }
 
 

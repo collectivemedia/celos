@@ -49,6 +49,7 @@ public class CelosClientTest {
         String str = "" +
                 "{\n" +
                 "\"info\": { \"url\": \"http://myurl\", \"contacts\": [ { \"name\": \"John Doe\", \"email\": \"John.Doe@Gmail.Com\"} ] },\n" +
+                "\"paused\": \"true\",\n" +
                 "\"slots\": [\n" +
                 "  {\n" +
                 "    \"time\" : \"2014-10-27T14:00:00.000Z\",\n" +
@@ -66,7 +67,11 @@ public class CelosClientTest {
                 "}";
 
         WorkflowID workflowID = new WorkflowID("123");
-        List<SlotState> result = new CelosClient(URI.create("localhost")).parseWorkflowStatus(workflowID, new ByteArrayInputStream(str.getBytes())).getSlotStates();
+
+        WorkflowStatus workflowStatus = new CelosClient(URI.create("localhost")).parseWorkflowStatus(workflowID, new ByteArrayInputStream(str.getBytes()));
+        Assert.assertTrue(workflowStatus.isPaused());
+
+        List<SlotState> result = workflowStatus.getSlotStates();
         Assert.assertEquals(result.size(), 2);
 
         ScheduledTime time1 = new ScheduledTime("2014-10-27T14:00:00.000Z");

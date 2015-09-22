@@ -58,7 +58,11 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  *       17:00:00.000Z
  *     ...
  *   ...
- *   
+ * paused/
+ *   workflow-1
+ *   workflow-2
+ *   ...
+ *
  * A JSON state file looks like this:
  * 
  * {"status":"RUNNING","externalID":"23873218-13202130978213-W"}
@@ -72,12 +76,14 @@ public class FileSystemStateDatabase implements StateDatabase {
     private static final String CHARSET = "UTF-8";
     private static final String STATE_DIR_NAME = "state";
     private static final String RERUN_DIR_NAME = "rerun";
+    private static final String PAUSED_DIR_NAME = "paused";
     private static final Logger LOGGER = Logger.getLogger(FileSystemStateDatabase.class);
 
     private final ObjectMapper mapper = new ObjectMapper();
     private final ScheduledTimeFormatter formatter = new ScheduledTimeFormatter();
     private final File stateDir;
     private final File rerunDir;
+    private final File pausedDir;
     
     /**
      * Creates a new DB that stores data in the given directory, which must exist.
@@ -88,6 +94,7 @@ public class FileSystemStateDatabase implements StateDatabase {
         }
         stateDir = new File(dir, STATE_DIR_NAME);
         rerunDir = new File(dir, RERUN_DIR_NAME);
+        pausedDir = new File(dir, PAUSED_DIR_NAME);
     }
 
     @Override
@@ -115,6 +122,10 @@ public class FileSystemStateDatabase implements StateDatabase {
     /** Returns the directory containing rerun info for the slot's workflow. */
     private File getWorkflowRerunDir(WorkflowID id) {
         return new File(rerunDir, id.toString());
+    }
+
+    private File getWorkflowPauseFile(WorkflowID id) {
+        return new File(pausedDir, id.toString());
     }
 
     private File getSlotStateFile(SlotID slotID) {
@@ -162,7 +173,22 @@ public class FileSystemStateDatabase implements StateDatabase {
         return res;
     }
 
-    private void writeJson(JsonNode obj, File file) throws JsonProcessingException, IOException {
+    @Override
+    public boolean isPaused(WorkflowID workflowID) {
+        return getWorkflowPauseFile(workflowID).exists();
+    }
+
+    @Override
+    public void setPaused(WorkflowID workflowID, boolean paused) throws IOException {
+        File file = getWorkflowPauseFile(workflowID);
+        if (paused) {
+            FileUtils.touch(file);
+        } else {
+            FileUtils.forceDelete(file);
+        }
+    }
+
+    private void writeJson(JsonNode obj, File file) throws IOException {
         String json = mapper.writeValueAsString(obj);
         FileUtils.forceMkdir(file.getParentFile());
         FileUtils.write(file, json, CHARSET);
