@@ -33,9 +33,9 @@ import java.util.Set;
  * time -- scheduled time of slot
  */
 @SuppressWarnings("serial")
-public class KIllServlet extends AbstractServlet {
+public class KillServlet extends AbstractServlet {
     
-    private static Logger LOGGER = Logger.getLogger(KIllServlet.class);
+    private static Logger LOGGER = Logger.getLogger(KillServlet.class);
     
     private static final String ID_PARAM = "id";
 
