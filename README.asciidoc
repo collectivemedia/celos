@@ -1178,6 +1178,27 @@ reset to 0.
 curl -X POST "localhost:1234/rerun?id=workflow-1&time=2015-09-13T13:40Z"
 ....
 
+==== /kill
+
+Doing a POST to this servlet marks a slot as `KILLED` and also kills
+its underlying Oozie job, if any.
+
+===== Parameters
+
+[options="header"]
+|===
+|Name|Type|Required|Description
+|`id`|String|Yes|ID of the workflow.
+|`time`|String (ISO 8601)|Yes|Scheduled time of slot to kill.
+|===
+
+===== Example
+
+[source,shell]
+....
+curl -X POST "localhost:1234/kill?id=workflow-1&time=2015-09-13T13:40Z"
+....
+
 ==== /pause
 
 Doing a POST to this servlet pauses or unpauses a workflow.  While a
