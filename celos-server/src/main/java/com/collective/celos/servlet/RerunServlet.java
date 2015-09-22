@@ -37,15 +37,13 @@ import java.util.Set;
 public class RerunServlet extends AbstractServlet {
     
     private static Logger LOGGER = Logger.getLogger(RerunServlet.class);
-    
-    private static final String ID_PARAM = "id";
 
     protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException {
         try {
             ScheduledTime time = getRequestTime(req);
-            String id = req.getParameter(ID_PARAM);
+            String id = req.getParameter(CelosClient.ID_PARAM);
             if (id == null) {
-                res.sendError(HttpServletResponse.SC_BAD_REQUEST, ID_PARAM + " parameter missing.");
+                res.sendError(HttpServletResponse.SC_BAD_REQUEST, CelosClient.ID_PARAM + " parameter missing.");
                 return;
             }
 
@@ -64,15 +62,33 @@ public class RerunServlet extends AbstractServlet {
                 return;
             }
 
+            Boolean rerunDownstream = Boolean.parseBoolean(req.getParameter(CelosClient.RERUN_DOWNSTREAM_PARAM));
+            Boolean rerunUpstream = Boolean.parseBoolean(req.getParameter(CelosClient.RERUN_UPSTREAM_PARAM));
+
             StateDatabase db = scheduler.getStateDatabase();
-            SlotState state = db.getSlotState(slot);
-            if (state != null) {
-                updateSlotToRerun(state, db);
+
+            rerunSlot(db, slot);
+            if (rerunDownstream) {
+                for (SlotID depSlot : scheduler.getDownstreamSlots(slot)) {
+                    rerunSlot(db, depSlot);
+                }
             }
-            db.markSlotForRerun(slot, ScheduledTime.now());
+            if (rerunUpstream) {
+                for (SlotID depSlot : scheduler.getUpstreamSlots(slot)) {
+                    rerunSlot(db, depSlot);
+                }
+            }
         } catch(Exception e) {
             throw new ServletException(e);
         }
+    }
+
+    private void rerunSlot(StateDatabase db, SlotID slot) throws Exception {
+        SlotState state = db.getSlotState(slot);
+        if (state != null) {
+            updateSlotToRerun(state, db);
+        }
+        db.markSlotForRerun(slot, ScheduledTime.now());
     }
 
     void updateSlotToRerun(SlotState state, StateDatabase db) throws Exception {

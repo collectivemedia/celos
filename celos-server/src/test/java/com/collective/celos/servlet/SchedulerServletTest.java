@@ -15,6 +15,7 @@
  */
 package com.collective.celos.servlet;
 
+import com.collective.celos.CelosClient;
 import com.collective.celos.WorkflowID;
 import org.junit.Assert;
 import org.junit.Test;
@@ -32,14 +33,14 @@ public class SchedulerServletTest {
     @Test
     public void parsesIDsParameterMissing() throws Exception {
         HttpServletRequest req = mock(HttpServletRequest.class);
-        when(req.getParameter(SchedulerServlet.IDS_PARAM)).thenReturn(null);
+        when(req.getParameter(CelosClient.IDS_PARAM)).thenReturn(null);
         Assert.assertEquals(Collections.emptySet(), new SchedulerServlet().getWorkflowIDs(req));
     }
     
     @Test
     public void parsesIDsParameter() throws Exception {
         HttpServletRequest req = mock(HttpServletRequest.class);
-        when(req.getParameter(SchedulerServlet.IDS_PARAM)).thenReturn("foo,bar");
+        when(req.getParameter(CelosClient.IDS_PARAM)).thenReturn("foo,bar");
         Set<WorkflowID> ids = new HashSet<>();
         ids.add(new WorkflowID("foo"));
         ids.add(new WorkflowID("bar"));

@@ -662,4 +662,16 @@ public class CelosClientServerTest {
         celosClient.rerunSlot(workflowID, new ScheduledTime("2013-11-20T12:34Z"));
     }
 
+    @Test
+    public void testRerunTransitiveUpstream() throws Exception {
+//        String path = "com/collective/celos/dependent-slots-test/workflow.js";
+//        URL resource = Thread.currentThread().getContextClassLoader().getResource(path);
+
+
+        File src = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/client/wf-list").toURI());
+        FileUtils.copyDirectory(src, workflowsDir);
+
+
+    }
+
 }

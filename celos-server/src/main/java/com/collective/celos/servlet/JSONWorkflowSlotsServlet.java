@@ -57,17 +57,17 @@ import java.util.List;
 @SuppressWarnings("serial")
 public class JSONWorkflowSlotsServlet extends AbstractJSONServlet {
 
-    private static final String ID_PARAM = "id";
-    private static final String INFO_PARAM = "info";
-    private static final String SLOTS_PARAM = "slots";
-    private static final String START_TIME_PARAM = "start";
-    private static final String END_TIME_PARAM = "end";
+//    private static final String ID_PARAM = "id";
+//    private static final String INFO_PARAM = "info";
+//    private static final String SLOTS_PARAM = "slots";
+//    private static final String START_TIME_PARAM = "start";
+//    private static final String END_TIME_PARAM = "end";
 
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException {
-        String id = req.getParameter(ID_PARAM);
+        String id = req.getParameter(CelosClient.ID_PARAM);
         try {
             if (id == null) {
-                res.sendError(HttpServletResponse.SC_BAD_REQUEST, ID_PARAM + " parameter missing.");
+                res.sendError(HttpServletResponse.SC_BAD_REQUEST, CelosClient.ID_PARAM + " parameter missing.");
                 return;
             }
             Scheduler scheduler = getOrCreateCachedScheduler();
@@ -77,8 +77,8 @@ public class JSONWorkflowSlotsServlet extends AbstractJSONServlet {
                 return;
             }
 
-            ScheduledTime endTime = getTimeParam(req, END_TIME_PARAM, new ScheduledTime(DateTime.now(DateTimeZone.UTC)));
-            ScheduledTime startTime = getTimeParam(req, START_TIME_PARAM, scheduler.getWorkflowStartTime(wf, endTime));
+            ScheduledTime endTime = getTimeParam(req, CelosClient.END_TIME_PARAM, new ScheduledTime(DateTime.now(DateTimeZone.UTC)));
+            ScheduledTime startTime = getTimeParam(req, CelosClient.START_TIME_PARAM, scheduler.getWorkflowStartTime(wf, endTime));
 
             if (startTime.plusHours(scheduler.getSlidingWindowHours()).getDateTime().isBefore(endTime.getDateTime())) {
                 res.sendError(HttpServletResponse.SC_BAD_REQUEST, "Time interval between start and end is limited to: " + scheduler.getSlidingWindowHours() + " hours");
@@ -92,8 +92,8 @@ public class JSONWorkflowSlotsServlet extends AbstractJSONServlet {
             }
 
             ObjectNode node = mapper.createObjectNode();
-            node.put(INFO_PARAM, (JsonNode) mapper.valueToTree(wf.getWorkflowInfo()));
-            node.putArray(SLOTS_PARAM).addAll(objectNodes);
+            node.put(CelosClient.WORKFLOW_SLOTS_INFO_NODE, (JsonNode) mapper.valueToTree(wf.getWorkflowInfo()));
+            node.putArray(CelosClient.WORKFLOW_SLOTS_SLOTS_NODE).addAll(objectNodes);
             writer.writeValue(res.getOutputStream(), node);
         } catch (Exception e) {
             throw new ServletException(e);

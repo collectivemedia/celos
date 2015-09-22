@@ -18,6 +18,7 @@ package com.collective.celos;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import org.apache.hadoop.ha.HAServiceProtocol;
 import org.apache.log4j.Logger;
 
 import com.collective.celos.trigger.Trigger;
@@ -226,23 +227,25 @@ public class Scheduler {
 
     public Set<SlotID> getUpstreamSlots(SlotID id) throws Exception {
         Workflow slotWorkflow = configuration.findWorkflow(id.getWorkflowID());
-        Set<SlotID> dependentSlots = slotWorkflow.getTrigger().findSlotsThatDependOnTime(id.getScheduledTime());
-        return dependentSlots.stream().filter(this::slotIsDefined).collect(Collectors.toSet());
+        Set<SlotID> slots = slotWorkflow.getTrigger().findSlotsThatDependOnTime(id.getScheduledTime());
+        Set<SlotID> dependentSlots = new HashSet();
+        for (SlotID candidate: slots) {
+            if (slotIsDefined(candidate)) {
+                dependentSlots.add(candidate);
+                dependentSlots.addAll(getUpstreamSlots(candidate));
+            }
+        }
+        return dependentSlots;
     }
 
-    public Set<SlotID> getDownstreamSlots(final SlotID id, boolean recursively) throws Exception {
+    public Set<SlotID> getDownstreamSlots(SlotID id) throws Exception {
         Set<SlotID> dependentSlots = new HashSet<>();
         for (Workflow workflow: configuration.getWorkflows()) {
             for (ScheduledTime time : workflow.getTrigger().findTimesThatDependOnSlot(id)) {
                 SlotID candidate = new SlotID(workflow.getID(), time);
                 if (slotIsDefined(candidate)) {
-                    if (recursively) {
-                        dependentSlots.add(candidate);
-                        dependentSlots.addAll(getDownstreamSlots(candidate, true));
-                    } else {
-                        dependentSlots.add(candidate);
-                    }
-
+                    dependentSlots.add(candidate);
+                    dependentSlots.addAll(getDownstreamSlots(candidate));
                 }
             }
         }
