@@ -78,6 +78,13 @@ public class HourlyScheduleTest {
         Assert.assertEquals(new TreeSet<ScheduledTime>(expectedHours), hours);
     }
 
+    @Test
+    public void isTimeFitsSchedule() {
+        Schedule sch = makeHourlySchedule();
+        Assert.assertTrue(sch.isTimeFitsSchedule(new ScheduledTime("2013-11-25T20:00Z"), null));
+        Assert.assertFalse(sch.isTimeFitsSchedule(new ScheduledTime("2013-11-25T20:01Z"), null));
+    }
+
     private HourlySchedule makeHourlySchedule() {
         return new HourlySchedule();
     }

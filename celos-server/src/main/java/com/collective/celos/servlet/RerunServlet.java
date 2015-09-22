@@ -58,8 +58,7 @@ public class RerunServlet extends AbstractServlet {
             }
 
             SlotID slot = new SlotID(workflowID, time);
-            Set<ScheduledTime> timeSet = workflow.getSchedule().getScheduledTimes(scheduler, time.minusSeconds(1), time.plusSeconds(1));
-            if (!timeSet.contains(time)) {
+            if (!workflow.getSchedule().isTimeFitsSchedule(time, scheduler)) {
                 res.sendError(HttpServletResponse.SC_NOT_FOUND, "Slot is not found: " + slot);
                 return;
             }

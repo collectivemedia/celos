@@ -57,8 +57,7 @@ public class KillServlet extends AbstractServlet {
             }
 
             SlotID slotID = new SlotID(workflowID, time);
-            Set<ScheduledTime> timeSet = workflow.getSchedule().getScheduledTimes(scheduler, time.minusSeconds(1), time.plusSeconds(1));
-            if (!timeSet.contains(time)) {
+            if (!workflow.getSchedule().isTimeFitsSchedule(time, scheduler)) {
                 res.sendError(HttpServletResponse.SC_NOT_FOUND, "Slot is not found: " + slotID);
                 return;
             }
@@ -69,11 +68,11 @@ public class KillServlet extends AbstractServlet {
             if (state == null) {
                 db.putSlotState(new SlotState(slotID, SlotState.Status.KILLED));
             } else {
-                SlotState newState = state.transitionToKill();
-                db.putSlotState(newState);
                 if (state.getExternalID() != null) {
                     workflow.getExternalService().kill(slotID, state.getExternalID());
                 }
+                SlotState newState = state.transitionToKill();
+                db.putSlotState(newState);
             }
 
         } catch(Exception e) {

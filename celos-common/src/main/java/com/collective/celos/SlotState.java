@@ -137,7 +137,7 @@ public class SlotState extends ValueObject {
         if (status.getType() != StatusType.INDETERMINATE) {
             throw new IllegalStateException("Slot must be in indeterminate state, but is: " + status);
         }
-        return new SlotState(slotID, Status.KILLED, null, 0); // reset retryCount to 0
+        return new SlotState(slotID, Status.KILLED, externalID, 0); // reset retryCount to 0
     }
 
     public SlotState transitionToRerun() {
