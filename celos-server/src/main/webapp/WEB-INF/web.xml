@@ -87,6 +87,15 @@
     </servlet-mapping>
 
     <servlet>
+        <servlet-name>WorkflowFileServlet</servlet-name>
+        <servlet-class>com.collective.celos.servlet.WorkflowFileServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>WorkflowFileServlet</servlet-name>
+        <url-pattern>/workflow-file</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
         <servlet-name>ClearCacheServlet</servlet-name>
         <servlet-class>com.collective.celos.servlet.ClearCacheServlet</servlet-class>
     </servlet>
