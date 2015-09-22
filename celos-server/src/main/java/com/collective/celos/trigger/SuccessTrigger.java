@@ -19,6 +19,7 @@ package com.collective.celos.trigger;
 import com.collective.celos.*;
 import com.google.common.collect.Sets;
 
+import java.util.Collections;
 import java.util.Set;
 
 /**
@@ -41,8 +42,15 @@ public class SuccessTrigger extends Trigger {
         return makeTriggerStatus(ready, humanReadableDescription(ready, slotId));
     }
 
-    public Set<SlotID> findDependentSlots(ScheduledTime scheduledTime) {
+    public Set<SlotID> findSlotsThatDependOnTime(ScheduledTime scheduledTime) {
         return Sets.newHashSet(new SlotID(triggerWorkflowID, scheduledTime));
+    }
+
+    public Set<ScheduledTime> findTimesThatDependOnSlot(SlotID other) {
+        if (triggerWorkflowID.equals(other.getWorkflowID())) {
+            return Sets.newHashSet(other.getScheduledTime());
+        }
+        return Collections.emptySet();
     }
 
     private String humanReadableDescription(boolean ready, SlotID slotId) {

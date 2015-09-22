@@ -63,7 +63,7 @@ celos.defineWorkflow({
     "id": "workflow-6-daily",
     "schedule": celos.cronSchedule("0 0 0 * * ?"),
     "schedulingStrategy": celos.serialSchedulingStrategy(),
-    "trigger": celos.notTrigger(celos.alwaysTrigger()),
+    "trigger": celos.successTrigger("workflow-5"),
     "externalService": new WorkflowConfigurationParserTest$TestExternalService()
 });
 

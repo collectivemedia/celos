@@ -44,8 +44,13 @@ public class OffsetTrigger extends Trigger {
     }
 
     @Override
-    public Set<SlotID> findDependentSlots(ScheduledTime scheduledTime) {
-        return trigger.findDependentSlots(scheduledTime.plusSeconds(seconds));
+    public Set<SlotID> findSlotsThatDependOnTime(ScheduledTime scheduledTime) {
+        return trigger.findSlotsThatDependOnTime(scheduledTime.plusSeconds(seconds));
+    }
+
+    @Override
+    public Set<ScheduledTime> findTimesThatDependOnSlot(SlotID other) {
+        return trigger.findTimesThatDependOnSlot(new SlotID(other.getWorkflowID(), other.getScheduledTime().plusHours(1)));
     }
 
     private String humanReadableDescription(boolean ready) {

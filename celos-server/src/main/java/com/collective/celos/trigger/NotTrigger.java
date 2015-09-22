@@ -43,8 +43,13 @@ public class NotTrigger extends Trigger {
     }
 
     @Override
-    public Set<SlotID> findDependentSlots(ScheduledTime scheduledTime) {
-        return trigger.findDependentSlots(scheduledTime);
+    public Set<SlotID> findSlotsThatDependOnTime(ScheduledTime scheduledTime) {
+        return trigger.findSlotsThatDependOnTime(scheduledTime);
+    }
+
+    @Override
+    public Set<ScheduledTime> findTimesThatDependOnSlot(SlotID other) {
+        return trigger.findTimesThatDependOnSlot(other);
     }
 
     private String humanReadableDescription(boolean ready) {

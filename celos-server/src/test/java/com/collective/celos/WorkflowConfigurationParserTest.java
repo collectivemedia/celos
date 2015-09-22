@@ -80,7 +80,12 @@ public class WorkflowConfigurationParserTest {
         }
 
         @Override
-        public Set<SlotID> findDependentSlots(ScheduledTime scheduledTime) {
+        public Set<SlotID> findSlotsThatDependOnTime(ScheduledTime scheduledTime) {
+            return null;
+        }
+
+        @Override
+        public Set<ScheduledTime> findTimesThatDependOnSlot(SlotID other) {
             return null;
         }
 

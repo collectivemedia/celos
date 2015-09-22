@@ -49,5 +49,8 @@ public abstract class Trigger {
         return makeTriggerStatus(ready, description, Collections.emptyList());
     }
 
-    public abstract Set<SlotID> findDependentSlots(ScheduledTime scheduledTime);
+    public abstract Set<SlotID> findSlotsThatDependOnTime(ScheduledTime scheduledTime);
+
+    public abstract Set<ScheduledTime> findTimesThatDependOnSlot(SlotID other);
+
 }

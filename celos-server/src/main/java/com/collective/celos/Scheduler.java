@@ -16,10 +16,8 @@
 package com.collective.celos;
 
 import java.util.*;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
-import com.collective.celos.trigger.TriggerStatus;
 import org.apache.log4j.Logger;
 
 import com.collective.celos.trigger.Trigger;
@@ -226,10 +224,23 @@ public class Scheduler {
         return database;
     }
 
-    public Set<SlotID> findDependentSlots(SlotID id) throws Exception {
+    public Set<SlotID> getUpstreamSlots(SlotID id) throws Exception {
         Workflow slotWorkflow = configuration.findWorkflow(id.getWorkflowID());
-        Set<SlotID> dependentSlots = slotWorkflow.getTrigger().findDependentSlots(id.getScheduledTime());
+        Set<SlotID> dependentSlots = slotWorkflow.getTrigger().findSlotsThatDependOnTime(id.getScheduledTime());
         return dependentSlots.stream().filter(this::slotIsDefined).collect(Collectors.toSet());
+    }
+
+    public Set<SlotID> getDownstreamSlots(final SlotID id) throws Exception {
+        Set<SlotID> dependentSlots = new HashSet<>();
+        for (Workflow workflow: configuration.getWorkflows()) {
+            for (ScheduledTime time : workflow.getTrigger().findTimesThatDependOnSlot(id)) {
+                SlotID candidate = new SlotID(workflow.getID(), time);
+                if (slotIsDefined(candidate)) {
+                    dependentSlots.add(candidate);
+                }
+            }
+        }
+        return dependentSlots;
     }
 
     private boolean slotIsDefined(SlotID slotID) {

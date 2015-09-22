@@ -52,12 +52,21 @@ public class AndTrigger extends Trigger {
     }
 
     @Override
-    public Set<SlotID> findDependentSlots(ScheduledTime scheduledTime) {
+    public Set<SlotID> findSlotsThatDependOnTime(ScheduledTime scheduledTime) {
         Set<SlotID> idSet = new HashSet<>();
         for (Trigger childTrigger: triggers) {
-            idSet.addAll(childTrigger.findDependentSlots(scheduledTime));
+            idSet.addAll(childTrigger.findSlotsThatDependOnTime(scheduledTime));
         }
         return idSet;
+    }
+
+    @Override
+    public Set<ScheduledTime> findTimesThatDependOnSlot(SlotID other) {
+        Set<ScheduledTime> times = new HashSet<>();
+        for (Trigger childTrigger: triggers) {
+            times.addAll(childTrigger.findTimesThatDependOnSlot(other));
+        }
+        return times;
     }
 
     private String humanReadableDescription(boolean ready) {

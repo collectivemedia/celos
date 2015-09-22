@@ -40,7 +40,12 @@ public class OnDateTrigger extends Trigger {
     }
 
     @Override
-    public Set<SlotID> findDependentSlots(ScheduledTime scheduledTime) {
+    public Set<SlotID> findSlotsThatDependOnTime(ScheduledTime scheduledTime) {
+        return Collections.emptySet();
+    }
+
+    @Override
+    public Set<ScheduledTime> findTimesThatDependOnSlot(SlotID other) {
         return Collections.emptySet();
     }
 
