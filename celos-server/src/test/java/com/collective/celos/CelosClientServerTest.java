@@ -16,7 +16,6 @@
 package com.collective.celos;
 
 import com.collective.celos.server.CelosServer;
-import com.collective.celos.server.Main;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -662,4 +661,39 @@ public class CelosClientServerTest {
         celosClient.rerunSlot(workflowID, new ScheduledTime("2013-11-20T12:34Z"));
     }
 
+    @Test
+    public void testPauseWorkflow() throws Exception {
+        File src = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/client/wf-list").toURI());
+        FileUtils.copyDirectory(src, workflowsDir);
+
+        WorkflowID workflowID = new WorkflowID("workflow-2");
+
+        WorkflowStatus workflowStatus = celosClient.getWorkflowStatus(workflowID);
+        List<SlotState> slotStates = workflowStatus.getSlotStates();
+        SlotState slotStateLast = slotStates.get(slotStates.size() - 1);
+        Assert.assertEquals(slotStateLast.getStatus(), SlotState.Status.WAITING);
+        Assert.assertFalse(workflowStatus.isPaused());
+
+        celosClient.setWorkflowPaused(workflowID, true);
+
+        celosClient.iterateScheduler();
+        celosClient.iterateScheduler();
+
+        WorkflowStatus workflowStatus2 = celosClient.getWorkflowStatus(workflowID);
+        List<SlotState> slotStates2 = workflowStatus2.getSlotStates();
+        SlotState slotStateLast2 = workflowStatus2.getSlotStates().get(slotStates2.size() - 1);
+        Assert.assertEquals(slotStateLast2.getStatus(), SlotState.Status.WAITING);
+        Assert.assertTrue(workflowStatus2.isPaused());
+
+        celosClient.setWorkflowPaused(workflowID, false);
+
+        celosClient.iterateScheduler();
+        celosClient.iterateScheduler();
+
+        WorkflowStatus workflowStatus3 = celosClient.getWorkflowStatus(workflowID);
+        List<SlotState> slotStates3 = workflowStatus3.getSlotStates();
+        SlotState slotStateLast3 = workflowStatus3.getSlotStates().get(slotStates3.size() - 1);
+        Assert.assertEquals(slotStateLast3.getStatus(), SlotState.Status.RUNNING);
+        Assert.assertFalse(workflowStatus3.isPaused());
+    }
 }

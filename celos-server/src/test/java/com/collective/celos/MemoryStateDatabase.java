@@ -29,6 +29,7 @@ public class MemoryStateDatabase implements StateDatabase {
 
     protected final Map<SlotID, SlotState> map = new HashMap<SlotID, SlotState>();
     protected final Set<SlotID> rerun = new HashSet<SlotID>();
+    protected final Set<WorkflowID> pausedWorkflows = new HashSet<>();
     
     @Override
     public SlotState getSlotState(SlotID id) throws Exception {
@@ -59,6 +60,20 @@ public class MemoryStateDatabase implements StateDatabase {
             }
         }
         return res;
+    }
+
+    @Override
+    public boolean isPaused(WorkflowID workflowID) {
+        return pausedWorkflows.contains(workflowID);
+    }
+
+    @Override
+    public void setPaused(WorkflowID workflowID, boolean paused) {
+        if (paused) {
+            pausedWorkflows.add(workflowID);
+        } else {
+            pausedWorkflows.remove(workflowID);
+        }
     }
 
 }
