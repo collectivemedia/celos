@@ -11,4 +11,4 @@ a { text-decoration: none; }
 .RUNNING, .READY { background-color: #ffc; }
 .SUCCESS { background-color: #cfc; }
 .WAITING { background-color: #ccf; }
-.FAILURE, .WAIT_TIMEOUT { background-color: #fcc; }
+.FAILURE, .WAIT_TIMEOUT, .KILLED { background-color: #fcc; }
