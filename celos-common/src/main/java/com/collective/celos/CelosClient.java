@@ -32,6 +32,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.*;
 
 /**
@@ -41,6 +42,7 @@ public class CelosClient {
 
     private static final String SCHEDULER_PATH = "/scheduler";
     private static final String RERUN_PATH = "/rerun";
+    private static final String KILL_PATH = "/kill";
     private static final String PAUSE_PATH = "/pause";
     private static final String SLOT_STATE_PATH = "/slot-state";
     private static final String CLEAR_CACHE_PATH = "/clear-cache";
@@ -158,6 +160,14 @@ public class CelosClient {
         uriBuilder.setPath(uriBuilder.getPath() + PAUSE_PATH);
         uriBuilder.addParameter(ID_PARAM, workflowID.toString());
         uriBuilder.addParameter(PAUSE_PARAM, paused.toString());
+        executePost(uriBuilder.build());
+    }
+
+    public void kill(WorkflowID workflowID, ScheduledTime scheduledTime) throws Exception {
+        URIBuilder uriBuilder = new URIBuilder(address);
+        uriBuilder.setPath(uriBuilder.getPath() + KILL_PATH);
+        uriBuilder.addParameter(ID_PARAM, workflowID.toString());
+        uriBuilder.addParameter(TIME_PARAM, scheduledTime.toString());
         executePost(uriBuilder.build());
     }
 

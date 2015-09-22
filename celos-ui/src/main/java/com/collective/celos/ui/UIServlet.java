@@ -137,6 +137,7 @@ public class UIServlet extends HttpServlet {
         STATUS_TO_SHORT_NAME.put(SlotState.Status.SUCCESS, "&nbsp;&nbsp;&nbsp;&nbsp;");
         STATUS_TO_SHORT_NAME.put(SlotState.Status.WAIT_TIMEOUT, "time");
         STATUS_TO_SHORT_NAME.put(SlotState.Status.WAITING, "wait");
+        STATUS_TO_SHORT_NAME.put(SlotState.Status.KILLED, "kill");
         if (STATUS_TO_SHORT_NAME.size() != SlotState.Status.values().length) {
             throw new Error("STATUS_TO_SHORT_NAME mapping is incomplete");
         }

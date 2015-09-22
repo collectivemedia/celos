@@ -49,7 +49,12 @@ public class MockExternalService implements ExternalService {
     public ExternalStatus getStatus(SlotID id, String externalID) {
         return status;
     }
-    
+
+    @Override
+    public void kill(SlotID id, String externalID) throws ExternalServiceException {
+
+    }
+
     public Map<SlotID, String> getSlots2ExternalID() {
         return slots2ExternalID;
     }

@@ -87,6 +87,15 @@
     </servlet-mapping>
 
     <servlet>
+        <servlet-name>KillServlet</servlet-name>
+        <servlet-class>com.collective.celos.servlet.KillServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>KillServlet</servlet-name>
+        <url-pattern>/kill</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
         <servlet-name>ClearCacheServlet</servlet-name>
         <servlet-class>com.collective.celos.servlet.ClearCacheServlet</servlet-class>
     </servlet>
