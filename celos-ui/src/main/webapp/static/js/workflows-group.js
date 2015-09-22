@@ -17,16 +17,15 @@
 var slotsNum = Math.trunc(($(window).width() - 250) / (30 + 4)) - 1;
 
 var WorkflowsGroupFetch = React.createClass({
-    getInitialState: function () {
-        return {data: null};
-    },
-    loadCommentsFromServer: function () {
+    loadCommentsFromServer: function (props) {
+        console.log("loadCommentsFromServer:", props)
         $.ajax({
-            url: this.props.url,
+            url: "/react",
             data: {
                 count: slotsNum,
-                zoom: getQueryVariable("zoom", window.location.search),
-                time: getQueryVariable("time", window.location.search)
+                group: props.name,
+                zoom: props.request.zoom,
+                time: props.request.time
             },
             dataType: 'json',
             cache: false,
@@ -34,24 +33,26 @@ var WorkflowsGroupFetch = React.createClass({
                 this.setState({data: data});
             }.bind(this),
             error: function (xhr, status, err) {
-                console.error(this.props.url, status, err.toString());
+                console.error(props.url, status, err.toString());
             }.bind(this)
         });
     },
-    componentDidMount: function () {
-        this.loadCommentsFromServer();
+    componentWillMount: function () {
+        console.log("componentWillMount:", this.props)
+        this.loadCommentsFromServer(this.props);
     },
-    componentWillReceiveProps: function () {
-        this.loadCommentsFromServer()
+    componentWillReceiveProps: function (nextProps) {
+        console.log("componentWillReceiveProps:", nextProps)
+        this.loadCommentsFromServer(nextProps)
     },
     render: function () {
-        console.log("WorkflowsGroupFetch", this.state.data);
-        if (this.state.data == null) {
-            return <div />;
-        } else {
+        console.log("WorkflowsGroupFetch", this.state);
+        if (this.state) {
             return (
-                <WorkflowsGroup data={this.state.data}/>
+                <WorkflowsGroup data={this.state.data} request={this.props.request} />
             );
+        } else {
+            return <div />;
         }
     }
 });
@@ -59,12 +60,22 @@ var WorkflowsGroupFetch = React.createClass({
 
 var WorkflowsGroup = React.createClass({
     render: function () {
+        console.log("WorkflowsGroup", this.props.data);
+        var req = this.props.request
+        var groupName = this.props.data.name
+        var newGroups
+        if (req.groups && req.groups != []) {
+            newGroups = req.groups.filter(function(x) { return x != groupName })
+        } else {
+            newGroups = [groupName]
+        }
+        var newUrl = makeCelosHref(req.zoom, req.time, newGroups)
         return (
             <table className="workflowTable">
                 <thead>
                 <tr>
                     <th className="groupName">
-                    <a href={"#groups/" + encodeURIComponent(this.props.data.name) }>
+                    <a href={ newUrl }>
                         {this.props.data.name}
                     </a>
                     </th>
@@ -105,7 +116,7 @@ var TimeSlot = React.createClass({
     render: function () {
         return (
             <td className={"slot " + this.props.data.status}>
-                <a href={this.props.data.url} data-slot-id="parquetify-retarget@2015-09-15T18:00:00.000Z">
+                <a href={this.props.data.url} >
                    {(! this.props.data.quantity)
                    ? <div />
                    : <div>{this.props.data.quantity}</div> }
@@ -114,3 +125,4 @@ var TimeSlot = React.createClass({
         );
     }
 });
+

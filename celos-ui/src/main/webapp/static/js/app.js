@@ -20,13 +20,13 @@ var CelosMainFetch = React.createClass({
     getInitialState: function () {
         return {data: {rows: [], navigation: {}}}
     },
-    loadCommentsFromServer: function () {
-        console.log("loadCommentsFromServer")
+    loadCommentsFromServer: function (props) {
+//        console.log("loadCommentsFromServer " + props.request.zoom + " " + props.request.time)
         $.ajax({
-            url: this.props.url,
+            url: props.url,
             data: {
-                zoom: this.props.request.zoom,
-                time: this.props.request.time
+                zoom: props.request.zoom,
+                time: props.request.time
             },
             dataType: 'json',
             cache: false,
@@ -34,15 +34,15 @@ var CelosMainFetch = React.createClass({
                 this.setState({data: data})
             }.bind(this),
             error: function (xhr, status, err) {
-                console.error(this.props.url, status, err.toString())
+                console.error(props.url, status, err.toString())
             }.bind(this)
         })
     },
-    componentWillReceiveProps: function () {
-        this.loadCommentsFromServer()
-    },
     componentWillMount: function () {
-        this.loadCommentsFromServer()
+        this.loadCommentsFromServer(this.props)
+    },
+    componentWillReceiveProps: function (nextProps) {
+        this.loadCommentsFromServer(nextProps)
     },
     render: function () {
         console.log("CelosMainFetch", this.props, this.state)
@@ -65,7 +65,7 @@ var CelosMainFetch = React.createClass({
 
 var CelosMain = React.createClass({
     render: function () {
-        console.log("CelosMain", this.props.data)
+        console.log("CelosMain", this.props.data, this.props.request)
 
         return (
             <div>
@@ -77,18 +77,20 @@ var CelosMain = React.createClass({
                     if (wfGroup.active) {
                         return (
                         <div key={i}>
-                            <WorkflowsGroupFetch url={wfGroup.url} active={wfGroup.active} />
+                            <WorkflowsGroupFetch name={wfGroup.name} active={wfGroup.active} request={this.props.request} />
                             <br />
                         </div>
                         )
                     } else {
+                        var req = this.props.request
+                        var newUrl = makeCelosHref(req.zoom, req.time, req.groups.concat(wfGroup.name))
                         return (
                         <div key={i}>
-                            {wfGroup.name}
+                        <a href={ newUrl }>{wfGroup.name}</a>
                         </div>
                         )
                     }
-                })}
+                }.bind(this))}
             </div>
         )
     }
@@ -96,34 +98,19 @@ var CelosMain = React.createClass({
 })
 
 
-var makeCelosHref = function(zoom, time, groups) {
-    var url0 = "#ui?"
-    if (zoom) {
-        url0 += "zoom=" + encodeURIComponent(zoom) + "&"
-    }
-    if (time) {
-        url0 += "time=" + encodeURIComponent(time) + "&"
-    }
-    if (groups) {
-        url0 += "groups=" + groups.map(encodeURIComponent).join(",") + "&"
-    }
-    return url0.substring(0, url0.length - 1)
-}
-
-
 var Navigation = React.createClass({
     render: function () {
         console.log("Navigation", this.props.data)
         return (
             <center className="bigButtons">
-                <a href={makeCelosHref(this.props.request.zoom, this.props.data.left,  this.props.request.groups)}> &lt; Prev page </a>
+                <a href={makeCelosHref(this.props.request.zoom, this.props.data.left,  this.props.request.groups)}>&lt; Prev page </a>
                 <strong> | </strong>
-                <a href={makeCelosHref(this.props.request.zoom, this.props.data.right, this.props.request.groups)}> Next page &gt; </a>
+                <a href={makeCelosHref(this.props.request.zoom, this.props.data.right, this.props.request.groups)}>Next page &gt; </a>
             <br />
             <br />
-                <a href={makeCelosHref(this.props.data.zoomOut, this.props.request.time, this.props.request.groups)}> Zoom OUT </a>
+                <a href={makeCelosHref(this.props.data.zoomOut, this.props.request.time, this.props.request.groups)}>Zoom OUT {this.props.data.zoomOut} </a>
                 <strong> / </strong>
-                <a href={makeCelosHref(this.props.data.zoomIn,  this.props.request.time, this.props.request.groups)}> Zoom IN </a>
+                <a href={makeCelosHref(this.props.data.zoomIn,  this.props.request.time, this.props.request.groups)}>Zoom IN {this.props.data.zoomIn} </a>
             <br />
             <br />
             </center>
@@ -132,19 +119,13 @@ var Navigation = React.createClass({
 })
 
 
-if (!String.prototype.startsWith) {
-  String.prototype.startsWith = function(searchString, position) {
-    position = position || 0
-    return this.indexOf(searchString, position) === position
-  }
-}
-
-
 var parseParams = function (paramsList) {
     res = {}
     paramsList.forEach(function (parameter) {
-        if (parameter.startsWith("groups=")) {
-            res["groups"] = parameter.substring(("groups=").length).split(",").map(decodeURIComponent)
+        if (parameter === "") {
+            // pass
+        } else if (parameter.startsWith("groups=")) {
+            res["groups"] = parameter.substring(("groups=").length).split(",").map(decodeURIComponent).filter(function(x) {return x})
         } else if (parameter.startsWith("zoom=")) {
             res["zoom"] = decodeURIComponent(parameter.substring(("zoom=").length))
         } else if (parameter.startsWith("time=")) {
@@ -157,9 +138,9 @@ var parseParams = function (paramsList) {
 }
 
 var defaultController = function() {
-    if (window.location.hash === "#") {
+    if (window.location.hash === "" || window.location.hash === "#ui") {
         ReactDOM.render(
-            <CelosMainFetch url="/react" />,
+            <CelosMainFetch url="/react" request={{}} />,
             document.getElementById('content')
         )
     } else if (window.location.hash.startsWith("#ui?")) {
