@@ -78,7 +78,7 @@ public class WorkflowConfigurationParser {
         Object wrappedThis = Context.javaToJS(this, scope);
         Map jsProperties = Maps.newHashMap(additionalJsVariables);
         jsProperties.put("celosWorkflowConfigurationParser", wrappedThis);
-        jsProperties.put("workflowFilePath", fileName);
+        jsProperties.put("celosWorkflowFilePath", fileName);
         jsConfigParser.putPropertiesInScope(jsProperties, scope);
 
         InputStream scripts = WorkflowConfigurationParser.class.getResourceAsStream("celos-scripts.js");

@@ -70,7 +70,7 @@ celos.defineWorkflow = function (json) {
             workflowInfo
     );
 
-    celosWorkflowConfigurationParser.addWorkflow(workflow, workflowFilePath);
+    celosWorkflowConfigurationParser.addWorkflow(workflow, celosWorkflowFilePath);
 }
 
 
