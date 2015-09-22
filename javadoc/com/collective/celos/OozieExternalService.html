@@ -17,7 +17,7 @@
     catch(err) {
     }
 //-->
-var methods = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10};
+var methods = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -211,12 +211,19 @@ implements <a href="../../../com/collective/celos/ExternalService.html" title="i
 </tr>
 <tr id="i3" class="rowColor">
 <td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../com/collective/celos/OozieExternalService.html#kill-com.collective.celos.SlotID-java.lang.String-">kill</a></span>(<a href="../../../com/collective/celos/SlotID.html" title="class in com.collective.celos">SlotID</a>&nbsp;unused,
+    java.lang.String&nbsp;externalID)</code>
+<div class="block">Kills workflow with the given external ID.</div>
+</td>
+</tr>
+<tr id="i4" class="altColor">
+<td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../com/collective/celos/OozieExternalService.html#start-com.collective.celos.SlotID-java.lang.String-">start</a></span>(<a href="../../../com/collective/celos/SlotID.html" title="class in com.collective.celos">SlotID</a>&nbsp;unused,
      java.lang.String&nbsp;externalID)</code>
 <div class="block">Starts workflow with the given external ID.</div>
 </td>
 </tr>
-<tr id="i4" class="altColor">
+<tr id="i5" class="rowColor">
 <td class="colFirst"><code>java.lang.String</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../com/collective/celos/OozieExternalService.html#submit-com.collective.celos.SlotID-">submit</a></span>(<a href="../../../com/collective/celos/SlotID.html" title="class in com.collective.celos">SlotID</a>&nbsp;id)</code>
 <div class="block">Submits slot to external service.</div>
@@ -406,6 +413,27 @@ implements <a href="../../../com/collective/celos/ExternalService.html" title="i
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
 <dd><code><a href="../../../com/collective/celos/ExternalService.html#start-com.collective.celos.SlotID-java.lang.String-">start</a></code>&nbsp;in interface&nbsp;<code><a href="../../../com/collective/celos/ExternalService.html" title="interface in com.collective.celos">ExternalService</a></code></dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="../../../com/collective/celos/ExternalServiceException.html" title="class in com.collective.celos">ExternalServiceException</a></code></dd>
+</dl>
+</li>
+</ul>
+<a name="kill-com.collective.celos.SlotID-java.lang.String-">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>kill</h4>
+<pre>public&nbsp;void&nbsp;kill(<a href="../../../com/collective/celos/SlotID.html" title="class in com.collective.celos">SlotID</a>&nbsp;unused,
+                 java.lang.String&nbsp;externalID)
+          throws <a href="../../../com/collective/celos/ExternalServiceException.html" title="class in com.collective.celos">ExternalServiceException</a></pre>
+<div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="../../../com/collective/celos/ExternalService.html#kill-com.collective.celos.SlotID-java.lang.String-">ExternalService</a></code></span></div>
+<div class="block">Kills workflow with the given external ID.
+
+ The slot ID is the same that previously passed to start.</div>
+<dl>
+<dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
+<dd><code><a href="../../../com/collective/celos/ExternalService.html#kill-com.collective.celos.SlotID-java.lang.String-">kill</a></code>&nbsp;in interface&nbsp;<code><a href="../../../com/collective/celos/ExternalService.html" title="interface in com.collective.celos">ExternalService</a></code></dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="../../../com/collective/celos/ExternalServiceException.html" title="class in com.collective.celos">ExternalServiceException</a></code></dd>
 </dl>

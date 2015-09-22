@@ -17,7 +17,7 @@
     catch(err) {
     }
 //-->
-var methods = {"i0":6,"i1":6,"i2":6};
+var methods = {"i0":6,"i1":6,"i2":6,"i3":6};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],4:["t3","Abstract Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -132,12 +132,19 @@ var activeTableTab = "activeTableTab";
 </tr>
 <tr id="i1" class="rowColor">
 <td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../com/collective/celos/ExternalService.html#kill-com.collective.celos.SlotID-java.lang.String-">kill</a></span>(<a href="../../../com/collective/celos/SlotID.html" title="class in com.collective.celos">SlotID</a>&nbsp;id,
+    java.lang.String&nbsp;externalID)</code>
+<div class="block">Kills workflow with the given external ID.</div>
+</td>
+</tr>
+<tr id="i2" class="altColor">
+<td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../com/collective/celos/ExternalService.html#start-com.collective.celos.SlotID-java.lang.String-">start</a></span>(<a href="../../../com/collective/celos/SlotID.html" title="class in com.collective.celos">SlotID</a>&nbsp;id,
      java.lang.String&nbsp;externalID)</code>
 <div class="block">Starts workflow with the given external ID.</div>
 </td>
 </tr>
-<tr id="i2" class="altColor">
+<tr id="i3" class="rowColor">
 <td class="colFirst"><code>java.lang.String</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../com/collective/celos/ExternalService.html#submit-com.collective.celos.SlotID-">submit</a></span>(<a href="../../../com/collective/celos/SlotID.html" title="class in com.collective.celos">SlotID</a>&nbsp;id)</code>
 <div class="block">Submits slot to external service.</div>
@@ -196,13 +203,31 @@ var activeTableTab = "activeTableTab";
 <a name="getStatus-com.collective.celos.SlotID-java.lang.String-">
 <!--   -->
 </a>
-<ul class="blockListLast">
+<ul class="blockList">
 <li class="blockList">
 <h4>getStatus</h4>
 <pre><a href="../../../com/collective/celos/ExternalStatus.html" title="interface in com.collective.celos">ExternalStatus</a>&nbsp;getStatus(<a href="../../../com/collective/celos/SlotID.html" title="class in com.collective.celos">SlotID</a>&nbsp;id,
                          java.lang.String&nbsp;externalID)
                   throws <a href="../../../com/collective/celos/ExternalServiceException.html" title="class in com.collective.celos">ExternalServiceException</a></pre>
 <div class="block">Gets the status of the externally running workflow with the given ID.</div>
+<dl>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="../../../com/collective/celos/ExternalServiceException.html" title="class in com.collective.celos">ExternalServiceException</a></code></dd>
+</dl>
+</li>
+</ul>
+<a name="kill-com.collective.celos.SlotID-java.lang.String-">
+<!--   -->
+</a>
+<ul class="blockListLast">
+<li class="blockList">
+<h4>kill</h4>
+<pre>void&nbsp;kill(<a href="../../../com/collective/celos/SlotID.html" title="class in com.collective.celos">SlotID</a>&nbsp;id,
+          java.lang.String&nbsp;externalID)
+   throws <a href="../../../com/collective/celos/ExternalServiceException.html" title="class in com.collective.celos">ExternalServiceException</a></pre>
+<div class="block">Kills workflow with the given external ID.
+
+ The slot ID is the same that previously passed to start.</div>
 <dl>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="../../../com/collective/celos/ExternalServiceException.html" title="class in com.collective.celos">ExternalServiceException</a></code></dd>

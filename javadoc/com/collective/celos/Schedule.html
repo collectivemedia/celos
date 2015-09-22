@@ -17,8 +17,8 @@
     catch(err) {
     }
 //-->
-var methods = {"i0":6};
-var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],4:["t3","Abstract Methods"]};
+var methods = {"i0":6,"i1":18};
+var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],4:["t3","Abstract Methods"],16:["t5","Default Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
 var tableTab = "tableTab";
@@ -118,7 +118,7 @@ var activeTableTab = "activeTableTab";
 </a>
 <h3>Method Summary</h3>
 <table class="memberSummary" border="0" cellpadding="3" cellspacing="0" summary="Method Summary table, listing methods, and an explanation">
-<caption><span id="t0" class="activeTableTab"><span>All Methods</span><span class="tabEnd">&nbsp;</span></span><span id="t2" class="tableTab"><span><a href="javascript:show(2);">Instance Methods</a></span><span class="tabEnd">&nbsp;</span></span><span id="t3" class="tableTab"><span><a href="javascript:show(4);">Abstract Methods</a></span><span class="tabEnd">&nbsp;</span></span></caption>
+<caption><span id="t0" class="activeTableTab"><span>All Methods</span><span class="tabEnd">&nbsp;</span></span><span id="t2" class="tableTab"><span><a href="javascript:show(2);">Instance Methods</a></span><span class="tabEnd">&nbsp;</span></span><span id="t3" class="tableTab"><span><a href="javascript:show(4);">Abstract Methods</a></span><span class="tabEnd">&nbsp;</span></span><span id="t5" class="tableTab"><span><a href="javascript:show(16);">Default Methods</a></span><span class="tabEnd">&nbsp;</span></span></caption>
 <tr>
 <th class="colFirst" scope="col">Modifier and Type</th>
 <th class="colLast" scope="col">Method and Description</th>
@@ -131,6 +131,11 @@ var activeTableTab = "activeTableTab";
 <div class="block">Returns the set of scheduled times of this schedule within the
  window defined by start (inclusive) and end (exclusive).</div>
 </td>
+</tr>
+<tr id="i1" class="rowColor">
+<td class="colFirst"><code>default boolean</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../com/collective/celos/Schedule.html#isTimeInSchedule-com.collective.celos.ScheduledTime-com.collective.celos.Scheduler-">isTimeInSchedule</a></span>(<a href="../../../com/collective/celos/ScheduledTime.html" title="class in com.collective.celos">ScheduledTime</a>&nbsp;time,
+                <a href="../../../com/collective/celos/Scheduler.html" title="class in com.collective.celos">Scheduler</a>&nbsp;scheduler)</code>&nbsp;</td>
 </tr>
 </table>
 </li>
@@ -150,7 +155,7 @@ var activeTableTab = "activeTableTab";
 <a name="getScheduledTimes-com.collective.celos.Scheduler-com.collective.celos.ScheduledTime-com.collective.celos.ScheduledTime-">
 <!--   -->
 </a>
-<ul class="blockListLast">
+<ul class="blockList">
 <li class="blockList">
 <h4>getScheduledTimes</h4>
 <pre>java.util.SortedSet&lt;<a href="../../../com/collective/celos/ScheduledTime.html" title="class in com.collective.celos">ScheduledTime</a>&gt;&nbsp;getScheduledTimes(<a href="../../../com/collective/celos/Scheduler.html" title="class in com.collective.celos">Scheduler</a>&nbsp;scheduler,
@@ -161,6 +166,16 @@ var activeTableTab = "activeTableTab";
  
  The scheduler parameter is currently only used by DependentSchedule, so tests
  of other schedules pass null as scheduler, which is a bit of a hack, but works.</div>
+</li>
+</ul>
+<a name="isTimeInSchedule-com.collective.celos.ScheduledTime-com.collective.celos.Scheduler-">
+<!--   -->
+</a>
+<ul class="blockListLast">
+<li class="blockList">
+<h4>isTimeInSchedule</h4>
+<pre>default&nbsp;boolean&nbsp;isTimeInSchedule(<a href="../../../com/collective/celos/ScheduledTime.html" title="class in com.collective.celos">ScheduledTime</a>&nbsp;time,
+                                 <a href="../../../com/collective/celos/Scheduler.html" title="class in com.collective.celos">Scheduler</a>&nbsp;scheduler)</pre>
 </li>
 </ul>
 </li>

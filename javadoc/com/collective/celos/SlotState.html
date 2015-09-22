@@ -17,7 +17,7 @@
     catch(err) {
     }
 //-->
-var methods = {"i0":9,"i1":9,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10,"i8":10,"i9":10,"i10":10,"i11":10,"i12":10,"i13":10,"i14":10};
+var methods = {"i0":9,"i1":9,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10,"i8":10,"i9":10,"i10":10,"i11":10,"i12":10,"i13":10,"i14":10,"i15":10};
 var tabs = {65535:["t0","All Methods"],1:["t1","Static Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -247,25 +247,29 @@ extends <a href="../../../com/collective/celos/ValueObject.html" title="class in
 </tr>
 <tr id="i9" class="rowColor">
 <td class="colFirst"><code><a href="../../../com/collective/celos/SlotState.html" title="class in com.collective.celos">SlotState</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../com/collective/celos/SlotState.html#transitionToReady--">transitionToReady</a></span>()</code>&nbsp;</td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../com/collective/celos/SlotState.html#transitionToKill--">transitionToKill</a></span>()</code>&nbsp;</td>
 </tr>
 <tr id="i10" class="altColor">
 <td class="colFirst"><code><a href="../../../com/collective/celos/SlotState.html" title="class in com.collective.celos">SlotState</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../com/collective/celos/SlotState.html#transitionToRerun--">transitionToRerun</a></span>()</code>&nbsp;</td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../com/collective/celos/SlotState.html#transitionToReady--">transitionToReady</a></span>()</code>&nbsp;</td>
 </tr>
 <tr id="i11" class="rowColor">
 <td class="colFirst"><code><a href="../../../com/collective/celos/SlotState.html" title="class in com.collective.celos">SlotState</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../com/collective/celos/SlotState.html#transitionToRetry--">transitionToRetry</a></span>()</code>&nbsp;</td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../com/collective/celos/SlotState.html#transitionToRerun--">transitionToRerun</a></span>()</code>&nbsp;</td>
 </tr>
 <tr id="i12" class="altColor">
 <td class="colFirst"><code><a href="../../../com/collective/celos/SlotState.html" title="class in com.collective.celos">SlotState</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../com/collective/celos/SlotState.html#transitionToRunning-java.lang.String-">transitionToRunning</a></span>(java.lang.String&nbsp;externalID)</code>&nbsp;</td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../com/collective/celos/SlotState.html#transitionToRetry--">transitionToRetry</a></span>()</code>&nbsp;</td>
 </tr>
 <tr id="i13" class="rowColor">
 <td class="colFirst"><code><a href="../../../com/collective/celos/SlotState.html" title="class in com.collective.celos">SlotState</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../com/collective/celos/SlotState.html#transitionToSuccess--">transitionToSuccess</a></span>()</code>&nbsp;</td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../com/collective/celos/SlotState.html#transitionToRunning-java.lang.String-">transitionToRunning</a></span>(java.lang.String&nbsp;externalID)</code>&nbsp;</td>
 </tr>
 <tr id="i14" class="altColor">
+<td class="colFirst"><code><a href="../../../com/collective/celos/SlotState.html" title="class in com.collective.celos">SlotState</a></code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../com/collective/celos/SlotState.html#transitionToSuccess--">transitionToSuccess</a></span>()</code>&nbsp;</td>
+</tr>
+<tr id="i15" class="rowColor">
 <td class="colFirst"><code><a href="../../../com/collective/celos/SlotState.html" title="class in com.collective.celos">SlotState</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../com/collective/celos/SlotState.html#transitionToWaitTimeout--">transitionToWaitTimeout</a></span>()</code>&nbsp;</td>
 </tr>
@@ -453,6 +457,15 @@ extends <a href="../../../com/collective/celos/ValueObject.html" title="class in
 <li class="blockList">
 <h4>transitionToRetry</h4>
 <pre>public&nbsp;<a href="../../../com/collective/celos/SlotState.html" title="class in com.collective.celos">SlotState</a>&nbsp;transitionToRetry()</pre>
+</li>
+</ul>
+<a name="transitionToKill--">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>transitionToKill</h4>
+<pre>public&nbsp;<a href="../../../com/collective/celos/SlotState.html" title="class in com.collective.celos">SlotState</a>&nbsp;transitionToKill()</pre>
 </li>
 </ul>
 <a name="transitionToRerun--">
