@@ -17,7 +17,7 @@
     catch(err) {
     }
 //-->
-var methods = {"i0":10,"i1":10};
+var methods = {"i0":10,"i1":10,"i2":10};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -128,8 +128,9 @@ extends java.lang.Object</pre>
 <th class="colOne" scope="col">Constructor and Description</th>
 </tr>
 <tr class="altColor">
-<td class="colOne"><code><span class="memberNameLink"><a href="../../../com/collective/celos/WorkflowStatus.html#WorkflowStatus-com.collective.celos.WorkflowInfo-java.util.List-">WorkflowStatus</a></span>(<a href="../../../com/collective/celos/WorkflowInfo.html" title="class in com.collective.celos">WorkflowInfo</a>&nbsp;info,
-              java.util.List&lt;<a href="../../../com/collective/celos/SlotState.html" title="class in com.collective.celos">SlotState</a>&gt;&nbsp;slotStates)</code>&nbsp;</td>
+<td class="colOne"><code><span class="memberNameLink"><a href="../../../com/collective/celos/WorkflowStatus.html#WorkflowStatus-com.collective.celos.WorkflowInfo-java.util.List-boolean-">WorkflowStatus</a></span>(<a href="../../../com/collective/celos/WorkflowInfo.html" title="class in com.collective.celos">WorkflowInfo</a>&nbsp;info,
+              java.util.List&lt;<a href="../../../com/collective/celos/SlotState.html" title="class in com.collective.celos">SlotState</a>&gt;&nbsp;slotStates,
+              boolean&nbsp;paused)</code>&nbsp;</td>
 </tr>
 </table>
 </li>
@@ -154,6 +155,10 @@ extends java.lang.Object</pre>
 <td class="colFirst"><code>java.util.List&lt;<a href="../../../com/collective/celos/SlotState.html" title="class in com.collective.celos">SlotState</a>&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../com/collective/celos/WorkflowStatus.html#getSlotStates--">getSlotStates</a></span>()</code>&nbsp;</td>
 </tr>
+<tr id="i2" class="altColor">
+<td class="colFirst"><code>boolean</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../com/collective/celos/WorkflowStatus.html#isPaused--">isPaused</a></span>()</code>&nbsp;</td>
+</tr>
 </table>
 <ul class="blockList">
 <li class="blockList"><a name="methods.inherited.from.class.java.lang.Object">
@@ -176,14 +181,15 @@ extends java.lang.Object</pre>
 <!--   -->
 </a>
 <h3>Constructor Detail</h3>
-<a name="WorkflowStatus-com.collective.celos.WorkflowInfo-java.util.List-">
+<a name="WorkflowStatus-com.collective.celos.WorkflowInfo-java.util.List-boolean-">
 <!--   -->
 </a>
 <ul class="blockListLast">
 <li class="blockList">
 <h4>WorkflowStatus</h4>
 <pre>public&nbsp;WorkflowStatus(<a href="../../../com/collective/celos/WorkflowInfo.html" title="class in com.collective.celos">WorkflowInfo</a>&nbsp;info,
-                      java.util.List&lt;<a href="../../../com/collective/celos/SlotState.html" title="class in com.collective.celos">SlotState</a>&gt;&nbsp;slotStates)</pre>
+                      java.util.List&lt;<a href="../../../com/collective/celos/SlotState.html" title="class in com.collective.celos">SlotState</a>&gt;&nbsp;slotStates,
+                      boolean&nbsp;paused)</pre>
 </li>
 </ul>
 </li>
@@ -206,10 +212,19 @@ extends java.lang.Object</pre>
 <a name="getSlotStates--">
 <!--   -->
 </a>
-<ul class="blockListLast">
+<ul class="blockList">
 <li class="blockList">
 <h4>getSlotStates</h4>
 <pre>public&nbsp;java.util.List&lt;<a href="../../../com/collective/celos/SlotState.html" title="class in com.collective.celos">SlotState</a>&gt;&nbsp;getSlotStates()</pre>
+</li>
+</ul>
+<a name="isPaused--">
+<!--   -->
+</a>
+<ul class="blockListLast">
+<li class="blockList">
+<h4>isPaused</h4>
+<pre>public&nbsp;boolean&nbsp;isPaused()</pre>
 </li>
 </ul>
 </li>
