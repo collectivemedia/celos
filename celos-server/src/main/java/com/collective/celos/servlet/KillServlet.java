@@ -15,15 +15,15 @@
  */
 package com.collective.celos.servlet;
 
+import com.collective.celos.*;
+import org.apache.log4j.Logger;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.collective.celos.*;
-import org.apache.log4j.Logger;
-
 /**
- * Posting to this servlet reruns the specified slot.
+ * Posting to this servlet kills the specified slot's underlying job.
  * 
  * Parameters:
  * 
@@ -32,9 +32,9 @@ import org.apache.log4j.Logger;
  * time -- scheduled time of slot
  */
 @SuppressWarnings("serial")
-public class RerunServlet extends AbstractServlet {
+public class KillServlet extends AbstractServlet {
     
-    private static Logger LOGGER = Logger.getLogger(RerunServlet.class);
+    private static Logger LOGGER = Logger.getLogger(KillServlet.class);
     
     private static final String ID_PARAM = "id";
 
@@ -55,27 +55,28 @@ public class RerunServlet extends AbstractServlet {
                 return;
             }
 
-            SlotID slot = new SlotID(workflowID, time);
+            SlotID slotID = new SlotID(workflowID, time);
             if (!workflow.getSchedule().isTimeInSchedule(time, scheduler)) {
-                res.sendError(HttpServletResponse.SC_NOT_FOUND, "Slot is not found: " + slot);
+                res.sendError(HttpServletResponse.SC_NOT_FOUND, "Slot is not found: " + slotID);
                 return;
             }
-
             StateDatabase db = scheduler.getStateDatabase();
-            SlotState state = db.getSlotState(slot);
-            if (state != null) {
-                updateSlotToRerun(state, db);
+            SlotState state = db.getSlotState(slotID);
+
+            LOGGER.info("Killing slot: " + slotID);
+            if (state == null) {
+                db.putSlotState(new SlotState(slotID, SlotState.Status.KILLED));
+            } else {
+                if (state.getExternalID() != null) {
+                    workflow.getExternalService().kill(slotID, state.getExternalID());
+                }
+                SlotState newState = state.transitionToKill();
+                db.putSlotState(newState);
             }
-            db.markSlotForRerun(slot, ScheduledTime.now());
+
         } catch(Exception e) {
             throw new ServletException(e);
         }
-    }
-
-    void updateSlotToRerun(SlotState state, StateDatabase db) throws Exception {
-        LOGGER.info("Scheduling Slot for rerun: " + state.getSlotID());
-        SlotState newState = state.transitionToRerun();
-        db.putSlotState(newState);
     }
 
 }
