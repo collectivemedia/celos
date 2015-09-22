@@ -326,6 +326,7 @@ Celos takes the following action, depending on the state of the slot:
 |SUCCESS|Do nothing.
 |FAILURE|Do nothing.
 |WAIT_TIMEOUT|Do nothing.
+|KILLED|Do nothing.
 |===
 
 The state database contains additional information about slots that
@@ -1180,8 +1181,8 @@ curl -X POST "localhost:1234/rerun?id=workflow-1&time=2015-09-13T13:40Z"
 
 ==== /kill
 
-Doing a POST to this servlet marks a slot as `KILLED` and also kills
-its underlying Oozie job, if any.
+Doing a POST to this servlet marks a slot as killed and also kills its
+underlying Oozie job, if any.
 
 ===== Parameters
 
