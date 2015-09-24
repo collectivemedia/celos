@@ -20,19 +20,6 @@ var startsWith = function startsWith(searchString, str) {
     return str.indexOf(searchString) === 0;
 };
 
-function getQueryVariable(variable) {
-    var query = window.location.search.substring(1);
-    var vars = query.split("&");
-    for (var elem in data) {
-        var pair = elem.split("=");
-        if (pair[0] == variable) {
-            return pair[1];
-        }
-    }
-    return null;
-}
-
-
 var ajaxGetJson = function(url0, data, successCallback, errorCallback) {
     var request = new XMLHttpRequest();
     var query = [];
@@ -76,16 +63,21 @@ var parseParams = function parseParams(paramsList) {
     var res = {};
     paramsList.forEach(function (parameter) {
         if (parameter === "") {
-            // pass
-        } else if (startsWith("groups=", parameter)) {
-            res["groups"] = parameter.substring("groups=".length).split(",").map(decodeURIComponent)
+            throw "Empty parameter";
+        }
+        var tmp = parameter.split("=");
+        var key = tmp[0];
+        var value = tmp[1];
+        if (key == "groups") {
+            res["groups"] = value.split(",")
+                .map(decodeURIComponent)
                 .filter(function (x) {
-                    return x;
+                    return x != "";
                 });
-        } else if (startsWith("zoom=", parameter)) {
-            res["zoom"] = decodeURIComponent(parameter.substring("zoom=".length));
-        } else if (startsWith("time=", parameter)) {
-            res["time"] = decodeURIComponent(parameter.substring("time=".length));
+        } else if (key == "zoom") {
+            res["zoom"] = decodeURIComponent(value);
+        } else if (key == "time") {
+            res["time"] = decodeURIComponent(value);
         } else {
             throw "Unknown parameter: " + parameter;
         }

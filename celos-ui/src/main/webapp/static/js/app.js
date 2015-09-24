@@ -97,9 +97,12 @@ var ProductRow = React.createClass({
     displayName: "ProductRow",
 
     render: function render() {
-        return React.DOM.tr(null, React.DOM.th({ className: "workflowName" }, this.props.data.workflowName), this.props.data.slots.slice(-slotsNum).map(function (slot, i) {
-            return React.createElement(TimeSlot, { data: slot, key: i });
-        }));
+        return React.DOM.tr(null,
+            React.DOM.th({ className: "workflowName" }, this.props.data.workflowName),
+            this.props.data.slots.slice(-slotsNum).map(function (slot, i) {
+                return React.createElement(TimeSlot, { data: slot, key: i });
+            })
+        );
     }
 });
 
