@@ -24,7 +24,7 @@ public class ReactServletTest {
 
     @Test
     public void testWorkflowGroup() throws IOException {
-        final ReactServlet.WorkflowGroupPOJO xx = new ReactServlet.WorkflowGroupPOJO();
+        final ReactWorkflowsServlet.WorkflowGroupPOJO xx = new ReactWorkflowsServlet.WorkflowGroupPOJO();
         xx.name = "groupName";
         xx.times = new ArrayList<>();
         xx.times.add("0000");
@@ -34,30 +34,30 @@ public class ReactServletTest {
         xx.times.add("0004");
         xx.times.add("0005");
         xx.rows = new ArrayList<>();
-        xx.rows.add(new ReactServlet.WorkflowPOJO());
+        xx.rows.add(new ReactWorkflowsServlet.WorkflowPOJO());
         xx.rows.get(0).workflowName = "wf 1";
         xx.rows.get(0).slots = new ArrayList<>();
-        xx.rows.get(0).slots.add(new ReactServlet.SlotPOJO());
+        xx.rows.get(0).slots.add(new ReactWorkflowsServlet.SlotPOJO());
         xx.rows.get(0).slots.get(0).status = "ready";
-        xx.rows.get(0).slots.add(new ReactServlet.SlotPOJO());
+        xx.rows.get(0).slots.add(new ReactWorkflowsServlet.SlotPOJO());
         xx.rows.get(0).slots.get(1).status = "wait";
-        xx.rows.add(new ReactServlet.WorkflowPOJO());
+        xx.rows.add(new ReactWorkflowsServlet.WorkflowPOJO());
         xx.rows.get(1).workflowName = "wf 1";
         xx.rows.get(1).slots = new ArrayList<>();
-        xx.rows.get(1).slots.add(new ReactServlet.SlotPOJO());
+        xx.rows.get(1).slots.add(new ReactWorkflowsServlet.SlotPOJO());
         xx.rows.get(1).slots.get(0).status = "ready";
-        xx.rows.get(1).slots.add(new ReactServlet.SlotPOJO());
+        xx.rows.get(1).slots.add(new ReactWorkflowsServlet.SlotPOJO());
         xx.rows.get(1).slots.get(1).status = "wait";
     }
 
     @Test
     public void testMain() throws IOException {
-        final ReactServlet.MainUI zz = new ReactServlet.MainUI();
+        final ReactMainServlet.MainUI zz = new ReactMainServlet.MainUI();
         zz.currentTime = "2015-09-15 21:50 UTC";
         zz.rows = new ArrayList<>();
-        zz.rows.add(new ReactServlet.WorkflowGroupRef());
+        zz.rows.add(new ReactMainServlet.WorkflowGroupRef());
         zz.rows.get(0).name = "dsada";
-        zz.rows.add(new ReactServlet.WorkflowGroupRef());
+        zz.rows.add(new ReactMainServlet.WorkflowGroupRef());
         zz.rows.get(1).name = "Gr 2";
     }
 

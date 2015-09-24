@@ -84,5 +84,3 @@ var parseParams = function parseParams(paramsList) {
     });
     return res;
 };
-
-console.log("LIB loaded");

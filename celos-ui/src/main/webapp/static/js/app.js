@@ -22,9 +22,9 @@ var WorkflowsGroupFetch = React.createClass({
     displayName: "WorkflowsGroupFetch",
 
     loadCommentsFromServer: function loadCommentsFromServer(props) {
-        console.log("loadCommentsFromServer:", props);
+        console.log("WorkflowsGroupFetch fromServer:", props);
         ajaxGetJson(
-            /*url=*/ "/react",
+            /*url=*/ "/group",
             /*data=*/ {
                 count: slotsNum,
                 group: props.name,
@@ -40,15 +40,12 @@ var WorkflowsGroupFetch = React.createClass({
         );
     },
     componentWillMount: function componentWillMount() {
-        console.log("componentWillMount:", this.props);
         this.loadCommentsFromServer(this.props);
     },
     componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
-        console.log("componentWillReceiveProps:", nextProps);
         this.loadCommentsFromServer(nextProps);
     },
     render: function render() {
-        console.log("WorkflowsGroupFetch", this.state);
         if (this.state) {
             return React.createElement(WorkflowsGroup, { data: this.state.data, request: this.props.request });
         } else {
@@ -61,7 +58,6 @@ var WorkflowsGroup = React.createClass({
     displayName: "WorkflowsGroup",
 
     render: function render() {
-        console.log("WorkflowsGroup", this.props.data);
         var req = this.props.request;
         var groupName = this.props.data.name;
         var newGroups;
@@ -77,7 +73,17 @@ var WorkflowsGroup = React.createClass({
             React.DOM.thead(null,
                 React.DOM.tr(null,
                     React.DOM.th({ className: "groupName" },
-                    React.DOM.a({ href: newUrl }, this.props.data.name)),
+                        React.DOM.a({ href: newUrl }, this.props.data.name)),
+                    this.props.data.days
+                        .slice(-slotsNum)
+                        .map(function (tt, i) {
+                            return React.DOM.th({ className: "timeHeader", key: i },
+                                React.DOM.strong(null, tt)
+                            );
+                        })
+                ),
+                React.DOM.tr(null,
+                    React.DOM.th({ className: "groupName" }),
                     this.props.data.times
                         .slice(-slotsNum)
                         .map(function (tt, i) {
@@ -120,8 +126,6 @@ var TimeSlot = React.createClass({
     }
 });
 
-console.log("WORKFLOW loaded");
-
 var CelosMainFetch = React.createClass({
     displayName: "CelosMainFetch",
 
@@ -129,7 +133,6 @@ var CelosMainFetch = React.createClass({
         return { data: { rows: [], navigation: {} } };
     },
     loadCommentsFromServer: function loadCommentsFromServer(props) {
-        //        console.log("loadCommentsFromServer " + props.request.zoom + " " + props.request.time)
         ajaxGetJson(
             /*url=*/ props.url,
             /*data=*/ {
@@ -137,7 +140,6 @@ var CelosMainFetch = React.createClass({
                 time: props.request.time
             },
             /*success=*/ (function (data) {
-                console.log("SET STATE", this, data);
                 this.setState({ data: data });
             }).bind(this),
             /*error=*/ (function (xhr, status, err) {
@@ -152,7 +154,6 @@ var CelosMainFetch = React.createClass({
         this.loadCommentsFromServer(nextProps);
     },
     render: function render() {
-        console.log("CelosMainFetch", this.props, this.state);
         var tmp = this.state.data;
         if (this.props.request.groups) {
             var groupFilter = this.props.request.groups;
@@ -172,8 +173,7 @@ var CelosMain = React.createClass({
     displayName: "CelosMain",
 
     render: function render() {
-        console.log("CelosMain", this.props.data, this.props.request);
-
+        console.log("CelosMain", this.props);
         return React.DOM.div(null,
             React.createElement("h2", null, this.props.data.currentTime),
             React.createElement(Navigation, { data: this.props.data.navigation, request: this.props.request }),
@@ -202,7 +202,6 @@ var Navigation = React.createClass({
     displayName: "Navigation",
 
     render: function render() {
-        console.log("Navigation", this.props.data);
         return React.createElement("center", { className: "bigButtons" },
             React.DOM.a({ href: makeCelosHref(this.props.request.zoom, this.props.data.left, this.props.request.groups) }, "< Prev page"),
             React.DOM.strong(null, " | "),
@@ -220,11 +219,11 @@ var Navigation = React.createClass({
 
 var defaultController = function defaultController() {
     if (window.location.hash === "" || window.location.hash === "#ui") {
-        ReactDOM.render(React.createElement(CelosMainFetch, { url: "/react", request: {} }), document.getElementById('content'));
+        ReactDOM.render(React.createElement(CelosMainFetch, { url: "/main", request: {} }), document.getElementById('content'));
     } else if (startsWith("#ui?", window.location.hash)) {
         var params = parseParams(window.location.hash.substring("#ui?".length).split("&"));
         var request = { groups: params.groups, zoom: params.zoom, time: params.time };
-        ReactDOM.render(React.createElement(CelosMainFetch, { url: "/react", request: request }), document.getElementById('content'));
+        ReactDOM.render(React.createElement(CelosMainFetch, { url: "/main", request: request }), document.getElementById('content'));
     } else if (window.location.hash.indexOf("#test") === 0) {
         ReactDOM.render(React.createElement(CelosMainFetch, { url: "assets/main.json" }), document.getElementById('content'));
     } else {
@@ -236,7 +235,5 @@ window.addEventListener('hashchange', function () {
     console.log("URL:", window.location.hash);
     defaultController();
 });
-
-console.log("APP loaded");
 
 defaultController();

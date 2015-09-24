@@ -9,8 +9,13 @@
     </servlet>
 
     <servlet>
-        <servlet-name>ReactServlet</servlet-name>
-        <servlet-class>com.collective.celos.ui.ReactServlet</servlet-class>
+        <servlet-name>ReactWorkflowsServlet</servlet-name>
+        <servlet-class>com.collective.celos.ui.ReactWorkflowsServlet</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>ReactMainServlet</servlet-name>
+        <servlet-class>com.collective.celos.ui.ReactMainServlet</servlet-class>
     </servlet>
 
     <servlet>
@@ -29,8 +34,13 @@
     </servlet-mapping>
 
     <servlet-mapping>
-        <servlet-name>ReactServlet</servlet-name>
-        <url-pattern>/react</url-pattern>
+        <servlet-name>ReactMainServlet</servlet-name>
+        <url-pattern>/main</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>ReactWorkflowsServlet</servlet-name>
+        <url-pattern>/group</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>
