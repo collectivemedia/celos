@@ -16,83 +16,28 @@
 
 "use strict";
 
-var startsWith = function startsWith(searchString, str) {
-    return str.indexOf(searchString) === 0;
-};
-
-function getQueryVariable(variable) {
-    var query = window.location.search.substring(1);
-    var vars = query.split("&");
-    for (var i = 0; i < vars.length; i++) {
-        var pair = vars[i].split("=");
-        if (pair[0] == variable) {
-            return pair[1];
-        }
-    }
-    return null;
-}
-
-var makeCelosHref = function makeCelosHref(zoom, time, groups) {
-    var url0 = "#ui?";
-    if (zoom) {
-        url0 += "zoom=" + encodeURIComponent(zoom) + "&";
-    }
-    if (time) {
-        url0 += "time=" + encodeURIComponent(time) + "&";
-    }
-    if (groups && groups.length != 0) {
-        url0 += "groups=" + groups.map(encodeURIComponent).join(",") + "&";
-    }
-    return url0.substring(0, url0.length - 1);
-};
-
-var parseParams = function parseParams(paramsList) {
-    var res = {};
-    paramsList.forEach(function (parameter) {
-        if (parameter === "") {
-            // pass
-        } else if (startsWith("groups=", parameter)) {
-                res["groups"] = parameter.substring("groups=".length).split(",").map(decodeURIComponent)
-                    .filter(function (x) {
-                        return x;
-                    });
-            } else if (startsWith("zoom=", parameter)) {
-                res["zoom"] = decodeURIComponent(parameter.substring("zoom=".length));
-            } else if (startsWith("time=", parameter)) {
-                res["time"] = decodeURIComponent(parameter.substring("time=".length));
-            } else {
-                throw "Unknown parameter: " + parameter;
-            }
-    });
-    return res;
-};
-
-console.log("LIB loaded");
-
-var slotsNum = Math.trunc(($(window).width() - 250) / (30 + 4)) - 1;
+var slotsNum = Math.trunc((window.innerWidth - 250) / (30 + 4)) - 1;
 
 var WorkflowsGroupFetch = React.createClass({
     displayName: "WorkflowsGroupFetch",
 
     loadCommentsFromServer: function loadCommentsFromServer(props) {
         console.log("loadCommentsFromServer:", props);
-        $.ajax({
-            url: "/react",
-            data: {
+        ajaxGetJson(
+            /*url=*/ "/react",
+            /*data=*/ {
                 count: slotsNum,
                 group: props.name,
                 zoom: props.request.zoom,
                 time: props.request.time
             },
-            dataType: 'json',
-            cache: false,
-            success: (function (data) {
+            /*success=*/ (function (data) {
                 this.setState({ data: data });
             }).bind(this),
-            error: (function (xhr, status, err) {
+            /*error=*/ (function (xhr, status, err) {
                 console.error(props.url, status, err.toString());
             }).bind(this)
-        });
+        );
     },
     componentWillMount: function componentWillMount() {
         console.log("componentWillMount:", this.props);
@@ -182,21 +127,20 @@ var CelosMainFetch = React.createClass({
     },
     loadCommentsFromServer: function loadCommentsFromServer(props) {
         //        console.log("loadCommentsFromServer " + props.request.zoom + " " + props.request.time)
-        $.ajax({
-            url: props.url,
-            data: {
+        ajaxGetJson(
+            /*url=*/ props.url,
+            /*data=*/ {
                 zoom: props.request.zoom,
                 time: props.request.time
             },
-            dataType: 'json',
-            cache: false,
-            success: (function (data) {
+            /*success=*/ (function (data) {
+                console.log("SET STATE", this, data);
                 this.setState({ data: data });
             }).bind(this),
-            error: (function (xhr, status, err) {
+            /*error=*/ (function (xhr, status, err) {
                 console.error(props.url, status, err.toString());
             }).bind(this)
-        });
+        );
     },
     componentWillMount: function componentWillMount() {
         this.loadCommentsFromServer(this.props);
