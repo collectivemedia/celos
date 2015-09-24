@@ -24,10 +24,12 @@ public class WorkflowStatus {
 
     private final WorkflowInfo info;
     private final List<SlotState> slotStates;
+    private final boolean paused;
 
-    public WorkflowStatus(WorkflowInfo info, List<SlotState> slotStates) {
+    public WorkflowStatus(WorkflowInfo info, List<SlotState> slotStates, boolean paused) {
         this.slotStates = slotStates;
         this.info = info;
+        this.paused = paused;
     }
 
     public WorkflowInfo getInfo() {
@@ -36,5 +38,9 @@ public class WorkflowStatus {
 
     public List<SlotState> getSlotStates() {
         return slotStates;
+    }
+
+    public boolean isPaused() {
+        return paused;
     }
 }

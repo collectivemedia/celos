@@ -39,4 +39,10 @@ public interface ExternalService {
      */
     public ExternalStatus getStatus(SlotID id, String externalID) throws ExternalServiceException;
 
+    /**
+     * Kills workflow with the given external ID.
+     *
+     * The slot ID is the same that previously passed to start.
+     */
+    public void kill(SlotID id, String externalID) throws ExternalServiceException;
 }

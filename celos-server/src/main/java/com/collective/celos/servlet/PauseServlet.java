@@ -15,32 +15,31 @@
  */
 package com.collective.celos.servlet;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import com.collective.celos.*;
 import org.apache.log4j.Logger;
 
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.Set;
+
 /**
- * Posting to this servlet reruns the specified slot.
+ * Posting to this servlet (un) pauses the specified workflow.
  * 
  * Parameters:
  * 
  * id -- workflow ID
  * 
- * time -- scheduled time of slot
+ * paused -- true/false whether workflow should be paused or unpaused
  */
 @SuppressWarnings("serial")
-public class RerunServlet extends AbstractServlet {
-    
-    private static Logger LOGGER = Logger.getLogger(RerunServlet.class);
-    
+public class PauseServlet extends AbstractServlet {
+
     private static final String ID_PARAM = "id";
+    private static final String PAUSE_PARAM = "paused";
 
     protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException {
         try {
-            ScheduledTime time = getRequestTime(req);
             String id = req.getParameter(ID_PARAM);
             if (id == null) {
                 res.sendError(HttpServletResponse.SC_BAD_REQUEST, ID_PARAM + " parameter missing.");
@@ -55,27 +54,10 @@ public class RerunServlet extends AbstractServlet {
                 return;
             }
 
-            SlotID slot = new SlotID(workflowID, time);
-            if (!workflow.getSchedule().isTimeInSchedule(time, scheduler)) {
-                res.sendError(HttpServletResponse.SC_NOT_FOUND, "Slot is not found: " + slot);
-                return;
-            }
-
-            StateDatabase db = scheduler.getStateDatabase();
-            SlotState state = db.getSlotState(slot);
-            if (state != null) {
-                updateSlotToRerun(state, db);
-            }
-            db.markSlotForRerun(slot, ScheduledTime.now());
+            Boolean pause = Boolean.parseBoolean(req.getParameter(PAUSE_PARAM));
+            scheduler.getStateDatabase().setPaused(workflowID, pause);
         } catch(Exception e) {
             throw new ServletException(e);
         }
     }
-
-    void updateSlotToRerun(SlotState state, StateDatabase db) throws Exception {
-        LOGGER.info("Scheduling Slot for rerun: " + state.getSlotID());
-        SlotState newState = state.transitionToRerun();
-        db.putSlotState(newState);
-    }
-
 }
