@@ -15,17 +15,17 @@
  */
 package com.collective.celos.ui;
 
-import javax.servlet.http.HttpServletResponse;
+import org.junit.Test;
+
 import java.io.IOException;
 import java.util.ArrayList;
 
 public class ReactServletTest {
 
-
-
-    protected void testWorkflowGroup(String groupName, HttpServletResponse response) throws IOException {
+    @Test
+    public void testWorkflowGroup() throws IOException {
         final ReactServlet.WorkflowGroupPOJO xx = new ReactServlet.WorkflowGroupPOJO();
-        xx.name = groupName;
+        xx.name = "groupName";
         xx.times = new ArrayList<>();
         xx.times.add("0000");
         xx.times.add("0001");
@@ -48,21 +48,17 @@ public class ReactServletTest {
         xx.rows.get(1).slots.get(0).status = "ready";
         xx.rows.get(1).slots.add(new ReactServlet.SlotPOJO());
         xx.rows.get(1).slots.get(1).status = "wait";
-
     }
 
-    protected void testMain(String groupName, HttpServletResponse response) throws IOException {
-
+    @Test
+    public void testMain() throws IOException {
         final ReactServlet.MainUI zz = new ReactServlet.MainUI();
         zz.currentTime = "2015-09-15 21:50 UTC";
         zz.rows = new ArrayList<>();
         zz.rows.add(new ReactServlet.WorkflowGroupRef());
         zz.rows.get(0).name = "dsada";
-        zz.rows.get(0).url = "/react?wf-group=success";
         zz.rows.add(new ReactServlet.WorkflowGroupRef());
         zz.rows.get(1).name = "Gr 2";
-        zz.rows.get(1).url = "/react?wf-group=success";
-
     }
 
 }

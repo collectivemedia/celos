@@ -38,7 +38,7 @@ import java.util.stream.Collectors;
 import static j2html.TagCreator.*;
 
 /**
- * Renders the UI HTML.
+ * Renders the UI JSON.
  */
 public class ReactServlet extends HttpServlet {
 
@@ -270,7 +270,7 @@ public class ReactServlet extends HttpServlet {
         }
     }
 
-    static final Map<SlotState.Status, String> STATUS_TO_SHORT_NAME = new HashMap<SlotState.Status, String>();
+    static final Map<SlotState.Status, String> STATUS_TO_SHORT_NAME = new HashMap<>();
     static {
         STATUS_TO_SHORT_NAME.put(SlotState.Status.FAILURE, "fail");
         STATUS_TO_SHORT_NAME.put(SlotState.Status.READY, "rdy&nbsp;");
@@ -292,27 +292,6 @@ public class ReactServlet extends HttpServlet {
     private static final DateTimeFormatter HEADER_FORMAT = DateTimeFormat.forPattern("HHmm");
     private static final DateTimeFormatter FULL_FORMAT = DateTimeFormat.forPattern("YYYY-MM-dd HH:mm");
     
-    static String render(UIConfiguration conf) throws Exception {
-        return html().with(makeHead(), makeBody(conf)).render();
-    }
-
-    private static Tag makeHead() {
-        return head().with(title("Celos"),
-                           link().withType("text/css").withRel("stylesheet").withHref("/static/style.css"),
-                           script().withType("text/javascript").withSrc("/static/jquery.min.js"),
-                           script().withType("text/javascript").withSrc("/static/script.js"));
-    }
-
-    private static Tag makeBody(UIConfiguration conf) {
-        return body().with(makeTable(conf), div().with(text("(Shift-click a slot to rerun it.)")));
-    }
-
-    private static Tag makeTable(UIConfiguration conf) {
-        List<Tag> contents = new LinkedList<>();
-        contents.addAll(makeTableHeader(conf));
-        contents.addAll(makeTableRows(conf));
-        return table().withClass("mainTable").with(contents);
-    }
 
     private static List<Tag> makeTableHeader(UIConfiguration conf) {
         return ImmutableList.of(makeDayHeader(conf), makeTimeHeader(conf));
@@ -543,7 +522,7 @@ public class ReactServlet extends HttpServlet {
     }
 
     private List<WorkflowGroup> getDefaultGroups(Set<WorkflowID> workflows) {
-        return ImmutableList.of(new WorkflowGroup(DEFAULT_CAPTION, new LinkedList<WorkflowID>(new TreeSet<WorkflowID>(workflows))));
+        return Collections.singletonList(new WorkflowGroup(DEFAULT_CAPTION, new LinkedList<>(new TreeSet<>(workflows))));
     }
 
 }
