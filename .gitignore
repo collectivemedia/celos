@@ -13,5 +13,3 @@ javadoc-tmp/
 **/.project
 **/.settings
 **/.DS_Store
-**/bower_components/
-**/node_modules/
