@@ -16,23 +16,6 @@
 
 "use strict";
 
-var jsx = React.createElement;
-
-var jsxBR = function () {
-    return React.createElement("br", null);
-};
-
-// looks ugly, isnt it?
-// I think it will be a bit faster than fun.apply(null, ["a"].concat(args))
-var jsxA = function (a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z) {
-    return React.createElement("a", a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z);
-};
-
-var jsxDIV = function (a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z) {
-    return React.createElement("div", a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z);
-};
-
-
 var startsWith = function startsWith(searchString, str) {
     return str.indexOf(searchString) === 0;
 };
@@ -69,9 +52,10 @@ var parseParams = function parseParams(paramsList) {
         if (parameter === "") {
             // pass
         } else if (startsWith("groups=", parameter)) {
-                res["groups"] = parameter.substring("groups=".length).split(",").map(decodeURIComponent).filter(function (x) {
-                    return x;
-                });
+                res["groups"] = parameter.substring("groups=".length).split(",").map(decodeURIComponent)
+                    .filter(function (x) {
+                        return x;
+                    });
             } else if (startsWith("zoom=", parameter)) {
                 res["zoom"] = decodeURIComponent(parameter.substring("zoom=".length));
             } else if (startsWith("time=", parameter)) {
@@ -121,9 +105,9 @@ var WorkflowsGroupFetch = React.createClass({
     render: function render() {
         console.log("WorkflowsGroupFetch", this.state);
         if (this.state) {
-            return jsx(WorkflowsGroup, { data: this.state.data, request: this.props.request });
+            return React.createElement(WorkflowsGroup, { data: this.state.data, request: this.props.request });
         } else {
-            return jsx("div", null);
+            return React.DOM.div(null);
         }
     }
 });
@@ -144,11 +128,23 @@ var WorkflowsGroup = React.createClass({
             newGroups = [groupName];
         }
         var newUrl = makeCelosHref(req.zoom, req.time, newGroups);
-        return jsx("table", { className: "workflowTable" }, jsx("thead", null, jsx("tr", null, jsx("th", { className: "groupName" }, jsx("a", { href: newUrl }, this.props.data.name)), this.props.data.times.slice(-slotsNum).map(function (tt, i) {
-            return jsx("th", { className: "timeHeader", key: i }, tt);
-        }))), jsx("tbody", null, this.props.data.rows.map(function (product, key) {
-            return jsx(ProductRow, { data: product, key: key });
-        })));
+        return React.DOM.table({ className: "workflowTable" },
+            React.DOM.thead(null,
+                React.DOM.tr(null,
+                    React.DOM.th({ className: "groupName" },
+                    React.DOM.a({ href: newUrl }, this.props.data.name)),
+                    this.props.data.times
+                        .slice(-slotsNum)
+                        .map(function (tt, i) {
+                            return React.DOM.th({ className: "timeHeader", key: i }, tt);
+                        })
+                )),
+            React.DOM.tbody(null,
+                this.props.data.rows
+                    .map(function (product, key) {
+                        return React.createElement(ProductRow, { data: product, key: key });
+                    })
+            ));
     }
 });
 
@@ -156,8 +152,8 @@ var ProductRow = React.createClass({
     displayName: "ProductRow",
 
     render: function render() {
-        return jsx("tr", null, jsx("th", { className: "workflowName" }, this.props.data.workflowName), this.props.data.slots.slice(-slotsNum).map(function (slot, i) {
-            return jsx(TimeSlot, { data: slot, key: i });
+        return React.DOM.tr(null, React.DOM.th({ className: "workflowName" }, this.props.data.workflowName), this.props.data.slots.slice(-slotsNum).map(function (slot, i) {
+            return React.createElement(TimeSlot, { data: slot, key: i });
         }));
     }
 });
@@ -166,7 +162,13 @@ var TimeSlot = React.createClass({
     displayName: "TimeSlot",
 
     render: function render() {
-        return jsx("td", { className: "slot " + this.props.data.status }, jsx("a", { href: this.props.data.url }, !this.props.data.quantity ? jsx("div", null) : jsx("div", null, this.props.data.quantity)));
+        return React.DOM.td({ className: "slot " + this.props.data.status },
+            React.DOM.a({ href: this.props.data.url },
+                !this.props.data.quantity
+                    ? React.DOM.div(null)
+                    : React.DOM.div(null, this.props.data.quantity)
+            )
+        );
     }
 });
 
@@ -215,7 +217,7 @@ var CelosMainFetch = React.createClass({
                 x.active = true;
             });
         }
-        return jsx(CelosMain, { data: tmp, request: this.props.request });
+        return React.createElement(CelosMain, { data: tmp, request: this.props.request });
     }
 });
 
@@ -225,21 +227,28 @@ var CelosMain = React.createClass({
     render: function render() {
         console.log("CelosMain", this.props.data, this.props.request);
 
-        return jsx("div", null, jsx("h2", null, this.props.data.currentTime), jsx(Navigation, { data: this.props.data.navigation, request: this.props.request }), this.props.data.rows.map((function (wfGroup, i) {
-            if (wfGroup.active) {
-                return jsx("div", { key: i }, jsx(WorkflowsGroupFetch, {
-                    name: wfGroup.name,
-                    active: wfGroup.active,
-                    request: this.props.request
-                }), jsxBR());
-            } else {
-                var req = this.props.request;
-                var newUrl = makeCelosHref(req.zoom, req.time, req.groups.concat(wfGroup.name));
-                return jsx("div", { key: i }, jsx("a", { href: newUrl }, wfGroup.name));
-            }
-        }).bind(this)));
+        return React.DOM.div(null,
+            React.createElement("h2", null, this.props.data.currentTime),
+            React.createElement(Navigation, { data: this.props.data.navigation, request: this.props.request }),
+            this.props.data.rows.map((function (wfGroup, i) {
+                if (wfGroup.active) {
+                    return React.DOM.div({ key: i },
+                        React.createElement(WorkflowsGroupFetch, {
+                            name: wfGroup.name,
+                            active: wfGroup.active,
+                            request: this.props.request
+                        }),
+                        React.DOM.br());
+                } else {
+                    var req = this.props.request;
+                    var newUrl = makeCelosHref(req.zoom, req.time, req.groups.concat(wfGroup.name));
+                    return React.DOM.div({ key: i },
+                        React.DOM.a({ href: newUrl }, wfGroup.name)
+                    );
+                }
+            }).bind(this))
+        );
     }
-
 });
 
 var Navigation = React.createClass({
@@ -247,21 +256,30 @@ var Navigation = React.createClass({
 
     render: function render() {
         console.log("Navigation", this.props.data);
-        return jsx("center", { className: "bigButtons" },
-            jsx("a", { href: makeCelosHref(this.props.request.zoom, this.props.data.left, this.props.request.groups) }, "< Prev page"),
-            jsx("strong", null, " | "), jsx("a", { href: makeCelosHref(this.props.request.zoom, this.props.data.right, this.props.request.groups) }, "Next page >"), jsxBR(), jsxBR(), jsx("a", { href: makeCelosHref(this.props.data.zoomOut, this.props.request.time, this.props.request.groups) }, "Zoom OUT"), jsx("strong", null, " / ", this.props.request.zoom || 60, " minutes / "), jsx("a", { href: makeCelosHref(this.props.data.zoomIn, this.props.request.time, this.props.request.groups) }, "Zoom IN"), jsxBR(), jsxBR());
+        return React.createElement("center", { className: "bigButtons" },
+            React.DOM.a({ href: makeCelosHref(this.props.request.zoom, this.props.data.left, this.props.request.groups) }, "< Prev page"),
+            React.DOM.strong(null, " | "),
+            React.DOM.a({ href: makeCelosHref(this.props.request.zoom, this.props.data.right, this.props.request.groups) }, "Next page >"),
+            React.DOM.br(),
+            React.DOM.br(),
+            React.DOM.a({ href: makeCelosHref(this.props.data.zoomOut, this.props.request.time, this.props.request.groups) }, "Zoom OUT"),
+            React.DOM.strong(null, " / ", this.props.request.zoom || 60, " minutes / "),
+            React.DOM.a({ href: makeCelosHref(this.props.data.zoomIn, this.props.request.time, this.props.request.groups) }, "Zoom IN"),
+            React.DOM.br(),
+            React.DOM.br()
+        );
     }
 });
 
 var defaultController = function defaultController() {
     if (window.location.hash === "" || window.location.hash === "#ui") {
-        ReactDOM.render(jsx(CelosMainFetch, { url: "/react", request: {} }), document.getElementById('content'));
+        ReactDOM.render(React.createElement(CelosMainFetch, { url: "/react", request: {} }), document.getElementById('content'));
     } else if (startsWith("#ui?", window.location.hash)) {
         var params = parseParams(window.location.hash.substring("#ui?".length).split("&"));
         var request = { groups: params.groups, zoom: params.zoom, time: params.time };
-        ReactDOM.render(jsx(CelosMainFetch, { url: "/react", request: request }), document.getElementById('content'));
+        ReactDOM.render(React.createElement(CelosMainFetch, { url: "/react", request: request }), document.getElementById('content'));
     } else if (window.location.hash.indexOf("#test") === 0) {
-        ReactDOM.render(jsx(CelosMainFetch, { url: "assets/main.json" }), document.getElementById('content'));
+        ReactDOM.render(React.createElement(CelosMainFetch, { url: "assets/main.json" }), document.getElementById('content'));
     } else {
         throw "no route for this URL: " + window.location.hash;
     }
