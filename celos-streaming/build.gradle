@@ -1,0 +1,43 @@
+apply plugin: 'application'
+apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'maven'
+
+sourceCompatibility = 1.8
+version = '0.1'
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    maven { url "http://repo1.maven.org/maven2" }
+    maven { url "https://repository.cloudera.com/artifactory/cloudera-repos" }
+    maven { url "http://nexus.collective-media.net/content/repositories/releases" }
+}
+
+mainClassName = 'com.collective.celos.streaming.WordCount'
+version = '0.1'
+
+sourceSets {
+    main {
+        java {
+            srcDir 'src/main/java'
+        }
+        resources {
+            srcDir 'src/main/resources'
+            srcDir 'src/main/webapp'
+        }
+    }
+}
+
+dependencies {
+
+    compile("org.apache.spark:spark-streaming_2.10:1.3.0")
+}
+
+jar {
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }}
+    archiveName "celos-streaming.jar"
+    manifest {
+        attributes("Main-Class": mainClassName)
+    }
+}
