@@ -4,7 +4,6 @@ apply plugin: 'idea'
 apply plugin: 'maven'
 
 sourceCompatibility = 1.8
-version = '0.1'
 
 repositories {
     mavenLocal()
@@ -22,10 +21,6 @@ sourceSets {
         java {
             srcDir 'src/main/java'
         }
-        resources {
-            srcDir 'src/main/resources'
-            srcDir 'src/main/webapp'
-        }
     }
 }
 
@@ -35,7 +30,7 @@ dependencies {
 }
 
 jar {
-    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }}
+    from { (configurations.compile - configurations.provided).collect { it.isDirectory() ? it : zipTree(it).matching { exclude 'META-INF/**' } } }
     archiveName "celos-streaming.jar"
     manifest {
         attributes("Main-Class": mainClassName)
