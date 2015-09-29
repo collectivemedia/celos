@@ -59,6 +59,8 @@ var makeCelosHref = function makeCelosHref(zoom, time, groups) {
     return url0.substring(0, url0.length - 1);
 };
 
+
+
 var parseParams = function parseParams(paramsList) {
     var res = {};
     paramsList.forEach(function (parameter) {
@@ -83,4 +85,29 @@ var parseParams = function parseParams(paramsList) {
         }
     });
     return res;
+};
+
+var addOrRemoveClass = function(elem, className) {
+    if (elem.className.indexOf(className) == -1) {
+        elem.className += " " + className;
+    } else {
+        elem.className = elem.className.replace(" " + className, "");
+    }
+};
+
+var KEYBOARD = {
+    altPressed: false
+};
+
+window.onkeydown = function (e) {
+    if (e.key == "Alt") {
+        KEYBOARD.altPressed = true;
+    }
+};
+
+window.onkeyup = function (e) {
+    console.log(e);
+    if (e.key == "Alt") {
+        KEYBOARD.altPressed = false;
+    }
 };

@@ -115,14 +115,51 @@ var ProductRow = React.createClass({
 var TimeSlot = React.createClass({
     displayName: "TimeSlot",
 
+    getInitialState: function getInitialState() {
+        return {
+            isSelected: false,
+            showPopup: false
+        }
+    },
+    handleClick: function () {
+        if (KEYBOARD.altPressed) {
+            this.setState({
+                isSelected: !this.state.isSelected
+            });
+        } else {
+            this.setState({
+                showPopup: !this.state.showPopup
+            })
+        }
+    },
+    handleOnMouseLeave: function () {
+        this.setState({
+            showPopup: false
+        })
+    },
     render: function render() {
-        return React.DOM.td({ className: "slot " + this.props.data.status },
-            React.DOM.a({ href: this.props.data.url },
-                !this.props.data.quantity
-                    ? React.DOM.div(null)
-                    : React.DOM.div(null, this.props.data.quantity)
-            )
+        var selectedClass = this.state.isSelected ? "selected" : "";
+        var cellConfig = {};
+        cellConfig.className = ["slot", this.props.data.status, selectedClass].join(" ");
+        cellConfig.onClick = this.handleClick;
+        if (this.state.showPopup) {
+            cellConfig.onMouseLeave = this.handleOnMouseLeave
+        }
+        var popupElement = (
+                React.DOM.div({className: "cell-hover"},
+                    React.DOM.a({ href: this.props.data.url }, "click me!"),
+                    "Slot info")
         );
+        return (
+            React.DOM.td(cellConfig,
+                this.props.data.quantity
+                    ? React.DOM.div(null, this.props.data.quantity)
+                    : React.DOM.div(null),
+                this.state.showPopup
+                    ? popupElement
+                    : React.DOM.div(null)
+            )
+        )
     }
 });
 

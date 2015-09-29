@@ -49,7 +49,35 @@
     font-size: large;
 }
 
-.RUNNING, .READY { background-color: #ffc; }
-.SUCCESS { background-color: #cfc; }
-.WAITING { background-color: #ccf; }
-.FAILURE, .WAIT_TIMEOUT { background-color: #fcc; }
+.RUNNING, .READY {
+    background-color: #ffc;
+}
+.SUCCESS {
+    background-color: #cfc;
+}
+.WAITING {
+    background-color: #ccf;
+}
+.FAILURE, .WAIT_TIMEOUT {
+    background-color: #fcc;
+}
+
+
+.selected {
+    background-color: #aaaaaa;
+}
+
+
+.cell-hover {
+    display: block;
+    position: absolute;
+    /*top: 5px;*/
+    /*left: 0;*/
+    border: 1px solid #000;
+    background: #fff;
+    width: 300px;
+    text-align: center;
+}
+
+/*.anchor:hover > .profile-hover { display: block; }*/
+
