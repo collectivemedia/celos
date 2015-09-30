@@ -106,8 +106,23 @@ window.onkeydown = function (e) {
 };
 
 window.onkeyup = function (e) {
-    console.log(e);
     if (e.key == "Alt") {
         KEYBOARD.altPressed = false;
     }
+};
+
+window.oncontextmenu = function(e) {
+    // show context menu
+    ReactDOM.render(React.createElement(ContextMenu, {showElement: true, x: e.pageX, y: e.pageY}),
+        document.getElementById('contextMenu'));
+
+    return false;
+};
+
+window.onclick = function(e) {
+    // close context menu
+    ReactDOM.render(React.createElement(ContextMenu, {showElement: false}),
+        document.getElementById('contextMenu'));
+
+    return true;
 };

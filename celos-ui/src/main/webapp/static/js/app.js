@@ -49,7 +49,7 @@ var WorkflowsGroupFetch = React.createClass({
         if (this.state) {
             return React.createElement(WorkflowsGroup, { data: this.state.data, request: this.props.request });
         } else {
-            return React.DOM.div(null);
+            return null
         }
     }
 });
@@ -69,33 +69,34 @@ var WorkflowsGroup = React.createClass({
             newGroups = [groupName];
         }
         var newUrl = makeCelosHref(req.zoom, req.time, newGroups);
-        return React.DOM.table({ className: "workflowTable" },
-            React.DOM.thead(null,
-                React.DOM.tr(null,
-                    React.DOM.th({ className: "groupName" },
-                        React.DOM.a({ href: newUrl }, this.props.data.name)),
-                    this.props.data.days
-                        .slice(-slotsNum)
-                        .map(function (tt, i) {
-                            return React.DOM.th({ className: "timeHeader", key: i },
-                                React.DOM.strong(null, tt)
-                            );
+        return (
+            React.DOM.table({ className: "workflowTable" },
+                React.DOM.thead(null,
+                    React.DOM.tr(null,
+                        React.DOM.th({ className: "groupName" },
+                            React.DOM.a({ href: newUrl }, this.props.data.name)),
+                        this.props.data.days
+                            .slice(-slotsNum)
+                            .map(function (tt, i) {
+                                return React.DOM.th({ className: "timeHeader", key: i },
+                                    React.DOM.strong(null, tt));
+                            })
+                    ),
+                    React.DOM.tr(null,
+                        React.DOM.th({ className: "groupName" }),
+                        this.props.data.times
+                            .slice(-slotsNum)
+                            .map(function (tt, i) {
+                                return React.DOM.th({ className: "timeHeader", key: i }, tt);
+                            })
+                    )),
+                React.DOM.tbody(null,
+                    this.props.data.rows
+                        .map(function (product, key) {
+                            return React.createElement(ProductRow, { data: product, key: key });
                         })
-                ),
-                React.DOM.tr(null,
-                    React.DOM.th({ className: "groupName" }),
-                    this.props.data.times
-                        .slice(-slotsNum)
-                        .map(function (tt, i) {
-                            return React.DOM.th({ className: "timeHeader", key: i }, tt);
-                        })
-                )),
-            React.DOM.tbody(null,
-                this.props.data.rows
-                    .map(function (product, key) {
-                        return React.createElement(ProductRow, { data: product, key: key });
-                    })
-            ));
+                ))
+        );
     }
 });
 
@@ -145,19 +146,17 @@ var TimeSlot = React.createClass({
         if (this.state.showPopup) {
             cellConfig.onMouseLeave = this.handleOnMouseLeave
         }
-        var popupElement = (
-                React.DOM.div({className: "cell-hover"},
+        var popupElementOrNull = (!this.state.showPopup)
+            ? null
+            : React.DOM.div({className: "cell-hover"},
                     React.DOM.a({ href: this.props.data.url }, "click me!"),
-                    "Slot info")
-        );
+                    "Slot info");
         return (
             React.DOM.td(cellConfig,
                 this.props.data.quantity
                     ? React.DOM.div(null, this.props.data.quantity)
-                    : React.DOM.div(null),
-                this.state.showPopup
-                    ? popupElement
-                    : React.DOM.div(null)
+                    : null,
+                popupElementOrNull
             )
         )
     }
@@ -166,7 +165,7 @@ var TimeSlot = React.createClass({
 var CelosMainFetch = React.createClass({
     displayName: "CelosMainFetch",
 
-    getInitialState: function getInitialState() {
+    getInitialState: function () {
         return { data: { rows: [], navigation: {} } };
     },
     loadCommentsFromServer: function loadCommentsFromServer(props) {
@@ -209,9 +208,10 @@ var CelosMainFetch = React.createClass({
 var CelosMain = React.createClass({
     displayName: "CelosMain",
 
-    render: function render() {
+    render: function () {
         console.log("CelosMain", this.props);
         return React.DOM.div(null,
+            React.createElement(ContextMenu, {}),
             React.createElement("h2", null, this.props.data.currentTime),
             React.createElement(Navigation, { data: this.props.data.navigation, request: this.props.request }),
             this.props.data.rows.map((function (wfGroup, i) {
@@ -222,16 +222,34 @@ var CelosMain = React.createClass({
                             active: wfGroup.active,
                             request: this.props.request
                         }),
-                        React.DOM.br());
+                        React.DOM.br())
                 } else {
                     var req = this.props.request;
                     var newUrl = makeCelosHref(req.zoom, req.time, req.groups.concat(wfGroup.name));
                     return React.DOM.div({ key: i },
                         React.DOM.a({ href: newUrl }, wfGroup.name)
-                    );
+                    )
                 }
             }).bind(this))
         );
+    }
+});
+
+var ContextMenu = React.createClass({
+    displayName: "ContextMenu",
+
+    render: function () {
+        if (!this.props.showElement) {
+            return null
+        }
+        // else
+        return (
+            React.DOM.div({className: "context-menu",
+                           style: {top: this.props.y, left: this.props.x}},
+                React.DOM.li(null,
+                    React.DOM.ul(null, "sss"),
+                    React.DOM.ul(null, "xxx"),
+                    React.DOM.ul(null, "zzz"))))
     }
 });
 

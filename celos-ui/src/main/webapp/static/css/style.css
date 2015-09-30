@@ -81,3 +81,10 @@
 
 /*.anchor:hover > .profile-hover { display: block; }*/
 
+.context-menu {
+    display: block;
+    position: absolute;
+    z-index: 10;
+    border: 1px solid #000;
+    background: #fff;
+}
