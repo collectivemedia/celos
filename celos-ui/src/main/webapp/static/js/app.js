@@ -244,12 +244,12 @@ var ContextMenu = React.createClass({
         }
         // else
         return (
-            React.DOM.div({className: "context-menu",
-                           style: {top: this.props.y, left: this.props.x}},
-                React.DOM.li(null,
-                    React.DOM.ul(null, "sss"),
-                    React.DOM.ul(null, "xxx"),
-                    React.DOM.ul(null, "zzz"))))
+            React.DOM.ul({className: "context-menu",
+                          style: {top: this.props.y,
+                                  left: this.props.x}},
+                React.DOM.li(null, "First thing"),
+                React.DOM.li(null, "Second thing"),
+                React.DOM.li(null, "Third thing")))
     }
 });
 
