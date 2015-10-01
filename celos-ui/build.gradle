@@ -1,5 +1,9 @@
-mainClassName = 'com.collective.celos.ui.Main'
 version = '0.1'
+
+apply plugin: 'scala'
+
+mainClassName = "AkkaHttpMicroService"
+
 
 jar {
     baseName "celos-ui"
@@ -12,6 +16,9 @@ sourceSets {
     main {
         java {
             srcDir 'src/main/java'
+        }
+        scala {
+            srcDir 'src/main/scala'
         }
         resources {
             srcDir 'src/main/resources'
@@ -26,7 +33,15 @@ sourceSets {
 }
 
 dependencies {
+    compile('org.scala-lang:scala-library:2.11.7')
     compile project(':celos-common')
+
+    compile("com.typesafe.akka:akka-actor_2.11:2.3.12")
+    compile("com.typesafe.akka:akka-stream-experimental_2.11:1.0")
+    compile("com.typesafe.akka:akka-http-core-experimental_2.11:1.0")
+    compile("com.typesafe.akka:akka-http-experimental_2.11:1.0")
+    compile("com.typesafe.akka:akka-http-spray-json-experimental_2.11:1.0")
+
     compile("com.j2html:j2html:0.5.0")
     testCompile("junit:junit:4.8.2")
     testCompile("net.sourceforge.htmlunit:htmlunit:2.4")
