@@ -53,15 +53,15 @@ object AkkaHttpMicroService extends App with Protocols {
     attrs
   }
 
-  lazy val servletContext: util.HashMap[String, Object] = {
-    println(commandLine)
-    getAttributes(commandLine)
-  }
+  lazy val servletContext: util.HashMap[String, Object] = getAttributes(commandLine)
 
   lazy val routes = {
     logRequestResult("akka-http-microservice") {
-      pathPrefix("skillen") {
-        getFromResource("index.html")
+      path("static" / ) {
+        getFromResource("static/index.html")
+      } ~
+      pathPrefix("static") {
+        getFromResourceDirectory("static")
       } ~
       path("version") {
         get {
