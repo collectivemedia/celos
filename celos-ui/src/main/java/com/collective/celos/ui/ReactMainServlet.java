@@ -23,10 +23,6 @@ import com.google.common.collect.Sets;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.net.URL;
 import java.util.*;
@@ -34,7 +30,7 @@ import java.util.*;
 /**
  * Renders the UI JSON.
  */
-public class ReactMainServlet extends HttpServlet {
+public class ReactMainServlet {
 
     private static final String ZOOM_PARAM = "zoom";
     private static final String TIME_PARAM = "time";
@@ -44,7 +40,7 @@ public class ReactMainServlet extends HttpServlet {
     private static final String UNLISTED_WORKFLOWS_CAPTION = "Unlisted workflows";
     private static final String DEFAULT_CAPTION = "All Workflows";
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private static final ObjectMapper objectMapper = new ObjectMapper();
     private static final DateTimeFormatter FULL_FORMAT = DateTimeFormat.forPattern("YYYY-MM-dd HH:mm");
 
     protected static class MainUI {
@@ -57,8 +53,8 @@ public class ReactMainServlet extends HttpServlet {
         public String name;
     }
 
-    protected final ObjectMapper mapper = new ObjectMapper();
-    protected final ObjectWriter writer = mapper.writerWithDefaultPrettyPrinter();
+    protected final static ObjectMapper mapper = new ObjectMapper();
+    protected final static ObjectWriter writer = mapper.writerWithDefaultPrettyPrinter();
 
 
     protected static class NavigationPOJO {
@@ -91,8 +87,8 @@ public class ReactMainServlet extends HttpServlet {
         return result;
     }
 
-    protected MainUI processMain(List<WorkflowGroup> groups, ScheduledTime shift,
-                                 int zoom, ScheduledTime now) throws IOException {
+    protected static MainUI processMain(List<WorkflowGroup> groups, ScheduledTime shift,
+                                        int zoom, ScheduledTime now) throws IOException {
         final MainUI result = new MainUI();
         result.currentTime = FULL_FORMAT.print(now.getDateTime()) + " UTC";
         result.navigation = makeNavigationButtons(shift, zoom, now);
@@ -115,38 +111,31 @@ public class ReactMainServlet extends HttpServlet {
     static final int MAX_ZOOM_LEVEL_MINUTES = 60*24; // Code won't work with higher level, because of toFullDay()
 
 
-    @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-        try {
-            URL celosURL = (URL) Util.requireNonNull(getServletContext().getAttribute(Main.CELOS_URL_ATTR));
-            File configFile = (File) getServletContext().getAttribute(Main.CONFIG_FILE_ATTR);
+    public static String processGet(HashMap<String, Object> servletContext, String timeParam, String zoomParam) throws Exception {
+        URL celosURL = (URL) Util.requireNonNull(servletContext.get(Main.CELOS_URL_ATTR));
+        File configFile = (File) servletContext.get(Main.CONFIG_FILE_ATTR);
 
-            res.setContentType("application/json;charset=utf-8");
-            res.setStatus(HttpServletResponse.SC_OK);
 
-            CelosClient client = new CelosClient(celosURL.toURI());
-            final ScheduledTime now = ScheduledTime.now();
-            ScheduledTime timeShift = getDisplayTime(req.getParameter(TIME_PARAM), now);
-            int zoomLevelMinutes = getZoomLevel(req.getParameter(ZOOM_PARAM));
-            Set<WorkflowID> workflowIDs = client.getWorkflowList();
+        CelosClient client = new CelosClient(celosURL.toURI());
+        final ScheduledTime now = ScheduledTime.now();
+        ScheduledTime timeShift = getDisplayTime(timeParam, now);
+        int zoomLevelMinutes = getZoomLevel(zoomParam);
+        Set<WorkflowID> workflowIDs = client.getWorkflowList();
 
-            List<WorkflowGroup> groups;
+        List<WorkflowGroup> groups;
 
-            if (configFile != null) {
-                groups = getWorkflowGroups(new FileInputStream(configFile), workflowIDs);
-            } else {
-                groups = getDefaultGroups(workflowIDs);
-            }
-
-            final MainUI mainUI = processMain(groups, timeShift, zoomLevelMinutes, now);
-
-            writer.writeValue(res.getOutputStream(), mainUI);
-        } catch (Exception e) {
-            throw new ServletException(e);
+        if (configFile != null) {
+            groups = getWorkflowGroups(new FileInputStream(configFile), workflowIDs);
+        } else {
+            groups = getDefaultGroups(workflowIDs);
         }
+
+        final MainUI mainUI = processMain(groups, timeShift, zoomLevelMinutes, now);
+
+        return writer.writeValueAsString(mainUI);
     }
 
-    static ScheduledTime getDisplayTime(String timeStr, ScheduledTime now) {
+        static ScheduledTime getDisplayTime(String timeStr, ScheduledTime now) {
         if (timeStr == null || timeStr.isEmpty()) {
             return now;
         } else {
@@ -191,7 +180,7 @@ public class ReactMainServlet extends HttpServlet {
 
 
 
-    List<WorkflowGroup> getWorkflowGroups(InputStream configFileIS, Set<WorkflowID> expectedWfs) throws IOException {
+    static List<WorkflowGroup> getWorkflowGroups(InputStream configFileIS, Set<WorkflowID> expectedWfs) throws IOException {
         JsonNode mainNode = objectMapper.readValue(configFileIS, JsonNode.class);
         List<WorkflowGroup> configWorkflowGroups = new ArrayList<>();
         Set<WorkflowID> listedWfs = new TreeSet<>();
@@ -216,7 +205,7 @@ public class ReactMainServlet extends HttpServlet {
         return configWorkflowGroups;
     }
 
-    private List<WorkflowGroup> getDefaultGroups(Set<WorkflowID> workflows) {
+    private static List<WorkflowGroup> getDefaultGroups(Set<WorkflowID> workflows) {
         return Collections.singletonList(new WorkflowGroup(DEFAULT_CAPTION, new LinkedList<>(new TreeSet<>(workflows))));
     }
 
