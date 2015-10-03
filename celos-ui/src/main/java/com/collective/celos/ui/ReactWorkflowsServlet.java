@@ -26,6 +26,7 @@ import org.joda.time.format.DateTimeFormatter;
 
 import java.io.*;
 import java.net.URL;
+import java.time.ZonedDateTime;
 import java.util.*;
 
 import static java.util.stream.Collectors.toList;
@@ -61,6 +62,7 @@ public class ReactWorkflowsServlet {
     protected static class SlotPOJO {
         public String status;
         public String url;
+        public String ts;
         public Integer quantity;
     }
 
@@ -74,6 +76,7 @@ public class ReactWorkflowsServlet {
         } else if (states.size() == 1) {
             final SlotState next = states.iterator().next();
             slot.status = printTileClass(states);
+            slot.ts = ZonedDateTime.parse(next.getScheduledTime().toString()).toString();
             if (conf.getHueURL() != null && next.getExternalID() != null) {
                 slot.url = printWorkflowURL(conf, next);
             }

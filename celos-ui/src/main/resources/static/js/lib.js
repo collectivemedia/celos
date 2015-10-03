@@ -100,23 +100,14 @@ var KEYBOARD = {
 };
 
 window.onkeydown = function (e) {
-    if (e.key == "Alt") {
+    if (e.altKey) {
         KEYBOARD.altPressed = true;
     }
 };
 
 window.onkeyup = function (e) {
-    if (e.key == "Alt") {
-        KEYBOARD.altPressed = false;
-    }
-};
-
-window.oncontextmenu = function(e) {
-    // show context menu
-    ReactDOM.render(React.createElement(ContextMenu, {showElement: true, x: e.pageX, y: e.pageY}),
-        document.getElementById('contextMenu'));
-
-    return false;
+    // e.altKey doesn't work in safari
+    KEYBOARD.altPressed = false;
 };
 
 window.onclick = function(e) {

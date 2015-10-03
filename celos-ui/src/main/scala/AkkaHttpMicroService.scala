@@ -101,6 +101,7 @@ object AkkaHttpMicroService extends App with Protocols {
     }
   }
 
+  logger.info("running server on port " + commandLine.getPort)
   Http().bindAndHandle(routes, interface = "localhost", port = commandLine.getPort)
 
 }

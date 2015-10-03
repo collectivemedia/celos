@@ -31,18 +31,18 @@ var WorkflowsGroupFetch = React.createClass({
                 zoom: props.request.zoom,
                 time: props.request.time
             },
-            /*success=*/ (function (data) {
+            /*success=*/ function (data) {
                 this.setState({ data: data });
-            }).bind(this),
-            /*error=*/ (function (xhr, status, err) {
+            }.bind(this),
+            /*error=*/ function (xhr, status, err) {
                 console.error(props.url, status, err.toString());
-            }).bind(this)
+            }.bind(this)
         );
     },
-    componentWillMount: function componentWillMount() {
+    componentWillMount: function () {
         this.loadCommentsFromServer(this.props);
     },
-    componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
+    componentWillReceiveProps: function (nextProps) {
         this.loadCommentsFromServer(nextProps);
     },
     render: function render() {
@@ -51,114 +51,6 @@ var WorkflowsGroupFetch = React.createClass({
         } else {
             return null
         }
-    }
-});
-
-var WorkflowsGroup = React.createClass({
-    displayName: "WorkflowsGroup",
-
-    render: function render() {
-        var req = this.props.request;
-        var groupName = this.props.data.name;
-        var newGroups;
-        if (req.groups && req.groups != []) {
-            newGroups = req.groups.filter(function (x) {
-                return x != groupName;
-            });
-        } else {
-            newGroups = [groupName];
-        }
-        var newUrl = makeCelosHref(req.zoom, req.time, newGroups);
-        return (
-            React.DOM.table({ className: "workflowTable" },
-                React.DOM.thead(null,
-                    React.DOM.tr(null,
-                        React.DOM.th({ className: "groupName" },
-                            React.DOM.a({ href: newUrl }, this.props.data.name)),
-                        this.props.data.days
-                            .slice(-slotsNum)
-                            .map(function (tt, i) {
-                                return React.DOM.th({ className: "timeHeader", key: i },
-                                    React.DOM.strong(null, tt));
-                            })
-                    ),
-                    React.DOM.tr(null,
-                        React.DOM.th({ className: "groupName" }),
-                        this.props.data.times
-                            .slice(-slotsNum)
-                            .map(function (tt, i) {
-                                return React.DOM.th({ className: "timeHeader", key: i }, tt);
-                            })
-                    )),
-                React.DOM.tbody(null,
-                    this.props.data.rows
-                        .map(function (product, key) {
-                            return React.createElement(ProductRow, { data: product, key: key });
-                        })
-                ))
-        );
-    }
-});
-
-var ProductRow = React.createClass({
-    displayName: "ProductRow",
-
-    render: function render() {
-        return React.DOM.tr(null,
-            React.DOM.th({ className: "workflowName" }, this.props.data.workflowName),
-            this.props.data.slots.slice(-slotsNum).map(function (slot, i) {
-                return React.createElement(TimeSlot, { data: slot, key: i });
-            })
-        );
-    }
-});
-
-var TimeSlot = React.createClass({
-    displayName: "TimeSlot",
-
-    getInitialState: function getInitialState() {
-        return {
-            isSelected: false,
-            showPopup: false
-        }
-    },
-    handleClick: function () {
-        if (KEYBOARD.altPressed) {
-            this.setState({
-                isSelected: !this.state.isSelected
-            });
-        } else {
-            this.setState({
-                showPopup: !this.state.showPopup
-            })
-        }
-    },
-    handleOnMouseLeave: function () {
-        this.setState({
-            showPopup: false
-        })
-    },
-    render: function render() {
-        var selectedClass = this.state.isSelected ? "selected" : "";
-        var cellConfig = {};
-        cellConfig.className = ["slot", this.props.data.status, selectedClass].join(" ");
-        cellConfig.onClick = this.handleClick;
-        if (this.state.showPopup) {
-            cellConfig.onMouseLeave = this.handleOnMouseLeave
-        }
-        var popupElementOrNull = (!this.state.showPopup)
-            ? null
-            : React.DOM.div({className: "cell-hover"},
-                    React.DOM.a({ href: this.props.data.url }, "click me!"),
-                    "Slot info");
-        return (
-            React.DOM.td(cellConfig,
-                this.props.data.quantity
-                    ? React.DOM.div(null, this.props.data.quantity)
-                    : null,
-                popupElementOrNull
-            )
-        )
     }
 });
 
@@ -214,7 +106,7 @@ var CelosMain = React.createClass({
             React.createElement(ContextMenu, {}),
             React.createElement("h2", null, this.props.data.currentTime),
             React.createElement(Navigation, { data: this.props.data.navigation, request: this.props.request }),
-            this.props.data.rows.map((function (wfGroup, i) {
+            this.props.data.rows.map(function (wfGroup, i) {
                 if (wfGroup.active) {
                     return React.DOM.div({ key: i },
                         React.createElement(WorkflowsGroupFetch, {
@@ -230,7 +122,7 @@ var CelosMain = React.createClass({
                         React.DOM.a({ href: newUrl }, wfGroup.name)
                     )
                 }
-            }).bind(this))
+            }.bind(this))
         );
     }
 });
