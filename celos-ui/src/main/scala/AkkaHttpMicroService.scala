@@ -15,7 +15,7 @@ import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.unmarshalling.Unmarshal
 import akka.stream.{ActorMaterializer, Materializer}
 import akka.stream.scaladsl.{Flow, Sink, Source}
-import com.collective.celos.{Util, CelosClient}
+import com.collective.celos.{WorkflowID, Util, CelosClient}
 import com.collective.celos.ui._
 import com.typesafe.config.Config
 import com.typesafe.config.ConfigFactory
@@ -55,6 +55,13 @@ object AkkaHttpMicroService extends App with Protocols {
 
   lazy val servletContext: util.HashMap[String, Object] = getAttributes(commandLine)
 
+  def getTriggerStatus(id: String, time: String) = {
+    val celosURL: URL = servletContext.get(Main.CELOS_URL_ATTR).asInstanceOf[URL]
+    val client: CelosClient = new CelosClient(celosURL.toURI)
+    client.getTriggerStatusAsText(id, time);
+  }
+
+
   lazy val routes = {
     logRequestResult("akka-http-microservice") {
       path("static" / ) {
@@ -83,6 +90,16 @@ object AkkaHttpMicroService extends App with Protocols {
               complete {
                 val res = ReactMainServlet.processGet(servletContext, time, zoom)
                 res
+              }
+          }
+        }
+      } ~
+      path("trigger-status") {
+        get {
+          parameters("time" ? "", "id" ? "") {
+            (time: String, id: String) =>
+              complete {
+                getTriggerStatus(id, time)
               }
           }
         }

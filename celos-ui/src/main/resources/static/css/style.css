@@ -1,5 +1,10 @@
 .workflowTable {
     table-layout: fixed;
+
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
 .groupName {
@@ -18,6 +23,11 @@
     min-width: 250px;
     overflow: hidden;
     height: 20px;
+
+    -webkit-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
+    user-select: text;
 }
 
 .timeHeader {

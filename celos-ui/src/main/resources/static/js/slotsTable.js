@@ -37,12 +37,12 @@ var WorkflowsGroup = React.createClass({
     },
 
     handleOnContextMenu: function (e) {
-        console.log(e);
         // show context menu
         ReactDOM.render(React.createElement(ContextMenu, {showElement: true, x: e.pageX, y: e.pageY}),
             document.getElementById('contextMenu'));
-
-        return false;
+        e.preventDefault();
+        // return false;
+        // doesn't work for react events
     },
 
 
@@ -127,8 +127,10 @@ var TimeSlot = React.createClass({
             showPopup: false
         }
     },
-    handleClick: function () {
-        if (KEYBOARD.altPressed) {
+    handleClick: function (e) {
+        //console.log(JSON.stringify(e.nativeEvent), e.altKey, e.altPressed);
+
+        if (e.altKey) {
             this.props.tableHandler.clickOnSlot(this.props.workflowName, this.props.data.ts)
         } else {
             this.setState({

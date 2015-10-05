@@ -95,21 +95,6 @@ var addOrRemoveClass = function(elem, className) {
     }
 };
 
-var KEYBOARD = {
-    altPressed: false
-};
-
-window.onkeydown = function (e) {
-    if (e.altKey) {
-        KEYBOARD.altPressed = true;
-    }
-};
-
-window.onkeyup = function (e) {
-    // e.altKey doesn't work in safari
-    KEYBOARD.altPressed = false;
-};
-
 window.onclick = function(e) {
     // close context menu
     ReactDOM.render(React.createElement(ContextMenu, {showElement: false}),
