@@ -5,6 +5,11 @@
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
+
+    /*default html values*/
+    border-collapse: separate;
+    border-spacing: 2px;
+
 }
 
 .groupName {
@@ -85,13 +90,13 @@
     /*left: 0;*/
     border: 1px solid #000;
     background: #fff;
-    width: 300px;
-    text-align: center;
+    /*width: 700px;*/
+    text-align: left;
 }
 
 /*.anchor:hover > .profile-hover { display: block; }*/
 
-.context-menu {
+.my-context-menu {
     display: block;
     position: absolute;
     z-index: 10;
@@ -103,12 +108,16 @@
 }
 
 /* Each of the items in the list */
-.context-menu li {
+.my-context-menu li {
     padding: 8px 12px;
     cursor: pointer;
     list-style-type: none;
 }
 
-.context-menu li:hover {
+.my-context-menu li:hover {
     background-color: #DEF;
+}
+
+.my-non-styled-list {
+    list-style-type: none
 }
