@@ -44,7 +44,12 @@ var WorkflowsGroupFetch = React.createClass({
     },
     render: function render() {
         if (this.state) {
-            return React.createElement(WorkflowsGroup, { data: this.state.data, request: this.props.request })
+            return React.createElement(WorkflowsGroup, {
+                data: this.state.data,
+                request: this.props.request,
+                store: this.props.store,
+                breadcrumbs: this.props.breadcrumbs
+            })
         } else {
             return null
         }
@@ -136,8 +141,8 @@ var CelosMain = React.createClass({
                                 name: wfGroup.name,
                                 active: wfGroup.active,
                                 request: this.props.request,
-                                store: this.state.get(wfGroup.name),
-                                breadcrumbs: [wfGroup.name]
+                                store: this.state.allGroups.get(wfGroup.name, Immutable.Map()),
+                                breadcrumbs: [].concat(wfGroup.name)
                             }),
                             React.DOM.br())
                     } else {

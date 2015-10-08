@@ -16,27 +16,6 @@
 
 "use strict";
 
-var AppDispatcher = {
-
-    clickOnSlot: function (breadcrumb) {
-        if (slotTimestamp !== null) {
-            var newSlots = this.state.selectedSlots.updateIn([wfName, slotTimestamp, "isSelected"], false, function (x) {
-                return !x;
-            });
-            this.setState({
-                selectedSlots: newSlots
-            })
-        }
-    },
-
-
-    register: function (callback) {
-
-
-    }
-
-};
-
 var CHANGE_EVENT = 'change';
 
 var TodoConstants = {
@@ -45,9 +24,68 @@ var TodoConstants = {
     TODO_DESTROY: "TODO_DESTROY"
 };
 
-var WorkflowStore = {
+var AppDispatcher = {
 
-    internalData: Immutable.Map(),
+    _callbacks: [],
+    _promises: [],
+
+    /**
+     * A bridge function between the views and the dispatcher, marking the action
+     * as a view action.  Another variant here could be handleServerAction.
+     * @param  {object} action The data coming from the view.
+     */
+    handleClickOnSlot: function (action) {
+        console.log("handleClickOnSlot", action);
+        this.dispatch({
+            source: TodoConstants.TODO_UPDATE,
+            action: action,
+            breadcrumbs: action.breadcrumbs
+        });
+    },
+
+    /**
+     * Register a Store's callback so that it may be invoked by an action.
+     * @param {function} callback The callback to be registered.
+     * @return {number} The index of the callback within the _callbacks array.
+     */
+    register: function(callback) {
+        this._callbacks.push(callback);
+        return this._callbacks.length - 1; // index
+    },
+
+    /**
+     * dispatch
+     * @param  {object} payload The data from the action.
+     */
+    dispatch: function (payload) {
+        console.log("AppDispatcher.dispatch", payload);
+        // First create array of promises for callbacks to reference.
+        var resolves = [];
+        var rejects = [];
+        this._promises = this._callbacks.map(function(_, i) {
+            return new Promise(function(resolve, reject) {
+                resolves[i] = resolve;
+                rejects[i] = reject;
+            });
+        });
+        // Dispatch to callbacks and resolve/reject promises.
+        this._callbacks.forEach(function(callback, i) {
+            // Callback can return an obj, to resolve, or a promise, to chain.
+            // See waitFor() for why this might be useful.
+            Promise.resolve(callback(payload)).then(function() {
+                resolves[i](payload);
+            }, function() {
+                rejects[i](new Error('Dispatcher callback unsuccessful'));
+            });
+        });
+        this._promises = [];
+    }
+
+};
+
+var _internalData = Immutable.Map();
+
+var WorkflowStore = {
 
     internalEvents: {},
 
@@ -56,19 +94,24 @@ var WorkflowStore = {
      * @return {object}
      */
     getAll: function() {
-        return this.internalData;
+        return _internalData;
     },
 
     emitChange: function() {
-        this.internalEvents[CHANGE_EVENT].forEach(function(callback) {
-            callback()
-        })
+        if (CHANGE_EVENT in this.internalEvents) {
+            this.internalEvents[CHANGE_EVENT].forEach(function (callback) {
+                callback()
+            })
+        }
     },
 
     /**
      * @param {function} callback
      */
     addChangeListener: function (callback) {
+        if (!(CHANGE_EVENT in this.internalEvents)) {
+            this.internalEvents[CHANGE_EVENT] = []
+        }
         this.internalEvents[CHANGE_EVENT].push(callback)
     },
 
@@ -76,22 +119,25 @@ var WorkflowStore = {
      * @param {function} callback
      */
     removeChangeListener: function (callback) {
-        this.internalEvents[CHANGE_EVENT] = this.internalEvents[CHANGE_EVENT]
+        this.internalEvents[CHANGE_EVENT] = _internalData[CHANGE_EVENT]
             .filter(function(x) {return x !== callback});
     },
 
     dispatcherIndex: AppDispatcher.register(function (payload) {
 
-        switch(payload.action.actionType) {
+        console.log("dispatcherIndex: AppDispatcher.register", payload.action);
+
+        switch (payload.source) {
             case TodoConstants.TODO_UPDATE:
-                this.internalData.setIn(payload.action.breadcrumb, payload.action.status);
-                TodoStore.emitChange();
+                var treePath = payload.breadcrumbs.concat("isSelected");
+                _internalData = _internalData.updateIn(treePath, function (x) {return !x});
+                WorkflowStore.emitChange();
                 break;
 
             // add more cases for other actionTypes, like TODO_DESTROY, etc.
         }
 
         return true; // No errors. Needed by promise in Dispatcher.
-    })
+    }.bind(this))
 
 };

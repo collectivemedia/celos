@@ -72,7 +72,7 @@ var WorkflowsGroup = React.createClass({
                                 key: i,
                                 data: product,
                                 store: this.props.store.get(product.workflowName, Immutable.Map()),
-                                breadcrumb: this.state.breadcrumb.concat(product.workflowName)
+                                breadcrumbs: this.props.breadcrumbs.concat(product.workflowName)
                             })}.bind(this)
                         )
                 ))
@@ -94,9 +94,11 @@ var ProductRow = React.createClass({
                 return React.createElement(TimeSlot, {
                     key: i,
                     data: slot,
+                    status: slot.status,
+                    quantity: slot.quantity,
                     workflowName: this.props.data.workflowName,
                     store: this.props.store.get(slot.ts, Immutable.Map()),
-                    breadcrumb: this.state.breadcrumb.concat(slot.ts)
+                    breadcrumbs: this.props.breadcrumbs.concat(slot.ts)
                 });
             }.bind(this))
         )
@@ -105,6 +107,15 @@ var ProductRow = React.createClass({
 
 var TimeSlot = React.createClass({
     displayName: "TimeSlot",
+
+    propTypes: {
+        store: React.PropTypes.object.isRequired,
+        breadcrumbs: React.PropTypes.array.isRequired,
+        status: React.PropTypes.string.isRequired,
+        workflowName: React.PropTypes.string.isRequired,
+        quantity: React.PropTypes.number,
+        ts: React.PropTypes.string
+    },
 
     getInitialState: function () {
         return {
@@ -115,12 +126,10 @@ var TimeSlot = React.createClass({
         //console.log(JSON.stringify(e.nativeEvent), e.altKey, e.altPressed);
 
         if (e.altKey) {
-
-
-
-            this.props.tableHandler.clickOnSlot(this.props.workflowName, this.props.data.ts)
-
+            console.log("click", e);
+            AppDispatcher.handleClickOnSlot({breadcrumbs: this.props.breadcrumbs})
         } else {
+            // encapsulated state
             this.setState({showPopup: !this.state.showPopup})
         }
     },
@@ -129,10 +138,13 @@ var TimeSlot = React.createClass({
             showPopup: false
         })
     },
+    getSelectedClass: function () {
+        return this.props.store.get("isSelected", false)
+    },
     getCellConfig: function () {
         var cell = {};
-        var selectedClass = this.props.store.get("isSelected", false) ? "selected" : "";
-        cell.className = ["slot", this.props.data.status, selectedClass].join(" ");
+        var selectedClass = this.getSelectedClass() ? "selected" : "";
+        cell.className = ["slot", this.props.status, selectedClass].join(" ");
         cell.onClick = this.handleClick;
         if (this.state.showPopup) {
             cell.onMouseLeave = this.handleOnMouseLeave
@@ -142,13 +154,13 @@ var TimeSlot = React.createClass({
     render: function () {
         return (
             React.DOM.td(this.getCellConfig(),
-                this.props.data.quantity
-                    ? React.DOM.div(null, this.props.data.quantity)
+                this.props.quantity
+                    ? React.DOM.div(null, this.props.quantity)
                     : null,
                 this.state.showPopup
                     ? React.createElement(TriggerStatusFetch, {
                         id: this.props.workflowName,
-                        ts: this.props.data.ts})
+                        ts: this.props.ts})
                     : null
             )
         )
