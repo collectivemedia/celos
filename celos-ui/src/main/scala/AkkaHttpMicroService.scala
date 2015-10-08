@@ -5,7 +5,7 @@ import java.util.{Map, HashMap}
 import akka.actor.ActorSystem
 import akka.actor.ActorSystem
 import akka.event.{LoggingAdapter, Logging}
-import akka.http.scaladsl.Http
+import akka.http.scaladsl.{server, Http}
 import akka.http.scaladsl.client.RequestBuilding
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport._
 import akka.http.scaladsl.marshalling.ToResponseMarshallable
@@ -22,7 +22,7 @@ import com.typesafe.config.ConfigFactory
 import java.io.IOException
 import scala.collection.mutable
 import scala.concurrent.{ExecutionContextExecutor, Future}
-import spray.json.{JsonParser, DefaultJsonProtocol}
+import spray.json.{JsValue, JsonParser, DefaultJsonProtocol}
 
 import scala.language.postfixOps
 
@@ -55,14 +55,15 @@ object AkkaHttpMicroService extends App with Protocols {
 
   lazy val servletContext: util.HashMap[String, Object] = getAttributes(commandLine)
 
-  def getTriggerStatus(id: String, time: String) = {
+  def getTriggerStatus(id: String, time: String): JsValue = {
+    import spray.json._
     val celosURL: URL = servletContext.get(Main.CELOS_URL_ATTR).asInstanceOf[URL]
     val client: CelosClient = new CelosClient(celosURL.toURI)
-    client.getTriggerStatusAsText(id, time);
+    client.getTriggerStatusAsText(id, time).parseJson
   }
 
 
-  lazy val routes = {
+  lazy val routes: server.Route = {
     logRequestResult("akka-http-microservice") {
       path("static" / ) {
         getFromResource("static/index.html")

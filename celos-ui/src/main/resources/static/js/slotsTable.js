@@ -96,6 +96,7 @@ var ProductRow = React.createClass({
                     data: slot,
                     status: slot.status,
                     quantity: slot.quantity,
+                    ts: slot.ts,
                     workflowName: this.props.data.workflowName,
                     store: this.props.store.get(slot.ts, Immutable.Map()),
                     breadcrumbs: this.props.breadcrumbs.concat(slot.ts)
@@ -171,7 +172,7 @@ var TimeSlot = React.createClass({
 var TriggerStatusFetch = React.createClass({
     displayName: "TriggerStatusFetch",
 
-    loadCommentsFromServer: function loadCommentsFromServer(props) {
+    loadCommentsFromServer: function (props) {
         console.log("TriggerStatusFetch fromServer:", props);
         ajaxGetJson(
             /*url=*/ "/trigger-status",

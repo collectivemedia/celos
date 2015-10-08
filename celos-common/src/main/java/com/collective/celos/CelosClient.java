@@ -49,6 +49,7 @@ public class CelosClient {
     private static final String KILL_PATH = "/kill";
     private static final String PAUSE_PATH = "/pause";
     private static final String SLOT_STATE_PATH = "/slot-state";
+    private static final String TRIGGER_STATUS_PATH = "/trigger-status";
     private static final String CLEAR_CACHE_PATH = "/clear-cache";
     private static final String WORKFLOW_LIST_PATH = "/workflow-list";
     private static final String WORKFLOW_SLOTS_PATH = "/workflow-slots";
@@ -149,7 +150,7 @@ public class CelosClient {
 
     public String getTriggerStatusAsText(String workflowID, String scheduledTime) throws Exception {
         URIBuilder uriBuilder = new URIBuilder(address);
-        uriBuilder.setPath(uriBuilder.getPath() + SLOT_STATE_PATH);
+        uriBuilder.setPath(uriBuilder.getPath() + TRIGGER_STATUS_PATH);
         uriBuilder.addParameter(ID_PARAM, workflowID);
         uriBuilder.addParameter(TIME_PARAM, scheduledTime);
 
