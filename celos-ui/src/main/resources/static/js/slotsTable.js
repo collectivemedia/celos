@@ -19,12 +19,6 @@
 var WorkflowsGroup = React.createClass({
     displayName: "WorkflowsGroup",
 
-    getInitialState: function () {
-        return {
-            selectedSlots: Immutable.Map()
-        }
-    },
-
     clickOnSlot: function (wfName, slotTimestamp) {
         if (slotTimestamp !== null) {
             var newSlots = this.state.selectedSlots.updateIn([wfName, slotTimestamp, "isSelected"], false, function (x) {
@@ -35,16 +29,6 @@ var WorkflowsGroup = React.createClass({
             })
         }
     },
-
-    handleOnContextMenu: function (e) {
-        // show context menu
-        ReactDOM.render(React.createElement(ContextMenu, {showElement: true, x: e.pageX, y: e.pageY}),
-            document.getElementById('contextMenu'));
-        e.preventDefault();
-        // return false;
-        // doesn't work for react events
-    },
-
 
     render: function () {
         console.log("render WorkflowsGroup", this.props);
@@ -60,7 +44,7 @@ var WorkflowsGroup = React.createClass({
         }
         var newUrl = makeCelosHref(req.zoom, req.time, newGroups);
         return (
-            React.DOM.table({ className: "workflowTable", onContextMenu: this.handleOnContextMenu},
+            React.DOM.table({ className: "workflowTable"},
                 React.DOM.thead(null,
                     React.DOM.tr(null,
                         React.DOM.th({ className: "groupName" },
@@ -77,19 +61,20 @@ var WorkflowsGroup = React.createClass({
                         this.props.data.times
                             .slice(-slotsNum)
                             .map(function (tt, i) {
-                                return React.DOM.th({ className: "timeHeader", key: i }, tt);
+                                return React.DOM.th({ className: "timeHeader", key: i }, tt)
                             })
-                    )),
+                    )
+                ),
                 React.DOM.tbody(null,
                     this.props.data.rows
                         .map(function (product, i) {
                             return React.createElement(ProductRow, {
                                 key: i,
                                 data: product,
-                                rowState: this.state.selectedSlots.get(product.workflowName, Immutable.Map()),
-                                tableHandler: this
-                            });
-                        }.bind(this))
+                                store: this.props.store.get(product.workflowName, Immutable.Map()),
+                                breadcrumb: this.state.breadcrumb.concat(product.workflowName)
+                            })}.bind(this)
+                        )
                 ))
         );
     }
@@ -101,9 +86,8 @@ var ProductRow = React.createClass({
     shouldComponentUpdate: function(nextProps, nextState) {
         return nextProps.data !== this.props.data || nextProps.rowState !== this.props.rowState;
     },
-    render: function render() {
+    render: function () {
         console.log("render ProductRow", this.props);
-        var defaultSlotState = Immutable.Map({isSelected: false});
         return React.DOM.tr(null,
             React.DOM.th({ className: "workflowName" }, this.props.data.workflowName),
             this.props.data.slots.slice(-slotsNum).map(function (slot, i) {
@@ -111,8 +95,8 @@ var ProductRow = React.createClass({
                     key: i,
                     data: slot,
                     workflowName: this.props.data.workflowName,
-                    slotState: this.props.rowState.get(slot.ts, defaultSlotState),
-                    tableHandler: this.props.tableHandler
+                    store: this.props.store.get(slot.ts, Immutable.Map()),
+                    breadcrumb: this.state.breadcrumb.concat(slot.ts)
                 });
             }.bind(this))
         )
@@ -131,11 +115,13 @@ var TimeSlot = React.createClass({
         //console.log(JSON.stringify(e.nativeEvent), e.altKey, e.altPressed);
 
         if (e.altKey) {
+
+
+
             this.props.tableHandler.clickOnSlot(this.props.workflowName, this.props.data.ts)
+
         } else {
-            this.setState({
-                showPopup: !this.state.showPopup
-            })
+            this.setState({showPopup: !this.state.showPopup})
         }
     },
     handleOnMouseLeave: function () {
@@ -143,18 +129,9 @@ var TimeSlot = React.createClass({
             showPopup: false
         })
     },
-    makePopupElementOrNull: function() {
-        if (!this.state.showPopup) {
-            return null
-        } else {
-            return React.DOM.div({className: "cell-hover"},
-                React.DOM.a({href: this.props.data.url}, "click me!"),
-                "Slot info")
-        }
-    },
     getCellConfig: function () {
         var cell = {};
-        var selectedClass = this.props.slotState.get("isSelected") ? "selected" : "";
+        var selectedClass = this.props.store.get("isSelected", false) ? "selected" : "";
         cell.className = ["slot", this.props.data.status, selectedClass].join(" ");
         cell.onClick = this.handleClick;
         if (this.state.showPopup) {
@@ -168,8 +145,80 @@ var TimeSlot = React.createClass({
                 this.props.data.quantity
                     ? React.DOM.div(null, this.props.data.quantity)
                     : null,
-                this.makePopupElementOrNull()
+                this.state.showPopup
+                    ? React.createElement(TriggerStatusFetch, {
+                        id: this.props.workflowName,
+                        ts: this.props.data.ts})
+                    : null
             )
         )
     }
 });
+
+
+var TriggerStatusFetch = React.createClass({
+    displayName: "TriggerStatusFetch",
+
+    loadCommentsFromServer: function loadCommentsFromServer(props) {
+        console.log("TriggerStatusFetch fromServer:", props);
+        ajaxGetJson(
+            /*url=*/ "/trigger-status",
+            /*data=*/ {
+                id: props.id,
+                time: props.ts},
+            /*success=*/ function (data) {
+                console.log("set State:", data);
+                this.setState({ data: data })
+            }.bind(this)
+        )
+    },
+    componentWillMount: function () {
+        this.loadCommentsFromServer(this.props)
+    },
+    componentWillReceiveProps: function (nextProps) {
+        this.loadCommentsFromServer(nextProps)
+    },
+
+    drawTrigger: function(listOfStatuses) {
+        console.log(listOfStatuses);
+        return React.DOM.ul({className: "my-non-styled-list"},
+            listOfStatuses.map(function (curr) {
+                var successClass = curr.ready ? "label-success" : "label-warning";
+                var successLabel = curr.ready ? "READY" : "WAIT";
+                var header = React.DOM.li(null,
+                    React.DOM.span({className: ["label", successClass].join(" ")}, successLabel),
+                    " ",
+                    curr.type,
+                    ": ",
+                    curr.description
+                );
+                var children = React.DOM.li(null,
+                    this.drawTrigger(curr.subStatuses)
+                );
+                return [header, children]
+            }.bind(this)))
+    },
+
+    render: function () {
+        console.log("TriggerStatus render", this.props, this.state);
+        return this.state
+            ? React.DOM.div({className: "cell-hover"},
+            this.drawTrigger([this.state.data]))
+            : null
+    }
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

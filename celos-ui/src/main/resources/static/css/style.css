@@ -21,7 +21,7 @@
 }
 
 .workflowName {
-    /*text-align: right;*/
+    text-align: center;
     font-weight: normal;
     width: 250px;
     max-width: 250px;
@@ -96,27 +96,6 @@
 
 /*.anchor:hover > .profile-hover { display: block; }*/
 
-.my-context-menu {
-    display: block;
-    position: absolute;
-    z-index: 10;
-    border: 1px solid #000;
-    background: #fff;
-    overflow: hidden;
-    color: #333;
-    padding: 0;
-}
-
-/* Each of the items in the list */
-.my-context-menu li {
-    padding: 8px 12px;
-    cursor: pointer;
-    list-style-type: none;
-}
-
-.my-context-menu li:hover {
-    background-color: #DEF;
-}
 
 .my-non-styled-list {
     list-style-type: none

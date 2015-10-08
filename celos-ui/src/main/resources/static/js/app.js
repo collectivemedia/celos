@@ -32,22 +32,19 @@ var WorkflowsGroupFetch = React.createClass({
                 time: props.request.time
             },
             /*success=*/ function (data) {
-                this.setState({ data: data });
-            }.bind(this),
-            /*error=*/ function (xhr, status, err) {
-                console.error(props.url, status, err.toString());
+                this.setState({ data: data })
             }.bind(this)
         );
     },
     componentWillMount: function () {
-        this.loadCommentsFromServer(this.props);
+        this.loadCommentsFromServer(this.props)
     },
     componentWillReceiveProps: function (nextProps) {
-        this.loadCommentsFromServer(nextProps);
+        this.loadCommentsFromServer(nextProps)
     },
     render: function render() {
         if (this.state) {
-            return React.createElement(WorkflowsGroup, { data: this.state.data, request: this.props.request });
+            return React.createElement(WorkflowsGroup, { data: this.state.data, request: this.props.request })
         } else {
             return null
         }
@@ -68,10 +65,7 @@ var CelosMainFetch = React.createClass({
                 time: props.request.time
             },
             /*success=*/ (function (data) {
-                this.setState({ data: data });
-            }).bind(this),
-            /*error=*/ (function (xhr, status, err) {
-                console.error(props.url, status, err.toString());
+                this.setState({ data: data })
             }).bind(this)
         );
     },
@@ -100,29 +94,61 @@ var CelosMainFetch = React.createClass({
 var CelosMain = React.createClass({
     displayName: "CelosMain",
 
+    getInitialState: function() {
+        return {
+            allGroups: WorkflowStore.getAll()
+        }
+    },
+
+    _onChange: function() {
+        this.setState({
+            allGroups: WorkflowStore.getAll()
+        })
+    },
+
+    componentDidMount: function() {
+        WorkflowStore.addChangeListener(this._onChange);
+    },
+
+    componentWillUnmount: function() {
+        WorkflowStore.removeChangeListener(this._onChange);
+    },
+
+    handleContextMenu: function (e) {
+        e.preventDefault();
+        // show context menu
+        ReactDOM.render(React.createElement(ContextMenu, {showElement: true, x: e.pageX, y: e.pageY}),
+            document.getElementById('contextMenu'));
+        // return false; doesn't work for react events
+    },
+
     render: function () {
         console.log("CelosMain", this.props);
         return React.DOM.div(null,
             React.createElement(ContextMenu, {}),
             React.createElement("h2", null, this.props.data.currentTime),
             React.createElement(Navigation, { data: this.props.data.navigation, request: this.props.request }),
-            this.props.data.rows.map(function (wfGroup, i) {
-                if (wfGroup.active) {
-                    return React.DOM.div({ key: i },
-                        React.createElement(WorkflowsGroupFetch, {
-                            name: wfGroup.name,
-                            active: wfGroup.active,
-                            request: this.props.request
-                        }),
-                        React.DOM.br())
-                } else {
-                    var req = this.props.request;
-                    var newUrl = makeCelosHref(req.zoom, req.time, req.groups.concat(wfGroup.name));
-                    return React.DOM.div({ key: i },
-                        React.DOM.a({ href: newUrl }, wfGroup.name)
-                    )
-                }
-            }.bind(this))
+            React.DOM.div({onContextMenu: this.handleContextMenu},
+                this.props.data.rows.map(function (wfGroup, i) {
+                    if (wfGroup.active) {
+                        return React.DOM.div({ key: i },
+                            React.createElement(WorkflowsGroupFetch, {
+                                name: wfGroup.name,
+                                active: wfGroup.active,
+                                request: this.props.request,
+                                store: this.state.get(wfGroup.name),
+                                breadcrumbs: [wfGroup.name]
+                            }),
+                            React.DOM.br())
+                    } else {
+                        var req = this.props.request;
+                        var newUrl = makeCelosHref(req.zoom, req.time, req.groups.concat(wfGroup.name));
+                        return React.DOM.div({ key: i },
+                            React.DOM.a({ href: newUrl }, wfGroup.name)
+                        )
+                    }
+                }.bind(this))
+            )
         );
     }
 });
@@ -130,20 +156,34 @@ var CelosMain = React.createClass({
 var ContextMenu = React.createClass({
     displayName: "ContextMenu",
 
+    proceedClick1: function () {
+        console.log('ololo2');
+    },
+
     render: function () {
         if (!this.props.showElement) {
             return null
         }
         // else
         return (
-            React.DOM.ul({className: "context-menu",
-                          style: {top: this.props.y,
-                                  left: this.props.x}},
-                React.DOM.li(null, "First thing"),
-                React.DOM.li(null, "Second thing"),
-                React.DOM.li(null, "Third thing")))
+            React.DOM.ul({className: "dropdown-menu",
+                          style: {
+                              display: "block",
+                              position: "absolute",
+                              top: this.props.y,
+                              left: this.props.x
+                          }},
+                React.DOM.li({onClick: this.proceedClick1},
+                    React.DOM.a({href: window.location.hash, tabIndex: -1},
+                        "Kill workflows")),
+                React.DOM.li({onClick: this.proceedClick1},
+                    React.DOM.a({href: window.location.hash, tabIndex: -1},
+                        "Rerun workflows"))
+            )
+        )
     }
 });
+
 
 var Navigation = React.createClass({
     displayName: "Navigation",
@@ -155,9 +195,9 @@ var Navigation = React.createClass({
             React.DOM.a({ href: makeCelosHref(this.props.request.zoom, this.props.data.right, this.props.request.groups) }, "Next page >"),
             React.DOM.br(),
             React.DOM.br(),
-            React.DOM.a({ href: makeCelosHref(this.props.data.zoomOut, this.props.request.time, this.props.request.groups) }, "Zoom OUT"),
+            React.DOM.a({ href: makeCelosHref(this.props.data.zoomOut, this.props.request.time, this.props.request.groups) }, "- Zoom OUT"),
             React.DOM.strong(null, " / ", this.props.request.zoom || 60, " minutes / "),
-            React.DOM.a({ href: makeCelosHref(this.props.data.zoomIn, this.props.request.time, this.props.request.groups) }, "Zoom IN"),
+            React.DOM.a({ href: makeCelosHref(this.props.data.zoomIn, this.props.request.time, this.props.request.groups) }, "Zoom IN +"),
             React.DOM.br(),
             React.DOM.br()
         );

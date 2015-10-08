@@ -20,11 +20,14 @@ var startsWith = function startsWith(searchString, str) {
     return str.indexOf(searchString) === 0;
 };
 
-var ajaxGetJson = function(url0, data, successCallback, errorCallback) {
+var ajaxGetJson = function(url0, data, successCallback) {
+    var errorCallback = function (xhr, status, err) {
+        console.error(url0, status, err.toString())
+    };
     var request = new XMLHttpRequest();
     var query = [];
     for (var key in data) {
-        if (data.hasOwnProperty(key) && data[key] != undefined) {
+        if (data.hasOwnProperty(key) && data[key] !== undefined) {
             query.push(encodeURIComponent(key) + '=' + encodeURIComponent(data[key]));
         }
     }
@@ -58,7 +61,6 @@ var makeCelosHref = function makeCelosHref(zoom, time, groups) {
     }
     return url0.substring(0, url0.length - 1);
 };
-
 
 
 var parseParams = function parseParams(paramsList) {
@@ -99,6 +101,13 @@ window.onclick = function(e) {
     // close context menu
     ReactDOM.render(React.createElement(ContextMenu, {showElement: false}),
         document.getElementById('contextMenu'));
-
     return true;
 };
+
+
+
+
+
+
+
+
