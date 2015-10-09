@@ -15,25 +15,18 @@
  */
 package com.collective.celos.ui;
 
-import static j2html.TagCreator.a;
-import static j2html.TagCreator.body;
-import static j2html.TagCreator.div;
-import static j2html.TagCreator.head;
-import static j2html.TagCreator.html;
-import static j2html.TagCreator.text;
-import static j2html.TagCreator.link;
-import static j2html.TagCreator.script;
-import static j2html.TagCreator.table;
-import static j2html.TagCreator.td;
-import static j2html.TagCreator.title;
-import static j2html.TagCreator.tr;
-import static j2html.TagCreator.unsafeHtml;
-
+import com.collective.celos.*;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.Sets;
 import j2html.tags.Tag;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -41,22 +34,8 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.*;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
-
-import com.collective.celos.CelosClient;
-import com.collective.celos.ScheduledTime;
-import com.collective.celos.SlotState;
-import com.collective.celos.Util;
-import com.collective.celos.WorkflowID;
-import com.collective.celos.WorkflowStatus;
-import com.google.common.collect.ImmutableList;
+import static j2html.TagCreator.*;
+import static java.util.stream.Collectors.toList;
 
 /**
  * Renders the UI HTML.
@@ -179,7 +158,10 @@ public class UIServlet extends HttpServlet {
     }
 
     private static List<Tag> makeTableHeader(UIConfiguration conf) {
-        return ImmutableList.of(makeDayHeader(conf), makeTimeHeader(conf));
+        List<Tag> tmp = new ArrayList<>();
+        tmp.add(makeDayHeader(conf));
+        tmp.add(makeTimeHeader(conf));
+        return Collections.unmodifiableList(tmp);
     }
 
     private static Tag makeDayHeader(UIConfiguration conf) {
@@ -383,7 +365,7 @@ public class UIServlet extends HttpServlet {
 
     List<WorkflowGroup> getWorkflowGroups(InputStream configFileIS, Set<WorkflowID> expectedWfs) throws IOException {
         JsonNode mainNode = objectMapper.readValue(configFileIS, JsonNode.class);
-        List<WorkflowGroup> configWorkflowGroups = new ArrayList();
+        List<WorkflowGroup> configWorkflowGroups = new ArrayList<>();
         Set<WorkflowID> listedWfs = new TreeSet<>();
 
         for(JsonNode workflowGroupNode: mainNode.get(GROUPS_TAG)) {
@@ -399,15 +381,17 @@ public class UIServlet extends HttpServlet {
             listedWfs.addAll(ids);
         }
 
-        TreeSet<WorkflowID> diff = new TreeSet<>(Sets.difference(expectedWfs, listedWfs));
+        List<WorkflowID> diff = expectedWfs.stream().filter(x -> !listedWfs.contains(x)).sorted().collect(toList());
         if (!diff.isEmpty()) {
-            configWorkflowGroups.add(new WorkflowGroup(UNLISTED_WORKFLOWS_CAPTION, new ArrayList<>(diff)));
+            configWorkflowGroups.add(new WorkflowGroup(UNLISTED_WORKFLOWS_CAPTION, diff));
         }
         return configWorkflowGroups;
     }
 
     private List<WorkflowGroup> getDefaultGroups(Set<WorkflowID> workflows) {
-        return ImmutableList.of(new WorkflowGroup(DEFAULT_CAPTION, new LinkedList<WorkflowID>(new TreeSet<WorkflowID>(workflows))));
+        List<WorkflowGroup> tmp = new ArrayList<>();
+        tmp.add(new WorkflowGroup(DEFAULT_CAPTION, new LinkedList<WorkflowID>(new TreeSet<WorkflowID>(workflows))));
+        return Collections.unmodifiableList(tmp);
     }
 
 }
