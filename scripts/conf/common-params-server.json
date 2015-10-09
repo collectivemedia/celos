@@ -1,5 +1,6 @@
 {
   "service_args": "--workflows {{ celos_workflows_dir }} --defaults {{ celos_defaults_dir }} --db {{ celos_db_dir }} --logs {{ celos_log_dir }}",
-  "jar_path": "../celos-server/build/libs/celos-server.jar",
-  "main_class": "com.collective.celos.server.Main"
+  "start_script": "bin/celos-server",
+  "jvm_opts": "-cp /etc/hadoop/conf",
+  "build_path": "../celos-server/build/install/celos-server"
 }

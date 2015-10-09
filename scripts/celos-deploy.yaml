@@ -12,7 +12,7 @@
     service_dir: "{{ prefix }}/service/{{ service_name }}"
     runit_restart: "{{ root }}/scripts/runit-restart-service.sh"
     start_script_path: "{{ prefix }}/bin/{{ service_name}}"
-    dest_jar_path: "{{ prefix }}/lib/{{ service_name}}.jar"
+    dest_path: "{{ prefix }}/share/{{ service_name}}"
     stdout_log_path: "{{ prefix }}/log/{{ service_name }}"
 
   tasks:
@@ -34,8 +34,14 @@
   - file: dest={{ service_dir }}/log state=directory
   - file: state=directory dest={{ stdout_log_path }}
 
-  - file: state=directory dest={{ prefix }}/lib
-  - copy: src={{ jar_path }} dest={{ dest_jar_path }}
+  - file: state=directory dest={{ dest_path }}/
+
+  - name: Upload jar files after installApp command
+    synchronize:
+      src: "{{ build_path }}/"
+      dest: "{{ dest_path }}/"
+      dirs: yes
+      delete: yes
 
   - name: Stop service if exists, overwise ignore errors
     shell: "/sbin/sv stop {{service_name}} && /sbin/sv stop {{service_name}}/log"

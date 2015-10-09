@@ -1,5 +1,3 @@
-apply plugin: 'maven'
-
 mainClassName = 'com.collective.celos.server.Main'
 version = '0.1'
 
@@ -39,12 +37,4 @@ dependencies {
     }
     testCompile("org.mockito:mockito-all:1.9.5")
     testCompile project(":celos-server")
-}
-
-jar {
-    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }}
-    archiveName "celos-server.jar"
-    manifest {
-        attributes("Main-Class": mainClassName)
-    }
 }
