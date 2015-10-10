@@ -15,8 +15,9 @@
  */
 package com.collective.celos;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.collect.Lists;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -26,13 +27,10 @@ import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.*;
 
 /**
@@ -210,7 +208,7 @@ public class CelosClient {
         Boolean paused = node.get(PAUSE_PARAM).asBoolean();
 
         Iterator<JsonNode> elems = node.get(SLOTS_NODE).elements();
-        List<SlotState> result = Lists.newArrayList();
+        List<SlotState> result = new ArrayList<>();
         while (elems.hasNext()) {
             result.add(SlotState.fromJSONNode(workflowID, elems.next()));
         }

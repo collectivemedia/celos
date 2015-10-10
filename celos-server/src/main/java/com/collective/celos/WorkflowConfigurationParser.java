@@ -15,7 +15,6 @@
  */
 package com.collective.celos;
 
-import com.google.common.collect.Maps;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.mozilla.javascript.Context;
@@ -23,6 +22,7 @@ import org.mozilla.javascript.tools.shell.Global;
 
 import java.io.*;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -76,7 +76,7 @@ public class WorkflowConfigurationParser {
         Global scope = jsConfigParser.createGlobalScope();
 
         Object wrappedThis = Context.javaToJS(this, scope);
-        Map jsProperties = Maps.newHashMap(additionalJsVariables);
+        Map<String, Object> jsProperties = new HashMap<>(additionalJsVariables);
         jsProperties.put("celosWorkflowConfigurationParser", wrappedThis);
 
         jsConfigParser.putPropertiesInScope(jsProperties, scope);

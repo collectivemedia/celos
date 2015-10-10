@@ -15,13 +15,10 @@
  */
 package com.collective.celos;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.ServerSocket;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.Map;
-
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
@@ -30,12 +27,12 @@ import org.apache.log4j.rolling.TimeBasedRollingPolicy;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Maps;
+import java.io.File;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * The place for everything that doesn't fit anywhere else.
@@ -148,18 +145,23 @@ public class Util {
     /**
      * we need those conversions to be able to parse hdfs URI strings which contain '$', '{' and '}' symbols
      */
-    private static final Map<String, String> conversions = ImmutableMap.of(
-            "$", Character.toString((char) 0xE000),
-            "{", Character.toString((char) 0xE001),
-            "}", Character.toString((char) 0xE002));
+
+    private static final Map<String, String> conversions;
+    static {
+        Map<String, String> aMap = new HashMap<>();
+        aMap.put("$", Character.toString((char) 0xE000));
+        aMap.put("{", Character.toString((char) 0xE001));
+        aMap.put("}", Character.toString((char) 0xE002));
+        conversions = Collections.unmodifiableMap(aMap);
+    }
 
     private static final Map<String, String> backConversions;
-
     static {
-        backConversions = Maps.newHashMap();
+        Map<String, String> backConversionsTmp = new HashMap<>();
         for (Map.Entry<String, String> entry : conversions.entrySet()) {
-            backConversions.put(entry.getValue(), entry.getKey());
+            backConversionsTmp.put(entry.getValue(), entry.getKey());
         }
+        backConversions = Collections.unmodifiableMap(backConversionsTmp);
     }
 
     public static String augmentHdfsPath(String hdfsPrefix, String path) throws URISyntaxException {
