@@ -17,6 +17,7 @@ package com.collective.celos;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.Lists;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -48,6 +49,8 @@ public class CelosClient {
     private static final String CLEAR_CACHE_PATH = "/clear-cache";
     private static final String WORKFLOW_LIST_PATH = "/workflow-list";
     private static final String WORKFLOW_SLOTS_PATH = "/workflow-slots";
+    private static final String WORKFLOW_FILE_PATH = "/workflow-file";
+
     private static final String START_TIME_PARAM = "start";
     private static final String END_TIME_PARAM = "end";
     private static final String TIME_PARAM = "time";
@@ -161,6 +164,17 @@ public class CelosClient {
         uriBuilder.addParameter(ID_PARAM, workflowID.toString());
         uriBuilder.addParameter(PAUSE_PARAM, paused.toString());
         executePost(uriBuilder.build());
+    }
+
+    public String getWorkflowFile(WorkflowID workflowID) throws Exception {
+        URIBuilder uriBuilder = new URIBuilder(address);
+        uriBuilder.setPath(WORKFLOW_FILE_PATH);
+        uriBuilder.addParameter(ID_PARAM, workflowID.toString());
+
+        HttpGet workflowListGet = new HttpGet(uriBuilder.build());
+        HttpResponse getResponse = execute(workflowListGet);
+        InputStream content = getResponse.getEntity().getContent();
+        return IOUtils.toString(content);
     }
 
     public void kill(WorkflowID workflowID, ScheduledTime scheduledTime) throws Exception {

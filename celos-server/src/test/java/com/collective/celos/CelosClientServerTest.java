@@ -698,6 +698,31 @@ public class CelosClientServerTest {
     }
 
     @Test
+    public void testGetWorkflowFile() throws Exception {
+        File src = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/client/wf-list").toURI());
+        FileUtils.copyDirectory(src, workflowsDir);
+
+        String workflowFile1 = celosClient.getWorkflowFile(new WorkflowID("workflow-1"));
+        String workflowFile2 = celosClient.getWorkflowFile(new WorkflowID("workflow-2"));
+
+        File wfFile1 = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/client/wf-list/workflow-1.js").toURI());
+        File wfFile2 = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/client/wf-list/workflow-2.js").toURI());
+
+        String expectedWfFile1 = FileUtils.readFileToString(wfFile1);
+        String expectedWfFile2 = FileUtils.readFileToString(wfFile2);
+
+        Assert.assertEquals(expectedWfFile1, workflowFile1);
+        Assert.assertEquals(expectedWfFile2, workflowFile2);
+    }
+
+    @Test (expected = IOException.class)
+    public void testGetWorkflowFileFailsNoWF() throws Exception {
+        File src = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/client/wf-list").toURI());
+        FileUtils.copyDirectory(src, workflowsDir);
+
+        celosClient.getWorkflowFile(new WorkflowID("thereisnosuchwf"));
+    }
+
     public void testKill() throws Exception {
         File src = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/client/wf-list").toURI());
         FileUtils.copyDirectory(src, workflowsDir);

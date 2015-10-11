@@ -69,7 +69,7 @@ public class DependentScheduleTest {
                         slidingWindowHours,
                         workflowStartTime,
                         Workflow.DEFAULT_WAIT_TIMEOUT_SECONDS,
-                        new WorkflowInfo(null, Collections.<ContactsInfo>emptyList())));
+                        new WorkflowInfo(null, Collections.<ContactsInfo>emptyList())), "");
         
         DependentSchedule schedule = new DependentSchedule(new WorkflowID(id));
         SortedSet<ScheduledTime> times = schedule.getScheduledTimes(scheduler, schedulingStartTime, schedulingEndTime);
