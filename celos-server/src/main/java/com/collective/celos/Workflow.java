@@ -16,6 +16,7 @@
 package com.collective.celos;
 
 import com.collective.celos.trigger.Trigger;
+import com.fasterxml.jackson.databind.JsonNode;
 
 /**
  * A periodical task.
@@ -54,6 +55,19 @@ public class Workflow {
         this.workflowInfo = Util.requireNonNull(workflowInfo);
         this.waitTimeoutSeconds = waitTimeoutSeconds;
     }
+
+//    public static Workflow fromJSON(JsonNode node) {
+//        WorkflowID id = WorkflowID.fromJSON(node.get("id"));
+//        Schedule schedule = Schedule.fromJSON(node.get("schedule"));
+//        return new Workflow(id, schedule);
+//    }
+//
+//    public static Schedule fromJSON(JsonNode node) {
+//        Class specificClass = node.get("type");
+//        Schedule schedule = specificClass.fromJSON(node);
+//        return schedule;
+//    }
+
 
     public WorkflowID getID() {
         return id;
