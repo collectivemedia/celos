@@ -30,7 +30,7 @@ dependencies {
 }
 
 jar {
-    from { (configurations.compile - configurations.provided).collect { it.isDirectory() ? it : zipTree(it).matching { exclude 'META-INF/**' } } }
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it).matching { exclude 'META-INF/**' } } }
     archiveName "celos-streaming.jar"
     manifest {
         attributes("Main-Class": mainClassName)
