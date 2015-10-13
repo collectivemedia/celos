@@ -39,6 +39,7 @@ import java.util.List;
  *           { "name": "Jack Smith", "email": "Jack.Smith@Gmail.Com"},
  *       ]
  *   },
+ *   "paused": false,
  *   "slots": [
  *      { "time": "2013-12-07T13:00Z", "status": "RUNNING", "externalID": "237982137-371832798321-W", retryCount: 5 },
  *      { "time": "2013-12-07T14:00Z", "status": "READY", "externalID": null, retryCount: 0 },
@@ -58,6 +59,7 @@ public class JSONWorkflowSlotsServlet extends AbstractJSONServlet {
 
     private static final String ID_PARAM = "id";
     private static final String INFO_PARAM = "info";
+    private static final String PAUSED_PARAM = "paused";
     private static final String SLOTS_PARAM = "slots";
     private static final String START_TIME_PARAM = "start";
     private static final String END_TIME_PARAM = "end";
@@ -92,6 +94,7 @@ public class JSONWorkflowSlotsServlet extends AbstractJSONServlet {
 
             ObjectNode node = mapper.createObjectNode();
             node.put(INFO_PARAM, (JsonNode) mapper.valueToTree(wf.getWorkflowInfo()));
+            node.put(PAUSED_PARAM, scheduler.getStateDatabase().isPaused(wf.getID()));
             node.putArray(SLOTS_PARAM).addAll(objectNodes);
             writer.writeValue(res.getOutputStream(), node);
         } catch (Exception e) {

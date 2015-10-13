@@ -40,41 +40,44 @@ public class Scheduler {
         this.configuration = Util.requireNonNull(configuration);
         this.database = Util.requireNonNull(database);
     }
-    
+
     /**
      * Returns the start of the sliding window, given the current time.
      */
     ZonedDateTime getSlidingWindowStartTime(ZonedDateTime current) {
         return current.minusHours(slidingWindowHours);
     }
-    
+
     /**
      * Main method, called every minute.
-     * 
+     * <p>
      * Steps through all workflows.
      */
     public void step(ZonedDateTime current) {
     	// by default, schedule all workflows
     	step(current, Collections.<WorkflowID>emptySet());
     }
-    
+
     /**
      * If workflowIDs is empty, schedule all workflows.
-     * 
+     * <p>
      * Otherwise, schedule only workflows in the set.
      */
     public void step(ZonedDateTime current, Set<WorkflowID> workflowIDs) {
         LOGGER.info("Starting scheduler step: " + current + " -- " + getSlidingWindowStartTime(current));
         for (Workflow wf : configuration.getWorkflows()) {
             WorkflowID id = wf.getID();
-            if (workflowIDs.isEmpty() || workflowIDs.contains(id)) {
+            boolean shouldProcess = workflowIDs.isEmpty() || workflowIDs.contains(id);
+            if (!shouldProcess) {
+                LOGGER.info("Ignoring workflow: " + id);
+            } else if (database.isPaused(id)) {
+                LOGGER.info("Workflow is paused: " + id);
+            } else {
                 try {
                     stepWorkflow(wf, current);
                 } catch (Exception e) {
                     LOGGER.error("Exception in workflow: " + id + ": " + e.getMessage(), e);
                 }
-            } else {
-                LOGGER.info("Ignoring workflow: " + id);
             }
         }
         LOGGER.info("Ending scheduler step: " + current + " -- " + getSlidingWindowStartTime(current));
@@ -82,11 +85,11 @@ public class Scheduler {
 
     /**
      * Steps a single workflow:
-     * 
+     * <p>
      * - Submit any READY slots to the external service.
-     * 
+     * <p>
      * - Check any WAITING slots for data availability.
-     * 
+     * <p>
      * - Check any RUNNING slots for their current external status.
      */
     private void stepWorkflow(Workflow wf, ZonedDateTime current) throws Exception {
@@ -141,7 +144,7 @@ public class Scheduler {
         ZonedDateTime workflowStartTime = wf.getStartTime();
         return Util.max(slidingWindowStartTime, workflowStartTime);
     }
-    
+
     /**
      * Get scheduled slots from scheduling strategy and submit them to external system.
      */
@@ -162,7 +165,7 @@ public class Scheduler {
 
     /**
      * Check the trigger for all WAITING slots, and update them to READY if data is available.
-     * 
+     * <p>
      * Check the external status of all RUNNING slots, and update them to SUCCESS or FAILURE if they're finished.
      */
     void updateSlotState(Workflow wf, SlotState slotState, ZonedDateTime current) throws Exception {
@@ -205,12 +208,12 @@ public class Scheduler {
         ZonedDateTime scheduledTime = slotState.getScheduledTime();
         return trigger.isDataAvailable(this, current, scheduledTime);
     }
-    
+
     static boolean isSlotTimedOut(ZonedDateTime nominalTime, ZonedDateTime current, int timeoutSeconds) {
         ZonedDateTime timeoutTime = nominalTime.plusSeconds(timeoutSeconds);
         return current.isAfter(timeoutTime);
     }
-    
+
     public int getSlidingWindowHours() {
         return slidingWindowHours;
     }

@@ -56,6 +56,7 @@ public abstract class AbstractServlet extends HttpServlet {
                 super.service(req, res);
             } catch(ServletException|IOException|RuntimeException e) {
                 LOGGER.error(e.getMessage(), e);
+                res.sendError(HttpServletResponse.SC_BAD_REQUEST, e.getLocalizedMessage());
                 throw e;
             }
         }

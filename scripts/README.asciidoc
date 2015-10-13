@@ -1,0 +1,10 @@
+This directory contains our Ansible + Runit based production setup, as
+well as the integration test suite.
+
+With a little modification of the Ansible inventory files, the
+production setup can be used to deploy Celos and Celos UI to any
+host(s) with Runit installed.
+
+link:https://github.com/collectivemedia/celos#get-in-touch[Contact us]
+if you're interested in using it at your site.  It could probably be
+made a bit more easily reusable if there's interest.

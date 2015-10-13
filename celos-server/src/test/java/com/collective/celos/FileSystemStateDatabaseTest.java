@@ -121,6 +121,26 @@ public class FileSystemStateDatabaseTest {
         }
     }
 
+    @Test
+    public void testPause() throws IOException {
+        StateDatabase db = new FileSystemStateDatabase(makeDatabaseDir());
+        WorkflowID workflowID = new WorkflowID("wf1");
+
+        File pauseFile = new File(getDatabaseDir(), "paused/wf1");
+
+        Assert.assertFalse(db.isPaused(workflowID));
+        Assert.assertFalse(pauseFile.exists());
+
+        db.setPaused(workflowID, true);
+
+        Assert.assertTrue(pauseFile.exists());
+        Assert.assertTrue(db.isPaused(workflowID));
+
+        db.setPaused(workflowID, false);
+        Assert.assertFalse(db.isPaused(workflowID));
+        Assert.assertFalse(pauseFile.exists());
+    }
+
     /**
      * Returns true if diff reports a difference between the two files/dirs.
      */
@@ -175,5 +195,5 @@ public class FileSystemStateDatabaseTest {
         
         return states;
     }
-    
+
 }

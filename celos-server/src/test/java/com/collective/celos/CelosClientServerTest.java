@@ -662,4 +662,100 @@ public class CelosClientServerTest {
         celosClient.rerunSlot(workflowID, ZonedDateTime.parse("2013-11-20T12:34Z"));
     }
 
+    @Test
+    public void testPauseWorkflow() throws Exception {
+        File src = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/client/wf-list").toURI());
+        FileUtils.copyDirectory(src, workflowsDir);
+
+        WorkflowID workflowID = new WorkflowID("workflow-2");
+
+        WorkflowStatus workflowStatus = celosClient.getWorkflowStatus(workflowID);
+        List<SlotState> slotStates = workflowStatus.getSlotStates();
+        SlotState slotStateLast = slotStates.get(slotStates.size() - 1);
+        Assert.assertEquals(slotStateLast.getStatus(), SlotState.Status.WAITING);
+        Assert.assertFalse(workflowStatus.isPaused());
+
+        celosClient.setWorkflowPaused(workflowID, true);
+
+        celosClient.iterateScheduler();
+        celosClient.iterateScheduler();
+
+        WorkflowStatus workflowStatus2 = celosClient.getWorkflowStatus(workflowID);
+        List<SlotState> slotStates2 = workflowStatus2.getSlotStates();
+        SlotState slotStateLast2 = workflowStatus2.getSlotStates().get(slotStates2.size() - 1);
+        Assert.assertEquals(slotStateLast2.getStatus(), SlotState.Status.WAITING);
+        Assert.assertTrue(workflowStatus2.isPaused());
+
+        celosClient.setWorkflowPaused(workflowID, false);
+
+        celosClient.iterateScheduler();
+        celosClient.iterateScheduler();
+
+        WorkflowStatus workflowStatus3 = celosClient.getWorkflowStatus(workflowID);
+        List<SlotState> slotStates3 = workflowStatus3.getSlotStates();
+        SlotState slotStateLast3 = workflowStatus3.getSlotStates().get(slotStates3.size() - 1);
+        Assert.assertEquals(slotStateLast3.getStatus(), SlotState.Status.RUNNING);
+        Assert.assertFalse(workflowStatus3.isPaused());
+    }
+
+    @Test
+    public void testKill() throws Exception {
+        File src = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/client/wf-list").toURI());
+        FileUtils.copyDirectory(src, workflowsDir);
+
+        ZonedDateTime endTime = Util.zonedDateTimeNowUTC();
+
+        WorkflowID workflowID = new WorkflowID("workflow-2");
+
+        WorkflowStatus workflowStatus = celosClient.getWorkflowStatus(workflowID, endTime);
+        List<SlotState> slotStates = workflowStatus.getSlotStates();
+        SlotState slotStateLast = workflowStatus.getSlotStates().get(slotStates.size() - 1);
+        Assert.assertEquals(slotStateLast.getStatus(), SlotState.Status.WAITING);
+
+        celosClient.kill(workflowID, slotStateLast.getScheduledTime());
+
+        WorkflowStatus workflowStatus2 = celosClient.getWorkflowStatus(workflowID, endTime);
+        List<SlotState> slotStates2 = workflowStatus2.getSlotStates();
+        SlotState slotStateLast2 = workflowStatus2.getSlotStates().get(slotStates2.size() - 1);
+        Assert.assertEquals(slotStateLast2.getStatus(), SlotState.Status.KILLED);
+
+        celosClient.rerunSlot(workflowID, slotStateLast.getScheduledTime());
+
+        celosClient.iterateScheduler();
+        celosClient.iterateScheduler();
+
+        WorkflowStatus workflowStatus3 = celosClient.getWorkflowStatus(workflowID, endTime);
+        List<SlotState> slotStates3 = workflowStatus3.getSlotStates();
+        SlotState slotStateLast3 = workflowStatus3.getSlotStates().get(slotStates3.size() - 1);
+        Assert.assertEquals(slotStateLast3.getStatus(), SlotState.Status.RUNNING);
+
+        celosClient.kill(workflowID, slotStateLast3.getScheduledTime());
+
+        WorkflowStatus workflowStatus4 = celosClient.getWorkflowStatus(workflowID, endTime);
+        List<SlotState> slotStates4 = workflowStatus4.getSlotStates();
+        SlotState slotStateLast4 = workflowStatus4.getSlotStates().get(slotStates4.size() - 1);
+        Assert.assertEquals(slotStateLast4.getStatus(), SlotState.Status.KILLED);
+    }
+
+    @Test(expected = IOException.class)
+    public void testDoesntKillSuccess() throws Exception {
+        File src = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/client/wf-list").toURI());
+        FileUtils.copyDirectory(src, workflowsDir);
+
+        ZonedDateTime endTime = Util.zonedDateTimeNowUTC();
+
+        WorkflowID workflowID = new WorkflowID("workflow-2");
+
+        celosClient.iterateScheduler();
+        celosClient.iterateScheduler();
+        celosClient.iterateScheduler();
+
+        WorkflowStatus workflowStatus = celosClient.getWorkflowStatus(workflowID, endTime);
+        List<SlotState> slotStates = workflowStatus.getSlotStates();
+        SlotState slotStateLast = workflowStatus.getSlotStates().get(slotStates.size() - 1);
+        Assert.assertEquals(slotStateLast.getStatus(), SlotState.Status.SUCCESS);
+
+        celosClient.kill(workflowID, slotStateLast.getScheduledTime());
+    }
+
 }

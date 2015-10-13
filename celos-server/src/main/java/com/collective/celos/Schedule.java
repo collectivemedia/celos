@@ -32,4 +32,8 @@ public interface Schedule {
      */
     public SortedSet<ZonedDateTime> getScheduledTimes(Scheduler scheduler, ZonedDateTime start, ZonedDateTime end);
 
+    default boolean isTimeInSchedule(ZonedDateTime time, Scheduler scheduler) {
+        return getScheduledTimes(scheduler, time, time.plusSeconds(1)).contains(time);
+    }
+
 }

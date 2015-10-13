@@ -39,8 +39,6 @@ import java.util.UUID;
  */
 public class TestRun {
 
-    private final WorkflowFilesDeployer wfDeployer;
-    private final HdfsDeployer hdfsDeployer;
     private final CelosCiContext ciContext;
     private final File testCaseTempDir;
     private final TestCase testCase;
@@ -68,8 +66,6 @@ public class TestRun {
         CelosCiTarget testTarget = new CelosCiTarget(target.getPathToHdfsSite(), target.getPathToCoreSite(), celosServerMode.getCelosWorkflowDir(), celosServerMode.getCelosDefaultsDir(), target.getHiveJdbc());
         this.ciContext = new CelosCiContext(testTarget, commandLine.getUserName(), CelosCiContext.Mode.TEST, commandLine.getDeployDir(), commandLine.getWorkflowName(), celosServerMode.getHdfsPrefix(), commandLine.getHdfsRoot());
 
-        this.wfDeployer = new WorkflowFilesDeployer(ciContext);
-        this.hdfsDeployer = new HdfsDeployer(ciContext);
         this.keepTempData = commandLine.isKeepTempData();
     }
 
@@ -112,8 +108,8 @@ public class TestRun {
             }
             System.out.println(testCase.getName() + ": HDFS prefix is: " + celosServerMode.getHdfsPrefix());
 
-            wfDeployer.deploy();
-            hdfsDeployer.deploy();
+            new WorkflowFilesDeployer(ciContext).deploy();
+            new HdfsDeployer(ciContext).deploy();
 
             for (FixtureDeployer fixtureDeployer : testCase.getInputs()) {
                 fixtureDeployer.deploy(this);

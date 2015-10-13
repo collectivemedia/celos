@@ -16,6 +16,7 @@
 package com.collective.celos;
 
 import java.time.ZonedDateTime;
+import java.io.IOException;
 import java.util.SortedSet;
 
 /**
@@ -44,5 +45,14 @@ public interface StateDatabase {
      * Returns the list of scheduled times of the given workflow that have been marked for rerun.
      */
     public SortedSet<ZonedDateTime> getTimesMarkedForRerun(WorkflowID workflowID, ZonedDateTime now) throws Exception;
-    
+
+    /**
+     * Checks if Workflow has been paused
+     */
+    public boolean isPaused(WorkflowID workflowID);
+
+    /**
+     * Sets paused flag for a Workflow
+     */
+    public void setPaused(WorkflowID workflowID, boolean paused) throws IOException;
 }

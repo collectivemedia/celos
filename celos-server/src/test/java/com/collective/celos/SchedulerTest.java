@@ -770,7 +770,12 @@ public class SchedulerTest {
                 return new MockExternalService.MockExternalStatusFailure();
             }
         }
-        
+
+        @Override
+        public void kill(SlotID id, String externalID) throws ExternalServiceException {
+
+        }
+
     }
     
     @Test

@@ -117,6 +117,7 @@ public class UIServlet extends HttpServlet {
         STATUS_TO_SHORT_NAME.put(SlotState.Status.SUCCESS, "&nbsp;&nbsp;&nbsp;&nbsp;");
         STATUS_TO_SHORT_NAME.put(SlotState.Status.WAIT_TIMEOUT, "time");
         STATUS_TO_SHORT_NAME.put(SlotState.Status.WAITING, "wait");
+        STATUS_TO_SHORT_NAME.put(SlotState.Status.KILLED, "kill");
         if (STATUS_TO_SHORT_NAME.size() != SlotState.Status.values().length) {
             throw new Error("STATUS_TO_SHORT_NAME mapping is incomplete");
         }
@@ -209,6 +210,10 @@ public class UIServlet extends HttpServlet {
     }
 
     private static Tag makeWorkflowRow(UIConfiguration conf, WorkflowID id) {
+        WorkflowStatus workflowStatus = conf.getStatuses().get(id);
+        if (workflowStatus == null) {
+            return tr().with(td(id.toString() + " (missing)").withClass("workflow missing"));
+        }
         List<Tag> cells = new LinkedList<>();
         cells.add(td(id.toString()).withClass("workflow"));
         Map<ZonedDateTime, Set<SlotState>> buckets = bucketSlotsByTime(conf.getStatuses().get(id).getSlotStates(), conf.getTileTimes());
