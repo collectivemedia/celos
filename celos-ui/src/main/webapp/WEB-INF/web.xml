@@ -5,6 +5,11 @@
 
     <servlet>
         <servlet-name>UIServlet</servlet-name>
+        <servlet-class>com.collective.celos.ui.UIServlet</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>MainServlet</servlet-name>
         <servlet-class>com.collective.celos.ui.MainServlet</servlet-class>
     </servlet>
 
@@ -30,6 +35,11 @@
 
     <servlet-mapping>
         <servlet-name>UIServlet</servlet-name>
+        <url-pattern>/ui</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>MainServlet</servlet-name>
         <url-pattern>/main</url-pattern>
     </servlet-mapping>
 
