@@ -45,7 +45,7 @@
 
     <servlet-mapping>
         <servlet-name>WorkflowsServlet</servlet-name>
-        <url-pattern>/groups</url-pattern>
+        <url-pattern>/group</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>
