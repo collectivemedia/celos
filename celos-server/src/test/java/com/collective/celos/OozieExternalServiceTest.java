@@ -15,13 +15,12 @@
  */
 package com.collective.celos;
 
-import java.util.Properties;
-
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import junit.framework.Assert;
-
 import org.junit.Test;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import java.time.ZonedDateTime;
+import java.util.Properties;
 
 public class OozieExternalServiceTest {
 
@@ -37,7 +36,7 @@ public class OozieExternalServiceTest {
 
     @Test
     public void runPropertiesAreCorrectlySetup() {
-        ScheduledTime t = new ScheduledTime("2013-11-26T17:23Z");
+        ZonedDateTime t = ZonedDateTime.parse("2013-11-26T17:23Z");
         SlotID id = new SlotID(new WorkflowID("test"), t); 
         ObjectNode defaults = Util.newObjectNode();
         defaults.put("foo", "bar");

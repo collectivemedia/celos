@@ -15,15 +15,16 @@
  */
 package com.collective.celos;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import java.time.ZonedDateTime;
 
 public class SlotStateTest {
     
-    private final SlotID id = new SlotID(new WorkflowID("foo"), new ScheduledTime("2013-12-04T19:18Z"));
+    private final SlotID id = new SlotID(new WorkflowID("foo"), ZonedDateTime.parse("2013-12-04T19:18Z"));
     
     @Test
     public void transitionsWorkAsExpected() {
@@ -79,8 +80,8 @@ public class SlotStateTest {
     }
     
     @Test
-    public void slotStateGetScheduledTimeWorks() {
-        ScheduledTime t = new ScheduledTime("2013-11-26T13:00Z");
+    public void slotStateGetZonedDateTimeWorks() {
+        ZonedDateTime t = ZonedDateTime.parse("2013-11-26T13:00Z");
         SlotState slotState = new SlotState(new SlotID(new WorkflowID("foo"), t), SlotState.Status.READY);
         Assert.assertEquals(t, slotState.getScheduledTime());
     }
@@ -90,8 +91,8 @@ public class SlotStateTest {
         ObjectMapper mapper = new ObjectMapper();
         SlotState state1 = new SlotState(id, SlotState.Status.WAITING);
         SlotState state2 = new SlotState(id, SlotState.Status.READY).transitionToRunning("foo-external-ID");
-        String json1 = "{\"time\":\"2013-12-04T19:18:00.000Z\",\"status\":\"WAITING\",\"externalID\":null,\"retryCount\":0}";
-        String json2 = "{\"time\":\"2013-12-04T19:18:00.000Z\",\"status\":\"RUNNING\",\"externalID\":\"foo-external-ID\",\"retryCount\":0}";
+        String json1 = "{\"time\":\"2013-12-04T19:18Z\",\"status\":\"WAITING\",\"externalID\":null,\"retryCount\":0}";
+        String json2 = "{\"time\":\"2013-12-04T19:18Z\",\"status\":\"RUNNING\",\"externalID\":\"foo-external-ID\",\"retryCount\":0}";
 
         Assert.assertEquals(json1, mapper.writeValueAsString(state1.toJSONNode()));
         Assert.assertEquals(json2, mapper.writeValueAsString(state2.toJSONNode()));

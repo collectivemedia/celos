@@ -15,6 +15,8 @@
  */
 package com.collective.celos;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang.StringUtils;
@@ -26,14 +28,15 @@ import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.*;
+import java.time.ZonedDateTime;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Utility class to talk to the Celos server HTTP API.
@@ -80,7 +83,7 @@ public class CelosClient {
         return parseWorkflowIdsList(content);
     }
 
-    public WorkflowStatus getWorkflowStatus(WorkflowID workflowID, ScheduledTime startTime, ScheduledTime endTime) throws Exception {
+    public WorkflowStatus getWorkflowStatus(WorkflowID workflowID, ZonedDateTime startTime, ZonedDateTime endTime) throws Exception {
 
         URIBuilder uriBuilder = new URIBuilder(address);
         uriBuilder.setPath(uriBuilder.getPath() + WORKFLOW_SLOTS_PATH);
@@ -99,7 +102,7 @@ public class CelosClient {
         return parseWorkflowStatus(workflowID, content);
     }
 
-    public WorkflowStatus getWorkflowStatus(WorkflowID workflowID, ScheduledTime endTime) throws Exception {
+    public WorkflowStatus getWorkflowStatus(WorkflowID workflowID, ZonedDateTime endTime) throws Exception {
         return getWorkflowStatus(workflowID, null, endTime);
     }
 
@@ -108,14 +111,14 @@ public class CelosClient {
     }
 
     public void iterateScheduler() throws Exception {
-        iterateScheduler(ScheduledTime.now());
+        iterateScheduler(Util.zonedDateTimeNowUTC());
     }
 
-    public void iterateScheduler(ScheduledTime scheduledTime) throws Exception {
+    public void iterateScheduler(ZonedDateTime scheduledTime) throws Exception {
         iterateScheduler(scheduledTime, Collections.<WorkflowID>emptySet());
     }
 
-    public void iterateScheduler(ScheduledTime scheduledTime, Set<WorkflowID> workflowIDs) throws Exception {
+    public void iterateScheduler(ZonedDateTime scheduledTime, Set<WorkflowID> workflowIDs) throws Exception {
         URIBuilder uriBuilder = new URIBuilder(address);
         uriBuilder.setPath(uriBuilder.getPath() + SCHEDULER_PATH);
         if (!workflowIDs.isEmpty()) {
@@ -131,7 +134,7 @@ public class CelosClient {
         executePost(uriBuilder.build());
     }
 
-    public SlotState getSlotState(WorkflowID workflowID, ScheduledTime scheduledTime) throws Exception {
+    public SlotState getSlotState(WorkflowID workflowID, ZonedDateTime scheduledTime) throws Exception {
         URIBuilder uriBuilder = new URIBuilder(address);
         uriBuilder.setPath(uriBuilder.getPath() + SLOT_STATE_PATH);
         uriBuilder.addParameter(ID_PARAM, workflowID.toString());
@@ -144,10 +147,10 @@ public class CelosClient {
     }
     
     public void rerunSlot(SlotID slotID) throws Exception {
-        rerunSlot(slotID.getWorkflowID(), slotID.getScheduledTime());
+        rerunSlot(slotID.getWorkflowID(), slotID.getSlotTime());
     }
     
-    public void rerunSlot(WorkflowID workflowID, ScheduledTime scheduledTime) throws Exception {
+    public void rerunSlot(WorkflowID workflowID, ZonedDateTime scheduledTime) throws Exception {
         URIBuilder uriBuilder = new URIBuilder(address);
         uriBuilder.setPath(uriBuilder.getPath() + RERUN_PATH);
         uriBuilder.addParameter(ID_PARAM, workflowID.toString());
@@ -163,7 +166,7 @@ public class CelosClient {
         executePost(uriBuilder.build());
     }
 
-    public void kill(WorkflowID workflowID, ScheduledTime scheduledTime) throws Exception {
+    public void kill(WorkflowID workflowID, ZonedDateTime scheduledTime) throws Exception {
         URIBuilder uriBuilder = new URIBuilder(address);
         uriBuilder.setPath(uriBuilder.getPath() + KILL_PATH);
         uriBuilder.addParameter(ID_PARAM, workflowID.toString());

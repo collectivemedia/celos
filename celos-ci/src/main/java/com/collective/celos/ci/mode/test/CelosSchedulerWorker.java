@@ -16,12 +16,12 @@
 package com.collective.celos.ci.mode.test;
 
 import com.collective.celos.CelosClient;
-import com.collective.celos.ScheduledTime;
 import com.collective.celos.SlotState;
 import com.collective.celos.WorkflowID;
 import com.google.common.collect.Sets;
 import org.apache.commons.lang.StringUtils;
 
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Set;
 
@@ -46,9 +46,9 @@ public class CelosSchedulerWorker {
             workflowList = testCase.getTargetWorkflows();
         }
 
-        ScheduledTime startTime = testCase.getSampleTimeStart().plusSeconds(1);
-        ScheduledTime actualTime = startTime;
-        ScheduledTime endTime = testCase.getSampleTimeEnd().plusSeconds(1);
+        ZonedDateTime startTime = testCase.getSampleTimeStart().plusSeconds(1);
+        ZonedDateTime actualTime = startTime;
+        ZonedDateTime endTime = testCase.getSampleTimeEnd().plusSeconds(1);
 
         if (!workflowList.isEmpty()) {
             startScheduler(testCase, workflowList, actualTime, endTime);
@@ -57,17 +57,17 @@ public class CelosSchedulerWorker {
         }
     }
 
-    private void startScheduler(TestCase testCase, Set<WorkflowID> workflowList, ScheduledTime actualTime, ScheduledTime endTime) throws Exception {
+    private void startScheduler(TestCase testCase, Set<WorkflowID> workflowList, ZonedDateTime actualTime, ZonedDateTime endTime) throws Exception {
         System.out.println(testCase.getName() + ": Starting scheduler for: " + StringUtils.join(workflowList, ", "));
         client.iterateScheduler(actualTime, testCase.getTargetWorkflows());
 
-        while (!actualTime.getDateTime().isAfter(endTime.getDateTime())) {
+        while (!actualTime.isAfter(endTime)) {
             String workflowStatuses = StringUtils.join(getWorkflowStatusesInfo(workflowList, actualTime), " ");
             if (!workflowStatuses.trim().isEmpty()) {
                 System.out.println(testCase.getName() + ": Workflow statuses: " + workflowStatuses);
             }
             if (!isThereAnyRunningWorkflows(workflowList, actualTime)) {
-                actualTime = new ScheduledTime(actualTime.getDateTime().plusHours(1));
+                actualTime = actualTime.plusHours(1);
             } else {
                 Thread.sleep(2000);
             }
@@ -75,7 +75,7 @@ public class CelosSchedulerWorker {
         }
     }
 
-    boolean isThereAnyRunningWorkflows(Set<WorkflowID> workflowList, ScheduledTime schedTime) throws Exception {
+    boolean isThereAnyRunningWorkflows(Set<WorkflowID> workflowList, ZonedDateTime schedTime) throws Exception {
         for (WorkflowID workflowID : workflowList) {
             List<SlotState> slotStates = client.getWorkflowStatus(workflowID, schedTime).getSlotStates();
             for (SlotState slotState : slotStates) {
@@ -87,7 +87,7 @@ public class CelosSchedulerWorker {
         return false;
     }
 
-    Set<String> getWorkflowStatusesInfo(Set<WorkflowID> workflowList, ScheduledTime schedTime) throws Exception {
+    Set<String> getWorkflowStatusesInfo(Set<WorkflowID> workflowList, ZonedDateTime schedTime) throws Exception {
         Set<String> messages = Sets.newHashSet();
         for (WorkflowID workflowID : workflowList) {
             List<SlotState> slotStates = client.getWorkflowStatus(workflowID, schedTime).getSlotStates();

@@ -15,13 +15,14 @@
  */
 package com.collective.celos;
 
+import org.junit.Assert;
+import org.junit.Test;
+
+import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
-
-import org.junit.Assert;
-import org.junit.Test;
 
 public class MinutelyScheduleTest {
 
@@ -30,8 +31,8 @@ public class MinutelyScheduleTest {
         // Start time equals end time
         // -> empty schedule
         Schedule sch = makeMinutelySchedule();
-        ScheduledTime t = new ScheduledTime("2013-11-25T20:00Z");
-        Set<ScheduledTime> minutes = sch.getScheduledTimes(null, t, t);
+        ZonedDateTime t = ZonedDateTime.parse("2013-11-25T20:00Z");
+        Set<ZonedDateTime> minutes = sch.getScheduledTimes(null, t, t);
         Assert.assertEquals(0, minutes.size());
     }
 
@@ -40,10 +41,10 @@ public class MinutelyScheduleTest {
         // Start time is full minute, end time one minute later
         // -> start time is the single minute in schedule
         Schedule sch = makeMinutelySchedule();
-        ScheduledTime t1 = new ScheduledTime("2013-11-25T20:00Z");
-        ScheduledTime t2 = new ScheduledTime("2013-11-25T20:01Z");
-        Set<ScheduledTime> minutes = sch.getScheduledTimes(null, t1, t2);
-        Assert.assertEquals(new TreeSet<ScheduledTime>(Arrays.asList(t1)), minutes);
+        ZonedDateTime t1 = ZonedDateTime.parse("2013-11-25T20:00Z");
+        ZonedDateTime t2 = ZonedDateTime.parse("2013-11-25T20:01Z");
+        Set<ZonedDateTime> minutes = sch.getScheduledTimes(null, t1, t2);
+        Assert.assertEquals(new TreeSet<ZonedDateTime>(Arrays.asList(t1)), minutes);
     }
     
     @Test
@@ -52,9 +53,9 @@ public class MinutelyScheduleTest {
         // end time one minute later
         // -> empty schedule
         Schedule sch = makeMinutelySchedule();
-        ScheduledTime t1 = new ScheduledTime("2013-11-25T20:01:05Z");
-        ScheduledTime t2 = new ScheduledTime("2013-11-25T20:02:00Z");
-        Set<ScheduledTime> minutes = sch.getScheduledTimes(null, t1, t2);
+        ZonedDateTime t1 = ZonedDateTime.parse("2013-11-25T20:01:05Z");
+        ZonedDateTime t2 = ZonedDateTime.parse("2013-11-25T20:02:00Z");
+        Set<ZonedDateTime> minutes = sch.getScheduledTimes(null, t1, t2);
         Assert.assertEquals(0, minutes.size());
     }
 
@@ -64,14 +65,14 @@ public class MinutelyScheduleTest {
         // End time is a couple of minutes later
         // -> schedule contains all full minutes after start and before end
         Schedule sch = makeMinutelySchedule();
-        ScheduledTime t1 = new ScheduledTime("2013-11-25T20:05:12.00182Z");
-        ScheduledTime t2 = new ScheduledTime("2013-11-25T20:08:56.2182Z");
-        Set<ScheduledTime> minutes = sch.getScheduledTimes(null, t1, t2);
-        List<ScheduledTime> expectedMinutes =
-                Arrays.asList(new ScheduledTime("2013-11-25T20:06Z"),
-                              new ScheduledTime("2013-11-25T20:07Z"),
-                              new ScheduledTime("2013-11-25T20:08Z"));
-        Assert.assertEquals(new TreeSet<ScheduledTime>(expectedMinutes), minutes);
+        ZonedDateTime t1 = ZonedDateTime.parse("2013-11-25T20:05:12.00182Z");
+        ZonedDateTime t2 = ZonedDateTime.parse("2013-11-25T20:08:56.2182Z");
+        Set<ZonedDateTime> minutes = sch.getScheduledTimes(null, t1, t2);
+        List<ZonedDateTime> expectedMinutes =
+                Arrays.asList(ZonedDateTime.parse("2013-11-25T20:06Z"),
+                              ZonedDateTime.parse("2013-11-25T20:07Z"),
+                              ZonedDateTime.parse("2013-11-25T20:08Z"));
+        Assert.assertEquals(new TreeSet<ZonedDateTime>(expectedMinutes), minutes);
     }
     
     @Test
@@ -80,15 +81,15 @@ public class MinutelyScheduleTest {
         // End time is a couple of minutes later
         // -> schedule contains all full minutes after (and including) start and before end
         Schedule sch = makeMinutelySchedule();
-        ScheduledTime t1 = new ScheduledTime("2013-11-25T20:00Z");
-        ScheduledTime t2 = new ScheduledTime("2013-11-25T20:03:56.2182Z");
-        Set<ScheduledTime> minutes = sch.getScheduledTimes(null, t1, t2);
-        List<ScheduledTime> expectedMinutes =
-                Arrays.asList(new ScheduledTime("2013-11-25T20:00Z"),
-                              new ScheduledTime("2013-11-25T20:01Z"),
-                              new ScheduledTime("2013-11-25T20:02Z"),
-                              new ScheduledTime("2013-11-25T20:03Z"));
-        Assert.assertEquals(new TreeSet<ScheduledTime>(expectedMinutes), minutes);
+        ZonedDateTime t1 = ZonedDateTime.parse("2013-11-25T20:00Z");
+        ZonedDateTime t2 = ZonedDateTime.parse("2013-11-25T20:03:56.2182Z");
+        Set<ZonedDateTime> minutes = sch.getScheduledTimes(null, t1, t2);
+        List<ZonedDateTime> expectedMinutes =
+                Arrays.asList(ZonedDateTime.parse("2013-11-25T20:00Z"),
+                              ZonedDateTime.parse("2013-11-25T20:01Z"),
+                              ZonedDateTime.parse("2013-11-25T20:02Z"),
+                              ZonedDateTime.parse("2013-11-25T20:03Z"));
+        Assert.assertEquals(new TreeSet<ZonedDateTime>(expectedMinutes), minutes);
     }
 
     private MinutelySchedule makeMinutelySchedule() {

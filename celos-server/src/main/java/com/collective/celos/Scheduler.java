@@ -15,16 +15,11 @@
  */
 package com.collective.celos;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
+import com.collective.celos.trigger.Trigger;
 import org.apache.log4j.Logger;
 
-import com.collective.celos.trigger.Trigger;
+import java.time.ZonedDateTime;
+import java.util.*;
 
 /**
  * Master control program.
@@ -49,8 +44,8 @@ public class Scheduler {
     /**
      * Returns the start of the sliding window, given the current time.
      */
-    ScheduledTime getSlidingWindowStartTime(ScheduledTime current) {
-        return new ScheduledTime(current.getDateTime().minusHours(slidingWindowHours));
+    ZonedDateTime getSlidingWindowStartTime(ZonedDateTime current) {
+        return current.minusHours(slidingWindowHours);
     }
 
     /**
@@ -58,9 +53,9 @@ public class Scheduler {
      * <p>
      * Steps through all workflows.
      */
-    public void step(ScheduledTime current) {
-        // by default, schedule all workflows
-        step(current, Collections.<WorkflowID>emptySet());
+    public void step(ZonedDateTime current) {
+    	// by default, schedule all workflows
+    	step(current, Collections.<WorkflowID>emptySet());
     }
 
     /**
@@ -68,7 +63,7 @@ public class Scheduler {
      * <p>
      * Otherwise, schedule only workflows in the set.
      */
-    public void step(ScheduledTime current, Set<WorkflowID> workflowIDs) {
+    public void step(ZonedDateTime current, Set<WorkflowID> workflowIDs) {
         LOGGER.info("Starting scheduler step: " + current + " -- " + getSlidingWindowStartTime(current));
         for (Workflow wf : configuration.getWorkflows()) {
             WorkflowID id = wf.getID();
@@ -97,7 +92,7 @@ public class Scheduler {
      * <p>
      * - Check any RUNNING slots for their current external status.
      */
-    private void stepWorkflow(Workflow wf, ScheduledTime current) throws Exception {
+    private void stepWorkflow(Workflow wf, ZonedDateTime current) throws Exception {
         LOGGER.info("Processing workflow: " + wf.getID() + " at: " + current);
         List<SlotState> slotStates = getSlotStatesIncludingMarkedForRerun(wf, current, getWorkflowStartTime(wf, current), current);
         runExternalWorkflows(wf, slotStates);
@@ -110,8 +105,8 @@ public class Scheduler {
      * Get the slot states of all slots of the workflow from within the window defined by start (inclusive) and end (exclusive),
      * as well as the slots states of all slots marked for rerun in the database.
      */
-    public List<SlotState> getSlotStatesIncludingMarkedForRerun(Workflow wf, ScheduledTime current, ScheduledTime start, ScheduledTime end) throws Exception {
-        SortedSet<ScheduledTime> times = new TreeSet<>();
+    public List<SlotState> getSlotStatesIncludingMarkedForRerun(Workflow wf, ZonedDateTime current, ZonedDateTime start, ZonedDateTime end) throws Exception {
+        SortedSet<ZonedDateTime> times = new TreeSet<>();
         times.addAll(wf.getSchedule().getScheduledTimes(this, start, end));
         times.addAll(database.getTimesMarkedForRerun(wf.getID(), current));
         return fetchSlotStates(wf, times);
@@ -121,15 +116,15 @@ public class Scheduler {
      * Get the slot states of all slots of the workflow from within the window defined by start (inclusive) and end (exclusive).
      * This is used for servlets that return the slot states within the window, and don't care about rerun slots.
      */
-    public List<SlotState> getSlotStates(Workflow wf, ScheduledTime start, ScheduledTime end) throws Exception {
-        SortedSet<ScheduledTime> times = new TreeSet<>();
+    public List<SlotState> getSlotStates(Workflow wf, ZonedDateTime start, ZonedDateTime end) throws Exception {
+        SortedSet<ZonedDateTime> times = new TreeSet<>();
         times.addAll(wf.getSchedule().getScheduledTimes(this, start, end));
         return fetchSlotStates(wf, times);
     }
 
-    private List<SlotState> fetchSlotStates(Workflow wf, SortedSet<ScheduledTime> scheduledTimes) throws Exception {
+    private List<SlotState> fetchSlotStates(Workflow wf, SortedSet<ZonedDateTime> scheduledTimes) throws Exception {
         List<SlotState> slotStates = new ArrayList<SlotState>(scheduledTimes.size());
-        for (ScheduledTime t : scheduledTimes) {
+        for (ZonedDateTime t : scheduledTimes) {
             SlotID slotID = new SlotID(wf.getID(), t);
             SlotState slotState = database.getSlotState(slotID);
             if (slotState != null) {
@@ -144,9 +139,9 @@ public class Scheduler {
         return Collections.unmodifiableList(slotStates);
     }
 
-    public ScheduledTime getWorkflowStartTime(Workflow wf, ScheduledTime current) {
-        ScheduledTime slidingWindowStartTime = getSlidingWindowStartTime(current);
-        ScheduledTime workflowStartTime = wf.getStartTime();
+    public ZonedDateTime getWorkflowStartTime(Workflow wf, ZonedDateTime current) {
+        ZonedDateTime slidingWindowStartTime = getSlidingWindowStartTime(current);
+        ZonedDateTime workflowStartTime = wf.getStartTime();
         return Util.max(slidingWindowStartTime, workflowStartTime);
     }
 
@@ -173,7 +168,7 @@ public class Scheduler {
      * <p>
      * Check the external status of all RUNNING slots, and update them to SUCCESS or FAILURE if they're finished.
      */
-    void updateSlotState(Workflow wf, SlotState slotState, ScheduledTime current) throws Exception {
+    void updateSlotState(Workflow wf, SlotState slotState, ZonedDateTime current) throws Exception {
         SlotID slotID = slotState.getSlotID();
         SlotState.Status status = slotState.getStatus();
         if (status.equals(SlotState.Status.WAITING)) {
@@ -208,15 +203,15 @@ public class Scheduler {
         }
     }
 
-    private boolean callTrigger(Workflow wf, SlotState slotState, ScheduledTime current) throws Exception {
+    private boolean callTrigger(Workflow wf, SlotState slotState, ZonedDateTime current) throws Exception {
         Trigger trigger = wf.getTrigger();
-        ScheduledTime scheduledTime = slotState.getScheduledTime();
+        ZonedDateTime scheduledTime = slotState.getScheduledTime();
         return trigger.isDataAvailable(this, current, scheduledTime);
     }
 
-    static boolean isSlotTimedOut(ScheduledTime nominalTime, ScheduledTime current, int timeoutSeconds) {
-        ScheduledTime timeoutTime = nominalTime.plusSeconds(timeoutSeconds);
-        return current.getDateTime().isAfter(timeoutTime.getDateTime());
+    static boolean isSlotTimedOut(ZonedDateTime nominalTime, ZonedDateTime current, int timeoutSeconds) {
+        ZonedDateTime timeoutTime = nominalTime.plusSeconds(timeoutSeconds);
+        return current.isAfter(timeoutTime);
     }
 
     public int getSlidingWindowHours() {

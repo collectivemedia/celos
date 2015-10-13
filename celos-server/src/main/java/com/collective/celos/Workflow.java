@@ -17,12 +17,14 @@ package com.collective.celos;
 
 import com.collective.celos.trigger.Trigger;
 
+import java.time.ZonedDateTime;
+
 /**
  * A periodical task.
  */
 public class Workflow {
 
-    public static final ScheduledTime DEFAULT_START_TIME = new ScheduledTime("1970-01-01T00:00:00.000Z");
+    public static final ZonedDateTime DEFAULT_START_TIME = ZonedDateTime.parse("1970-01-01T00:00Z");
     public static final int DEFAULT_WAIT_TIMEOUT_SECONDS = Integer.MAX_VALUE;
     
     private final WorkflowID id;
@@ -31,7 +33,7 @@ public class Workflow {
     private final Trigger trigger;
     private final ExternalService externalService;
     private final int maxRetryCount;
-    private final ScheduledTime startTime;
+    private final ZonedDateTime startTime;
     private final int waitTimeoutSeconds;
     private final WorkflowInfo workflowInfo;
     
@@ -41,7 +43,7 @@ public class Workflow {
                     Trigger trigger,
                     ExternalService service,
                     int maxRetryCount,
-                    ScheduledTime startTime,
+                    ZonedDateTime startTime,
                     int waitTimeoutSeconds,
                     WorkflowInfo workflowInfo) {
         this.id = Util.requireNonNull(id);
@@ -79,7 +81,7 @@ public class Workflow {
         return maxRetryCount;
     }
 
-    public ScheduledTime getStartTime() {
+    public ZonedDateTime getStartTime() {
         return startTime;
     }
 

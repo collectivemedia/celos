@@ -20,6 +20,7 @@ import com.google.common.collect.Sets;
 import junit.framework.Assert;
 import org.junit.Test;
 
+import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Set;
@@ -38,7 +39,7 @@ public class CelosSchedulerWorkerTest {
         WorkflowID wf1 = new WorkflowID("wf1");
         WorkflowID wf2 = new WorkflowID("wf2");
         Set<WorkflowID> workflowSet = Sets.newHashSet(wf1, wf2);
-        ScheduledTime scheduledTime = new ScheduledTime("2013-12-20T16:00Z");
+        ZonedDateTime scheduledTime = ZonedDateTime.parse("2013-12-20T16:00Z");
 
         SlotState slotState1 = new SlotState(new SlotID(wf1, scheduledTime), SlotState.Status.WAITING);
         SlotState slotState2 = new SlotState(new SlotID(wf1, scheduledTime), SlotState.Status.SUCCESS);
@@ -64,7 +65,7 @@ public class CelosSchedulerWorkerTest {
         WorkflowID wf1 = new WorkflowID("wf1");
         WorkflowID wf2 = new WorkflowID("wf2");
         Set<WorkflowID> workflowSet = Sets.newHashSet(wf1, wf2);
-        ScheduledTime scheduledTime = new ScheduledTime("2013-12-20T16:00Z");
+        ZonedDateTime scheduledTime = ZonedDateTime.parse("2013-12-20T16:00Z");
 
         SlotState slotState1 = new SlotState(new SlotID(wf1, scheduledTime), SlotState.Status.WAITING);
         SlotState slotState2 = new SlotState(new SlotID(wf1, scheduledTime), SlotState.Status.READY);
@@ -88,7 +89,7 @@ public class CelosSchedulerWorkerTest {
         WorkflowID wf1 = new WorkflowID("wf1");
         WorkflowID wf2 = new WorkflowID("wf2");
         Set<WorkflowID> workflowSet = Sets.newHashSet(wf1, wf2);
-        ScheduledTime scheduledTime = new ScheduledTime("2013-12-20T16:00Z");
+        ZonedDateTime scheduledTime = ZonedDateTime.parse("2013-12-20T16:00Z");
 
         SlotState slotState1 = new SlotState(new SlotID(wf1, scheduledTime), SlotState.Status.WAITING);
         SlotState slotState2 = new SlotState(new SlotID(wf1, scheduledTime), SlotState.Status.READY);
@@ -102,8 +103,8 @@ public class CelosSchedulerWorkerTest {
 
         Set<String> statuses = worker.getWorkflowStatusesInfo(workflowSet, scheduledTime);
         Assert.assertEquals(statuses, Sets.newHashSet(
-                "SlotState[slotID=wf1@2013-12-20T16:00:00.000Z,status=READY,externalID=<null>,retryCount=0]",
-                "SlotState[slotID=wf2@2013-12-20T16:00:00.000Z,status=RUNNING,externalID=<null>,retryCount=0]")
+                "SlotState[slotID=wf1@2013-12-20T16:00Z,status=READY,externalID=<null>,retryCount=0]",
+                "SlotState[slotID=wf2@2013-12-20T16:00Z,status=RUNNING,externalID=<null>,retryCount=0]")
         );
     }
 
@@ -113,12 +114,12 @@ public class CelosSchedulerWorkerTest {
         CelosClient celosClient = mock(CelosClient.class);
         CelosSchedulerWorker worker = new CelosSchedulerWorker(celosClient);
 
-        ScheduledTime scheduledTimeStart = new ScheduledTime("2013-12-20T16:00Z");
-        ScheduledTime scheduledTimeEnd = new ScheduledTime("2013-12-20T18:00Z");
+        ZonedDateTime scheduledTimeStart = ZonedDateTime.parse("2013-12-20T16:00Z");
+        ZonedDateTime scheduledTimeEnd = ZonedDateTime.parse("2013-12-20T18:00Z");
 
-        ScheduledTime time1 = scheduledTimeStart.plusSeconds(1);
-        ScheduledTime time2 = scheduledTimeStart.plusHours(1).plusSeconds(1);
-        ScheduledTime time3 = scheduledTimeStart.plusHours(2).plusSeconds(1);
+        ZonedDateTime time1 = scheduledTimeStart.plusSeconds(1);
+        ZonedDateTime time2 = scheduledTimeStart.plusHours(1).plusSeconds(1);
+        ZonedDateTime time3 = scheduledTimeStart.plusHours(2).plusSeconds(1);
 
         WorkflowID wf1 = new WorkflowID("wf1");
         WorkflowID wf2 = new WorkflowID("wf2");
@@ -148,12 +149,12 @@ public class CelosSchedulerWorkerTest {
         CelosClient celosClient = mock(CelosClient.class);
         CelosSchedulerWorker worker = new CelosSchedulerWorker(celosClient);
 
-        ScheduledTime scheduledTimeStart = new ScheduledTime("2013-12-20T16:00Z");
-        ScheduledTime scheduledTimeEnd = new ScheduledTime("2013-12-20T18:00Z");
+        ZonedDateTime scheduledTimeStart = ZonedDateTime.parse("2013-12-20T16:00Z");
+        ZonedDateTime scheduledTimeEnd = ZonedDateTime.parse("2013-12-20T18:00Z");
 
-        ScheduledTime time1 = scheduledTimeStart.plusSeconds(1);
-        ScheduledTime time2 = scheduledTimeStart.plusHours(1).plusSeconds(1);
-        ScheduledTime time3 = scheduledTimeStart.plusHours(2).plusSeconds(1);
+        ZonedDateTime time1 = scheduledTimeStart.plusSeconds(1);
+        ZonedDateTime time2 = scheduledTimeStart.plusHours(1).plusSeconds(1);
+        ZonedDateTime time3 = scheduledTimeStart.plusHours(2).plusSeconds(1);
 
         WorkflowID wf1 = new WorkflowID("wf1");
         WorkflowID wf2 = new WorkflowID("wf2");

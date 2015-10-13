@@ -15,24 +15,21 @@
  */
 package com.collective.celos.servlet;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Map;
+import com.collective.celos.Constants;
+import com.collective.celos.Scheduler;
+import com.collective.celos.SchedulerConfiguration;
+import com.collective.celos.Util;
+import com.google.common.collect.ImmutableMap;
+import org.apache.log4j.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.apache.log4j.Logger;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
-
-import com.collective.celos.Constants;
-import com.collective.celos.ScheduledTime;
-import com.collective.celos.Scheduler;
-import com.collective.celos.SchedulerConfiguration;
-import com.google.common.collect.ImmutableMap;
+import java.io.File;
+import java.io.IOException;
+import java.time.ZonedDateTime;
+import java.util.Map;
 
 /**
  * Superclass for all servlets that access the database.
@@ -65,12 +62,12 @@ public abstract class AbstractServlet extends HttpServlet {
         }
     }
 
-    protected ScheduledTime getRequestTime(HttpServletRequest req) {
+    protected ZonedDateTime getRequestTime(HttpServletRequest req) {
         String t = req.getParameter(TIME_PARAM);
         if (t == null) {
-            return new ScheduledTime(DateTime.now(DateTimeZone.UTC));
+            return Util.zonedDateTimeNowUTC();
         } else {
-            return new ScheduledTime(t);
+            return ZonedDateTime.parse(t);
         }
     }
 

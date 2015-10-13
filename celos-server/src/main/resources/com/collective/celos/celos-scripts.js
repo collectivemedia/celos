@@ -65,7 +65,7 @@ celos.defineWorkflow = function (json) {
             json.trigger,
             json.externalService,
             json.maxRetryCount ? json.maxRetryCount : 0,
-            new ScheduledTime(json.startTime ? json.startTime : "1970-01-01T00:00:00.000Z"),
+            Packages.java.time.ZonedDateTime.parse(json.startTime ? json.startTime : "1970-01-01T00:00Z"),
             waitTimeoutSeconds,
             workflowInfo
     );
@@ -110,14 +110,14 @@ celos.hdfsCheck = function (path, slotID, fs) {
     var scheduledTime;
 
     if (!slotID) {
-        scheduledTime = ScheduledTime.now();
+        scheduledTime = Util.zonedDateTimeNowUTC();
     } else {
         if (typeof slotID != "object" || slotID.getClass().getName() !== "com.collective.celos.SlotID") {
             throw "slotID should be instance of com.collective.celos.SlotID";
         }
-        scheduledTime = slotID.getScheduledTime();
+        scheduledTime = slotID.getSlotTime();
     }
-    return trigger.isDataAvailable(null, ScheduledTime.now(), scheduledTime);
+    return trigger.isDataAvailable(null, Util.zonedDateTimeNowUTC(), scheduledTime);
 }
 
 // Pass fs as last parameter so we can later use a default if parameter not supplied
@@ -236,14 +236,9 @@ celos.oozieExternalService = function (userPropertiesOrFun, oozieURL) {
     return new OozieExternalService(oozieURL, propertiesGen);
 }
 
-celos.replaceTimeVariables = function (string, t) {
-    string = string.replace(/\${year}/g, t.year());
-    string = string.replace(/\${month}/g, t.month());
-    string = string.replace(/\${day}/g, t.day());
-    string = string.replace(/\${hour}/g, t.hour());
-    string = string.replace(/\${minute}/g, t.minute());
-    string = string.replace(/\${second}/g, t.second());
-    return string;                            
+celos.replaceTimeVariables = function (ss, t) {
+    var FORMATTER = new Packages.com.collective.celos.ScheduledTimeFormatter
+    return FORMATTER.replaceTimeTokens(ss, Packages.java.time.ZonedDateTime.parse(t.toString()));
 }
 
 celos.databaseName = function (database) {

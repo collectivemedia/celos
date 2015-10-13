@@ -28,6 +28,7 @@ import org.mozilla.javascript.NativeJavaObject;
 
 import java.io.File;
 import java.io.StringReader;
+import java.time.ZonedDateTime;
 import java.util.Properties;
 
 public class JavaScriptFunctionsTest {
@@ -180,7 +181,7 @@ public class JavaScriptFunctionsTest {
         Assert.assertEquals("http://foo", s.getOozieURL());
         ObjectNode props = new ObjectMapper().createObjectNode();
         props.put("bla", "hello");
-        Assert.assertEquals(props, s.getProperties(new SlotID(new WorkflowID("foo"), ScheduledTime.now())));
+        Assert.assertEquals(props, s.getProperties(new SlotID(new WorkflowID("foo"), Util.zonedDateTimeNowUTC())));
     }
     
     @Test
@@ -204,7 +205,7 @@ public class JavaScriptFunctionsTest {
         props.put("a", "1");
         props.put("b", "3");
         props.put("c", "4");
-        Assert.assertEquals(props, s.getProperties(new SlotID(new WorkflowID("foo"), ScheduledTime.now())));
+        Assert.assertEquals(props, s.getProperties(new SlotID(new WorkflowID("foo"), Util.zonedDateTimeNowUTC())));
     }
 
     @Test
@@ -215,7 +216,7 @@ public class JavaScriptFunctionsTest {
         props.put("a", "2014");
         props.put("b", "03");
         props.put("c", "2013");
-        ScheduledTime t = new ScheduledTime("2014-03-01T00:00Z");
+        ZonedDateTime t = ZonedDateTime.parse("2014-03-01T00:00Z");
         Assert.assertEquals(props, s.setupDefaultProperties(s.getProperties(new SlotID(new WorkflowID("foo"), t)), t));
     }
 
@@ -237,7 +238,7 @@ public class JavaScriptFunctionsTest {
         props.put("a", "2014");
         props.put("b", "03");
         props.put("c", "2013");
-        ScheduledTime t = new ScheduledTime("2014-03-01T00:00Z");
+        ZonedDateTime t = ZonedDateTime.parse("2014-03-01T00:00Z");
         Assert.assertEquals(props, s.setupDefaultProperties(s.getProperties(new SlotID(new WorkflowID("foo"), t)), t));
     }
     
@@ -282,7 +283,7 @@ public class JavaScriptFunctionsTest {
     @Test
     public void testHdfsCheckNotExists() throws Exception {
         String js = "var CELOS_DEFAULT_HDFS = ''; " +
-                "var schTime = new Packages.com.collective.celos.ScheduledTime('2014-05-12T19:33:01Z');" +
+                "var schTime = Packages.java.time.ZonedDateTime.parse('2014-05-12T19:33:01Z');" +
                 "var workflowId = new Packages.com.collective.celos.WorkflowID('id');" +
                 "var slotId = new Packages.com.collective.celos.SlotID(workflowId, schTime);" +
                 "celos.hdfsCheck('/path', slotId)";
@@ -295,7 +296,7 @@ public class JavaScriptFunctionsTest {
     @Test
     public void testHdfsCheckExists() throws Exception {
         String js = "var CELOS_DEFAULT_HDFS = ''; " +
-                "var schTime = new Packages.com.collective.celos.ScheduledTime('2014-05-12T19:33:01Z');" +
+                "var schTime = Packages.java.time.ZonedDateTime.parse('2014-05-12T19:33:01Z');" +
                 "var workflowId = new Packages.com.collective.celos.WorkflowID('id');" +
                 "var slotId = new Packages.com.collective.celos.SlotID(workflowId, schTime);" +
                 "celos.hdfsCheck('file:///tmp', slotId)";
@@ -308,7 +309,7 @@ public class JavaScriptFunctionsTest {
     @Test
     public void testHdfsCheckExists2() throws Exception {
         String js = "var CELOS_DEFAULT_HDFS = ''; " +
-                "var schTime = new Packages.com.collective.celos.ScheduledTime('2014-05-12T19:33:01Z');" +
+                "var schTime = Packages.java.time.ZonedDateTime.parse('2014-05-12T19:33:01Z');" +
                 "var workflowId = new Packages.com.collective.celos.WorkflowID('id');" +
                 "var slotId = new Packages.com.collective.celos.SlotID(workflowId, schTime);" +
                 "celos.hdfsCheck('/tmp', slotId, 'file:///')";
@@ -321,7 +322,7 @@ public class JavaScriptFunctionsTest {
     @Test(expected = JavaScriptException.class)
     public void testHdfsCheckWrongType() throws Exception {
         String js = "var CELOS_DEFAULT_HDFS = ''; " +
-                "var schTime = new Packages.com.collective.celos.ScheduledTime('2014-05-12T19:33:01Z');" +
+                "var schTime = Packages.java.time.ZonedDateTime.parse('2014-05-12T19:33:01Z');" +
                 "var workflowId = new Packages.com.collective.celos.WorkflowID('id');" +
                 "var slotId = 'slot';" +
                 "celos.hdfsCheck('file:///tmp', slotId)";

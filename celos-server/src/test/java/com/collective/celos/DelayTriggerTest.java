@@ -21,12 +21,14 @@ import com.collective.celos.trigger.TriggerStatus;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.time.ZonedDateTime;
+
 import static org.mockito.Mockito.mock;
 
 public class DelayTriggerTest {
 
     private Scheduler scheduler = mock(Scheduler.class);
-    private ScheduledTime now = new ScheduledTime("2014-01-01T05:00:00Z");
+    private ZonedDateTime now = ZonedDateTime.parse("2014-01-01T05:00:00Z");
 
     @Test
     public void canBeConfiguredFromJSON() throws Exception {
@@ -36,13 +38,13 @@ public class DelayTriggerTest {
     @Test
     public void works() throws Exception {
         Trigger t = new DelayTrigger(60 * 60);
-        Assert.assertTrue(t.isDataAvailable(scheduler, now, new ScheduledTime("1980-01-01T03:59:00Z")));
-        Assert.assertTrue(t.isDataAvailable(scheduler, now, new ScheduledTime("2014-01-01T03:59:00Z")));
-        Assert.assertTrue(t.isDataAvailable(scheduler, now, new ScheduledTime("2014-01-01T03:59:59Z")));
-        Assert.assertFalse(t.isDataAvailable(scheduler, now, new ScheduledTime("2014-01-01T04:00:00Z")));
-        Assert.assertFalse(t.isDataAvailable(scheduler, now, new ScheduledTime("2014-01-01T05:00:00Z")));
-        Assert.assertFalse(t.isDataAvailable(scheduler, now, new ScheduledTime("2014-01-01T06:00:00Z")));
-        Assert.assertFalse(t.isDataAvailable(scheduler, now, new ScheduledTime("2080-01-01T06:00:00Z")));
+        Assert.assertTrue(t.isDataAvailable(scheduler, now, ZonedDateTime.parse("1980-01-01T03:59:00Z")));
+        Assert.assertTrue(t.isDataAvailable(scheduler, now, ZonedDateTime.parse("2014-01-01T03:59:00Z")));
+        Assert.assertTrue(t.isDataAvailable(scheduler, now, ZonedDateTime.parse("2014-01-01T03:59:59Z")));
+        Assert.assertFalse(t.isDataAvailable(scheduler, now, ZonedDateTime.parse("2014-01-01T04:00:00Z")));
+        Assert.assertFalse(t.isDataAvailable(scheduler, now, ZonedDateTime.parse("2014-01-01T05:00:00Z")));
+        Assert.assertFalse(t.isDataAvailable(scheduler, now, ZonedDateTime.parse("2014-01-01T06:00:00Z")));
+        Assert.assertFalse(t.isDataAvailable(scheduler, now, ZonedDateTime.parse("2080-01-01T06:00:00Z")));
     }
 
 
@@ -52,7 +54,7 @@ public class DelayTriggerTest {
         final TriggerStatus triggerStatus = t.getTriggerStatus(scheduler, now.plusHours(2), now);
         final String description = triggerStatus.getDescription();
         Assert.assertTrue(triggerStatus.isReady());
-        Assert.assertEquals("Ready since 2014-01-01T06:00:00.000Z", description);
+        Assert.assertEquals("Ready since 2014-01-01T06:00Z", description);
     }
 
     @Test
@@ -61,7 +63,7 @@ public class DelayTriggerTest {
         final TriggerStatus triggerStatus = t.getTriggerStatus(scheduler, now, now);
         final String description = triggerStatus.getDescription();
         Assert.assertFalse(triggerStatus.isReady());
-        Assert.assertEquals("Delayed until 2014-01-01T06:00:00.000Z", description);
+        Assert.assertEquals("Delayed until 2014-01-01T06:00Z", description);
     }
 
 }

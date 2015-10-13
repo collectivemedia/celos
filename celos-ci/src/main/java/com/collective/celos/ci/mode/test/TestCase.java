@@ -15,7 +15,7 @@
  */
 package com.collective.celos.ci.mode.test;
 
-import com.collective.celos.ScheduledTime;
+import java.time.ZonedDateTime;
 import com.collective.celos.Util;
 import com.collective.celos.WorkflowID;
 import com.collective.celos.ci.testing.fixtures.compare.FixtureComparer;
@@ -32,17 +32,17 @@ import java.util.Set;
 public class TestCase {
 
     private final String name;
-    private final ScheduledTime sampleTimeStart;
-    private final ScheduledTime sampleTimeEnd;
+    private final ZonedDateTime sampleTimeStart;
+    private final ZonedDateTime sampleTimeEnd;
     private final List<FixtureDeployer> inputs = Lists.newArrayList();
     private final List<FixtureComparer> outputs = Lists.newArrayList();
     private final Set<WorkflowID> targetWorkflowIDs = Sets.newHashSet();
 
     public TestCase(String name, String sampleTimeStart, String sampleTimeEnd) {
-        this(name, new ScheduledTime(sampleTimeStart), new ScheduledTime(sampleTimeEnd));
+        this(name, ZonedDateTime.parse(sampleTimeStart), ZonedDateTime.parse(sampleTimeEnd));
     }
 
-    public TestCase(String name, ScheduledTime sampleTimeStart, ScheduledTime sampleTimeEnd) {
+    public TestCase(String name, ZonedDateTime sampleTimeStart, ZonedDateTime sampleTimeEnd) {
         this.name = name;
         this.sampleTimeStart = Util.requireNonNull(sampleTimeStart);
         this.sampleTimeEnd = Util.requireNonNull(sampleTimeEnd);
@@ -64,11 +64,11 @@ public class TestCase {
         return name;
     }
 
-    public ScheduledTime getSampleTimeStart() {
+    public ZonedDateTime getSampleTimeStart() {
         return sampleTimeStart;
     }
 
-    public ScheduledTime getSampleTimeEnd() {
+    public ZonedDateTime getSampleTimeEnd() {
         return sampleTimeEnd;
     }
 

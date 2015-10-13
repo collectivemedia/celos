@@ -19,12 +19,11 @@ import com.collective.celos.*;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.Lists;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 /**
@@ -42,8 +41,8 @@ import java.util.List;
  *   },
  *   "paused": false,
  *   "slots": [
- *      { "time": "2013-12-07T13:00:00.000Z", "status": "RUNNING", "externalID": "237982137-371832798321-W", retryCount: 5 },
- *      { "time": "2013-12-07T14:00:00.000Z", "status": "READY", "externalID": null, retryCount: 0 },
+ *      { "time": "2013-12-07T13:00Z", "status": "RUNNING", "externalID": "237982137-371832798321-W", retryCount: 5 },
+ *      { "time": "2013-12-07T14:00Z", "status": "READY", "externalID": null, retryCount: 0 },
  *     ...
  *   ]
  * }
@@ -79,10 +78,10 @@ public class JSONWorkflowSlotsServlet extends AbstractJSONServlet {
                 return;
             }
 
-            ScheduledTime endTime = getTimeParam(req, END_TIME_PARAM, new ScheduledTime(DateTime.now(DateTimeZone.UTC)));
-            ScheduledTime startTime = getTimeParam(req, START_TIME_PARAM, scheduler.getWorkflowStartTime(wf, endTime));
+            ZonedDateTime endTime = getTimeParam(req, END_TIME_PARAM, Util.zonedDateTimeNowUTC());
+            ZonedDateTime startTime = getTimeParam(req, START_TIME_PARAM, scheduler.getWorkflowStartTime(wf, endTime));
 
-            if (startTime.plusHours(scheduler.getSlidingWindowHours()).getDateTime().isBefore(endTime.getDateTime())) {
+            if (startTime.plusHours(scheduler.getSlidingWindowHours()).isBefore(endTime)) {
                 res.sendError(HttpServletResponse.SC_BAD_REQUEST, "Time interval between start and end is limited to: " + scheduler.getSlidingWindowHours() + " hours");
                 return;
             }
@@ -103,10 +102,10 @@ public class JSONWorkflowSlotsServlet extends AbstractJSONServlet {
         }
     }
 
-    private ScheduledTime getTimeParam(HttpServletRequest req, String paramName, ScheduledTime defaultTime) throws Exception {
+    private ZonedDateTime getTimeParam(HttpServletRequest req, String paramName, ZonedDateTime defaultTime) throws Exception {
         String timeParam = req.getParameter(paramName);
         if (timeParam != null) {
-            return new ScheduledTime(timeParam);
+            return ZonedDateTime.parse(timeParam);
         }
         return defaultTime;
     }

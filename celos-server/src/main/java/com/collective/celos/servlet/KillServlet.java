@@ -21,6 +21,7 @@ import org.apache.log4j.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.time.ZonedDateTime;
 
 /**
  * Posting to this servlet kills the specified slot's underlying job.
@@ -40,7 +41,7 @@ public class KillServlet extends AbstractServlet {
 
     protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException {
         try {
-            ScheduledTime time = getRequestTime(req);
+            ZonedDateTime time = getRequestTime(req);
             String id = req.getParameter(ID_PARAM);
             if (id == null) {
                 res.sendError(HttpServletResponse.SC_BAD_REQUEST, ID_PARAM + " parameter missing.");

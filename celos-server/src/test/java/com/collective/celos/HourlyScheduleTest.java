@@ -15,74 +15,75 @@
  */
 package com.collective.celos;
 
+import org.junit.Assert;
+import org.junit.Test;
+
+import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
-
-import org.junit.Assert;
-import org.junit.Test;
 
 public class HourlyScheduleTest {
 
     @Test
     public void hourlyScheduleEmpty() {
         Schedule sch = makeHourlySchedule();
-        ScheduledTime t = new ScheduledTime("2013-11-25T20:00Z");
-        Set<ScheduledTime> hours = sch.getScheduledTimes(null, t, t);
+        ZonedDateTime t = ZonedDateTime.parse("2013-11-25T20:00Z");
+        Set<ZonedDateTime> hours = sch.getScheduledTimes(null, t, t);
         Assert.assertEquals(0, hours.size());
     }
 
     @Test
     public void hourlyScheduleOneHour() {
         Schedule sch = makeHourlySchedule();
-        ScheduledTime t1 = new ScheduledTime("2013-11-25T20:00Z");
-        ScheduledTime t2 = new ScheduledTime("2013-11-25T21:00Z");
-        Set<ScheduledTime> hours = sch.getScheduledTimes(null, t1, t2);
-        Assert.assertEquals(new TreeSet<ScheduledTime>(Arrays.asList(t1)), hours);
+        ZonedDateTime t1 = ZonedDateTime.parse("2013-11-25T20:00Z");
+        ZonedDateTime t2 = ZonedDateTime.parse("2013-11-25T21:00Z");
+        Set<ZonedDateTime> hours = sch.getScheduledTimes(null, t1, t2);
+        Assert.assertEquals(new TreeSet<ZonedDateTime>(Arrays.asList(t1)), hours);
     }
     
     @Test
     public void hourlyScheduleOneHourWithMinutes() {
         Schedule sch = makeHourlySchedule();
-        ScheduledTime t1 = new ScheduledTime("2013-11-25T20:05Z");
-        ScheduledTime t2 = new ScheduledTime("2013-11-25T21:00Z");
-        Set<ScheduledTime> hours = sch.getScheduledTimes(null, t1, t2);
+        ZonedDateTime t1 = ZonedDateTime.parse("2013-11-25T20:05Z");
+        ZonedDateTime t2 = ZonedDateTime.parse("2013-11-25T21:00Z");
+        Set<ZonedDateTime> hours = sch.getScheduledTimes(null, t1, t2);
         Assert.assertEquals(0, hours.size());
     }
 
     @Test
     public void hourlyScheduleSomeHours() {
         Schedule sch = makeHourlySchedule();
-        ScheduledTime t1 = new ScheduledTime("2013-11-25T20:05:12.00182Z");
-        ScheduledTime t2 = new ScheduledTime("2013-11-25T23:05:56.2182Z");
-        Set<ScheduledTime> hours = sch.getScheduledTimes(null, t1, t2);
-        List<ScheduledTime> expectedHours =
-                Arrays.asList(new ScheduledTime("2013-11-25T21:00Z"),
-                              new ScheduledTime("2013-11-25T22:00Z"),
-                              new ScheduledTime("2013-11-25T23:00Z"));
-        Assert.assertEquals(new TreeSet<ScheduledTime>(expectedHours), hours);
+        ZonedDateTime t1 = ZonedDateTime.parse("2013-11-25T20:05:12.00182Z");
+        ZonedDateTime t2 = ZonedDateTime.parse("2013-11-25T23:05:56.2182Z");
+        Set<ZonedDateTime> hours = sch.getScheduledTimes(null, t1, t2);
+        List<ZonedDateTime> expectedHours =
+                Arrays.asList(ZonedDateTime.parse("2013-11-25T21:00Z"),
+                              ZonedDateTime.parse("2013-11-25T22:00Z"),
+                              ZonedDateTime.parse("2013-11-25T23:00Z"));
+        Assert.assertEquals(new TreeSet<ZonedDateTime>(expectedHours), hours);
     }
     
     @Test
     public void hourlyScheduleSomeHoursWithStartingFullHour() {
         Schedule sch = makeHourlySchedule();
-        ScheduledTime t1 = new ScheduledTime("2013-11-25T20:00Z");
-        ScheduledTime t2 = new ScheduledTime("2013-11-25T23:05:56.2182Z");
-        Set<ScheduledTime> hours = sch.getScheduledTimes(null, t1, t2);
-        List<ScheduledTime> expectedHours =
-                Arrays.asList(new ScheduledTime("2013-11-25T20:00Z"),
-                              new ScheduledTime("2013-11-25T21:00Z"),
-                              new ScheduledTime("2013-11-25T22:00Z"),
-                              new ScheduledTime("2013-11-25T23:00Z"));
-        Assert.assertEquals(new TreeSet<ScheduledTime>(expectedHours), hours);
+        ZonedDateTime t1 = ZonedDateTime.parse("2013-11-25T20:00Z");
+        ZonedDateTime t2 = ZonedDateTime.parse("2013-11-25T23:05:56.2182Z");
+        Set<ZonedDateTime> hours = sch.getScheduledTimes(null, t1, t2);
+        List<ZonedDateTime> expectedHours =
+                Arrays.asList(ZonedDateTime.parse("2013-11-25T20:00Z"),
+                              ZonedDateTime.parse("2013-11-25T21:00Z"),
+                              ZonedDateTime.parse("2013-11-25T22:00Z"),
+                              ZonedDateTime.parse("2013-11-25T23:00Z"));
+        Assert.assertEquals(new TreeSet<ZonedDateTime>(expectedHours), hours);
     }
 
     @Test
     public void isTimeFitsSchedule() {
         Schedule sch = makeHourlySchedule();
-        Assert.assertTrue(sch.isTimeInSchedule(new ScheduledTime("2013-11-25T20:00Z"), null));
-        Assert.assertFalse(sch.isTimeInSchedule(new ScheduledTime("2013-11-25T20:01Z"), null));
+        Assert.assertTrue(sch.isTimeInSchedule(ZonedDateTime.parse("2013-11-25T20:00Z"), null));
+        Assert.assertFalse(sch.isTimeInSchedule(ZonedDateTime.parse("2013-11-25T20:01Z"), null));
     }
 
     private HourlySchedule makeHourlySchedule() {

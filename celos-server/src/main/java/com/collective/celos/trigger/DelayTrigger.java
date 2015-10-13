@@ -15,10 +15,9 @@
  */
 package com.collective.celos.trigger;
 
-import org.joda.time.DateTime;
-
-import com.collective.celos.ScheduledTime;
 import com.collective.celos.Scheduler;
+
+import java.time.ZonedDateTime;
 
 /**
  * A trigger that signals data availability for a given scheduled time
@@ -43,14 +42,14 @@ public class DelayTrigger extends Trigger {
     }
 
     @Override
-    public TriggerStatus getTriggerStatus(Scheduler scheduler, ScheduledTime now, ScheduledTime scheduledTime) throws Exception {
-        DateTime nowDT = now.getDateTime();
-        DateTime waitUntilDT = scheduledTime.getDateTime().plusSeconds(getSeconds());
+    public TriggerStatus getTriggerStatus(Scheduler scheduler, ZonedDateTime now, ZonedDateTime scheduledTime) throws Exception {
+        ZonedDateTime nowDT = now;
+        ZonedDateTime waitUntilDT = scheduledTime.plusSeconds(getSeconds());
         boolean ready = nowDT.isAfter(waitUntilDT);
         return makeTriggerStatus(ready, humanReadableDescription(ready, waitUntilDT));
     }
 
-    private String humanReadableDescription(boolean ready, DateTime waitUntilDT) {
+    private String humanReadableDescription(boolean ready, ZonedDateTime waitUntilDT) {
         if (ready) {
             return "Ready since " + waitUntilDT.toString();
         } else {

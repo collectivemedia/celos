@@ -15,7 +15,7 @@
  */
 package com.collective.celos.ci.mode;
 
-import com.collective.celos.ScheduledTime;
+import java.time.ZonedDateTime;
 import com.collective.celos.ci.config.CiCommandLine;
 import com.collective.celos.ci.config.deploy.CelosCiTarget;
 import com.collective.celos.ci.config.deploy.CelosCiTargetParser;
@@ -101,8 +101,8 @@ public class TestTaskTest {
         Assert.assertTrue(testTask.getTestRuns().get(0).getCiContext().getTarget().getWorkflowsDirUri().toString().startsWith(tempDirUri));
         Assert.assertTrue(testTask.getTestRuns().get(0).getCiContext().getTarget().getWorkflowsDirUri().toString().length() > tempDirUri.length());
         Assert.assertEquals(testTask.getTestRuns().get(0).getTestCase().getName(), "wordcount test case 1");
-        Assert.assertEquals(testTask.getTestRuns().get(0).getTestCase().getSampleTimeStart(), new ScheduledTime("2013-11-20T11:00Z"));
-        Assert.assertEquals(testTask.getTestRuns().get(0).getTestCase().getSampleTimeEnd(), new ScheduledTime("2013-11-20T18:00Z"));
+        Assert.assertEquals(testTask.getTestRuns().get(0).getTestCase().getSampleTimeStart(), ZonedDateTime.parse("2013-11-20T11:00Z"));
+        Assert.assertEquals(testTask.getTestRuns().get(0).getTestCase().getSampleTimeEnd(), ZonedDateTime.parse("2013-11-20T18:00Z"));
         HdfsInputDeployer deployer1 = (HdfsInputDeployer) testTask.getTestRuns().get(0).getTestCase().getInputs().get(0);
         HdfsInputDeployer deployer2 = (HdfsInputDeployer) testTask.getTestRuns().get(0).getTestCase().getInputs().get(1);
         Assert.assertEquals(deployer1.getPath(), new Path("input/wordcount1"));
@@ -119,8 +119,8 @@ public class TestTaskTest {
         Assert.assertTrue(testTask.getTestRuns().get(1).getCiContext().getTarget().getWorkflowsDirUri().toString().startsWith(tempDirUri));
         Assert.assertTrue(testTask.getTestRuns().get(1).getCiContext().getTarget().getWorkflowsDirUri().toString().length() > tempDirUri.length());
         Assert.assertEquals(testTask.getTestRuns().get(1).getTestCase().getName(), "wordcount test case 2");
-        Assert.assertEquals(testTask.getTestRuns().get(1).getTestCase().getSampleTimeStart(), new ScheduledTime("2013-12-20T16:00Z"));
-        Assert.assertEquals(testTask.getTestRuns().get(1).getTestCase().getSampleTimeEnd(), new ScheduledTime("2013-12-20T18:00Z"));
+        Assert.assertEquals(testTask.getTestRuns().get(1).getTestCase().getSampleTimeStart(), ZonedDateTime.parse("2013-12-20T16:00Z"));
+        Assert.assertEquals(testTask.getTestRuns().get(1).getTestCase().getSampleTimeEnd(), ZonedDateTime.parse("2013-12-20T18:00Z"));
         HdfsInputDeployer deployer21 = (HdfsInputDeployer) testTask.getTestRuns().get(1).getTestCase().getInputs().get(0);
         Assert.assertEquals(deployer21.getPath(), new Path("input/wordcount2"));
         RecursiveFsObjectComparer comparer2 = (RecursiveFsObjectComparer) testTask.getTestRuns().get(1).getTestCase().getOutputs().get(0);

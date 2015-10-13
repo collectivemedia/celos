@@ -23,7 +23,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.collective.celos.ScheduledTime;
+import java.time.ZonedDateTime;
 import com.collective.celos.Scheduler;
 import com.collective.celos.WorkflowID;
 
@@ -40,7 +40,7 @@ public class SchedulerServlet extends AbstractServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException {
         try {
             Scheduler scheduler = createAndCacheScheduler();
-            ScheduledTime current = getRequestTime(req);
+            ZonedDateTime current = getRequestTime(req);
             Set<WorkflowID> workflowIDs = getWorkflowIDs(req);
             scheduler.step(current, workflowIDs);
         } catch(Exception e) {

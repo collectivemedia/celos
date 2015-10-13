@@ -27,13 +27,13 @@ public class NotTriggerTest {
     @Test
     public void invertsTrue() throws Exception {
         Scheduler scheduler = mock(Scheduler.class);
-        Assert.assertFalse(new NotTrigger(AndTriggerTest.createAlwaysTrigger()).isDataAvailable(scheduler, ScheduledTime.now(), ScheduledTime.now()));
+        Assert.assertFalse(new NotTrigger(AndTriggerTest.createAlwaysTrigger()).isDataAvailable(scheduler, Util.zonedDateTimeNowUTC(), Util.zonedDateTimeNowUTC()));
     }
     
     @Test
     public void invertsFalse() throws Exception {
         Scheduler scheduler = mock(Scheduler.class);
-        Assert.assertTrue(new NotTrigger(AndTriggerTest.createNeverTrigger()).isDataAvailable(scheduler, ScheduledTime.now(), ScheduledTime.now()));
+        Assert.assertTrue(new NotTrigger(AndTriggerTest.createNeverTrigger()).isDataAvailable(scheduler, Util.zonedDateTimeNowUTC(), Util.zonedDateTimeNowUTC()));
     }
     
 }

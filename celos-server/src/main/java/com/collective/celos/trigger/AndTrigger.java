@@ -15,7 +15,7 @@
  */
 package com.collective.celos.trigger;
 
-import com.collective.celos.ScheduledTime;
+import java.time.ZonedDateTime;
 import com.collective.celos.Scheduler;
 
 import java.util.ArrayList;
@@ -43,7 +43,7 @@ public class AndTrigger extends Trigger {
     }
 
     @Override
-    public TriggerStatus getTriggerStatus(Scheduler scheduler, ScheduledTime now, ScheduledTime scheduledTime) throws Exception {
+    public TriggerStatus getTriggerStatus(Scheduler scheduler, ZonedDateTime now, ZonedDateTime scheduledTime) throws Exception {
         final List<TriggerStatus> subStatuses = new ArrayList<>();
         for (Trigger trigger : triggers) {
             subStatuses.add(trigger.getTriggerStatus(scheduler, now, scheduledTime));

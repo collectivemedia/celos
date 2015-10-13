@@ -15,6 +15,7 @@
  */
 package com.collective.celos;
 
+import java.time.ZonedDateTime;
 import java.util.SortedSet;
 
 /**
@@ -29,7 +30,7 @@ public class DependentSchedule implements Schedule {
     }
     
     @Override
-    public SortedSet<ScheduledTime> getScheduledTimes(Scheduler scheduler, ScheduledTime start, ScheduledTime end) {
+    public SortedSet<ZonedDateTime> getScheduledTimes(Scheduler scheduler, ZonedDateTime start, ZonedDateTime end) {
         Workflow otherWorkflow = scheduler.getWorkflowConfiguration().findWorkflow(getOtherWorkflowID());
         if (otherWorkflow == null) {
             throw new RuntimeException("Workflow " + getOtherWorkflowID() + " doesn't exist.");

@@ -16,8 +16,9 @@
 package com.collective.celos;
 
 import org.apache.commons.lang.builder.CompareToBuilder;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
+
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 
 /**
  * Time of a workflow run in UTC.
@@ -25,22 +26,18 @@ import org.joda.time.DateTimeZone;
 public class ScheduledTime extends ValueObject implements Comparable<ScheduledTime> {
 
     public static final ScheduledTimeFormatter FORMATTER = new ScheduledTimeFormatter();
-    protected final DateTime dateTime;
+    protected final ZonedDateTime dateTime;
 
     public ScheduledTime(String formattedDate) {
-        this(DateTime.parse(formattedDate));
+        this(ZonedDateTime.parse(formattedDate));
     }
 
-    public ScheduledTime(DateTime dateTime) {
+    public ScheduledTime(ZonedDateTime dateTime) {
         this.dateTime = Util.requireNonNull(dateTime);
-        if (!dateTime.getZone().equals(DateTimeZone.UTC)) {
+        if (!dateTime.getZone().equals(ZoneOffset.UTC)) {
             throw new IllegalArgumentException(
                     "Scheduled time must be in UTC, but isn't: " + dateTime);
         }
-    }
-
-    public DateTime getDateTime() {
-        return dateTime;
     }
 
     @Override
@@ -53,7 +50,7 @@ public class ScheduledTime extends ValueObject implements Comparable<ScheduledTi
     }
 
     public int getMonth() {
-        return dateTime.getMonthOfYear();
+        return dateTime.getMonthValue();
     }
 
     public int getDay() {
@@ -61,19 +58,19 @@ public class ScheduledTime extends ValueObject implements Comparable<ScheduledTi
     }
 
     public int getHour() {
-        return dateTime.getHourOfDay();
+        return dateTime.getHour();
     }
 
     public int getMinute() {
-        return dateTime.getMinuteOfHour();
+        return dateTime.getMinute();
     }
 
     public int getSecond() {
-        return dateTime.getSecondOfMinute();
+        return dateTime.getSecond();
     }
 
     public int getMillisecond() {
-        return dateTime.getMillisOfSecond();
+        return dateTime.getNano() / 1000 / 1000;
     }
 
     public String toString() {
@@ -81,80 +78,76 @@ public class ScheduledTime extends ValueObject implements Comparable<ScheduledTi
     }
 
     public ScheduledTime minusYears(int i) {
-        return new ScheduledTime(getDateTime().minusYears(i));
+        return new ScheduledTime(dateTime.minusYears(i));
     }
 
     public ScheduledTime plusYears(int i) {
-        return new ScheduledTime(getDateTime().plusYears(i));
+        return new ScheduledTime(dateTime.plusYears(i));
     }
 
     public ScheduledTime minusMonths(int i) {
-        return new ScheduledTime(getDateTime().minusMonths(i));
+        return new ScheduledTime(dateTime.minusMonths(i));
     }
 
     public ScheduledTime plusMonths(int i) {
-        return new ScheduledTime(getDateTime().plusMonths(i));
+        return new ScheduledTime(dateTime.plusMonths(i));
     }
 
     public ScheduledTime minusDays(int i) {
-        return new ScheduledTime(getDateTime().minusDays(i));
+        return new ScheduledTime(dateTime.minusDays(i));
     }
 
     public ScheduledTime plusDays(int i) {
-        return new ScheduledTime(getDateTime().plusDays(i));
+        return new ScheduledTime(dateTime.plusDays(i));
     }
 
     public ScheduledTime minusHours(int i) {
-        return new ScheduledTime(getDateTime().minusHours(i));
+        return new ScheduledTime(dateTime.minusHours(i));
     }
 
     public ScheduledTime plusHours(int i) {
-        return new ScheduledTime(getDateTime().plusHours(i));
+        return new ScheduledTime(dateTime.plusHours(i));
     }
 
     public ScheduledTime minusMinutes(int i) {
-        return new ScheduledTime(getDateTime().minusMinutes(i));
+        return new ScheduledTime(dateTime.minusMinutes(i));
     }
 
     public ScheduledTime plusMinutes(int i) {
-        return new ScheduledTime(getDateTime().plusMinutes(i));
+        return new ScheduledTime(dateTime.plusMinutes(i));
     }
 
 
     public ScheduledTime minusSeconds(int i) {
-        return new ScheduledTime(getDateTime().minusSeconds(i));
+        return new ScheduledTime(dateTime.minusSeconds(i));
     }
 
     public ScheduledTime plusSeconds(int i) {
-        return new ScheduledTime(getDateTime().plusSeconds(i));
+        return new ScheduledTime(dateTime.plusSeconds(i));
     }
 
     public String year() {
-        return FORMATTER.formatYear(this);
+        return FORMATTER.formatYear(dateTime);
     }
 
     public String month() {
-        return FORMATTER.formatMonth(this);
+        return FORMATTER.formatMonth(dateTime);
     }
 
     public String day() {
-        return FORMATTER.formatDay(this);
+        return FORMATTER.formatDay(dateTime);
     }
 
     public String hour() {
-        return FORMATTER.formatHour(this);
+        return FORMATTER.formatHour(dateTime);
     }
 
     public String minute() {
-        return FORMATTER.formatMinute(this);
+        return FORMATTER.formatMinute(dateTime);
     }
 
     public String second() {
-        return FORMATTER.formatSecond(this);
-    }
-
-    public static ScheduledTime now() {
-        return new ScheduledTime(DateTime.now(DateTimeZone.UTC));
+        return FORMATTER.formatSecond(dateTime);
     }
 
 }

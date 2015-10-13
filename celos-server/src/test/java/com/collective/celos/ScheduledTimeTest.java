@@ -15,10 +15,10 @@
  */
 package com.collective.celos;
 
-import static org.junit.Assert.assertEquals;
-
 import org.junit.Assert;
 import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
 
 public class ScheduledTimeTest {
     
@@ -32,14 +32,6 @@ public class ScheduledTimeTest {
         Assert.assertEquals(0, t2.compareTo(t2));
     }
 
-    @Test
-    public void testMax() {
-        ScheduledTime t1 = new ScheduledTime("2013-11-26T13:00Z");
-        ScheduledTime t2 = new ScheduledTime("2013-11-26T13:01Z");
-        Assert.assertEquals(t2, Util.max(t1, t2));
-        Assert.assertEquals(t2, Util.max(t2, t1));
-    }
-    
     @Test
     public void testGetYear() {
         ScheduledTime t = new ScheduledTime("2013-11-18T20:00Z");

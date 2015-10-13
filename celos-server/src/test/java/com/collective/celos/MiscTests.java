@@ -19,6 +19,8 @@ import com.collective.celos.trigger.AlwaysTrigger;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeParseException;
 import java.util.HashMap;
 
 import static org.mockito.Mockito.mock;
@@ -29,29 +31,29 @@ public class MiscTests {
     
     @Test
     public void scheduledTimeEqualsWorks() {
-        Assert.assertEquals(new ScheduledTime("2013-11-18T20:00Z"), new ScheduledTime("2013-11-18T20:00Z"));
-        Assert.assertNotSame(new ScheduledTime("2014-11-18T20:00Z"), new ScheduledTime("2013-11-18T20:00Z"));
+        Assert.assertEquals(ZonedDateTime.parse("2013-11-18T20:00Z"), ZonedDateTime.parse("2013-11-18T20:00Z"));
+        Assert.assertNotSame(ZonedDateTime.parse("2014-11-18T20:00Z"), ZonedDateTime.parse("2013-11-18T20:00Z"));
     }
     
     @Test
     public void slotIDEqualsWorks() {    
-        Assert.assertEquals(new SlotID(new WorkflowID("foo"), new ScheduledTime("2013-11-18T20:00Z")),
-                            new SlotID(new WorkflowID("foo"), new ScheduledTime("2013-11-18T20:00Z")));
-        Assert.assertNotSame(new SlotID(new WorkflowID("bar"), new ScheduledTime("2013-11-18T20:00Z")),
-                             new SlotID(new WorkflowID("foo"), new ScheduledTime("2013-11-18T20:00Z")));
-        Assert.assertNotSame(new SlotID(new WorkflowID("foo"), new ScheduledTime("2014-11-18T20:00Z")),
-                             new SlotID(new WorkflowID("foo"), new ScheduledTime("2013-11-18T20:00Z")));
+        Assert.assertEquals(new SlotID(new WorkflowID("foo"), ZonedDateTime.parse("2013-11-18T20:00Z")),
+                            new SlotID(new WorkflowID("foo"), ZonedDateTime.parse("2013-11-18T20:00Z")));
+        Assert.assertNotSame(new SlotID(new WorkflowID("bar"), ZonedDateTime.parse("2013-11-18T20:00Z")),
+                             new SlotID(new WorkflowID("foo"), ZonedDateTime.parse("2013-11-18T20:00Z")));
+        Assert.assertNotSame(new SlotID(new WorkflowID("foo"), ZonedDateTime.parse("2014-11-18T20:00Z")),
+                             new SlotID(new WorkflowID("foo"), ZonedDateTime.parse("2013-11-18T20:00Z")));
     }        
         
     @Test
     public void slotStateEqualsWorks() {
-        SlotID slotID1 = new SlotID(new WorkflowID("foo"), new ScheduledTime("2013-11-18T20:00Z"));
-        SlotID slotID2= new SlotID(new WorkflowID("bar"), new ScheduledTime("2013-11-18T20:00Z"));
+        SlotID slotID1 = new SlotID(new WorkflowID("foo"), ZonedDateTime.parse("2013-11-18T20:00Z"));
+        SlotID slotID2= new SlotID(new WorkflowID("bar"), ZonedDateTime.parse("2013-11-18T20:00Z"));
 
         Assert.assertEquals(new SlotState(slotID1, SlotState.Status.READY),
                             new SlotState(slotID1, SlotState.Status.READY));
         Assert.assertNotSame(new SlotState(slotID1, SlotState.Status.READY),
-                             new SlotState(slotID1, SlotState.Status.WAITING));
+                new SlotState(slotID1, SlotState.Status.WAITING));
         Assert.assertNotSame(new SlotState(slotID1, SlotState.Status.READY),
                              new SlotState(slotID2, SlotState.Status.READY));   
     }
@@ -75,18 +77,18 @@ public class MiscTests {
     
     @Test
     public void scheduledTimeHashCodeWorks() {
-        hashCodeTest(new ScheduledTime("2013-11-18T20:00Z"), new ScheduledTime("2013-11-19T20:00Z"));
+        hashCodeTest(ZonedDateTime.parse("2013-11-18T20:00Z"), ZonedDateTime.parse("2013-11-19T20:00Z"));
     }
     
     @Test
     public void slotIDHashCodeWorks() {
-        hashCodeTest(new SlotID(new WorkflowID("foo"), new ScheduledTime("2013-11-18T20:00Z")),
-                     new SlotID(new WorkflowID("bar"), new ScheduledTime("2013-11-18T20:00Z")));
+        hashCodeTest(new SlotID(new WorkflowID("foo"), ZonedDateTime.parse("2013-11-18T20:00Z")),
+                     new SlotID(new WorkflowID("bar"), ZonedDateTime.parse("2013-11-18T20:00Z")));
     }
     
     @Test
     public void slotStateHashCodeWorks() {
-        SlotID slotID = new SlotID(new WorkflowID("foo"), new ScheduledTime("2013-11-18T20:00Z"));
+        SlotID slotID = new SlotID(new WorkflowID("foo"), ZonedDateTime.parse("2013-11-18T20:00Z"));
         hashCodeTest(new SlotState(slotID, SlotState.Status.READY),
                      new SlotState(slotID, SlotState.Status.WAITING));
     }
@@ -108,15 +110,15 @@ public class MiscTests {
         new WorkflowID("workflow/1");
     }
 
-    @Test(expected=IllegalArgumentException.class)
+    @Test(expected=DateTimeParseException.class)
     public void scheduledTimeMustBeUTC() {
-        new ScheduledTime("2013-11-12T20:00");
+        ZonedDateTime.parse("2013-11-12T20:00");
     }
     
     @Test
     public void tooTrivialButStill_alwaysTriggerAlwaysTriggers() throws Exception {
         Scheduler scheduler = mock(Scheduler.class);
-        Assert.assertTrue(new AlwaysTrigger().isDataAvailable(scheduler, ScheduledTime.now(), new ScheduledTime("2013-11-21T20:00Z")));
+        Assert.assertTrue(new AlwaysTrigger().isDataAvailable(scheduler, Util.zonedDateTimeNowUTC(), ZonedDateTime.parse("2013-11-21T20:00Z")));
     }
         
 }

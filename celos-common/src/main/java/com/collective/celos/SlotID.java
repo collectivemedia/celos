@@ -15,15 +15,17 @@
  */
 package com.collective.celos;
 
+import java.time.ZonedDateTime;
+
 /**
  * A single execution of a workflow at a given time.
  */
 public class SlotID extends ValueObject {
     
     protected final WorkflowID workflowID;
-    protected final ScheduledTime scheduledTime;
+    protected final ZonedDateTime scheduledTime;
 
-    public SlotID(WorkflowID workflowID, ScheduledTime scheduledTime) {
+    public SlotID(WorkflowID workflowID, ZonedDateTime scheduledTime) {
         this.workflowID = Util.requireNonNull(workflowID);
         this.scheduledTime = Util.requireNonNull(scheduledTime);
     }
@@ -32,10 +34,14 @@ public class SlotID extends ValueObject {
         return workflowID;
     }
     
-    public ScheduledTime getScheduledTime() {
+    public ZonedDateTime getSlotTime() {
         return scheduledTime;
     }
-    
+
+    public ScheduledTime getScheduledTime() {
+        return new ScheduledTime(scheduledTime.toString());
+    }
+
     public String toString() {
         return workflowID + "@" + scheduledTime;
     }
@@ -46,7 +52,7 @@ public class SlotID extends ValueObject {
         if (!(parts.length == 2)) {
             throw new IllegalArgumentException("Malformed slot ID: " + idStr);
         }
-        return new SlotID(new WorkflowID(parts[0]), new ScheduledTime(parts[1]));
+        return new SlotID(new WorkflowID(parts[0]), ZonedDateTime.parse(parts[1]));
     }
     
 }
