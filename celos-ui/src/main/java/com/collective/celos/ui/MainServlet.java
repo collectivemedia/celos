@@ -31,7 +31,7 @@ import static java.util.stream.Collectors.toList;
 /**
  * Renders the UI JSON.
  */
-public class ReactMainServlet {
+public class MainServlet {
 
     private static final String ZOOM_PARAM = "zoom";
     private static final String TIME_PARAM = "time";

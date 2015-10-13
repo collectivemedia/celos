@@ -89,7 +89,7 @@ object AkkaHttpMicroService extends App with Protocols {
           parameters("time" ? "", "zoom" ? "") {
             (time: String, zoom: String) =>
               complete {
-                val res = ReactMainServlet.processGet(servletContext, time, zoom)
+                val res = MainServlet.processGet(servletContext, time, zoom)
                 res
               }
           }

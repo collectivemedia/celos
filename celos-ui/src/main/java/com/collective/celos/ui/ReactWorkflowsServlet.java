@@ -30,8 +30,8 @@ import java.net.URL;
 import java.time.ZonedDateTime;
 import java.util.*;
 
-import static com.collective.celos.ui.ReactMainServlet.getDefaultGroups;
-import static com.collective.celos.ui.ReactMainServlet.getWorkflowGroups;
+import static com.collective.celos.ui.MainServlet.getDefaultGroups;
+import static com.collective.celos.ui.MainServlet.getWorkflowGroups;
 import static java.util.stream.Collectors.toList;
 
 /**

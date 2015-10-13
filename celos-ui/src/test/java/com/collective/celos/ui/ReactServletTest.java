@@ -52,12 +52,12 @@ public class ReactServletTest {
 
     @Test
     public void testMain() throws IOException {
-        final ReactMainServlet.MainUI zz = new ReactMainServlet.MainUI();
+        final MainServlet.MainUI zz = new MainServlet.MainUI();
         zz.currentTime = "2015-09-15 21:50 UTC";
         zz.rows = new ArrayList<>();
-        zz.rows.add(new ReactMainServlet.WorkflowGroupRef());
+        zz.rows.add(new MainServlet.WorkflowGroupRef());
         zz.rows.get(0).name = "dsada";
-        zz.rows.add(new ReactMainServlet.WorkflowGroupRef());
+        zz.rows.add(new MainServlet.WorkflowGroupRef());
         zz.rows.get(1).name = "Gr 2";
     }
 
