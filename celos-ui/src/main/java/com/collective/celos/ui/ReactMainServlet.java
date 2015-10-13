@@ -19,13 +19,14 @@ import com.collective.celos.*;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import com.google.common.collect.Sets;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
 import java.io.*;
 import java.net.URL;
 import java.util.*;
+
+import static java.util.stream.Collectors.toList;
 
 /**
  * Renders the UI JSON.
@@ -198,14 +199,14 @@ public class ReactMainServlet {
             listedWfs.addAll(ids);
         }
 
-        TreeSet<WorkflowID> diff = new TreeSet<>(Sets.difference(expectedWfs, listedWfs));
+        List<WorkflowID> diff = expectedWfs.stream().filter(x -> !listedWfs.contains(x)).sorted().collect(toList());
         if (!diff.isEmpty()) {
-            configWorkflowGroups.add(new WorkflowGroup(UNLISTED_WORKFLOWS_CAPTION, new ArrayList<>(diff)));
+            configWorkflowGroups.add(new WorkflowGroup(UNLISTED_WORKFLOWS_CAPTION, diff));
         }
         return configWorkflowGroups;
     }
 
-    private static List<WorkflowGroup> getDefaultGroups(Set<WorkflowID> workflows) {
+    static List<WorkflowGroup> getDefaultGroups(Set<WorkflowID> workflows) {
         return Collections.singletonList(new WorkflowGroup(DEFAULT_CAPTION, new LinkedList<>(new TreeSet<>(workflows))));
     }
 

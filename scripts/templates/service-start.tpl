@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-CELOS_VERSION={{ service_version }} exec java 2>&1 -cp "{{ dest_jar_path }}:/etc/hadoop/conf" {{ main_class }} --port {{ service_port }} {{ service_args }}
+CELOS_VERSION="{{ service_version }}" JAVA_OPTS="{{jvm_opts}}" exec {{ dest_path }}/{{ start_script }} 2>&1 --port {{ service_port }} {{ service_args }}

@@ -4,14 +4,6 @@ apply plugin: 'scala'
 
 mainClassName = "AkkaHttpMicroService"
 
-
-jar {
-    baseName "celos-ui"
-    manifest {
-        attributes("Main-Class": mainClassName)
-    }
-}
-
 sourceSets {
     main {
         java {
@@ -42,7 +34,6 @@ dependencies {
     compile("com.typesafe.akka:akka-http-experimental_2.11:1.0")
     compile("com.typesafe.akka:akka-http-spray-json-experimental_2.11:1.0")
 
-    compile("com.j2html:j2html:0.5.0")
     testCompile("junit:junit:4.8.2")
     testCompile("net.sourceforge.htmlunit:htmlunit:2.4")
     testCompile("org.powermock:powermock-module-junit4:1.5.5") {
@@ -52,9 +43,6 @@ dependencies {
        exclude module: 'junit'
     }
     testCompile("org.mockito:mockito-all:1.9.5")
-}
+    testCompile("com.google.guava:guava:11.0.2")
 
-jar {
-    from configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
-    archiveName "celos-ui.jar"
 }

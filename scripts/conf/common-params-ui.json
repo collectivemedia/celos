@@ -1,5 +1,6 @@
 {
-  "jar_path": "../celos-ui/build/libs/celos-ui.jar",
-  "main_class": "com.collective.celos.ui.Main",
+  "build_path": "../celos-ui/build/install/celos-ui",
+  "start_script": "bin/celos-ui",
+  "jvm_opts": "",
   "service_args": "--celos http://{{ celos_server_host }}:{{ server_service_port }} --hue {{ ui_hue_url }}  --config {{ ui_config_file }}"
 }
