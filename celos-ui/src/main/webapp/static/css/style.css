@@ -1,0 +1,104 @@
+.workflowTable {
+    table-layout: fixed;
+}
+
+.groupName {
+    text-align: left;
+    width: 250px;
+    max-width: 250px;
+    min-width: 250px;
+    overflow: hidden;
+}
+
+.workflowName {
+    /*text-align: right;*/
+    font-weight: normal;
+    width: 250px;
+    max-width: 250px;
+    min-width: 250px;
+    overflow: hidden;
+    height: 20px;
+}
+
+.timeHeader {
+    font-family: monospace;
+    font-size: small;
+    font-weight: normal;
+    width: 30px;
+    max-width: 30px;
+    min-width: 30px;
+}
+
+.slot {
+    text-align: center;
+    width: 30px;
+    max-width: 30px;
+    min-width: 30px;
+    min-height: 20px;
+    height: 20px;
+}
+
+.slot a {
+    width: 100%;
+    height: 100%;
+    display:block;
+    text-decoration:none;
+}
+
+.bigButtons {
+    font-size: large;
+}
+
+.RUNNING, .READY {
+    background-color: #ffc;
+}
+.SUCCESS {
+    background-color: #cfc;
+}
+.WAITING {
+    background-color: #ccf;
+}
+.FAILURE, .WAIT_TIMEOUT {
+    background-color: #fcc;
+}
+
+
+.selected {
+    background-color: #aaaaaa;
+}
+
+
+.cell-hover {
+    display: block;
+    position: absolute;
+    /*top: 5px;*/
+    /*left: 0;*/
+    border: 1px solid #000;
+    background: #fff;
+    width: 300px;
+    text-align: center;
+}
+
+/*.anchor:hover > .profile-hover { display: block; }*/
+
+.context-menu {
+    display: block;
+    position: absolute;
+    z-index: 10;
+    border: 1px solid #000;
+    background: #fff;
+    overflow: hidden;
+    color: #333;
+    padding: 0;
+}
+
+/* Each of the items in the list */
+.context-menu li {
+    padding: 8px 12px;
+    cursor: pointer;
+    list-style-type: none;
+}
+
+.context-menu li:hover {
+    background-color: #DEF;
+}
