@@ -28,16 +28,6 @@ public class RerunServletTest {
         failsOnWrongStatusTest(SlotState.Status.RUNNING);
     }
 
-    @Test(expected = IllegalStateException.class)
-    public void failsOnReadySlot() throws Exception {
-        failsOnWrongStatusTest(SlotState.Status.READY);
-    }
-
-    @Test(expected = IllegalStateException.class)
-    public void failsOnWaitingSlot() throws Exception {
-        failsOnWrongStatusTest(SlotState.Status.WAITING);
-    }
-
     private void failsOnWrongStatusTest(Status status) throws Exception {
         StateDatabase db = new MemoryStateDatabase();
         SlotID id = new SlotID(new WorkflowID("foo"), new ScheduledTime("2014-02-08T20:00Z"));

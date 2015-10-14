@@ -795,23 +795,6 @@ public class CelosClientServerTest {
         Assert.assertEquals(slotStateLast4.getStatus(), SlotState.Status.KILLED);
     }
 
-    @Test (expected = IOException.class)
-    public void testRerunRunningFails() throws Exception {
-        File src = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/client/wf-list").toURI());
-        FileUtils.copyDirectory(src, workflowsDir);
-
-        WorkflowID workflowID = new WorkflowID("workflow-2");
-
-        celosClient.iterateScheduler();
-        celosClient.iterateScheduler();
-
-        WorkflowStatus workflowStatus3 = celosClient.getWorkflowStatus(workflowID);
-        List<SlotState> slotStates = workflowStatus3.getSlotStates();
-        SlotState slotStateLast = workflowStatus3.getSlotStates().get(slotStates.size() - 1);
-        Assert.assertEquals(slotStateLast.getStatus(), SlotState.Status.RUNNING);
-        celosClient.rerunSlot(slotStateLast.getSlotID());
-    }
-
 
     @Test(expected = IOException.class)
     public void testDoesntKillSuccess() throws Exception {
