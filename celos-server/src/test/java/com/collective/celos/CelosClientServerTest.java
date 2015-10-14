@@ -795,7 +795,7 @@ public class CelosClientServerTest {
         Assert.assertEquals(slotStateLast4.getStatus(), SlotState.Status.KILLED);
     }
 
-    @Test (expected = IllegalStateException.class)
+    @Test (expected = IOException.class)
     public void testRerunRunningFails() throws Exception {
         File src = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/client/wf-list").toURI());
         FileUtils.copyDirectory(src, workflowsDir);
