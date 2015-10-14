@@ -482,7 +482,7 @@ The `options` argument is an object with the following fields:
 |`schedule`|<<schedules-reference,Schedule>>|Yes|The schedule that determines the points in time at which the workflow should run.
 |`schedulingStrategy`|<<scheduling-strategies-reference,SchedulingStrategy>>|Yes|The scheduling strategy that determines when and in which order ready slots should be run.
 |`externalService`|<<external-services-reference,ExternalService>>|Yes|The external service actually responsible for executing the job.
-|`startTime`|String (ISO 8601)|No|The date when the workflow should start executing (default: "1970-01-01T00:00Z").
+|`startTime`|String (ISO 8601, UTC)|No|The date when the workflow should start executing (default: "1970-01-01T00:00Z").
 |`maxRetryCount`|Number|No|The number of times a slot of this workflow should be automatically retried if it fails (default: 0).
 |`waitTimeoutSeconds`|Number|No|The number of seconds a workflow should stay waiting until it times out (default: `Integer.MAX_VALUE` (68 years)).
 |===
@@ -1077,8 +1077,8 @@ paused state (see the <<pause>> servlet).
 |===
 |Name|Type|Required|Description
 |`id`|String|Yes|ID of the workflow.
-|`end`|String (ISO 8601)|No|Time (exclusive) of most recent slot to return.  Defaults to current time.
-|`start`|String (ISO 8601)|No|Time (inclusive) of earliest slot to return.  Defaults to 1 week before `end`.
+|`end`|String (ISO 8601, UTC)|No|Time (exclusive) of most recent slot to return.  Defaults to current time.
+|`start`|String (ISO 8601, UTC)|No|Time (inclusive) of earliest slot to return.  Defaults to 1 week before `end`.
 |===
 
 ===== Example
@@ -1125,7 +1125,7 @@ why a slot is waiting.
 |===
 |Name|Type|Required|Description
 |`id`|String|Yes|ID of the workflow.
-|`time`|String (ISO 8601)|Yes|Scheduled time of slot to check.
+|`time`|String (ISO 8601, UTC)|Yes|Scheduled time of slot to check.
 |===
 
 ===== Example
@@ -1169,7 +1169,7 @@ reset to 0.
 |===
 |Name|Type|Required|Description
 |`id`|String|Yes|ID of the workflow.
-|`time`|String (ISO 8601)|Yes|Scheduled time of slot to rerun.
+|`time`|String (ISO 8601, UTC)|Yes|Scheduled time of slot to rerun.
 |===
 
 ===== Example
@@ -1190,7 +1190,7 @@ underlying Oozie job, if any.
 |===
 |Name|Type|Required|Description
 |`id`|String|Yes|ID of the workflow.
-|`time`|String (ISO 8601)|Yes|Scheduled time of slot to kill.
+|`time`|String (ISO 8601, UTC)|Yes|Scheduled time of slot to kill.
 |===
 
 ===== Example
@@ -1387,8 +1387,8 @@ Doing a GET to this servlet displays the Celos UI.
 [options="header"]
 |===
 |Name|Type|Required|Description
-|`time`|String (ISO 8601)|No|Time of most recent slot to display (defaults to current time).
-|`zoom`|String (ISO 8601)|No|Zoom level in minutes (defaults to 60).
+|`time`|String (ISO 8601, UTC)|No|Time of most recent slot to display (defaults to current time).
+|`zoom`|String (Number)|No|Zoom level in minutes (defaults to 60).
 |===
 
 == Miscellaneous
