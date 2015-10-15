@@ -150,7 +150,7 @@ public class MainServlet extends HttpServlet {
         return writer.writeValueAsString(mainUI);
     }
 
-        static ScheduledTime getDisplayTime(String timeStr, ScheduledTime now) {
+    static ScheduledTime getDisplayTime(String timeStr, ScheduledTime now) {
         if (timeStr == null || timeStr.isEmpty()) {
             return now;
         } else {

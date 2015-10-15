@@ -29,6 +29,11 @@
     </servlet>
 
     <servlet>
+        <servlet-name>UIActionServlet</servlet-name>
+        <servlet-class>com.collective.celos.ui.UIActionServlet</servlet-class>
+    </servlet>
+
+    <servlet>
         <servlet-name>VersionServlet</servlet-name>
         <servlet-class>com.collective.celos.servlet.VersionServlet</servlet-class>
     </servlet>
@@ -56,6 +61,11 @@
     <servlet-mapping>
         <servlet-name>UIRerunServlet</servlet-name>
         <url-pattern>/rerun</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>UIActionServlet</servlet-name>
+        <url-pattern>/multiplex-rpc</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>

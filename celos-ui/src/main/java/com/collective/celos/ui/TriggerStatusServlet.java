@@ -18,6 +18,7 @@ package com.collective.celos.ui;
 import com.collective.celos.CelosClient;
 import com.collective.celos.Util;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -26,6 +27,10 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Arrays;
+import java.util.List;
+
+import static java.util.stream.Collectors.toList;
 
 /**
  * Renders the UI HTML.
@@ -43,15 +48,19 @@ public class TriggerStatusServlet extends HttpServlet {
             URL celosURL = (URL) Util.requireNonNull(getServletContext().getAttribute(Main.CELOS_URL_ATTR));
             URL hueURL = (URL) getServletContext().getAttribute(Main.HUE_URL_ATTR);
             File configFile = (File) getServletContext().getAttribute(Main.CONFIG_FILE_ATTR);
-
+            final List<String> timestamps = Arrays.stream(req.getParameter(TIME_PARAM).split(","))
+                    .limit(ReactWorkflowsServlet.MULTI_SLOT_INFO_LIMIT)
+                    .collect(toList());
+            ObjectMapper mapper = new ObjectMapper();
             CelosClient client = new CelosClient(celosURL.toURI());
-
-            String tmp = client.getTriggerStatusAsText(req.getParameter(ID_PARAM), req.getParameter(TIME_PARAM));
+            final ArrayNode node = mapper.createArrayNode();
+            for (String ts : timestamps) {
+                node.add(client.getTriggerStatusAsText(req.getParameter(ID_PARAM), ts));
+            }
             response.setContentType("application/json;charset=UTF-8");
-            response.getWriter().write(tmp);
+            mapper.writeValue(response.getWriter(), node);
         } catch (Exception e) {
             throw new ServletException(e);
         }
     }
-
 }

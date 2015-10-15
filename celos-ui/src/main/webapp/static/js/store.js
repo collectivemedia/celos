@@ -93,9 +93,24 @@ var WorkflowStore = {
      * Get the entire collection of TODOs.
      * @return {object}
      */
-    getAll: function() {
+    getAll: function () {
         return _internalData;
     },
+
+    getSelectedSlots: function () {
+        var result = [];
+        _internalData.forEach(function (table) {
+            table.forEach(function (row, wfName) {
+                row.forEach(function (slot, timestamp) {
+                    if (slot.get("isSelected", false)) {
+                        result.push({ workflow: wfName, ts: timestamp })
+                    }
+                })
+            })
+        });
+        return result;
+    },
+
 
     emitChange: function() {
         if (CHANGE_EVENT in this.internalEvents) {

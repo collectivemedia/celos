@@ -162,7 +162,21 @@ var ContextMenu = React.createClass({
     displayName: "ContextMenu",
 
     proceedClick1: function () {
-        console.log('ololo2');
+        ajaxPostJSON("/multiplex-rpc",
+            {
+                action: "rerun",
+                slots: WorkflowStore.getSelectedSlots()
+            }, function (res) { console.log(res)}
+        )
+    },
+
+    proceedClick2: function () {
+        ajaxPostJSON("/multiplex-rpc",
+            {
+                action: "kill",
+                slots: WorkflowStore.getSelectedSlots()
+            }, function (res) { console.log(res)}
+        )
     },
 
     render: function () {

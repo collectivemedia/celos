@@ -20,8 +20,9 @@ var startsWith = function startsWith(searchString, str) {
     return str.indexOf(searchString) === 0;
 };
 
+
 var ajaxGetJson = function(url0, data, successCallback) {
-    var errorCallback = function (xhr, status, err) {
+    var _ajaxErrorCallback = function (xhr, status, err) {
         console.error(url0, status, err.toString())
     };
     var request = new XMLHttpRequest();
@@ -33,20 +34,39 @@ var ajaxGetJson = function(url0, data, successCallback) {
     }
     var urlQuery = url0 + (query.length ? '?' + query.join('&') : '');
     request.open('GET', urlQuery, true);
-    request.onreadystatechange = function() {
+    request.onreadystatechange = function () {
         if (this.readyState == XMLHttpRequest.DONE) {
             if (this.status >= 200 && this.status < 400) {
-                // Success!
                 successCallback(JSON.parse(this.responseText))
             } else {
-                // We reached our target server, but it returned an error
-                errorCallback(this, this.status, this.statusText);
+                _ajaxErrorCallback(this, this.status, this.statusText);
             }
         }
     };
-    request.onerror = errorCallback;
+    request.onerror = _ajaxErrorCallback;
     request.send();
 };
+
+var ajaxPostJSON = function (url0, jsondata, successCallback) {
+    var _ajaxErrorCallback = function (xhr, status, err) {
+        console.error(url0, status, err.toString())
+    };
+    var request = new XMLHttpRequest();
+    request.open("POST", url0);
+    request.setRequestHeader('Content-Type', 'application/json');
+    request.onreadystatechange = function () {
+        if (this.readyState == XMLHttpRequest.DONE) {
+            if (this.status >= 200 && this.status < 400) {
+                successCallback(JSON.parse(this.responseText))
+            } else {
+                _ajaxErrorCallback(this, this.status, this.statusText);
+            }
+        }
+    };
+    request.onerror = _ajaxErrorCallback;
+    request.send(JSON.stringify(jsondata));
+};
+
 
 var makeCelosHref = function makeCelosHref(zoom, time, groups) {
     var url0 = "#ui?";
@@ -103,7 +123,6 @@ window.onclick = function(e) {
         document.getElementById('contextMenu'));
     return true;
 };
-
 
 
 

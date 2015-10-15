@@ -96,9 +96,9 @@ var ProductRow = React.createClass({
                     data: slot,
                     status: slot.status,
                     quantity: slot.quantity,
-                    ts: slot.ts,
+                    timestamps: slot.timestamps,
                     workflowName: this.props.data.workflowName,
-                    store: this.props.store.get(slot.ts, Immutable.Map()),
+                    store: this.props.store.get(slot.timestamps, Immutable.Map()),
                     breadcrumbs: this.props.breadcrumbs.concat(slot.ts)
                 });
             }.bind(this))
@@ -115,7 +115,7 @@ var TimeSlot = React.createClass({
         status: React.PropTypes.string.isRequired,
         workflowName: React.PropTypes.string.isRequired,
         quantity: React.PropTypes.number,
-        ts: React.PropTypes.string
+        timestamps: React.PropTypes.array
     },
 
     getInitialState: function () {
@@ -124,8 +124,10 @@ var TimeSlot = React.createClass({
         }
     },
     handleClick: function (e) {
-        //console.log(JSON.stringify(e.nativeEvent), e.altKey, e.altPressed);
-
+        // empty status do nothing
+        if (this.props.status == "EMPTY") {
+            return
+        }
         if (e.altKey) {
             console.log("click", e);
             AppDispatcher.handleClickOnSlot({breadcrumbs: this.props.breadcrumbs})
@@ -155,13 +157,14 @@ var TimeSlot = React.createClass({
     render: function () {
         return (
             React.DOM.td(this.getCellConfig(),
-                this.props.quantity
+                this.props.quantity > 1
                     ? React.DOM.div(null, this.props.quantity)
                     : null,
                 this.state.showPopup
                     ? React.createElement(TriggerStatusFetch, {
                         id: this.props.workflowName,
-                        ts: this.props.ts})
+                        timestamps: this.props.timestamps,
+                        quantity: this.props.quantity})
                     : null
             )
         )
@@ -178,7 +181,7 @@ var TriggerStatusFetch = React.createClass({
             /*url=*/ "/trigger-status",
             /*data=*/ {
                 id: props.id,
-                time: props.ts},
+                time: props.timestamps.join(",")},
             /*success=*/ function (data) {
                 console.log("set State:", data);
                 this.setState({ data: data })
@@ -216,7 +219,7 @@ var TriggerStatusFetch = React.createClass({
         console.log("TriggerStatus render", this.props, this.state);
         return this.state
             ? React.DOM.div({className: "cell-hover"},
-            this.drawTrigger([this.state.data]))
+            this.drawTrigger(this.state.data))
             : null
     }
 });

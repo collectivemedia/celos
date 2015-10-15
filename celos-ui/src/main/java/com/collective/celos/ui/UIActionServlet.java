@@ -16,9 +16,9 @@
 package com.collective.celos.ui;
 
 import com.collective.celos.CelosClient;
-import com.collective.celos.SlotID;
 import com.collective.celos.Util;
-import com.collective.celos.WorkflowID;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -30,22 +30,29 @@ import java.net.URL;
 /**
  * Called from the browser to rerun a slot.
  */
-public class UIRerunServlet extends HttpServlet {
+public class UIActionServlet extends HttpServlet {
     
     private static final String SLOT_ID = "id";
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try {
-            String idStr = req.getParameter(SLOT_ID);
-            if (idStr == null) {
-                throw new IllegalArgumentException("id parameter must be specified");
-            }
-            SlotID id = SlotID.fromString(idStr);
             URL celosURL = (URL) Util.requireNonNull(getServletContext().getAttribute(Main.CELOS_URL_ATTR));
             CelosClient client = new CelosClient(celosURL.toURI());
-            client.rerunSlot(new SlotID(new WorkflowID("DUMMY"), id.getScheduledTime()));
-            res.setStatus(HttpServletResponse.SC_OK);
+
+            ObjectMapper mapper = new ObjectMapper();
+            final JsonNode jsonNode = mapper.readTree(request.getReader());
+
+
+//            client.kill(id.getWorkflowID(), id.getScheduledTime());
+//            client.getWorkflowStatus(new WorkflowID("DUMMY"), ScheduledTime.now());
+
+            System.out.println("SUCCESS!!!!");
+            System.out.println(mapper.writeValueAsString(jsonNode));
+
+            mapper.writeValue(response.getWriter(), jsonNode);
+
+            response.setStatus(HttpServletResponse.SC_OK);
         } catch(Exception e) {
             throw new ServletException(e);
         }

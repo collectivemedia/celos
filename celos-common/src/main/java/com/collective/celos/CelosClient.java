@@ -19,7 +19,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.Lists;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -33,7 +32,6 @@ import org.apache.http.util.EntityUtils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
-import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -148,7 +146,7 @@ public class CelosClient {
         return SlotState.fromJSONNode(workflowID, objectMapper.readValue(content, ObjectNode.class));
     }
 
-    public String getTriggerStatusAsText(String workflowID, String scheduledTime) throws Exception {
+    public JsonNode getTriggerStatusAsText(String workflowID, String scheduledTime) throws Exception {
         URIBuilder uriBuilder = new URIBuilder(address);
         uriBuilder.setPath(uriBuilder.getPath() + TRIGGER_STATUS_PATH);
         uriBuilder.addParameter(ID_PARAM, workflowID);
@@ -157,7 +155,7 @@ public class CelosClient {
         HttpGet workflowListGet = new HttpGet(uriBuilder.build());
         HttpResponse getResponse = execute(workflowListGet);
         InputStream content = getResponse.getEntity().getContent();
-        return IOUtils.toString(content, Charset.defaultCharset());
+        return objectMapper.readTree(content);
     }
 
 

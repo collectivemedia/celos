@@ -49,6 +49,7 @@ public class ReactWorkflowsServlet extends HttpServlet {
     private static final String NAME_TAG = "name";
     private static final String UNLISTED_WORKFLOWS_CAPTION = "Unlisted workflows";
     private static final String DEFAULT_CAPTION = "All Workflows";
+    static final int MULTI_SLOT_INFO_LIMIT = 16;
 
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -67,28 +68,28 @@ public class ReactWorkflowsServlet extends HttpServlet {
     protected static class SlotPOJO {
         public String status;
         public String url;
-        public String ts;
+        public List<String> timestamps;
         public Integer quantity;
     }
 
     protected static final ObjectMapper mapper = new ObjectMapper();
     protected static final ObjectWriter writer = mapper.writerWithDefaultPrettyPrinter();
 
-    private static SlotPOJO makeSlot(UIConfiguration conf, Set<SlotState> states) {
+    private static SlotPOJO makeSlot(UIConfiguration conf, List<SlotState> states) {
         final SlotPOJO slot = new SlotPOJO();
-        if (states == null) {
+        if (states.isEmpty()) {
             slot.status = "EMPTY";
-        } else if (states.size() == 1) {
-            final SlotState next = states.iterator().next();
-            slot.status = printTileClass(states);
-            slot.ts = ZonedDateTime.parse(next.getScheduledTime().toString()).toString();
-            if (conf.getHueURL() != null && next.getExternalID() != null) {
-                slot.url = printWorkflowURL(conf, next);
-            }
-        } else {
-            slot.status = printTileClass(states);
-            slot.quantity = states.size();
+            return slot;
         }
+        if (states.size() == 1 && conf.getHueURL() != null && states.get(0).getExternalID() != null) {
+            slot.url = printWorkflowURL(conf, states.get(0));
+        }
+        slot.status = printTileClass(states);
+        slot.quantity = states.size();
+        slot.timestamps = states.stream()
+                .map(x -> ZonedDateTime.parse(x.getScheduledTime().toString()).toString())
+                .limit(MULTI_SLOT_INFO_LIMIT)
+                .collect(toList());
         return slot;
     }
 
@@ -125,7 +126,9 @@ public class ReactWorkflowsServlet extends HttpServlet {
             Map<ScheduledTime, Set<SlotState>> buckets = bucketSlotsByTime(workflowStatus.getSlotStates(), tileTimes);
             workflow.slots = new ArrayList<>();
             for (ScheduledTime tileTime : tileTimes) {
-                Set<SlotState> slots = buckets.get(tileTime);
+                List<SlotState> slots = buckets.getOrDefault(tileTime, new HashSet<>()).stream()
+                        .sorted((foo, bar) -> foo.getScheduledTime().compareTo(bar.getScheduledTime()))
+                        .collect(toList());
                 workflow.slots.add(makeSlot(conf, slots));
             }
         }
@@ -247,7 +250,7 @@ public class ReactWorkflowsServlet extends HttpServlet {
     private static final DateTimeFormatter FULL_FORMAT = DateTimeFormat.forPattern("YYYY-MM-dd HH:mm");
     
 
-    static String printTileClass(Set<SlotState> slots) {
+    static String printTileClass(List<SlotState> slots) {
         if (slots == null) {
             return "";
         } else if (slots.size() == 1) {
@@ -257,7 +260,7 @@ public class ReactWorkflowsServlet extends HttpServlet {
         }
     }
 
-    static String printMultiSlotClass(Set<SlotState> slots) {
+    static String printMultiSlotClass(List<SlotState> slots) {
         boolean hasIndeterminate = false;
         for (SlotState slot : slots) {
             if (slot.getStatus().getType() == SlotState.StatusType.FAILURE) {
