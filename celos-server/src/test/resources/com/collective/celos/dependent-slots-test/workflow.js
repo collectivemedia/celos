@@ -55,7 +55,7 @@ celos.defineWorkflow({
     "id": "workflow-5",
     "schedule": celos.hourlySchedule(),
     "schedulingStrategy": celos.serialSchedulingStrategy(),
-    "trigger": celos.orTrigger(celos.notTrigger(celos.successTrigger("workflow-1")), celos.offsetTrigger(hour_sec, celos.successTrigger("workflow-4"))),
+    "trigger": celos.orTrigger(celos.notTrigger(celos.successTrigger("workflow-1")), celos.offsetTrigger(2 * hour_sec, celos.successTrigger("workflow-4"))),
     "externalService": new WorkflowConfigurationParserTest$TestExternalService()
 });
 

@@ -50,7 +50,7 @@ public class OffsetTrigger extends Trigger {
 
     @Override
     public Set<ScheduledTime> findTimesThatDependOnSlot(SlotID other) {
-        return trigger.findTimesThatDependOnSlot(new SlotID(other.getWorkflowID(), other.getScheduledTime().plusHours(1)));
+        return trigger.findTimesThatDependOnSlot(new SlotID(other.getWorkflowID(), other.getScheduledTime().plusSeconds(seconds)));
     }
 
     private String humanReadableDescription(boolean ready) {

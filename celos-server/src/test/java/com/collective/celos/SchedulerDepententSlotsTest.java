@@ -59,7 +59,7 @@ public class SchedulerDepententSlotsTest {
         Set<SlotID> idSet3 = scheduler.getUpstreamSlots(id3);
         Assert.assertEquals(idSet3, Sets.newHashSet(id1, id2));
 
-        SlotID id4offset = new SlotID(new WorkflowID("workflow-4"), scheduledTime.plusHours(1));
+        SlotID id4offset = new SlotID(new WorkflowID("workflow-4"), scheduledTime.plusHours(2));
 
         SlotID id5 = new SlotID(new WorkflowID("workflow-5"), scheduledTime);
         Set<SlotID> idSet5 = scheduler.getUpstreamSlots(id5);
@@ -72,7 +72,7 @@ public class SchedulerDepententSlotsTest {
         ScheduledTime scheduledTime = new ScheduledTime("2014-03-10T00:00:00.000Z");
 
         SlotID id1 = new SlotID(new WorkflowID("workflow-1"), scheduledTime);
-        SlotID id4 = new SlotID(new WorkflowID("workflow-4"), scheduledTime.plusHours(1));
+        SlotID id4 = new SlotID(new WorkflowID("workflow-4"), scheduledTime.plusHours(2));
         SlotID id5 = new SlotID(new WorkflowID("workflow-5"), scheduledTime);
 
         SlotID id6 = new SlotID(new WorkflowID("workflow-6-daily"), scheduledTime);
@@ -110,7 +110,7 @@ public class SchedulerDepententSlotsTest {
         SlotID id3 = new SlotID(new WorkflowID("workflow-3"), scheduledTime);
         SlotID id4 = new SlotID(new WorkflowID("workflow-4"), scheduledTime);
         SlotID id5 = new SlotID(new WorkflowID("workflow-5"), scheduledTime);
-        SlotID id5_offset = new SlotID(new WorkflowID("workflow-5"), scheduledTime.plusHours(1));
+        SlotID id5_offset = new SlotID(new WorkflowID("workflow-5"), scheduledTime.plusHours(2));
         SlotID id8 = new SlotID(new WorkflowID("workflow-8"), scheduledTime);
         SlotID id9 = new SlotID(new WorkflowID("workflow-9"), scheduledTime);
 
@@ -135,7 +135,7 @@ public class SchedulerDepententSlotsTest {
         Set<SlotID> idSet5_1 = scheduler.getDownstreamSlots(id5_1);
         Assert.assertEquals(idSet5_1, Sets.newHashSet(id6, id7));
 
-        SlotID id5_2 = new SlotID(new WorkflowID("workflow-5"), scheduledTime.plusHours(1));
+        SlotID id5_2 = new SlotID(new WorkflowID("workflow-5"), scheduledTime.plusHours(2));
         Set<SlotID> idSet5_2 = scheduler.getDownstreamSlots(id5_2);
         Assert.assertEquals(idSet5_2, Sets.newHashSet());
     }
