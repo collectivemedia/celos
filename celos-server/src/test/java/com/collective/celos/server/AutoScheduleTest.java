@@ -27,6 +27,7 @@ import org.junit.rules.TemporaryFolder;
 import java.io.File;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -70,7 +71,7 @@ public class AutoScheduleTest {
         File src = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/client/wf-list").toURI());
         FileUtils.copyDirectory(src, workflowsDir);
 
-        Main.setupAutoschedule(new ArrayList<>(port), 1);
+        Main.setupAutoschedule(Arrays.asList(port), 1);
 
         Assert.assertTrue(autoScheduleWorked());
     }
