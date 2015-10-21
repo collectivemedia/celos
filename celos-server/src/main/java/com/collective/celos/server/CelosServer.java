@@ -30,6 +30,16 @@ public class CelosServer {
     private JettyServer server = new JettyServer();
 
     public int startServer(Map<String, String> jsVariables,
+                           File workflowsDir, File defaultsDir, File stateDatabase) throws Exception {
+        return startServer(jsVariables, workflowsDir, defaultsDir, stateDatabase, 1, 0);
+    }
+
+    public void startServer(int port, Map<String, String> jsVariables,
+                            File workflowsDir, File defaultsDir, File stateDatabase) throws Exception {
+        startServer(port, jsVariables, workflowsDir, defaultsDir, stateDatabase, 1, 0);
+    }
+
+    public int startServer(Map<String, String> jsVariables,
                            File workflowsDir, File defaultsDir, File stateDatabase,
                            int swarmSize, int celosNumber) throws Exception {
 
