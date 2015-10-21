@@ -39,7 +39,7 @@ public class SchedulerServlet extends AbstractServlet {
 
     protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException {
         try {
-            Scheduler scheduler = createAndCacheScheduler();
+            Scheduler scheduler = getOrCreateCachedScheduler();
             ScheduledTime current = getRequestTime(req);
             Set<WorkflowID> workflowIDs = getWorkflowIDs(req);
             scheduler.step(current, workflowIDs);
