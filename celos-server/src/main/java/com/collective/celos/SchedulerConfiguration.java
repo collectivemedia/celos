@@ -30,19 +30,23 @@ public class SchedulerConfiguration {
     private final File defaultsConfigurationPath;
     private final File stateDatabasePath;
     private final Map<String, String> additionalVars;
+    private final int swarmSize;
+    private final int celosNumber;
 
-    public SchedulerConfiguration(File workflowConfigurationPath, File defaultsConfigurationPath, File stateDatabasePath, Map<String, String> additionalVars) {
+    public SchedulerConfiguration(File workflowConfigurationPath, File defaultsConfigurationPath, File stateDatabasePath, Map<String, String> additionalVars, int swarmSize, int celosNumber) {
         this.workflowConfigurationPath = workflowConfigurationPath;
         this.defaultsConfigurationPath = defaultsConfigurationPath;
         this.stateDatabasePath = stateDatabasePath;
         this.additionalVars = additionalVars;
+        this.swarmSize = swarmSize;
+        this.celosNumber = celosNumber;
     }
 
     public Scheduler makeDefaultScheduler() throws Exception {
         WorkflowConfiguration config = getWorkflowConfigurationParser().getWorkflowConfiguration();
         StateDatabase db = makeDefaultStateDatabase();
         int slidingWindowHours = 24 * SLIDING_WINDOW_DAYS;
-        return new Scheduler(config, db, slidingWindowHours);
+        return new Scheduler(config, db, slidingWindowHours, swarmSize, celosNumber);
     }
 
     private WorkflowConfigurationParser getWorkflowConfigurationParser() throws Exception {

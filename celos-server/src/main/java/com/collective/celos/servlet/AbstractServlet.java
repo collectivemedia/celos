@@ -91,13 +91,17 @@ public abstract class AbstractServlet extends HttpServlet {
         String workflowConfigPath = getServletContext().getInitParameter(Constants.WORKFLOW_CONFIGURATION_PATH_ATTR);
         String defaultsConfigPath = getServletContext().getInitParameter(Constants.DEFAULTS_CONFIGURATION_PATH_ATTR);
         String stateDatabasePath = getServletContext().getInitParameter(Constants.STATE_DATABASE_PATH_ATTR);
+
         Map<String, String> additionalVars = (Map<String, String>) getServletContext().getAttribute(Constants.ADDITIONAL_JS_VARIABLES);
+        Integer swarmSize = (Integer) getServletContext().getAttribute(Constants.SWARM_SIZE);
+        Integer celosNumber = (Integer) getServletContext().getAttribute(Constants.SWARM_CELOS_NUMBER);
+
         if (additionalVars == null) {
             additionalVars = ImmutableMap.of();
         }
 
         Scheduler sch = new SchedulerConfiguration(
-                new File(workflowConfigPath), new File(defaultsConfigPath), new File(stateDatabasePath), additionalVars
+                new File(workflowConfigPath), new File(defaultsConfigPath), new File(stateDatabasePath), additionalVars, swarmSize, celosNumber
         ).makeDefaultScheduler();
 
         getServletContext().setAttribute(SCHEDULER_ATTR, sch);

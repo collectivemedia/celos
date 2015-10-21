@@ -32,14 +32,19 @@ public class Main {
     public static void main(String... args) throws Exception {
         ServerCommandLineParser serverCommandLineParser = new ServerCommandLineParser();
         final ServerCommandLine commandLine = serverCommandLineParser.parse(args);
-        CelosServer celosServer = new CelosServer();
-        celosServer.startServer(commandLine.getPort(),
-                Collections.<String, String>emptyMap(),
-                commandLine.getWorkflowsDir(),
-                commandLine.getDefaultsDir(),
-                commandLine.getStateDatabase());
 
         setupAutoschedule(commandLine.getPort(), commandLine.getAutoSchedule());
+
+        int swarmSize = Runtime.getRuntime().availableProcessors();
+        for (int i = 0; i < swarmSize; i++) {
+            CelosServer celosServer = new CelosServer();
+            celosServer.startServer(commandLine.getPort(),
+                    Collections.<String, String>emptyMap(),
+                    commandLine.getWorkflowsDir(),
+                    commandLine.getDefaultsDir(),
+                    commandLine.getStateDatabase(),
+                    swarmSize, i);
+        }
 
         Util.setupLogging(commandLine.getLogDir());
     }
