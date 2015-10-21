@@ -13,6 +13,7 @@ dependencies {
 //  this leads fatJar to auth fail, i am not sure why did i put it here, so disabling it   
 //  compile("org.apache.hadoop:hadoop-mapreduce-client-core:2.5.0-cdh5.3.1")
     compile("net.sf.opencsv:opencsv:2.3")
+    compile('org.postgresql:postgresql:9.4-1204-jdbc42')
 
     testCompile("junit:junit:4.8.2")
     testCompile("org.powermock:powermock-module-junit4:1.5.5") {
