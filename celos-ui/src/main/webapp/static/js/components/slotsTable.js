@@ -19,16 +19,16 @@
 var WorkflowsGroup = React.createClass({
     displayName: "WorkflowsGroup",
 
-    clickOnSlot: function (wfName, slotTimestamp) {
-        if (slotTimestamp !== null) {
-            var newSlots = this.state.selectedSlots.updateIn([wfName, slotTimestamp, "isSelected"], false, function (x) {
-                return !x;
-            });
-            this.setState({
-                selectedSlots: newSlots
-            })
-        }
-    },
+    //clickOnSlot: function (wfName, slotTimestamp) {
+    //    if (slotTimestamp !== null) {
+    //        var newSlots = this.state.selectedSlots.updateIn([wfName, slotTimestamp, "isSelected"], false, function (x) {
+    //            return !x;
+    //        });
+    //        this.setState({
+    //            selectedSlots: newSlots
+    //        })
+    //    }
+    //},
 
     render: function () {
         console.log("render WorkflowsGroup", this.props);
@@ -129,7 +129,16 @@ var TimeSlot = React.createClass({
             return
         }
         console.log("click", e);
-        AppDispatcher.handleClickOnSlot({breadcrumbs: this.props.breadcrumbs, selection: e.altKey})
+        if (e.altKey) {
+            AppDispatcher.handleSelectSlot({
+                breadcrumbs: this.props.breadcrumbs
+            })
+        } else {
+            AppDispatcher.handleClickOnSlot({
+                ts: this.props.timestamps,
+                workflowName: this.props.workflowName
+            })
+        }
     },
     //handleOnMouseLeave: function () {
     //    this.setState({

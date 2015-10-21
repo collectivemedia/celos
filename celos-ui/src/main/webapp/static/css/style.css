@@ -100,3 +100,33 @@
 .my-non-styled-list {
     list-style-type: none
 }
+
+
+#page-content {
+    width: 70%;
+}
+
+#sidebar-wrapper {
+    width: 30%;
+    position: fixed;
+    top:0;
+    right:0;
+    height: 100%;
+    background-color: #f7f7f7;
+}
+
+
+.my-row {
+
+    float: left;
+    width: 100%;
+    background-color: #aaaaaa;
+    list-style-type: none;
+
+}
+
+.my-column {
+    float: left;
+    /*padding-left: 5px;*/
+    /*padding-right: 5px;*/
+}

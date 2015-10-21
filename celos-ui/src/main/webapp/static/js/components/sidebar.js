@@ -22,8 +22,23 @@ var CelosSidebar = React.createClass({
 
     getInitialState: function () {
         return {
-            allGroups: WorkflowStore.getAll()
+            store: SidebarStore.getAll()
         }
+    },
+
+    _onChange: function() {
+        console.log("_onChange", SidebarStore.getAll().toJS());
+        this.setState({
+            store: SidebarStore.getAll()
+        })
+    },
+
+    componentDidMount: function() {
+        SidebarStore.on(CHANGE_EVENT, this._onChange)
+    },
+
+    componentWillUnmount: function() {
+        SidebarStore.removeListener(CHANGE_EVENT, this._onChange)
     },
 
     makeDropMenu: function (bb) {
@@ -56,6 +71,7 @@ var CelosSidebar = React.createClass({
     },
 
     render: function () {
+        console.log("!!!!", this.state.store.toJS());
         return React.DOM.div({id: "sidebar-wrapper"},
             React.createElement(
                 "h4",
@@ -129,10 +145,12 @@ var CelosSidebar = React.createClass({
                     )
                 )
             ),
-            React.createElement(TriggerStatusFetch, {
-                                    id: "TODO",
-                                    timestamps: ["TODO"],
+            this.state.store.getIn(["selected", "workflowName"])
+                ? React.createElement(TriggerStatusFetch, {
+                                    id: this.state.store.getIn(["selected", "workflowName"]),
+                                    timestamps: this.state.store.getIn(["selected", "ts"]),
                                     quantity: 13})
+                : null
 
             )
         }

@@ -21,12 +21,6 @@ var _internalWorkflowData = Immutable.Map();
 
 var SlotsStore = Object.assign({}, EventEmitter.prototype, {
 
-    internalEvents: {},
-
-    /**
-     * Get the entire collection of TODOs.
-     * @return {object}
-     */
     getAll: function () {
         return _internalWorkflowData;
     },
@@ -43,16 +37,8 @@ var SlotsStore = Object.assign({}, EventEmitter.prototype, {
             })
         });
         return result;
-    },
-
-
-    emitChange: function() {
-        if (CHANGE_EVENT in this.internalEvents) {
-            this.internalEvents[CHANGE_EVENT].forEach(function (callback) {
-                callback()
-            })
-        }
     }
+
 });
 
 
@@ -62,9 +48,10 @@ AppDispatcher.register(function (payload) {
 
     switch (payload.source) {
         case TodoConstants.TODO_UPDATE:
+            console.log(_internalWorkflowData.toJS());
             var treePath = payload.breadcrumbs.concat("isSelected");
             _internalWorkflowData = _internalWorkflowData.updateIn(treePath, function (x) {return !x});
-            SlotsStore.emitChange();
+            SlotsStore.emit(CHANGE_EVENT);
             break;
 
         // add more cases for other actionTypes, like TODO_DESTROY, etc.

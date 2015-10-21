@@ -21,7 +21,8 @@ var CHANGE_EVENT = 'change';
 var TodoConstants = {
     TODO_CREATE: "TODO_CREATE",
     TODO_UPDATE: "TODO_UPDATE",
-    TODO_DESTROY: "TODO_DESTROY"
+    TODO_DESTROY: "TODO_DESTROY",
+    SIDEBAR_UPDATE: "SIDEBAR_UPDATE"
 };
 
 var AppDispatcher = {
@@ -36,19 +37,19 @@ var AppDispatcher = {
      */
     handleClickOnSlot: function (action) {
         console.log("handleClickOnSlot", action);
-        if (action.selection) {
-            this.dispatch({
-                source: TodoConstants.TODO_UPDATE,
-                action: action,
-                breadcrumbs: action.breadcrumbs
-            })
-        } else {
-            this.dispatch({
-                source: TodoConstants.SIDEBAR_UPDATE,
-                action: action,
-                breadcrumbs: action.breadcrumbs
-            })
-        }
+        this.dispatch({
+            source: TodoConstants.SIDEBAR_UPDATE,
+            action: action
+        })
+    },
+
+    handleSelectSlot: function (action) {
+        console.log("handleClickOnSlot", action);
+        this.dispatch({
+            source: TodoConstants.TODO_UPDATE,
+            action: action,
+            breadcrumbs: action.breadcrumbs
+        })
     },
 
     /**

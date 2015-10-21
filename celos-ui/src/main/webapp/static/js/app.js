@@ -16,7 +16,7 @@
 
 "use strict";
 
-var slotsNum = Math.trunc((window.innerWidth - 250) / (30 + 4)) - 1;
+var slotsNum = Math.trunc((window.innerWidth * 0.7 - 250) / (30 + 4)) - 1;
 
 var WorkflowsGroupFetch = React.createClass({
     displayName: "WorkflowsGroupFetch",
@@ -92,31 +92,35 @@ var CelosMainFetch = React.createClass({
                 x.active = true;
             });
         }
-        return React.createElement(CelosMain, { data: tmp, request: this.props.request });
+        return React.DOM.div(null,
+            React.createElement(CelosMain, { data: tmp, request: this.props.request }),
+            React.createElement(CelosSidebar, {})
+        );
     }
 });
+
 
 var CelosMain = React.createClass({
     displayName: "CelosMain",
 
     getInitialState: function() {
         return {
-            allGroups: WorkflowStore.getAll()
+            store: SlotsStore.getAll()
         }
     },
 
     _onChange: function() {
         this.setState({
-            allGroups: WorkflowStore.getAll()
+            store: SlotsStore.getAll()
         })
     },
 
     componentDidMount: function() {
-        WorkflowStore.addChangeListener(this._onChange);
+        SlotsStore.on(CHANGE_EVENT, this._onChange)
     },
 
     componentWillUnmount: function() {
-        WorkflowStore.removeChangeListener(this._onChange);
+        SlotsStore.removeListener(CHANGE_EVENT, this._onChange)
     },
 
     handleContextMenu: function (e) {
@@ -129,7 +133,7 @@ var CelosMain = React.createClass({
 
     render: function () {
         console.log("CelosMain", this.props);
-        return React.DOM.div(null,
+        return React.DOM.div({id: "page-content"},
             React.createElement(ContextMenu, {}),
             React.createElement("h2", null, this.props.data.currentTime),
             React.createElement(Navigation, { data: this.props.data.navigation, request: this.props.request }),
@@ -141,7 +145,7 @@ var CelosMain = React.createClass({
                                 name: wfGroup.name,
                                 active: wfGroup.active,
                                 request: this.props.request,
-                                store: this.state.allGroups.get(wfGroup.name, Immutable.Map()),
+                                store: this.state.store.get(wfGroup.name, Immutable.Map()),
                                 breadcrumbs: [].concat(wfGroup.name)
                             }),
                             React.DOM.br())
@@ -165,7 +169,7 @@ var ContextMenu = React.createClass({
         ajaxPostJSON("/multiplex-rpc",
             {
                 action: "rerun",
-                slots: WorkflowStore.getSelectedSlots()
+                slots: SlotsStore.getSelectedSlots()
             }, function (res) { console.log(res)}
         )
     },
@@ -174,7 +178,7 @@ var ContextMenu = React.createClass({
         ajaxPostJSON("/multiplex-rpc",
             {
                 action: "kill",
-                slots: WorkflowStore.getSelectedSlots()
+                slots: SlotsStore.getSelectedSlots()
             }, function (res) { console.log(res)}
         )
     },
