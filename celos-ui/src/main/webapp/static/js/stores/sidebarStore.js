@@ -36,11 +36,19 @@ var AppDispatcher = {
      */
     handleClickOnSlot: function (action) {
         console.log("handleClickOnSlot", action);
-        this.dispatch({
-            source: TodoConstants.TODO_UPDATE,
-            action: action,
-            breadcrumbs: action.breadcrumbs
-        });
+        if (action.selection) {
+            this.dispatch({
+                source: TodoConstants.TODO_UPDATE,
+                action: action,
+                breadcrumbs: action.breadcrumbs
+            })
+        } else {
+            this.dispatch({
+                source: TodoConstants.SIDEBAR_UPDATE,
+                action: action,
+                breadcrumbs: action.breadcrumbs
+            })
+        }
     },
 
     /**
@@ -85,7 +93,7 @@ var AppDispatcher = {
 
 var _internalData = Immutable.Map();
 
-var WorkflowStore = {
+var WorkflowStore = Object.assign({}, EventEmitter.prototype, {
 
     internalEvents: {},
 
@@ -118,24 +126,6 @@ var WorkflowStore = {
                 callback()
             })
         }
-    },
-
-    /**
-     * @param {function} callback
-     */
-    addChangeListener: function (callback) {
-        if (!(CHANGE_EVENT in this.internalEvents)) {
-            this.internalEvents[CHANGE_EVENT] = []
-        }
-        this.internalEvents[CHANGE_EVENT].push(callback)
-    },
-
-    /**
-     * @param {function} callback
-     */
-    removeChangeListener: function (callback) {
-        this.internalEvents[CHANGE_EVENT] = _internalData[CHANGE_EVENT]
-            .filter(function(x) {return x !== callback});
     },
 
     dispatcherIndex: AppDispatcher.register(function (payload) {

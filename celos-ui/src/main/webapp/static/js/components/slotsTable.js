@@ -128,19 +128,14 @@ var TimeSlot = React.createClass({
         if (this.props.status == "EMPTY") {
             return
         }
-        if (e.altKey) {
-            console.log("click", e);
-            AppDispatcher.handleClickOnSlot({breadcrumbs: this.props.breadcrumbs})
-        } else {
-            // encapsulated state
-            this.setState({showPopup: !this.state.showPopup})
-        }
+        console.log("click", e);
+        AppDispatcher.handleClickOnSlot({breadcrumbs: this.props.breadcrumbs, selection: e.altKey})
     },
-    handleOnMouseLeave: function () {
-        this.setState({
-            showPopup: false
-        })
-    },
+    //handleOnMouseLeave: function () {
+    //    this.setState({
+    //        showPopup: false
+    //    })
+    //},
     getSelectedClass: function () {
         return this.props.store.get("isSelected", false)
     },
@@ -149,9 +144,9 @@ var TimeSlot = React.createClass({
         var selectedClass = this.getSelectedClass() ? "selected" : "";
         cell.className = ["slot", this.props.status, selectedClass].join(" ");
         cell.onClick = this.handleClick;
-        if (this.state.showPopup) {
-            cell.onMouseLeave = this.handleOnMouseLeave
-        }
+        //if (this.state.showPopup) {
+        //    cell.onMouseLeave = this.handleOnMouseLeave
+        //}
         return cell;
     },
     render: function () {
@@ -161,69 +156,12 @@ var TimeSlot = React.createClass({
                     ? React.DOM.div(null, this.props.quantity)
                     : null,
                 this.state.showPopup
-                    ? React.createElement(TriggerStatusFetch, {
-                        id: this.props.workflowName,
-                        timestamps: this.props.timestamps,
-                        quantity: this.props.quantity})
+                    ? "popup moved to sidebar"
                     : null
             )
         )
     }
 });
-
-
-var TriggerStatusFetch = React.createClass({
-    displayName: "TriggerStatusFetch",
-
-    loadCommentsFromServer: function (props) {
-        console.log("TriggerStatusFetch fromServer:", props);
-        ajaxGetJson(
-            /*url=*/ "/trigger-status",
-            /*data=*/ {
-                id: props.id,
-                time: props.timestamps.join(",")},
-            /*success=*/ function (data) {
-                console.log("set State:", data);
-                this.setState({ data: data })
-            }.bind(this)
-        )
-    },
-    componentWillMount: function () {
-        this.loadCommentsFromServer(this.props)
-    },
-    componentWillReceiveProps: function (nextProps) {
-        this.loadCommentsFromServer(nextProps)
-    },
-
-    drawTrigger: function(listOfStatuses) {
-        console.log(listOfStatuses);
-        return React.DOM.ul({className: "my-non-styled-list"},
-            listOfStatuses.map(function (curr) {
-                var successClass = curr.ready ? "label-success" : "label-warning";
-                var successLabel = curr.ready ? "READY" : "WAIT";
-                var header = React.DOM.li(null,
-                    React.DOM.span({className: ["label", successClass].join(" ")}, successLabel),
-                    " ",
-                    curr.type,
-                    ": ",
-                    curr.description
-                );
-                var children = React.DOM.li(null,
-                    this.drawTrigger(curr.subStatuses)
-                );
-                return [header, children]
-            }.bind(this)))
-    },
-
-    render: function () {
-        console.log("TriggerStatus render", this.props, this.state);
-        return this.state
-            ? React.DOM.div({className: "cell-hover"},
-            this.drawTrigger(this.state.data))
-            : null
-    }
-});
-
 
 
 
