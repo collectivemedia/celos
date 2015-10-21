@@ -77,14 +77,14 @@ public class Scheduler {
      * Otherwise, schedule only workflows in the set.
      */
     public void step(ScheduledTime current, Set<WorkflowID> workflowIDs) {
-        LOGGER.info("Starting scheduler step: " + current + " -- " + getSlidingWindowStartTime(current));
+        LOGGER.info("Celos #" + celosNumber + ": Starting scheduler step: " + current + " -- " + getSlidingWindowStartTime(current));
         for (Workflow wf : configuration.getWorkflows()) {
             WorkflowID id = wf.getID();
             if (isItMyWorkflow(id)) {
                 processWorkflow(current, workflowIDs, wf, id);
             }
         }
-        LOGGER.info("Ending scheduler step: " + current + " -- " + getSlidingWindowStartTime(current));
+        LOGGER.info("Celos #" + celosNumber + ": Ending scheduler step: " + current + " -- " + getSlidingWindowStartTime(current));
     }
 
     private boolean isItMyWorkflow(WorkflowID id) {
