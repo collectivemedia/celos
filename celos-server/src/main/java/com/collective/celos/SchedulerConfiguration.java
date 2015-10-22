@@ -45,7 +45,7 @@ public class SchedulerConfiguration {
     public Scheduler makeDefaultScheduler() throws Exception {
         WorkflowConfiguration config = getWorkflowConfigurationParser().getWorkflowConfiguration();
         StateDatabase db = makeDefaultStateDatabase();
-        int slidingWindowHours = 24 * SLIDING_WINDOW_DAYS;
+        int slidingWindowHours = 3;
         return new Scheduler(config, db, slidingWindowHours, swarmSize, celosNumber);
     }
 

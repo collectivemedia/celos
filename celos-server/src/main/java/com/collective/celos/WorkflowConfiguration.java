@@ -18,13 +18,14 @@ package com.collective.celos;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * The set of all workflows loaded into the scheduler.
  */
 public class WorkflowConfiguration {
 
-    private final Map<WorkflowID, Workflow> workflows = new HashMap<>();
+    private final Map<WorkflowID, Workflow> workflows = new TreeMap<>();
 
     public Collection<Workflow> getWorkflows() {
         return workflows.values();
