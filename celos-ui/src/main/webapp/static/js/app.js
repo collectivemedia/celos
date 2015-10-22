@@ -152,7 +152,7 @@ var CelosMain = React.createClass({
                     } else {
                         var req = this.props.request;
                         var newUrl = makeCelosHref(req.zoom, req.time, req.groups.concat(wfGroup.name));
-                        return React.DOM.div({ key: i },
+                        return React.DOM.div({ key: i, className: "groupName"},
                             React.DOM.a({ href: newUrl }, wfGroup.name)
                         )
                     }

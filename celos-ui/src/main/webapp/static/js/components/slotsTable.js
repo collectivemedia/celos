@@ -96,10 +96,10 @@ var ProductRow = React.createClass({
                     data: slot,
                     status: slot.status,
                     quantity: slot.quantity,
-                    timestamps: slot.timestamps,
+                    timestamps: slot.timestamps ,
                     workflowName: this.props.data.workflowName,
-                    store: this.props.store.get(slot.timestamps, Immutable.Map()),
-                    breadcrumbs: this.props.breadcrumbs.concat(slot.ts)
+                    store: this.props.store.get(slot.timestamps[0], Immutable.Map()),
+                    breadcrumbs: this.props.breadcrumbs.concat(slot.timestamps[0])
                 });
             }.bind(this))
         )
@@ -145,9 +145,11 @@ var TimeSlot = React.createClass({
     //        showPopup: false
     //    })
     //},
+
     getSelectedClass: function () {
         return this.props.store.get("isSelected", false)
     },
+
     getCellConfig: function () {
         var cell = {};
         var selectedClass = this.getSelectedClass() ? "selected" : "";
@@ -158,6 +160,7 @@ var TimeSlot = React.createClass({
         //}
         return cell;
     },
+
     render: function () {
         return (
             React.DOM.td(this.getCellConfig(),

@@ -16,7 +16,6 @@
 package com.collective.celos.ui;
 
 import com.collective.celos.*;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import org.joda.time.DateTime;
@@ -28,7 +27,10 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.time.ZonedDateTime;
 import java.util.*;
@@ -79,6 +81,8 @@ public class ReactWorkflowsServlet extends HttpServlet {
         final SlotPOJO slot = new SlotPOJO();
         if (states.isEmpty()) {
             slot.status = "EMPTY";
+            slot.quantity = 0;
+            slot.timestamps = Collections.emptyList();
             return slot;
         }
         if (states.size() == 1 && conf.getHueURL() != null && states.get(0).getExternalID() != null) {
