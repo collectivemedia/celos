@@ -5,6 +5,7 @@ import com.collective.celos.Constants;
 import com.collective.celos.Util;
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+
 import org.apache.log4j.Logger;
 
 import java.net.URI;
@@ -49,12 +50,19 @@ public class Main {
     static void setupAutoschedule(List<Integer> ports, int autoSchedule) {
         if (autoSchedule > 0) {
 
-            for (Integer port : ports) {
+            for (int i = 0; i < ports.size(); i++) {
+                Integer port = ports.get(i);
+                final int j = i;
                 new Thread(new Runnable() {
                     CelosClient celosClient = new CelosClient(URI.create("http://localhost:" + port));
 
                     @Override
                     public void run() {
+                        try {
+                            Thread.sleep(((long)j) * (60000/ports.size()));
+                        } catch (InterruptedException e1) {
+                            e1.printStackTrace();
+                        }
                         while (true) {
                             try {
                                 long timeStart = System.currentTimeMillis();
