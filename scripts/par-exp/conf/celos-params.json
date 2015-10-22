@@ -1,0 +1,7 @@
+{
+  "celos_wrk_dir": "/home/celos-ci/par-exp",
+  "server_service_name": "celos-server-par-exp",
+  "server_service_port": 10021,
+  "ui_service_name": "celos-ui-par-exp",
+  "ui_service_port": 10022
+}
