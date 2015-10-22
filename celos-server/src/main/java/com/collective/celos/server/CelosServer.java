@@ -69,8 +69,7 @@ public class CelosServer {
     private void setupContext(Map<String, String> jsVariables, File workflowsDir, File defaultsDir, File stateDatabase, int swarmSize, int celosNumber) {
         Map<String, Object> attributes = ImmutableMap.of(Constants.ADDITIONAL_JS_VARIABLES, jsVariables,
                 Constants.SWARM_SIZE, swarmSize,
-                Constants.SWARM_CELOS_NUMBER, celosNumber,
-                Constants.SWARM_SIZE, new Object());
+                Constants.SWARM_CELOS_NUMBER, celosNumber);
 
         Map<String, String> initParams = ImmutableMap.of(Constants.WORKFLOW_CONFIGURATION_PATH_ATTR, workflowsDir.getAbsolutePath(),
                 Constants.DEFAULTS_CONFIGURATION_PATH_ATTR, defaultsDir.getAbsolutePath(),
