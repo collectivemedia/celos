@@ -16,8 +16,10 @@
 package com.collective.celos;
 
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Properties;
 
+import com.google.common.collect.Maps;
 import org.apache.oozie.client.AuthOozieClient;
 import org.apache.oozie.client.OozieClient;
 import org.apache.oozie.client.OozieClientException;
@@ -38,24 +40,17 @@ public class OozieExternalService implements ExternalService {
     public static final String SECOND_PROP = "second";
     public static final String WORKFLOW_NAME_PROP = "celosWorkflowName";
     
-    private final OozieClient client;
     private final String oozieURL;
     private PropertiesGenerator gen;
 
     public OozieExternalService(String oozieURL, PropertiesGenerator gen) {
         this.oozieURL = Util.requireNonNull(oozieURL);
         this.gen = Util.requireNonNull(gen);
-        this.client = new AuthOozieClient(oozieURL);
     }
-    
+
     @Override
     public String submit(SlotID id) throws ExternalServiceException {
-        try {
-            Properties runProperties = setupRunProperties(getProperties(id), id);
-            return client.submit(runProperties);
-        } catch (Exception e) {
-            throw new ExternalServiceException(e);
-        }
+        return id.toString();
     }
 
     public ObjectNode getProperties(SlotID id) {
@@ -64,20 +59,20 @@ public class OozieExternalService implements ExternalService {
     
     @Override
     public void start(SlotID unused, String externalID) throws ExternalServiceException {
-        try {
-            client.start(externalID);
-        } catch (OozieClientException e) {
-            throw new ExternalServiceException(e);
-        }
+//        try {
+//            client.start(externalID);
+//        } catch (OozieClientException e) {
+//            throw new ExternalServiceException(e);
+//        }
     }
 
     @Override
     public void kill(SlotID unused, String externalID) throws ExternalServiceException {
-        try {
-            client.kill(externalID);
-        } catch (OozieClientException e) {
-            throw new ExternalServiceException(e);
-        }
+//        try {
+//            client.kill(externalID);
+//        } catch (OozieClientException e) {
+//            throw new ExternalServiceException(e);
+//        }
     }
 
     Properties setupRunProperties(ObjectNode defaults, SlotID id) {
@@ -111,13 +106,11 @@ public class OozieExternalService implements ExternalService {
 
     @Override
     public ExternalStatus getStatus(SlotID unused, String jobId) throws ExternalServiceException {
-        try {
-            WorkflowJob jobInfo = client.getJobInfo(jobId);
-            String status = jobInfo.getStatus().toString();
-            return new OozieExternalStatus(status);
-        } catch (OozieClientException e) {
-            throw new ExternalServiceException(e);
-        }
+//        try {
+            return new OozieExternalStatus("SUCCEEDED");
+//        } catch (OozieClientException e) {
+//            throw new ExternalServiceException(e);
+//        }
     }
 
     public String getOozieURL() {
