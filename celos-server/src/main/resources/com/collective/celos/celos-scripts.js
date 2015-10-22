@@ -25,11 +25,9 @@ celos.celosWorkflowIndex = 0;
 
 celos.defineWorkflow = function (json) {
 
-    if (celos.celosWorkflowIndex % celosWorkflowConfigurationParser.getSwarmSize() != celosWorkflowConfigurationParser.getCelosNumber()) {
+    if (celos.celosWorkflowIndex++ % celosWorkflowConfigurationParser.getSwarmSize() != celosWorkflowConfigurationParser.getCelosNumber()) {
         return;
     }
-
-    celos.celosWorkflowIndex = celos.celosWorkflowIndex + 1;
 
     function createWorkflowInfo(json) {
         var contacts = new Packages.java.util.ArrayList();

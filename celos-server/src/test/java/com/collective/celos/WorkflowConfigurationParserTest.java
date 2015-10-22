@@ -260,6 +260,30 @@ public class WorkflowConfigurationParserTest {
         Assert.assertEquals(generator.getProperties(null).get("user.name").asText(), "nameIsChanged");
     }
 
+    @Test
+    public void testCelosWorkflowIndex() throws Exception {
+
+        URL resource = Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/defaults-oozie-props");
+        File defaults = new File(resource.toURI());
+
+        WorkflowConfigurationParser parser = new WorkflowConfigurationParser(defaults, ImmutableMap.of("CELOS_USER_JS_VAR", "nameIsChanged"), 3, 1);
+
+        String str0 = "celos.celosWorkflowIndex = 0; " +
+                "celos.celosWorkflowIndex++ % celosWorkflowConfigurationParser.getSwarmSize() != celosWorkflowConfigurationParser.getCelosNumber()";
+
+        String str1 = "celos.celosWorkflowIndex = 0; " +
+                "celos.celosWorkflowIndex++; " +
+                "celos.celosWorkflowIndex++ % celosWorkflowConfigurationParser.getSwarmSize() != celosWorkflowConfigurationParser.getCelosNumber()";
+
+        String str2 = "celos.celosWorkflowIndex = 0; " +
+                "celos.celosWorkflowIndex++; " +
+                "celos.celosWorkflowIndex++; " +
+                "celos.celosWorkflowIndex++ % celosWorkflowConfigurationParser.getSwarmSize() != celosWorkflowConfigurationParser.getCelosNumber()";
+
+        Assert.assertTrue((Boolean)  parser.evaluateReader(new StringReader(str0), "string"));
+        Assert.assertFalse((Boolean)  parser.evaluateReader(new StringReader(str1), "string"));
+        Assert.assertTrue((Boolean)  parser.evaluateReader(new StringReader(str2), "string"));
+    }
 
     @Test
     public void doesntEvaluateAdditionalVar() throws Exception {
