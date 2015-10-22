@@ -16,11 +16,20 @@
 importPackage(Packages.com.collective.celos);
 importPackage(Packages.com.collective.celos.trigger);
 importPackage(Packages.com.collective.celos.ci.testing);
-var celos = {};
-
 // FIXME: temporary solution: until all utility functions return real Java objects,
 // allow JSON also and create instances from it using the JSONInstanceCreator.
+
+var celos = {};
+
+celos.celosWorkflowIndex = 0;
+
 celos.defineWorkflow = function (json) {
+
+    if (celos.celosWorkflowIndex % celosWorkflowConfigurationParser.getSwarmSize() != celosWorkflowConfigurationParser.getCelosNumber()) {
+        return;
+    }
+
+    celos.celosWorkflowIndex = celos.celosWorkflowIndex + 1;
 
     function createWorkflowInfo(json) {
         var contacts = new Packages.java.util.ArrayList();
@@ -72,7 +81,6 @@ celos.defineWorkflow = function (json) {
 
     celosWorkflowConfigurationParser.addWorkflow(workflow);
 }
-
 
 celos.importDefaults = function (label) {
     celosWorkflowConfigurationParser.importDefaultsIntoScope(label, celosScope);

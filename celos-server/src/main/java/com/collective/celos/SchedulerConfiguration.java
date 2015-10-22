@@ -46,11 +46,11 @@ public class SchedulerConfiguration {
         WorkflowConfiguration config = getWorkflowConfigurationParser().getWorkflowConfiguration();
         StateDatabase db = makeDefaultStateDatabase();
         int slidingWindowHours = 3;
-        return new Scheduler(config, db, slidingWindowHours, swarmSize, celosNumber);
+        return new Scheduler(config, db, slidingWindowHours);
     }
 
     private WorkflowConfigurationParser getWorkflowConfigurationParser() throws Exception {
-        return new WorkflowConfigurationParser(defaultsConfigurationPath, additionalVars).parseConfiguration(workflowConfigurationPath);
+        return new WorkflowConfigurationParser(defaultsConfigurationPath, additionalVars, swarmSize, celosNumber).parseConfiguration(workflowConfigurationPath);
     }
 
     private StateDatabase makeDefaultStateDatabase() throws IOException {

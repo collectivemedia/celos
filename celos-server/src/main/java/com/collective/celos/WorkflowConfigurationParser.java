@@ -44,10 +44,14 @@ public class WorkflowConfigurationParser {
     private final JSConfigParser jsConfigParser = new JSConfigParser();
     private final File defaultsDir;
     private final Map<String, String> additionalJsVariables;
+    private final int swarmSize;
+    private final int celosNumber;
 
-    public WorkflowConfigurationParser(File defaultsDir, Map<String, String> additionalJsVariables) throws Exception {
+    public WorkflowConfigurationParser(File defaultsDir, Map<String, String> additionalJsVariables, int swarmSize, int celosNumber) throws Exception {
         this.defaultsDir = Util.requireNonNull(defaultsDir);
         this.additionalJsVariables = additionalJsVariables;
+        this.swarmSize = swarmSize;
+        this.celosNumber = celosNumber;
     }
 
     public WorkflowConfigurationParser parseConfiguration(File workflowsDir) {
@@ -62,6 +66,14 @@ public class WorkflowConfigurationParser {
             }
         }
         return this;
+    }
+
+    public int getSwarmSize() {
+        return swarmSize;
+    }
+
+    public int getCelosNumber() {
+        return celosNumber;
     }
 
     void parseFile(File f) throws Exception {
