@@ -34,9 +34,5 @@ public class Constants {
     public static final String SWARM_SIZE = "swarm.size";
     public static final String SWARM_CELOS_NUMBER = "swarm.celos.number";
 
-    public static final String SWARM_SIZE = "swarm.size";
-    public static final String SWARM_CELOS_NUMBER = "swarm.celos.number";
-    public static final String LOCK = "lock";
-
     public static final Integer SECOND_MS = 1000;
 }
