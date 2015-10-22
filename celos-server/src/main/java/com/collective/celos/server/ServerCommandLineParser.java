@@ -38,9 +38,12 @@ public class ServerCommandLineParser {
     private static final String CLI_LOG_DIR = "logs";
     private static final String CLI_AUTOSCHEDULE = "autoSchedule";
     private static final String CLI_PORT = "port";
+    private static final String CLI_PARALLEL = "parallel";
+    private static final String CLI_PARALLEL_AUTO = "auto";
 
     private static final Logger LOGGER = Logger.getLogger(ServerCommandLineParser.class);
-    
+
+
     public ServerCommandLine parse(final String[] commandLineArguments) throws Exception {
 
         final CommandLineParser cmdLineGnuParser = new GnuParser();
@@ -59,7 +62,17 @@ public class ServerCommandLineParser {
         Integer autoSchedule = Integer.valueOf(getDefault(commandLine, CLI_AUTOSCHEDULE, "-1"));
         Integer port = Integer.valueOf(commandLine.getOptionValue(CLI_PORT));
 
-        return new ServerCommandLine(workflowsDir, defaultsDir, stateDbDir, logDir, port, autoSchedule);
+        Integer parallel = getParallelismLevel(commandLine);
+
+        return new ServerCommandLine(workflowsDir, defaultsDir, stateDbDir, logDir, port, autoSchedule, parallel);
+    }
+
+    private Integer getParallelismLevel(CommandLine commandLine) {
+        if (commandLine.getOptionValue(CLI_PARALLEL) != null &&  CLI_PARALLEL_AUTO.equals(commandLine.getOptionValue(CLI_PARALLEL).toLowerCase())) {
+            return Runtime.getRuntime().availableProcessors();
+        } else {
+            return Integer.valueOf(getDefault(commandLine, CLI_PARALLEL, "1"));
+        }
     }
 
     private String getDefault(CommandLine commandLine, String optionName, String defaultValue) {
@@ -79,7 +92,8 @@ public class ServerCommandLineParser {
                 .addOption(CLI_STATE_DB_DIR, CLI_STATE_DB_DIR, true, "Path to STATE DATABASE dir")
                 .addOption(CLI_PORT, CLI_PORT, true, "Celos Server port")
                 .addOption(CLI_LOG_DIR, CLI_LOG_DIR, true, "Celos logs dir")
-                .addOption(CLI_AUTOSCHEDULE, CLI_AUTOSCHEDULE, true, "Time period in seconds to automatically run Scheduler. If not specified, Scheduler will not be automatically run");
+                .addOption(CLI_AUTOSCHEDULE, CLI_AUTOSCHEDULE, true, "Time period in seconds to automatically run Scheduler. If not specified, Scheduler will not be automatically run")
+                .addOption(CLI_PARALLEL, CLI_PARALLEL, true, "Parallelism level. Set value to 'AUTO' for automatic setup");
         return options;
     }
 

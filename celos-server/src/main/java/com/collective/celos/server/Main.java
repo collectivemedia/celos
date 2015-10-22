@@ -1,68 +1,74 @@
-/*
- * Copyright 2015 Collective, Inc.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
- * implied.  See the License for the specific language governing
- * permissions and limitations under the License.
- */
 package com.collective.celos.server;
 
 import com.collective.celos.CelosClient;
 import com.collective.celos.Constants;
 import com.collective.celos.Util;
+import com.google.common.collect.Lists;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 import java.net.URI;
-import java.util.Collections;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
+import java.util.concurrent.*;
 
-/**
- * Main entry point to the scheduler server.
- */
 public class Main {
 
     public static void main(String... args) throws Exception {
         ServerCommandLineParser serverCommandLineParser = new ServerCommandLineParser();
         final ServerCommandLine commandLine = serverCommandLineParser.parse(args);
-        CelosServer celosServer = new CelosServer();
-        celosServer.startServer(commandLine.getPort(),
+
+        List<Integer> ports = Lists.newArrayList();
+
+        CelosServer mainCelosServer = new CelosServer();
+        mainCelosServer.startServer(commandLine.getPort(),
                 Collections.<String, String>emptyMap(),
                 commandLine.getWorkflowsDir(),
                 commandLine.getDefaultsDir(),
-                commandLine.getStateDatabase());
+                commandLine.getStateDatabase(),
+                commandLine.getParallelismLevel(), 0);
 
-        setupAutoschedule(commandLine.getPort(), commandLine.getAutoSchedule());
+        ports.add(commandLine.getPort());
+
+        for (int i = 1; i < commandLine.getParallelismLevel(); i++) {
+            CelosServer celosServer = new CelosServer();
+            int port = celosServer.startServer(Collections.<String, String>emptyMap(),
+                    commandLine.getWorkflowsDir(),
+                    commandLine.getDefaultsDir(),
+                    commandLine.getStateDatabase(),
+                    commandLine.getParallelismLevel(), i);
+            ports.add(port);
+        }
+
+        setupAutoschedule(ports, commandLine.getAutoSchedule());
 
         Util.setupLogging(commandLine.getLogDir());
     }
 
-    static void setupAutoschedule(int port, int autoSchedule) {
+    static void setupAutoschedule(List<Integer> ports, int autoSchedule) {
         if (autoSchedule > 0) {
-            Timer timer = new Timer(true);
-            timer.schedule(createTimerTask(port), 0, autoSchedule * Constants.SECOND_MS);
+
+            for (Integer port : ports) {
+                new Thread(new Runnable() {
+                    CelosClient celosClient = new CelosClient(URI.create("http://localhost:" + port));
+
+                    @Override
+                    public void run() {
+                        while (true) {
+                            try {
+                                long timeStart = System.currentTimeMillis();
+                                celosClient.iterateScheduler();
+                                long duration = System.currentTimeMillis() - timeStart;
+                                if (duration < autoSchedule * Constants.SECOND_MS) {
+                                    Thread.sleep(autoSchedule * Constants.SECOND_MS - duration);
+                                }
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+
+                        }
+                    }
+                }).start();
+            }
         }
     }
 
-    private static TimerTask createTimerTask(final int port) {
-        final CelosClient celosClient = new CelosClient(URI.create("http://localhost:" + port));
-
-        return new TimerTask() {
-            @Override
-            public void run() {
-                try {
-                    celosClient.iterateScheduler();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        };
-    }
 }

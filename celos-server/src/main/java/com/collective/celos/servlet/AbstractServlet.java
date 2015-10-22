@@ -47,14 +47,9 @@ public abstract class AbstractServlet extends HttpServlet {
 
     private static final String SCHEDULER_ATTR = "celos.scheduler";
 
-    /**
-     * This lock serves to synchronize all operations.
-     */
-    protected static final Object LOCK = new Object();
-
     @Override
     public void service(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-        synchronized(LOCK) {
+        synchronized(getServletContext()) {
             try {
                 super.service(req, res);
             } catch(ServletException|IOException|RuntimeException e) {

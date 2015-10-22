@@ -30,14 +30,16 @@ public class ServerCommandLine {
     private final File logDir;
     private final int port;
     private final int autoSchedule;
+    private final int parallelismLevel;
 
-    public ServerCommandLine(String workflowsDir, String defaultsDir, String stateDatabase, String logDir, int port, int autoSchedule) {
-        this.autoSchedule = autoSchedule;
+    public ServerCommandLine(String workflowsDir, String defaultsDir, String stateDatabase, String logDir, int port, int autoSchedule, int parallel) {
         this.workflowsDir = new File(Util.requireNonNull(workflowsDir));
         this.defaultsDir = new File(Util.requireNonNull(defaultsDir));
         this.stateDatabase = new File(Util.requireNonNull(stateDatabase));
         this.port = port;
         this.logDir = new File(Util.requireNonNull(logDir));
+        this.autoSchedule = autoSchedule;
+        this.parallelismLevel = parallel;
     }
 
     public int getAutoSchedule() {
@@ -62,5 +64,9 @@ public class ServerCommandLine {
 
     public File getLogDir() {
         return logDir;
+    }
+
+    public int getParallelismLevel() {
+        return parallelismLevel;
     }
 }
