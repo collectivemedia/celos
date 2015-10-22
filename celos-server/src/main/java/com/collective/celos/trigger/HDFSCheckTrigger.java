@@ -74,7 +74,7 @@ public class HDFSCheckTrigger extends Trigger {
     @Override
     public TriggerStatus getTriggerStatus(Scheduler scheduler, ScheduledTime now, ScheduledTime scheduledTime) throws Exception {
         Path path = new Path(formatter.replaceTimeTokens(getRawPathString(), scheduledTime));
-        LOGGER.info("Checking HDFS path: " + path);
+//        LOGGER.info("Checking HDFS path: " + path);
         boolean ready = getFs().exists(path);
         return makeTriggerStatus(ready, humanReadableDescription(ready, path));
     }

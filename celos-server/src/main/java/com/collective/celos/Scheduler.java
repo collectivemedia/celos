@@ -184,7 +184,7 @@ public class Scheduler {
                 LOGGER.info("Slot timed out waiting: " + slotID);
                 database.putSlotState(slotState.transitionToWaitTimeout());
             } else {
-                LOGGER.info("Waiting for slot: " + slotID);
+//                LOGGER.info("Waiting for slot: " + slotID);
             }
         } else if (status.equals(SlotState.Status.RUNNING)) {
             String externalID = slotState.getExternalID();
