@@ -5,6 +5,7 @@ import com.collective.celos.Constants;
 import com.collective.celos.Util;
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import org.apache.log4j.Logger;
 
 import java.net.URI;
 import java.util.*;
@@ -43,6 +44,8 @@ public class Main {
         Util.setupLogging(commandLine.getLogDir());
     }
 
+    private static Logger LOGGER = Logger.getLogger(Main.class);
+
     static void setupAutoschedule(List<Integer> ports, int autoSchedule) {
         if (autoSchedule > 0) {
 
@@ -57,6 +60,8 @@ public class Main {
                                 long timeStart = System.currentTimeMillis();
                                 celosClient.iterateScheduler();
                                 long duration = System.currentTimeMillis() - timeStart;
+                                LOGGER.info("Step time on " + port + " is " + duration);
+
                                 if (duration < autoSchedule * Constants.SECOND_MS) {
                                     Thread.sleep(autoSchedule * Constants.SECOND_MS - duration);
                                 }
