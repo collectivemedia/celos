@@ -78,17 +78,18 @@ public class Scheduler {
      */
     public void step(ScheduledTime current, Set<WorkflowID> workflowIDs) {
         LOGGER.info("Celos #" + celosNumber + ": Starting scheduler step: " + current + " -- " + getSlidingWindowStartTime(current));
+        int i=0;
         for (Workflow wf : configuration.getWorkflows()) {
             WorkflowID id = wf.getID();
-            if (isItMyWorkflow(id)) {
+            if (isItMyWorkflow(id, i++)) {
                 processWorkflow(current, workflowIDs, wf, id);
             }
         }
         LOGGER.info("Celos #" + celosNumber + ": Ending scheduler step: " + current + " -- " + getSlidingWindowStartTime(current));
     }
 
-    private boolean isItMyWorkflow(WorkflowID id) {
-        return Math.abs(id.toString().hashCode()) % swarmSize == celosNumber;
+    private boolean isItMyWorkflow(WorkflowID id, int workflowNum) {
+        return workflowNum % swarmSize == celosNumber;
     }
 
     private void processWorkflow(ScheduledTime current, Set<WorkflowID> workflowIDs, Workflow wf, WorkflowID id) {
