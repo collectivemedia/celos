@@ -14,8 +14,11 @@ import java.util.concurrent.*;
 public class Main {
 
     public static void main(String... args) throws Exception {
+
         ServerCommandLineParser serverCommandLineParser = new ServerCommandLineParser();
         final ServerCommandLine commandLine = serverCommandLineParser.parse(args);
+
+        Util.setupLogging(commandLine.getLogDir());
 
         List<Integer> ports = Lists.newArrayList();
 
@@ -40,8 +43,6 @@ public class Main {
         }
 
         setupAutoschedule(ports, commandLine.getAutoSchedule());
-
-        Util.setupLogging(commandLine.getLogDir());
     }
 
     private static Logger LOGGER = Logger.getLogger(Main.class);
