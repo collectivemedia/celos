@@ -19,11 +19,11 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.collective.celos.Scheduler;
-import com.collective.celos.SlotID;
-import com.collective.celos.SlotState;
-import com.collective.celos.WorkflowID;
+import com.collective.celos.*;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.apache.commons.io.IOUtils;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpGet;
 
 /**
  * Returns JSON information about a single slot.
@@ -40,14 +40,21 @@ public class JSONSlotStateServlet extends AbstractJSONServlet {
                 res.sendError(HttpServletResponse.SC_BAD_REQUEST, ID_PARAM + " parameter missing.");
                 return;
             }
-            Scheduler scheduler = getOrCreateCachedScheduler();
-            SlotID slotID = new SlotID(new WorkflowID(id), getRequestTime(req));
-            SlotState slotState = scheduler.getStateDatabase().getSlotState(slotID);
-            if (slotState == null) {
-                res.sendError(HttpServletResponse.SC_NOT_FOUND, "Slot not found: " + id);
+            if (!Util.belongsToCelos(id, getSwarmSize(), getSwarmCelosNumber())) {
+                int number = Util.getWorkflowCelosNumber(id, getSwarmSize());
+                HttpGet get = new HttpGet("http://localhost:" + getSwarmPorts().get(number) + req.getRequestURI() + "?" + req.getQueryString());
+                HttpResponse response = httpClient.execute(get);
+                IOUtils.copy(response.getEntity().getContent(), res.getOutputStream());
             } else {
-                ObjectNode object = slotState.toJSONNode();
-                writer.writeValue(res.getOutputStream(), object);
+                Scheduler scheduler = getOrCreateCachedScheduler();
+                SlotID slotID = new SlotID(new WorkflowID(id), getRequestTime(req));
+                SlotState slotState = scheduler.getStateDatabase().getSlotState(slotID);
+                if (slotState == null) {
+                    res.sendError(HttpServletResponse.SC_NOT_FOUND, "Slot not found: " + id);
+                } else {
+                    ObjectNode object = slotState.toJSONNode();
+                    writer.writeValue(res.getOutputStream(), object);
+                }
             }
         } catch (Exception e) {
             throw new ServletException(e);

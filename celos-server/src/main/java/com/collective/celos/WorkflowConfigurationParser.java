@@ -119,4 +119,8 @@ public class WorkflowConfigurationParser {
         cfg.addWorkflow(wf);
     }
 
+    public boolean belongsToCelos(String id) {
+        return Util.belongsToCelos(id, swarmSize, celosNumber);
+    }
+
 }

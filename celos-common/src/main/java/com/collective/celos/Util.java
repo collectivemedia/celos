@@ -16,8 +16,6 @@
 package com.collective.celos;
 
 import java.io.File;
-import java.io.IOException;
-import java.net.ServerSocket;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Map;
@@ -206,6 +204,14 @@ public class Util {
         appender.activateOptions();
         Logger.getRootLogger().addAppender(appender);
         Logger.getRootLogger().setLevel(Level.INFO);
+    }
+
+    public static int getWorkflowCelosNumber(String id, int celosSwarmSize) {
+        return Math.abs(id.hashCode()) % celosSwarmSize;
+    }
+
+    public static boolean belongsToCelos(String id, int celosSwarmSize, int celosNumber) {
+        return getWorkflowCelosNumber(id, celosSwarmSize) == celosNumber;
     }
 
 }

@@ -25,7 +25,11 @@ celos.celosWorkflowIndex = 0;
 
 celos.defineWorkflow = function (json) {
 
-    if (celos.celosWorkflowIndex++ % celosWorkflowConfigurationParser.getSwarmSize() != celosWorkflowConfigurationParser.getCelosNumber()) {
+    if (typeof(json.id) !== "string") {
+        throw "Workflow ID must be a string: " + json.id;
+    }
+
+    if (!celosWorkflowConfigurationParser.belongsToCelos(json.id)) {
         return;
     }
 
@@ -46,11 +50,6 @@ celos.defineWorkflow = function (json) {
             url = new Packages.java.net.URL(json.url);
         }
         return new WorkflowInfo(url, contacts);
-    }
-
-
-    if (typeof(json.id) !== "string") {
-        throw "Workflow ID must be a string: " + json.id;
     }
 
     var waitTimeoutSeconds;

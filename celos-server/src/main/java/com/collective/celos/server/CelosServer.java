@@ -20,6 +20,8 @@ import com.collective.celos.JettyServer;
 import com.google.common.collect.ImmutableMap;
 
 import java.io.File;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -28,16 +30,6 @@ import java.util.Map;
 public class CelosServer {
 
     private JettyServer server = new JettyServer();
-
-    public int startServer(Map<String, String> jsVariables,
-                           File workflowsDir, File defaultsDir, File stateDatabase) throws Exception {
-        return startServer(jsVariables, workflowsDir, defaultsDir, stateDatabase, 1, 0);
-    }
-
-    public void startServer(int port, Map<String, String> jsVariables,
-                            File workflowsDir, File defaultsDir, File stateDatabase) throws Exception {
-        startServer(port, jsVariables, workflowsDir, defaultsDir, stateDatabase, 1, 0);
-    }
 
     public int startServer(Map<String, String> jsVariables,
                            File workflowsDir, File defaultsDir, File stateDatabase,
@@ -49,13 +41,13 @@ public class CelosServer {
 
         int port = server.start();
 
-        setupContext(jsVariables, workflowsDir, defaultsDir, stateDatabase, swarmSize, celosNumber);
+        setupContext(jsVariables, workflowsDir, defaultsDir, stateDatabase, swarmSize, celosNumber, Collections.EMPTY_LIST);
         return port;
     }
 
     public void startServer(int port, Map<String, String> jsVariables,
                             File workflowsDir, File defaultsDir, File stateDatabase,
-                            int swarmSize, int celosNumber) throws Exception {
+                            int swarmSize, int celosNumber, List<Integer> swarmPorts) throws Exception {
 
         validateDirExists(workflowsDir);
         validateDirExists(defaultsDir);
@@ -63,13 +55,14 @@ public class CelosServer {
 
         server.start(port);
 
-        setupContext(jsVariables, workflowsDir, defaultsDir, stateDatabase, swarmSize, celosNumber);
+        setupContext(jsVariables, workflowsDir, defaultsDir, stateDatabase, swarmSize, celosNumber, swarmPorts);
     }
 
-    private void setupContext(Map<String, String> jsVariables, File workflowsDir, File defaultsDir, File stateDatabase, int swarmSize, int celosNumber) {
+    private void setupContext(Map<String, String> jsVariables, File workflowsDir, File defaultsDir, File stateDatabase, int swarmSize, int celosNumber, List<Integer> ports) {
         Map<String, Object> attributes = ImmutableMap.of(Constants.ADDITIONAL_JS_VARIABLES, jsVariables,
                 Constants.SWARM_SIZE, swarmSize,
-                Constants.SWARM_CELOS_NUMBER, celosNumber);
+                Constants.SWARM_CELOS_NUMBER, celosNumber,
+                Constants.SWARM_PORTS, ports);
 
         Map<String, String> initParams = ImmutableMap.of(Constants.WORKFLOW_CONFIGURATION_PATH_ATTR, workflowsDir.getAbsolutePath(),
                 Constants.DEFAULTS_CONFIGURATION_PATH_ATTR, defaultsDir.getAbsolutePath(),

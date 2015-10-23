@@ -33,6 +33,7 @@ public class Constants {
     public static final String ADDITIONAL_JS_VARIABLES = "additional.js.variables";
     public static final String SWARM_SIZE = "swarm.size";
     public static final String SWARM_CELOS_NUMBER = "swarm.celos.number";
+    public static final String SWARM_PORTS = "swarm.ports";
 
     public static final Integer SECOND_MS = 1000;
 }

@@ -20,6 +20,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.collective.celos.*;
+import org.apache.commons.io.IOUtils;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.log4j.Logger;
 
 /**
@@ -46,27 +49,33 @@ public class RerunServlet extends AbstractServlet {
                 res.sendError(HttpServletResponse.SC_BAD_REQUEST, ID_PARAM + " parameter missing.");
                 return;
             }
+            if (!Util.belongsToCelos(id, getSwarmSize(), getSwarmCelosNumber())) {
+                int number = Util.getWorkflowCelosNumber(id, getSwarmSize());
+                HttpPost post = new HttpPost("http://localhost:" + getSwarmPorts().get(number) + req.getRequestURI() + "?" + req.getQueryString());
+                HttpResponse response = httpClient.execute(post);
+                IOUtils.copy(response.getEntity().getContent(), res.getOutputStream());
+            } else {
+                Scheduler scheduler = getOrCreateCachedScheduler();
+                WorkflowID workflowID = new WorkflowID(id);
+                Workflow workflow = scheduler.getWorkflowConfiguration().findWorkflow(workflowID);
+                if (workflow == null) {
+                    res.sendError(HttpServletResponse.SC_NOT_FOUND, "Workflow not found: " + id);
+                    return;
+                }
 
-            Scheduler scheduler = getOrCreateCachedScheduler();
-            WorkflowID workflowID = new WorkflowID(id);
-            Workflow workflow = scheduler.getWorkflowConfiguration().findWorkflow(workflowID);
-            if (workflow == null) {
-                res.sendError(HttpServletResponse.SC_NOT_FOUND, "Workflow not found: " + id);
-                return;
-            }
+                SlotID slot = new SlotID(workflowID, time);
+                if (!workflow.getSchedule().isTimeInSchedule(time, scheduler)) {
+                    res.sendError(HttpServletResponse.SC_NOT_FOUND, "Slot is not found: " + slot);
+                    return;
+                }
 
-            SlotID slot = new SlotID(workflowID, time);
-            if (!workflow.getSchedule().isTimeInSchedule(time, scheduler)) {
-                res.sendError(HttpServletResponse.SC_NOT_FOUND, "Slot is not found: " + slot);
-                return;
+                StateDatabase db = scheduler.getStateDatabase();
+                SlotState state = db.getSlotState(slot);
+                if (state != null) {
+                    updateSlotToRerun(state, db);
+                }
+                db.markSlotForRerun(slot, ScheduledTime.now());
             }
-
-            StateDatabase db = scheduler.getStateDatabase();
-            SlotState state = db.getSlotState(slot);
-            if (state != null) {
-                updateSlotToRerun(state, db);
-            }
-            db.markSlotForRerun(slot, ScheduledTime.now());
         } catch(Exception e) {
             throw new ServletException(e);
         }

@@ -60,7 +60,7 @@ public class AutoScheduleTest {
         this.slotDbDir.mkdirs();
 
         this.celosServer = new CelosServer();
-        this.port = celosServer.startServer(ImmutableMap.<String, String>of(), workflowsDir, defaultsDir, slotDbDir);
+        this.port = celosServer.startServer(ImmutableMap.<String, String>of(), workflowsDir, defaultsDir, slotDbDir, 1, 0);
         this.celosClient = new CelosClient(URI.create("http://localhost:" + port));
     }
 
@@ -71,7 +71,7 @@ public class AutoScheduleTest {
         File src = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/client/wf-list").toURI());
         FileUtils.copyDirectory(src, workflowsDir);
 
-        Main.setupAutoschedule(Arrays.asList(port), 1);
+//        Main.setupAutoschedule(Arrays.asList(port), 1);
 
         Assert.assertTrue(autoScheduleWorked());
     }

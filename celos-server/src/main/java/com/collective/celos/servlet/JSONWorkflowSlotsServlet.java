@@ -19,6 +19,12 @@ import com.collective.celos.*;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.Lists;
+import org.apache.commons.io.IOUtils;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
@@ -72,32 +78,40 @@ public class JSONWorkflowSlotsServlet extends AbstractJSONServlet {
                 res.sendError(HttpServletResponse.SC_BAD_REQUEST, ID_PARAM + " parameter missing.");
                 return;
             }
-            Scheduler scheduler = getOrCreateCachedScheduler();
-            Workflow wf = scheduler.getWorkflowConfiguration().findWorkflow(new WorkflowID(id));
-            if (wf == null) {
-                res.sendError(HttpServletResponse.SC_NOT_FOUND, "Workflow not found: " + id);
-                return;
+
+            if (!Util.belongsToCelos(id, getSwarmSize(), getSwarmCelosNumber())) {
+                int number = Util.getWorkflowCelosNumber(id, getSwarmSize());
+                HttpGet get = new HttpGet("http://localhost:" + getSwarmPorts().get(number) + req.getRequestURI() + "?" + req.getQueryString());
+                HttpResponse response = httpClient.execute(get);
+                IOUtils.copy(response.getEntity().getContent(), res.getOutputStream());
+            } else {
+                Scheduler scheduler = getOrCreateCachedScheduler();
+                Workflow wf = scheduler.getWorkflowConfiguration().findWorkflow(new WorkflowID(id));
+                if (wf == null) {
+                    res.sendError(HttpServletResponse.SC_NOT_FOUND, "Workflow not found: " + id);
+                    return;
+                }
+
+                ScheduledTime endTime = getTimeParam(req, END_TIME_PARAM, new ScheduledTime(DateTime.now(DateTimeZone.UTC)));
+                ScheduledTime startTime = getTimeParam(req, START_TIME_PARAM, scheduler.getWorkflowStartTime(wf, endTime));
+
+                if (startTime.plusHours(scheduler.getSlidingWindowHours()).getDateTime().isBefore(endTime.getDateTime())) {
+                    res.sendError(HttpServletResponse.SC_BAD_REQUEST, "Time interval between start and end is limited to: " + scheduler.getSlidingWindowHours() + " hours");
+                    return;
+                }
+
+                List<SlotState> slotStates = scheduler.getSlotStates(wf, startTime, endTime);
+                List<JsonNode> objectNodes = Lists.newArrayList();
+                for (SlotState state : Lists.reverse(slotStates)) {
+                    objectNodes.add(state.toJSONNode());
+                }
+
+                ObjectNode node = mapper.createObjectNode();
+                node.put(INFO_PARAM, (JsonNode) mapper.valueToTree(wf.getWorkflowInfo()));
+                node.put(PAUSED_PARAM, scheduler.getStateDatabase().isPaused(wf.getID()));
+                node.putArray(SLOTS_PARAM).addAll(objectNodes);
+                writer.writeValue(res.getOutputStream(), node);
             }
-
-            ScheduledTime endTime = getTimeParam(req, END_TIME_PARAM, new ScheduledTime(DateTime.now(DateTimeZone.UTC)));
-            ScheduledTime startTime = getTimeParam(req, START_TIME_PARAM, scheduler.getWorkflowStartTime(wf, endTime));
-
-            if (startTime.plusHours(scheduler.getSlidingWindowHours()).getDateTime().isBefore(endTime.getDateTime())) {
-                res.sendError(HttpServletResponse.SC_BAD_REQUEST, "Time interval between start and end is limited to: " + scheduler.getSlidingWindowHours() + " hours");
-                return;
-            }
-
-            List<SlotState> slotStates = scheduler.getSlotStates(wf, startTime, endTime);
-            List<JsonNode> objectNodes = Lists.newArrayList();
-            for (SlotState state : Lists.reverse(slotStates)) {
-                objectNodes.add(state.toJSONNode());
-            }
-
-            ObjectNode node = mapper.createObjectNode();
-            node.put(INFO_PARAM, (JsonNode) mapper.valueToTree(wf.getWorkflowInfo()));
-            node.put(PAUSED_PARAM, scheduler.getStateDatabase().isPaused(wf.getID()));
-            node.putArray(SLOTS_PARAM).addAll(objectNodes);
-            writer.writeValue(res.getOutputStream(), node);
         } catch (Exception e) {
             throw new ServletException(e);
         }

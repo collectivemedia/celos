@@ -16,6 +16,10 @@
 package com.collective.celos.servlet;
 
 import com.collective.celos.*;
+import org.apache.commons.io.IOUtils;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.log4j.Logger;
 
 import javax.servlet.ServletException;
@@ -46,34 +50,39 @@ public class KillServlet extends AbstractServlet {
                 res.sendError(HttpServletResponse.SC_BAD_REQUEST, ID_PARAM + " parameter missing.");
                 return;
             }
-
-            Scheduler scheduler = getOrCreateCachedScheduler();
-            WorkflowID workflowID = new WorkflowID(id);
-            Workflow workflow = scheduler.getWorkflowConfiguration().findWorkflow(workflowID);
-            if (workflow == null) {
-                res.sendError(HttpServletResponse.SC_NOT_FOUND, "Workflow not found: " + id);
-                return;
-            }
-
-            SlotID slotID = new SlotID(workflowID, time);
-            if (!workflow.getSchedule().isTimeInSchedule(time, scheduler)) {
-                res.sendError(HttpServletResponse.SC_NOT_FOUND, "Slot is not found: " + slotID);
-                return;
-            }
-            StateDatabase db = scheduler.getStateDatabase();
-            SlotState state = db.getSlotState(slotID);
-
-            LOGGER.info("Killing slot: " + slotID);
-            if (state == null) {
-                db.putSlotState(new SlotState(slotID, SlotState.Status.KILLED));
+            if (!Util.belongsToCelos(id, getSwarmSize(), getSwarmCelosNumber())) {
+                int number = Util.getWorkflowCelosNumber(id, getSwarmSize());
+                HttpPost post = new HttpPost("http://localhost:" + getSwarmPorts().get(number) + req.getRequestURI() + "?" + req.getQueryString());
+                HttpResponse response = httpClient.execute(post);
+                IOUtils.copy(response.getEntity().getContent(), res.getOutputStream());
             } else {
-                if (state.getExternalID() != null) {
-                    workflow.getExternalService().kill(slotID, state.getExternalID());
+                Scheduler scheduler = getOrCreateCachedScheduler();
+                WorkflowID workflowID = new WorkflowID(id);
+                Workflow workflow = scheduler.getWorkflowConfiguration().findWorkflow(workflowID);
+                if (workflow == null) {
+                    res.sendError(HttpServletResponse.SC_NOT_FOUND, "Workflow not found: " + id);
+                    return;
                 }
-                SlotState newState = state.transitionToKill();
-                db.putSlotState(newState);
-            }
 
+                SlotID slotID = new SlotID(workflowID, time);
+                if (!workflow.getSchedule().isTimeInSchedule(time, scheduler)) {
+                    res.sendError(HttpServletResponse.SC_NOT_FOUND, "Slot is not found: " + slotID);
+                    return;
+                }
+                StateDatabase db = scheduler.getStateDatabase();
+                SlotState state = db.getSlotState(slotID);
+
+                LOGGER.info("Killing slot: " + slotID);
+                if (state == null) {
+                    db.putSlotState(new SlotState(slotID, SlotState.Status.KILLED));
+                } else {
+                    if (state.getExternalID() != null) {
+                        workflow.getExternalService().kill(slotID, state.getExternalID());
+                    }
+                    SlotState newState = state.transitionToKill();
+                    db.putSlotState(newState);
+                }
+            }
         } catch(Exception e) {
             throw new ServletException(e);
         }

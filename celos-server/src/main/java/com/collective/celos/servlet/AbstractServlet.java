@@ -17,6 +17,8 @@ package com.collective.celos.servlet;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.ServletException;
@@ -24,14 +26,14 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.collective.celos.*;
+import com.google.common.collect.Lists;
+import org.apache.http.client.HttpClient;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
-import com.collective.celos.Constants;
-import com.collective.celos.ScheduledTime;
-import com.collective.celos.Scheduler;
-import com.collective.celos.SchedulerConfiguration;
 import com.google.common.collect.ImmutableMap;
 
 /**
@@ -46,6 +48,8 @@ public abstract class AbstractServlet extends HttpServlet {
     private static Logger LOGGER = Logger.getLogger(AbstractServlet.class);
 
     private static final String SCHEDULER_ATTR = "celos.scheduler";
+
+    protected final HttpClient httpClient = new DefaultHttpClient();
 
     @Override
     public void service(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
@@ -88,19 +92,38 @@ public abstract class AbstractServlet extends HttpServlet {
         String stateDatabasePath = getServletContext().getInitParameter(Constants.STATE_DATABASE_PATH_ATTR);
 
         Map<String, String> additionalVars = (Map<String, String>) getServletContext().getAttribute(Constants.ADDITIONAL_JS_VARIABLES);
-        Integer swarmSize = (Integer) getServletContext().getAttribute(Constants.SWARM_SIZE);
-        Integer celosNumber = (Integer) getServletContext().getAttribute(Constants.SWARM_CELOS_NUMBER);
 
         if (additionalVars == null) {
             additionalVars = ImmutableMap.of();
         }
 
         Scheduler sch = new SchedulerConfiguration(
-                new File(workflowConfigPath), new File(defaultsConfigPath), new File(stateDatabasePath), additionalVars, swarmSize, celosNumber
+                new File(workflowConfigPath), new File(defaultsConfigPath), new File(stateDatabasePath), additionalVars, getSwarmSize(), getSwarmCelosNumber()
         ).makeDefaultScheduler();
 
         getServletContext().setAttribute(SCHEDULER_ATTR, sch);
         return sch;
+    }
+
+    public List<Integer> getSwarmPorts() {
+        return (List<Integer>) getServletContext().getAttribute(Constants.SWARM_PORTS);
+    }
+
+    public Integer getSwarmCelosNumber() {
+        return (Integer) getServletContext().getAttribute(Constants.SWARM_CELOS_NUMBER);
+    }
+
+    public Integer getSwarmSize() {
+        return (Integer) getServletContext().getAttribute(Constants.SWARM_SIZE);
+    }
+
+    protected List<CelosClient> getSlaveClients() {
+        List<CelosClient> clients = Lists.newArrayList();
+        List <Integer> ports = (List <Integer>) getServletContext().getAttribute(Constants.SWARM_PORTS);
+        for (Integer port : ports) {
+            clients.add(new CelosClient(URI.create("http://localhost:" + port)));
+        }
+        return clients;
     }
 
     protected Scheduler getOrCreateCachedScheduler() throws Exception {

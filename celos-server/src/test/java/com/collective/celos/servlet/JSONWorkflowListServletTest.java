@@ -24,6 +24,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import java.util.Collections;
+
 public class JSONWorkflowListServletTest {
 
     @Test
@@ -36,7 +38,7 @@ public class JSONWorkflowListServletTest {
         list.add(new String("workflow-2"));
         ObjectNode obj = mapper.createObjectNode();
         obj.put("ids", list);
-        Assert.assertEquals(obj, new JSONWorkflowListServlet().createJSONObject(cfg));
+        Assert.assertEquals(obj, new JSONWorkflowListServlet().createJSONObject(cfg, Collections.<ArrayNode>emptyList()));
     }
     
 }

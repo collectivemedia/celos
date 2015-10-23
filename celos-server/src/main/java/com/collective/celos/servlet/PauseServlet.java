@@ -16,6 +16,9 @@
 package com.collective.celos.servlet;
 
 import com.collective.celos.*;
+import org.apache.commons.io.IOUtils;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.log4j.Logger;
 
 import javax.servlet.ServletException;
@@ -45,17 +48,23 @@ public class PauseServlet extends AbstractServlet {
                 res.sendError(HttpServletResponse.SC_BAD_REQUEST, ID_PARAM + " parameter missing.");
                 return;
             }
+            if (!Util.belongsToCelos(id, getSwarmSize(), getSwarmCelosNumber())) {
+                int number = Util.getWorkflowCelosNumber(id, getSwarmSize());
+                HttpPost post = new HttpPost("http://localhost:" + getSwarmPorts().get(number) + req.getRequestURI() + "?" + req.getQueryString());
+                HttpResponse response = httpClient.execute(post);
+                IOUtils.copy(response.getEntity().getContent(), res.getOutputStream());
+            } else {
+                Scheduler scheduler = getOrCreateCachedScheduler();
+                WorkflowID workflowID = new WorkflowID(id);
+                Workflow workflow = scheduler.getWorkflowConfiguration().findWorkflow(workflowID);
+                if (workflow == null) {
+                    res.sendError(HttpServletResponse.SC_NOT_FOUND, "Workflow not found: " + id);
+                    return;
+                }
 
-            Scheduler scheduler = getOrCreateCachedScheduler();
-            WorkflowID workflowID = new WorkflowID(id);
-            Workflow workflow = scheduler.getWorkflowConfiguration().findWorkflow(workflowID);
-            if (workflow == null) {
-                res.sendError(HttpServletResponse.SC_NOT_FOUND, "Workflow not found: " + id);
-                return;
+                Boolean pause = Boolean.parseBoolean(req.getParameter(PAUSE_PARAM));
+                scheduler.getStateDatabase().setPaused(workflowID, pause);
             }
-
-            Boolean pause = Boolean.parseBoolean(req.getParameter(PAUSE_PARAM));
-            scheduler.getStateDatabase().setPaused(workflowID, pause);
         } catch(Exception e) {
             throw new ServletException(e);
         }
