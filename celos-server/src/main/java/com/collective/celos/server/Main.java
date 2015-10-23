@@ -13,7 +13,7 @@ public class Main {
 
     public static void main(String... args) throws Exception {
 
-        args = "-parallel 5 -autoSchedule 60 -db /home/akonopko/celos_wrk/db -defaults /home/akonopko/celos_wrk/defaults -logs /home/akonopko/celos_wrk/logs -workflows /home/akonopko/celos_wrk/workflows -port 9123".split(" ");
+//        args = "-parallel 5 -autoSchedule 60 -db /home/akonopko/celos_wrk/db -defaults /home/akonopko/celos_wrk/defaults -logs /home/akonopko/celos_wrk/logs -workflows /home/akonopko/celos_wrk/workflows -port 9123".split(" ");
 
         ServerCommandLineParser serverCommandLineParser = new ServerCommandLineParser();
         final ServerCommandLine commandLine = serverCommandLineParser.parse(args);
