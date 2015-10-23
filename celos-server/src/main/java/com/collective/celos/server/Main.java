@@ -46,9 +46,9 @@ public class Main {
 
     private static Logger LOGGER = Logger.getLogger(Main.class);
 
-    static void setupAutoschedule(List<Integer> ports, int autoSchedule) {
+    static void setupAutoschedule(List<Integer> ports, int autoSchedule) throws InterruptedException {
         if (autoSchedule > 0) {
-
+            long delay = (long) autoSchedule * Constants.SECOND_MS / ports.size();
             for (Integer port : ports) {
                 new Thread(new Runnable() {
                     CelosClient celosClient = new CelosClient(URI.create("http://localhost:" + port));
@@ -72,6 +72,7 @@ public class Main {
                         }
                     }
                 }).start();
+                Thread.sleep(delay);
             }
         }
     }

@@ -17,9 +17,11 @@ package com.collective.celos;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import com.google.common.collect.Maps;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 
@@ -97,19 +99,27 @@ public class FileSystemStateDatabase implements StateDatabase {
         pausedDir = new File(dir, PAUSED_DIR_NAME);
     }
 
+    private final Map<SlotID, SlotState> cache = Maps.newHashMap();
+
     @Override
     public SlotState getSlotState(SlotID id) throws Exception {
         File file = getSlotStateFile(id);
         if (!file.exists()) {
             return null;
         } else {
-            String json = FileUtils.readFileToString(file, CHARSET);
-            return SlotState.fromJSONNode(id, (ObjectNode) mapper.readTree(json));
+            SlotState slotState = cache.get(id);
+            if (slotState == null) {
+                String json = FileUtils.readFileToString(file, CHARSET);
+                slotState = SlotState.fromJSONNode(id, mapper.readTree(json));
+                cache.put(id, slotState);
+            }
+            return slotState;
         }
     }
 
     @Override
     public void putSlotState(SlotState state) throws Exception {
+        cache.put(state.getSlotID(), state);
         File file = getSlotStateFile(state.getSlotID());
         writeJson(state.toJSONNode(), file);
     }
