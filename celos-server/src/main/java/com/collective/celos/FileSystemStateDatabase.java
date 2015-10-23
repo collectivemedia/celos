@@ -18,10 +18,12 @@ package com.collective.celos;
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 
@@ -99,22 +101,28 @@ public class FileSystemStateDatabase implements StateDatabase {
         pausedDir = new File(dir, PAUSED_DIR_NAME);
     }
 
-    private final Map<SlotID, SlotState> cache = Maps.newHashMap();
+    private final Map<SlotID, SlotState> cache = Maps.newHashMapWithExpectedSize(24 * 7 * 10000);
+    private final Set<SlotID> cacheWaits = Sets.newHashSetWithExpectedSize(24 * 7 * 10000);
 
     @Override
     public SlotState getSlotState(SlotID id) throws Exception {
-        File file = getSlotStateFile(id);
-        if (!file.exists()) {
-            return null;
-        } else {
-            SlotState slotState = cache.get(id);
-            if (slotState == null) {
-                String json = FileUtils.readFileToString(file, CHARSET);
-                slotState = SlotState.fromJSONNode(id, mapper.readTree(json));
-                cache.put(id, slotState);
+        boolean isWait = cacheWaits.contains(id);
+        if (!isWait) {
+            if (!getSlotStateFile(id).exists()) {
+                cacheWaits.add(id);
+                isWait = true;
             }
-            return slotState;
         }
+        if (isWait) {
+            return null;
+        }
+        SlotState slotState = cache.get(id);
+        if (slotState == null) {
+            String json = FileUtils.readFileToString(getSlotStateFile(id), CHARSET);
+            slotState = SlotState.fromJSONNode(id, mapper.readTree(json));
+            cache.put(id, slotState);
+        }
+        return slotState;
     }
 
     @Override
