@@ -106,28 +106,27 @@ public class FileSystemStateDatabase implements StateDatabase {
 
     @Override
     public SlotState getSlotState(SlotID id) throws Exception {
-        boolean isWait = cacheWaits.contains(id);
-        if (!isWait) {
-            if (!getSlotStateFile(id).exists()) {
-                cacheWaits.add(id);
-                isWait = true;
-            }
+        SlotState slotState = cache.get(id);
+        if (slotState != null) {
+            return slotState;
         }
-        if (isWait) {
+        if (cacheWaits.contains(id)) {
+            return null;
+        } else if (!getSlotStateFile(id).exists()) {
+            cacheWaits.add(id);
             return null;
         }
-        SlotState slotState = cache.get(id);
-        if (slotState == null) {
-            String json = FileUtils.readFileToString(getSlotStateFile(id), CHARSET);
-            slotState = SlotState.fromJSONNode(id, mapper.readTree(json));
-            cache.put(id, slotState);
-        }
+
+        String json = FileUtils.readFileToString(getSlotStateFile(id), CHARSET);
+        slotState = SlotState.fromJSONNode(id, mapper.readTree(json));
+        cache.put(id, slotState);
         return slotState;
     }
 
     @Override
     public void putSlotState(SlotState state) throws Exception {
         cache.put(state.getSlotID(), state);
+        cacheWaits.remove(state.getSlotID());
         File file = getSlotStateFile(state.getSlotID());
         writeJson(state.toJSONNode(), file);
     }
