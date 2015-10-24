@@ -16,12 +16,11 @@
 package com.collective.celos.trigger;
 
 
-import com.collective.celos.ScheduledTime;
-import com.collective.celos.Scheduler;
-import com.collective.celos.SlotID;
-import com.collective.celos.SlotState;
-import com.collective.celos.StateDatabase;
-import com.collective.celos.WorkflowID;
+import com.collective.celos.*;
+import com.google.common.collect.Sets;
+
+import java.util.Collections;
+import java.util.Set;
 
 /**
  * Trigger that checks another workflow's slot (at the same scheduled time) for success.
@@ -41,6 +40,17 @@ public class SuccessTrigger extends Trigger {
         final SlotState slotState = stateDatabase.getSlotState(slotId);
         boolean ready = slotState != null && SlotState.Status.SUCCESS == slotState.getStatus();
         return makeTriggerStatus(ready, humanReadableDescription(ready, slotId));
+    }
+
+    public Set<SlotID> findSlotsThatDependOnTime(ScheduledTime scheduledTime) {
+        return Sets.newHashSet(new SlotID(triggerWorkflowID, scheduledTime));
+    }
+
+    public Set<ScheduledTime> findTimesThatDependOnSlot(SlotID other) {
+        if (triggerWorkflowID.equals(other.getWorkflowID())) {
+            return Sets.newHashSet(other.getScheduledTime());
+        }
+        return Collections.emptySet();
     }
 
     private String humanReadableDescription(boolean ready, SlotID slotId) {

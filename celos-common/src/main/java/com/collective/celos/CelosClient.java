@@ -32,7 +32,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.*;
 
 /**
@@ -48,12 +47,17 @@ public class CelosClient {
     private static final String CLEAR_CACHE_PATH = "/clear-cache";
     private static final String WORKFLOW_LIST_PATH = "/workflow-list";
     private static final String WORKFLOW_SLOTS_PATH = "/workflow-slots";
-    private static final String START_TIME_PARAM = "start";
-    private static final String END_TIME_PARAM = "end";
-    private static final String TIME_PARAM = "time";
-    private static final String PAUSE_PARAM = "paused";
-    private static final String ID_PARAM = "id";
-    private static final String IDS_PARAM = "ids";
+
+    public static final String START_TIME_PARAM = "start";
+    public static final String END_TIME_PARAM = "end";
+    public static final String TIME_PARAM = "time";
+    public static final String ID_PARAM = "id";
+    public static final String IDS_PARAM = "ids";
+    public static final String RERUN_DOWNSTREAM_PARAM = "rerunDownstream";
+    public static final String RERUN_UPSTREAM_PARAM = "rerunUpstream";
+    public static final String WORKFLOW_SLOTS_INFO_NODE = "info";
+    public static final String WORKFLOW_SLOTS_SLOTS_NODE = "slots";
+    public static final String WORKFLOW_SLOTS_PAUSED_NODE = "paused";
 
     private final HttpClient client;
     private final ScheduledTimeFormatter timeFormatter;
@@ -142,16 +146,30 @@ public class CelosClient {
         InputStream content = getResponse.getEntity().getContent();
         return SlotState.fromJSONNode(workflowID, objectMapper.readValue(content, ObjectNode.class));
     }
-    
+
     public void rerunSlot(SlotID slotID) throws Exception {
-        rerunSlot(slotID.getWorkflowID(), slotID.getScheduledTime());
+        rerunSlot(slotID, false, false);
     }
-    
+
+    public void rerunSlot(SlotID slotID, boolean rerunUpstream, boolean rerunDownstream) throws Exception {
+        rerunSlot(slotID.getWorkflowID(), slotID.getScheduledTime(), rerunUpstream, rerunDownstream);
+    }
+
     public void rerunSlot(WorkflowID workflowID, ScheduledTime scheduledTime) throws Exception {
+        rerunSlot(workflowID, scheduledTime, false, false);
+    }
+
+    public void rerunSlot(WorkflowID workflowID, ScheduledTime scheduledTime, boolean rerunUpstream, boolean rerunDownstream) throws Exception {
         URIBuilder uriBuilder = new URIBuilder(address);
         uriBuilder.setPath(uriBuilder.getPath() + RERUN_PATH);
         uriBuilder.addParameter(ID_PARAM, workflowID.toString());
         uriBuilder.addParameter(TIME_PARAM, scheduledTime.toString());
+        if (rerunDownstream) {
+            uriBuilder.addParameter(RERUN_DOWNSTREAM_PARAM, Boolean.TRUE.toString());
+        }
+        if (rerunUpstream) {
+            uriBuilder.addParameter(RERUN_UPSTREAM_PARAM, Boolean.TRUE.toString());
+        }
         executePost(uriBuilder.build());
     }
 
@@ -159,7 +177,7 @@ public class CelosClient {
         URIBuilder uriBuilder = new URIBuilder(address);
         uriBuilder.setPath(uriBuilder.getPath() + PAUSE_PATH);
         uriBuilder.addParameter(ID_PARAM, workflowID.toString());
-        uriBuilder.addParameter(PAUSE_PARAM, paused.toString());
+        uriBuilder.addParameter(WORKFLOW_SLOTS_PAUSED_NODE, paused.toString());
         executePost(uriBuilder.build());
     }
 
@@ -201,15 +219,12 @@ public class CelosClient {
         return objectMapper.readValue(content, WorkflowList.class).getIds();
     }
 
-    private static final String INFO_NODE = "info";
-    private static final String SLOTS_NODE = "slots";
-
     WorkflowStatus parseWorkflowStatus(WorkflowID workflowID, InputStream content) throws IOException {
         JsonNode node = objectMapper.readValue(content, JsonNode.class);
-        WorkflowInfo info = objectMapper.treeToValue(node.get(INFO_NODE), WorkflowInfo.class);
-        Boolean paused = node.get(PAUSE_PARAM).asBoolean();
+        WorkflowInfo info = objectMapper.treeToValue(node.get(WORKFLOW_SLOTS_INFO_NODE), WorkflowInfo.class);
+        Boolean paused = node.get(WORKFLOW_SLOTS_PAUSED_NODE).asBoolean();
 
-        Iterator<JsonNode> elems = node.get(SLOTS_NODE).elements();
+        Iterator<JsonNode> elems = node.get(WORKFLOW_SLOTS_SLOTS_NODE).elements();
         List<SlotState> result = Lists.newArrayList();
         while (elems.hasNext()) {
             result.add(SlotState.fromJSONNode(workflowID, elems.next()));

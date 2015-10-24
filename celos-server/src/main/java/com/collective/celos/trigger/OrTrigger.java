@@ -17,10 +17,9 @@ package com.collective.celos.trigger;
 
 import com.collective.celos.ScheduledTime;
 import com.collective.celos.Scheduler;
+import com.collective.celos.SlotID;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 /**
  * Trigger that takes N nested triggers and does a logical OR.
@@ -51,7 +50,25 @@ public class OrTrigger extends Trigger {
         boolean ready = this.checkSubTriggers(subStatuses);
         return makeTriggerStatus(ready, humanReadableDescription(ready), subStatuses);
     }
-    
+
+    @Override
+    public Set<SlotID> findSlotsThatDependOnTime(ScheduledTime scheduledTime) {
+        Set<SlotID> idSet = new HashSet<>();
+        for (Trigger childTrigger: triggers) {
+            idSet.addAll(childTrigger.findSlotsThatDependOnTime(scheduledTime));
+        }
+        return idSet;
+    }
+
+    @Override
+    public Set<ScheduledTime> findTimesThatDependOnSlot(SlotID other) {
+        Set<ScheduledTime> times = new HashSet<>();
+        for (Trigger childTrigger: triggers) {
+            times.addAll(childTrigger.findTimesThatDependOnSlot(other));
+        }
+        return times;
+    }
+
     private String humanReadableDescription(boolean ready) {
         if (ready) {
             return "One or more nested triggers are ready";

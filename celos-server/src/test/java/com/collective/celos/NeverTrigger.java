@@ -19,6 +19,7 @@ import com.collective.celos.trigger.Trigger;
 import com.collective.celos.trigger.TriggerStatus;
 
 import java.util.Collections;
+import java.util.Set;
 
 /**
  * Utility trigger for testing that never signals data availability.
@@ -28,6 +29,16 @@ public class NeverTrigger extends Trigger {
     @Override
     public TriggerStatus getTriggerStatus(Scheduler scheduler, ScheduledTime now, ScheduledTime scheduledTime) throws Exception {
         return makeTriggerStatus(false, "Never ready");
+    }
+
+    @Override
+    public Set<SlotID> findSlotsThatDependOnTime(ScheduledTime scheduledTime) {
+        return Collections.emptySet();
+    }
+
+    @Override
+    public Set<ScheduledTime> findTimesThatDependOnSlot(SlotID other) {
+        return Collections.emptySet();
     }
 
 }

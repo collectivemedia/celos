@@ -15,13 +15,10 @@
  */
 package com.collective.celos;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.*;
+import java.util.stream.Collectors;
 
+import org.apache.hadoop.ha.HAServiceProtocol;
 import org.apache.log4j.Logger;
 
 import com.collective.celos.trigger.Trigger;
@@ -229,6 +226,39 @@ public class Scheduler {
 
     public StateDatabase getStateDatabase() {
         return database;
+    }
+
+    public Set<SlotID> getUpstreamSlots(SlotID id) throws Exception {
+        Workflow slotWorkflow = configuration.findWorkflow(id.getWorkflowID());
+        Set<SlotID> slots = slotWorkflow.getTrigger().findSlotsThatDependOnTime(id.getScheduledTime());
+        Set<SlotID> dependentSlots = new HashSet();
+        for (SlotID candidate: slots) {
+            if (slotIsDefined(candidate)) {
+                dependentSlots.add(candidate);
+                dependentSlots.addAll(getUpstreamSlots(candidate));
+            }
+        }
+        return dependentSlots;
+    }
+
+    public Set<SlotID> getDownstreamSlots(SlotID id) throws Exception {
+        Set<SlotID> dependentSlots = new HashSet<>();
+        for (Workflow workflow: configuration.getWorkflows()) {
+            for (ScheduledTime time : workflow.getTrigger().findTimesThatDependOnSlot(id)) {
+                SlotID candidate = new SlotID(workflow.getID(), time);
+                if (slotIsDefined(candidate)) {
+                    dependentSlots.add(candidate);
+                    dependentSlots.addAll(getDownstreamSlots(candidate));
+                }
+            }
+        }
+        return dependentSlots;
+    }
+
+    private boolean slotIsDefined(SlotID slotID) {
+        Workflow workflow = configuration.findWorkflow(slotID.getWorkflowID());
+        Set<ScheduledTime> scheduledTimes = workflow.getSchedule().getScheduledTimes(this, slotID.getScheduledTime(), slotID.getScheduledTime().plusSeconds(1));
+        return scheduledTimes.contains(slotID.getScheduledTime());
     }
 
 }

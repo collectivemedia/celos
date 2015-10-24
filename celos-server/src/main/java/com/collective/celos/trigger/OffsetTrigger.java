@@ -17,9 +17,11 @@ package com.collective.celos.trigger;
 
 import com.collective.celos.ScheduledTime;
 import com.collective.celos.Scheduler;
+import com.collective.celos.SlotID;
 import com.collective.celos.Util;
 
 import java.util.Collections;
+import java.util.Set;
 
 /**
  * Trigger that offsets a nested trigger into the past or future.
@@ -39,6 +41,16 @@ public class OffsetTrigger extends Trigger {
         TriggerStatus status = trigger.getTriggerStatus(scheduler, now, scheduledTime.plusSeconds(seconds));
         boolean ready = status.isReady();
         return makeTriggerStatus(ready, humanReadableDescription(ready), Collections.singletonList(status));
+    }
+
+    @Override
+    public Set<SlotID> findSlotsThatDependOnTime(ScheduledTime scheduledTime) {
+        return trigger.findSlotsThatDependOnTime(scheduledTime.plusSeconds(seconds));
+    }
+
+    @Override
+    public Set<ScheduledTime> findTimesThatDependOnSlot(SlotID other) {
+        return trigger.findTimesThatDependOnSlot(new SlotID(other.getWorkflowID(), other.getScheduledTime().plusSeconds(seconds)));
     }
 
     private String humanReadableDescription(boolean ready) {

@@ -141,8 +141,8 @@ public class SlotState extends ValueObject {
     }
 
     public SlotState transitionToRerun() {
-        if (status.getType() == StatusType.INDETERMINATE) {
-            throw new IllegalStateException("Slot must be in successful or failed, but is: " + status);
+        if (status == Status.RUNNING) {
+            throw new IllegalStateException("Cannot rerun running slot. Please kill it");
         }
         return new SlotState(slotID, Status.WAITING, null, 0); // reset retryCount to 0
     }

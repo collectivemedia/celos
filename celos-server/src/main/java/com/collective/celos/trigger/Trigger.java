@@ -17,9 +17,11 @@ package com.collective.celos.trigger;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import com.collective.celos.ScheduledTime;
 import com.collective.celos.Scheduler;
+import com.collective.celos.SlotID;
 
 /**
  * A trigger is called to determine data availability for a workflow.
@@ -46,5 +48,9 @@ public abstract class Trigger {
     protected final TriggerStatus makeTriggerStatus(boolean ready, String description) {
         return makeTriggerStatus(ready, description, Collections.emptyList());
     }
-    
+
+    public abstract Set<SlotID> findSlotsThatDependOnTime(ScheduledTime scheduledTime);
+
+    public abstract Set<ScheduledTime> findTimesThatDependOnSlot(SlotID other);
+
 }

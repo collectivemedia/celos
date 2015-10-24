@@ -41,17 +41,7 @@ public class SlotStateTest {
         SlotState retry = new SlotState(id, SlotState.Status.WAITING, null, 1);
         Assert.assertEquals(retry, running.transitionToRetry());        
     }
-    
-    @Test(expected = IllegalStateException.class)
-    public void rerunFailsAsExpectedForWaiting() {
-        new SlotState(id, SlotState.Status.WAITING).transitionToRerun();
-    }
-    
-    @Test(expected = IllegalStateException.class)
-    public void rerunFailsAsExpectedForReady() {
-        new SlotState(id, SlotState.Status.READY).transitionToRerun();
-    }
-    
+
     @Test(expected = IllegalStateException.class)
     public void rerunFailsAsExpectedForRunning() {
         new SlotState(id, SlotState.Status.RUNNING).transitionToRerun();

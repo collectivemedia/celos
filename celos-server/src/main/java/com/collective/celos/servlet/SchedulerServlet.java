@@ -23,6 +23,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.collective.celos.CelosClient;
 import com.collective.celos.ScheduledTime;
 import com.collective.celos.Scheduler;
 import com.collective.celos.WorkflowID;
@@ -34,8 +35,6 @@ import com.collective.celos.WorkflowID;
  */
 @SuppressWarnings("serial")
 public class SchedulerServlet extends AbstractServlet {
-
-    static final String IDS_PARAM = "ids";
 
     protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException {
         try {
@@ -49,7 +48,7 @@ public class SchedulerServlet extends AbstractServlet {
     }
 
     Set<WorkflowID> getWorkflowIDs(HttpServletRequest req) {
-        String idString = req.getParameter(IDS_PARAM);
+        String idString = req.getParameter(CelosClient.IDS_PARAM);
         if (idString == null) {
             return Collections.<WorkflowID>emptySet();
         } else {
