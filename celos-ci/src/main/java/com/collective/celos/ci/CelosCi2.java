@@ -38,7 +38,7 @@ public abstract class CelosCi2 {
 //        celosCi.start();
 
 
-        for (int i=0; i<1; i++) {
+        for (int i=0; i<5; i++) {
             new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -49,6 +49,7 @@ public abstract class CelosCi2 {
                     }
                 }
             }).start();
+            Thread.sleep(2);
         }
 
 
@@ -70,7 +71,7 @@ public abstract class CelosCi2 {
 
             PreparedStatement preparedStatement = connection.prepareStatement("update test2 set data = 'some data' where id = ?");
             Random random = new Random();
-            for (int i=0; i < 10000; i++) {
+            for (int i=0; i < 500; i++) {
                 preparedStatement.setInt(1, random.nextInt(4000000));
                 preparedStatement.execute();
             }

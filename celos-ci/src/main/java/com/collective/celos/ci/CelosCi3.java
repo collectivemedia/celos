@@ -20,6 +20,7 @@ import org.apache.commons.io.IOUtils;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -48,19 +49,8 @@ public abstract class CelosCi3 {
         //Пароль
         String password = "akonopko";
         try {
-
-            long l1 = System.currentTimeMillis();
-
-            for (int i=0; i < 20000; i++) {
-                FileOutputStream stream = new FileOutputStream("/home" + "/akonopko/" + "work/celos/123");
-                IOUtils.write("some data", stream);
-                stream.close();
-            }
-
-
-            long l2 = System.currentTimeMillis();
-
-            System.out.println(l2-l1);
+            for (int i = 0; i < 50; i ++)
+            tryIt();
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -69,6 +59,21 @@ public abstract class CelosCi3 {
             }
         }
 
+    }
+
+    private static void tryIt() throws IOException {
+        long l1 = System.currentTimeMillis();
+
+        for (int i=0; i < 500; i++) {
+            FileOutputStream stream = new FileOutputStream("/home" + "/akonopko/" + "work/celos/123");
+            IOUtils.write("some data", stream);
+            stream.close();
+        }
+
+
+        long l2 = System.currentTimeMillis();
+
+        System.out.println(l2-l1);
     }
 
     public static CelosCi3 createCelosCi(CiCommandLine commandLine) throws Exception {

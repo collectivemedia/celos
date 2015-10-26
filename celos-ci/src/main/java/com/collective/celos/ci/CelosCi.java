@@ -15,17 +15,13 @@
  */
 package com.collective.celos.ci;
 
-import com.collective.celos.ci.config.CiCommandLineParser;
 import com.collective.celos.ci.config.CiCommandLine;
-import com.collective.celos.ci.config.deploy.CelosCiContext;
-import com.collective.celos.ci.mode.DeployTask;
-import com.collective.celos.ci.mode.TestTask;
-import com.collective.celos.ci.mode.UndeployTask;
 
-import java.sql.*;
-import java.util.UUID;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.Random;
 
 public abstract class CelosCi {
 
@@ -41,6 +37,24 @@ public abstract class CelosCi {
 //        celosCi.start();
 
 
+        for (int i=0; i<5; i++) {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        runIt();
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }).start();
+            Thread.sleep(2);
+        }
+
+
+    }
+
+    private static void runIt() throws SQLException {
         Connection connection = null;
         //URL к базе состоит из протокола:подпротокола://[хоста]:[порта_СУБД]/[БД] и других_сведений
         String url = "jdbc:postgresql://127.0.0.1:5432/akonopko";
@@ -51,23 +65,19 @@ public abstract class CelosCi {
         try {
             Class.forName("org.postgresql.Driver");
             connection = DriverManager.getConnection(url, name, password);
-            Statement statement = connection.createStatement();
-//            ResultSet result1 = statement.executeQuery("SELECT * FROM users where id >2 and id <10");
-//            while (result1.next()) {
-//                result1.getString("username");
-//            }
 
-            PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO test(id, data) values(?, ?)");
-            for (int i=10000; i < 1000000; i++) {
-                preparedStatement.setObject(1, i);
-                preparedStatement.setString(2, UUID.randomUUID().toString());
-                preparedStatement.executeUpdate();
-                if (i % 100000 ==0 ) {
-                    System.out.println("100000!");
-                }
+            long l1 = System.currentTimeMillis();
+
+            PreparedStatement preparedStatement = connection.prepareStatement("update test2 set data = 'some data' where id = ?");
+            Random random = new Random();
+            for (int i=0; i < 500; i++) {
+                preparedStatement.setInt(1, random.nextInt(4000000));
+                preparedStatement.execute();
             }
 
+            long l2 = System.currentTimeMillis();
 
+            System.out.println(l2-l1);
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -75,18 +85,17 @@ public abstract class CelosCi {
                 connection.close();
             }
         }
-
     }
 
     public static CelosCi createCelosCi(CiCommandLine commandLine) throws Exception {
 
-        if (commandLine.getMode() == CelosCiContext.Mode.TEST) {
-            return new TestTask(commandLine);
-        } else if (commandLine.getMode() == CelosCiContext.Mode.DEPLOY) {
-            return new DeployTask(commandLine);
-        } else if (commandLine.getMode() == CelosCiContext.Mode.UNDEPLOY) {
-            return new UndeployTask(commandLine);
-        }
+//        if (commandLine.getMode() == CelosCiContext.Mode.TEST) {
+//            return new TestTask(commandLine);
+//        } else if (commandLine.getMode() == CelosCiContext.Mode.DEPLOY) {
+//            return new DeployTask(commandLine);
+//        } else if (commandLine.getMode() == CelosCiContext.Mode.UNDEPLOY) {
+//            return new UndeployTask(commandLine);
+//        }
         throw new IllegalStateException("Unknown mode " + commandLine.getMode());
     }
 
