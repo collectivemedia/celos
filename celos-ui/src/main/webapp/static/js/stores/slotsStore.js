@@ -47,16 +47,17 @@ var SlotsStore = Object.assign({}, EventEmitter.prototype, {
 
 });
 
-
 AppDispatcher.register(function (payload) {
 
     console.log("dispatcherIndex: AppDispatcher.register", payload.action);
 
     switch (payload.source) {
         case TodoConstants.TODO_UPDATE:
-            console.log(_internalSlotsData.toJS());
+            console.log("case TodoConstants.TODO_UPDATE");
             var treePath = payload.breadcrumbs.concat("isSelected");
             _internalSlotsData = _internalSlotsData.updateIn(treePath, function (x) {return !x});
+            console.log(_internalSlotsData.getIn(["rows", 0, "rows", 0]).toJS());
+            console.log(_internalSlotsData.getIn(payload.breadcrumbs).toJS());
             SlotsStore.emit(CHANGE_EVENT);
             break;
 
@@ -71,8 +72,9 @@ AppDispatcher.register(function (payload) {
                         time: payload.action.time
                     },
                     /*success=*/ function (data) {
-                        _internalSlotsData = _internalSlotsData.set(payload.action.group, Immutable.fromJS(data));
-                        SlotsStore.emit(CHANGE_EVENT)
+                        _internalSlotsData = _internalSlotsData.mergeDeepIn(payload.breadcrumbs, Immutable.fromJS(data));
+                        console.log("?????", _internalSlotsData.getIn(payload.breadcrumbs).toJS());
+                        SlotsStore.emit(CHANGE_EVENT);
                     }.bind(this)
                 );
             break;
@@ -87,10 +89,7 @@ AppDispatcher.register(function (payload) {
                 },
                 /*success=*/ (function (data) {
                     console.log("success", data);
-                    var tmp = data.rows.map(function (x) {return [x.name, undefined]});
-                    _internalSlotsData = Immutable.OrderedMap(tmp);
-                    _internalNavigationData = data.navigation;
-                    _internalNavigationData.currentTime = data.currentTime;
+                    _internalSlotsData = Immutable.fromJS(data);
                     console.log("new state", _internalSlotsData.toJS());
                     SlotsStore.emit(CHANGE_EVENT);
                 }).bind(this)

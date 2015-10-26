@@ -42,12 +42,14 @@ var WorkflowsGroupFetch = React.createClass({
     //},
 
     render: function render() {
-        if (this.props.rows) {
-            console.log("WorkflowsGroupFetch", this.props.rows.toJS());
+        console.log("WorkflowsGroupFetch", this.props.store.toJS());
+        if (!this.props.store.get("rows").isEmpty()) {
             return React.createElement(WorkflowsGroup, {
                 request: this.props.request,
                 groupName: this.props.name,
-                store: this.props.rows,
+                rows: this.props.store.get("rows"),
+                times: this.props.store.get("times"),
+                days: this.props.store.get("days"),
                 breadcrumbs: this.props.breadcrumbs
             })
         } else {
@@ -61,8 +63,10 @@ var WorkflowsGroup = React.createClass({
     displayName: "WorkflowsGroup",
 
     propTypes: {
-        store: React.PropTypes.instanceOf(Immutable.Map).isRequired,
-        breadcrumbs: React.PropTypes.arrayOf(React.PropTypes.string).isRequired
+        rows: React.PropTypes.instanceOf(Immutable.List),
+        times: React.PropTypes.instanceOf(Immutable.List),
+        days: React.PropTypes.instanceOf(Immutable.List),
+        breadcrumbs: React.PropTypes.array.isRequired
     },
 
     //clickOnSlot: function (wfName, slotTimestamp) {
@@ -76,8 +80,7 @@ var WorkflowsGroup = React.createClass({
     //    }
     //},
 
-    render: function () {
-        console.log("render WorkflowsGroup", this.props.store.get("rows").toJS());
+    makeNewUrl: function () {
         var req = this.props.request;
         var groupName = this.props.groupName;
         var newGroups;
@@ -88,23 +91,28 @@ var WorkflowsGroup = React.createClass({
         } else {
             newGroups = [groupName];
         }
-        var newUrl = makeCelosHref(req.zoom, req.time, newGroups);
+        return makeCelosHref(req.zoom, req.time, newGroups);
+    },
+
+    render: function () {
+        console.log("WorkflowsGroup", this.props.rows.toJS());
+        var newUrl = this.makeNewUrl();
         return (
             React.DOM.table({ className: "workflowTable"},
                 React.DOM.thead(null,
                     React.DOM.tr(null,
                         React.DOM.th({ className: "groupName" },
                             React.DOM.a({ href: newUrl }, this.props.groupName)),
-                        this.props.store.get("days")
+                        this.props.days
                             .slice(-slotsNum)
                             .map(function (tt, i) {
                                 return React.DOM.th({ className: "timeHeader", key: i },
-                                    React.DOM.strong(null, tt));
+                                    React.DOM.strong(null, tt))
                             })
                     ),
                     React.DOM.tr(null,
                         React.DOM.th({ className: "groupName" }),
-                        this.props.store.get("times")
+                        this.props.times
                             .slice(-slotsNum)
                             .map(function (tt, i) {
                                 return React.DOM.th({ className: "timeHeader", key: i }, tt)
@@ -112,44 +120,60 @@ var WorkflowsGroup = React.createClass({
                     )
                 ),
                 React.DOM.tbody(null,
-                    this.props.store.get("rows")
+                    this.props.rows
                         .map(function (product, i) {
                             return React.createElement(ProductRow, {
                                 key: i,
-                                store: product,
-                                //store: this.props.store.get(product.workflowName, Immutable.Map()),
-                                breadcrumbs: this.props.breadcrumbs.concat(product.workflowName)
+                                slots: product.get("slots"),
+                                workflowName: product.get("workflowName"),
+                                breadcrumbs: this.props.breadcrumbs.concat("rows", i)
                             })}.bind(this))
                 )
             )
-        );
+        )
     }
 });
 
 var ProductRow = React.createClass({
     displayName: "ProductRow",
 
-    shouldComponentUpdate: function(nextProps, nextState) {
-        return nextProps.data !== this.props.data || nextProps.rowState !== this.props.rowState;
+    propTypes: {
+        slots: React.PropTypes.instanceOf(Immutable.List),
+        workflowName: React.PropTypes.string.isRequired,
+        timestamps: React.PropTypes.array,
+        breadcrumbs: React.PropTypes.array.isRequired
     },
+
+    shouldComponentUpdate: function(nextProps) {
+        return nextProps.slots !== this.props.slots
+            || nextProps.timestamps !== this.props.timestamps
+            || nextProps.workflowName !== this.props.workflowName;
+    },
+
     render: function () {
-        console.log("render ProductRow", this.props.store.toJS());
+        console.log("render ProductRow", this.props.slots.toJS());
+        // shift needs to calculate correct breadcrumbs
+        var shift = (this.props.slots.count() > slotsNum)
+            ? this.props.slots.count() - slotsNum
+            : 0;
+
+        console.log("render ProductRowrender ProductRowrender ProductRow", shift);
         return React.DOM.tr(null,
-            React.DOM.th({ className: "workflowName" }, this.props.store.get("workflowName")),
-            this.props.store.get("slots")
+            React.DOM.th({ className: "workflowName" }, this.props.workflowName),
+            this.props.slots
                 .slice(-slotsNum)
-                .map(function (slot1, i) {
+                .map(function (slot1, i1) {
+                    var i = i1 + shift;
                     var slot = slot1.toJS();
                     return React.createElement(TimeSlot, {
                         key: i,
-                        data: slot,
                         status: slot.status,
                         quantity: slot.quantity,
                         timestamps: slot.timestamps,
-                        workflowName: this.props.store.get("workflowName"),
-                        store: this.props.store.get(slot.timestamps[0], Immutable.Map()),
-                        breadcrumbs: this.props.breadcrumbs.concat(slot.timestamps[0])
-                    });
+                        workflowName: this.props.workflowName,
+                        isSelected: slot.isSelected || false,
+                        breadcrumbs: this.props.breadcrumbs.concat("slots", i)
+                    })
                 }.bind(this))
         )
     }
@@ -159,12 +183,20 @@ var TimeSlot = React.createClass({
     displayName: "TimeSlot",
 
     propTypes: {
-        store: React.PropTypes.instanceOf(Immutable.Map),
-        breadcrumbs: React.PropTypes.array.isRequired,
+        isSelected: React.PropTypes.bool.isRequired,
         status: React.PropTypes.string.isRequired,
         workflowName: React.PropTypes.string.isRequired,
         quantity: React.PropTypes.number,
-        timestamps: React.PropTypes.array
+        timestamps: React.PropTypes.array,
+        breadcrumbs: React.PropTypes.array.isRequired
+    },
+
+    shouldComponentUpdate: function(nextProps) {
+        return nextProps.isSelected !== this.props.isSelected
+            || nextProps.status !== this.props.status
+            || nextProps.quantity !== this.props.quantity
+            || nextProps.timestamps !== this.props.timestamps
+            || nextProps.workflowName !== this.props.workflowName;
     },
 
     getInitialState: function () {
@@ -172,6 +204,7 @@ var TimeSlot = React.createClass({
             showPopup: false
         }
     },
+
     handleClick: function (e) {
         // empty status do nothing
         if (this.props.status == "EMPTY") {
@@ -195,13 +228,9 @@ var TimeSlot = React.createClass({
     //    })
     //},
 
-    getSelectedClass: function () {
-        return this.props.store.get("isSelected", false)
-    },
-
     getCellConfig: function () {
         var cell = {};
-        var selectedClass = this.getSelectedClass() ? "selected" : "";
+        var selectedClass = this.props.isSelected ? "selected" : "";
         cell.className = ["slot", this.props.status, selectedClass].join(" ");
         cell.onClick = this.handleClick;
         //if (this.state.showPopup) {

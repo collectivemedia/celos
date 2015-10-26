@@ -36,7 +36,7 @@ var AppDispatcher = {
      * @param  {object} action The data coming from the view.
      */
     handleClickOnSlot: function (action) {
-        console.log("handleClickOnSlot", action);
+        console.log("handleClickOnSlot", action.breadcrumbs + "");
         this.dispatch({
             source: TodoConstants.SIDEBAR_UPDATE,
             action: action
@@ -44,7 +44,7 @@ var AppDispatcher = {
     },
 
     handleSelectSlot: function (action) {
-        console.log("handleClickOnSlot", action);
+        console.log("handleSelectSlot", action.breadcrumbs + "");
         this.dispatch({
             source: TodoConstants.TODO_UPDATE,
             action: action,

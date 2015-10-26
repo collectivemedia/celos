@@ -56,6 +56,7 @@ public class MainServlet extends HttpServlet {
 
     protected static class WorkflowGroupRef {
         public String name;
+        public List<Object> rows;
     }
 
     protected final static ObjectMapper mapper = new ObjectMapper();
@@ -112,6 +113,7 @@ public class MainServlet extends HttpServlet {
         for (WorkflowGroup g : groups) {
             final WorkflowGroupRef group = new WorkflowGroupRef();
             group.name = g.getName();
+            group.rows = Collections.emptyList();
             result.rows.add(group);
         }
         return result;
