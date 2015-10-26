@@ -16,8 +16,54 @@
 
 "use strict";
 
+
+var WorkflowsGroupFetch = React.createClass({
+    displayName: "WorkflowsGroupFetch",
+
+    componentWillMount: function () {
+        var nextProps = this.props;
+        AppDispatcher.handleLoadSlotsFromServer({
+            group: nextProps.name,
+            zoom: nextProps.request.zoom,
+            time: nextProps.request.time,
+            breadcrumbs: nextProps.breadcrumbs
+        })
+    },
+
+    //componentWillReceiveProps: function (nextProps) {
+        //if (nextProps.rows == undefined) {
+        //    AppDispatcher.handleLoadSlotsFromServer({
+        //        group: nextProps.name,
+        //        zoom: nextProps.request.zoom,
+        //        time: nextProps.request.time,
+        //        breadcrumbs: nextProps.breadcrumbs
+        //    })
+        //}
+    //},
+
+    render: function render() {
+        if (this.props.rows) {
+            console.log("WorkflowsGroupFetch", this.props.rows.toJS());
+            return React.createElement(WorkflowsGroup, {
+                request: this.props.request,
+                groupName: this.props.name,
+                store: this.props.rows,
+                breadcrumbs: this.props.breadcrumbs
+            })
+        } else {
+            return null
+        }
+    }
+});
+
+
 var WorkflowsGroup = React.createClass({
     displayName: "WorkflowsGroup",
+
+    propTypes: {
+        store: React.PropTypes.instanceOf(Immutable.Map).isRequired,
+        breadcrumbs: React.PropTypes.arrayOf(React.PropTypes.string).isRequired
+    },
 
     //clickOnSlot: function (wfName, slotTimestamp) {
     //    if (slotTimestamp !== null) {
@@ -31,9 +77,9 @@ var WorkflowsGroup = React.createClass({
     //},
 
     render: function () {
-        console.log("render WorkflowsGroup", this.props);
+        console.log("render WorkflowsGroup", this.props.store.get("rows").toJS());
         var req = this.props.request;
-        var groupName = this.props.data.name;
+        var groupName = this.props.groupName;
         var newGroups;
         if (req.groups && req.groups != []) {
             newGroups = req.groups.filter(function (x) {
@@ -48,8 +94,8 @@ var WorkflowsGroup = React.createClass({
                 React.DOM.thead(null,
                     React.DOM.tr(null,
                         React.DOM.th({ className: "groupName" },
-                            React.DOM.a({ href: newUrl }, this.props.data.name)),
-                        this.props.data.days
+                            React.DOM.a({ href: newUrl }, this.props.groupName)),
+                        this.props.store.get("days")
                             .slice(-slotsNum)
                             .map(function (tt, i) {
                                 return React.DOM.th({ className: "timeHeader", key: i },
@@ -58,7 +104,7 @@ var WorkflowsGroup = React.createClass({
                     ),
                     React.DOM.tr(null,
                         React.DOM.th({ className: "groupName" }),
-                        this.props.data.times
+                        this.props.store.get("times")
                             .slice(-slotsNum)
                             .map(function (tt, i) {
                                 return React.DOM.th({ className: "timeHeader", key: i }, tt)
@@ -66,16 +112,16 @@ var WorkflowsGroup = React.createClass({
                     )
                 ),
                 React.DOM.tbody(null,
-                    this.props.data.rows
+                    this.props.store.get("rows")
                         .map(function (product, i) {
                             return React.createElement(ProductRow, {
                                 key: i,
-                                data: product,
-                                store: this.props.store.get(product.workflowName, Immutable.Map()),
+                                store: product,
+                                //store: this.props.store.get(product.workflowName, Immutable.Map()),
                                 breadcrumbs: this.props.breadcrumbs.concat(product.workflowName)
-                            })}.bind(this)
-                        )
-                ))
+                            })}.bind(this))
+                )
+            )
         );
     }
 });
@@ -87,21 +133,24 @@ var ProductRow = React.createClass({
         return nextProps.data !== this.props.data || nextProps.rowState !== this.props.rowState;
     },
     render: function () {
-        console.log("render ProductRow", this.props);
+        console.log("render ProductRow", this.props.store.toJS());
         return React.DOM.tr(null,
-            React.DOM.th({ className: "workflowName" }, this.props.data.workflowName),
-            this.props.data.slots.slice(-slotsNum).map(function (slot, i) {
-                return React.createElement(TimeSlot, {
-                    key: i,
-                    data: slot,
-                    status: slot.status,
-                    quantity: slot.quantity,
-                    timestamps: slot.timestamps ,
-                    workflowName: this.props.data.workflowName,
-                    store: this.props.store.get(slot.timestamps[0], Immutable.Map()),
-                    breadcrumbs: this.props.breadcrumbs.concat(slot.timestamps[0])
-                });
-            }.bind(this))
+            React.DOM.th({ className: "workflowName" }, this.props.store.get("workflowName")),
+            this.props.store.get("slots")
+                .slice(-slotsNum)
+                .map(function (slot1, i) {
+                    var slot = slot1.toJS();
+                    return React.createElement(TimeSlot, {
+                        key: i,
+                        data: slot,
+                        status: slot.status,
+                        quantity: slot.quantity,
+                        timestamps: slot.timestamps,
+                        workflowName: this.props.store.get("workflowName"),
+                        store: this.props.store.get(slot.timestamps[0], Immutable.Map()),
+                        breadcrumbs: this.props.breadcrumbs.concat(slot.timestamps[0])
+                    });
+                }.bind(this))
         )
     }
 });
@@ -110,7 +159,7 @@ var TimeSlot = React.createClass({
     displayName: "TimeSlot",
 
     propTypes: {
-        store: React.PropTypes.object.isRequired,
+        store: React.PropTypes.instanceOf(Immutable.Map),
         breadcrumbs: React.PropTypes.array.isRequired,
         status: React.PropTypes.string.isRequired,
         workflowName: React.PropTypes.string.isRequired,

@@ -19,9 +19,9 @@
 var CHANGE_EVENT = 'change';
 
 var TodoConstants = {
-    TODO_CREATE: "TODO_CREATE",
+    LOAD_GROUPS: "LOAD_GROUPS",
     TODO_UPDATE: "TODO_UPDATE",
-    TODO_DESTROY: "TODO_DESTROY",
+    LOAD_SLOTS: "LOAD_SLOTS",
     SIDEBAR_UPDATE: "SIDEBAR_UPDATE"
 };
 
@@ -51,6 +51,25 @@ var AppDispatcher = {
             breadcrumbs: action.breadcrumbs
         })
     },
+
+    handleLoadSlotsFromServer: function (action) {
+        console.log("handleLoadSlotsFromServer", action);
+        this.dispatch({
+            source: TodoConstants.LOAD_SLOTS,
+            action: action,
+            breadcrumbs: action.breadcrumbs
+        })
+    },
+
+    handleLoadGroupsFromServer: function (action) {
+        console.log("handleLoadGroupsFromServer", action);
+        this.dispatch({
+            source: TodoConstants.LOAD_GROUPS,
+            action: action,
+            breadcrumbs: action.breadcrumbs
+        })
+    },
+
 
     /**
      * Register a Store's callback so that it may be invoked by an action.

@@ -17,17 +17,23 @@
 "use strict";
 
 
-var _internalWorkflowData = Immutable.Map();
+var _internalSlotsData = Immutable.Map();
+
+var _internalNavigationData = {};
 
 var SlotsStore = Object.assign({}, EventEmitter.prototype, {
 
     getAll: function () {
-        return _internalWorkflowData;
+        return _internalSlotsData;
+    },
+
+    getNavigation: function () {
+        return _internalNavigationData;
     },
 
     getSelectedSlots: function () {
         var result = [];
-        _internalWorkflowData.forEach(function (table) {
+        _internalSlotsData.forEach(function (table) {
             table.forEach(function (row, wfName) {
                 row.forEach(function (slot, timestamp) {
                     if (slot.get("isSelected", false)) {
@@ -48,10 +54,47 @@ AppDispatcher.register(function (payload) {
 
     switch (payload.source) {
         case TodoConstants.TODO_UPDATE:
-            console.log(_internalWorkflowData.toJS());
+            console.log(_internalSlotsData.toJS());
             var treePath = payload.breadcrumbs.concat("isSelected");
-            _internalWorkflowData = _internalWorkflowData.updateIn(treePath, function (x) {return !x});
+            _internalSlotsData = _internalSlotsData.updateIn(treePath, function (x) {return !x});
             SlotsStore.emit(CHANGE_EVENT);
+            break;
+
+        case TodoConstants.LOAD_SLOTS:
+            console.log("case LOAD_SLOTS:");
+                ajaxGetJson(
+                    /*url=*/ "/group",
+                    /*data=*/ {
+                        count: slotsNum,
+                        group: payload.action.group,
+                        zoom: payload.action.zoom,
+                        time: payload.action.time
+                    },
+                    /*success=*/ function (data) {
+                        _internalSlotsData = _internalSlotsData.set(payload.action.group, Immutable.fromJS(data));
+                        SlotsStore.emit(CHANGE_EVENT)
+                    }.bind(this)
+                );
+            break;
+
+        case TodoConstants.LOAD_GROUPS:
+            console.log("case LOAD_GROUPS:");
+            ajaxGetJson(
+                /*url=*/ payload.action.url,
+                /*data=*/ {
+                    zoom: payload.action.zoom,
+                    time: payload.action.time
+                },
+                /*success=*/ (function (data) {
+                    console.log("success", data);
+                    var tmp = data.rows.map(function (x) {return [x.name, undefined]});
+                    _internalSlotsData = Immutable.OrderedMap(tmp);
+                    _internalNavigationData = data.navigation;
+                    _internalNavigationData.currentTime = data.currentTime;
+                    console.log("new state", _internalSlotsData.toJS());
+                    SlotsStore.emit(CHANGE_EVENT);
+                }).bind(this)
+            );
             break;
 
         // add more cases for other actionTypes, like TODO_DESTROY, etc.

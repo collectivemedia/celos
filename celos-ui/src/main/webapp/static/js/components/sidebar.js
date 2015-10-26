@@ -22,7 +22,8 @@ var CelosSidebar = React.createClass({
 
     getInitialState: function () {
         return {
-            store: SidebarStore.getAll()
+            store: SidebarStore.getAll(),
+            dropdownActivated: false
         }
     },
 
@@ -41,31 +42,40 @@ var CelosSidebar = React.createClass({
         SidebarStore.removeListener(CHANGE_EVENT, this._onChange)
     },
 
-    makeDropMenu: function (bb) {
-        return React.createElement("div", { className: "dropdown open" },
-            React.createElement("button",
-                { className: "btn btn-secondary dropdown-toggle", type: "button", id: "dropdownMenu1",
-                    "data-toggle": "dropdown", "aria-haspopup": "true", "aria-expanded": "false" },
+    menuInternals: function () {
+        return React.createElement("div", { className: "dropdown-menu", "aria-labelledby": "dropdownMenu1" },
+            React.createElement(
+                "button",
+                { className: "dropdown-item", type: "button" },
                 "parqutifly-retarget@2015-10-05T12:21"
             ),
-            bb
-                ? React.createElement("div", { className: "dropdown-menu", "aria-labelledby": "dropdownMenu1" },
-                                React.createElement(
-                                    "button",
-                                    { className: "dropdown-item", type: "button" },
-                                    "parqutifly-retarget@2015-10-05T12:21"
-                                ),
-                                React.createElement(
-                                    "button",
-                                    { className: "dropdown-item", type: "button" },
-                                    "parqutifly-retarget@2015-10-05T12:22"
-                                ),
-                                React.createElement(
-                                    "button",
-                                    { className: "dropdown-item", type: "button" },
-                                    "parqutifly-retarget@2015-10-05T12:23"
-                                )
-                            )
+            React.createElement(
+                "button",
+                { className: "dropdown-item", type: "button" },
+                "parqutifly-retarget@2015-10-05T12:22"
+            ),
+            React.createElement(
+                "button",
+                { className: "dropdown-item", type: "button" },
+                "parqutifly-retarget@2015-10-05T12:23"
+            )
+        )
+    },
+
+    makeDropMenu: function () {
+        return React.DOM.div({ className: "dropdown open" },
+            React.DOM.button({
+                    className: "btn btn-secondary dropdown-toggle",
+                    type: "button",
+                    id: "dropdownMenu1",
+                    "data-toggle": "dropdown",
+                    "aria-haspopup": "true",
+                    "aria-expanded": this.state.dropdownActivated
+                },
+                "parqutifly-retarget@2015-10-05T12:21"
+            ),
+            this.state.dropdownActivated
+                ? this.menuInternals()
                 : null
             )
     },
@@ -78,26 +88,18 @@ var CelosSidebar = React.createClass({
                 { align: "center" },
                 "Selection (XX slots)"
             ),
-            React.createElement(
-                "ul",
-                { className: "my-row" },
-                React.createElement(
-                    "li",
-                    { className: "my-column" },
-                    this.makeDropMenu(false)
+            React.DOM.ul({ className: "my-row" },
+                React.DOM.li({ className: "my-column" },
+                    this.makeDropMenu()
                 ),
-                React.createElement(
-                    "li",
-                    { className: "my-column" },
+                React.DOM.li({ className: "my-column" },
                     React.createElement(
                         "button",
                         { type: "button", className: "btn btn-warning " },
                         "Rerun"
                     )
                 ),
-                React.createElement(
-                    "li",
-                    { className: "my-column" },
+                React.DOM.li({ className: "my-column" },
                     React.createElement(
                         "button",
                         { type: "button", className: "btn btn-danger" },
@@ -105,39 +107,29 @@ var CelosSidebar = React.createClass({
                     )
                 )
             ),
-            React.createElement(
-                "ul",
-                { className: "nav nav-tabs" },
-                React.createElement(
-                    "li",
-                    { className: "nav-item" },
+            React.DOM.ul({ className: "nav nav-tabs" },
+                React.DOM.li({ className: "nav-item" },
                     React.createElement(
                         "a",
                         { href: "#", className: "nav-link" },
                         "Overview"
                     )
                 ),
-                React.createElement(
-                    "li",
-                    { className: "nav-item" },
+                React.DOM.li({ className: "nav-item" },
                     React.createElement(
                         "a",
                         { href: "#", className: "nav-link active" },
                         "Trigger"
                     )
                 ),
-                React.createElement(
-                    "li",
-                    { className: "nav-item disabled" },
+                React.DOM.li({ className: "nav-item disabled" },
                     React.createElement(
                         "a",
                         { href: "#", className: "nav-link" },
                         "Logs"
                     )
                 ),
-                React.createElement(
-                    "li",
-                    { className: "nav-item disabled" },
+                React.DOM.li({ className: "nav-item disabled" },
                     React.createElement(
                         "a",
                         { href: "#", className: "nav-link" },
