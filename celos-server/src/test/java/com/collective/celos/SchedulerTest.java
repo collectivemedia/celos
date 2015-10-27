@@ -18,6 +18,8 @@ package com.collective.celos;
 import com.collective.celos.trigger.AlwaysTrigger;
 import com.collective.celos.trigger.Trigger;
 import com.collective.celos.trigger.TriggerStatus;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.junit.Assert;
@@ -954,7 +956,105 @@ public class SchedulerTest {
         Assert.assertFalse(Scheduler.isSlotTimedOut(new ScheduledTime("2015-03-05T00:00:00Z"), new ScheduledTime("2014-03-05T00:00:20Z"), 20));
         Assert.assertTrue(Scheduler.isSlotTimedOut(new ScheduledTime("2015-03-05T00:00:00Z"), new ScheduledTime("2016-03-05T00:00:21Z"), 20));
     }
-        
+
+    @Test
+    public void testGetSlotStates() throws Exception {
+
+        WorkflowID id = wf.getID();
+
+        ScheduledTime time1_noSlot = new ScheduledTime("2015-03-05T01:00:00Z");
+        ScheduledTime time2_slot = new ScheduledTime("2015-03-05T02:00:00Z");
+        ScheduledTime time3_slot = new ScheduledTime("2015-03-05T03:00:00Z");
+        ScheduledTime time4_noSlot = new ScheduledTime("2015-03-05T04:00:00Z");
+        ScheduledTime time5_slot = new ScheduledTime("2015-03-05T05:00:00Z");
+        ScheduledTime time6_noSlot = new ScheduledTime("2015-03-05T06:00:00Z");
+        ScheduledTime time7_noSlot = new ScheduledTime("2015-03-05T07:00:00Z");
+
+        SortedSet<ScheduledTime> scheduledTimes = Sets.newTreeSet();
+        scheduledTimes.add(time1_noSlot);
+        scheduledTimes.add(time2_slot);
+//        OMIT THOSE FOR TESTING
+//        scheduledTimes.add(time3_slot);
+//        scheduledTimes.add(time4_noSlot);
+        scheduledTimes.add(time5_slot);
+        scheduledTimes.add(time6_noSlot);
+
+        List<SlotState> dbSlotStates1 = Lists.newArrayList();
+        dbSlotStates1.add(new SlotState(new SlotID(id, time2_slot), SlotState.Status.SUCCESS));
+        dbSlotStates1.add(new SlotState(new SlotID(id, time3_slot), SlotState.Status.SUCCESS));
+        dbSlotStates1.add(new SlotState(new SlotID(id, time5_slot), SlotState.Status.SUCCESS));
+
+        when(stateDatabase.getSlotStates(id, time1_noSlot, time7_noSlot)).thenReturn(dbSlotStates1);
+        when(schedule.getScheduledTimes(scheduler, time1_noSlot, time7_noSlot)).thenReturn(scheduledTimes);
+
+        List<SlotState> slotStates = scheduler.getSlotStates(wf, time1_noSlot, time7_noSlot);
+        Assert.assertEquals(slotStates.size(), 4);
+        Assert.assertEquals(slotStates.get(0).getStatus(), SlotState.Status.WAITING);
+        Assert.assertEquals(slotStates.get(0).getScheduledTime(), time1_noSlot);
+        Assert.assertEquals(slotStates.get(1).getStatus(), SlotState.Status.SUCCESS);
+        Assert.assertEquals(slotStates.get(1).getScheduledTime(), time2_slot);
+        Assert.assertEquals(slotStates.get(2).getStatus(), SlotState.Status.SUCCESS);
+        Assert.assertEquals(slotStates.get(2).getScheduledTime(), time5_slot);
+        Assert.assertEquals(slotStates.get(3).getStatus(), SlotState.Status.WAITING);
+        Assert.assertEquals(slotStates.get(3).getScheduledTime(), time6_noSlot);
+    }
+
+    @Test
+    public void testGetSlotStatesIncludingMarkedForRerun() throws Exception {
+
+        WorkflowID id = wf.getID();
+
+        ScheduledTime time1_noSlot = new ScheduledTime("2015-03-05T01:00:00Z");
+        ScheduledTime time2_slot = new ScheduledTime("2015-03-05T02:00:00Z");
+        ScheduledTime time3_slot = new ScheduledTime("2015-03-05T03:00:00Z");
+        ScheduledTime time4_noSlot = new ScheduledTime("2015-03-05T04:00:00Z");
+        ScheduledTime time5_slot = new ScheduledTime("2015-03-05T05:00:00Z");
+        ScheduledTime time6_noSlot = new ScheduledTime("2015-03-05T06:00:00Z");
+        ScheduledTime time7_noSlot = new ScheduledTime("2015-03-05T07:00:00Z");
+
+        ScheduledTime nowTimeForRerun = new ScheduledTime("2015-03-15T07:00:00Z");
+
+        SortedSet<ScheduledTime> scheduledTimes = Sets.newTreeSet();
+        scheduledTimes.add(time1_noSlot);
+        scheduledTimes.add(time2_slot);
+//        OMIT THOSE FOR TESTING
+//        scheduledTimes.add(time3_slot);
+//        scheduledTimes.add(time4_noSlot);
+        scheduledTimes.add(time5_slot);
+        scheduledTimes.add(time6_noSlot);
+
+        List<SlotState> dbSlotStates1 = Lists.newArrayList();
+        dbSlotStates1.add(new SlotState(new SlotID(id, time2_slot), SlotState.Status.SUCCESS));
+        dbSlotStates1.add(new SlotState(new SlotID(id, time3_slot), SlotState.Status.SUCCESS));
+        dbSlotStates1.add(new SlotState(new SlotID(id, time5_slot), SlotState.Status.SUCCESS));
+
+        SortedSet<ScheduledTime> rerunTimes = Sets.newTreeSet();
+        ScheduledTime timeRerun1 = new ScheduledTime("2015-03-02T07:00:00Z");
+        ScheduledTime timeRerun2 = new ScheduledTime("2015-03-09T07:00:00Z");
+        rerunTimes.add(timeRerun1);
+        rerunTimes.add(timeRerun2);
+
+        when(stateDatabase.getSlotStates(id, time1_noSlot, time7_noSlot)).thenReturn(dbSlotStates1);
+        when(schedule.getScheduledTimes(scheduler, time1_noSlot, time7_noSlot)).thenReturn(scheduledTimes);
+        when(stateDatabase.getTimesMarkedForRerun(workflowId, nowTimeForRerun)).thenReturn(rerunTimes);
+
+        List<SlotState> slotStates = scheduler.getSlotStatesIncludingMarkedForRerun(wf, nowTimeForRerun, time1_noSlot, time7_noSlot);
+        Assert.assertEquals(slotStates.size(), 6);
+        Assert.assertEquals(slotStates.get(0).getStatus(), SlotState.Status.WAITING);
+        Assert.assertEquals(slotStates.get(0).getScheduledTime(), timeRerun1);
+        Assert.assertEquals(slotStates.get(1).getStatus(), SlotState.Status.WAITING);
+        Assert.assertEquals(slotStates.get(1).getScheduledTime(), time1_noSlot);
+        Assert.assertEquals(slotStates.get(2).getStatus(), SlotState.Status.SUCCESS);
+        Assert.assertEquals(slotStates.get(2).getScheduledTime(), time2_slot);
+        Assert.assertEquals(slotStates.get(3).getStatus(), SlotState.Status.SUCCESS);
+        Assert.assertEquals(slotStates.get(3).getScheduledTime(), time5_slot);
+        Assert.assertEquals(slotStates.get(4).getStatus(), SlotState.Status.WAITING);
+        Assert.assertEquals(slotStates.get(4).getScheduledTime(), time6_noSlot);
+        Assert.assertEquals(slotStates.get(5).getStatus(), SlotState.Status.WAITING);
+        Assert.assertEquals(slotStates.get(5).getScheduledTime(), timeRerun2);
+
+    }
+
     private AlwaysTrigger makeAlwaysTrigger() {
         return new AlwaysTrigger();
     }
