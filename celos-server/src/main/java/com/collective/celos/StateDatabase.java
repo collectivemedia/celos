@@ -16,12 +16,22 @@
 package com.collective.celos;
 
 import java.io.IOException;
+import java.util.Collection;
+import java.util.List;
 import java.util.SortedSet;
 
 /**
  * Stores all state needed by the scheduler.
  */
 public interface StateDatabase {
+
+    /**
+     *
+     */
+    public List<SlotState> getSlotStates(WorkflowID id, ScheduledTime start, ScheduledTime end) throws Exception;
+
+
+    public List<SlotState> getSlotStates(WorkflowID id, Collection<ScheduledTime> times) throws Exception;
 
     /**
      * Returns the state of the given slot, or null if not found.
