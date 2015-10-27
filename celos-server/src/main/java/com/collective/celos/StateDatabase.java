@@ -16,6 +16,8 @@
 package com.collective.celos;
 
 import java.io.IOException;
+import java.util.Collection;
+import java.util.List;
 import java.util.SortedSet;
 
 /**
@@ -24,22 +26,34 @@ import java.util.SortedSet;
 public interface StateDatabase {
 
     /**
+     * Returns the state of the slots, specified by start time (inclusive) and end time (exclusive)
+     * or empty List if not found.
+     */
+    public List<SlotState> getSlotStates(WorkflowID id, ScheduledTime start, ScheduledTime end) throws Exception;
+
+
+    /**
+     * Returns the state of the given slots, or empty List if not found.
+     */
+    public List<SlotState> getSlotStates(WorkflowID id, Collection<ScheduledTime> times) throws Exception;
+
+    /**
      * Returns the state of the given slot, or null if not found.
      */
     public SlotState getSlotState(SlotID slot) throws Exception;
 
     /**
      * Updates the state of the given slot.
-     * 
+     *
      * If this is a rerun, then markSlotForRerun() must be used in addition.
      */
     public void putSlotState(SlotState state) throws Exception;
-    
+
     /**
      * Marks the slot for rerun at the current wallclock time.
      */
     public void markSlotForRerun(SlotID slot, ScheduledTime now) throws Exception;
-    
+
     /**
      * Returns the list of scheduled times of the given workflow that have been marked for rerun.
      */

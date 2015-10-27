@@ -15,12 +15,10 @@
  */
 package com.collective.celos;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import com.google.common.collect.Lists;
+import org.joda.time.DateTime;
+
+import java.util.*;
 
 /**
  * Simple implementation of StateDatabase that stores everything in a Map.
@@ -30,7 +28,31 @@ public class MemoryStateDatabase implements StateDatabase {
     protected final Map<SlotID, SlotState> map = new HashMap<SlotID, SlotState>();
     protected final Set<SlotID> rerun = new HashSet<SlotID>();
     protected final Set<WorkflowID> pausedWorkflows = new HashSet<>();
-    
+
+    @Override
+    public List<SlotState> getSlotStates(WorkflowID id, ScheduledTime start, ScheduledTime end) throws Exception {
+        List<SlotState> slotStates = Lists.newArrayList();
+        for (Map.Entry<SlotID, SlotState> entry: map.entrySet()) {
+            DateTime dateTime = entry.getKey().getScheduledTime().getDateTime();
+            if (!dateTime.isBefore(start.getDateTime()) && dateTime.isBefore(end.getDateTime())) {
+                slotStates.add(entry.getValue());
+            }
+        }
+        return slotStates;
+    }
+
+    @Override
+    public List<SlotState> getSlotStates(WorkflowID id, Collection<ScheduledTime> times) throws Exception {
+        List<SlotState> slotStates = Lists.newArrayList();
+        for (ScheduledTime time : times) {
+            SlotState slotState = getSlotState(new SlotID(id, time));
+            if (slotState != null) {
+                slotStates.add(slotState);
+            }
+        }
+        return slotStates;
+    }
+
     @Override
     public SlotState getSlotState(SlotID id) throws Exception {
         return map.get(id);
@@ -40,7 +62,7 @@ public class MemoryStateDatabase implements StateDatabase {
     public void putSlotState(SlotState state) throws Exception {
         map.put(state.getSlotID(), state);
     }
-    
+
     public int size() {
         return map.size();
     }
