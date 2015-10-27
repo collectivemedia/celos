@@ -17,10 +17,7 @@ package com.collective.celos;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collection;
-import java.util.List;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.*;
 
 import com.google.common.collect.Lists;
 import org.apache.commons.io.FileUtils;
@@ -101,6 +98,11 @@ public class FileSystemStateDatabase implements StateDatabase {
 
     @Override
     public List<SlotState> getSlotStates(WorkflowID id, ScheduledTime start, ScheduledTime end) throws Exception {
+
+        if (end.getDateTime().isBefore(start.getDateTime())) {
+            throw new IllegalArgumentException("End time should not be less than Start time");
+        }
+
         List<SlotState> slotStates = Lists.newArrayList();
 
         ScheduledTime startBeginOfDay = new ScheduledTime(start.getDateTime().withMillisOfDay(0));
@@ -113,20 +115,16 @@ public class FileSystemStateDatabase implements StateDatabase {
             if (dayDir.exists() && dayDir.isDirectory()) {
                 slotStates.addAll(getSlotStatesFromDir(id, start, end, dayDir));
             }
-            currTime = new ScheduledTime(currTime.getDateTime().plusDays(1).withMillisOfDay(0));
+            currTime = new ScheduledTime(currTime.getDateTime().plusDays(1));
         }
 
-        return null;
-    }
-
-    private List<SlotState> getSlotStatesFromDir(WorkflowID id, ScheduledTime start, ScheduledTime end, File dayDir) throws IOException {
-        List<SlotState> slotStates = Lists.newArrayList();
-        for (File file : dayDir.listFiles()) {
-            ScheduledTime time = new ScheduledTime(dayDir.getName() + "T" + file.getName());
-            if (!time.getDateTime().isBefore(start.getDateTime()) && time.getDateTime().isBefore(end.getDateTime())) {
-                slotStates.add(readSlotStateFromFile(new SlotID(id, time), file));
+        Collections.sort(slotStates, new Comparator<SlotState>() {
+            @Override
+            public int compare(SlotState o1, SlotState o2) {
+                return o1.getScheduledTime().compareTo(o2.getScheduledTime());
             }
-        }
+        });
+
         return slotStates;
     }
 
@@ -152,15 +150,26 @@ public class FileSystemStateDatabase implements StateDatabase {
         }
     }
 
-    private SlotState readSlotStateFromFile(SlotID id, File file) throws IOException {
-        String json = FileUtils.readFileToString(file, CHARSET);
-        return SlotState.fromJSONNode(id, (ObjectNode) mapper.readTree(json));
-    }
-
     @Override
     public void putSlotState(SlotState state) throws Exception {
         File file = getSlotStateFile(state.getSlotID());
         writeJson(state.toJSONNode(), file);
+    }
+
+    private List<SlotState> getSlotStatesFromDir(WorkflowID id, ScheduledTime start, ScheduledTime end, File dayDir) throws IOException {
+        List<SlotState> slotStates = Lists.newArrayList();
+        for (File file : dayDir.listFiles()) {
+            ScheduledTime time = new ScheduledTime(dayDir.getName() + "T" + file.getName());
+            if (!time.getDateTime().isBefore(start.getDateTime()) && time.getDateTime().isBefore(end.getDateTime())) {
+                slotStates.add(readSlotStateFromFile(new SlotID(id, time), file));
+            }
+        }
+        return slotStates;
+    }
+
+    private SlotState readSlotStateFromFile(SlotID id, File file) throws IOException {
+        String json = FileUtils.readFileToString(file, CHARSET);
+        return SlotState.fromJSONNode(id, (ObjectNode) mapper.readTree(json));
     }
 
     /**
