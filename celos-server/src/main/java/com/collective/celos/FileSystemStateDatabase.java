@@ -99,10 +99,6 @@ public class FileSystemStateDatabase implements StateDatabase {
     @Override
     public List<SlotState> getSlotStates(WorkflowID id, ScheduledTime start, ScheduledTime end) throws Exception {
 
-        if (end.getDateTime().isBefore(start.getDateTime())) {
-            throw new IllegalArgumentException("End time should not be less than Start time");
-        }
-
         List<SlotState> slotStates = Lists.newArrayList();
 
         ScheduledTime startBeginOfDay = new ScheduledTime(start.getDateTime().withMillisOfDay(0));

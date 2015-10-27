@@ -206,10 +206,11 @@ public class FileSystemStateDatabaseTest {
         Assert.assertEquals(slotStates.get(2).getSlotID(), new SlotID(wf1, new ScheduledTime("2013-12-03T00:00Z")));
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testGetSlotStatesForPeriodValidates() throws Exception {
+    @Test
+    public void testGetSlotStatesForPeriodEmptyList() throws Exception {
         StateDatabase db = new FileSystemStateDatabase(makeDatabaseDir());
-        db.getSlotStates(new WorkflowID("id"), new ScheduledTime("2013-12-03T00:01Z"), new ScheduledTime("2013-12-03T00:00Z"));
+        List<SlotState> slotStates = db.getSlotStates(new WorkflowID("id"), new ScheduledTime("2013-12-03T00:01Z"), new ScheduledTime("2013-12-03T00:00Z"));
+        Assert.assertEquals(slotStates.size(), 0);
     }
 
     private void assertSlotStatesOrder(List<SlotState> slotStates) {
