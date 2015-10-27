@@ -19,6 +19,7 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.google.common.collect.Sets;
 import org.apache.log4j.Logger;
 
 import com.collective.celos.trigger.Trigger;
@@ -114,11 +115,12 @@ public class Scheduler {
         times.addAll(wf.getSchedule().getScheduledTimes(this, start, end));
         times.addAll(timesMarkedForRerun);
 
-        List<SlotState> fetchedSlots = new ArrayList<>();
+        Set<SlotState> fetchedSlots = Sets.newHashSet();
         fetchedSlots.addAll(database.getSlotStates(wf.getID(), start, end));
         fetchedSlots.addAll(database.getSlotStates(wf.getID(), timesMarkedForRerun));
         return matchScheduledToFetched(wf, times, fetchedSlots);
     }
+
 
     /**
      * Get the slot states of all slots of the workflow from within the window defined by start (inclusive) and end (exclusive).
