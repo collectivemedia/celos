@@ -30,16 +30,18 @@ var WorkflowsGroupFetch = React.createClass({
         })
     },
 
-    //componentWillReceiveProps: function (nextProps) {
-        //if (nextProps.rows == undefined) {
-        //    AppDispatcher.handleLoadSlotsFromServer({
-        //        group: nextProps.name,
-        //        zoom: nextProps.request.zoom,
-        //        time: nextProps.request.time,
-        //        breadcrumbs: nextProps.breadcrumbs
-        //    })
-        //}
-    //},
+    componentWillReceiveProps: function (nextProps) {
+        if (nextProps.request.zoom != this.props.request.zoom
+            ||  nextProps.request.time != this.props.request.time
+        ) {
+            AppDispatcher.handleLoadSlotsFromServer({
+                group: nextProps.name,
+                zoom: nextProps.request.zoom,
+                time: nextProps.request.time,
+                breadcrumbs: nextProps.breadcrumbs
+            })
+        }
+    },
 
     render: function render() {
         console.log("WorkflowsGroupFetch", this.props.store.toJS());
@@ -63,10 +65,10 @@ var WorkflowsGroup = React.createClass({
     displayName: "WorkflowsGroup",
 
     propTypes: {
-        rows: React.PropTypes.instanceOf(Immutable.List),
-        times: React.PropTypes.instanceOf(Immutable.List),
-        days: React.PropTypes.instanceOf(Immutable.List),
-        breadcrumbs: React.PropTypes.array.isRequired
+        rows: React.PropTypes.instanceOf(Immutable.List).isRequired,
+        times: React.PropTypes.instanceOf(Immutable.List).isRequired,
+        days: React.PropTypes.instanceOf(Immutable.List).isRequired,
+        breadcrumbs: React.PropTypes.instanceOf(Immutable.Seq).isRequired
     },
 
     //clickOnSlot: function (wfName, slotTimestamp) {
@@ -138,40 +140,33 @@ var ProductRow = React.createClass({
     displayName: "ProductRow",
 
     propTypes: {
-        slots: React.PropTypes.instanceOf(Immutable.List),
+        slots: React.PropTypes.instanceOf(Immutable.List).isRequired,
         workflowName: React.PropTypes.string.isRequired,
-        timestamps: React.PropTypes.array,
-        breadcrumbs: React.PropTypes.array.isRequired
+        breadcrumbs: React.PropTypes.instanceOf(Immutable.Seq).isRequired
     },
 
     shouldComponentUpdate: function(nextProps) {
         return nextProps.slots !== this.props.slots
-            || nextProps.timestamps !== this.props.timestamps
-            || nextProps.workflowName !== this.props.workflowName;
+            || nextProps.workflowName != this.props.workflowName;
     },
 
     render: function () {
-        console.log("render ProductRow", this.props.slots.toJS());
+        console.log("RENDER WORKFLOW", this.props.workflowName);
         // shift needs to calculate correct breadcrumbs
         var shift = (this.props.slots.count() > slotsNum)
             ? this.props.slots.count() - slotsNum
             : 0;
 
-        console.log("render ProductRowrender ProductRowrender ProductRow", shift);
         return React.DOM.tr(null,
             React.DOM.th({ className: "workflowName" }, this.props.workflowName),
             this.props.slots
                 .slice(-slotsNum)
                 .map(function (slot1, i1) {
                     var i = i1 + shift;
-                    var slot = slot1.toJS();
                     return React.createElement(TimeSlot, {
                         key: i,
-                        status: slot.status,
-                        quantity: slot.quantity,
-                        timestamps: slot.timestamps,
+                        store: slot1,
                         workflowName: this.props.workflowName,
-                        isSelected: slot.isSelected || false,
                         breadcrumbs: this.props.breadcrumbs.concat("slots", i)
                     })
                 }.bind(this))
@@ -183,20 +178,14 @@ var TimeSlot = React.createClass({
     displayName: "TimeSlot",
 
     propTypes: {
-        isSelected: React.PropTypes.bool.isRequired,
-        status: React.PropTypes.string.isRequired,
+        store: React.PropTypes.instanceOf(Immutable.Map).isRequired,
         workflowName: React.PropTypes.string.isRequired,
-        quantity: React.PropTypes.number,
-        timestamps: React.PropTypes.array,
-        breadcrumbs: React.PropTypes.array.isRequired
+        breadcrumbs: React.PropTypes.instanceOf(Immutable.Seq).isRequired
     },
 
     shouldComponentUpdate: function(nextProps) {
-        return nextProps.isSelected !== this.props.isSelected
-            || nextProps.status !== this.props.status
-            || nextProps.quantity !== this.props.quantity
-            || nextProps.timestamps !== this.props.timestamps
-            || nextProps.workflowName !== this.props.workflowName;
+        return nextProps.store !== this.props.store
+            || nextProps.workflowName != this.props.workflowName
     },
 
     getInitialState: function () {
@@ -207,7 +196,7 @@ var TimeSlot = React.createClass({
 
     handleClick: function (e) {
         // empty status do nothing
-        if (this.props.status == "EMPTY") {
+        if (this.props.store.get("status") == "EMPTY") {
             return
         }
         console.log("click", e);
@@ -217,8 +206,9 @@ var TimeSlot = React.createClass({
             })
         } else {
             AppDispatcher.handleClickOnSlot({
-                ts: this.props.timestamps,
-                workflowName: this.props.workflowName
+                ts: this.props.store.get("timestamps"),
+                workflowName: this.props.workflowName,
+                breadcrumbs: this.props.breadcrumbs
             })
         }
     },
@@ -228,22 +218,25 @@ var TimeSlot = React.createClass({
     //    })
     //},
 
-    getCellConfig: function () {
-        var cell = {};
-        var selectedClass = this.props.isSelected ? "selected" : "";
-        cell.className = ["slot", this.props.status, selectedClass].join(" ");
-        cell.onClick = this.handleClick;
-        //if (this.state.showPopup) {
-        //    cell.onMouseLeave = this.handleOnMouseLeave
-        //}
-        return cell;
+    getCellConfig: function (slotInfo) {
+        var selectedClass = slotInfo.isSelected ? "selected" : "";
+        return {
+            className: ["slot", slotInfo.status, selectedClass].join(" "),
+            onClick: this.handleClick,
+            style: (slotInfo.temporarySelected ? {border: "dashed 1px"} : undefined)
+        }
     },
 
     render: function () {
+        if (this.props.store.get("temporarySelected")) {
+            console.log("this.props.temporarySelected")
+        }
+        var slotInfo = this.props.store.toJS();
+        var quantity = slotInfo.quantity;
         return (
-            React.DOM.td(this.getCellConfig(),
-                this.props.quantity > 1
-                    ? React.DOM.div(null, this.props.quantity)
+            React.DOM.td(this.getCellConfig(slotInfo),
+                quantity > 1
+                    ? React.DOM.div(null, quantity)
                     : null,
                 this.state.showPopup
                     ? "popup moved to sidebar"

@@ -20,6 +20,12 @@
 var ContextMenu = React.createClass({
     displayName: "ContextMenu",
 
+    getInitialState: function () {
+        return {
+            slots: SlotsStore.getSelectedSlots()
+        }
+    },
+
     proceedClick1: function () {
         ajaxPostJSON("/multiplex-rpc", {
                 action: "rerun",

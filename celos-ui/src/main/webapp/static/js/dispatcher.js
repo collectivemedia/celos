@@ -39,7 +39,8 @@ var AppDispatcher = {
         console.log("handleClickOnSlot", action.breadcrumbs + "");
         this.dispatch({
             source: TodoConstants.SIDEBAR_UPDATE,
-            action: action
+            action: action,
+            breadcrumbs: action.breadcrumbs
         })
     },
 

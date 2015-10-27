@@ -16,6 +16,13 @@
 
 "use strict";
 
+var SIDEBAR_TABS = {
+    OVERVIEW: "Overview",
+    TRIGGER: "Trigger",
+    LOGS: "Logs",
+    JAVASCRIPT: "Javascript"
+};
+
 
 var CelosSidebar = React.createClass({
     displayName: "CelosSidebar",
@@ -23,48 +30,53 @@ var CelosSidebar = React.createClass({
     getInitialState: function () {
         return {
             store: SidebarStore.getAll(),
-            dropdownActivated: false
+            dropdownActivated: false,
+            selectedTab: SIDEBAR_TABS.TRIGGER,
+            selectedSlots: []
         }
     },
 
     _onChange: function() {
         console.log("_onChange", SidebarStore.getAll().toJS());
         this.setState({
-            store: SidebarStore.getAll()
+            store: SidebarStore.getAll(),
+            selectedSlots: SlotsStore.getSelectedSlots()
         })
     },
 
     componentDidMount: function() {
-        SidebarStore.on(CHANGE_EVENT, this._onChange)
+        SidebarStore.on(CHANGE_EVENT, this._onChange);
+        SlotsStore.on(CHANGE_EVENT, this._onChange)
     },
 
     componentWillUnmount: function() {
-        SidebarStore.removeListener(CHANGE_EVENT, this._onChange)
+        SidebarStore.removeListener(CHANGE_EVENT, this._onChange);
+        SlotsStore.removeListener(CHANGE_EVENT, this._onChange)
     },
 
     menuInternals: function () {
-        return React.createElement("div", { className: "dropdown-menu", "aria-labelledby": "dropdownMenu1" },
-            React.createElement(
-                "button",
-                { className: "dropdown-item", type: "button" },
-                "parqutifly-retarget@2015-10-05T12:21"
-            ),
-            React.createElement(
-                "button",
-                { className: "dropdown-item", type: "button" },
-                "parqutifly-retarget@2015-10-05T12:22"
-            ),
-            React.createElement(
-                "button",
-                { className: "dropdown-item", type: "button" },
-                "parqutifly-retarget@2015-10-05T12:23"
-            )
+        console.log("this.state.selectedSlots");
+        console.log(this.state.selectedSlots);
+        return React.DOM.div({ className: "dropdown-menu", "aria-labelledby": "dropdownMenu1" },
+            (this.state.selectedSlots.length == 0)
+                ? React.DOM.div({ className: "dropdown-item"}, "empty list...")
+                : this.state.selectedSlots.map(function (elem, i) {
+                    return React.createElement("button",
+                        { className: "dropdown-item", type: "button", key: i},
+                        "" + elem.workflow + "@" + elem.ts
+                    )
+                })
         )
+    },
+
+    handleClickDropdown: function () {
+        this.setState({dropdownActivated: !this.state.dropdownActivated})
     },
 
     makeDropMenu: function () {
         return React.DOM.div({ className: "dropdown open" },
             React.DOM.button({
+                    onClick: this.handleClickDropdown,
                     className: "btn btn-secondary dropdown-toggle",
                     type: "button",
                     id: "dropdownMenu1",
@@ -72,7 +84,7 @@ var CelosSidebar = React.createClass({
                     "aria-haspopup": "true",
                     "aria-expanded": this.state.dropdownActivated
                 },
-                "parqutifly-retarget@2015-10-05T12:21"
+                "SELECT SLOT"
             ),
             this.state.dropdownActivated
                 ? this.menuInternals()
@@ -80,72 +92,86 @@ var CelosSidebar = React.createClass({
             )
     },
 
+    makeHandleSelectTab: function (tabLabel) {
+        return function () {
+            this.setState({
+                selectedTab: tabLabel
+            })
+        }.bind(this)
+    },
+
+    makeOneTab: function (tabLabel) {
+        return React.DOM.li({ className: "nav-item", onClick: this.makeHandleSelectTab(tabLabel)},
+            React.DOM.a({
+                    href: window.location.hash,
+                    className: "nav-link" + (this.state.selectedTab == tabLabel ? " active" : "")
+                },
+                tabLabel
+            )
+        )
+    },
+
+    makeTabContent: function () {
+        switch (this.state.selectedTab) {
+            case SIDEBAR_TABS.OVERVIEW:
+                return "in development...";
+            case SIDEBAR_TABS.TRIGGER:
+                if (this.state.store.getIn(["selected", "workflowName"])) {
+                    return React.createElement(TriggerStatusFetch, {
+                        id: this.state.store.getIn(["selected", "workflowName"]),
+                        timestamps: this.state.store.getIn(["selected", "ts"]),
+                        quantity: 13})
+                } else {
+                    return "slot is not selected"
+                }
+            case SIDEBAR_TABS.LOGS:
+                return "in development...";
+            case SIDEBAR_TABS.JAVASCRIPT:
+                return "in development...";
+        }
+
+    },
+
+    makeNavTabs: function () {
+        return React.DOM.div(null,
+            React.DOM.ul({ className: "nav nav-tabs" },
+                this.makeOneTab(SIDEBAR_TABS.OVERVIEW),
+                this.makeOneTab(SIDEBAR_TABS.TRIGGER),
+                this.makeOneTab(SIDEBAR_TABS.LOGS),
+                this.makeOneTab(SIDEBAR_TABS.JAVASCRIPT)
+            ),
+            this.makeTabContent()
+
+        )
+    },
+
     render: function () {
-        console.log("!!!!", this.state.store.toJS());
+        console.log("CelosSidebar", this.state.store.toJS());
         return React.DOM.div({id: "sidebar-wrapper"},
-            React.createElement(
-                "h4",
-                { align: "center" },
-                "Selection (XX slots)"
+            React.DOM.h4({style: {textAlign: "center"}},
+                "Selection (" + this.state.selectedSlots.length + " slots)"
+            ),
+            React.DOM.h6({style: {textAlign: "left"}},
+                "flume-ready-sv4@123-123-23T0000"
             ),
             React.DOM.ul({ className: "my-row" },
                 React.DOM.li({ className: "my-column" },
                     this.makeDropMenu()
                 ),
                 React.DOM.li({ className: "my-column" },
-                    React.createElement(
-                        "button",
-                        { type: "button", className: "btn btn-warning " },
+                    React.DOM.button({ type: "button", className: "btn btn-warning " },
                         "Rerun"
                     )
                 ),
                 React.DOM.li({ className: "my-column" },
-                    React.createElement(
-                        "button",
-                        { type: "button", className: "btn btn-danger" },
+                    React.DOM.button({ type: "button", className: "btn btn-danger" },
                         "Kill"
                     )
                 )
             ),
-            React.DOM.ul({ className: "nav nav-tabs" },
-                React.DOM.li({ className: "nav-item" },
-                    React.createElement(
-                        "a",
-                        { href: "#", className: "nav-link" },
-                        "Overview"
-                    )
-                ),
-                React.DOM.li({ className: "nav-item" },
-                    React.createElement(
-                        "a",
-                        { href: "#", className: "nav-link active" },
-                        "Trigger"
-                    )
-                ),
-                React.DOM.li({ className: "nav-item disabled" },
-                    React.createElement(
-                        "a",
-                        { href: "#", className: "nav-link" },
-                        "Logs"
-                    )
-                ),
-                React.DOM.li({ className: "nav-item disabled" },
-                    React.createElement(
-                        "a",
-                        { href: "#", className: "nav-link" },
-                        "Javasript"
-                    )
-                )
-            ),
-            this.state.store.getIn(["selected", "workflowName"])
-                ? React.createElement(TriggerStatusFetch, {
-                                    id: this.state.store.getIn(["selected", "workflowName"]),
-                                    timestamps: this.state.store.getIn(["selected", "ts"]),
-                                    quantity: 13})
-                : null
-
-            )
-        }
+            this.makeNavTabs()
+        )
+    }
 
 });
 

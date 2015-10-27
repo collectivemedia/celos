@@ -50,7 +50,11 @@ var CelosMainFetch = React.createClass({
     },
 
     componentWillReceiveProps: function (nextProps) {
-        this.loadCommentsFromServer(nextProps);
+        AppDispatcher.handleLoadGroupsFromServer({
+            url: nextProps.url,
+            zoom: nextProps.request.zoom,
+            time: nextProps.request.time
+        })
     },
 
     render: function () {
@@ -101,21 +105,22 @@ var CelosMain = React.createClass({
         console.log("CelosMain", this.props);
         return React.DOM.div({id: "page-content"},
             React.createElement(ContextMenu, {}),
-            React.createElement("h2", null, this.props.navigation.currentTime),
+            React.DOM.h2(null, this.props.navigation.currentTime),
             React.createElement(Navigation, { data: this.props.navigation, request: this.props.request }),
+            React.DOM.p({style: {backgroundColor: "#eee"}}, "to select slots use Alt + Click"),
             React.DOM.div({onContextMenu: this.handleContextMenu},
                 this.props.groups.map(function (wfInfo, i) {
                     var wfGroup = wfInfo.get("name");
                     var isGroupActive = this.props.activeGroups.contains(wfGroup);
                     if (isGroupActive) {
-                        //console.log(wfInfo.toJS());
+                        console.log("OLOLO", wfInfo.toJS());
                         return React.DOM.div({ key: i },
                             React.createElement(WorkflowsGroupFetch, {
                                 name: wfGroup,
                                 active: isGroupActive,
                                 request: this.props.request,
                                 store: wfInfo,
-                                breadcrumbs: [].concat("rows", i)
+                                breadcrumbs: Immutable.Seq(["rows", i])
                             }),
                             React.DOM.br())
                     } else {

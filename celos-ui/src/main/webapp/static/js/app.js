@@ -24,15 +24,18 @@ var Navigation = React.createClass({
     displayName: "Navigation",
 
     render: function render() {
+        console.log("DEBUG");
+        console.log(this.props.data.toJS());
+        var serverInfo = this.props.data.toJS();
         return React.createElement("center", { className: "bigButtons" },
-            React.DOM.a({ href: makeCelosHref(this.props.request.zoom, this.props.data.left, this.props.request.groups) }, "< Prev page"),
+            React.DOM.a({ href: makeCelosHref(this.props.request.zoom, serverInfo.left, this.props.request.groups) }, "< Prev page"),
             React.DOM.strong(null, " | "),
-            React.DOM.a({ href: makeCelosHref(this.props.request.zoom, this.props.data.right, this.props.request.groups) }, "Next page >"),
+            React.DOM.a({ href: makeCelosHref(this.props.request.zoom, serverInfo.right, this.props.request.groups) }, "Next page >"),
             React.DOM.br(),
             React.DOM.br(),
-            React.DOM.a({ href: makeCelosHref(this.props.data.zoomOut, this.props.request.time, this.props.request.groups) }, "- Zoom OUT"),
+            React.DOM.a({ href: makeCelosHref(serverInfo.zoomOut, this.props.request.time, this.props.request.groups) }, "- Zoom OUT"),
             React.DOM.strong(null, " / ", this.props.request.zoom || 60, " minutes / "),
-            React.DOM.a({ href: makeCelosHref(this.props.data.zoomIn, this.props.request.time, this.props.request.groups) }, "Zoom IN +"),
+            React.DOM.a({ href: makeCelosHref(serverInfo.zoomIn, this.props.request.time, this.props.request.groups) }, "Zoom IN +"),
             React.DOM.br(),
             React.DOM.br()
         );

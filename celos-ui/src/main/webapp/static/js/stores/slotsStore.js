@@ -19,6 +19,8 @@
 
 var _internalSlotsData = Immutable.Map();
 
+var _internalLastSelectedSlotPath = undefined;
+
 var _internalNavigationData = {};
 
 var SlotsStore = Object.assign({}, EventEmitter.prototype, {
@@ -33,11 +35,11 @@ var SlotsStore = Object.assign({}, EventEmitter.prototype, {
 
     getSelectedSlots: function () {
         var result = [];
-        _internalSlotsData.forEach(function (table) {
-            table.forEach(function (row, wfName) {
-                row.forEach(function (slot, timestamp) {
+        _internalSlotsData.get("rows").forEach(function (table) {
+            table.get("rows").forEach(function (row) {
+                row.get("slots").forEach(function (slot, timestamp) {
                     if (slot.get("isSelected", false)) {
-                        result.push({ workflow: wfName, ts: timestamp })
+                        result.push({ workflow: row.get("workflowName"), ts: slot.getIn(["timestamps", 0])})
                     }
                 })
             })
@@ -52,12 +54,31 @@ AppDispatcher.register(function (payload) {
     console.log("dispatcherIndex: AppDispatcher.register", payload.action);
 
     switch (payload.source) {
+
         case TodoConstants.TODO_UPDATE:
             console.log("case TodoConstants.TODO_UPDATE");
-            var treePath = payload.breadcrumbs.concat("isSelected");
-            _internalSlotsData = _internalSlotsData.updateIn(treePath, function (x) {return !x});
-            console.log(_internalSlotsData.getIn(["rows", 0, "rows", 0]).toJS());
-            console.log(_internalSlotsData.getIn(payload.breadcrumbs).toJS());
+            var treePath1 = payload.breadcrumbs.concat("isSelected");
+            _internalSlotsData = _internalSlotsData.updateIn(treePath1, function (x) {return !x});
+            SlotsStore.emit(CHANGE_EVENT);
+            break;
+
+        case TodoConstants.SIDEBAR_UPDATE:
+            console.log("case TodoConstants.SIDEBAR_UPDATE");
+            var newPath = payload.breadcrumbs.concat("temporarySelected");
+            var oldPath = _internalLastSelectedSlotPath;
+            var newState = _internalSlotsData;
+
+            console.log("DEBUG:", oldPath, newPath, oldPath == newPath);
+
+            if (oldPath != undefined) {
+                newState = newState.setIn(oldPath, false);
+                _internalLastSelectedSlotPath = undefined;
+            }
+            if (!newPath.equals(oldPath)) {
+                newState = newState.setIn(newPath, true);
+                _internalLastSelectedSlotPath = newPath;
+            }
+            _internalSlotsData = newState;
             SlotsStore.emit(CHANGE_EVENT);
             break;
 
@@ -88,9 +109,9 @@ AppDispatcher.register(function (payload) {
                     time: payload.action.time
                 },
                 /*success=*/ (function (data) {
-                    console.log("success", data);
-                    _internalSlotsData = Immutable.fromJS(data);
-                    console.log("new state", _internalSlotsData.toJS());
+                    // deep merge works fine with empty lists
+                    _internalSlotsData = _internalSlotsData.mergeDeep(Immutable.fromJS(data));
+                    //console.log("new state", _internalSlotsData.toJS());
                     SlotsStore.emit(CHANGE_EVENT);
                 }).bind(this)
             );

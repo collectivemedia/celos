@@ -1,10 +1,12 @@
-.workflowTable {
+table {
     table-layout: fixed;
+}
 
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
+.workflowTable {
+    /*-webkit-user-select: none;*/
+    /*-moz-user-select: none;*/
+    /*-ms-user-select: none;*/
+    /*user-select: none;*/
 
     /*default html values*/
     border-collapse: separate;
