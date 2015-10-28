@@ -200,16 +200,29 @@ var TimeSlot = React.createClass({
             return
         }
         console.log("click", e);
+        var focusArgs = {
+            ts: this.props.store.get("timestamps"),
+            workflowName: this.props.workflowName,
+            breadcrumbs: this.props.breadcrumbs
+        };
         if (e.altKey) {
-            AppDispatcher.handleSelectSlot({
+            AppDispatcher.markSlotAsSelected({
                 breadcrumbs: this.props.breadcrumbs
-            })
+            });
+            AppDispatcher.focusOnSlot(focusArgs);
+        } else if (e.shiftKey) {
+            AppDispatcher.rectangleSlotSelection({
+                breadcrumbs: this.props.breadcrumbs
+            });
+            AppDispatcher.focusOnSlot(focusArgs);
         } else {
-            AppDispatcher.handleClickOnSlot({
-                ts: this.props.store.get("timestamps"),
-                workflowName: this.props.workflowName,
+            AppDispatcher.clearSelection({
                 breadcrumbs: this.props.breadcrumbs
-            })
+            });
+            AppDispatcher.markSlotAsSelected({
+                breadcrumbs: this.props.breadcrumbs
+            });
+            AppDispatcher.focusOnSlot(focusArgs);
         }
     },
     //handleOnMouseLeave: function () {
@@ -223,13 +236,13 @@ var TimeSlot = React.createClass({
         return {
             className: ["slot", slotInfo.status, selectedClass].join(" "),
             onClick: this.handleClick,
-            style: (slotInfo.temporarySelected ? {border: "dashed 1px"} : undefined)
+            style: (slotInfo.inFocus ? {border: "dashed 1px"} : undefined)
         }
     },
 
     render: function () {
-        if (this.props.store.get("temporarySelected")) {
-            console.log("this.props.temporarySelected")
+        if (this.props.store.get("inFocus")) {
+            console.log("this.props.inFocus")
         }
         var slotInfo = this.props.store.toJS();
         var quantity = slotInfo.quantity;

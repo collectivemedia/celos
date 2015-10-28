@@ -50,6 +50,7 @@ var CelosMainFetch = React.createClass({
     },
 
     componentWillReceiveProps: function (nextProps) {
+        AppDispatcher.clearSelection();
         AppDispatcher.handleLoadGroupsFromServer({
             url: nextProps.url,
             zoom: nextProps.request.zoom,

@@ -57,7 +57,7 @@ var CelosSidebar = React.createClass({
     menuInternals: function () {
         console.log("this.state.selectedSlots");
         console.log(this.state.selectedSlots);
-        return React.DOM.div({ className: "dropdown-menu", "aria-labelledby": "dropdownMenu1" },
+        return React.DOM.div({ className: "dropdown-menu overflow-scroll", "aria-labelledby": "dropdownMenu1" },
             (this.state.selectedSlots.length == 0)
                 ? React.DOM.div({ className: "dropdown-item"}, "empty list...")
                 : this.state.selectedSlots.map(function (elem, i) {
@@ -147,12 +147,15 @@ var CelosSidebar = React.createClass({
 
     render: function () {
         console.log("CelosSidebar", this.state.store.toJS());
+        var wfName = this.state.store.getIn(["selected", "workflowName"]);
         return React.DOM.div({id: "sidebar-wrapper"},
             React.DOM.h4({style: {textAlign: "center"}},
                 "Selection (" + this.state.selectedSlots.length + " slots)"
             ),
             React.DOM.h6({style: {textAlign: "left"}},
-                "flume-ready-sv4@123-123-23T0000"
+                (wfName)
+                    ? wfName + "@" + this.state.store.getIn(["selected", "ts", 0])
+                    : "not selected"
             ),
             React.DOM.ul({ className: "my-row" },
                 React.DOM.li({ className: "my-column" },

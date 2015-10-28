@@ -2,13 +2,17 @@ table {
     table-layout: fixed;
 }
 
-.workflowTable {
-    /*-webkit-user-select: none;*/
-    /*-moz-user-select: none;*/
-    /*-ms-user-select: none;*/
-    /*user-select: none;*/
+.overflow-scroll {
+    overflow: scroll;
+    max-height: 600px;
+}
 
-    /*default html values*/
+.workflowTable {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+
     border-collapse: separate;
     border-spacing: 2px;
 
@@ -32,10 +36,10 @@ table {
     overflow: hidden;
     height: 20px;
 
-    -webkit-user-select: text;
-    -moz-user-select: text;
-    -ms-user-select: text;
-    user-select: text;
+    /*-webkit-user-select: text;*/
+    /*-moz-user-select: text;*/
+    /*-ms-user-select: text;*/
+    /*user-select: text;*/
 }
 
 .timeHeader {

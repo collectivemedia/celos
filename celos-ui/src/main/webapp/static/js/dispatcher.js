@@ -21,8 +21,10 @@ var CHANGE_EVENT = 'change';
 var TodoConstants = {
     LOAD_GROUPS: "LOAD_GROUPS",
     TODO_UPDATE: "TODO_UPDATE",
+    RECTANGLE_UPDATE: "RECTANGLE_UPDATE",
     LOAD_SLOTS: "LOAD_SLOTS",
-    SIDEBAR_UPDATE: "SIDEBAR_UPDATE"
+    FOCUS_ON_SLOT: "FOCUS_ON_SLOT",
+    CLEAR_SELECTION: "CLEAR_SELECTION"
 };
 
 var AppDispatcher = {
@@ -35,21 +37,38 @@ var AppDispatcher = {
      * as a view action.  Another variant here could be handleServerAction.
      * @param  {object} action The data coming from the view.
      */
-    handleClickOnSlot: function (action) {
-        console.log("handleClickOnSlot", action.breadcrumbs + "");
+    focusOnSlot: function (action) {
+        console.log("focusOnSlot", action.breadcrumbs + "");
         this.dispatch({
-            source: TodoConstants.SIDEBAR_UPDATE,
+            source: TodoConstants.FOCUS_ON_SLOT,
             action: action,
             breadcrumbs: action.breadcrumbs
         })
     },
 
-    handleSelectSlot: function (action) {
-        console.log("handleSelectSlot", action.breadcrumbs + "");
+    markSlotAsSelected: function (action) {
+        console.log("markSlotAsSelected", action.breadcrumbs + "");
         this.dispatch({
             source: TodoConstants.TODO_UPDATE,
             action: action,
             breadcrumbs: action.breadcrumbs
+        })
+    },
+
+    rectangleSlotSelection: function (action) {
+        console.log("markSlotAsSelected", action.breadcrumbs + "");
+        this.dispatch({
+            source: TodoConstants.RECTANGLE_UPDATE,
+            action: action,
+            breadcrumbs: action && action.breadcrumbs
+        })
+    },
+
+    clearSelection: function (action) {
+        console.log("clearSelection", action);
+        this.dispatch({
+            source: TodoConstants.CLEAR_SELECTION,
+            breadcrumbs: action && action.breadcrumbs
         })
     },
 

@@ -38,7 +38,7 @@ AppDispatcher.register(function (payload) {
     console.log("dispatcherIndex: AppDispatcher.register", payload.action);
 
     switch (payload.source) {
-        case TodoConstants.SIDEBAR_UPDATE:
+        case TodoConstants.FOCUS_ON_SLOT:
             console.log("case TodoConstants.SIDEBAR_UPDATE");
             _internalSidebarData = _internalSidebarData.setIn(["selected"], Immutable.Map({
                 ts: payload.action.ts,

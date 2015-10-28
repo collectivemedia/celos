@@ -39,7 +39,9 @@ var SlotsStore = Object.assign({}, EventEmitter.prototype, {
             table.get("rows").forEach(function (row) {
                 row.get("slots").forEach(function (slot, timestamp) {
                     if (slot.get("isSelected", false)) {
-                        result.push({ workflow: row.get("workflowName"), ts: slot.getIn(["timestamps", 0])})
+                        slot.getIn(["timestamps"]).forEach(function(tmp) {
+                            result.push({ workflow: row.get("workflowName"), ts: tmp})
+                        })
                     }
                 })
             })
@@ -55,6 +57,28 @@ AppDispatcher.register(function (payload) {
 
     switch (payload.source) {
 
+        case TodoConstants.CLEAR_SELECTION:
+            console.log("case TodoConstants.CLEAR_SELECTION");
+            var oldVal = payload.breadcrumbs && _internalSlotsData.getIn(payload.breadcrumbs);
+            _internalSlotsData = _internalSlotsData.update("rows", function (allGroups) {
+                return allGroups.map(function (group) {
+                    return group.update("rows", function (workflowList) {
+                        return workflowList.map(function (wf) {
+                            return wf.update("slots", function (slotList) {
+                                return slotList.map(function (slot) {
+                                    return slot.set("isSelected", false)
+                                })
+                            })
+                        })
+                    })
+                })
+            });
+            if (payload.breadcrumbs) {
+                _internalSlotsData = _internalSlotsData.setIn(payload.breadcrumbs, oldVal);
+            }
+            SlotsStore.emit(CHANGE_EVENT);
+            break;
+
         case TodoConstants.TODO_UPDATE:
             console.log("case TodoConstants.TODO_UPDATE");
             var treePath1 = payload.breadcrumbs.concat("isSelected");
@@ -62,22 +86,72 @@ AppDispatcher.register(function (payload) {
             SlotsStore.emit(CHANGE_EVENT);
             break;
 
-        case TodoConstants.SIDEBAR_UPDATE:
+        case TodoConstants.FOCUS_ON_SLOT:
             console.log("case TodoConstants.SIDEBAR_UPDATE");
-            var newPath = payload.breadcrumbs.concat("temporarySelected");
+            var newPath = payload.breadcrumbs;
             var oldPath = _internalLastSelectedSlotPath;
             var newState = _internalSlotsData;
-
-            console.log("DEBUG:", oldPath, newPath, oldPath == newPath);
-
             if (oldPath != undefined) {
-                newState = newState.setIn(oldPath, false);
+                newState = newState.setIn(oldPath.concat("inFocus"), false);
                 _internalLastSelectedSlotPath = undefined;
             }
             if (!newPath.equals(oldPath)) {
-                newState = newState.setIn(newPath, true);
-                _internalLastSelectedSlotPath = newPath;
+                var selected = newState.getIn(newPath.concat("isSelected"));
+                if (selected) {
+                    newState = newState.setIn(newPath.concat("inFocus"), true);
+                    _internalLastSelectedSlotPath = newPath;
+                } else {
+                    newState = newState.setIn(newPath.concat("inFocus"), false);
+                    _internalLastSelectedSlotPath = undefined;
+                }
             }
+            _internalSlotsData = newState;
+            SlotsStore.emit(CHANGE_EVENT);
+            break;
+
+        case TodoConstants.RECTANGLE_UPDATE:
+            console.log("case TodoConstants.RECTANGLE_UPDATE");
+            var newPath1 = payload.breadcrumbs;
+            var oldPath1 = _internalLastSelectedSlotPath;
+            if (oldPath1 == undefined) {
+                newState = _internalSlotsData;
+                newState = newState.setIn(newPath1.concat("isSelected", true));
+                newState = newState.setIn(newPath1.concat("inFocus", true));
+                _internalLastSelectedSlotPath = newPath1;
+                _internalSlotsData = newState;
+                SlotsStore.emit(CHANGE_EVENT);
+            }
+            var g1 = newPath1.get(1);
+            var g2 = oldPath1.get(1);
+            if (g1 != g2) {
+                console.log("g1 == g2");
+                break
+            }
+            // else
+            var wfTop     = Math.min(newPath1.get(3), oldPath1.get(3));
+            var wfBottom  = Math.max(newPath1.get(3), oldPath1.get(3));
+            var slotLeft  = Math.min(newPath1.get(5), oldPath1.get(5));
+            var slotRight = Math.max(newPath1.get(5), oldPath1.get(5));
+
+            newState = _internalSlotsData;
+            newState = newState.updateIn(["rows", g1], function (group) {
+                return group.update("rows", function (workflowList) {
+                    return workflowList.map(function (wf, workflowIdx) {
+                        return wf.update("slots", function (slotList) {
+                            return slotList.map(function (slot, slotIdx) {
+                                if (slotLeft <= slotIdx && slotIdx <= slotRight
+                                    && wfTop <= workflowIdx && workflowIdx <= wfBottom
+                                    && slot.get("status") != "EMPTY")
+                                {
+                                    return slot.set("isSelected", true)
+                                } else {
+                                    return slot
+                                }
+                            })
+                        })
+                    })
+                })
+            });
             _internalSlotsData = newState;
             SlotsStore.emit(CHANGE_EVENT);
             break;
