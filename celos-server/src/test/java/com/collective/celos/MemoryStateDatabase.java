@@ -16,6 +16,7 @@
 package com.collective.celos;
 
 import com.google.common.collect.Lists;
+import org.eclipse.jetty.util.ConcurrentHashSet;
 import org.joda.time.DateTime;
 
 import java.util.*;
@@ -26,7 +27,7 @@ import java.util.*;
 public class MemoryStateDatabase implements StateDatabase {
 
     protected final Map<SlotID, SlotState> map = new HashMap<SlotID, SlotState>();
-    protected final Set<SlotID> rerun = new HashSet<SlotID>();
+    protected final Set<SlotID> rerun = new ConcurrentHashSet<>();
     protected final Set<WorkflowID> pausedWorkflows = new HashSet<>();
 
     @Override
@@ -74,19 +75,23 @@ public class MemoryStateDatabase implements StateDatabase {
     }
 
     @Override
+    public boolean isPaused(WorkflowID workflowID) {
+        return pausedWorkflows.contains(workflowID);
+    }
+
+    @Override
     public SortedSet<ScheduledTime> getTimesMarkedForRerun(WorkflowID workflowID, ScheduledTime now) throws Exception {
         SortedSet<ScheduledTime> res = new TreeSet<>();
         for (SlotID slot : rerun) {
             if (slot.getWorkflowID().equals(workflowID)) {
                 res.add(slot.getScheduledTime());
+                RerunState rerunState = new RerunState(slot.getScheduledTime());
+                if (rerunState.isExpired(now)) {
+                    rerun.remove(slot);
+                }
             }
         }
         return res;
-    }
-
-    @Override
-    public boolean isPaused(WorkflowID workflowID) {
-        return pausedWorkflows.contains(workflowID);
     }
 
     @Override
