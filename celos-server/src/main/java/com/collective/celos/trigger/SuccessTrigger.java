@@ -20,7 +20,7 @@ import com.collective.celos.ScheduledTime;
 import com.collective.celos.Scheduler;
 import com.collective.celos.SlotID;
 import com.collective.celos.SlotState;
-import com.collective.celos.StateDatabase;
+import com.collective.celos.StateDatabaseConnection;
 import com.collective.celos.WorkflowID;
 
 /**
@@ -35,10 +35,9 @@ public class SuccessTrigger extends Trigger {
     }
     
     @Override
-    public TriggerStatus getTriggerStatus(Scheduler scheduler, ScheduledTime now, ScheduledTime scheduledTime) throws Exception {
-        StateDatabase stateDatabase = scheduler.getStateDatabase();
+    public TriggerStatus getTriggerStatus(StateDatabaseConnection connection, ScheduledTime now, ScheduledTime scheduledTime) throws Exception {
         SlotID slotId = new SlotID(triggerWorkflowID, scheduledTime);
-        final SlotState slotState = stateDatabase.getSlotState(slotId);
+        final SlotState slotState = connection.getSlotState(slotId);
         boolean ready = slotState != null && SlotState.Status.SUCCESS == slotState.getStatus();
         return makeTriggerStatus(ready, humanReadableDescription(ready, slotId));
     }

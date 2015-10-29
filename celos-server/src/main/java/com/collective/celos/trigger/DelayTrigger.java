@@ -15,6 +15,7 @@
  */
 package com.collective.celos.trigger;
 
+import com.collective.celos.StateDatabaseConnection;
 import org.joda.time.DateTime;
 
 import com.collective.celos.ScheduledTime;
@@ -43,7 +44,7 @@ public class DelayTrigger extends Trigger {
     }
 
     @Override
-    public TriggerStatus getTriggerStatus(Scheduler scheduler, ScheduledTime now, ScheduledTime scheduledTime) throws Exception {
+    public TriggerStatus getTriggerStatus(StateDatabaseConnection connection, ScheduledTime now, ScheduledTime scheduledTime) throws Exception {
         DateTime nowDT = now.getDateTime();
         DateTime waitUntilDT = scheduledTime.getDateTime().plusSeconds(getSeconds());
         boolean ready = nowDT.isAfter(waitUntilDT);

@@ -15,9 +15,12 @@
  */
 package com.collective.celos;
 
-public interface StateDatabase extends AutoCloseable {
+import java.io.IOException;
 
-    public StateDatabaseConnection openConnection() throws Exception;
+public class MemoryStateDatabaseConnectionTest extends AbstractStateDatabaseTest {
 
-    public default void close() {}
+    @Override
+    public StateDatabaseConnection getStateDatabase() throws IOException {
+        return new MemoryStateDatabase().openConnection();
+    }
 }

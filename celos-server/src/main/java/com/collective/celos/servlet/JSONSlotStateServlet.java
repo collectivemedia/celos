@@ -19,10 +19,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.collective.celos.Scheduler;
-import com.collective.celos.SlotID;
-import com.collective.celos.SlotState;
-import com.collective.celos.WorkflowID;
+import com.collective.celos.*;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
@@ -42,12 +39,14 @@ public class JSONSlotStateServlet extends AbstractJSONServlet {
             }
             Scheduler scheduler = getOrCreateCachedScheduler();
             SlotID slotID = new SlotID(new WorkflowID(id), getRequestTime(req));
-            SlotState slotState = scheduler.getStateDatabase().getSlotState(slotID);
-            if (slotState == null) {
-                res.sendError(HttpServletResponse.SC_NOT_FOUND, "Slot not found: " + id);
-            } else {
-                ObjectNode object = slotState.toJSONNode();
-                writer.writeValue(res.getOutputStream(), object);
+            try (StateDatabaseConnection connection = scheduler.getStateDatabase().openConnection()) {
+                SlotState slotState = connection.getSlotState(slotID);
+                if (slotState == null) {
+                    res.sendError(HttpServletResponse.SC_NOT_FOUND, "Slot not found: " + id);
+                } else {
+                    ObjectNode object = slotState.toJSONNode();
+                    writer.writeValue(res.getOutputStream(), object);
+                }
             }
         } catch (Exception e) {
             throw new ServletException(e);

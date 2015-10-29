@@ -62,7 +62,7 @@ public class SlotState extends ValueObject {
         FAILURE(StatusType.FAILURE),
         /** The workflow has been killed. */
         KILLED(StatusType.FAILURE);
-        
+
         private final StatusType type;
         Status(StatusType type) {
             this.type = type;

@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.sql.Timestamp;
 import java.util.Map;
 
 import org.apache.log4j.Level;
@@ -28,6 +29,7 @@ import org.apache.log4j.PatternLayout;
 import org.apache.log4j.rolling.RollingFileAppender;
 import org.apache.log4j.rolling.TimeBasedRollingPolicy;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -206,4 +208,11 @@ public class Util {
         Logger.getRootLogger().setLevel(Level.INFO);
     }
 
+    public static Timestamp toTimestamp(ScheduledTime time) {
+        return new Timestamp(time.getDateTime().getMillis());
+    }
+
+    public static ScheduledTime toScheduledTime(Timestamp timestamp) {
+        return new ScheduledTime(new DateTime(timestamp.getTime()).withZone(DateTimeZone.UTC));
+    }
 }
