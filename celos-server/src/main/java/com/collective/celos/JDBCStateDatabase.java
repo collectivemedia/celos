@@ -29,19 +29,25 @@ import java.util.stream.Collectors;
 public class JDBCStateDatabase implements StateDatabase {
 
     private static final String SELECT_SINGLE_SLOT = "SELECT STATUS, EXTERNALID, RETRYCOUNT FROM SLOTSTATE WHERE WORKFLOWID = ? AND DATE = ?";
-    private static final String INSERT_SLOT_STATE = "INSERT INTO SLOTSTATE(WORKFLOWID, DATE, STATUS, EXTERNALID, RETRYCOUNT) VALUES (?, ?, ?, ?, ?);";
-    private static final String UPDATE_SLOT_STATE = "UPDATE SLOTSTATE SET STATUS=?, EXTERNALID=?, RETRYCOUNT=? WHERE WORKFLOWID=? AND DATE=?;";
+    private static final String INSERT_SLOT_STATE = "INSERT INTO SLOTSTATE(WORKFLOWID, DATE, STATUS, EXTERNALID, RETRYCOUNT) VALUES (?, ?, ?, ?, ?)";
+    private static final String UPDATE_SLOT_STATE = "UPDATE SLOTSTATE SET STATUS=?, EXTERNALID=?, RETRYCOUNT=? WHERE WORKFLOWID=? AND DATE=?";
     private static final String SELECT_SLOTS_BY_PERIOD = "SELECT STATUS, EXTERNALID, RETRYCOUNT, DATE FROM SLOTSTATE WHERE WORKFLOWID = ? AND DATE >= ? AND DATE < ?";
     private static final String SELECT_SLOTS_BY_TIMESTAMPS = "SELECT STATUS, EXTERNALID, RETRYCOUNT, DATE FROM SLOTSTATE WHERE WORKFLOWID = ? AND DATE IN (???)";
-    private static final String INSERT_RERUN_SLOT = "INSERT INTO RERUNSLOT(WORKFLOWID, DATE) VALUES (?, ?);";
+    private static final String INSERT_RERUN_SLOT = "INSERT INTO RERUNSLOT(WORKFLOWID, DATE) VALUES (?, ?)";
     private static final String SELECT_RERUN_SLOTS = "SELECT DATE FROM RERUNSLOT WHERE WORKFLOWID = ?";
     private static final String DELETE_RERUN_SLOTS = "DELETE FROM RERUNSLOT WHERE WORKFLOWID = ? AND DATE = ?";
+    private static final String INSERT_PAUSE_WORKFLOW = "INSERT INTO WORKFLOWINFO(WORKFLOWID, PAUSED) VALUES (?, ?)";
+    private static final String UPDATE_PAUSE_WORKFLOW = "UPDATE WORKFLOWINFO SET PAUSED = ? WHERE WORKFLOWID = ?";
+    private static final String SELECT_PAUSE_WORKFLOW = "SELECT PAUSED FROM WORKFLOWINFO WHERE WORKFLOWID = ?";
 
-    private static final String STATUS_PARAM = "status";
-    private static final String EXTERNAL_ID_PARAM = "externalId";
-    private static final String RETRY_COUNT_PARAM = "retryCount";
-    private static final String DATE_PARAM = "date";
+    private static final String STATUS_PARAM = "STATUS";
+    private static final String EXTERNAL_ID_PARAM = "EXTERNALID";
+    private static final String RETRY_COUNT_PARAM = "RETRYCOUNT";
+    private static final String DATE_PARAM = "DATE";
+    private static final String PAUSED_PARAM = "PAUSED";
+
     private static final Logger LOGGER = Logger.getLogger(AbstractServlet.class);
+
 
     private final String url;
     private final String name;
@@ -196,20 +202,45 @@ public class JDBCStateDatabase implements StateDatabase {
                     statement.execute();
                 }
             }
-
             return rerunTimes;
         }
 
         @Override
-        public boolean isPaused(WorkflowID workflowID) {
-            return false;
+        public boolean isPaused(WorkflowID workflowID) throws Exception {
+            return Boolean.TRUE.equals(getPausedWrapped(workflowID));
+        }
+
+        private Boolean getPausedWrapped(WorkflowID workflowID) throws SQLException {
+            try (PreparedStatement statement = connection.prepareStatement(SELECT_PAUSE_WORKFLOW)) {
+                statement.setString(1, workflowID.toString());
+                try (ResultSet resultSet = statement.executeQuery()) {
+                    if (resultSet.next()) {
+                        return resultSet.getBoolean(PAUSED_PARAM);
+                    } else {
+                        return null;
+                    }
+                }
+            }
         }
 
         @Override
-        public void setPaused(WorkflowID workflowID, boolean paused) throws IOException {
-
+        public void setPaused(WorkflowID workflowID, boolean paused) throws Exception {
+            if (getPausedWrapped(workflowID) == null) {
+                if (paused) {
+                    try (PreparedStatement statement = connection.prepareStatement(INSERT_PAUSE_WORKFLOW)) {
+                        statement.setString(1, workflowID.toString());
+                        statement.setBoolean(2, paused);
+                        statement.execute();
+                    }
+                }
+            } else {
+                try (PreparedStatement statement = connection.prepareStatement(UPDATE_PAUSE_WORKFLOW)) {
+                    statement.setBoolean(1, paused);
+                    statement.setString(2, workflowID.toString());
+                    statement.execute();
+                }
+            }
         }
-
     }
 
 }

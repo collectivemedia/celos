@@ -18,6 +18,7 @@ package com.collective.celos;
 import com.google.common.collect.Maps;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -75,12 +76,12 @@ public interface StateDatabaseConnection extends AutoCloseable {
     /**
      * Checks if Workflow has been paused
      */
-    public boolean isPaused(WorkflowID workflowID);
+    public boolean isPaused(WorkflowID workflowID) throws Exception;
 
     /**
      * Sets paused flag for a Workflow
      */
-    public void setPaused(WorkflowID workflowID, boolean paused) throws IOException;
+    public void setPaused(WorkflowID workflowID, boolean paused) throws IOException, SQLException, Exception;
 
     @Override
     default void close() {};

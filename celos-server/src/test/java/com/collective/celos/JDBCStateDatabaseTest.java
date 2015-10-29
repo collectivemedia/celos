@@ -23,7 +23,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.Statement;
 
-public class JDBCStateDatabaseConnectionTest extends AbstractStateDatabaseTest {
+public class JDBCStateDatabaseTest extends AbstractStateDatabaseTest {
 
     public static final String CREATE_SLOT_STATE_TABLE = "CREATE TABLE SLOTSTATE (" +
             "WORKFLOWID VARCHAR(25) NOT NULL, DATE TIMESTAMP NOT NULL, STATUS VARCHAR(20) NOT NULL, " +
@@ -31,6 +31,10 @@ public class JDBCStateDatabaseConnectionTest extends AbstractStateDatabaseTest {
 
     public static final String CREATE_RERUN_SLOT_TABLE = "CREATE TABLE RERUNSLOT (" +
             "WORKFLOWID VARCHAR(25) NOT NULL, DATE TIMESTAMP NOT NULL)";
+
+    public static final String CREATE_WORKFLOW_INFO_TABLE = "CREATE TABLE WORKFLOWINFO (" +
+            "WORKFLOWID VARCHAR(25) NOT NULL, PAUSED BOOLEAN NOT NULL)";
+
 
     private static Server SERVER;
     private static String URL = "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1";
@@ -46,6 +50,7 @@ public class JDBCStateDatabaseConnectionTest extends AbstractStateDatabaseTest {
             try (Statement statement = connection.createStatement()) {
                 statement.execute(CREATE_SLOT_STATE_TABLE);
                 statement.execute(CREATE_RERUN_SLOT_TABLE);
+                statement.execute(CREATE_WORKFLOW_INFO_TABLE);
             }
         }
         db = new JDBCStateDatabase(URL, USERNAME, PASSWORD).openConnection();

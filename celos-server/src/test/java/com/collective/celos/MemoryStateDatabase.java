@@ -20,6 +20,7 @@ import org.eclipse.jetty.util.ConcurrentHashSet;
 import org.joda.time.DateTime;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Simple implementation of StateDatabase that stores everything in a Map.
@@ -27,7 +28,7 @@ import java.util.*;
 public class MemoryStateDatabase implements StateDatabase {
 
     protected final Map<SlotID, SlotState> map = new HashMap<>();
-    protected final Set<SlotID> rerun = new ConcurrentHashSet<>();
+    protected final Map<SlotID, ScheduledTime> rerun = new ConcurrentHashMap<>();
     protected final Set<WorkflowID> pausedWorkflows = new HashSet<>();
     private final MemoryStateDatabaseConnection instance = new MemoryStateDatabaseConnection();
 
@@ -83,7 +84,7 @@ public class MemoryStateDatabase implements StateDatabase {
         @Override
         public void markSlotForRerun(SlotID slot, ScheduledTime now) throws Exception {
             // Doesn't implement GC for rerun
-            rerun.add(slot);
+            rerun.put(slot, now);
         }
 
         @Override
@@ -94,12 +95,12 @@ public class MemoryStateDatabase implements StateDatabase {
         @Override
         public SortedSet<ScheduledTime> getTimesMarkedForRerun(WorkflowID workflowID, ScheduledTime now) throws Exception {
             SortedSet<ScheduledTime> res = new TreeSet<>();
-            for (SlotID slot : rerun) {
-                if (slot.getWorkflowID().equals(workflowID)) {
-                    res.add(slot.getScheduledTime());
-                    RerunState rerunState = new RerunState(slot.getScheduledTime());
+            for (Map.Entry<SlotID, ScheduledTime> entry : rerun.entrySet()) {
+                if (entry.getKey().getWorkflowID().equals(workflowID)) {
+                    res.add(entry.getKey().getScheduledTime());
+                    RerunState rerunState = new RerunState(entry.getValue());
                     if (rerunState.isExpired(now)) {
-                        rerun.remove(slot);
+                        rerun.remove(entry.getKey());
                     }
                 }
             }

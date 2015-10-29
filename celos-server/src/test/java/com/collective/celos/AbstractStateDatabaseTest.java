@@ -146,6 +146,8 @@ public abstract class AbstractStateDatabaseTest {
         StateDatabaseConnection db = getStateDatabase();
         WorkflowID workflowID = new WorkflowID("wf1");
 
+        Assert.assertFalse(db.isPaused(workflowID));
+
         db.setPaused(workflowID, true);
         Assert.assertTrue(db.isPaused(workflowID));
 
