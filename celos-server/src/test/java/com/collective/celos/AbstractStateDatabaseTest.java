@@ -54,31 +54,31 @@ public abstract class AbstractStateDatabaseTest {
         ScheduledTime time3 = new ScheduledTime("2013-12-03T20:00Z");
         ScheduledTime time4 = new ScheduledTime("2013-12-04T01:00Z");
 
-        List<SlotState> slotStates0 = db.getSlotStates(wf1, time0, time2);
+        List<SlotState> slotStates0 = new ArrayList<>(db.getSlotStates(wf1, time0, time2).values());
         Collections.sort(slotStates0, comparator);
         Assert.assertEquals(slotStates0.size(), 7);
         assertSlotStatesOrder(slotStates0);
 
-        List<SlotState> slotStates1 = db.getSlotStates(wf1, time1, time2);
+        List<SlotState> slotStates1 = new ArrayList<>(db.getSlotStates(wf1, time1, time2).values());
         Collections.sort(slotStates1, comparator);
         Assert.assertEquals(slotStates1.size(), 4);
         assertSlotStatesOrder(slotStates1);
 
-        List<SlotState> slotStates2 = db.getSlotStates(wf1, time1, time3);
+        List<SlotState> slotStates2 = new ArrayList<>(db.getSlotStates(wf1, time1, time3).values());
         Collections.sort(slotStates2, comparator);
         Assert.assertEquals(slotStates2.size(), 24);
         assertSlotStatesOrder(slotStates2);
 
-        List<SlotState> slotStates4 = db.getSlotStates(wf1, time1, time1);
+        List<SlotState> slotStates4 = new ArrayList<>(db.getSlotStates(wf1, time1, time1).values());
         Collections.sort(slotStates4, comparator);
         Assert.assertEquals(slotStates4.size(), 0);
 
-        List<SlotState> slotStates5 = db.getSlotStates(wf1, time1, time1.plusSeconds(1));
+        List<SlotState> slotStates5 = new ArrayList<>(db.getSlotStates(wf1, time1, time1.plusSeconds(1)).values());
         Collections.sort(slotStates5, comparator);
         Assert.assertEquals(slotStates5.size(), 1);
         Assert.assertEquals(slotStates5.get(0).getScheduledTime(), time1);
 
-        List<SlotState> slotStates6 = db.getSlotStates(wf1, time4, time4.plusMonths(1));
+        List<SlotState> slotStates6 = new ArrayList<>(db.getSlotStates(wf1, time4, time4.plusMonths(1)).values());
         Collections.sort(slotStates6, comparator);
         Assert.assertEquals(slotStates6.size(), 1);
         Assert.assertEquals(slotStates6.get(0).getScheduledTime(), time4);
@@ -93,7 +93,7 @@ public abstract class AbstractStateDatabaseTest {
         WorkflowID wf1 = new WorkflowID("workflow-1");
         List<ScheduledTime> times = Lists.newArrayList(new ScheduledTime("2013-12-02T17:00Z"), new ScheduledTime("2013-12-02T19:00Z"), new ScheduledTime("2013-12-03T00:00Z"));
 
-        List<SlotState> slotStates = db.getSlotStates(wf1, times);
+        List<SlotState> slotStates = new ArrayList<>(db.getSlotStates(wf1, times).values());
         Collections.sort(slotStates, comparator);
 
         Assert.assertEquals(slotStates.size(), 3);
@@ -110,7 +110,7 @@ public abstract class AbstractStateDatabaseTest {
     @Test
     public void testGetSlotStatesForPeriodEmptyList() throws Exception {
         StateDatabaseConnection db = getStateDatabase();
-        List<SlotState> slotStates = db.getSlotStates(new WorkflowID("id"), new ScheduledTime("2013-12-03T00:01Z"), new ScheduledTime("2013-12-03T00:00Z"));
+        Map<SlotID, SlotState> slotStates = db.getSlotStates(new WorkflowID("id"), new ScheduledTime("2013-12-03T00:01Z"), new ScheduledTime("2013-12-03T00:00Z"));
         Assert.assertEquals(slotStates.size(), 0);
     }
 

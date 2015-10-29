@@ -18,7 +18,7 @@ package com.collective.celos;
 import com.collective.celos.trigger.AlwaysTrigger;
 import com.collective.celos.trigger.Trigger;
 import com.collective.celos.trigger.TriggerStatus;
-import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -980,10 +980,13 @@ public class SchedulerTest {
         scheduledTimes.add(time5_slot);
         scheduledTimes.add(time6_noSlot);
 
-        List<SlotState> dbSlotStates1 = Lists.newArrayList();
-        dbSlotStates1.add(new SlotState(new SlotID(id, time2_slot), SlotState.Status.SUCCESS));
-        dbSlotStates1.add(new SlotState(new SlotID(id, time3_slot), SlotState.Status.SUCCESS));
-        dbSlotStates1.add(new SlotState(new SlotID(id, time5_slot), SlotState.Status.SUCCESS));
+        Map<SlotID, SlotState> dbSlotStates1 = Maps.newHashMap();
+        SlotID slotID1 = new SlotID(id, time2_slot);
+        dbSlotStates1.put(slotID1, new SlotState(slotID1, SlotState.Status.SUCCESS));
+        SlotID slotID2 = new SlotID(id, time3_slot);
+        dbSlotStates1.put(slotID2,new SlotState(slotID2, SlotState.Status.SUCCESS));
+        SlotID slotID3 = new SlotID(id, time5_slot);
+        dbSlotStates1.put(slotID3, new SlotState(slotID3, SlotState.Status.SUCCESS));
 
         when(connection.getSlotStates(id, time1_noSlot, time7_noSlot)).thenReturn(dbSlotStates1);
         when(schedule.getScheduledTimes(scheduler, time1_noSlot, time7_noSlot)).thenReturn(scheduledTimes);
@@ -1024,11 +1027,13 @@ public class SchedulerTest {
         scheduledTimes.add(time5_slot);
         scheduledTimes.add(time6_noSlot);
 
-        List<SlotState> dbSlotStates1 = Lists.newArrayList();
-        dbSlotStates1.add(new SlotState(new SlotID(id, time2_slot), SlotState.Status.SUCCESS));
-        dbSlotStates1.add(new SlotState(new SlotID(id, time3_slot), SlotState.Status.SUCCESS));
-        dbSlotStates1.add(new SlotState(new SlotID(id, time5_slot), SlotState.Status.SUCCESS));
-
+        Map<SlotID, SlotState> dbSlotStates1 = Maps.newHashMap();
+        SlotID slotID1 = new SlotID(id, time2_slot);
+        dbSlotStates1.put(slotID1, new SlotState(slotID1, SlotState.Status.SUCCESS));
+        SlotID slotID2 = new SlotID(id, time3_slot);
+        dbSlotStates1.put(slotID2,new SlotState(slotID2, SlotState.Status.SUCCESS));
+        SlotID slotID3 = new SlotID(id, time5_slot);
+        dbSlotStates1.put(slotID3,new SlotState(slotID3, SlotState.Status.SUCCESS));
         SortedSet<ScheduledTime> rerunTimes = Sets.newTreeSet();
         ScheduledTime timeRerun1 = new ScheduledTime("2015-03-02T07:00:00Z");
         ScheduledTime timeRerun2 = new ScheduledTime("2015-03-09T07:00:00Z");

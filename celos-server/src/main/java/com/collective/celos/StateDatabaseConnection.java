@@ -15,9 +15,12 @@
  */
 package com.collective.celos;
 
+import com.google.common.collect.Maps;
+
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.SortedSet;
 
 /**
@@ -27,15 +30,25 @@ public interface StateDatabaseConnection extends AutoCloseable {
 
     /**
      * Returns the state of the slots, specified by start time (inclusive) and end time (exclusive)
-     * or empty List if not found.
+     * or empty Map if not found.
      */
-    public List<SlotState> getSlotStates(WorkflowID id, ScheduledTime start, ScheduledTime end) throws Exception;
+    public Map<SlotID, SlotState> getSlotStates(WorkflowID id, ScheduledTime start, ScheduledTime end) throws Exception;
 
 
     /**
-     * Returns the state of the given slots, or empty List if not found.
+     * Returns the state of the given slots, or empty Map if not found.
      */
-    public List<SlotState> getSlotStates(WorkflowID id, Collection<ScheduledTime> times) throws Exception;
+    public default Map<SlotID, SlotState> getSlotStates(WorkflowID id, Collection<ScheduledTime> times) throws Exception {
+        Map<SlotID, SlotState> slotStates = Maps.newHashMap();
+        for (ScheduledTime time : times) {
+            SlotID slotID = new SlotID(id, time);
+            SlotState slotState = getSlotState(slotID);
+            if (slotState != null) {
+                slotStates.put(slotID, slotState);
+            }
+        }
+        return slotStates;
+    }
 
     /**
      * Returns the state of the given slot, or null if not found.

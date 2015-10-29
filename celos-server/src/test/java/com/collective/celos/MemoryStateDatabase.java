@@ -15,7 +15,7 @@
  */
 package com.collective.celos;
 
-import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import org.eclipse.jetty.util.ConcurrentHashSet;
 import org.joda.time.DateTime;
 
@@ -26,7 +26,7 @@ import java.util.*;
  */
 public class MemoryStateDatabase implements StateDatabase {
 
-    protected final Map<SlotID, SlotState> map = new HashMap<SlotID, SlotState>();
+    protected final Map<SlotID, SlotState> map = new HashMap<>();
     protected final Set<SlotID> rerun = new ConcurrentHashSet<>();
     protected final Set<WorkflowID> pausedWorkflows = new HashSet<>();
     private final MemoryStateDatabaseConnection instance = new MemoryStateDatabaseConnection();
@@ -42,24 +42,25 @@ public class MemoryStateDatabase implements StateDatabase {
 
     protected class MemoryStateDatabaseConnection implements StateDatabaseConnection {
         @Override
-        public List<SlotState> getSlotStates(WorkflowID id, ScheduledTime start, ScheduledTime end) throws Exception {
-            List<SlotState> slotStates = Lists.newArrayList();
+        public Map<SlotID, SlotState> getSlotStates(WorkflowID id, ScheduledTime start, ScheduledTime end) throws Exception {
+            Map<SlotID, SlotState> slotStates = Maps.newHashMap();
             for (Map.Entry<SlotID, SlotState> entry : map.entrySet()) {
                 DateTime dateTime = entry.getKey().getScheduledTime().getDateTime();
                 if (!dateTime.isBefore(start.getDateTime()) && dateTime.isBefore(end.getDateTime())) {
-                    slotStates.add(entry.getValue());
+                    slotStates.put(entry.getKey(), entry.getValue());
                 }
             }
             return slotStates;
         }
 
         @Override
-        public List<SlotState> getSlotStates(WorkflowID id, Collection<ScheduledTime> times) throws Exception {
-            List<SlotState> slotStates = Lists.newArrayList();
+        public Map<SlotID, SlotState> getSlotStates(WorkflowID id, Collection<ScheduledTime> times) throws Exception {
+            Map<SlotID, SlotState> slotStates = Maps.newHashMap();
             for (ScheduledTime time : times) {
-                SlotState slotState = getSlotState(new SlotID(id, time));
+                SlotID slotID = new SlotID(id, time);
+                SlotState slotState = getSlotState(slotID);
                 if (slotState != null) {
-                    slotStates.add(slotState);
+                    slotStates.put(slotID, slotState);
                 }
             }
             return slotStates;

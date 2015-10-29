@@ -17,6 +17,7 @@ package com.collective.celos;
 
 import com.collective.celos.servlet.AbstractServlet;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -75,19 +76,20 @@ public class JDBCStateDatabase implements StateDatabase {
         }
 
         @Override
-        public List<SlotState> getSlotStates(WorkflowID id, ScheduledTime start, ScheduledTime end) throws Exception {
+        public Map<SlotID, SlotState> getSlotStates(WorkflowID id, ScheduledTime start, ScheduledTime end) throws Exception {
             try (PreparedStatement preparedStatement = connection.prepareStatement(SELECT_SLOTS_BY_PERIOD)) {
                 preparedStatement.setString(1, id.toString());
                 preparedStatement.setTimestamp(2, Util.toTimestamp(start));
                 preparedStatement.setTimestamp(3, Util.toTimestamp(end));
-                List<SlotState> slotStates = Lists.newArrayList();
+                Map<SlotID, SlotState> slotStates = Maps.newHashMap();
                 try (ResultSet resultSet = preparedStatement.executeQuery()) {
                     while (resultSet.next()) {
                         SlotState.Status status = SlotState.Status.valueOf(resultSet.getString(STATUS_PARAM));
                         String externalId = resultSet.getString(EXTERNAL_ID_PARAM);
                         int retryCount = resultSet.getInt(RETRY_COUNT_PARAM);
-                        ScheduledTime date = Util.toScheduledTime(resultSet.getTimestamp(DATE_PARAM));
-                        slotStates.add(new SlotState(new SlotID(id, date), status, externalId, retryCount));
+                        ScheduledTime date = Util.fromTimestamp(resultSet.getTimestamp(DATE_PARAM));
+                        SlotID slotID = new SlotID(id, date);
+                        slotStates.put(slotID, new SlotState(slotID, status, externalId, retryCount));
                     }
                 }
                 return slotStates;
@@ -95,7 +97,7 @@ public class JDBCStateDatabase implements StateDatabase {
         }
 
         @Override
-        public List<SlotState> getSlotStates(WorkflowID id, Collection<ScheduledTime> times) throws Exception {
+        public Map<SlotID, SlotState> getSlotStates(WorkflowID id, Collection<ScheduledTime> times) throws Exception {
             String questionMarks = StringUtils.join(times.stream().map(t -> "?").collect(Collectors.toList()), ", ");
             String query = SELECT_SLOTS_BY_TIMESTAMPS.replace("???", questionMarks);
             try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
@@ -104,14 +106,15 @@ public class JDBCStateDatabase implements StateDatabase {
                 for (ScheduledTime time : times) {
                     preparedStatement.setTimestamp(i++, Util.toTimestamp(time));
                 }
-                List<SlotState> slotStates = Lists.newArrayList();
+                Map<SlotID, SlotState> slotStates = Maps.newHashMap();
                 try (ResultSet resultSet = preparedStatement.executeQuery()) {
                     while (resultSet.next()) {
                         SlotState.Status status = SlotState.Status.valueOf(resultSet.getString(STATUS_PARAM));
                         String externalId = resultSet.getString(EXTERNAL_ID_PARAM);
                         int retryCount = resultSet.getInt(RETRY_COUNT_PARAM);
-                        ScheduledTime date = Util.toScheduledTime(resultSet.getTimestamp(DATE_PARAM));
-                        slotStates.add(new SlotState(new SlotID(id, date), status, externalId, retryCount));
+                        ScheduledTime date = Util.fromTimestamp(resultSet.getTimestamp(DATE_PARAM));
+                        SlotID slotID = new SlotID(id, date);
+                        slotStates.put(slotID, new SlotState(slotID, status, externalId, retryCount));
                     }
                 }
                 return slotStates;
@@ -177,7 +180,7 @@ public class JDBCStateDatabase implements StateDatabase {
                 statement.setString(1, workflowID.toString());
                 try(ResultSet resultSet = statement.executeQuery()) {
                     while (resultSet.next()) {
-                        ScheduledTime time = Util.toScheduledTime(resultSet.getTimestamp(DATE_PARAM));
+                        ScheduledTime time = Util.fromTimestamp(resultSet.getTimestamp(DATE_PARAM));
                         RerunState rerunState = new RerunState(time);
                         rerunTimes.add(time);
                         if (rerunState.isExpired(now)) {
