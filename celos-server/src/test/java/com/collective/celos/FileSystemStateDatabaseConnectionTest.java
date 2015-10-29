@@ -27,7 +27,7 @@ import java.net.URISyntaxException;
 import java.util.HashSet;
 import java.util.Set;
 
-public class FileSystemStateDatabaseTest extends AbstractStateDatabaseTest {
+public class FileSystemStateDatabaseConnectionTest extends AbstractStateDatabaseTest {
 
     @Rule
     public TemporaryFolder tempFolder = new TemporaryFolder();
@@ -40,13 +40,13 @@ public class FileSystemStateDatabaseTest extends AbstractStateDatabaseTest {
 
     @Test
     public void emptyDatabaseReturnsNull() throws Exception {
-        StateDatabase db = getStateDatabase();
+        StateDatabaseConnection db = getStateDatabase();
         Assert.assertNull(db.getSlotState(new SlotID(new WorkflowID("workflow-1"), new ScheduledTime("2013-12-02T13:37Z"))));
     }
 
     @Override
-    public StateDatabase getStateDatabase() throws IOException {
-        return new FileSystemStateDatabase(makeDatabaseDir());
+    public StateDatabaseConnection getStateDatabase() throws IOException {
+        return new FileSystemStateDatabase(makeDatabaseDir()).openConnection();
     }
 
     private File makeDatabaseDir() {
@@ -64,7 +64,7 @@ public class FileSystemStateDatabaseTest extends AbstractStateDatabaseTest {
      */
     @Test
     public void canReadFromFileSystem1() throws Exception {
-        StateDatabase db = new FileSystemStateDatabase(getResourceDirNoTimestamp());
+        StateDatabaseConnection db = new FileSystemStateDatabase(getResourceDirNoTimestamp()).openConnection();
         for(SlotState state : getStates()) {
             Assert.assertEquals(state, db.getSlotState(state.getSlotID()));
         }
@@ -75,7 +75,7 @@ public class FileSystemStateDatabaseTest extends AbstractStateDatabaseTest {
      */
     @Test
     public void canReadFromFileSystem2() throws Exception {
-        StateDatabase db = new FileSystemStateDatabase(getResourceDir());
+        StateDatabaseConnection db = new FileSystemStateDatabase(getResourceDir()).openConnection();
         for(SlotState state : getStates()) {
             Assert.assertEquals(state, db.getSlotState(state.getSlotID()));
         }
@@ -87,7 +87,7 @@ public class FileSystemStateDatabaseTest extends AbstractStateDatabaseTest {
      */
     @Test
     public void canWriteToFileSystem() throws Exception {
-        StateDatabase db = getStateDatabase();
+        StateDatabaseConnection db = getStateDatabase();
         for(SlotState state : getStates()) {
             db.putSlotState(state);
         }
@@ -98,7 +98,7 @@ public class FileSystemStateDatabaseTest extends AbstractStateDatabaseTest {
 
     @Test
     public void testPauseFileExistence() throws IOException {
-        StateDatabase db = getStateDatabase();
+        StateDatabaseConnection db = getStateDatabase();
         WorkflowID workflowID = new WorkflowID("wf1");
 
         File pauseFile = new File(getDatabaseDir(), "paused/wf1");

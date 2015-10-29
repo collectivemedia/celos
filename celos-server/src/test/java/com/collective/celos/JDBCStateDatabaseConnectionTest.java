@@ -23,7 +23,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.Statement;
 
-public class JDBCStateDatabaseTest extends AbstractStateDatabaseTest {
+public class JDBCStateDatabaseConnectionTest extends AbstractStateDatabaseTest {
 
     public static final String CREATE_SLOT_STATE_TABLE = "CREATE TABLE SLOTSTATE (" +
             "WORKFLOWID VARCHAR(25) NOT NULL, DATE TIMESTAMP NOT NULL, STATUS VARCHAR(20) NOT NULL, " +
@@ -36,7 +36,7 @@ public class JDBCStateDatabaseTest extends AbstractStateDatabaseTest {
     private static String URL = "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1";
     private static String USERNAME = "sa";
     private static String PASSWORD = "";
-    private static StateDatabase db;
+    private static StateDatabaseConnection db;
 
     @BeforeClass
     public static void setupClass() throws Exception {
@@ -48,7 +48,7 @@ public class JDBCStateDatabaseTest extends AbstractStateDatabaseTest {
                 statement.execute(CREATE_RERUN_SLOT_TABLE);
             }
         }
-        db = new JDBCStateDatabase(URL, USERNAME, PASSWORD);
+        db = new JDBCStateDatabase(URL, USERNAME, PASSWORD).openConnection();
     }
 
     @AfterClass
@@ -57,7 +57,7 @@ public class JDBCStateDatabaseTest extends AbstractStateDatabaseTest {
     }
 
     @Override
-    public StateDatabase getStateDatabase() {
+    public StateDatabaseConnection getStateDatabase() {
         return db;
     }
 

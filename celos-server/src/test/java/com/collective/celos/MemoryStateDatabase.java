@@ -29,78 +29,91 @@ public class MemoryStateDatabase implements StateDatabase {
     protected final Map<SlotID, SlotState> map = new HashMap<SlotID, SlotState>();
     protected final Set<SlotID> rerun = new ConcurrentHashSet<>();
     protected final Set<WorkflowID> pausedWorkflows = new HashSet<>();
+    private final MemoryStateDatabaseConnection instance = new MemoryStateDatabaseConnection();
 
     @Override
-    public List<SlotState> getSlotStates(WorkflowID id, ScheduledTime start, ScheduledTime end) throws Exception {
-        List<SlotState> slotStates = Lists.newArrayList();
-        for (Map.Entry<SlotID, SlotState> entry: map.entrySet()) {
-            DateTime dateTime = entry.getKey().getScheduledTime().getDateTime();
-            if (!dateTime.isBefore(start.getDateTime()) && dateTime.isBefore(end.getDateTime())) {
-                slotStates.add(entry.getValue());
-            }
-        }
-        return slotStates;
+    public StateDatabaseConnection openConnection() {
+        return getMemoryStateDatabaseConnection();
     }
 
-    @Override
-    public List<SlotState> getSlotStates(WorkflowID id, Collection<ScheduledTime> times) throws Exception {
-        List<SlotState> slotStates = Lists.newArrayList();
-        for (ScheduledTime time : times) {
-            SlotState slotState = getSlotState(new SlotID(id, time));
-            if (slotState != null) {
-                slotStates.add(slotState);
-            }
-        }
-        return slotStates;
+    public MemoryStateDatabaseConnection getMemoryStateDatabaseConnection() {
+        return instance;
     }
 
-    @Override
-    public SlotState getSlotState(SlotID id) throws Exception {
-        return map.get(id);
-    }
-
-    @Override
-    public void putSlotState(SlotState state) throws Exception {
-        map.put(state.getSlotID(), state);
-    }
-
-    public int size() {
-        return map.size();
-    }
-
-    @Override
-    public void markSlotForRerun(SlotID slot, ScheduledTime now) throws Exception {
-        // Doesn't implement GC for rerun
-        rerun.add(slot);
-    }
-
-    @Override
-    public boolean isPaused(WorkflowID workflowID) {
-        return pausedWorkflows.contains(workflowID);
-    }
-
-    @Override
-    public SortedSet<ScheduledTime> getTimesMarkedForRerun(WorkflowID workflowID, ScheduledTime now) throws Exception {
-        SortedSet<ScheduledTime> res = new TreeSet<>();
-        for (SlotID slot : rerun) {
-            if (slot.getWorkflowID().equals(workflowID)) {
-                res.add(slot.getScheduledTime());
-                RerunState rerunState = new RerunState(slot.getScheduledTime());
-                if (rerunState.isExpired(now)) {
-                    rerun.remove(slot);
+    protected class MemoryStateDatabaseConnection implements StateDatabaseConnection {
+        @Override
+        public List<SlotState> getSlotStates(WorkflowID id, ScheduledTime start, ScheduledTime end) throws Exception {
+            List<SlotState> slotStates = Lists.newArrayList();
+            for (Map.Entry<SlotID, SlotState> entry : map.entrySet()) {
+                DateTime dateTime = entry.getKey().getScheduledTime().getDateTime();
+                if (!dateTime.isBefore(start.getDateTime()) && dateTime.isBefore(end.getDateTime())) {
+                    slotStates.add(entry.getValue());
                 }
             }
+            return slotStates;
         }
-        return res;
-    }
 
-    @Override
-    public void setPaused(WorkflowID workflowID, boolean paused) {
-        if (paused) {
-            pausedWorkflows.add(workflowID);
-        } else {
-            pausedWorkflows.remove(workflowID);
+        @Override
+        public List<SlotState> getSlotStates(WorkflowID id, Collection<ScheduledTime> times) throws Exception {
+            List<SlotState> slotStates = Lists.newArrayList();
+            for (ScheduledTime time : times) {
+                SlotState slotState = getSlotState(new SlotID(id, time));
+                if (slotState != null) {
+                    slotStates.add(slotState);
+                }
+            }
+            return slotStates;
         }
-    }
+
+        @Override
+        public SlotState getSlotState(SlotID id) throws Exception {
+            return map.get(id);
+        }
+
+        @Override
+        public void putSlotState(SlotState state) throws Exception {
+            map.put(state.getSlotID(), state);
+        }
+
+        public int size() {
+            return map.size();
+        }
+
+        @Override
+        public void markSlotForRerun(SlotID slot, ScheduledTime now) throws Exception {
+            // Doesn't implement GC for rerun
+            rerun.add(slot);
+        }
+
+        @Override
+        public boolean isPaused(WorkflowID workflowID) {
+            return pausedWorkflows.contains(workflowID);
+        }
+
+        @Override
+        public SortedSet<ScheduledTime> getTimesMarkedForRerun(WorkflowID workflowID, ScheduledTime now) throws Exception {
+            SortedSet<ScheduledTime> res = new TreeSet<>();
+            for (SlotID slot : rerun) {
+                if (slot.getWorkflowID().equals(workflowID)) {
+                    res.add(slot.getScheduledTime());
+                    RerunState rerunState = new RerunState(slot.getScheduledTime());
+                    if (rerunState.isExpired(now)) {
+                        rerun.remove(slot);
+                    }
+                }
+            }
+            return res;
+        }
+
+        @Override
+        public void setPaused(WorkflowID workflowID, boolean paused) {
+            if (paused) {
+                pausedWorkflows.add(workflowID);
+            } else {
+                pausedWorkflows.remove(workflowID);
+            }
+        }
+
+    };
 
 }
