@@ -4,11 +4,6 @@
 <web-app>
 
     <servlet>
-        <servlet-name>UIServlet</servlet-name>
-        <servlet-class>com.collective.celos.ui.UIServlet</servlet-class>
-    </servlet>
-
-    <servlet>
         <servlet-name>ConfigServlet</servlet-name>
         <servlet-class>com.collective.celos.ui.ConfigServlet</servlet-class>
     </servlet>
@@ -24,11 +19,6 @@
     </servlet>
 
     <servlet>
-        <servlet-name>UIRerunServlet</servlet-name>
-        <servlet-class>com.collective.celos.ui.UIRerunServlet</servlet-class>
-    </servlet>
-
-    <servlet>
         <servlet-name>UIActionServlet</servlet-name>
         <servlet-class>com.collective.celos.ui.UIActionServlet</servlet-class>
     </servlet>
@@ -37,11 +27,6 @@
         <servlet-name>VersionServlet</servlet-name>
         <servlet-class>com.collective.celos.servlet.VersionServlet</servlet-class>
     </servlet>
-
-    <servlet-mapping>
-        <servlet-name>UIServlet</servlet-name>
-        <url-pattern>/ui</url-pattern>
-    </servlet-mapping>
 
     <servlet-mapping>
         <servlet-name>ConfigServlet</servlet-name>
@@ -56,11 +41,6 @@
     <servlet-mapping>
         <servlet-name>TriggerStatusServlet</servlet-name>
         <url-pattern>/trigger-status</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
-        <servlet-name>UIRerunServlet</servlet-name>
-        <url-pattern>/rerun</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>
