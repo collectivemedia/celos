@@ -182,6 +182,12 @@ AppDispatcher.register(function (payload) {
             SlotsStore.emit(CHANGE_EVENT);
             break;
 
+        case TodoConstants.MODAL_BOX:
+            console.log("case MODAL_BOX:");
+            _internalSlotsData = _internalSlotsData.set("modalBox", Immutable.Map(payload.action));
+            SlotsStore.emit(CHANGE_EVENT);
+            break;
+
         // add more cases for other actionTypes, like TODO_DESTROY, etc.
     }
 

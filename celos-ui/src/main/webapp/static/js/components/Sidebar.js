@@ -102,8 +102,7 @@ var CelosSidebar = React.createClass({
 
     makeOneTab: function (tabLabel) {
         return React.DOM.li({ className: "nav-item", onClick: this.makeHandleSelectTab(tabLabel)},
-            React.DOM.a({
-                    href: window.location.hash,
+            React.DOM.button({
                     className: "nav-link" + (this.state.selectedTab == tabLabel ? " active" : "")
                 },
                 tabLabel
@@ -162,12 +161,18 @@ var CelosSidebar = React.createClass({
                     this.makeDropMenu()
                 ),
                 React.DOM.li({ className: "my-column" },
-                    React.DOM.button({ type: "button", className: "btn btn-warning " },
+                    React.DOM.button({type: "button", className: "btn btn-warning",
+                            onClick: function() {
+                                AppDispatcher.modalBoxAction({show: true, callback: AppDispatcher.rerunSelectedSlots})
+                            }},
                         "Rerun"
                     )
                 ),
                 React.DOM.li({ className: "my-column" },
-                    React.DOM.button({ type: "button", className: "btn btn-danger" },
+                    React.DOM.button({type: "button", className: "btn btn-danger",
+                            onClick: function() {
+                                AppDispatcher.modalBoxAction({show: true, callback: AppDispatcher.killSelectedSlots})
+                            }},
                         "Kill"
                     )
                 )

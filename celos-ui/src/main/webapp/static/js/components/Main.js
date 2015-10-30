@@ -21,7 +21,6 @@ var CelosMainFetch = React.createClass({
 
     getInitialState: function () {
         return {
-            //navigation: SlotsStore.getNavigation(),
             data: SlotsStore.getAll()
         };
     },
@@ -81,6 +80,7 @@ var CelosMainFetch = React.createClass({
         return React.DOM.div(null,
             React.createElement(CelosMain, {
                 groups: tmp,
+                modalBox: this.state.data.get("modalBox", Immutable.Map()),
                 request: this.props.request,
                 activeGroups: Immutable.Set(activeGroups),
                 navigation: this.state.data.get("navigation")
@@ -106,6 +106,7 @@ var CelosMain = React.createClass({
         console.log("CelosMain", this.props);
         return React.DOM.div({id: "page-content"},
             React.createElement(ContextMenu, {}),
+            React.createElement(ModalBox, {store: this.props.modalBox}),
             React.DOM.h2(null, this.props.navigation.currentTime),
             React.createElement(Navigation, { data: this.props.navigation, request: this.props.request }),
             React.DOM.p({style: {backgroundColor: "#eee"}}, "to select slots use Alt + Click"),

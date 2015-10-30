@@ -25,7 +25,8 @@ var TodoConstants = {
     LOAD_SLOTS: "LOAD_SLOTS",
     FOCUS_ON_SLOT: "FOCUS_ON_SLOT",
     CLEAR_SELECTION: "CLEAR_SELECTION",
-    LOAD_NAVIGATION: "LOAD_NAVIGATION"
+    LOAD_NAVIGATION: "LOAD_NAVIGATION",
+    MODAL_BOX: "MODAL_BOX"
 };
 
 var AppDispatcher = {
@@ -97,6 +98,34 @@ var AppDispatcher = {
             breadcrumbs: action.breadcrumbs
         })
 
+    },
+
+    killSelectedSlots: function () {
+        console.log("KILL ACTION");
+        ajaxPostJSON("/multiplex-rpc", {
+                action: "kill",
+                slots: SlotsStore.getSelectedSlots()
+            },
+            function (res) { console.log(res)}
+        )
+    },
+
+    rerunSelectedSlots: function () {
+        console.log("RERUN ACTION");
+        ajaxPostJSON("/multiplex-rpc", {
+                action: "rerun",
+                slots: SlotsStore.getSelectedSlots()
+            },
+            function (res) { console.log(res)}
+        )
+    },
+
+    modalBoxAction: function (action) {
+        console.log("modalBoxAction");
+        this.dispatch({
+            source: TodoConstants.MODAL_BOX,
+            action: action
+        })
     },
 
     /**

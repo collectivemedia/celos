@@ -26,24 +26,6 @@ var ContextMenu = React.createClass({
         }
     },
 
-    proceedClick1: function () {
-        ajaxPostJSON("/multiplex-rpc", {
-                action: "rerun",
-                slots: SlotsStore.getSelectedSlots()
-            },
-            function (res) { console.log(res)}
-        )
-    },
-
-    proceedClick2: function () {
-        ajaxPostJSON("/multiplex-rpc", {
-                action: "kill",
-                slots: SlotsStore.getSelectedSlots()
-            },
-            function (res) { console.log(res)}
-        )
-    },
-
     render: function () {
         if (!this.props.showElement) {
             return null
@@ -57,14 +39,18 @@ var ContextMenu = React.createClass({
                         top: this.props.y,
                         left: this.props.x
                     }},
-                React.DOM.li({onClick: this.proceedClick1},
-                    React.DOM.a({href: window.location.hash, tabIndex: -1},
+                // TODO set text for rerun and kill
+                React.DOM.li({onClick: function() {
+                        AppDispatcher.modalBoxAction({show: true, callback: AppDispatcher.killSelectedSlots})
+                    }},
+                    React.DOM.button({tabIndex: -1},
                         "Kill workflows")),
-                React.DOM.li({onClick: this.proceedClick2},
-                    React.DOM.a({href: window.location.hash, tabIndex: -1},
+                React.DOM.li({onClick: function() {
+                        AppDispatcher.modalBoxAction({show: true, callback: AppDispatcher.rerunSelectedSlots})
+                    }},
+                    React.DOM.button({tabIndex: -1},
                         "Rerun workflows"))
             )
         )
     }
 });
-

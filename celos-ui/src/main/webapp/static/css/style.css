@@ -137,3 +137,24 @@ table {
     /*padding-left: 5px;*/
     /*padding-right: 5px;*/
 }
+
+.modalDialog > div {
+    width: 400px;
+    position: relative;
+    margin: 20% 20%;
+    padding: 20px 20px 20px 20px;
+    background: #fff;
+}
+
+.modalDialog {
+    opacity: 1;
+    pointer-events: auto;
+
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background: #aaa;
+    /*z-index: 99999;*/
+}
