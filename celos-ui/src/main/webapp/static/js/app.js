@@ -24,8 +24,6 @@ var Navigation = React.createClass({
     displayName: "Navigation",
 
     render: function render() {
-        console.log("DEBUG");
-        console.log(this.props.data.toJS());
         var serverInfo = this.props.data.toJS();
         return React.createElement("center", { className: "bigButtons" },
             React.DOM.a({ href: makeCelosHref(this.props.request.zoom, serverInfo.left, this.props.request.groups) }, "< Prev page"),

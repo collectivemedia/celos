@@ -114,7 +114,6 @@ var CelosMain = React.createClass({
                     var wfGroup = wfInfo.get("name");
                     var isGroupActive = this.props.activeGroups.contains(wfGroup);
                     if (isGroupActive) {
-                        console.log("OLOLO", wfInfo.toJS());
                         return React.DOM.div({ key: i },
                             React.createElement(WorkflowsGroupFetch, {
                                 name: wfGroup,

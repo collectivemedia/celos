@@ -168,7 +168,6 @@ AppDispatcher.register(function (payload) {
                     },
                     /*success=*/ function (data) {
                         _internalSlotsData = _internalSlotsData.mergeDeepIn(payload.breadcrumbs, Immutable.fromJS(data));
-                        console.log("?????", _internalSlotsData.getIn(payload.breadcrumbs).toJS());
                         SlotsStore.emit(CHANGE_EVENT);
                     }.bind(this)
                 );

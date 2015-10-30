@@ -203,7 +203,6 @@ var TriggerStatusFetch = React.createClass({
     },
 
     drawTrigger: function(listOfStatuses) {
-        console.log(listOfStatuses);
         return React.DOM.ul({className: "my-non-styled-list"},
             listOfStatuses.map(function (curr) {
                 var successClass = curr.ready ? "label-success" : "label-warning";
@@ -223,7 +222,7 @@ var TriggerStatusFetch = React.createClass({
     },
 
     render: function () {
-        console.log("TriggerStatus render", this.props, this.state);
+        //console.log("TriggerStatus render", this.props, this.state);
         return this.state
             ? React.DOM.div({className: "cell-hover"},
             this.drawTrigger(this.state.data))
