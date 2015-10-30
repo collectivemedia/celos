@@ -84,6 +84,7 @@ public class FileSystemStateDatabase implements StateDatabase {
     private final File stateDir;
     private final File rerunDir;
     private final File pausedDir;
+    private final FileSystemStateDatabaseConnection instance;
 
     /**
      * Creates a new DB that stores data in the given directory, which must exist.
@@ -95,6 +96,7 @@ public class FileSystemStateDatabase implements StateDatabase {
         stateDir = new File(dir, STATE_DIR_NAME);
         rerunDir = new File(dir, RERUN_DIR_NAME);
         pausedDir = new File(dir, PAUSED_DIR_NAME);
+        instance = new FileSystemStateDatabaseConnection();
     }
 
     @Override
@@ -102,7 +104,7 @@ public class FileSystemStateDatabase implements StateDatabase {
         return instance;
     }
 
-    private final StateDatabaseConnection instance = new StateDatabaseConnection() {
+    private class FileSystemStateDatabaseConnection implements StateDatabaseConnection {
 
         @Override
         public void close() throws Exception {
