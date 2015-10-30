@@ -116,6 +116,10 @@ public class MemoryStateDatabase implements StateDatabase {
             }
         }
 
+        @Override
+        public void close() throws Exception {
+            
+        }
     };
 
 }

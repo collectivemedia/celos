@@ -105,6 +105,11 @@ public class FileSystemStateDatabase implements StateDatabase {
     private final StateDatabaseConnection instance = new StateDatabaseConnection() {
 
         @Override
+        public void close() throws Exception {
+
+        }
+
+        @Override
         public Map<SlotID, SlotState> getSlotStates(WorkflowID id, ScheduledTime start, ScheduledTime end) throws Exception {
 
             Map<SlotID, SlotState> slotStates = Maps.newHashMap();

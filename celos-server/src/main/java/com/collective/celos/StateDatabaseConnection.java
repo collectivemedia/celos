@@ -81,8 +81,6 @@ public interface StateDatabaseConnection extends AutoCloseable {
     /**
      * Sets paused flag for a Workflow
      */
-    public void setPaused(WorkflowID workflowID, boolean paused) throws IOException, SQLException, Exception;
+    public void setPaused(WorkflowID workflowID, boolean paused) throws Exception;
 
-    @Override
-    default void close() {};
 }
