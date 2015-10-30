@@ -28,6 +28,7 @@ import static org.mockito.Mockito.when;
 public class SuccessTriggerTest {
 
     private Scheduler scheduler = Mockito.mock(Scheduler.class);
+    private StateDatabaseConnection connection = Mockito.mock(StateDatabaseConnection.class);
     private Workflow workflow = Mockito.mock(Workflow.class);
     private WorkflowConfiguration workflowConfiguration = Mockito.mock(WorkflowConfiguration.class);
     private StateDatabase stateDatabase = Mockito.mock(StateDatabase.class);
@@ -62,7 +63,7 @@ public class SuccessTriggerTest {
     public void testFailIsDataAvailableInternalTrigger() throws Exception {
         SuccessTrigger trigger = new SuccessTrigger("foo");
 
-        trigger.isDataAvailable(scheduler, new ScheduledTime(DateTime.now()), new ScheduledTime(DateTime.now()));
+        trigger.isDataAvailable(connection, new ScheduledTime(DateTime.now()), new ScheduledTime(DateTime.now()));
     }
 
     @Test
@@ -73,12 +74,12 @@ public class SuccessTriggerTest {
         ScheduledTime scheduledTime = new ScheduledTime(DateTime.now(DateTimeZone.UTC));
         ScheduledTime stNow = new ScheduledTime(DateTime.now(DateTimeZone.UTC).plusMinutes(30));
 
-        msd.putSlotState(new SlotState(new SlotID(new WorkflowID("foo"), scheduledTime), SlotState.Status.SUCCESS));
+        msd.openConnection().putSlotState(new SlotState(new SlotID(new WorkflowID("foo"), scheduledTime), SlotState.Status.SUCCESS));
 
         Mockito.when(scheduler.getStateDatabase()).thenReturn(msd);
         SuccessTrigger trigger = new SuccessTrigger("foo");
 
-        Assert.assertTrue(trigger.isDataAvailable(scheduler, stNow, scheduledTime));
+        Assert.assertTrue(trigger.isDataAvailable(msd.openConnection(), stNow, scheduledTime));
     }
 
     @Test
@@ -89,13 +90,13 @@ public class SuccessTriggerTest {
         ScheduledTime scheduledTime = new ScheduledTime(DateTime.now(DateTimeZone.UTC));
         ScheduledTime stNow = new ScheduledTime(DateTime.now(DateTimeZone.UTC).plusMinutes(30));
 
-        msd.putSlotState(new SlotState(new SlotID(new WorkflowID("foo"), scheduledTime), SlotState.Status.WAITING));
+        msd.openConnection().putSlotState(new SlotState(new SlotID(new WorkflowID("foo"), scheduledTime), SlotState.Status.WAITING));
 
         Mockito.when(scheduler.getStateDatabase()).thenReturn(msd);
         SuccessTrigger trigger = new SuccessTrigger("foo");
 
 
-        Assert.assertFalse(trigger.isDataAvailable(scheduler, stNow, scheduledTime));
+        Assert.assertFalse(trigger.isDataAvailable(connection, stNow, scheduledTime));
     }
 
     @Test
@@ -106,12 +107,12 @@ public class SuccessTriggerTest {
         ScheduledTime scheduledTime = new ScheduledTime(DateTime.now(DateTimeZone.UTC));
         ScheduledTime stNow = new ScheduledTime(DateTime.now(DateTimeZone.UTC).plusMinutes(30));
 
-        msd.putSlotState(new SlotState(new SlotID(new WorkflowID("foo2"), stNow), SlotState.Status.SUCCESS));
+        msd.openConnection().putSlotState(new SlotState(new SlotID(new WorkflowID("foo2"), stNow), SlotState.Status.SUCCESS));
 
         Mockito.when(scheduler.getStateDatabase()).thenReturn(msd);
         SuccessTrigger trigger = new SuccessTrigger("foo");
 
-        Assert.assertFalse(trigger.isDataAvailable(scheduler, stNow, scheduledTime));
+        Assert.assertFalse(trigger.isDataAvailable(connection, stNow, scheduledTime));
     }
 
 }

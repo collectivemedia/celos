@@ -61,18 +61,19 @@ public class RerunServlet extends AbstractServlet {
                 return;
             }
 
-            StateDatabase db = scheduler.getStateDatabase();
-            SlotState state = db.getSlotState(slot);
-            if (state != null) {
-                updateSlotToRerun(state, db);
+            try(StateDatabaseConnection db = scheduler.getStateDatabase().openConnection()) {
+                SlotState state = db.getSlotState(slot);
+                if (state != null) {
+                    updateSlotToRerun(state, db);
+                }
+                db.markSlotForRerun(slot, ScheduledTime.now());
             }
-            db.markSlotForRerun(slot, ScheduledTime.now());
         } catch(Exception e) {
             throw new ServletException(e);
         }
     }
 
-    void updateSlotToRerun(SlotState state, StateDatabase db) throws Exception {
+    void updateSlotToRerun(SlotState state, StateDatabaseConnection db) throws Exception {
         LOGGER.info("Scheduling Slot for rerun: " + state.getSlotID());
         SlotState newState = state.transitionToRerun();
         db.putSlotState(newState);
