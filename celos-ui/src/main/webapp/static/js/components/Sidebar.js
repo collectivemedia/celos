@@ -61,8 +61,12 @@ var CelosSidebar = React.createClass({
             (this.state.selectedSlots.length == 0)
                 ? React.DOM.div({ className: "dropdown-item"}, "empty list...")
                 : this.state.selectedSlots.map(function (elem, i) {
-                    return React.createElement("button",
-                        { className: "dropdown-item", type: "button", key: i},
+                    return React.DOM.button(
+                        { className: "dropdown-item", type: "button", key: i,
+                        onClick: function () {
+                            // hide sidebar
+                            AppDispatcher.focusOnSlot({breadcrumbs: Immutable.Seq(elem.bc)})
+                        }},
                         "" + elem.workflow + "@" + elem.ts
                     )
                 })

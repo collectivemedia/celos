@@ -35,12 +35,12 @@ var SlotsStore = Object.assign({}, EventEmitter.prototype, {
 
     getSelectedSlots: function () {
         var result = [];
-        _internalSlotsData.get("rows").forEach(function (table) {
-            table.get("rows").forEach(function (row) {
-                row.get("slots").forEach(function (slot, timestamp) {
+        _internalSlotsData.get("rows").forEach(function (table, i1) {
+            table.get("rows").forEach(function (row, i2) {
+                row.get("slots").forEach(function (slot, i3) {
                     if (slot.get("isSelected", false)) {
                         slot.getIn(["timestamps"]).forEach(function(tmp) {
-                            result.push({ workflow: row.get("workflowName"), ts: tmp})
+                            result.push({ workflow: row.get("workflowName"), ts: tmp, bc: ["rows", i1, "rows", i2, "rows", i3]})
                         })
                     }
                 })
@@ -87,7 +87,7 @@ AppDispatcher.register(function (payload) {
             break;
 
         case TodoConstants.FOCUS_ON_SLOT:
-            console.log("case TodoConstants.SIDEBAR_UPDATE");
+            console.log("case TodoConstants.FOCUS_ON_SLOT", payload.breadcrumbs);
             var newPath = payload.breadcrumbs;
             var oldPath = _internalLastSelectedSlotPath;
             var newState = _internalSlotsData;
