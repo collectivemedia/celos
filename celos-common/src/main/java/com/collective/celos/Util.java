@@ -212,7 +212,7 @@ public class Util {
         return new Timestamp(time.getDateTime().getMillis());
     }
 
-    public static ScheduledTime toScheduledTime(Timestamp timestamp) {
+    public static ScheduledTime fromTimestamp(Timestamp timestamp) {
         return new ScheduledTime(new DateTime(timestamp.getTime()).withZone(DateTimeZone.UTC));
     }
 }

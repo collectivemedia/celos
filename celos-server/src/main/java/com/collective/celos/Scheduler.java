@@ -19,6 +19,7 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import org.apache.log4j.Logger;
 
@@ -117,9 +118,9 @@ public class Scheduler {
         times.addAll(wf.getSchedule().getScheduledTimes(this, start, end));
         times.addAll(timesMarkedForRerun);
 
-        Set<SlotState> fetchedSlots = Sets.newHashSet();
-        fetchedSlots.addAll(connection.getSlotStates(wf.getID(), start, end));
-        fetchedSlots.addAll(connection.getSlotStates(wf.getID(), timesMarkedForRerun));
+        Map<SlotID, SlotState> fetchedSlots = Maps.newHashMap();
+        fetchedSlots.putAll(connection.getSlotStates(wf.getID(), start, end));
+        fetchedSlots.putAll(connection.getSlotStates(wf.getID(), timesMarkedForRerun));
         return matchScheduledToFetched(wf, times, fetchedSlots);
     }
 
@@ -131,16 +132,15 @@ public class Scheduler {
     public List<SlotState> getSlotStates(Workflow wf, ScheduledTime start, ScheduledTime end, StateDatabaseConnection connection) throws Exception {
         SortedSet<ScheduledTime> times = new TreeSet<>();
         times.addAll(wf.getSchedule().getScheduledTimes(this, start, end));
-        List<SlotState> fetchedSlots = connection.getSlotStates(wf.getID(), start, end);
+        Map<SlotID, SlotState> fetchedSlots = connection.getSlotStates(wf.getID(), start, end);
         return matchScheduledToFetched(wf, times, fetchedSlots);
     }
 
-    private List<SlotState> matchScheduledToFetched(Workflow wf, SortedSet<ScheduledTime> scheduledTimes, Collection<SlotState> fetchedSlots) throws Exception {
+    private List<SlotState> matchScheduledToFetched(Workflow wf, SortedSet<ScheduledTime> scheduledTimes, Map<SlotID, SlotState> timeToSlots) throws Exception {
         List<SlotState> slotStates = new ArrayList<SlotState>(scheduledTimes.size());
-        Map<SlotID, SlotState> timeToSlotMap = fetchedSlots.stream().collect(Collectors.toMap(SlotState::getSlotID, Function.identity()));
         for (ScheduledTime t : scheduledTimes) {
             SlotID slotID = new SlotID(wf.getID(), t);
-            SlotState slotState = timeToSlotMap.get(slotID);
+            SlotState slotState = timeToSlots.get(slotID);
             if (slotState != null) {
                 slotStates.add(slotState);
             } else {

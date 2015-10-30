@@ -17,7 +17,7 @@ package com.collective.celos;
 
 import java.io.IOException;
 
-public class MemoryStateDatabaseConnectionTest extends AbstractStateDatabaseTest {
+public class MemoryStateDatabaseTest extends AbstractStateDatabaseTest {
 
     @Override
     public StateDatabaseConnection getStateDatabase() throws IOException {

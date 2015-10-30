@@ -27,7 +27,7 @@ import java.net.URISyntaxException;
 import java.util.HashSet;
 import java.util.Set;
 
-public class FileSystemStateDatabaseConnectionTest extends AbstractStateDatabaseTest {
+public class FileSystemStateDatabaseTest extends AbstractStateDatabaseTest {
 
     @Rule
     public TemporaryFolder tempFolder = new TemporaryFolder();
@@ -97,7 +97,7 @@ public class FileSystemStateDatabaseConnectionTest extends AbstractStateDatabase
     }
 
     @Test
-    public void testPauseFileExistence() throws IOException {
+    public void testPauseFileExistence() throws Exception {
         StateDatabaseConnection db = getStateDatabase();
         WorkflowID workflowID = new WorkflowID("wf1");
 

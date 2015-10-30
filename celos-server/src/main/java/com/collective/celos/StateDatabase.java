@@ -15,9 +15,8 @@
  */
 package com.collective.celos;
 
-public interface StateDatabase extends AutoCloseable {
+public interface StateDatabase {
 
     public StateDatabaseConnection openConnection() throws Exception;
 
-    public default void close() {}
 }
