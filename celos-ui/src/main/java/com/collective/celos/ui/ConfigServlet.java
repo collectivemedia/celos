@@ -35,7 +35,7 @@ import java.util.*;
 /**
  * Renders the UI JSON.
  */
-public class MainServlet extends HttpServlet {
+public class ConfigServlet extends HttpServlet {
 
     private static final String ZOOM_PARAM = "zoom";
     private static final String TIME_PARAM = "time";
@@ -48,12 +48,6 @@ public class MainServlet extends HttpServlet {
     private static final ObjectMapper objectMapper = new ObjectMapper();
     private static final DateTimeFormatter FULL_FORMAT = DateTimeFormat.forPattern("YYYY-MM-dd HH:mm");
 
-    protected static class MainUI {
-        public String currentTime;
-        public NavigationPOJO navigation;
-        public List<WorkflowGroupRef> rows;
-    }
-
     protected static class WorkflowGroupRef {
         public String name;
         public List<Object> rows;
@@ -62,6 +56,9 @@ public class MainServlet extends HttpServlet {
     protected final static ObjectMapper mapper = new ObjectMapper();
     protected final static ObjectWriter writer = mapper.writerWithDefaultPrettyPrinter();
 
+    protected static class ConfigUI {
+        public List<WorkflowGroupRef> rows;
+    }
 
     protected static class NavigationPOJO {
         public String left;
@@ -104,21 +101,6 @@ public class MainServlet extends HttpServlet {
         }
     }
 
-    protected static MainUI processMain(List<WorkflowGroup> groups, ScheduledTime shift,
-                                        int zoom, ScheduledTime now) throws IOException {
-        final MainUI result = new MainUI();
-        result.currentTime = FULL_FORMAT.print(now.getDateTime()) + " UTC";
-        result.navigation = makeNavigationButtons(shift, zoom, now);
-        result.rows = new ArrayList<>();
-        for (WorkflowGroup g : groups) {
-            final WorkflowGroupRef group = new WorkflowGroupRef();
-            group.name = g.getName();
-            group.rows = Collections.emptyList();
-            result.rows.add(group);
-        }
-        return result;
-    }
-
     // We never want to fetch more data than for a week from Celos so as not to overload the server
     private static int MAX_MINUTES_TO_FETCH = 7 * 60 * 24;
     private static int MAX_TILES_TO_DISPLAY = 48;
@@ -134,9 +116,6 @@ public class MainServlet extends HttpServlet {
         File configFile = (File) servletContext.getAttribute(Main.CONFIG_FILE_ATTR);
 
         CelosClient client = new CelosClient(celosURL.toURI());
-        final ScheduledTime now = ScheduledTime.now();
-        ScheduledTime timeShift = getDisplayTime(timeParam, now);
-        int zoomLevelMinutes = getZoomLevel(zoomParam);
         Set<WorkflowID> workflowIDs = client.getWorkflowList();
 
         List<WorkflowGroup> groups;
@@ -146,10 +125,15 @@ public class MainServlet extends HttpServlet {
         } else {
             groups = getDefaultGroups(workflowIDs);
         }
-
-        final MainUI mainUI = processMain(groups, timeShift, zoomLevelMinutes, now);
-
-        return writer.writeValueAsString(mainUI);
+        final ConfigUI result = new ConfigUI();
+        result.rows = new ArrayList<>();
+        for (WorkflowGroup g : groups) {
+            final WorkflowGroupRef group = new WorkflowGroupRef();
+            group.name = g.getName();
+            group.rows = Collections.emptyList();
+            result.rows.add(group);
+        }
+        return writer.writeValueAsString(result);
     }
 
     static ScheduledTime getDisplayTime(String timeStr, ScheduledTime now) {

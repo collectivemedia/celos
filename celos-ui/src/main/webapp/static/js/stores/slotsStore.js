@@ -17,7 +17,7 @@
 "use strict";
 
 
-var _internalSlotsData = Immutable.Map();
+var _internalSlotsData = undefined;
 
 var _internalLastSelectedSlotPath = undefined;
 
@@ -174,21 +174,13 @@ AppDispatcher.register(function (payload) {
                 );
             break;
 
-        case TodoConstants.LOAD_GROUPS:
-            console.log("case LOAD_GROUPS:");
-            ajaxGetJson(
-                /*url=*/ payload.action.url,
-                /*data=*/ {
-                    zoom: payload.action.zoom,
-                    time: payload.action.time
-                },
-                /*success=*/ (function (data) {
-                    // deep merge works fine with empty lists
-                    _internalSlotsData = _internalSlotsData.mergeDeep(Immutable.fromJS(data));
-                    //console.log("new state", _internalSlotsData.toJS());
-                    SlotsStore.emit(CHANGE_EVENT);
-                }).bind(this)
-            );
+        case TodoConstants.LOAD_NAVIGATION:
+            console.log("case LOAD_NAVIGATION:");
+            var nav = getNavigation(payload.action.zoom, payload.action.time);
+
+            _internalSlotsData = _internalSlotsData.set("navigation", Immutable.fromJS(nav));
+            console.log("new state", _internalSlotsData.get("navigation").toJS());
+            SlotsStore.emit(CHANGE_EVENT);
             break;
 
         // add more cases for other actionTypes, like TODO_DESTROY, etc.

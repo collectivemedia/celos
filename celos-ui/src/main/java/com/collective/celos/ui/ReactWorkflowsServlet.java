@@ -16,8 +16,10 @@
 package com.collective.celos.ui;
 
 import com.collective.celos.*;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import com.google.common.collect.Sets;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -27,15 +29,11 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.net.URL;
 import java.time.ZonedDateTime;
 import java.util.*;
 
-import static com.collective.celos.ui.MainServlet.getWorkflowGroups;
 import static java.util.stream.Collectors.toList;
 
 /**
@@ -165,6 +163,31 @@ public class ReactWorkflowsServlet extends HttpServlet {
         }
     }
 
+
+    static List<WorkflowGroup> getWorkflowGroups(InputStream configFileIS, Set<WorkflowID> expectedWfs) throws IOException {
+        JsonNode mainNode = objectMapper.readValue(configFileIS, JsonNode.class);
+        List<WorkflowGroup> configWorkflowGroups = new ArrayList<>();
+        Set<WorkflowID> listedWfs = new TreeSet<>();
+
+        for(JsonNode workflowGroupNode: mainNode.get(GROUPS_TAG)) {
+            String[] workflowNames = objectMapper.treeToValue(workflowGroupNode.get(WORKFLOWS_TAG), String[].class);
+
+            List<WorkflowID> ids = new ArrayList<>();
+            for (String wfName : workflowNames) {
+                ids.add(new WorkflowID(wfName));
+            }
+
+            String name = workflowGroupNode.get(NAME_TAG).textValue();
+            configWorkflowGroups.add(new WorkflowGroup(name, ids));
+            listedWfs.addAll(ids);
+        }
+
+        TreeSet<WorkflowID> diff = new TreeSet<>(Sets.difference(expectedWfs, listedWfs));
+        if (!diff.isEmpty()) {
+            configWorkflowGroups.add(new WorkflowGroup(UNLISTED_WORKFLOWS_CAPTION, new ArrayList<>(diff)));
+        }
+        return configWorkflowGroups;
+    }
 
     public static String processGet(ServletContext servletContext, String timeParam, String zoomParam, String wfGroup) throws Exception {
 

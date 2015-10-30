@@ -9,8 +9,8 @@
     </servlet>
 
     <servlet>
-        <servlet-name>MainServlet</servlet-name>
-        <servlet-class>com.collective.celos.ui.MainServlet</servlet-class>
+        <servlet-name>ConfigServlet</servlet-name>
+        <servlet-class>com.collective.celos.ui.ConfigServlet</servlet-class>
     </servlet>
 
     <servlet>
@@ -44,8 +44,8 @@
     </servlet-mapping>
 
     <servlet-mapping>
-        <servlet-name>MainServlet</servlet-name>
-        <url-pattern>/main</url-pattern>
+        <servlet-name>ConfigServlet</servlet-name>
+        <url-pattern>/config</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>

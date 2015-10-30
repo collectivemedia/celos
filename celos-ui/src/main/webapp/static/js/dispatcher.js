@@ -24,7 +24,8 @@ var TodoConstants = {
     RECTANGLE_UPDATE: "RECTANGLE_UPDATE",
     LOAD_SLOTS: "LOAD_SLOTS",
     FOCUS_ON_SLOT: "FOCUS_ON_SLOT",
-    CLEAR_SELECTION: "CLEAR_SELECTION"
+    CLEAR_SELECTION: "CLEAR_SELECTION",
+    LOAD_NAVIGATION: "LOAD_NAVIGATION"
 };
 
 var AppDispatcher = {
@@ -81,15 +82,22 @@ var AppDispatcher = {
         })
     },
 
-    handleLoadGroupsFromServer: function (action) {
-        console.log("handleLoadGroupsFromServer", action);
+    //handleLoadGroupsFromServer: function (action) {
+    //    console.log("handleLoadGroupsFromServer", action);
+    //    this.dispatch({
+    //        source: TodoConstants.LOAD_GROUPS
+    //    });
+    //},
+
+    handleLoadNavigation: function (action) {
+        console.log("handleLoadNavigation", action);
         this.dispatch({
-            source: TodoConstants.LOAD_GROUPS,
+            source: TodoConstants.LOAD_NAVIGATION,
             action: action,
             breadcrumbs: action.breadcrumbs
         })
-    },
 
+    },
 
     /**
      * Register a Store's callback so that it may be invoked by an action.
