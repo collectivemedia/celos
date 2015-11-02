@@ -32,8 +32,6 @@ public class Scheduler {
     private final int slidingWindowHours;
     private final WorkflowConfiguration configuration;
     private final StateDatabase database;
-    private final int swarmSize;
-    private final int celosNumber;
 
     private static Logger LOGGER = Logger.getLogger(Scheduler.class);
 
@@ -48,8 +46,6 @@ public class Scheduler {
         this.slidingWindowHours = slidingWindowHours;
         this.configuration = Util.requireNonNull(configuration);
         this.database = Util.requireNonNull(database);
-        this.swarmSize = swarmSize;
-        this.celosNumber = celosNumber;
     }
 
     /**
@@ -75,33 +71,23 @@ public class Scheduler {
      * Otherwise, schedule only workflows in the set.
      */
     public void step(ScheduledTime current, Set<WorkflowID> workflowIDs) {
-        LOGGER.info("Celos #" + celosNumber + ": Starting scheduler step: " + current + " -- " + getSlidingWindowStartTime(current));
+        LOGGER.info("Starting scheduler step: " + current + " -- " + getSlidingWindowStartTime(current));
         for (Workflow wf : configuration.getWorkflows()) {
             WorkflowID id = wf.getID();
-            if (isItMyWorkflow(id)) {
-                processWorkflow(current, workflowIDs, wf, id);
+            boolean shouldProcess = workflowIDs.isEmpty() || workflowIDs.contains(id);
+            if (!shouldProcess) {
+                LOGGER.info("Ignoring workflow: " + id);
+            } else if (database.isPaused(id)) {
+                LOGGER.info("Workflow is paused: " + id);
+            } else {
+                try {
+                    stepWorkflow(wf, current);
+                } catch (Exception e) {
+                    LOGGER.error("Exception in workflow: " + id + ": " + e.getMessage(), e);
+                }
             }
         }
-        LOGGER.info("Celos #" + celosNumber + ": Ending scheduler step: " + current + " -- " + getSlidingWindowStartTime(current));
-    }
-
-    private boolean isItMyWorkflow(WorkflowID id) {
-        return Math.abs(id.toString().hashCode()) % swarmSize == celosNumber;
-    }
-
-    private void processWorkflow(ScheduledTime current, Set<WorkflowID> workflowIDs, Workflow wf, WorkflowID id) {
-        boolean shouldProcess = workflowIDs.isEmpty() || workflowIDs.contains(id);
-        if (!shouldProcess) {
-            LOGGER.info("Ignoring workflow: " + id);
-        } else if (database.isPaused(id)) {
-            LOGGER.info("Workflow is paused: " + id);
-        } else {
-            try {
-                stepWorkflow(wf, current);
-            } catch (Exception e) {
-                LOGGER.error("Exception in workflow: " + id + ": " + e.getMessage(), e);
-            }
-        }
+        LOGGER.info("Ending scheduler step: " + current + " -- " + getSlidingWindowStartTime(current));
     }
 
     /**
