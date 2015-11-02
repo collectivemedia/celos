@@ -19,6 +19,7 @@ import com.collective.celos.trigger.AlwaysTrigger;
 import com.collective.celos.trigger.Trigger;
 import com.collective.celos.trigger.TriggerStatus;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -300,22 +301,22 @@ public class SchedulerTest {
         verifyNoMoreInteractions(stateDatabase);
     }
 
-    @Test(expected=IllegalArgumentException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void slidingWindowHoursPositive1() {
         new Scheduler(new WorkflowConfiguration(), new MemoryStateDatabase(), 0);
     }
 
-    @Test(expected=IllegalArgumentException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void slidingWindowHoursPositive2() {
         new Scheduler(new WorkflowConfiguration(), new MemoryStateDatabase(), -23);
     }
 
-    @Test(expected=NullPointerException.class)
+    @Test(expected = NullPointerException.class)
     public void configurationCannotBeNull() {
         new Scheduler(null, new MemoryStateDatabase(), 1);
     }
 
-    @Test(expected=NullPointerException.class)
+    @Test(expected = NullPointerException.class)
     public void databaseCannotBeNull() {
         new Scheduler(new WorkflowConfiguration(), null, 1);
     }
@@ -330,9 +331,9 @@ public class SchedulerTest {
 
     /**
      * Create a workflow with a hourly schedule and an always trigger.
-     *
+     * <p>
      * Step the workflow a single time.
-     *
+     * <p>
      * Ensure that all hourly slots have been changed to ready.
      */
     @Test
@@ -372,9 +373,9 @@ public class SchedulerTest {
 
     /**
      * Make sure that scheduler doesn't care about very old slot.
-     *
+     * <p>
      * Mark the slot for rerun.
-     *
+     * <p>
      * Ensure the scheduler now cares about it.
      */
     @Test
@@ -410,9 +411,9 @@ public class SchedulerTest {
 
     /**
      * Create a workflow with a hourly schedule and a never trigger.
-     *
+     * <p>
      * Step the workflow a single time.
-     *
+     * <p>
      * Ensure that no hourly slots have been changed to ready, and in fact,
      * that no slots have been updated in the database.
      */
@@ -475,7 +476,7 @@ public class SchedulerTest {
     /**
      * Creates running slots in memory database, with mock external service
      * that always says the external jobs are still running.
-     *
+     * <p>
      * Makes sure that the slots are still marked as running after step.
      */
     @Test
@@ -486,7 +487,7 @@ public class SchedulerTest {
     /**
      * Creates running slots in memory database, with mock external service
      * that always says the external jobs are successful.
-     *
+     * <p>
      * Makes sure that the slots are marked as successful after step.
      */
     @Test
@@ -497,7 +498,7 @@ public class SchedulerTest {
     /**
      * Creates running slots in memory database, with mock external service
      * that always says the external jobs are failed.
-     *
+     * <p>
      * Makes sure that the slots are marked as failed after step.
      */
     @Test
@@ -546,9 +547,9 @@ public class SchedulerTest {
 
     /**
      * Creates ready slots in memory database.
-     *
+     * <p>
      * Uses trivial scheduling strategy so all ready slots will be used.
-     *
+     * <p>
      * Makes sure all are running after step, and have been submitted to external service.
      */
     @Test
@@ -598,17 +599,17 @@ public class SchedulerTest {
 
     /**
      * Use a serial scheduling strategy.
-     *
+     * <p>
      * Create one waiting and two ready slots.
-     *
+     * <p>
      * Make sure that after a step:
-     *
+     * <p>
      * - the waiting slot is ready
-     *
+     * <p>
      * - the first ready slot is running
-     *
+     * <p>
      * - the second ready slot is still ready
-     *
+     * <p>
      * - the running slot's external ID matches the one handed out by the mock external service
      */
     @Test
@@ -660,9 +661,9 @@ public class SchedulerTest {
 
     /**
      * Create a workflow with a start time 3 days in the past.
-     *
+     * <p>
      * Run scheduler for past 7 days.
-     *
+     * <p>
      * Ensure that only slots for the past three days have been created in the DB.
      */
     @Test
@@ -795,9 +796,9 @@ public class SchedulerTest {
 
     /**
      * Set up workflow with max retry count of 10.
-     *
+     * <p>
      * Use repeatedly failing external service that fails 2 times.
-     *
+     * <p>
      * Ensure that slot is rerun 2 times and then moves to success state.
      */
     @Test
@@ -849,9 +850,9 @@ public class SchedulerTest {
 
     /**
      * Set up workflow with max retry count of 2.
-     *
+     * <p>
      * Use repeatedly failing external service that fails 3 times.
-     *
+     * <p>
      * Ensure that slot is rerun 2 (max retry count) times and then moves to failure state.
      */
     @Test
@@ -903,7 +904,7 @@ public class SchedulerTest {
 
     /**
      * Set up two identical workflows but tell scheduler to only schedule the first one.
-     *
+     * <p>
      * Check that second workflow's slot is not touched and stays in WAITING.
      */
     @Test
@@ -979,10 +980,13 @@ public class SchedulerTest {
         scheduledTimes.add(time5_slot);
         scheduledTimes.add(time6_noSlot);
 
-        List<SlotState> dbSlotStates1 = Lists.newArrayList();
-        dbSlotStates1.add(new SlotState(new SlotID(id, time2_slot), SlotState.Status.SUCCESS));
-        dbSlotStates1.add(new SlotState(new SlotID(id, time3_slot), SlotState.Status.SUCCESS));
-        dbSlotStates1.add(new SlotState(new SlotID(id, time5_slot), SlotState.Status.SUCCESS));
+        Map<SlotID, SlotState> dbSlotStates1 = Maps.newHashMap();
+        SlotID slotID1 = new SlotID(id, time2_slot);
+        dbSlotStates1.put(slotID1, new SlotState(slotID1, SlotState.Status.SUCCESS));
+        SlotID slotID2 = new SlotID(id, time3_slot);
+        dbSlotStates1.put(slotID2, new SlotState(slotID2, SlotState.Status.SUCCESS));
+        SlotID slotID3 = new SlotID(id, time5_slot);
+        dbSlotStates1.put(slotID3, new SlotState(slotID3, SlotState.Status.SUCCESS));
 
         when(stateDatabase.getSlotStates(id, time1_noSlot, time7_noSlot)).thenReturn(dbSlotStates1);
         when(schedule.getScheduledTimes(scheduler, time1_noSlot, time7_noSlot)).thenReturn(scheduledTimes);
@@ -1023,11 +1027,13 @@ public class SchedulerTest {
         scheduledTimes.add(time5_slot);
         scheduledTimes.add(time6_noSlot);
 
-        List<SlotState> dbSlotStates1 = Lists.newArrayList();
-        dbSlotStates1.add(new SlotState(new SlotID(id, time2_slot), SlotState.Status.SUCCESS));
-        dbSlotStates1.add(new SlotState(new SlotID(id, time3_slot), SlotState.Status.SUCCESS));
-        dbSlotStates1.add(new SlotState(new SlotID(id, time5_slot), SlotState.Status.SUCCESS));
-
+        Map<SlotID, SlotState> dbSlotStates1 = Maps.newHashMap();
+        SlotID slotID1 = new SlotID(id, time2_slot);
+        dbSlotStates1.put(slotID1, new SlotState(slotID1, SlotState.Status.SUCCESS));
+        SlotID slotID2 = new SlotID(id, time3_slot);
+        dbSlotStates1.put(slotID2, new SlotState(slotID2, SlotState.Status.SUCCESS));
+        SlotID slotID3 = new SlotID(id, time5_slot);
+        dbSlotStates1.put(slotID3, new SlotState(slotID3, SlotState.Status.SUCCESS));
         SortedSet<ScheduledTime> rerunTimes = Sets.newTreeSet();
         ScheduledTime timeRerun1 = new ScheduledTime("2015-03-02T07:00:00Z");
         ScheduledTime timeRerun2 = new ScheduledTime("2015-03-09T07:00:00Z");
@@ -1052,7 +1058,6 @@ public class SchedulerTest {
         Assert.assertEquals(slotStates.get(4).getScheduledTime(), time6_noSlot);
         Assert.assertEquals(slotStates.get(5).getStatus(), SlotState.Status.WAITING);
         Assert.assertEquals(slotStates.get(5).getScheduledTime(), timeRerun2);
-
     }
 
     private AlwaysTrigger makeAlwaysTrigger() {

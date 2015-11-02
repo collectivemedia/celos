@@ -19,7 +19,7 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import com.google.common.collect.Sets;
+import com.google.common.collect.Maps;
 import org.apache.log4j.Logger;
 
 import com.collective.celos.trigger.Trigger;
@@ -32,16 +32,24 @@ public class Scheduler {
     private final int slidingWindowHours;
     private final WorkflowConfiguration configuration;
     private final StateDatabase database;
+    private final int swarmSize;
+    private final int celosNumber;
 
     private static Logger LOGGER = Logger.getLogger(Scheduler.class);
 
     public Scheduler(WorkflowConfiguration configuration, StateDatabase database, int slidingWindowHours) {
+        this(configuration, database, slidingWindowHours, 1, 0);
+    }
+
+    public Scheduler(WorkflowConfiguration configuration, StateDatabase database, int slidingWindowHours, int swarmSize, int celosNumber) {
         if (slidingWindowHours <= 0) {
             throw new IllegalArgumentException("Sliding window hours must greater then zero.");
         }
         this.slidingWindowHours = slidingWindowHours;
         this.configuration = Util.requireNonNull(configuration);
         this.database = Util.requireNonNull(database);
+        this.swarmSize = swarmSize;
+        this.celosNumber = celosNumber;
     }
 
     /**
@@ -67,23 +75,33 @@ public class Scheduler {
      * Otherwise, schedule only workflows in the set.
      */
     public void step(ScheduledTime current, Set<WorkflowID> workflowIDs) {
-        LOGGER.info("Starting scheduler step: " + current + " -- " + getSlidingWindowStartTime(current));
+        LOGGER.info("Celos #" + celosNumber + ": Starting scheduler step: " + current + " -- " + getSlidingWindowStartTime(current));
         for (Workflow wf : configuration.getWorkflows()) {
             WorkflowID id = wf.getID();
-            boolean shouldProcess = workflowIDs.isEmpty() || workflowIDs.contains(id);
-            if (!shouldProcess) {
-                LOGGER.info("Ignoring workflow: " + id);
-            } else if (database.isPaused(id)) {
-                LOGGER.info("Workflow is paused: " + id);
-            } else {
-                try {
-                    stepWorkflow(wf, current);
-                } catch (Exception e) {
-                    LOGGER.error("Exception in workflow: " + id + ": " + e.getMessage(), e);
-                }
+            if (isItMyWorkflow(id)) {
+                processWorkflow(current, workflowIDs, wf, id);
             }
         }
-        LOGGER.info("Ending scheduler step: " + current + " -- " + getSlidingWindowStartTime(current));
+        LOGGER.info("Celos #" + celosNumber + ": Ending scheduler step: " + current + " -- " + getSlidingWindowStartTime(current));
+    }
+
+    private boolean isItMyWorkflow(WorkflowID id) {
+        return Math.abs(id.toString().hashCode()) % swarmSize == celosNumber;
+    }
+
+    private void processWorkflow(ScheduledTime current, Set<WorkflowID> workflowIDs, Workflow wf, WorkflowID id) {
+        boolean shouldProcess = workflowIDs.isEmpty() || workflowIDs.contains(id);
+        if (!shouldProcess) {
+            LOGGER.info("Ignoring workflow: " + id);
+        } else if (database.isPaused(id)) {
+            LOGGER.info("Workflow is paused: " + id);
+        } else {
+            try {
+                stepWorkflow(wf, current);
+            } catch (Exception e) {
+                LOGGER.error("Exception in workflow: " + id + ": " + e.getMessage(), e);
+            }
+        }
     }
 
     /**
@@ -115,9 +133,9 @@ public class Scheduler {
         times.addAll(wf.getSchedule().getScheduledTimes(this, start, end));
         times.addAll(timesMarkedForRerun);
 
-        Set<SlotState> fetchedSlots = Sets.newHashSet();
-        fetchedSlots.addAll(database.getSlotStates(wf.getID(), start, end));
-        fetchedSlots.addAll(database.getSlotStates(wf.getID(), timesMarkedForRerun));
+        Map<SlotID, SlotState> fetchedSlots = Maps.newHashMap();
+        fetchedSlots.putAll(database.getSlotStates(wf.getID(), start, end));
+        fetchedSlots.putAll(database.getSlotStates(wf.getID(), timesMarkedForRerun));
         return matchScheduledToFetched(wf, times, fetchedSlots);
     }
 
@@ -129,16 +147,15 @@ public class Scheduler {
     public List<SlotState> getSlotStates(Workflow wf, ScheduledTime start, ScheduledTime end) throws Exception {
         SortedSet<ScheduledTime> times = new TreeSet<>();
         times.addAll(wf.getSchedule().getScheduledTimes(this, start, end));
-        List<SlotState> fetchedSlots = database.getSlotStates(wf.getID(), start, end);
+        Map<SlotID, SlotState> fetchedSlots = database.getSlotStates(wf.getID(), start, end);
         return matchScheduledToFetched(wf, times, fetchedSlots);
     }
 
-    private List<SlotState> matchScheduledToFetched(Workflow wf, SortedSet<ScheduledTime> scheduledTimes, Collection<SlotState> fetchedSlots) throws Exception {
+    private List<SlotState> matchScheduledToFetched(Workflow wf, SortedSet<ScheduledTime> scheduledTimes, Map<SlotID, SlotState> timeToSlots) throws Exception {
         List<SlotState> slotStates = new ArrayList<SlotState>(scheduledTimes.size());
-        Map<SlotID, SlotState> timeToSlotMap = fetchedSlots.stream().collect(Collectors.toMap(SlotState::getSlotID, Function.identity()));
         for (ScheduledTime t : scheduledTimes) {
             SlotID slotID = new SlotID(wf.getID(), t);
-            SlotState slotState = timeToSlotMap.get(slotID);
+            SlotState slotState = timeToSlots.get(slotID);
             if (slotState != null) {
                 slotStates.add(slotState);
             } else {
