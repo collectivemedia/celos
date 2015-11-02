@@ -31,44 +31,44 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 /**
  * Brutally simple persistent implementation of StateDatabase
  * that stores slot states as JSON files in the file system.
- * <p>
+ *
  * The database has a top-level directory, with one sub directory, called state.
- * <p>
+ *
  * Inside the state directory, there is a subdirectory for each workflow.
  * Inside each workflow directory is one directory per day.  Inside each
  * day directory is one JSON file per workflow run.
- * <p>
+ *
  * state/
- * workflow-1/
- * 2013-12-02/
- * 16:00:00.000Z
- * 17:00:00.000Z
- * ...
- * workflow-2/
- * 2013-12-02/
- * 16:00:00.000Z
- * 17:00:00.000Z
+ *   workflow-1/
+ *     2013-12-02/
+ *       16:00:00.000Z
+ *       17:00:00.000Z
+ *     ...
+ *   workflow-2/
+ *     2013-12-02/
+ *       16:00:00.000Z
+ *       17:00:00.000Z
  * rerun/
- * workflow-1/
- * 2013-12-02/
- * 16:00:00.000Z
- * ...
- * workflow-2/
- * 2013-12-02/
- * 17:00:00.000Z
- * ...
- * ...
+ *   workflow-1/
+ *     2013-12-02/
+ *       16:00:00.000Z
+ *     ...
+ *   workflow-2/
+ *     2013-12-02/
+ *       17:00:00.000Z
+ *     ...
+ *   ...
  * paused/
- * workflow-1
- * workflow-2
- * ...
- * <p>
+ *   workflow-1
+ *   workflow-2
+ *   ...
+ *
  * A JSON state file looks like this:
- * <p>
+ *
  * {"status":"RUNNING","externalID":"23873218-13202130978213-W"}
- * <p>
+ *
  * A JSON rerun file looks like this:
- * <p>
+ *
  * {"rerunTime":"2015-09-06T20:21Z"}
  */
 public class FileSystemStateDatabase implements StateDatabase {
