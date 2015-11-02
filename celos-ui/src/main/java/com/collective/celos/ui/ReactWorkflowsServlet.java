@@ -62,7 +62,7 @@ public class ReactWorkflowsServlet extends HttpServlet {
 
     protected static class WorkflowPOJO {
         public String workflowName;
-        public List<SlotPOJO> slots;
+        public List<SlotPOJO> rows;
     }
 
     protected static class SlotPOJO {
@@ -126,12 +126,12 @@ public class ReactWorkflowsServlet extends HttpServlet {
                 continue;
             }
             Map<ScheduledTime, Set<SlotState>> buckets = bucketSlotsByTime(workflowStatus.getSlotStates(), tileTimes);
-            workflow.slots = new ArrayList<>();
+            workflow.rows = new ArrayList<>();
             for (ScheduledTime tileTime : tileTimes) {
                 List<SlotState> slots = buckets.getOrDefault(tileTime, new HashSet<>()).stream()
                         .sorted((foo, bar) -> foo.getScheduledTime().compareTo(bar.getScheduledTime()))
                         .collect(toList());
-                workflow.slots.add(makeSlot(conf, slots));
+                workflow.rows.add(makeSlot(conf, slots));
             }
         }
 

@@ -37,7 +37,7 @@ var SlotsStore = Object.assign({}, EventEmitter.prototype, {
         var result = [];
         _internalSlotsData.get("rows").forEach(function (table, i1) {
             table.get("rows").forEach(function (row, i2) {
-                row.get("slots").forEach(function (slot, i3) {
+                row.get("rows").forEach(function (slot, i3) {
                     if (slot.get("isSelected", false)) {
                         slot.getIn(["timestamps"]).forEach(function(tmp) {
                             result.push({ workflow: row.get("workflowName"), ts: tmp, bc: ["rows", i1, "rows", i2, "rows", i3]})
@@ -64,7 +64,7 @@ AppDispatcher.register(function (payload) {
                 return allGroups.map(function (group) {
                     return group.update("rows", function (workflowList) {
                         return workflowList.map(function (wf) {
-                            return wf.update("slots", function (slotList) {
+                            return wf.update("rows", function (slotList) {
                                 return slotList.map(function (slot) {
                                     return slot.set("isSelected", false)
                                 })
@@ -137,7 +137,7 @@ AppDispatcher.register(function (payload) {
             newState = newState.updateIn(["rows", g1], function (group) {
                 return group.update("rows", function (workflowList) {
                     return workflowList.map(function (wf, workflowIdx) {
-                        return wf.update("slots", function (slotList) {
+                        return wf.update("rows", function (slotList) {
                             return slotList.map(function (slot, slotIdx) {
                                 if (slotLeft <= slotIdx && slotIdx <= slotRight
                                     && wfTop <= workflowIdx && workflowIdx <= wfBottom
@@ -167,7 +167,19 @@ AppDispatcher.register(function (payload) {
                         time: payload.action.time
                     },
                     /*success=*/ function (data) {
-                        _internalSlotsData = _internalSlotsData.mergeDeepIn(payload.breadcrumbs, Immutable.fromJS(data));
+                        console.log("payload.breadcrumbs");
+                        console.log(payload.breadcrumbs);
+                        var newState = _internalSlotsData;
+                        newState = newState.updateIn(payload.breadcrumbs.concat("rows"), function (wfs) {
+                                return wfs.map(function (workflow) {
+                                    return workflow.set("rows", Immutable.List())
+                            })
+                        });
+                        console.log("XXXXXX");
+                        console.log(newState);
+                        console.log("YYYYYY");
+                        newState = newState.mergeDeepIn(payload.breadcrumbs, Immutable.fromJS(data));
+                        _internalSlotsData = newState;
                         SlotsStore.emit(CHANGE_EVENT);
                     }.bind(this)
                 );
@@ -175,7 +187,7 @@ AppDispatcher.register(function (payload) {
 
         case TodoConstants.LOAD_NAVIGATION:
             console.log("case LOAD_NAVIGATION:");
-            var nav = getNavigation(payload.action.zoom, payload.action.time);
+            var nav = getNavigation(payload.action.zoom, payload.action.time, new Date());
 
             _internalSlotsData = _internalSlotsData.set("navigation", Immutable.fromJS(nav));
             console.log("new state", _internalSlotsData.get("navigation").toJS());

@@ -72,12 +72,13 @@ ajaxGetJson(
 );
 
 
-var getNavigation = function (zoomStr, timeStr) {
+var getNavigation = function (zoomStr, timeStr, now) {
 
     var ZOOM_LEVEL_MINUTES = [1, 5, 15, 30, 60, 60*24];
     var DEFAULT_ZOOM_LEVEL_MINUTES = 60;
     var MIN_ZOOM_LEVEL_MINUTES = 1;
     var MAX_ZOOM_LEVEL_MINUTES = 60*24; // Code won't work with higher level, because of toFullDay()
+    var PAGE_SIZE = 20;
 
     var getZoomLevel = function () {
         if (zoomStr == null || zoomStr == "") {
@@ -93,6 +94,19 @@ var getNavigation = function (zoomStr, timeStr) {
             }
         }
     };
+
+    var minusMinutes = function(time, m) {
+        var tmp = new Date(time);
+        tmp.setMinutes(time.getMinutes() - m);
+        return tmp
+    };
+
+    var plusMinutes = function(time, m) {
+        var tmp = new Date(time);
+        tmp.setMinutes(time.getMinutes() + m);
+        return tmp
+    };
+
     var zoom = getZoomLevel(zoomStr);
     var timeShift;
     if (timeStr == null || timeStr == "" || timeStr == undefined) {
@@ -101,24 +115,12 @@ var getNavigation = function (zoomStr, timeStr) {
         timeShift = new Date(timeStr)
     }
 
-    var minusMinutes = function(time, m) {
-        var tmp = new Date(time);
-        tmp.setHours(time.getMinutes() + m);
-        return tmp
-    };
 
-    var plusMinutes = function(time, m) {
-        var tmp = new Date(time);
-        tmp.setHours(time.getMinutes() - m);
-        return tmp
-    };
-
-    var PAGE_SIZE = 20;
     var result = {};
-    var now = new Date();
     result.left = minusMinutes(timeShift, PAGE_SIZE * zoom).toISOString();
     // right link
     var tmp = plusMinutes(timeShift, PAGE_SIZE * zoom);
+
     if (tmp >= now) {
         result.right = null;
     } else {
@@ -129,14 +131,13 @@ var getNavigation = function (zoomStr, timeStr) {
     var pos = ZOOM_LEVEL_MINUTES.indexOf(zoom);
     // FIXME
     if (pos == -1) {
-        alert("DEBUG MOAFONASONFASONFASOF")
+        alert("wrong zoom")
     }
     result.zoomIn = (0 < pos && pos <= last) ? ZOOM_LEVEL_MINUTES[pos - 1] : ZOOM_LEVEL_MINUTES[0];
     result.zoomOut = (0 <= pos && pos < last) ? ZOOM_LEVEL_MINUTES[pos + 1] : ZOOM_LEVEL_MINUTES[last];
-    result.currentTime = new Date().toISOString();
+    result.currentTime = now.toISOString();
     return result;
 };
-
 
 
 

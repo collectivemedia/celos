@@ -126,7 +126,7 @@ var WorkflowsGroup = React.createClass({
                         .map(function (product, i) {
                             return React.createElement(ProductRow, {
                                 key: i,
-                                slots: product.get("slots"),
+                                slots: product.get("rows"),
                                 workflowName: product.get("workflowName"),
                                 breadcrumbs: this.props.breadcrumbs.concat("rows", i)
                             })}.bind(this))
@@ -167,7 +167,7 @@ var ProductRow = React.createClass({
                         key: i,
                         store: slot1,
                         workflowName: this.props.workflowName,
-                        breadcrumbs: this.props.breadcrumbs.concat("slots", i)
+                        breadcrumbs: this.props.breadcrumbs.concat("rows", i)
                     })
                 }.bind(this))
         )
