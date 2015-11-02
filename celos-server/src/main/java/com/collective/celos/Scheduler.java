@@ -19,6 +19,7 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.google.common.collect.Maps;
 import org.apache.log4j.Logger;
 
 import com.collective.celos.trigger.Trigger;
@@ -126,19 +127,18 @@ public class Scheduler {
      * as well as the slots states of all slots marked for rerun in the database.
      */
     public List<SlotState> getSlotStatesIncludingMarkedForRerun(Workflow wf, ScheduledTime current, ScheduledTime start, ScheduledTime end) throws Exception {
-
         SortedSet<ScheduledTime> timesMarkedForRerun = database.getTimesMarkedForRerun(wf.getID(), current);
 
         SortedSet<ScheduledTime> times = new TreeSet<>();
         times.addAll(wf.getSchedule().getScheduledTimes(this, start, end));
         times.addAll(timesMarkedForRerun);
 
-
-        List<SlotState> fetchedSlots = new ArrayList<>();
-        fetchedSlots.addAll(database.getSlotStates(wf.getID(), start, end));
-        fetchedSlots.addAll(database.getSlotStates(wf.getID(), timesMarkedForRerun));
+        Map<SlotID, SlotState> fetchedSlots = Maps.newHashMap();
+        fetchedSlots.putAll(database.getSlotStates(wf.getID(), start, end));
+        fetchedSlots.putAll(database.getSlotStates(wf.getID(), timesMarkedForRerun));
         return matchScheduledToFetched(wf, times, fetchedSlots);
     }
+
 
     /**
      * Get the slot states of all slots of the workflow from within the window defined by start (inclusive) and end (exclusive).
@@ -147,16 +147,15 @@ public class Scheduler {
     public List<SlotState> getSlotStates(Workflow wf, ScheduledTime start, ScheduledTime end) throws Exception {
         SortedSet<ScheduledTime> times = new TreeSet<>();
         times.addAll(wf.getSchedule().getScheduledTimes(this, start, end));
-        List<SlotState> fetchedSlots = database.getSlotStates(wf.getID(), start, end);
+        Map<SlotID, SlotState> fetchedSlots = database.getSlotStates(wf.getID(), start, end);
         return matchScheduledToFetched(wf, times, fetchedSlots);
     }
 
-    private List<SlotState> matchScheduledToFetched(Workflow wf, SortedSet<ScheduledTime> scheduledTimes, Collection<SlotState> fetchedSlots) throws Exception {
+    private List<SlotState> matchScheduledToFetched(Workflow wf, SortedSet<ScheduledTime> scheduledTimes, Map<SlotID, SlotState> timeToSlots) throws Exception {
         List<SlotState> slotStates = new ArrayList<SlotState>(scheduledTimes.size());
-        Map<SlotID, SlotState> timeToSlotMap = fetchedSlots.stream().collect(Collectors.toMap(SlotState::getSlotID, Function.identity()));
         for (ScheduledTime t : scheduledTimes) {
             SlotID slotID = new SlotID(wf.getID(), t);
-            SlotState slotState = timeToSlotMap.get(slotID);
+            SlotState slotState = timeToSlots.get(slotID);
             if (slotState != null) {
                 slotStates.add(slotState);
             } else {

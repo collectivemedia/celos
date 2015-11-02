@@ -15,9 +15,11 @@
  */
 package com.collective.celos;
 
+import com.google.common.collect.Maps;
+
 import java.io.IOException;
 import java.util.Collection;
-import java.util.List;
+import java.util.Map;
 import java.util.SortedSet;
 
 /**
@@ -26,12 +28,25 @@ import java.util.SortedSet;
 public interface StateDatabase {
 
     /**
-     *
+     * Returns the state of the given slots, or empty Map if not found.
      */
-    public List<SlotState> getSlotStates(WorkflowID id, ScheduledTime start, ScheduledTime end) throws Exception;
+    public Map<SlotID, SlotState> getSlotStates(WorkflowID id, ScheduledTime start, ScheduledTime end) throws Exception;
 
 
-    public List<SlotState> getSlotStates(WorkflowID id, Collection<ScheduledTime> times) throws Exception;
+    /**
+     * Returns the state of the given slots, or empty Map if not found.
+     */
+    public default Map<SlotID, SlotState> getSlotStates(WorkflowID id, Collection<ScheduledTime> times) throws Exception {
+        Map<SlotID, SlotState> slotStates = Maps.newHashMap();
+        for (ScheduledTime time : times) {
+            SlotID slotID = new SlotID(id, time);
+            SlotState slotState = getSlotState(slotID);
+            if (slotState != null) {
+                slotStates.put(slotID, slotState);
+            }
+        }
+        return slotStates;
+    }
 
     /**
      * Returns the state of the given slot, or null if not found.
@@ -40,16 +55,16 @@ public interface StateDatabase {
 
     /**
      * Updates the state of the given slot.
-     * 
+     * <p>
      * If this is a rerun, then markSlotForRerun() must be used in addition.
      */
     public void putSlotState(SlotState state) throws Exception;
-    
+
     /**
      * Marks the slot for rerun at the current wallclock time.
      */
     public void markSlotForRerun(SlotID slot, ScheduledTime now) throws Exception;
-    
+
     /**
      * Returns the list of scheduled times of the given workflow that have been marked for rerun.
      */

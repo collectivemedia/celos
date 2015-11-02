@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.util.*;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 
@@ -97,13 +98,9 @@ public class FileSystemStateDatabase implements StateDatabase {
     }
 
     @Override
-    public List<SlotState> getSlotStates(WorkflowID id, ScheduledTime start, ScheduledTime end) throws Exception {
+    public Map<SlotID, SlotState> getSlotStates(WorkflowID id, ScheduledTime start, ScheduledTime end) throws Exception {
 
-        if (end.getDateTime().isBefore(start.getDateTime())) {
-            throw new IllegalArgumentException("End time should not be less than Start time");
-        }
-
-        List<SlotState> slotStates = Lists.newArrayList();
+        Map<SlotID, SlotState> slotStates = Maps.newHashMap();
 
         ScheduledTime startBeginOfDay = new ScheduledTime(start.getDateTime().withMillisOfDay(0));
         ScheduledTime endBeginOfDay = new ScheduledTime(end.getDateTime().withMillisOfDay(0));
@@ -113,30 +110,11 @@ public class FileSystemStateDatabase implements StateDatabase {
         while (!currTime.getDateTime().isAfter(endBeginOfDay.getDateTime())) {
             File dayDir = getDayDir(getWorkflowStateDir(id), currTime);
             if (dayDir.exists() && dayDir.isDirectory()) {
-                slotStates.addAll(getSlotStatesFromDir(id, start, end, dayDir));
+                slotStates.putAll(getSlotStatesFromDir(id, start, end, dayDir));
             }
             currTime = new ScheduledTime(currTime.getDateTime().plusDays(1));
         }
 
-        Collections.sort(slotStates, new Comparator<SlotState>() {
-            @Override
-            public int compare(SlotState o1, SlotState o2) {
-                return o1.getScheduledTime().compareTo(o2.getScheduledTime());
-            }
-        });
-
-        return slotStates;
-    }
-
-    @Override
-    public List<SlotState> getSlotStates(WorkflowID id, Collection<ScheduledTime> times) throws Exception {
-        List<SlotState> slotStates = Lists.newArrayList();
-        for (ScheduledTime time : times) {
-            SlotState slotState = getSlotState(new SlotID(id, time));
-            if (slotState != null) {
-                slotStates.add(slotState);
-            }
-        }
         return slotStates;
     }
 
@@ -156,12 +134,13 @@ public class FileSystemStateDatabase implements StateDatabase {
         writeJson(state.toJSONNode(), file);
     }
 
-    private List<SlotState> getSlotStatesFromDir(WorkflowID id, ScheduledTime start, ScheduledTime end, File dayDir) throws IOException {
-        List<SlotState> slotStates = Lists.newArrayList();
+    private Map<SlotID, SlotState> getSlotStatesFromDir(WorkflowID id, ScheduledTime start, ScheduledTime end, File dayDir) throws IOException {
+        Map<SlotID, SlotState> slotStates = Maps.newHashMap();
         for (File file : dayDir.listFiles()) {
             ScheduledTime time = new ScheduledTime(dayDir.getName() + "T" + file.getName());
             if (!time.getDateTime().isBefore(start.getDateTime()) && time.getDateTime().isBefore(end.getDateTime())) {
-                slotStates.add(readSlotStateFromFile(new SlotID(id, time), file));
+                SlotID slotID = new SlotID(id, time);
+                slotStates.put(slotID, readSlotStateFromFile(slotID, file));
             }
         }
         return slotStates;
