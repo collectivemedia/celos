@@ -36,10 +36,6 @@ public class Scheduler {
     private static Logger LOGGER = Logger.getLogger(Scheduler.class);
 
     public Scheduler(WorkflowConfiguration configuration, StateDatabase database, int slidingWindowHours) {
-        this(configuration, database, slidingWindowHours, 1, 0);
-    }
-
-    public Scheduler(WorkflowConfiguration configuration, StateDatabase database, int slidingWindowHours, int swarmSize, int celosNumber) {
         if (slidingWindowHours <= 0) {
             throw new IllegalArgumentException("Sliding window hours must greater then zero.");
         }
