@@ -974,7 +974,7 @@ public class SchedulerTest {
         SortedSet<ScheduledTime> scheduledTimes = Sets.newTreeSet();
         scheduledTimes.add(time1_noSlot);
         scheduledTimes.add(time2_slot);
-//        OMIT THOSE FOR TESTING
+//        when ScheduleTime wasnt returned by Schedule.getScheduledTimes, it doesnt appear in Scheduler.getSlotStates
 //        scheduledTimes.add(time3_slot);
 //        scheduledTimes.add(time4_noSlot);
         scheduledTimes.add(time5_slot);
