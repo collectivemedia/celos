@@ -21,15 +21,11 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.collective.celos.*;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.log4j.Logger;
-
-import com.collective.celos.ScheduledTime;
-import com.collective.celos.ScheduledTimeFormatter;
-import com.collective.celos.Scheduler;
-import com.collective.celos.Util;
 
 /**
  * Check in HDFS for a data dependency.
@@ -72,7 +68,7 @@ public class HDFSCheckTrigger extends Trigger {
     }
 
     @Override
-    public TriggerStatus getTriggerStatus(Scheduler scheduler, ScheduledTime now, ScheduledTime scheduledTime) throws Exception {
+    public TriggerStatus getTriggerStatus(StateDatabaseConnection connection, ScheduledTime now, ScheduledTime scheduledTime) throws Exception {
         Path path = new Path(formatter.replaceTimeTokens(getRawPathString(), scheduledTime));
         LOGGER.info("Checking HDFS path: " + path);
         boolean ready = getFs().exists(path);

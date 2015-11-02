@@ -79,7 +79,7 @@ public class WorkflowConfigurationParserTest {
     public static class TestTrigger extends Trigger {
 
         @Override
-        public TriggerStatus getTriggerStatus(Scheduler scheduler, ScheduledTime now, ScheduledTime scheduledTime) throws Exception {
+        public TriggerStatus getTriggerStatus(StateDatabaseConnection connection, ScheduledTime now, ScheduledTime scheduledTime) throws Exception {
             return makeTriggerStatus(false, "TestTrigger");
         }
 

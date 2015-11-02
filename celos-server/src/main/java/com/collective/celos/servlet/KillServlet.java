@@ -60,20 +60,19 @@ public class KillServlet extends AbstractServlet {
                 res.sendError(HttpServletResponse.SC_NOT_FOUND, "Slot is not found: " + slotID);
                 return;
             }
-            StateDatabase db = scheduler.getStateDatabase();
-            SlotState state = db.getSlotState(slotID);
-
-            LOGGER.info("Killing slot: " + slotID);
-            if (state == null) {
-                db.putSlotState(new SlotState(slotID, SlotState.Status.KILLED));
-            } else {
-                if (state.getExternalID() != null) {
-                    workflow.getExternalService().kill(slotID, state.getExternalID());
+            try (StateDatabaseConnection db = scheduler.getStateDatabase().openConnection()) {
+                SlotState state = db.getSlotState(slotID);
+                LOGGER.info("Killing slot: " + slotID);
+                if (state == null) {
+                    db.putSlotState(new SlotState(slotID, SlotState.Status.KILLED));
+                } else {
+                    if (state.getExternalID() != null) {
+                        workflow.getExternalService().kill(slotID, state.getExternalID());
+                    }
+                    SlotState newState = state.transitionToKill();
+                    db.putSlotState(newState);
                 }
-                SlotState newState = state.transitionToKill();
-                db.putSlotState(newState);
             }
-
         } catch(Exception e) {
             throw new ServletException(e);
         }

@@ -84,6 +84,7 @@ public class FileSystemStateDatabase implements StateDatabase {
     private final File stateDir;
     private final File rerunDir;
     private final File pausedDir;
+    private final FileSystemStateDatabaseConnection instance;
 
     /**
      * Creates a new DB that stores data in the given directory, which must exist.
@@ -95,146 +96,160 @@ public class FileSystemStateDatabase implements StateDatabase {
         stateDir = new File(dir, STATE_DIR_NAME);
         rerunDir = new File(dir, RERUN_DIR_NAME);
         pausedDir = new File(dir, PAUSED_DIR_NAME);
+        instance = new FileSystemStateDatabaseConnection();
     }
 
     @Override
-    public Map<SlotID, SlotState> getSlotStates(WorkflowID id, ScheduledTime start, ScheduledTime end) throws Exception {
+    public StateDatabaseConnection openConnection() {
+        return instance;
+    }
 
-        Map<SlotID, SlotState> slotStates = Maps.newHashMap();
+    private class FileSystemStateDatabaseConnection implements StateDatabaseConnection {
 
-        ScheduledTime startBeginOfDay = new ScheduledTime(start.getDateTime().withMillisOfDay(0));
-        ScheduledTime endBeginOfDay = new ScheduledTime(end.getDateTime().withMillisOfDay(0));
+        @Override
+        public void close() throws Exception {
 
-        ScheduledTime currTime = startBeginOfDay;
+        }
 
-        while (!currTime.getDateTime().isAfter(endBeginOfDay.getDateTime())) {
-            File dayDir = getDayDir(getWorkflowStateDir(id), currTime);
-            if (dayDir.exists() && dayDir.isDirectory()) {
-                slotStates.putAll(getSlotStatesFromDir(id, start, end, dayDir));
+        @Override
+        public Map<SlotID, SlotState> getSlotStates(WorkflowID id, ScheduledTime start, ScheduledTime end) throws Exception {
+
+            Map<SlotID, SlotState> slotStates = Maps.newHashMap();
+
+            ScheduledTime startBeginOfDay = new ScheduledTime(start.getDateTime().withMillisOfDay(0));
+            ScheduledTime endBeginOfDay = new ScheduledTime(end.getDateTime().withMillisOfDay(0));
+
+            ScheduledTime currTime = startBeginOfDay;
+
+            while (!currTime.getDateTime().isAfter(endBeginOfDay.getDateTime())) {
+                File dayDir = getDayDir(getWorkflowStateDir(id), currTime);
+                if (dayDir.exists() && dayDir.isDirectory()) {
+                    slotStates.putAll(getSlotStatesFromDir(id, start, end, dayDir));
+                }
+                currTime = new ScheduledTime(currTime.getDateTime().plusDays(1));
             }
-            currTime = new ScheduledTime(currTime.getDateTime().plusDays(1));
+
+            return slotStates;
         }
 
-        return slotStates;
-    }
-
-    @Override
-    public SlotState getSlotState(SlotID id) throws Exception {
-        File file = getSlotStateFile(id);
-        if (!file.exists()) {
-            return null;
-        } else {
-            return readSlotStateFromFile(id, file);
-        }
-    }
-
-    @Override
-    public void putSlotState(SlotState state) throws Exception {
-        File file = getSlotStateFile(state.getSlotID());
-        writeJson(state.toJSONNode(), file);
-    }
-
-    private Map<SlotID, SlotState> getSlotStatesFromDir(WorkflowID id, ScheduledTime start, ScheduledTime end, File dayDir) throws IOException {
-        Map<SlotID, SlotState> slotStates = Maps.newHashMap();
-        for (File file : dayDir.listFiles()) {
-            ScheduledTime time = new ScheduledTime(dayDir.getName() + "T" + file.getName());
-            if (!time.getDateTime().isBefore(start.getDateTime()) && time.getDateTime().isBefore(end.getDateTime())) {
-                SlotID slotID = new SlotID(id, time);
-                slotStates.put(slotID, readSlotStateFromFile(slotID, file));
+        @Override
+        public SlotState getSlotState(SlotID id) throws Exception {
+            File file = getSlotStateFile(id);
+            if (!file.exists()) {
+                return null;
+            } else {
+                return readSlotStateFromFile(id, file);
             }
         }
-        return slotStates;
-    }
 
-    private SlotState readSlotStateFromFile(SlotID id, File file) throws IOException {
-        String json = FileUtils.readFileToString(file, CHARSET);
-        return SlotState.fromJSONNode(id, (ObjectNode) mapper.readTree(json));
-    }
+        @Override
+        public void putSlotState(SlotState state) throws Exception {
+            File file = getSlotStateFile(state.getSlotID());
+            writeJson(state.toJSONNode(), file);
+        }
 
-    /**
-     * Returns the directory containing state for the slot's workflow.
-     */
-    private File getWorkflowStateDir(WorkflowID id) {
-        return new File(stateDir, id.toString());
-    }
+        private Map<SlotID, SlotState> getSlotStatesFromDir(WorkflowID id, ScheduledTime start, ScheduledTime end, File dayDir) throws IOException {
+            Map<SlotID, SlotState> slotStates = Maps.newHashMap();
+            for (File file : dayDir.listFiles()) {
+                ScheduledTime time = new ScheduledTime(dayDir.getName() + "T" + file.getName());
+                if (!time.getDateTime().isBefore(start.getDateTime()) && time.getDateTime().isBefore(end.getDateTime())) {
+                    SlotID slotID = new SlotID(id, time);
+                    slotStates.put(slotID, readSlotStateFromFile(slotID, file));
+                }
+            }
+            return slotStates;
+        }
 
-    /**
-     * Returns the directory containing rerun info for the slot's workflow.
-     */
-    private File getWorkflowRerunDir(WorkflowID id) {
-        return new File(rerunDir, id.toString());
-    }
+        private SlotState readSlotStateFromFile(SlotID id, File file) throws IOException {
+            String json = FileUtils.readFileToString(file, CHARSET);
+            return SlotState.fromJSONNode(id, (ObjectNode) mapper.readTree(json));
+        }
 
-    private File getWorkflowPauseFile(WorkflowID id) {
-        return new File(pausedDir, id.toString());
-    }
+        /**
+         * Returns the directory containing state for the slot's workflow.
+         */
+        private File getWorkflowStateDir(WorkflowID id) {
+            return new File(stateDir, id.toString());
+        }
 
-    private File getSlotStateFile(SlotID slotID) {
-        return new File(getDayDir(getWorkflowStateDir(slotID.getWorkflowID()), slotID.getScheduledTime()), getFileName(slotID));
-    }
+        /**
+         * Returns the directory containing rerun info for the slot's workflow.
+         */
+        private File getWorkflowRerunDir(WorkflowID id) {
+            return new File(rerunDir, id.toString());
+        }
 
-    private File getSlotRerunFile(SlotID slotID) {
-        return new File(getDayDir(getWorkflowRerunDir(slotID.getWorkflowID()), slotID.getScheduledTime()), getFileName(slotID));
-    }
+        private File getWorkflowPauseFile(WorkflowID id) {
+            return new File(pausedDir, id.toString());
+        }
 
-    /**
-     * Returns the directory containing a day's data inside the workflow dir.
-     */
-    private File getDayDir(File superDir, ScheduledTime time) {
-        return new File(superDir, formatter.formatDatestamp(time));
-    }
+        private File getSlotStateFile(SlotID slotID) {
+            return new File(getDayDir(getWorkflowStateDir(slotID.getWorkflowID()), slotID.getScheduledTime()), getFileName(slotID));
+        }
 
-    private String getFileName(SlotID slotID) {
-        return formatter.formatTimestamp(slotID.getScheduledTime());
-    }
+        private File getSlotRerunFile(SlotID slotID) {
+            return new File(getDayDir(getWorkflowRerunDir(slotID.getWorkflowID()), slotID.getScheduledTime()), getFileName(slotID));
+        }
 
-    @Override
-    public void markSlotForRerun(SlotID slotID, ScheduledTime now) throws Exception {
-        RerunState st = new RerunState(now);
-        File file = getSlotRerunFile(slotID);
-        writeJson(st.toJSONNode(), file);
-    }
+        /**
+         * Returns the directory containing a day's data inside the workflow dir.
+         */
+        private File getDayDir(File superDir, ScheduledTime time) {
+            return new File(superDir, formatter.formatDatestamp(time));
+        }
 
-    @Override
-    public SortedSet<ScheduledTime> getTimesMarkedForRerun(WorkflowID workflowID, ScheduledTime now) throws Exception {
-        SortedSet<ScheduledTime> res = new TreeSet<>();
-        File wfDir = getWorkflowRerunDir(workflowID);
-        if (wfDir.exists()) {
-            for (File dayDir : wfDir.listFiles()) {
-                for (File rerunFile : dayDir.listFiles()) {
-                    String json = FileUtils.readFileToString(rerunFile, CHARSET);
-                    RerunState st = RerunState.fromJSONNode((ObjectNode) mapper.readTree(json));
-                    ScheduledTime t = new ScheduledTime(dayDir.getName() + "T" + rerunFile.getName());
-                    res.add(t);
-                    if (st.isExpired(now)) {
-                        LOGGER.info("Expiring rerun file: " + rerunFile);
-                        rerunFile.delete();
+        private String getFileName(SlotID slotID) {
+            return formatter.formatTimestamp(slotID.getScheduledTime());
+        }
+
+        @Override
+        public void markSlotForRerun(SlotID slotID, ScheduledTime now) throws Exception {
+            RerunState st = new RerunState(now);
+            File file = getSlotRerunFile(slotID);
+            writeJson(st.toJSONNode(), file);
+        }
+
+        @Override
+        public SortedSet<ScheduledTime> getTimesMarkedForRerun(WorkflowID workflowID, ScheduledTime now) throws Exception {
+            SortedSet<ScheduledTime> res = new TreeSet<>();
+            File wfDir = getWorkflowRerunDir(workflowID);
+            if (wfDir.exists()) {
+                for (File dayDir : wfDir.listFiles()) {
+                    for (File rerunFile : dayDir.listFiles()) {
+                        String json = FileUtils.readFileToString(rerunFile, CHARSET);
+                        RerunState st = RerunState.fromJSONNode((ObjectNode) mapper.readTree(json));
+                        ScheduledTime t = new ScheduledTime(dayDir.getName() + "T" + rerunFile.getName());
+                        res.add(t);
+                        if (st.isExpired(now)) {
+                            LOGGER.info("Expiring rerun file: " + rerunFile);
+                            rerunFile.delete();
+                        }
                     }
                 }
             }
+            return res;
         }
-        return res;
-    }
 
-    @Override
-    public boolean isPaused(WorkflowID workflowID) {
-        return getWorkflowPauseFile(workflowID).exists();
-    }
-
-    @Override
-    public void setPaused(WorkflowID workflowID, boolean paused) throws IOException {
-        File file = getWorkflowPauseFile(workflowID);
-        if (paused) {
-            FileUtils.touch(file);
-        } else {
-            FileUtils.forceDelete(file);
+        @Override
+        public boolean isPaused(WorkflowID workflowID) {
+            return getWorkflowPauseFile(workflowID).exists();
         }
-    }
 
-    private void writeJson(JsonNode obj, File file) throws IOException {
-        String json = mapper.writeValueAsString(obj);
-        FileUtils.forceMkdir(file.getParentFile());
-        FileUtils.write(file, json, CHARSET);
-    }
+        @Override
+        public void setPaused(WorkflowID workflowID, boolean paused) throws IOException {
+            File file = getWorkflowPauseFile(workflowID);
+            if (paused) {
+                FileUtils.touch(file);
+            } else {
+                FileUtils.forceDelete(file);
+            }
+        }
+
+        private void writeJson(JsonNode obj, File file) throws IOException {
+            String json = mapper.writeValueAsString(obj);
+            FileUtils.forceMkdir(file.getParentFile());
+            FileUtils.write(file, json, CHARSET);
+        }
+    };
 
 }
