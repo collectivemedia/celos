@@ -17,7 +17,7 @@
     catch(err) {
     }
 //-->
-var methods = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10};
+var methods = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -116,13 +116,13 @@ extends java.lang.Object
 implements <a href="../../../com/collective/celos/StateDatabase.html" title="interface in com.collective.celos">StateDatabase</a></pre>
 <div class="block">Brutally simple persistent implementation of StateDatabase
  that stores slot states as JSON files in the file system.
- 
+
  The database has a top-level directory, with one sub directory, called state.
- 
- Inside the state directory, there is a subdirectory for each workflow. 
- Inside each workflow directory is one directory per day.  Inside each 
+
+ Inside the state directory, there is a subdirectory for each workflow.
+ Inside each workflow directory is one directory per day.  Inside each
  day directory is one JSON file per workflow run.
- 
+
  state/
    workflow-1/
      2013-12-02/
@@ -149,11 +149,11 @@ implements <a href="../../../com/collective/celos/StateDatabase.html" title="int
    ...
 
  A JSON state file looks like this:
- 
+
  {"status":"RUNNING","externalID":"23873218-13202130978213-W"}
- 
+
  A JSON rerun file looks like this:
- 
+
  {"rerunTime":"2015-09-06T20:21Z"}</div>
 </li>
 </ul>
@@ -199,32 +199,40 @@ implements <a href="../../../com/collective/celos/StateDatabase.html" title="int
 </td>
 </tr>
 <tr id="i1" class="rowColor">
+<td class="colFirst"><code>java.util.Map&lt;<a href="../../../com/collective/celos/SlotID.html" title="class in com.collective.celos">SlotID</a>,<a href="../../../com/collective/celos/SlotState.html" title="class in com.collective.celos">SlotState</a>&gt;</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../com/collective/celos/FileSystemStateDatabase.html#getSlotStates-com.collective.celos.WorkflowID-com.collective.celos.ScheduledTime-com.collective.celos.ScheduledTime-">getSlotStates</a></span>(<a href="../../../com/collective/celos/WorkflowID.html" title="class in com.collective.celos">WorkflowID</a>&nbsp;id,
+             <a href="../../../com/collective/celos/ScheduledTime.html" title="class in com.collective.celos">ScheduledTime</a>&nbsp;start,
+             <a href="../../../com/collective/celos/ScheduledTime.html" title="class in com.collective.celos">ScheduledTime</a>&nbsp;end)</code>
+<div class="block">Returns the state of the given slots, or empty Map if not found.</div>
+</td>
+</tr>
+<tr id="i2" class="altColor">
 <td class="colFirst"><code>java.util.SortedSet&lt;<a href="../../../com/collective/celos/ScheduledTime.html" title="class in com.collective.celos">ScheduledTime</a>&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../com/collective/celos/FileSystemStateDatabase.html#getTimesMarkedForRerun-com.collective.celos.WorkflowID-com.collective.celos.ScheduledTime-">getTimesMarkedForRerun</a></span>(<a href="../../../com/collective/celos/WorkflowID.html" title="class in com.collective.celos">WorkflowID</a>&nbsp;workflowID,
                       <a href="../../../com/collective/celos/ScheduledTime.html" title="class in com.collective.celos">ScheduledTime</a>&nbsp;now)</code>
 <div class="block">Returns the list of scheduled times of the given workflow that have been marked for rerun.</div>
 </td>
 </tr>
-<tr id="i2" class="altColor">
+<tr id="i3" class="rowColor">
 <td class="colFirst"><code>boolean</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../com/collective/celos/FileSystemStateDatabase.html#isPaused-com.collective.celos.WorkflowID-">isPaused</a></span>(<a href="../../../com/collective/celos/WorkflowID.html" title="class in com.collective.celos">WorkflowID</a>&nbsp;workflowID)</code>
 <div class="block">Checks if Workflow has been paused</div>
 </td>
 </tr>
-<tr id="i3" class="rowColor">
+<tr id="i4" class="altColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../com/collective/celos/FileSystemStateDatabase.html#markSlotForRerun-com.collective.celos.SlotID-com.collective.celos.ScheduledTime-">markSlotForRerun</a></span>(<a href="../../../com/collective/celos/SlotID.html" title="class in com.collective.celos">SlotID</a>&nbsp;slotID,
                 <a href="../../../com/collective/celos/ScheduledTime.html" title="class in com.collective.celos">ScheduledTime</a>&nbsp;now)</code>
 <div class="block">Marks the slot for rerun at the current wallclock time.</div>
 </td>
 </tr>
-<tr id="i4" class="altColor">
+<tr id="i5" class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../com/collective/celos/FileSystemStateDatabase.html#putSlotState-com.collective.celos.SlotState-">putSlotState</a></span>(<a href="../../../com/collective/celos/SlotState.html" title="class in com.collective.celos">SlotState</a>&nbsp;state)</code>
 <div class="block">Updates the state of the given slot.</div>
 </td>
 </tr>
-<tr id="i5" class="rowColor">
+<tr id="i6" class="altColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../com/collective/celos/FileSystemStateDatabase.html#setPaused-com.collective.celos.WorkflowID-boolean-">setPaused</a></span>(<a href="../../../com/collective/celos/WorkflowID.html" title="class in com.collective.celos">WorkflowID</a>&nbsp;workflowID,
          boolean&nbsp;paused)</code>
@@ -238,6 +246,13 @@ implements <a href="../../../com/collective/celos/StateDatabase.html" title="int
 </a>
 <h3>Methods inherited from class&nbsp;java.lang.Object</h3>
 <code>clone, equals, finalize, getClass, hashCode, notify, notifyAll, toString, wait, wait, wait</code></li>
+</ul>
+<ul class="blockList">
+<li class="blockList"><a name="methods.inherited.from.class.com.collective.celos.StateDatabase">
+<!--   -->
+</a>
+<h3>Methods inherited from interface&nbsp;com.collective.celos.<a href="../../../com/collective/celos/StateDatabase.html" title="interface in com.collective.celos">StateDatabase</a></h3>
+<code><a href="../../../com/collective/celos/StateDatabase.html#getSlotStates-com.collective.celos.WorkflowID-java.util.Collection-">getSlotStates</a></code></li>
 </ul>
 </li>
 </ul>
@@ -276,6 +291,26 @@ implements <a href="../../../com/collective/celos/StateDatabase.html" title="int
 <!--   -->
 </a>
 <h3>Method Detail</h3>
+<a name="getSlotStates-com.collective.celos.WorkflowID-com.collective.celos.ScheduledTime-com.collective.celos.ScheduledTime-">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getSlotStates</h4>
+<pre>public&nbsp;java.util.Map&lt;<a href="../../../com/collective/celos/SlotID.html" title="class in com.collective.celos">SlotID</a>,<a href="../../../com/collective/celos/SlotState.html" title="class in com.collective.celos">SlotState</a>&gt;&nbsp;getSlotStates(<a href="../../../com/collective/celos/WorkflowID.html" title="class in com.collective.celos">WorkflowID</a>&nbsp;id,
+                                                     <a href="../../../com/collective/celos/ScheduledTime.html" title="class in com.collective.celos">ScheduledTime</a>&nbsp;start,
+                                                     <a href="../../../com/collective/celos/ScheduledTime.html" title="class in com.collective.celos">ScheduledTime</a>&nbsp;end)
+                                              throws java.lang.Exception</pre>
+<div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="../../../com/collective/celos/StateDatabase.html#getSlotStates-com.collective.celos.WorkflowID-com.collective.celos.ScheduledTime-com.collective.celos.ScheduledTime-">StateDatabase</a></code></span></div>
+<div class="block">Returns the state of the given slots, or empty Map if not found.</div>
+<dl>
+<dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
+<dd><code><a href="../../../com/collective/celos/StateDatabase.html#getSlotStates-com.collective.celos.WorkflowID-com.collective.celos.ScheduledTime-com.collective.celos.ScheduledTime-">getSlotStates</a></code>&nbsp;in interface&nbsp;<code><a href="../../../com/collective/celos/StateDatabase.html" title="interface in com.collective.celos">StateDatabase</a></code></dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code>java.lang.Exception</code></dd>
+</dl>
+</li>
+</ul>
 <a name="getSlotState-com.collective.celos.SlotID-">
 <!--   -->
 </a>
@@ -304,7 +339,7 @@ implements <a href="../../../com/collective/celos/StateDatabase.html" title="int
                   throws java.lang.Exception</pre>
 <div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="../../../com/collective/celos/StateDatabase.html#putSlotState-com.collective.celos.SlotState-">StateDatabase</a></code></span></div>
 <div class="block">Updates the state of the given slot.
- 
+ <p>
  If this is a rerun, then markSlotForRerun() must be used in addition.</div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
