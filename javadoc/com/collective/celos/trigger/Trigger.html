@@ -151,7 +151,7 @@ extends java.lang.Object</pre>
 </tr>
 <tr id="i0" class="altColor">
 <td class="colFirst"><code>abstract <a href="../../../../com/collective/celos/trigger/TriggerStatus.html" title="class in com.collective.celos.trigger">TriggerStatus</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/collective/celos/trigger/Trigger.html#getTriggerStatus-com.collective.celos.Scheduler-com.collective.celos.ScheduledTime-com.collective.celos.ScheduledTime-">getTriggerStatus</a></span>(<a href="../../../../com/collective/celos/Scheduler.html" title="class in com.collective.celos">Scheduler</a>&nbsp;scheduler,
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/collective/celos/trigger/Trigger.html#getTriggerStatus-com.collective.celos.StateDatabaseConnection-com.collective.celos.ScheduledTime-com.collective.celos.ScheduledTime-">getTriggerStatus</a></span>(<a href="../../../../com/collective/celos/StateDatabaseConnection.html" title="interface in com.collective.celos">StateDatabaseConnection</a>&nbsp;connection,
                 <a href="../../../../com/collective/celos/ScheduledTime.html" title="class in com.collective.celos">ScheduledTime</a>&nbsp;now,
                 <a href="../../../../com/collective/celos/ScheduledTime.html" title="class in com.collective.celos">ScheduledTime</a>&nbsp;scheduledTime)</code>
 <div class="block">Returns information about data availablity for the given scheduled time.</div>
@@ -159,7 +159,7 @@ extends java.lang.Object</pre>
 </tr>
 <tr id="i1" class="rowColor">
 <td class="colFirst"><code>boolean</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/collective/celos/trigger/Trigger.html#isDataAvailable-com.collective.celos.Scheduler-com.collective.celos.ScheduledTime-com.collective.celos.ScheduledTime-">isDataAvailable</a></span>(<a href="../../../../com/collective/celos/Scheduler.html" title="class in com.collective.celos">Scheduler</a>&nbsp;scheduler,
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/collective/celos/trigger/Trigger.html#isDataAvailable-com.collective.celos.StateDatabaseConnection-com.collective.celos.ScheduledTime-com.collective.celos.ScheduledTime-">isDataAvailable</a></span>(<a href="../../../../com/collective/celos/StateDatabaseConnection.html" title="interface in com.collective.celos">StateDatabaseConnection</a>&nbsp;connection,
                <a href="../../../../com/collective/celos/ScheduledTime.html" title="class in com.collective.celos">ScheduledTime</a>&nbsp;now,
                <a href="../../../../com/collective/celos/ScheduledTime.html" title="class in com.collective.celos">ScheduledTime</a>&nbsp;scheduledTime)</code>
 <div class="block">Returns true if data is available for the given scheduled time, false if not.</div>
@@ -215,13 +215,13 @@ extends java.lang.Object</pre>
 <!--   -->
 </a>
 <h3>Method Detail</h3>
-<a name="getTriggerStatus-com.collective.celos.Scheduler-com.collective.celos.ScheduledTime-com.collective.celos.ScheduledTime-">
+<a name="getTriggerStatus-com.collective.celos.StateDatabaseConnection-com.collective.celos.ScheduledTime-com.collective.celos.ScheduledTime-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>getTriggerStatus</h4>
-<pre>public abstract&nbsp;<a href="../../../../com/collective/celos/trigger/TriggerStatus.html" title="class in com.collective.celos.trigger">TriggerStatus</a>&nbsp;getTriggerStatus(<a href="../../../../com/collective/celos/Scheduler.html" title="class in com.collective.celos">Scheduler</a>&nbsp;scheduler,
+<pre>public abstract&nbsp;<a href="../../../../com/collective/celos/trigger/TriggerStatus.html" title="class in com.collective.celos.trigger">TriggerStatus</a>&nbsp;getTriggerStatus(<a href="../../../../com/collective/celos/StateDatabaseConnection.html" title="interface in com.collective.celos">StateDatabaseConnection</a>&nbsp;connection,
                                                <a href="../../../../com/collective/celos/ScheduledTime.html" title="class in com.collective.celos">ScheduledTime</a>&nbsp;now,
                                                <a href="../../../../com/collective/celos/ScheduledTime.html" title="class in com.collective.celos">ScheduledTime</a>&nbsp;scheduledTime)
                                         throws java.lang.Exception</pre>
@@ -232,13 +232,13 @@ extends java.lang.Object</pre>
 </dl>
 </li>
 </ul>
-<a name="isDataAvailable-com.collective.celos.Scheduler-com.collective.celos.ScheduledTime-com.collective.celos.ScheduledTime-">
+<a name="isDataAvailable-com.collective.celos.StateDatabaseConnection-com.collective.celos.ScheduledTime-com.collective.celos.ScheduledTime-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>isDataAvailable</h4>
-<pre>public final&nbsp;boolean&nbsp;isDataAvailable(<a href="../../../../com/collective/celos/Scheduler.html" title="class in com.collective.celos">Scheduler</a>&nbsp;scheduler,
+<pre>public final&nbsp;boolean&nbsp;isDataAvailable(<a href="../../../../com/collective/celos/StateDatabaseConnection.html" title="interface in com.collective.celos">StateDatabaseConnection</a>&nbsp;connection,
                                      <a href="../../../../com/collective/celos/ScheduledTime.html" title="class in com.collective.celos">ScheduledTime</a>&nbsp;now,
                                      <a href="../../../../com/collective/celos/ScheduledTime.html" title="class in com.collective.celos">ScheduledTime</a>&nbsp;scheduledTime)
                               throws java.lang.Exception</pre>
