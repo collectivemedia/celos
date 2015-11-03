@@ -55,19 +55,6 @@ public class MemoryStateDatabase implements StateDatabase {
         }
 
         @Override
-        public Map<SlotID, SlotState> getSlotStates(WorkflowID id, Collection<ScheduledTime> times) throws Exception {
-            Map<SlotID, SlotState> slotStates = Maps.newHashMap();
-            for (ScheduledTime time : times) {
-                SlotID slotID = new SlotID(id, time);
-                SlotState slotState = getSlotState(slotID);
-                if (slotState != null) {
-                    slotStates.put(slotID, slotState);
-                }
-            }
-            return slotStates;
-        }
-
-        @Override
         public SlotState getSlotState(SlotID id) throws Exception {
             return map.get(id);
         }
