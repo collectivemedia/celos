@@ -15,12 +15,11 @@
  */
 package com.collective.celos;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import com.google.common.collect.Maps;
+import org.joda.time.DateTime;
+
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Simple implementation of StateDatabase that stores everything in a Map.
@@ -28,9 +27,21 @@ import java.util.TreeSet;
 public class MemoryStateDatabase implements StateDatabase {
 
     protected final Map<SlotID, SlotState> map = new HashMap<SlotID, SlotState>();
-    protected final Set<SlotID> rerun = new HashSet<SlotID>();
+    protected final Map<SlotID, ScheduledTime> rerun = new ConcurrentHashMap<>();
     protected final Set<WorkflowID> pausedWorkflows = new HashSet<>();
-    
+
+    @Override
+    public Map<SlotID, SlotState> getSlotStates(WorkflowID id, ScheduledTime start, ScheduledTime end) throws Exception {
+        Map<SlotID, SlotState> slotStates = Maps.newHashMap();
+        for (Map.Entry<SlotID, SlotState> entry : map.entrySet()) {
+            DateTime dateTime = entry.getKey().getScheduledTime().getDateTime();
+            if (!dateTime.isBefore(start.getDateTime()) && dateTime.isBefore(end.getDateTime())) {
+                slotStates.put(entry.getKey(), entry.getValue());
+            }
+        }
+        return slotStates;
+    }
+
     @Override
     public SlotState getSlotState(SlotID id) throws Exception {
         return map.get(id);
@@ -40,7 +51,7 @@ public class MemoryStateDatabase implements StateDatabase {
     public void putSlotState(SlotState state) throws Exception {
         map.put(state.getSlotID(), state);
     }
-    
+
     public int size() {
         return map.size();
     }
@@ -48,23 +59,27 @@ public class MemoryStateDatabase implements StateDatabase {
     @Override
     public void markSlotForRerun(SlotID slot, ScheduledTime now) throws Exception {
         // Doesn't implement GC for rerun
-        rerun.add(slot);
-    }
-
-    @Override
-    public SortedSet<ScheduledTime> getTimesMarkedForRerun(WorkflowID workflowID, ScheduledTime now) throws Exception {
-        SortedSet<ScheduledTime> res = new TreeSet<>();
-        for (SlotID slot : rerun) {
-            if (slot.getWorkflowID().equals(workflowID)) {
-                res.add(slot.getScheduledTime());
-            }
-        }
-        return res;
+        rerun.put(slot, now);
     }
 
     @Override
     public boolean isPaused(WorkflowID workflowID) {
         return pausedWorkflows.contains(workflowID);
+    }
+
+    @Override
+    public SortedSet<ScheduledTime> getTimesMarkedForRerun(WorkflowID workflowID, ScheduledTime now) throws Exception {
+        SortedSet<ScheduledTime> res = new TreeSet<>();
+        for (Map.Entry<SlotID, ScheduledTime> entry : rerun.entrySet()) {
+            if (entry.getKey().getWorkflowID().equals(workflowID)) {
+                res.add(entry.getKey().getScheduledTime());
+                RerunState rerunState = new RerunState(entry.getValue());
+                if (rerunState.isExpired(now)) {
+                    rerun.remove(entry.getKey());
+                }
+            }
+        }
+        return res;
     }
 
     @Override
