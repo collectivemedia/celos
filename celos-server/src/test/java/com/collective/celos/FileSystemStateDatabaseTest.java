@@ -15,37 +15,22 @@
  */
 package com.collective.celos;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
-
-import com.google.common.collect.Lists;
 import junit.framework.Assert;
-
 import org.apache.commons.io.IOUtils;
-import org.joda.time.Instant;
-import org.joda.time.Interval;
-import org.joda.time.Period;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import com.google.common.collect.ImmutableSet;
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.util.HashSet;
+import java.util.Set;
 
 public class FileSystemStateDatabaseTest extends AbstractStateDatabaseTest {
 
     @Rule
     public TemporaryFolder tempFolder = new TemporaryFolder();
-
-    @Override
-    public StateDatabase getStateDatabase() throws IOException {
-        return new FileSystemStateDatabase(makeDatabaseDir());
-    }
-
 
     @Test(expected=IOException.class)
     public void directoryMustExist() throws IOException {
@@ -55,8 +40,13 @@ public class FileSystemStateDatabaseTest extends AbstractStateDatabaseTest {
 
     @Test
     public void emptyDatabaseReturnsNull() throws Exception {
-        StateDatabase db = new FileSystemStateDatabase(makeDatabaseDir());
+        StateDatabaseConnection db = getStateDatabase();
         Assert.assertNull(db.getSlotState(new SlotID(new WorkflowID("workflow-1"), new ScheduledTime("2013-12-02T13:37Z"))));
+    }
+
+    @Override
+    public StateDatabaseConnection getStateDatabase() throws IOException {
+        return new FileSystemStateDatabase(makeDatabaseDir()).openConnection();
     }
 
     private File makeDatabaseDir() {
@@ -74,7 +64,7 @@ public class FileSystemStateDatabaseTest extends AbstractStateDatabaseTest {
      */
     @Test
     public void canReadFromFileSystem1() throws Exception {
-        StateDatabase db = new FileSystemStateDatabase(getResourceDirNoTimestamp());
+        StateDatabaseConnection db = new FileSystemStateDatabase(getResourceDirNoTimestamp()).openConnection();
         for(SlotState state : getStates()) {
             Assert.assertEquals(state, db.getSlotState(state.getSlotID()));
         }
@@ -85,7 +75,7 @@ public class FileSystemStateDatabaseTest extends AbstractStateDatabaseTest {
      */
     @Test
     public void canReadFromFileSystem2() throws Exception {
-        StateDatabase db = new FileSystemStateDatabase(getResourceDir());
+        StateDatabaseConnection db = new FileSystemStateDatabase(getResourceDir()).openConnection();
         for(SlotState state : getStates()) {
             Assert.assertEquals(state, db.getSlotState(state.getSlotID()));
         }
@@ -97,13 +87,33 @@ public class FileSystemStateDatabaseTest extends AbstractStateDatabaseTest {
      */
     @Test
     public void canWriteToFileSystem() throws Exception {
-        StateDatabase db = new FileSystemStateDatabase(makeDatabaseDir());
+        StateDatabaseConnection db = getStateDatabase();
         for(SlotState state : getStates()) {
             db.putSlotState(state);
         }
         if (diff(getDatabaseDir(), getResourceDir())) {
             throw new AssertionError("Database differs from resource database.");
         }
+    }
+
+    @Test
+    public void testPauseFileExistence() throws Exception {
+        StateDatabaseConnection db = getStateDatabase();
+        WorkflowID workflowID = new WorkflowID("wf1");
+
+        File pauseFile = new File(getDatabaseDir(), "paused/wf1");
+
+        Assert.assertFalse(db.isPaused(workflowID));
+        Assert.assertFalse(pauseFile.exists());
+
+        db.setPaused(workflowID, true);
+
+        Assert.assertTrue(pauseFile.exists());
+        Assert.assertTrue(db.isPaused(workflowID));
+
+        db.setPaused(workflowID, false);
+        Assert.assertFalse(db.isPaused(workflowID));
+        Assert.assertFalse(pauseFile.exists());
     }
 
     /**
@@ -160,6 +170,5 @@ public class FileSystemStateDatabaseTest extends AbstractStateDatabaseTest {
 
         return states;
     }
-
 
 }

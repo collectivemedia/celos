@@ -20,7 +20,7 @@ import java.io.IOException;
 public class MemoryStateDatabaseTest extends AbstractStateDatabaseTest {
 
     @Override
-    public StateDatabase getStateDatabase() throws IOException {
-        return new MemoryStateDatabase();
+    public StateDatabaseConnection getStateDatabase() throws IOException {
+        return new MemoryStateDatabase().openConnection();
     }
 }
