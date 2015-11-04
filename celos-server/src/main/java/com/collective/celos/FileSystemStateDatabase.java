@@ -262,6 +262,8 @@ public class FileSystemStateDatabase implements StateDatabase {
 
         @Override
         public JsonNode getRegister(BucketID bucket, RegisterKey key) throws Exception {
+            Util.requireNonNull(bucket);
+            Util.requireNonNull(key);
             File registerFile = getRegisterFile(bucket, key);
             if (!registerFile.exists()) {
                 return null;
@@ -272,11 +274,16 @@ public class FileSystemStateDatabase implements StateDatabase {
         
         @Override
         public void putRegister(BucketID bucket, RegisterKey key, JsonNode value) throws Exception {
+            Util.requireNonNull(bucket);
+            Util.requireNonNull(key);
+            Util.requireNonNull(value);
             writeJson(value, getRegisterFile(bucket, key));
         }
         
         @Override
         public void deleteRegister(BucketID bucket, RegisterKey key) throws Exception {
+            Util.requireNonNull(bucket);
+            Util.requireNonNull(key);
             File registerFile = getRegisterFile(bucket, key);
             if (registerFile.exists()) {
                 registerFile.delete();
