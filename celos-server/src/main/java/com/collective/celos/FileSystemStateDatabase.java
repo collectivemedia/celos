@@ -17,6 +17,7 @@ package com.collective.celos;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.SortedSet;
@@ -286,11 +287,15 @@ public class FileSystemStateDatabase implements StateDatabase {
         public Iterable<Map.Entry<RegisterKey, JsonNode>> getAllRegisters(BucketID bucket) throws Exception {
             Map<RegisterKey, JsonNode> registers = new HashMap<>();
             File bucketDir = getBucketDir(bucket);
-            File[] registerFiles = bucketDir.listFiles();
-            for(File f : registerFiles) {
-                registers.put(new RegisterKey(f.getName()), readJson(f));
+            if (bucketDir.exists()) {
+                File[] registerFiles = bucketDir.listFiles();
+                for(File f : registerFiles) {
+                    registers.put(new RegisterKey(f.getName()), readJson(f));
+                }
+                return registers.entrySet();
+            } else {
+                return Collections.emptySet();
             }
-            return registers.entrySet();
         }
         
         private ObjectNode readJson(File file) throws IOException, JsonProcessingException {

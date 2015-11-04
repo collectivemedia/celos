@@ -18,6 +18,7 @@ package com.collective.celos;
 import com.collective.celos.trigger.Trigger;
 import com.collective.celos.trigger.TriggerStatus;
 import com.google.common.collect.ImmutableMap;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.mozilla.javascript.NativeJavaObject;
@@ -210,7 +211,8 @@ public class WorkflowConfigurationParserTest {
 
     @Test
     public void evaluatesAdditionalVar() throws Exception {
-        WorkflowConfigurationParser parser = new WorkflowConfigurationParser(new File("unused"), ImmutableMap.of("var1", "val1"));
+        StateDatabaseConnection conn = new MemoryStateDatabase().openConnection();
+        WorkflowConfigurationParser parser = new WorkflowConfigurationParser(new File("unused"), ImmutableMap.of("var1", "val1"), conn);
         // Evaluate JS function call
         Object jsResult = parser.evaluateReader(new StringReader("var1"), "string");
         Assert.assertEquals(jsResult, "val1");
@@ -222,7 +224,8 @@ public class WorkflowConfigurationParserTest {
         URL resource = Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/defaults-oozie-props");
         File defaults = new File(resource.toURI());
 
-        WorkflowConfigurationParser parser = new WorkflowConfigurationParser(defaults, ImmutableMap.of("var1", "val1"));
+        StateDatabaseConnection conn = new MemoryStateDatabase().openConnection();
+        WorkflowConfigurationParser parser = new WorkflowConfigurationParser(defaults, ImmutableMap.of("var1", "val1"), conn);
 
         String func = "function (slotId) {" +
                 "        return {" +
@@ -244,7 +247,8 @@ public class WorkflowConfigurationParserTest {
         URL resource = Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/defaults-oozie-props");
         File defaults = new File(resource.toURI());
 
-        WorkflowConfigurationParser parser = new WorkflowConfigurationParser(defaults, ImmutableMap.of("CELOS_USER_JS_VAR", "nameIsChanged"));
+        StateDatabaseConnection conn = new MemoryStateDatabase().openConnection();
+        WorkflowConfigurationParser parser = new WorkflowConfigurationParser(defaults, ImmutableMap.of("CELOS_USER_JS_VAR", "nameIsChanged"), conn);
 
         String func = "function (slotId) {" +
                 "        return {" +
@@ -263,7 +267,8 @@ public class WorkflowConfigurationParserTest {
 
     @Test
     public void doesntEvaluateAdditionalVar() throws Exception {
-        WorkflowConfigurationParser parser = new WorkflowConfigurationParser(new File("unused"), ImmutableMap.<String, String>of());
+        StateDatabaseConnection conn = new MemoryStateDatabase().openConnection();
+        WorkflowConfigurationParser parser = new WorkflowConfigurationParser(new File("unused"), ImmutableMap.<String, String>of(), conn);
         try {
             parser.evaluateReader(new StringReader("var1"), "string");
         } catch (Exception e) {
@@ -283,7 +288,8 @@ public class WorkflowConfigurationParserTest {
         File dir = getConfigurationDir(label);
         File defaults = getDefaultsDir();
         File workflow = new File(dir, workflowName + "." + WorkflowConfigurationParser.WORKFLOW_FILE_EXTENSION);
-        WorkflowConfigurationParser workflowConfigurationParser = new WorkflowConfigurationParser(defaults, ImmutableMap.<String, String>of());
+        StateDatabaseConnection conn = new MemoryStateDatabase().openConnection();
+        WorkflowConfigurationParser workflowConfigurationParser = new WorkflowConfigurationParser(defaults, ImmutableMap.<String, String>of(), conn);
         workflowConfigurationParser.parseFile(workflow);
         return workflowConfigurationParser.getWorkflowConfiguration();
     }
@@ -291,7 +297,8 @@ public class WorkflowConfigurationParserTest {
     public static WorkflowConfiguration parseDir(String label) throws Exception {
         File dir = getConfigurationDir(label);
         File defaults = getDefaultsDir();
-        return new WorkflowConfigurationParser(defaults, ImmutableMap.<String, String>of()).parseConfiguration(dir).getWorkflowConfiguration();
+        StateDatabaseConnection conn = new MemoryStateDatabase().openConnection();
+        return new WorkflowConfigurationParser(defaults, ImmutableMap.<String, String>of(), conn).parseConfiguration(dir).getWorkflowConfiguration();
     }
 
     public static File getConfigurationDir(String label) throws URISyntaxException {

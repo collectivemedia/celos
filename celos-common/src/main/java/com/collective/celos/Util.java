@@ -19,7 +19,6 @@ import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Map;
-import java.util.regex.Pattern;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -29,7 +28,9 @@ import org.apache.log4j.rolling.TimeBasedRollingPolicy;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -41,6 +42,8 @@ import com.google.common.collect.Maps;
  */
 public class Util {
 
+    private static final ObjectMapper MAPPER = new ObjectMapper();
+    
     public static <T> T requireNonNull(T object) {
         if (object == null) throw new NullPointerException();
         else return object;
@@ -139,6 +142,10 @@ public class Util {
         }
     }
 
+    public static String jsonNodeToString(JsonNode node) throws JsonProcessingException {
+        return MAPPER.writeValueAsString(node);
+    }
+    
     public static ScheduledTime max(ScheduledTime a, ScheduledTime b) {
         requireNonNull(a);
         requireNonNull(b);

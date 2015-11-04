@@ -258,6 +258,17 @@ celos.isRunningInTestMode = function() {
     return (typeof HDFS_PREFIX_JS_VAR !== "undefined");
 }
 
+celos.forEachRegister = function(bucket, fn) {
+    var bucketID = new BucketID(bucket);
+    var iterator = celosConnection.getAllRegisters(bucketID);
+    while(iterator.hasNext()) {
+        var mapEntry = iterator.next();
+        var key = mapEntry.getKey().toString();
+        var value = JSON.parse(Util.jsonNodeToString(mapEntry.getValue()));
+        fn(key, value);
+    }
+}
+
 var importDefaults = celos.importDefaults;
 //FIXME: left here for back compatibility with collective.js defaults, should be removed later
 celos.addWorkflow = celos.defineWorkflow ;

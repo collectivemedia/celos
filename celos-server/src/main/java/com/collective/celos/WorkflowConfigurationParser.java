@@ -44,10 +44,12 @@ public class WorkflowConfigurationParser {
     private final JSConfigParser jsConfigParser = new JSConfigParser();
     private final File defaultsDir;
     private final Map<String, String> additionalJsVariables;
+    private final StateDatabaseConnection connection;
 
-    public WorkflowConfigurationParser(File defaultsDir, Map<String, String> additionalJsVariables) throws Exception {
+    public WorkflowConfigurationParser(File defaultsDir, Map<String, String> additionalJsVariables, StateDatabaseConnection connection) throws Exception {
         this.defaultsDir = Util.requireNonNull(defaultsDir);
         this.additionalJsVariables = additionalJsVariables;
+        this.connection = Util.requireNonNull(connection);
     }
 
     public WorkflowConfigurationParser parseConfiguration(File workflowsDir) {
@@ -78,6 +80,7 @@ public class WorkflowConfigurationParser {
         Object wrappedThis = Context.javaToJS(this, scope);
         Map jsProperties = Maps.newHashMap(additionalJsVariables);
         jsProperties.put("celosWorkflowConfigurationParser", wrappedThis);
+        jsProperties.put("celosConnection", connection);
 
         jsConfigParser.putPropertiesInScope(jsProperties, scope);
 

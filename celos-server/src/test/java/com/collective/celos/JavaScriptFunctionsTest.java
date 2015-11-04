@@ -19,6 +19,7 @@ import com.collective.celos.trigger.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.ImmutableMap;
+
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -332,7 +333,7 @@ public class JavaScriptFunctionsTest {
     }
 
     private Object runJS(String js) throws Exception {
-        WorkflowConfigurationParser parser = new WorkflowConfigurationParser(new File("unused"), ImmutableMap.<String, String>of());
+        WorkflowConfigurationParser parser = createParser();
         // Evaluate JS function call
         Object jsResult = parser.evaluateReader(new StringReader(js), "string");
         if (jsResult instanceof NativeJavaObject) {
@@ -343,11 +344,16 @@ public class JavaScriptFunctionsTest {
     }
 
     private Object runJSNativeResult(String js) throws Exception {
-        WorkflowConfigurationParser parser = new WorkflowConfigurationParser(new File("unused"), ImmutableMap.<String, String>of());
+        WorkflowConfigurationParser parser = createParser();
         // Evaluate JS function call
         return parser.evaluateReader(new StringReader(js), "string");
     }
 
+    private WorkflowConfigurationParser createParser() throws Exception {
+        StateDatabaseConnection conn = new MemoryStateDatabase().openConnection();
+        WorkflowConfigurationParser parser = new WorkflowConfigurationParser(new File("unused"), ImmutableMap.<String, String>of(), conn);
+        return parser;
+    }
 
     private void expectMessage(String js, String string) throws AssertionError {
         try {
