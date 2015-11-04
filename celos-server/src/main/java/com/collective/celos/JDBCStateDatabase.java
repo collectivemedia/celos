@@ -32,7 +32,6 @@ public class JDBCStateDatabase implements StateDatabase {
     private static final String INSERT_SLOT_STATE = "INSERT INTO SLOTSTATE(WORKFLOWID, DATE, STATUS, EXTERNALID, RETRYCOUNT) VALUES (?, ?, ?, ?, ?)";
     private static final String UPDATE_SLOT_STATE = "UPDATE SLOTSTATE SET STATUS=?, EXTERNALID=?, RETRYCOUNT=? WHERE WORKFLOWID=? AND DATE=?";
     private static final String SELECT_SLOTS_BY_PERIOD = "SELECT STATUS, EXTERNALID, RETRYCOUNT, DATE FROM SLOTSTATE WHERE WORKFLOWID = ? AND DATE >= ? AND DATE < ?";
-    private static final String SELECT_SLOTS_BY_TIMESTAMPS = "SELECT STATUS, EXTERNALID, RETRYCOUNT, DATE FROM SLOTSTATE WHERE WORKFLOWID = ? AND DATE IN (???)";
     private static final String INSERT_RERUN_SLOT = "INSERT INTO RERUNSLOT(WORKFLOWID, DATE) VALUES (?, ?)";
     private static final String SELECT_RERUN_SLOTS = "SELECT DATE FROM RERUNSLOT WHERE WORKFLOWID = ?";
     private static final String DELETE_RERUN_SLOTS = "DELETE FROM RERUNSLOT WHERE WORKFLOWID = ? AND DATE = ?";
@@ -87,31 +86,6 @@ public class JDBCStateDatabase implements StateDatabase {
                 preparedStatement.setString(1, id.toString());
                 preparedStatement.setTimestamp(2, Util.toTimestamp(start));
                 preparedStatement.setTimestamp(3, Util.toTimestamp(end));
-                Map<SlotID, SlotState> slotStates = Maps.newHashMap();
-                try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                    while (resultSet.next()) {
-                        SlotState.Status status = SlotState.Status.valueOf(resultSet.getString(STATUS_PARAM));
-                        String externalId = resultSet.getString(EXTERNAL_ID_PARAM);
-                        int retryCount = resultSet.getInt(RETRY_COUNT_PARAM);
-                        ScheduledTime date = Util.fromTimestamp(resultSet.getTimestamp(DATE_PARAM));
-                        SlotID slotID = new SlotID(id, date);
-                        slotStates.put(slotID, new SlotState(slotID, status, externalId, retryCount));
-                    }
-                }
-                return slotStates;
-            }
-        }
-
-        @Override
-        public Map<SlotID, SlotState> getSlotStates(WorkflowID id, Collection<ScheduledTime> times) throws Exception {
-            String questionMarks = StringUtils.join(times.stream().map(t -> "?").collect(Collectors.toList()), ", ");
-            String query = SELECT_SLOTS_BY_TIMESTAMPS.replace("???", questionMarks);
-            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-                int i = 1;
-                preparedStatement.setString(i++, id.toString());
-                for (ScheduledTime time : times) {
-                    preparedStatement.setTimestamp(i++, Util.toTimestamp(time));
-                }
                 Map<SlotID, SlotState> slotStates = Maps.newHashMap();
                 try (ResultSet resultSet = preparedStatement.executeQuery()) {
                     while (resultSet.next()) {
