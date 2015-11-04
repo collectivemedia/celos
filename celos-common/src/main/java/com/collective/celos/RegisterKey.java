@@ -20,7 +20,7 @@ public class RegisterKey extends ValueObject implements Comparable<RegisterKey> 
     private final String keyString;
 
     public RegisterKey(String keyString) {
-        this.keyString = Util.requireProperName(keyString);
+        this.keyString = Util.requireProperBucketIDorRegisterKey(keyString);
     }
 
     public String toString() {

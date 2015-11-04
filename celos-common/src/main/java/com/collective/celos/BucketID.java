@@ -20,7 +20,7 @@ public class BucketID extends ValueObject implements Comparable<BucketID> {
     private final String id;
 
     public BucketID(String id) {
-        this.id = Util.requireProperName(id);
+        this.id = Util.requireProperBucketIDorRegisterKey(id);
     }
 
     public String toString() {

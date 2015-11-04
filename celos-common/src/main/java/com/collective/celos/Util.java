@@ -50,9 +50,12 @@ public class Util {
         else return object;
     }
 
-    public static String requireProperName(String s) {
-        // FIXME: make sure String contains only alphanumeric characters and - _
-        return requireNonNull(s);
+    public static String requireProperBucketIDorRegisterKey(String s) {
+        Util.requireNonNull(s);
+        if (s.indexOf("/") != -1) {
+            throw new IllegalArgumentException("Bucket IDs and register keys must not contain the / character:" + s);
+        }
+        return s;
     }
 
     // DATETIME UTILITIES
