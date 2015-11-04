@@ -15,25 +15,32 @@
  */
 package com.collective.celos;
 
-import com.collective.celos.server.CelosServer;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
-import org.apache.commons.io.FileUtils;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.conn.HttpHostConnectException;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.junit.*;
-import org.junit.rules.TemporaryFolder;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
 import java.util.List;
 import java.util.Set;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.conn.HttpHostConnectException;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
+
+import com.collective.celos.server.CelosServer;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 /**
  * Created by akonopko on 22.12.14.
@@ -52,6 +59,7 @@ public class CelosClientServerTest {
     private File slotDbDir;
     private CelosServer celosServer;
     private CelosClient celosClient;
+    private ObjectMapper mapper = new ObjectMapper();
 
     @Before
     public void setup() throws Exception {
@@ -756,5 +764,32 @@ public class CelosClientServerTest {
 
         celosClient.kill(workflowID, slotStateLast.getScheduledTime());
     }
+    
+    @Test()
+    public void testRegisters() throws Exception {
+        BucketID bucket1 = new BucketID("foo-bucket-Iñtërnâtiônàlizætiøn");
+        BucketID bucket2 = new BucketID("another-bucket-Iñtërnâtiônàlizætiøn");
+        RegisterKey key1 = new RegisterKey("bar-key-Iñtërnâtiônàlizætiøn");
+        RegisterKey key2 = new RegisterKey("quux-key-Iñtërnâtiônàlizætiøn");
+        Assert.assertNull(celosClient.getRegister(bucket1, key1));
+        Assert.assertNull(celosClient.getRegister(bucket2, key2));
+        ObjectNode value1 = mapper.createObjectNode();
+        value1.put("foo", "Iñtërnâtiônàlizætiøn");
+        ObjectNode value2 = mapper.createObjectNode();
+        value2.put("bar", "Iñtërnâtiônàlizætiøn");
+        celosClient.putRegister(bucket1, key1, value1);
+        Assert.assertEquals(value1, celosClient.getRegister(bucket1, key1));
+        Assert.assertNull(celosClient.getRegister(bucket2, key2));
+        celosClient.putRegister(bucket2, key2, value2);
+        Assert.assertEquals(value1, celosClient.getRegister(bucket1, key1));
+        Assert.assertEquals(value2, celosClient.getRegister(bucket2, key2));
+        celosClient.deleteRegister(bucket1, key1);
+        Assert.assertNull(celosClient.getRegister(bucket1, key1));
+        Assert.assertEquals(value2, celosClient.getRegister(bucket2, key2));
+        celosClient.deleteRegister(bucket2, key2);
+        Assert.assertNull(celosClient.getRegister(bucket1, key1));
+        Assert.assertNull(celosClient.getRegister(bucket2, key2));
+    }
+
 
 }

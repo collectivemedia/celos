@@ -194,13 +194,17 @@ public class CelosClient {
         uriBuilder.addParameter(KEY_PARAM, key.toString());
 
         HttpResponse res = client.execute(new HttpGet(uriBuilder.build()));
-        switch(res.getStatusLine().getStatusCode()) {
-        case HttpServletResponse.SC_NOT_FOUND:
-            return null;
-        case HttpServletResponse.SC_OK:
-            return objectMapper.readTree(res.getEntity().getContent());
-        default:
-            throw new Exception(res.getStatusLine().getReasonPhrase());
+        try {
+            switch(res.getStatusLine().getStatusCode()) {
+            case HttpServletResponse.SC_NOT_FOUND:
+                return null;
+            case HttpServletResponse.SC_OK:
+                return objectMapper.readTree(res.getEntity().getContent());
+            default:
+                throw new Exception(res.getStatusLine().toString());
+            }
+        } finally {
+            EntityUtils.consume(res.getEntity());
         }
     }
     
@@ -219,7 +223,7 @@ public class CelosClient {
     /**
      * Deletes the specified register value.
      */
-    public void deleteRegister(BucketID bucket, RegisterKey key, JsonNode value) throws Exception {
+    public void deleteRegister(BucketID bucket, RegisterKey key) throws Exception {
         URIBuilder uriBuilder = new URIBuilder(address);
         uriBuilder.setPath(uriBuilder.getPath() + REGISTER_PATH);
         uriBuilder.addParameter(BUCKET_PARAM, bucket.toString());
