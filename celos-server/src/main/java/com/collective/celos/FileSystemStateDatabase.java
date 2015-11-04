@@ -17,16 +17,19 @@ package com.collective.celos;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.common.collect.Maps;
 
 /**
  * Brutally simple persistent implementation of StateDatabase
@@ -77,6 +80,7 @@ public class FileSystemStateDatabase implements StateDatabase {
     private static final String STATE_DIR_NAME = "state";
     private static final String RERUN_DIR_NAME = "rerun";
     private static final String PAUSED_DIR_NAME = "paused";
+    private static final String REGISTER_DIR_NAME = "register";
     private static final Logger LOGGER = Logger.getLogger(FileSystemStateDatabase.class);
 
     private final ObjectMapper mapper = new ObjectMapper();
@@ -84,6 +88,7 @@ public class FileSystemStateDatabase implements StateDatabase {
     private final File stateDir;
     private final File rerunDir;
     private final File pausedDir;
+    private final File registerDir;
     private final FileSystemStateDatabaseConnection instance;
 
     /**
@@ -96,6 +101,7 @@ public class FileSystemStateDatabase implements StateDatabase {
         stateDir = new File(dir, STATE_DIR_NAME);
         rerunDir = new File(dir, RERUN_DIR_NAME);
         pausedDir = new File(dir, PAUSED_DIR_NAME);
+        registerDir = new File(dir, REGISTER_DIR_NAME);
         instance = new FileSystemStateDatabaseConnection();
     }
 
@@ -161,8 +167,7 @@ public class FileSystemStateDatabase implements StateDatabase {
         }
 
         private SlotState readSlotStateFromFile(SlotID id, File file) throws IOException {
-            String json = FileUtils.readFileToString(file, CHARSET);
-            return SlotState.fromJSONNode(id, (ObjectNode) mapper.readTree(json));
+            return SlotState.fromJSONNode(id, readJson(file));
         }
 
         /**
@@ -216,8 +221,7 @@ public class FileSystemStateDatabase implements StateDatabase {
             if (wfDir.exists()) {
                 for (File dayDir : wfDir.listFiles()) {
                     for (File rerunFile : dayDir.listFiles()) {
-                        String json = FileUtils.readFileToString(rerunFile, CHARSET);
-                        RerunState st = RerunState.fromJSONNode((ObjectNode) mapper.readTree(json));
+                        RerunState st = RerunState.fromJSONNode(readJson(rerunFile));
                         ScheduledTime t = new ScheduledTime(dayDir.getName() + "T" + rerunFile.getName());
                         res.add(t);
                         if (st.isExpired(now)) {
@@ -245,8 +249,57 @@ public class FileSystemStateDatabase implements StateDatabase {
             }
         }
 
+        //// Registers
+        
+        private File getBucketDir(BucketID bucket) {
+            return new File(registerDir, bucket.toString());
+        }
+        
+        private File getRegisterFile(BucketID bucket, RegisterKey key) {
+            return new File(getBucketDir(bucket), key.toString());
+        }
+
+        @Override
+        public JsonNode getRegister(BucketID bucket, RegisterKey key) throws Exception {
+            File registerFile = getRegisterFile(bucket, key);
+            if (!registerFile.exists()) {
+                return null;
+            } else {
+                return readJson(registerFile);
+            }
+        }
+        
+        @Override
+        public void putRegister(BucketID bucket, RegisterKey key, JsonNode value) throws Exception {
+            writeJson(value, getRegisterFile(bucket, key));
+        }
+        
+        @Override
+        public void deleteRegister(BucketID bucket, RegisterKey key) throws Exception {
+            File registerFile = getRegisterFile(bucket, key);
+            if (registerFile.exists()) {
+                registerFile.delete();
+            }
+        }
+        
+        @Override
+        public Iterable<Map.Entry<RegisterKey, JsonNode>> getAllRegisters(BucketID bucket) throws Exception {
+            Map<RegisterKey, JsonNode> registers = new HashMap<>();
+            File bucketDir = getBucketDir(bucket);
+            File[] registerFiles = bucketDir.listFiles();
+            for(File f : registerFiles) {
+                registers.put(new RegisterKey(f.getName()), readJson(f));
+            }
+            return registers.entrySet();
+        }
+        
+        private ObjectNode readJson(File file) throws IOException, JsonProcessingException {
+            String json = FileUtils.readFileToString(file, CHARSET);
+            return (ObjectNode) mapper.readTree(json);
+        }
+        
         private void writeJson(JsonNode obj, File file) throws IOException {
-            String json = mapper.writeValueAsString(obj);
+            String json = mapper.writeValueAsString(Util.requireNonNull(obj));
             FileUtils.forceMkdir(file.getParentFile());
             FileUtils.write(file, json, CHARSET);
         }

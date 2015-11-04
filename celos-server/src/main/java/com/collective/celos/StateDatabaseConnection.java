@@ -19,6 +19,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.SortedSet;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.Maps;
 
 /**
@@ -78,4 +79,32 @@ public interface StateDatabaseConnection extends AutoCloseable {
      */
     public void setPaused(WorkflowID workflowID, boolean paused) throws Exception;
 
+    /**
+     * Get the value of the specified register, or null if not found.
+     */
+    public default JsonNode getRegister(BucketID bucket, RegisterKey key) throws Exception {
+        throw new Error("Not implemented");
+    }
+    
+    /**
+     * Set the value of the specified register.
+     */
+    public default void putRegister(BucketID bucket, RegisterKey key, JsonNode value) throws Exception {
+        throw new Error("Not implemented");
+    }
+    
+    /**
+     * Delete the value of the specified register.
+     */
+    public default void deleteRegister(BucketID bucket, RegisterKey key) throws Exception {
+        throw new Error("Not implemented");
+    }
+    
+    /**
+     * Get all registers in the specified bucket.
+     */
+    public default Iterable<Map.Entry<RegisterKey, JsonNode>> getAllRegisters(BucketID bucket) throws Exception {
+        throw new Error("Not implemented");
+    }
+    
 }

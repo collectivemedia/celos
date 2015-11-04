@@ -15,25 +15,32 @@
  */
 package com.collective.celos;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.collect.Lists;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.*;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.common.collect.Lists;
 
 /**
  * Utility class to talk to the Celos server HTTP API.
@@ -48,12 +55,16 @@ public class CelosClient {
     private static final String CLEAR_CACHE_PATH = "/clear-cache";
     private static final String WORKFLOW_LIST_PATH = "/workflow-list";
     private static final String WORKFLOW_SLOTS_PATH = "/workflow-slots";
+    private static final String REGISTER_PATH = "/register";
     private static final String START_TIME_PARAM = "start";
     private static final String END_TIME_PARAM = "end";
     private static final String TIME_PARAM = "time";
     private static final String PAUSE_PARAM = "paused";
     private static final String ID_PARAM = "id";
     private static final String IDS_PARAM = "ids";
+    private static final String BUCKET_PARAM = "bucket";
+    private static final String KEY_PARAM = "key";
+    private static final String VALUE_PARAM = "value";
 
     private final HttpClient client;
     private final ScheduledTimeFormatter timeFormatter;
@@ -170,10 +181,66 @@ public class CelosClient {
         uriBuilder.addParameter(TIME_PARAM, scheduledTime.toString());
         executePost(uriBuilder.build());
     }
+    
+    //// Registers
+    
+    /**
+     * Returns the specified register value, or null if not found.
+     */
+    public JsonNode getRegister(BucketID bucket, RegisterKey key) throws Exception {
+        URIBuilder uriBuilder = new URIBuilder(address);
+        uriBuilder.setPath(uriBuilder.getPath() + REGISTER_PATH);
+        uriBuilder.addParameter(BUCKET_PARAM, bucket.toString());
+        uriBuilder.addParameter(KEY_PARAM, key.toString());
+
+        HttpResponse res = client.execute(new HttpGet(uriBuilder.build()));
+        switch(res.getStatusLine().getStatusCode()) {
+        case HttpServletResponse.SC_NOT_FOUND:
+            return null;
+        case HttpServletResponse.SC_OK:
+            return objectMapper.readTree(res.getEntity().getContent());
+        default:
+            throw new Exception(res.getStatusLine().getReasonPhrase());
+        }
+    }
+    
+    /**
+     * Sets the specified register value.
+     */
+    public void putRegister(BucketID bucket, RegisterKey key, JsonNode value) throws Exception {
+        URIBuilder uriBuilder = new URIBuilder(address);
+        uriBuilder.setPath(uriBuilder.getPath() + REGISTER_PATH);
+        uriBuilder.addParameter(BUCKET_PARAM, bucket.toString());
+        uriBuilder.addParameter(KEY_PARAM, key.toString());
+        uriBuilder.addParameter(VALUE_PARAM, objectMapper.writeValueAsString(value));
+        executePut(uriBuilder.build());
+    }
+    
+    /**
+     * Deletes the specified register value.
+     */
+    public void deleteRegister(BucketID bucket, RegisterKey key, JsonNode value) throws Exception {
+        URIBuilder uriBuilder = new URIBuilder(address);
+        uriBuilder.setPath(uriBuilder.getPath() + REGISTER_PATH);
+        uriBuilder.addParameter(BUCKET_PARAM, bucket.toString());
+        uriBuilder.addParameter(KEY_PARAM, key.toString());
+        executeDelete(uriBuilder.build());
+    }
 
     private void executePost(URI request) throws IOException {
-        HttpPost post = new HttpPost(request);
-        HttpResponse postResponse = execute(post);
+        executeAndConsume(new HttpPost(request));
+    }
+    
+    private void executePut(URI request) throws IOException {
+        executeAndConsume(new HttpPut(request));
+    }
+    
+    private void executeDelete(URI request) throws IOException {
+        executeAndConsume(new HttpDelete(request));
+    }
+
+    private void executeAndConsume(HttpUriRequest msg) throws IOException {
+        HttpResponse postResponse = execute(msg);
         EntityUtils.consume(postResponse.getEntity());
     }
 

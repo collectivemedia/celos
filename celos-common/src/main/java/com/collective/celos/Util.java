@@ -16,11 +16,10 @@
 package com.collective.celos;
 
 import java.io.File;
-import java.io.IOException;
-import java.net.ServerSocket;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -45,6 +44,11 @@ public class Util {
     public static <T> T requireNonNull(T object) {
         if (object == null) throw new NullPointerException();
         else return object;
+    }
+
+    public static String requireProperName(String s) {
+        // FIXME: make sure String contains only alphanumeric characters and - _
+        return requireNonNull(s);
     }
 
     // DATETIME UTILITIES
