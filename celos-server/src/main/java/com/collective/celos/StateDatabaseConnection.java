@@ -15,14 +15,11 @@
  */
 package com.collective.celos;
 
-import com.google.common.collect.Maps;
-
-import java.io.IOException;
-import java.sql.SQLException;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
+
+import com.google.common.collect.Maps;
 
 /**
  * Stores all state needed by the scheduler.
@@ -30,14 +27,12 @@ import java.util.SortedSet;
 public interface StateDatabaseConnection extends AutoCloseable {
 
     /**
-     * Returns the state of the slots, specified by start time (inclusive) and end time (exclusive)
-     * or empty Map if not found.
+     * Returns the state of the slots, specified by start time (inclusive) and end time (exclusive).
      */
     public Map<SlotID, SlotState> getSlotStates(WorkflowID id, ScheduledTime start, ScheduledTime end) throws Exception;
 
-
     /**
-     * Returns the state of the given slots, or empty Map if not found.
+     * Returns the state of the given slots. If a slot is not found, it will not be contained in the returned Map.
      */
     public default Map<SlotID, SlotState> getSlotStates(WorkflowID id, Collection<ScheduledTime> times) throws Exception {
         Map<SlotID, SlotState> slotStates = Maps.newHashMap();
@@ -74,12 +69,12 @@ public interface StateDatabaseConnection extends AutoCloseable {
     public SortedSet<ScheduledTime> getTimesMarkedForRerun(WorkflowID workflowID, ScheduledTime now) throws Exception;
 
     /**
-     * Checks if Workflow has been paused
+     * Checks if workflow has been paused.
      */
     public boolean isPaused(WorkflowID workflowID) throws Exception;
 
     /**
-     * Sets paused flag for a Workflow
+     * Sets paused flag for a workflow.
      */
     public void setPaused(WorkflowID workflowID, boolean paused) throws Exception;
 
