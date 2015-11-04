@@ -82,29 +82,21 @@ public interface StateDatabaseConnection extends AutoCloseable {
     /**
      * Get the value of the specified register, or null if not found.
      */
-    public default JsonNode getRegister(BucketID bucket, RegisterKey key) throws Exception {
-        throw new Error("Not implemented");
-    }
+    public JsonNode getRegister(BucketID bucket, RegisterKey key) throws Exception;
     
     /**
      * Set the value of the specified register.
      */
-    public default void putRegister(BucketID bucket, RegisterKey key, JsonNode value) throws Exception {
-        throw new Error("Not implemented");
-    }
+    public void putRegister(BucketID bucket, RegisterKey key, JsonNode value) throws Exception;
     
     /**
      * Delete the value of the specified register.
      */
-    public default void deleteRegister(BucketID bucket, RegisterKey key) throws Exception {
-        throw new Error("Not implemented");
-    }
+    public void deleteRegister(BucketID bucket, RegisterKey key) throws Exception;
     
     /**
      * Get all registers in the specified bucket.
      */
-    public default Iterable<Map.Entry<RegisterKey, JsonNode>> getAllRegisters(BucketID bucket) throws Exception {
-        throw new Error("Not implemented");
-    }
+    public Iterable<Map.Entry<RegisterKey, JsonNode>> getAllRegisters(BucketID bucket) throws Exception;
     
 }
