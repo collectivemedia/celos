@@ -20,7 +20,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedMap;
 import java.util.SortedSet;
+import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -37,7 +39,8 @@ public class MemoryStateDatabase implements StateDatabase {
     protected final Map<SlotID, SlotState> map = new HashMap<>();
     protected final Map<SlotID, ScheduledTime> rerun = new ConcurrentHashMap<>();
     protected final Set<WorkflowID> pausedWorkflows = new HashSet<>();
-    protected final Map<BucketID, Map<RegisterKey, JsonNode>> registers = new HashMap<>();
+    // Use SortedMap for easier testing of register contents
+    protected final SortedMap<BucketID, SortedMap<RegisterKey, JsonNode>> registers = new TreeMap<>();
 
     private final MemoryStateDatabaseConnection instance = new MemoryStateDatabaseConnection();
 
@@ -129,9 +132,9 @@ public class MemoryStateDatabase implements StateDatabase {
             Util.requireNonNull(bucket);
             Util.requireNonNull(key);
             Util.requireNonNull(value);
-            Map<RegisterKey, JsonNode> bucketMap = registers.get(bucket);
+            SortedMap<RegisterKey, JsonNode> bucketMap = registers.get(bucket);
             if (bucketMap == null) {
-                bucketMap = new HashMap<RegisterKey, JsonNode>();
+                bucketMap = new TreeMap<RegisterKey, JsonNode>();
                 registers.put(bucket, bucketMap);
             }
             bucketMap.put(key, value);
@@ -141,7 +144,7 @@ public class MemoryStateDatabase implements StateDatabase {
         public void deleteRegister(BucketID bucket, RegisterKey key) throws Exception {
             Util.requireNonNull(bucket);
             Util.requireNonNull(key);
-            Map<RegisterKey, JsonNode> bucketMap = registers.get(bucket);
+            SortedMap<RegisterKey, JsonNode> bucketMap = registers.get(bucket);
             if (bucketMap == null) {
                 return;
             } else {
@@ -151,7 +154,7 @@ public class MemoryStateDatabase implements StateDatabase {
         
         @Override
         public Iterable<Map.Entry<RegisterKey, JsonNode>> getAllRegisters(BucketID bucket) throws Exception {
-            Map<RegisterKey, JsonNode> bucketMap = registers.get(bucket);
+            SortedMap<RegisterKey, JsonNode> bucketMap = registers.get(bucket);
             if (bucketMap == null) {
                 return Collections.emptySet();
             } else {

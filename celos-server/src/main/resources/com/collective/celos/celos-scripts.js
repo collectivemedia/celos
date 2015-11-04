@@ -258,9 +258,26 @@ celos.isRunningInTestMode = function() {
     return (typeof HDFS_PREFIX_JS_VAR !== "undefined");
 }
 
+celos.getRegister = function(bucket, key) {
+    var node = celosConnection.getRegister(new BucketID(bucket), new RegisterKey(key));
+    if (node === null) {
+        return null;
+    } else {
+        return JSON.parse(Util.jsonNodeToString(node));
+    }
+}
+
+celos.putRegister = function(bucket, key, value) {
+    return celosConnection.putRegister(new BucketID(bucket), new RegisterKey(key), Util.stringToJsonNode(JSON.stringify(value)));
+}
+
+celos.deleteRegister = function(bucket, key) {
+    return celosConnection.deleteRegister(new BucketID(bucket), new RegisterKey(key));
+}
+
 celos.forEachRegister = function(bucket, fn) {
     var bucketID = new BucketID(bucket);
-    var iterator = celosConnection.getAllRegisters(bucketID);
+    var iterator = celosConnection.getAllRegisters(bucketID).iterator();
     while(iterator.hasNext()) {
         var mapEntry = iterator.next();
         var key = mapEntry.getKey().toString();

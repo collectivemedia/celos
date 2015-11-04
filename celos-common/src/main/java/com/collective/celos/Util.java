@@ -16,6 +16,7 @@
 package com.collective.celos;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Map;
@@ -142,8 +143,14 @@ public class Util {
         }
     }
 
-    public static String jsonNodeToString(JsonNode node) throws JsonProcessingException {
+    public static String jsonNodeToString(JsonNode node) throws Exception {
+        Util.requireNonNull(node);
         return MAPPER.writeValueAsString(node);
+    }
+    
+    public static JsonNode stringToJsonNode(String s) throws Exception {
+        Util.requireNonNull(s);
+        return MAPPER.readTree(s);
     }
     
     public static ScheduledTime max(ScheduledTime a, ScheduledTime b) {

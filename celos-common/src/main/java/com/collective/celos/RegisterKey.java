@@ -1,6 +1,6 @@
 package com.collective.celos;
 
-public class RegisterKey extends ValueObject {
+public class RegisterKey extends ValueObject implements Comparable<RegisterKey> {
 
     private final String keyString;
 
@@ -10,6 +10,12 @@ public class RegisterKey extends ValueObject {
 
     public String toString() {
         return keyString;
+    }
+    
+    @Override
+    public int compareTo(RegisterKey o) {
+        Util.requireNonNull(o);
+        return keyString.compareTo(o.keyString);
     }
 
 }
