@@ -1,6 +1,8 @@
 package com.collective.celos.servlet;
 
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -17,7 +19,6 @@ public class RegisterServlet extends AbstractJSONServlet {
     
     private static final String BUCKET_PARAM = "bucket";
     private static final String KEY_PARAM = "key";
-    private static final String VALUE_PARAM = "value";
 
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException {
         try {
@@ -41,7 +42,7 @@ public class RegisterServlet extends AbstractJSONServlet {
         try {
             BucketID bucket = getRequestBucketID(req);
             RegisterKey key = getRequestKey(req);
-            JsonNode value = getRequestValue(req);
+            JsonNode value = mapper.readTree(new InputStreamReader(req.getInputStream(), StandardCharsets.UTF_8));
             Scheduler scheduler = getOrCreateCachedScheduler();
             try(StateDatabaseConnection connection = scheduler.getStateDatabase().openConnection()) {
                 connection.putRegister(bucket, key, value);
@@ -71,10 +72,6 @@ public class RegisterServlet extends AbstractJSONServlet {
     
     private RegisterKey getRequestKey(HttpServletRequest req) {
         return new RegisterKey(req.getParameter(KEY_PARAM));
-    }
-    
-    private JsonNode getRequestValue(HttpServletRequest req) throws JsonProcessingException, IOException {
-        return mapper.readTree(req.getParameter(VALUE_PARAM));
     }
     
 }

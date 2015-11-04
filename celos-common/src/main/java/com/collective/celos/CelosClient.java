@@ -18,6 +18,7 @@ package com.collective.celos;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -26,6 +27,7 @@ import java.util.Set;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpDelete;
@@ -34,6 +36,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 
@@ -64,7 +67,6 @@ public class CelosClient {
     private static final String IDS_PARAM = "ids";
     private static final String BUCKET_PARAM = "bucket";
     private static final String KEY_PARAM = "key";
-    private static final String VALUE_PARAM = "value";
 
     private final HttpClient client;
     private final ScheduledTimeFormatter timeFormatter;
@@ -216,8 +218,7 @@ public class CelosClient {
         uriBuilder.setPath(uriBuilder.getPath() + REGISTER_PATH);
         uriBuilder.addParameter(BUCKET_PARAM, bucket.toString());
         uriBuilder.addParameter(KEY_PARAM, key.toString());
-        uriBuilder.addParameter(VALUE_PARAM, objectMapper.writeValueAsString(value));
-        executePut(uriBuilder.build());
+        executePut(uriBuilder.build(), new StringEntity(objectMapper.writeValueAsString(value), StandardCharsets.UTF_8));
     }
     
     /**
@@ -235,8 +236,10 @@ public class CelosClient {
         executeAndConsume(new HttpPost(request));
     }
     
-    private void executePut(URI request) throws IOException {
-        executeAndConsume(new HttpPut(request));
+    private void executePut(URI request, HttpEntity entity) throws IOException {
+        HttpPut put = new HttpPut(request);
+        put.setEntity(entity);
+        executeAndConsume(put);
     }
     
     private void executeDelete(URI request) throws IOException {
