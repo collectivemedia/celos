@@ -267,14 +267,6 @@ celos.getRegister = function(bucket, key) {
     }
 }
 
-celos.putRegister = function(bucket, key, value) {
-    return celosConnection.putRegister(new BucketID(bucket), new RegisterKey(key), Util.stringToJsonNode(JSON.stringify(value)));
-}
-
-celos.deleteRegister = function(bucket, key) {
-    return celosConnection.deleteRegister(new BucketID(bucket), new RegisterKey(key));
-}
-
 celos.forEachRegister = function(bucket, fn) {
     var bucketID = new BucketID(bucket);
     var iterator = celosConnection.getAllRegisters(bucketID).iterator();

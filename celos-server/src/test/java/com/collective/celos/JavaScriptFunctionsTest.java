@@ -341,18 +341,26 @@ public class JavaScriptFunctionsTest {
 
     @Test
     public void testRegisters() throws Exception {
-        runJSFile(new File("src/test/resources/js-tests/test-registers.js"));
-    }
-    
-    private void runJSFile(File f) throws Exception {
         WorkflowConfigurationParser parser = createParser();
-        Object jsResult = parser.evaluateReader(new FileReader(f), f.getName(),  new MemoryStateDatabase().openConnection());
+        StateDatabaseConnection conn = new MemoryStateDatabase().openConnection();
+        
+        ObjectNode v1 = mapper.createObjectNode();
+        v1.put("foo", "bar-Iñtërnâtiônàlizætiøn");
+        ObjectNode v2 = mapper.createObjectNode();
+        v2.put("quux", "meh-Iñtërnâtiônàlizætiøn");
+        ObjectNode v3 = mapper.createObjectNode();
+        v3.put("bla", "baz-Iñtërnâtiônàlizætiøn");
+        conn.putRegister(new BucketID("b1-Iñtërnâtiônàlizætiøn"), new RegisterKey("k1-Iñtërnâtiônàlizætiøn"), v1);
+        conn.putRegister(new BucketID("b1-Iñtërnâtiônàlizætiøn"), new RegisterKey("k2-Iñtërnâtiônàlizætiøn"), v2);
+        conn.putRegister(new BucketID("b2-Iñtërnâtiônàlizætiøn"), new RegisterKey("k3-Iñtërnâtiônàlizætiøn"), v3);
+        File f = new File("src/test/resources/js-tests/test-registers.js");
+        parser.evaluateReader(new FileReader(f), f.getName(), conn);
     }
         
     private Object runJS(String js) throws Exception {
         WorkflowConfigurationParser parser = createParser();
         // Evaluate JS function call
-        Object jsResult = parser.evaluateReader(new StringReader(js), "string",  new MemoryStateDatabase().openConnection());
+        Object jsResult = parser.evaluateReader(new StringReader(js), "string", new MemoryStateDatabase().openConnection());
         if (jsResult instanceof NativeJavaObject) {
             return ((NativeJavaObject) jsResult).unwrap();
         } else {
@@ -363,7 +371,7 @@ public class JavaScriptFunctionsTest {
     private Object runJSNativeResult(String js) throws Exception {
         WorkflowConfigurationParser parser = createParser();
         // Evaluate JS function call
-        return parser.evaluateReader(new StringReader(js), "string",  new MemoryStateDatabase().openConnection());
+        return parser.evaluateReader(new StringReader(js), "string", new MemoryStateDatabase().openConnection());
     }
 
     private WorkflowConfigurationParser createParser() throws Exception {
