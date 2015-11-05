@@ -14,9 +14,14 @@ sourceSets {
         }
     }
 }
+configurations {
+    compileIncluded {
+        extendsFrom compile
+    }
+}
 
 dependencies {
-    compile project(':celos-common')
+    compileIncluded project(':celos-common')
 
     compile("com.googlecode.json-simple:json-simple:1.1.1")
     compile("com.jcraft:jsch:0.1.51")
@@ -38,7 +43,6 @@ dependencies {
        exclude module: 'junit'
     }
     testCompile("org.mockito:mockito-all:1.9.5")
-    testCompile project(":celos-server")
 }
 
 jar {
@@ -62,6 +66,7 @@ uploadArchives.doFirst {
             if (!System.getenv("BUILD_NUMBER")) throw new GradleException("BUILD_NUMBER env variable should be present")
             pom.version = "2.0." + System.getenv("BUILD_NUMBER")
             pom.groupId = "com.collective"
+            pom.dependencies.removeAll { it.scope == "compileIncluded" }
         }
     }
 }
