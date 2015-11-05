@@ -51,6 +51,10 @@ public class CelosServer {
         setupContext(jsVariables, workflowsDir, defaultsDir, stateDatabase);
     }
 
+    public void setAttribute(String name, Object attr) {
+        server.setAttribute(name, attr);
+    }
+
     private void setupContext(Map<String, String> jsVariables, File workflowsDir, File defaultsDir, File stateDatabase) {
         Map<String, Object> attributes = ImmutableMap.<String, Object>of(Constants.ADDITIONAL_JS_VARIABLES, jsVariables);
         Map<String, String> initParams = ImmutableMap.of(Constants.WORKFLOW_CONFIGURATION_PATH_ATTR, workflowsDir.getAbsolutePath(),

@@ -18,6 +18,8 @@ package com.collective.celos.servlet;
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -25,6 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
+import org.eclipse.jetty.util.AttributesMap;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
@@ -44,9 +47,8 @@ public abstract class AbstractServlet extends HttpServlet {
 
     private static final String TIME_PARAM = "time";
     private static Logger LOGGER = Logger.getLogger(AbstractServlet.class);
-
     private static final String SCHEDULER_ATTR = "celos.scheduler";
-
+    
     /**
      * This lock serves to synchronize all operations.
      */
@@ -101,6 +103,13 @@ public abstract class AbstractServlet extends HttpServlet {
         ).makeDefaultScheduler();
 
         getServletContext().setAttribute(SCHEDULER_ATTR, sch);
+
+        Object schedHook = getServletContext().getAttribute(Constants.SCHEDULER_HOOK);
+        if (schedHook != null) {
+            AtomicReference<Scheduler> schedulerRef = (AtomicReference<Scheduler>) schedHook;
+            schedulerRef.set(sch);
+        }
+
         return sch;
     }
 
