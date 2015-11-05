@@ -42,11 +42,15 @@ task fatJar(type: Jar) {
 }
 
 jar {
+    from(sourceSets.main.output) {
+        include "**/**"
+    }
     baseName "celos-ci"
-    from { configurations.compileIncluded.collect { it.isDirectory() ? it : zipTree(it) }}
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }}
     manifest {
         attributes("Main-Class": mainClassName)
     }
+    zip64 = true
 }
 
 def repoUser = System.getenv("CELOS_NEXUS_USER");

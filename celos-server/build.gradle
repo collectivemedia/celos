@@ -55,7 +55,7 @@ task fatJar(type: Jar) {
 }
 
 jar {
-    from { configurations.compileIncluded.collect { it.isDirectory() ? it : zipTree(it) }}
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }}
     baseName "celos-server"
     manifest {
         attributes("Main-Class": mainClassName)
