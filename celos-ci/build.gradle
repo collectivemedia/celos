@@ -29,22 +29,11 @@ dependencies {
     testCompile("org.mockito:mockito-all:1.9.5")
 }
 
-task fatJar(type: Jar) {
-    from(sourceSets.main.output) {
-        include "**/**"
-    }
-    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }}
-    archiveName "celos-ci-fat.jar"
-    manifest {
-        attributes("Main-Class": mainClassName)
-    }
-    zip64 = true
-}
-
 jar {
     from(sourceSets.main.output) {
         include "**/**"
     }
+    archiveName "celos-ci.jar"
     baseName "celos-ci"
     from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }}
     manifest {
