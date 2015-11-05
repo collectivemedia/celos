@@ -14,10 +14,11 @@ sourceSets {
         }
     }
 }
+
+
 configurations {
-    compileIncluded {
-        extendsFrom compile
-    }
+    compileIncluded
+    compile.extendsFrom compileIncluded
 }
 
 dependencies {
