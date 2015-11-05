@@ -17,7 +17,7 @@
     catch(err) {
     }
 //-->
-var methods = {"i0":6,"i1":18,"i2":6,"i3":6,"i4":6,"i5":6,"i6":6,"i7":6};
+var methods = {"i0":6,"i1":6,"i2":6,"i3":6,"i4":18,"i5":6,"i6":6,"i7":6,"i8":6,"i9":6,"i10":6,"i11":6};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],4:["t3","Abstract Methods"],16:["t5","Default Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -125,58 +125,85 @@ extends java.lang.AutoCloseable</pre>
 <th class="colLast" scope="col">Method and Description</th>
 </tr>
 <tr id="i0" class="altColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../com/collective/celos/StateDatabaseConnection.html#deleteRegister-com.collective.celos.BucketID-com.collective.celos.RegisterKey-">deleteRegister</a></span>(<a href="../../../com/collective/celos/BucketID.html" title="class in com.collective.celos">BucketID</a>&nbsp;bucket,
+              <a href="../../../com/collective/celos/RegisterKey.html" title="class in com.collective.celos">RegisterKey</a>&nbsp;key)</code>
+<div class="block">Delete the value of the specified register.</div>
+</td>
+</tr>
+<tr id="i1" class="rowColor">
+<td class="colFirst"><code>java.lang.Iterable&lt;java.util.Map.Entry&lt;<a href="../../../com/collective/celos/RegisterKey.html" title="class in com.collective.celos">RegisterKey</a>,JsonNode&gt;&gt;</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../com/collective/celos/StateDatabaseConnection.html#getAllRegisters-com.collective.celos.BucketID-">getAllRegisters</a></span>(<a href="../../../com/collective/celos/BucketID.html" title="class in com.collective.celos">BucketID</a>&nbsp;bucket)</code>
+<div class="block">Get all registers in the specified bucket.</div>
+</td>
+</tr>
+<tr id="i2" class="altColor">
+<td class="colFirst"><code>JsonNode</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../com/collective/celos/StateDatabaseConnection.html#getRegister-com.collective.celos.BucketID-com.collective.celos.RegisterKey-">getRegister</a></span>(<a href="../../../com/collective/celos/BucketID.html" title="class in com.collective.celos">BucketID</a>&nbsp;bucket,
+           <a href="../../../com/collective/celos/RegisterKey.html" title="class in com.collective.celos">RegisterKey</a>&nbsp;key)</code>
+<div class="block">Get the value of the specified register, or null if not found.</div>
+</td>
+</tr>
+<tr id="i3" class="rowColor">
 <td class="colFirst"><code><a href="../../../com/collective/celos/SlotState.html" title="class in com.collective.celos">SlotState</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../com/collective/celos/StateDatabaseConnection.html#getSlotState-com.collective.celos.SlotID-">getSlotState</a></span>(<a href="../../../com/collective/celos/SlotID.html" title="class in com.collective.celos">SlotID</a>&nbsp;slot)</code>
 <div class="block">Returns the state of the given slot, or null if not found.</div>
 </td>
 </tr>
-<tr id="i1" class="rowColor">
+<tr id="i4" class="altColor">
 <td class="colFirst"><code>default java.util.Map&lt;<a href="../../../com/collective/celos/SlotID.html" title="class in com.collective.celos">SlotID</a>,<a href="../../../com/collective/celos/SlotState.html" title="class in com.collective.celos">SlotState</a>&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../com/collective/celos/StateDatabaseConnection.html#getSlotStates-com.collective.celos.WorkflowID-java.util.Collection-">getSlotStates</a></span>(<a href="../../../com/collective/celos/WorkflowID.html" title="class in com.collective.celos">WorkflowID</a>&nbsp;id,
              java.util.Collection&lt;<a href="../../../com/collective/celos/ScheduledTime.html" title="class in com.collective.celos">ScheduledTime</a>&gt;&nbsp;times)</code>
-<div class="block">Returns the state of the given slots, or empty Map if not found.</div>
+<div class="block">Returns the state of the given slots.</div>
 </td>
 </tr>
-<tr id="i2" class="altColor">
+<tr id="i5" class="rowColor">
 <td class="colFirst"><code>java.util.Map&lt;<a href="../../../com/collective/celos/SlotID.html" title="class in com.collective.celos">SlotID</a>,<a href="../../../com/collective/celos/SlotState.html" title="class in com.collective.celos">SlotState</a>&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../com/collective/celos/StateDatabaseConnection.html#getSlotStates-com.collective.celos.WorkflowID-com.collective.celos.ScheduledTime-com.collective.celos.ScheduledTime-">getSlotStates</a></span>(<a href="../../../com/collective/celos/WorkflowID.html" title="class in com.collective.celos">WorkflowID</a>&nbsp;id,
              <a href="../../../com/collective/celos/ScheduledTime.html" title="class in com.collective.celos">ScheduledTime</a>&nbsp;start,
              <a href="../../../com/collective/celos/ScheduledTime.html" title="class in com.collective.celos">ScheduledTime</a>&nbsp;end)</code>
-<div class="block">Returns the state of the slots, specified by start time (inclusive) and end time (exclusive)
- or empty Map if not found.</div>
+<div class="block">Returns the state of the slots, specified by start time (inclusive) and end time (exclusive).</div>
 </td>
 </tr>
-<tr id="i3" class="rowColor">
+<tr id="i6" class="altColor">
 <td class="colFirst"><code>java.util.SortedSet&lt;<a href="../../../com/collective/celos/ScheduledTime.html" title="class in com.collective.celos">ScheduledTime</a>&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../com/collective/celos/StateDatabaseConnection.html#getTimesMarkedForRerun-com.collective.celos.WorkflowID-com.collective.celos.ScheduledTime-">getTimesMarkedForRerun</a></span>(<a href="../../../com/collective/celos/WorkflowID.html" title="class in com.collective.celos">WorkflowID</a>&nbsp;workflowID,
                       <a href="../../../com/collective/celos/ScheduledTime.html" title="class in com.collective.celos">ScheduledTime</a>&nbsp;now)</code>
 <div class="block">Returns the list of scheduled times of the given workflow that have been marked for rerun.</div>
 </td>
 </tr>
-<tr id="i4" class="altColor">
+<tr id="i7" class="rowColor">
 <td class="colFirst"><code>boolean</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../com/collective/celos/StateDatabaseConnection.html#isPaused-com.collective.celos.WorkflowID-">isPaused</a></span>(<a href="../../../com/collective/celos/WorkflowID.html" title="class in com.collective.celos">WorkflowID</a>&nbsp;workflowID)</code>
-<div class="block">Checks if Workflow has been paused</div>
+<div class="block">Checks if workflow has been paused.</div>
 </td>
 </tr>
-<tr id="i5" class="rowColor">
+<tr id="i8" class="altColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../com/collective/celos/StateDatabaseConnection.html#markSlotForRerun-com.collective.celos.SlotID-com.collective.celos.ScheduledTime-">markSlotForRerun</a></span>(<a href="../../../com/collective/celos/SlotID.html" title="class in com.collective.celos">SlotID</a>&nbsp;slot,
                 <a href="../../../com/collective/celos/ScheduledTime.html" title="class in com.collective.celos">ScheduledTime</a>&nbsp;now)</code>
 <div class="block">Marks the slot for rerun at the current wallclock time.</div>
 </td>
 </tr>
-<tr id="i6" class="altColor">
+<tr id="i9" class="rowColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../com/collective/celos/StateDatabaseConnection.html#putRegister-com.collective.celos.BucketID-com.collective.celos.RegisterKey-JsonNode-">putRegister</a></span>(<a href="../../../com/collective/celos/BucketID.html" title="class in com.collective.celos">BucketID</a>&nbsp;bucket,
+           <a href="../../../com/collective/celos/RegisterKey.html" title="class in com.collective.celos">RegisterKey</a>&nbsp;key,
+           JsonNode&nbsp;value)</code>
+<div class="block">Set the value of the specified register.</div>
+</td>
+</tr>
+<tr id="i10" class="altColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../com/collective/celos/StateDatabaseConnection.html#putSlotState-com.collective.celos.SlotState-">putSlotState</a></span>(<a href="../../../com/collective/celos/SlotState.html" title="class in com.collective.celos">SlotState</a>&nbsp;state)</code>
 <div class="block">Updates the state of the given slot.</div>
 </td>
 </tr>
-<tr id="i7" class="rowColor">
+<tr id="i11" class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../com/collective/celos/StateDatabaseConnection.html#setPaused-com.collective.celos.WorkflowID-boolean-">setPaused</a></span>(<a href="../../../com/collective/celos/WorkflowID.html" title="class in com.collective.celos">WorkflowID</a>&nbsp;workflowID,
          boolean&nbsp;paused)</code>
-<div class="block">Sets paused flag for a Workflow</div>
+<div class="block">Sets paused flag for a workflow.</div>
 </td>
 </tr>
 </table>
@@ -211,8 +238,7 @@ extends java.lang.AutoCloseable</pre>
                                               <a href="../../../com/collective/celos/ScheduledTime.html" title="class in com.collective.celos">ScheduledTime</a>&nbsp;start,
                                               <a href="../../../com/collective/celos/ScheduledTime.html" title="class in com.collective.celos">ScheduledTime</a>&nbsp;end)
                                        throws java.lang.Exception</pre>
-<div class="block">Returns the state of the slots, specified by start time (inclusive) and end time (exclusive)
- or empty Map if not found.</div>
+<div class="block">Returns the state of the slots, specified by start time (inclusive) and end time (exclusive).</div>
 <dl>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code>java.lang.Exception</code></dd>
@@ -228,7 +254,7 @@ extends java.lang.AutoCloseable</pre>
 <pre>default&nbsp;java.util.Map&lt;<a href="../../../com/collective/celos/SlotID.html" title="class in com.collective.celos">SlotID</a>,<a href="../../../com/collective/celos/SlotState.html" title="class in com.collective.celos">SlotState</a>&gt;&nbsp;getSlotStates(<a href="../../../com/collective/celos/WorkflowID.html" title="class in com.collective.celos">WorkflowID</a>&nbsp;id,
                                                       java.util.Collection&lt;<a href="../../../com/collective/celos/ScheduledTime.html" title="class in com.collective.celos">ScheduledTime</a>&gt;&nbsp;times)
                                                throws java.lang.Exception</pre>
-<div class="block">Returns the state of the given slots, or empty Map if not found.</div>
+<div class="block">Returns the state of the given slots. If a slot is not found, it will not be contained in the returned Map.</div>
 <dl>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code>java.lang.Exception</code></dd>
@@ -307,7 +333,7 @@ extends java.lang.AutoCloseable</pre>
 <h4>isPaused</h4>
 <pre>boolean&nbsp;isPaused(<a href="../../../com/collective/celos/WorkflowID.html" title="class in com.collective.celos">WorkflowID</a>&nbsp;workflowID)
           throws java.lang.Exception</pre>
-<div class="block">Checks if Workflow has been paused</div>
+<div class="block">Checks if workflow has been paused.</div>
 <dl>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code>java.lang.Exception</code></dd>
@@ -317,13 +343,77 @@ extends java.lang.AutoCloseable</pre>
 <a name="setPaused-com.collective.celos.WorkflowID-boolean-">
 <!--   -->
 </a>
-<ul class="blockListLast">
+<ul class="blockList">
 <li class="blockList">
 <h4>setPaused</h4>
 <pre>void&nbsp;setPaused(<a href="../../../com/collective/celos/WorkflowID.html" title="class in com.collective.celos">WorkflowID</a>&nbsp;workflowID,
                boolean&nbsp;paused)
         throws java.lang.Exception</pre>
-<div class="block">Sets paused flag for a Workflow</div>
+<div class="block">Sets paused flag for a workflow.</div>
+<dl>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code>java.lang.Exception</code></dd>
+</dl>
+</li>
+</ul>
+<a name="getRegister-com.collective.celos.BucketID-com.collective.celos.RegisterKey-">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getRegister</h4>
+<pre>JsonNode&nbsp;getRegister(<a href="../../../com/collective/celos/BucketID.html" title="class in com.collective.celos">BucketID</a>&nbsp;bucket,
+                     <a href="../../../com/collective/celos/RegisterKey.html" title="class in com.collective.celos">RegisterKey</a>&nbsp;key)
+              throws java.lang.Exception</pre>
+<div class="block">Get the value of the specified register, or null if not found.</div>
+<dl>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code>java.lang.Exception</code></dd>
+</dl>
+</li>
+</ul>
+<a name="putRegister-com.collective.celos.BucketID-com.collective.celos.RegisterKey-JsonNode-">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>putRegister</h4>
+<pre>void&nbsp;putRegister(<a href="../../../com/collective/celos/BucketID.html" title="class in com.collective.celos">BucketID</a>&nbsp;bucket,
+                 <a href="../../../com/collective/celos/RegisterKey.html" title="class in com.collective.celos">RegisterKey</a>&nbsp;key,
+                 JsonNode&nbsp;value)
+          throws java.lang.Exception</pre>
+<div class="block">Set the value of the specified register.</div>
+<dl>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code>java.lang.Exception</code></dd>
+</dl>
+</li>
+</ul>
+<a name="deleteRegister-com.collective.celos.BucketID-com.collective.celos.RegisterKey-">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>deleteRegister</h4>
+<pre>void&nbsp;deleteRegister(<a href="../../../com/collective/celos/BucketID.html" title="class in com.collective.celos">BucketID</a>&nbsp;bucket,
+                    <a href="../../../com/collective/celos/RegisterKey.html" title="class in com.collective.celos">RegisterKey</a>&nbsp;key)
+             throws java.lang.Exception</pre>
+<div class="block">Delete the value of the specified register.</div>
+<dl>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code>java.lang.Exception</code></dd>
+</dl>
+</li>
+</ul>
+<a name="getAllRegisters-com.collective.celos.BucketID-">
+<!--   -->
+</a>
+<ul class="blockListLast">
+<li class="blockList">
+<h4>getAllRegisters</h4>
+<pre>java.lang.Iterable&lt;java.util.Map.Entry&lt;<a href="../../../com/collective/celos/RegisterKey.html" title="class in com.collective.celos">RegisterKey</a>,JsonNode&gt;&gt;&nbsp;getAllRegisters(<a href="../../../com/collective/celos/BucketID.html" title="class in com.collective.celos">BucketID</a>&nbsp;bucket)
+                                                                       throws java.lang.Exception</pre>
+<div class="block">Get all registers in the specified bucket.</div>
 <dl>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code>java.lang.Exception</code></dd>

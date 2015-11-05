@@ -17,7 +17,7 @@
     catch(err) {
     }
 //-->
-var methods = {"i0":9,"i1":9,"i2":9,"i3":9,"i4":9,"i5":9,"i6":9,"i7":9,"i8":9,"i9":9,"i10":9,"i11":9,"i12":9,"i13":9,"i14":9,"i15":9,"i16":9,"i17":9};
+var methods = {"i0":9,"i1":9,"i2":9,"i3":9,"i4":9,"i5":9,"i6":9,"i7":9,"i8":9,"i9":9,"i10":9,"i11":9,"i12":9,"i13":9,"i14":9,"i15":9,"i16":9,"i17":9,"i18":9,"i19":9,"i20":9};
 var tabs = {65535:["t0","All Methods"],1:["t1","Static Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -187,39 +187,51 @@ extends java.lang.Object</pre>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../com/collective/celos/Util.html#isFullSecond-DateTime-">isFullSecond</a></span>(DateTime&nbsp;dt)</code>&nbsp;</td>
 </tr>
 <tr id="i9" class="rowColor">
+<td class="colFirst"><code>static java.lang.String</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../com/collective/celos/Util.html#jsonNodeToString-JsonNode-">jsonNodeToString</a></span>(JsonNode&nbsp;node)</code>&nbsp;</td>
+</tr>
+<tr id="i10" class="altColor">
 <td class="colFirst"><code>static <a href="../../../com/collective/celos/ScheduledTime.html" title="class in com.collective.celos">ScheduledTime</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../com/collective/celos/Util.html#max-com.collective.celos.ScheduledTime-com.collective.celos.ScheduledTime-">max</a></span>(<a href="../../../com/collective/celos/ScheduledTime.html" title="class in com.collective.celos">ScheduledTime</a>&nbsp;a,
    <a href="../../../com/collective/celos/ScheduledTime.html" title="class in com.collective.celos">ScheduledTime</a>&nbsp;b)</code>&nbsp;</td>
 </tr>
-<tr id="i10" class="altColor">
+<tr id="i11" class="rowColor">
 <td class="colFirst"><code>static ArrayNode</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../com/collective/celos/Util.html#newArrayNode--">newArrayNode</a></span>()</code>&nbsp;</td>
 </tr>
-<tr id="i11" class="rowColor">
+<tr id="i12" class="altColor">
 <td class="colFirst"><code>static ObjectNode</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../com/collective/celos/Util.html#newObjectNode--">newObjectNode</a></span>()</code>&nbsp;</td>
 </tr>
-<tr id="i12" class="altColor">
+<tr id="i13" class="rowColor">
 <td class="colFirst"><code>static &lt;T&gt;&nbsp;T</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../com/collective/celos/Util.html#requireNonNull-T-">requireNonNull</a></span>(T&nbsp;object)</code>&nbsp;</td>
 </tr>
-<tr id="i13" class="rowColor">
+<tr id="i14" class="altColor">
+<td class="colFirst"><code>static java.lang.String</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../com/collective/celos/Util.html#requireProperBucketIDorRegisterKey-java.lang.String-">requireProperBucketIDorRegisterKey</a></span>(java.lang.String&nbsp;s)</code>&nbsp;</td>
+</tr>
+<tr id="i15" class="rowColor">
 <td class="colFirst"><code>static void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../com/collective/celos/Util.html#setupLogging-java.io.File-">setupLogging</a></span>(java.io.File&nbsp;logDir)</code>&nbsp;</td>
 </tr>
-<tr id="i14" class="altColor">
+<tr id="i16" class="altColor">
+<td class="colFirst"><code>static JsonNode</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../com/collective/celos/Util.html#stringToJsonNode-java.lang.String-">stringToJsonNode</a></span>(java.lang.String&nbsp;s)</code>&nbsp;</td>
+</tr>
+<tr id="i17" class="rowColor">
 <td class="colFirst"><code>static DateTime</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../com/collective/celos/Util.html#toFullHour-DateTime-">toFullHour</a></span>(DateTime&nbsp;dt)</code>&nbsp;</td>
 </tr>
-<tr id="i15" class="rowColor">
+<tr id="i18" class="altColor">
 <td class="colFirst"><code>static DateTime</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../com/collective/celos/Util.html#toFullMinute-DateTime-">toFullMinute</a></span>(DateTime&nbsp;dt)</code>&nbsp;</td>
 </tr>
-<tr id="i16" class="altColor">
+<tr id="i19" class="rowColor">
 <td class="colFirst"><code>static DateTime</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../com/collective/celos/Util.html#toFullSecond-DateTime-">toFullSecond</a></span>(DateTime&nbsp;dt)</code>&nbsp;</td>
 </tr>
-<tr id="i17" class="rowColor">
+<tr id="i20" class="altColor">
 <td class="colFirst"><code>static java.lang.String</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../com/collective/celos/Util.html#toNominalTimeFormat-DateTime-">toNominalTimeFormat</a></span>(DateTime&nbsp;dt)</code>&nbsp;</td>
 </tr>
@@ -271,6 +283,15 @@ extends java.lang.Object</pre>
 <li class="blockList">
 <h4>requireNonNull</h4>
 <pre>public static&nbsp;&lt;T&gt;&nbsp;T&nbsp;requireNonNull(T&nbsp;object)</pre>
+</li>
+</ul>
+<a name="requireProperBucketIDorRegisterKey-java.lang.String-">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>requireProperBucketIDorRegisterKey</h4>
+<pre>public static&nbsp;java.lang.String&nbsp;requireProperBucketIDorRegisterKey(java.lang.String&nbsp;s)</pre>
 </li>
 </ul>
 <a name="toFullHour-DateTime-">
@@ -401,6 +422,34 @@ extends java.lang.Object</pre>
 <h4>getObjectProperty</h4>
 <pre>public static&nbsp;ObjectNode&nbsp;getObjectProperty(ObjectNode&nbsp;properties,
                                            java.lang.String&nbsp;name)</pre>
+</li>
+</ul>
+<a name="jsonNodeToString-JsonNode-">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>jsonNodeToString</h4>
+<pre>public static&nbsp;java.lang.String&nbsp;jsonNodeToString(JsonNode&nbsp;node)
+                                         throws java.lang.Exception</pre>
+<dl>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code>java.lang.Exception</code></dd>
+</dl>
+</li>
+</ul>
+<a name="stringToJsonNode-java.lang.String-">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>stringToJsonNode</h4>
+<pre>public static&nbsp;JsonNode&nbsp;stringToJsonNode(java.lang.String&nbsp;s)
+                                 throws java.lang.Exception</pre>
+<dl>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code>java.lang.Exception</code></dd>
+</dl>
 </li>
 </ul>
 <a name="max-com.collective.celos.ScheduledTime-com.collective.celos.ScheduledTime-">

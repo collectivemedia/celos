@@ -17,7 +17,7 @@
     catch(err) {
     }
 //-->
-var methods = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10,"i8":10,"i9":10,"i10":10,"i11":10,"i12":10,"i13":10};
+var methods = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10,"i8":10,"i9":10,"i10":10,"i11":10,"i12":10,"i13":10,"i14":10,"i15":10,"i16":10};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -47,7 +47,7 @@ var activeTableTab = "activeTableTab";
 </div>
 <div class="subNav">
 <ul class="navList">
-<li>Prev&nbsp;Class</li>
+<li><a href="../../../com/collective/celos/BucketID.html" title="class in com.collective.celos"><span class="typeNameLink">Prev&nbsp;Class</span></a></li>
 <li><a href="../../../com/collective/celos/Constants.html" title="class in com.collective.celos"><span class="typeNameLink">Next&nbsp;Class</span></a></li>
 </ul>
 <ul class="navList">
@@ -150,61 +150,83 @@ extends java.lang.Object</pre>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../com/collective/celos/CelosClient.html#clearCache--">clearCache</a></span>()</code>&nbsp;</td>
 </tr>
 <tr id="i1" class="rowColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../com/collective/celos/CelosClient.html#deleteRegister-com.collective.celos.BucketID-com.collective.celos.RegisterKey-">deleteRegister</a></span>(<a href="../../../com/collective/celos/BucketID.html" title="class in com.collective.celos">BucketID</a>&nbsp;bucket,
+              <a href="../../../com/collective/celos/RegisterKey.html" title="class in com.collective.celos">RegisterKey</a>&nbsp;key)</code>
+<div class="block">Deletes the specified register value.</div>
+</td>
+</tr>
+<tr id="i2" class="altColor">
 <td class="colFirst"><code>java.net.URI</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../com/collective/celos/CelosClient.html#getAddress--">getAddress</a></span>()</code>&nbsp;</td>
 </tr>
-<tr id="i2" class="altColor">
+<tr id="i3" class="rowColor">
+<td class="colFirst"><code>JsonNode</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../com/collective/celos/CelosClient.html#getRegister-com.collective.celos.BucketID-com.collective.celos.RegisterKey-">getRegister</a></span>(<a href="../../../com/collective/celos/BucketID.html" title="class in com.collective.celos">BucketID</a>&nbsp;bucket,
+           <a href="../../../com/collective/celos/RegisterKey.html" title="class in com.collective.celos">RegisterKey</a>&nbsp;key)</code>
+<div class="block">Returns the specified register value, or null if not found.</div>
+</td>
+</tr>
+<tr id="i4" class="altColor">
 <td class="colFirst"><code><a href="../../../com/collective/celos/SlotState.html" title="class in com.collective.celos">SlotState</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../com/collective/celos/CelosClient.html#getSlotState-com.collective.celos.WorkflowID-com.collective.celos.ScheduledTime-">getSlotState</a></span>(<a href="../../../com/collective/celos/WorkflowID.html" title="class in com.collective.celos">WorkflowID</a>&nbsp;workflowID,
             <a href="../../../com/collective/celos/ScheduledTime.html" title="class in com.collective.celos">ScheduledTime</a>&nbsp;scheduledTime)</code>&nbsp;</td>
 </tr>
-<tr id="i3" class="rowColor">
+<tr id="i5" class="rowColor">
 <td class="colFirst"><code>java.util.Set&lt;<a href="../../../com/collective/celos/WorkflowID.html" title="class in com.collective.celos">WorkflowID</a>&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../com/collective/celos/CelosClient.html#getWorkflowList--">getWorkflowList</a></span>()</code>&nbsp;</td>
 </tr>
-<tr id="i4" class="altColor">
+<tr id="i6" class="altColor">
 <td class="colFirst"><code><a href="../../../com/collective/celos/WorkflowStatus.html" title="class in com.collective.celos">WorkflowStatus</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../com/collective/celos/CelosClient.html#getWorkflowStatus-com.collective.celos.WorkflowID-">getWorkflowStatus</a></span>(<a href="../../../com/collective/celos/WorkflowID.html" title="class in com.collective.celos">WorkflowID</a>&nbsp;workflowID)</code>&nbsp;</td>
 </tr>
-<tr id="i5" class="rowColor">
+<tr id="i7" class="rowColor">
 <td class="colFirst"><code><a href="../../../com/collective/celos/WorkflowStatus.html" title="class in com.collective.celos">WorkflowStatus</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../com/collective/celos/CelosClient.html#getWorkflowStatus-com.collective.celos.WorkflowID-com.collective.celos.ScheduledTime-">getWorkflowStatus</a></span>(<a href="../../../com/collective/celos/WorkflowID.html" title="class in com.collective.celos">WorkflowID</a>&nbsp;workflowID,
                  <a href="../../../com/collective/celos/ScheduledTime.html" title="class in com.collective.celos">ScheduledTime</a>&nbsp;endTime)</code>&nbsp;</td>
 </tr>
-<tr id="i6" class="altColor">
+<tr id="i8" class="altColor">
 <td class="colFirst"><code><a href="../../../com/collective/celos/WorkflowStatus.html" title="class in com.collective.celos">WorkflowStatus</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../com/collective/celos/CelosClient.html#getWorkflowStatus-com.collective.celos.WorkflowID-com.collective.celos.ScheduledTime-com.collective.celos.ScheduledTime-">getWorkflowStatus</a></span>(<a href="../../../com/collective/celos/WorkflowID.html" title="class in com.collective.celos">WorkflowID</a>&nbsp;workflowID,
                  <a href="../../../com/collective/celos/ScheduledTime.html" title="class in com.collective.celos">ScheduledTime</a>&nbsp;startTime,
                  <a href="../../../com/collective/celos/ScheduledTime.html" title="class in com.collective.celos">ScheduledTime</a>&nbsp;endTime)</code>&nbsp;</td>
 </tr>
-<tr id="i7" class="rowColor">
+<tr id="i9" class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../com/collective/celos/CelosClient.html#iterateScheduler--">iterateScheduler</a></span>()</code>&nbsp;</td>
 </tr>
-<tr id="i8" class="altColor">
+<tr id="i10" class="altColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../com/collective/celos/CelosClient.html#iterateScheduler-com.collective.celos.ScheduledTime-">iterateScheduler</a></span>(<a href="../../../com/collective/celos/ScheduledTime.html" title="class in com.collective.celos">ScheduledTime</a>&nbsp;scheduledTime)</code>&nbsp;</td>
 </tr>
-<tr id="i9" class="rowColor">
+<tr id="i11" class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../com/collective/celos/CelosClient.html#iterateScheduler-com.collective.celos.ScheduledTime-java.util.Set-">iterateScheduler</a></span>(<a href="../../../com/collective/celos/ScheduledTime.html" title="class in com.collective.celos">ScheduledTime</a>&nbsp;scheduledTime,
                 java.util.Set&lt;<a href="../../../com/collective/celos/WorkflowID.html" title="class in com.collective.celos">WorkflowID</a>&gt;&nbsp;workflowIDs)</code>&nbsp;</td>
 </tr>
-<tr id="i10" class="altColor">
+<tr id="i12" class="altColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../com/collective/celos/CelosClient.html#kill-com.collective.celos.WorkflowID-com.collective.celos.ScheduledTime-">kill</a></span>(<a href="../../../com/collective/celos/WorkflowID.html" title="class in com.collective.celos">WorkflowID</a>&nbsp;workflowID,
     <a href="../../../com/collective/celos/ScheduledTime.html" title="class in com.collective.celos">ScheduledTime</a>&nbsp;scheduledTime)</code>&nbsp;</td>
 </tr>
-<tr id="i11" class="rowColor">
+<tr id="i13" class="rowColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../com/collective/celos/CelosClient.html#putRegister-com.collective.celos.BucketID-com.collective.celos.RegisterKey-JsonNode-">putRegister</a></span>(<a href="../../../com/collective/celos/BucketID.html" title="class in com.collective.celos">BucketID</a>&nbsp;bucket,
+           <a href="../../../com/collective/celos/RegisterKey.html" title="class in com.collective.celos">RegisterKey</a>&nbsp;key,
+           JsonNode&nbsp;value)</code>
+<div class="block">Sets the specified register value.</div>
+</td>
+</tr>
+<tr id="i14" class="altColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../com/collective/celos/CelosClient.html#rerunSlot-com.collective.celos.SlotID-">rerunSlot</a></span>(<a href="../../../com/collective/celos/SlotID.html" title="class in com.collective.celos">SlotID</a>&nbsp;slotID)</code>&nbsp;</td>
 </tr>
-<tr id="i12" class="altColor">
+<tr id="i15" class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../com/collective/celos/CelosClient.html#rerunSlot-com.collective.celos.WorkflowID-com.collective.celos.ScheduledTime-">rerunSlot</a></span>(<a href="../../../com/collective/celos/WorkflowID.html" title="class in com.collective.celos">WorkflowID</a>&nbsp;workflowID,
          <a href="../../../com/collective/celos/ScheduledTime.html" title="class in com.collective.celos">ScheduledTime</a>&nbsp;scheduledTime)</code>&nbsp;</td>
 </tr>
-<tr id="i13" class="rowColor">
+<tr id="i16" class="altColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../com/collective/celos/CelosClient.html#setWorkflowPaused-com.collective.celos.WorkflowID-java.lang.Boolean-">setWorkflowPaused</a></span>(<a href="../../../com/collective/celos/WorkflowID.html" title="class in com.collective.celos">WorkflowID</a>&nbsp;workflowID,
                  java.lang.Boolean&nbsp;paused)</code>&nbsp;</td>
@@ -435,12 +457,61 @@ extends java.lang.Object</pre>
 <a name="kill-com.collective.celos.WorkflowID-com.collective.celos.ScheduledTime-">
 <!--   -->
 </a>
-<ul class="blockListLast">
+<ul class="blockList">
 <li class="blockList">
 <h4>kill</h4>
 <pre>public&nbsp;void&nbsp;kill(<a href="../../../com/collective/celos/WorkflowID.html" title="class in com.collective.celos">WorkflowID</a>&nbsp;workflowID,
                  <a href="../../../com/collective/celos/ScheduledTime.html" title="class in com.collective.celos">ScheduledTime</a>&nbsp;scheduledTime)
           throws java.lang.Exception</pre>
+<dl>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code>java.lang.Exception</code></dd>
+</dl>
+</li>
+</ul>
+<a name="getRegister-com.collective.celos.BucketID-com.collective.celos.RegisterKey-">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getRegister</h4>
+<pre>public&nbsp;JsonNode&nbsp;getRegister(<a href="../../../com/collective/celos/BucketID.html" title="class in com.collective.celos">BucketID</a>&nbsp;bucket,
+                            <a href="../../../com/collective/celos/RegisterKey.html" title="class in com.collective.celos">RegisterKey</a>&nbsp;key)
+                     throws java.lang.Exception</pre>
+<div class="block">Returns the specified register value, or null if not found.</div>
+<dl>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code>java.lang.Exception</code></dd>
+</dl>
+</li>
+</ul>
+<a name="putRegister-com.collective.celos.BucketID-com.collective.celos.RegisterKey-JsonNode-">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>putRegister</h4>
+<pre>public&nbsp;void&nbsp;putRegister(<a href="../../../com/collective/celos/BucketID.html" title="class in com.collective.celos">BucketID</a>&nbsp;bucket,
+                        <a href="../../../com/collective/celos/RegisterKey.html" title="class in com.collective.celos">RegisterKey</a>&nbsp;key,
+                        JsonNode&nbsp;value)
+                 throws java.lang.Exception</pre>
+<div class="block">Sets the specified register value.</div>
+<dl>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code>java.lang.Exception</code></dd>
+</dl>
+</li>
+</ul>
+<a name="deleteRegister-com.collective.celos.BucketID-com.collective.celos.RegisterKey-">
+<!--   -->
+</a>
+<ul class="blockListLast">
+<li class="blockList">
+<h4>deleteRegister</h4>
+<pre>public&nbsp;void&nbsp;deleteRegister(<a href="../../../com/collective/celos/BucketID.html" title="class in com.collective.celos">BucketID</a>&nbsp;bucket,
+                           <a href="../../../com/collective/celos/RegisterKey.html" title="class in com.collective.celos">RegisterKey</a>&nbsp;key)
+                    throws java.lang.Exception</pre>
+<div class="block">Deletes the specified register value.</div>
 <dl>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code>java.lang.Exception</code></dd>
@@ -474,7 +545,7 @@ extends java.lang.Object</pre>
 </div>
 <div class="subNav">
 <ul class="navList">
-<li>Prev&nbsp;Class</li>
+<li><a href="../../../com/collective/celos/BucketID.html" title="class in com.collective.celos"><span class="typeNameLink">Prev&nbsp;Class</span></a></li>
 <li><a href="../../../com/collective/celos/Constants.html" title="class in com.collective.celos"><span class="typeNameLink">Next&nbsp;Class</span></a></li>
 </ul>
 <ul class="navList">
