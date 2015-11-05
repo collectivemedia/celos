@@ -1,0 +1,31 @@
+apply plugin: 'maven'
+
+mainClassName = 'com.collective.celos.server.Main'
+version = '0.1'
+
+dependencies {
+    compile project(':celos-server')
+}
+
+jar {
+    baseName "celos-server-lib"
+    manifest {
+        attributes("Main-Class": mainClassName)
+    }
+}
+
+def repoUser = System.getenv("CELOS_NEXUS_USER");
+def repoPw = System.getenv("CELOS_NEXUS_PASS");
+
+uploadArchives.doFirst {
+    repositories {
+        mavenDeployer {
+            repository(url: System.getenv("NEXUS_MAVEN_REPO")) {
+                authentication(userName: repoUser, password: repoPw)
+            }
+            if (!System.getenv("BUILD_NUMBER")) throw new GradleException("BUILD_NUMBER env variable should be present")
+            pom.version = "2.0." + System.getenv("BUILD_NUMBER")
+            pom.groupId = "com.collective"
+        }
+    }
+}
