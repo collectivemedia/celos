@@ -41,9 +41,19 @@ dependencies {
     testCompile project(":celos-server")
 }
 
-jar {
+task fatJar(type: Jar) {
+    from(sourceSets.main.output) {
+        include "**/**"
+    }
     from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }}
     archiveName "celos-server.jar"
+    manifest {
+        attributes("Main-Class": mainClassName)
+    }
+}
+
+jar {
+    baseName "celos-server"
     manifest {
         attributes("Main-Class": mainClassName)
     }
