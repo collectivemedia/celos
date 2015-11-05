@@ -52,16 +52,14 @@ public class Util {
 
     public static String requireProperBucketIDorRegisterKey(String s) {
         Util.requireNonNull(s);
-        prohibitSymbol(s, "/");
-        if (s.indexOf(".") != -1) {
-            throw new IllegalArgumentException("Bucket IDs and register keys must not contain the . character:" + s);
-        }
+        prohibitCharacter(s, "/");
+        prohibitCharacter(s, ".");
         return s;
     }
 
-    private static void prohibitSymbol(String s, String sym) {
-        if (s.indexOf(sym) != -1) {
-            throw new IllegalArgumentException("Bucket IDs and register keys must not contain the " + sym + " character:" + s);
+    private static void prohibitCharacter(String s, String c) {
+        if (s.indexOf(c) != -1) {
+            throw new IllegalArgumentException("Bucket IDs and register keys must not contain the " + c + " character:" + s);
         }
     }
 
