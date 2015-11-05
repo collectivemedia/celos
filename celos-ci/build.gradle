@@ -37,7 +37,7 @@ task fatJar(type: Jar) {
 }
 
 jar {
-    baseName "celos-ci"
+    baseName "celos-ci-test"
     manifest {
         attributes("Main-Class": mainClassName)
     }
