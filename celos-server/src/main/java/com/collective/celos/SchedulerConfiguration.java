@@ -39,14 +39,17 @@ public class SchedulerConfiguration {
     }
 
     public Scheduler makeDefaultScheduler() throws Exception {
-        WorkflowConfiguration config = getWorkflowConfigurationParser().getWorkflowConfiguration();
         StateDatabase db = makeDefaultStateDatabase();
+        WorkflowConfiguration config;
+        try(StateDatabaseConnection conn = db.openConnection()) {
+            config = getWorkflowConfigurationParser(conn).getWorkflowConfiguration();
+        }
         int slidingWindowHours = 24 * SLIDING_WINDOW_DAYS;
         return new Scheduler(config, db, slidingWindowHours);
     }
 
-    private WorkflowConfigurationParser getWorkflowConfigurationParser() throws Exception {
-        return new WorkflowConfigurationParser(defaultsConfigurationPath, additionalVars).parseConfiguration(workflowConfigurationPath);
+    private WorkflowConfigurationParser getWorkflowConfigurationParser(StateDatabaseConnection conn) throws Exception {
+        return new WorkflowConfigurationParser(defaultsConfigurationPath, additionalVars).parseConfiguration(workflowConfigurationPath, conn);
     }
 
     private StateDatabase makeDefaultStateDatabase() throws IOException {

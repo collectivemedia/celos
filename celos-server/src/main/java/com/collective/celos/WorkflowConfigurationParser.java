@@ -50,13 +50,13 @@ public class WorkflowConfigurationParser {
         this.additionalJsVariables = additionalJsVariables;
     }
 
-    public WorkflowConfigurationParser parseConfiguration(File workflowsDir) {
+    public WorkflowConfigurationParser parseConfiguration(File workflowsDir, StateDatabaseConnection connection) {
         LOGGER.info("Using workflows directory: " + workflowsDir);
         LOGGER.info("Using defaults directory: " + defaultsDir);
         Collection<File> files = FileUtils.listFiles(workflowsDir, new String[] { WORKFLOW_FILE_EXTENSION }, false);
         for (File f : files) {
             try {
-                parseFile(f);
+                parseFile(f, connection);
             } catch(Exception e) {
                 LOGGER.error("Failed to load file: " + f + ": " + e.getMessage(), e);
             }
@@ -64,20 +64,21 @@ public class WorkflowConfigurationParser {
         return this;
     }
 
-    void parseFile(File f) throws Exception {
+    void parseFile(File f, StateDatabaseConnection connection) throws Exception {
         LOGGER.info("Loading file: " + f);
         FileReader fileReader = new FileReader(f);
         String fileName = f.toString();
-        evaluateReader(fileReader, fileName);
+        evaluateReader(fileReader, fileName, connection);
     }
 
-    Object evaluateReader(Reader r, String fileName) throws Exception {
+    Object evaluateReader(Reader r, String fileName, StateDatabaseConnection connection) throws Exception {
 
         Global scope = jsConfigParser.createGlobalScope();
 
         Object wrappedThis = Context.javaToJS(this, scope);
         Map jsProperties = Maps.newHashMap(additionalJsVariables);
         jsProperties.put("celosWorkflowConfigurationParser", wrappedThis);
+        jsProperties.put("celosConnection", connection);
 
         jsConfigParser.putPropertiesInScope(jsProperties, scope);
 

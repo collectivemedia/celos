@@ -15,12 +15,21 @@
  */
 package com.collective.celos;
 
-import com.google.common.collect.Maps;
-import org.eclipse.jetty.util.ConcurrentHashSet;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.SortedMap;
+import java.util.SortedSet;
+import java.util.TreeMap;
+import java.util.TreeSet;
+import java.util.concurrent.ConcurrentHashMap;
+
 import org.joda.time.DateTime;
 
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.google.common.collect.Maps;
 
 /**
  * Simple implementation of StateDatabase that stores everything in a Map.
@@ -30,6 +39,9 @@ public class MemoryStateDatabase implements StateDatabase {
     protected final Map<SlotID, SlotState> map = new HashMap<>();
     protected final Map<SlotID, ScheduledTime> rerun = new ConcurrentHashMap<>();
     protected final Set<WorkflowID> pausedWorkflows = new HashSet<>();
+    // Use SortedMap for easier testing of register contents
+    protected final SortedMap<BucketID, SortedMap<RegisterKey, JsonNode>> registers = new TreeMap<>();
+
     private final MemoryStateDatabaseConnection instance = new MemoryStateDatabaseConnection();
 
     @Override
@@ -100,6 +112,53 @@ public class MemoryStateDatabase implements StateDatabase {
                 pausedWorkflows.add(workflowID);
             } else {
                 pausedWorkflows.remove(workflowID);
+            }
+        }
+        
+        @Override
+        public JsonNode getRegister(BucketID bucket, RegisterKey key) throws Exception {
+            Util.requireNonNull(bucket);
+            Util.requireNonNull(key);
+            Map<RegisterKey, JsonNode> bucketMap = registers.get(bucket);
+            if (bucketMap == null) {
+                return null;
+            } else {
+                return bucketMap.get(key);
+            }
+        }
+        
+        @Override
+        public void putRegister(BucketID bucket, RegisterKey key, JsonNode value) throws Exception {
+            Util.requireNonNull(bucket);
+            Util.requireNonNull(key);
+            Util.requireNonNull(value);
+            SortedMap<RegisterKey, JsonNode> bucketMap = registers.get(bucket);
+            if (bucketMap == null) {
+                bucketMap = new TreeMap<RegisterKey, JsonNode>();
+                registers.put(bucket, bucketMap);
+            }
+            bucketMap.put(key, value);
+        }
+        
+        @Override
+        public void deleteRegister(BucketID bucket, RegisterKey key) throws Exception {
+            Util.requireNonNull(bucket);
+            Util.requireNonNull(key);
+            SortedMap<RegisterKey, JsonNode> bucketMap = registers.get(bucket);
+            if (bucketMap == null) {
+                return;
+            } else {
+                bucketMap.remove(key);
+            }
+        }
+        
+        @Override
+        public Iterable<Map.Entry<RegisterKey, JsonNode>> getAllRegisters(BucketID bucket) throws Exception {
+            SortedMap<RegisterKey, JsonNode> bucketMap = registers.get(bucket);
+            if (bucketMap == null) {
+                return Collections.emptySet();
+            } else {
+                return bucketMap.entrySet();
             }
         }
 

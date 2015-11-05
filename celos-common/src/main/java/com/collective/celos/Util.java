@@ -17,7 +17,6 @@ package com.collective.celos;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.ServerSocket;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Map;
@@ -30,7 +29,9 @@ import org.apache.log4j.rolling.TimeBasedRollingPolicy;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -42,9 +43,24 @@ import com.google.common.collect.Maps;
  */
 public class Util {
 
+    private static final ObjectMapper MAPPER = new ObjectMapper();
+    
     public static <T> T requireNonNull(T object) {
         if (object == null) throw new NullPointerException();
         else return object;
+    }
+
+    public static String requireProperBucketIDorRegisterKey(String s) {
+        Util.requireNonNull(s);
+        prohibitCharacter(s, "/");
+        prohibitCharacter(s, ".");
+        return s;
+    }
+
+    private static void prohibitCharacter(String s, String c) {
+        if (s.indexOf(c) != -1) {
+            throw new IllegalArgumentException("Bucket IDs and register keys must not contain the " + c + " character:" + s);
+        }
     }
 
     // DATETIME UTILITIES
@@ -135,6 +151,16 @@ public class Util {
         }
     }
 
+    public static String jsonNodeToString(JsonNode node) throws Exception {
+        Util.requireNonNull(node);
+        return MAPPER.writeValueAsString(node);
+    }
+    
+    public static JsonNode stringToJsonNode(String s) throws Exception {
+        Util.requireNonNull(s);
+        return MAPPER.readTree(s);
+    }
+    
     public static ScheduledTime max(ScheduledTime a, ScheduledTime b) {
         requireNonNull(a);
         requireNonNull(b);

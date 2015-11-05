@@ -43,7 +43,7 @@ public class CelosWorkflowConfigurationParserTest {
                 "    }";
 
         String str = "importDefaults(\"test\"); celos.makePropertiesGen(" + func + "); ";
-        NativeJavaObject jsResult = (NativeJavaObject) parser.evaluateReader(new StringReader(str), "string");
+        NativeJavaObject jsResult = (NativeJavaObject) parser.evaluateReader(new StringReader(str), "string",  new MemoryStateDatabase().openConnection());
         PropertiesGenerator generator = (PropertiesGenerator) jsResult.unwrap();
         Assert.assertEquals(generator.getProperties(null).get("user.name").asText(), "nameIsChanged");
     }
