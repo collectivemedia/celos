@@ -346,13 +346,13 @@ public class JavaScriptFunctionsTest {
     
     private void runJSFile(File f) throws Exception {
         WorkflowConfigurationParser parser = createParser();
-        Object jsResult = parser.evaluateReader(new FileReader(f), f.getName());
+        Object jsResult = parser.evaluateReader(new FileReader(f), f.getName(),  new MemoryStateDatabase().openConnection());
     }
         
     private Object runJS(String js) throws Exception {
         WorkflowConfigurationParser parser = createParser();
         // Evaluate JS function call
-        Object jsResult = parser.evaluateReader(new StringReader(js), "string");
+        Object jsResult = parser.evaluateReader(new StringReader(js), "string",  new MemoryStateDatabase().openConnection());
         if (jsResult instanceof NativeJavaObject) {
             return ((NativeJavaObject) jsResult).unwrap();
         } else {
@@ -363,12 +363,11 @@ public class JavaScriptFunctionsTest {
     private Object runJSNativeResult(String js) throws Exception {
         WorkflowConfigurationParser parser = createParser();
         // Evaluate JS function call
-        return parser.evaluateReader(new StringReader(js), "string");
+        return parser.evaluateReader(new StringReader(js), "string",  new MemoryStateDatabase().openConnection());
     }
 
     private WorkflowConfigurationParser createParser() throws Exception {
-        StateDatabaseConnection conn = new MemoryStateDatabase().openConnection();
-        WorkflowConfigurationParser parser = new WorkflowConfigurationParser(new File("unused"), ImmutableMap.<String, String>of(), conn);
+        WorkflowConfigurationParser parser = new WorkflowConfigurationParser(new File("unused"), ImmutableMap.<String, String>of());
         return parser;
     }
 

@@ -32,8 +32,7 @@ public class CelosWorkflowConfigurationParserTest {
         URL resource = Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/defaults-oozie-props");
         File defaults = new File(resource.toURI());
 
-        StateDatabaseConnection conn = new MemoryStateDatabase().openConnection();
-        WorkflowConfigurationParser parser = new WorkflowConfigurationParser(defaults, ImmutableMap.of("CELOS_USER_JS_VAR", "nameIsChanged"), conn);
+        WorkflowConfigurationParser parser = new WorkflowConfigurationParser(defaults, ImmutableMap.of("CELOS_USER_JS_VAR", "nameIsChanged"));
 
         String func = "function (slotId) {" +
                 "        return {" +
@@ -44,7 +43,7 @@ public class CelosWorkflowConfigurationParserTest {
                 "    }";
 
         String str = "importDefaults(\"test\"); celos.makePropertiesGen(" + func + "); ";
-        NativeJavaObject jsResult = (NativeJavaObject) parser.evaluateReader(new StringReader(str), "string");
+        NativeJavaObject jsResult = (NativeJavaObject) parser.evaluateReader(new StringReader(str), "string",  new MemoryStateDatabase().openConnection());
         PropertiesGenerator generator = (PropertiesGenerator) jsResult.unwrap();
         Assert.assertEquals(generator.getProperties(null).get("user.name").asText(), "nameIsChanged");
     }

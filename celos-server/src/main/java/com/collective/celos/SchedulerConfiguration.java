@@ -49,7 +49,7 @@ public class SchedulerConfiguration {
     }
 
     private WorkflowConfigurationParser getWorkflowConfigurationParser(StateDatabaseConnection conn) throws Exception {
-        return new WorkflowConfigurationParser(defaultsConfigurationPath, additionalVars, conn).parseConfiguration(workflowConfigurationPath);
+        return new WorkflowConfigurationParser(defaultsConfigurationPath, additionalVars).parseConfiguration(workflowConfigurationPath, conn);
     }
 
     private StateDatabase makeDefaultStateDatabase() throws IOException {

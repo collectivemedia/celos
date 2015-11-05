@@ -211,10 +211,9 @@ public class WorkflowConfigurationParserTest {
 
     @Test
     public void evaluatesAdditionalVar() throws Exception {
-        StateDatabaseConnection conn = new MemoryStateDatabase().openConnection();
-        WorkflowConfigurationParser parser = new WorkflowConfigurationParser(new File("unused"), ImmutableMap.of("var1", "val1"), conn);
+        WorkflowConfigurationParser parser = new WorkflowConfigurationParser(new File("unused"), ImmutableMap.of("var1", "val1"));
         // Evaluate JS function call
-        Object jsResult = parser.evaluateReader(new StringReader("var1"), "string");
+        Object jsResult = parser.evaluateReader(new StringReader("var1"), "string",  new MemoryStateDatabase().openConnection());
         Assert.assertEquals(jsResult, "val1");
     }
 
@@ -224,8 +223,7 @@ public class WorkflowConfigurationParserTest {
         URL resource = Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/defaults-oozie-props");
         File defaults = new File(resource.toURI());
 
-        StateDatabaseConnection conn = new MemoryStateDatabase().openConnection();
-        WorkflowConfigurationParser parser = new WorkflowConfigurationParser(defaults, ImmutableMap.of("var1", "val1"), conn);
+        WorkflowConfigurationParser parser = new WorkflowConfigurationParser(defaults, ImmutableMap.of("var1", "val1"));
 
         String func = "function (slotId) {" +
                 "        return {" +
@@ -236,7 +234,7 @@ public class WorkflowConfigurationParserTest {
                 "    }";
 
         String str = "importDefaults(\"test\"); celos.makePropertiesGen(" + func + "); ";
-        NativeJavaObject jsResult = (NativeJavaObject) parser.evaluateReader(new StringReader(str), "string");
+        NativeJavaObject jsResult = (NativeJavaObject) parser.evaluateReader(new StringReader(str), "string",  new MemoryStateDatabase().openConnection());
         PropertiesGenerator generator = (PropertiesGenerator) jsResult.unwrap();
         Assert.assertEquals(generator.getProperties(null).get("user.name").asText(), "default");
     }
@@ -247,8 +245,7 @@ public class WorkflowConfigurationParserTest {
         URL resource = Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/defaults-oozie-props");
         File defaults = new File(resource.toURI());
 
-        StateDatabaseConnection conn = new MemoryStateDatabase().openConnection();
-        WorkflowConfigurationParser parser = new WorkflowConfigurationParser(defaults, ImmutableMap.of("CELOS_USER_JS_VAR", "nameIsChanged"), conn);
+        WorkflowConfigurationParser parser = new WorkflowConfigurationParser(defaults, ImmutableMap.of("CELOS_USER_JS_VAR", "nameIsChanged"));
 
         String func = "function (slotId) {" +
                 "        return {" +
@@ -259,7 +256,7 @@ public class WorkflowConfigurationParserTest {
                 "    }";
 
         String str = "importDefaults(\"test\"); celos.makePropertiesGen(" + func + "); ";
-        NativeJavaObject jsResult = (NativeJavaObject) parser.evaluateReader(new StringReader(str), "string");
+        NativeJavaObject jsResult = (NativeJavaObject) parser.evaluateReader(new StringReader(str), "string",  new MemoryStateDatabase().openConnection());
         PropertiesGenerator generator = (PropertiesGenerator) jsResult.unwrap();
         Assert.assertEquals(generator.getProperties(null).get("user.name").asText(), "nameIsChanged");
     }
@@ -267,10 +264,9 @@ public class WorkflowConfigurationParserTest {
 
     @Test
     public void doesntEvaluateAdditionalVar() throws Exception {
-        StateDatabaseConnection conn = new MemoryStateDatabase().openConnection();
-        WorkflowConfigurationParser parser = new WorkflowConfigurationParser(new File("unused"), ImmutableMap.<String, String>of(), conn);
+        WorkflowConfigurationParser parser = new WorkflowConfigurationParser(new File("unused"), ImmutableMap.<String, String>of());
         try {
-            parser.evaluateReader(new StringReader("var1"), "string");
+            parser.evaluateReader(new StringReader("var1"), "string",  new MemoryStateDatabase().openConnection());
         } catch (Exception e) {
             if (e.getMessage().contains("\"var1\" is not defined")) {
                 return;
@@ -288,17 +284,15 @@ public class WorkflowConfigurationParserTest {
         File dir = getConfigurationDir(label);
         File defaults = getDefaultsDir();
         File workflow = new File(dir, workflowName + "." + WorkflowConfigurationParser.WORKFLOW_FILE_EXTENSION);
-        StateDatabaseConnection conn = new MemoryStateDatabase().openConnection();
-        WorkflowConfigurationParser workflowConfigurationParser = new WorkflowConfigurationParser(defaults, ImmutableMap.<String, String>of(), conn);
-        workflowConfigurationParser.parseFile(workflow);
+        WorkflowConfigurationParser workflowConfigurationParser = new WorkflowConfigurationParser(defaults, ImmutableMap.<String, String>of());
+        workflowConfigurationParser.parseFile(workflow,  new MemoryStateDatabase().openConnection());
         return workflowConfigurationParser.getWorkflowConfiguration();
     }
     
     public static WorkflowConfiguration parseDir(String label) throws Exception {
         File dir = getConfigurationDir(label);
         File defaults = getDefaultsDir();
-        StateDatabaseConnection conn = new MemoryStateDatabase().openConnection();
-        return new WorkflowConfigurationParser(defaults, ImmutableMap.<String, String>of(), conn).parseConfiguration(dir).getWorkflowConfiguration();
+        return new WorkflowConfigurationParser(defaults, ImmutableMap.<String, String>of()).parseConfiguration(dir,  new MemoryStateDatabase().openConnection()).getWorkflowConfiguration();
     }
 
     public static File getConfigurationDir(String label) throws URISyntaxException {

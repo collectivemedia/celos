@@ -44,21 +44,19 @@ public class WorkflowConfigurationParser {
     private final JSConfigParser jsConfigParser = new JSConfigParser();
     private final File defaultsDir;
     private final Map<String, String> additionalJsVariables;
-    private final StateDatabaseConnection connection;
 
-    public WorkflowConfigurationParser(File defaultsDir, Map<String, String> additionalJsVariables, StateDatabaseConnection connection) throws Exception {
+    public WorkflowConfigurationParser(File defaultsDir, Map<String, String> additionalJsVariables) throws Exception {
         this.defaultsDir = Util.requireNonNull(defaultsDir);
         this.additionalJsVariables = additionalJsVariables;
-        this.connection = Util.requireNonNull(connection);
     }
 
-    public WorkflowConfigurationParser parseConfiguration(File workflowsDir) {
+    public WorkflowConfigurationParser parseConfiguration(File workflowsDir, StateDatabaseConnection connection) {
         LOGGER.info("Using workflows directory: " + workflowsDir);
         LOGGER.info("Using defaults directory: " + defaultsDir);
         Collection<File> files = FileUtils.listFiles(workflowsDir, new String[] { WORKFLOW_FILE_EXTENSION }, false);
         for (File f : files) {
             try {
-                parseFile(f);
+                parseFile(f, connection);
             } catch(Exception e) {
                 LOGGER.error("Failed to load file: " + f + ": " + e.getMessage(), e);
             }
@@ -66,14 +64,14 @@ public class WorkflowConfigurationParser {
         return this;
     }
 
-    void parseFile(File f) throws Exception {
+    void parseFile(File f, StateDatabaseConnection connection) throws Exception {
         LOGGER.info("Loading file: " + f);
         FileReader fileReader = new FileReader(f);
         String fileName = f.toString();
-        evaluateReader(fileReader, fileName);
+        evaluateReader(fileReader, fileName, connection);
     }
 
-    Object evaluateReader(Reader r, String fileName) throws Exception {
+    Object evaluateReader(Reader r, String fileName, StateDatabaseConnection connection) throws Exception {
 
         Global scope = jsConfigParser.createGlobalScope();
 
