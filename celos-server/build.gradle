@@ -53,7 +53,7 @@ task fatJar(type: Jar) {
 }
 
 jar {
-    baseName "celos-server"
+    baseName "celos-server-lib"
     manifest {
         attributes("Main-Class": mainClassName)
     }
