@@ -46,10 +46,17 @@ dependencies {
     testCompile("org.mockito:mockito-all:1.9.5")
 }
 
-jar {
+task fatJar(type: Jar) {
     from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }}
-    baseName "celos-server"
     archiveName "celos-server.jar"
+    manifest {
+        attributes("Main-Class": mainClassName)
+    }
+}
+
+jar {
+    from { configurations.compileIncluded.collect { it.isDirectory() ? it : zipTree(it) }}
+    baseName "celos-server"
     manifest {
         attributes("Main-Class": mainClassName)
     }

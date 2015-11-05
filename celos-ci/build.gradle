@@ -3,8 +3,13 @@ apply plugin: 'maven'
 mainClassName = 'com.collective.celos.ci.CelosCi'
 version = '0.1'
 
+configurations {
+    compileIncluded
+    compile.extendsFrom compileIncluded
+}
+
 dependencies {
-    compile project(':celos-server')
+    compileIncluded project(':celos-server')
     compile("com.jcraft:jsch:0.1.51")
 
     compile("org.apache.commons:commons-vfs2:2.0")
@@ -38,6 +43,7 @@ task fatJar(type: Jar) {
 
 jar {
     baseName "celos-ci"
+    from { configurations.compileIncluded.collect { it.isDirectory() ? it : zipTree(it) }}
     manifest {
         attributes("Main-Class": mainClassName)
     }
@@ -55,6 +61,7 @@ uploadArchives.doFirst {
             if (!System.getenv("BUILD_NUMBER")) throw new GradleException("BUILD_NUMBER env variable should be present")
             pom.version = "2.0." + System.getenv("BUILD_NUMBER")
             pom.groupId = "com.collective"
+            pom.dependencies.removeAll { it.scope == "compileIncluded" }
         }
     }
 }
