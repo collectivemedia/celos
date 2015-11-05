@@ -30,8 +30,13 @@ public class UtilTest {
     }
 
     @Test(expected=IllegalArgumentException.class)
-    public void requireProperBucketIDorRegisterKeyThrows() {
+    public void requireProperBucketIDorRegisterKeyThrowsOnSlash() {
         Util.requireProperBucketIDorRegisterKey("foo/bar");
+    }
+    
+    @Test(expected=IllegalArgumentException.class)
+    public void requireProperBucketIDorRegisterKeyThrowsOnDot() {
+        Util.requireProperBucketIDorRegisterKey("foo.bar");
     }
     
     // DATETIME TESTS

@@ -55,6 +55,9 @@ public class Util {
         if (s.indexOf("/") != -1) {
             throw new IllegalArgumentException("Bucket IDs and register keys must not contain the / character:" + s);
         }
+        if (s.indexOf(".") != -1) {
+            throw new IllegalArgumentException("Bucket IDs and register keys must not contain the . character:" + s);
+        }
         return s;
     }
 
