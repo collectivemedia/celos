@@ -208,6 +208,18 @@ public abstract class AbstractStateDatabaseTest {
         Assert.assertEquals(ImmutableMap.of().entrySet(), db.getAllRegisters(bucket1));
         Assert.assertNull(db.getRegister(bucket2, key2));
         Assert.assertEquals(ImmutableMap.of().entrySet(), db.getAllRegisters(bucket2));
+        
+        db.putRegister(bucket2, key2, value2);
+        Assert.assertNull(db.getRegister(bucket1, key1));
+        Assert.assertEquals(ImmutableMap.of().entrySet(), db.getAllRegisters(bucket1));
+        Assert.assertEquals(value2, db.getRegister(bucket2, key2));
+        Assert.assertEquals(ImmutableMap.of(key2, value2).entrySet(), db.getAllRegisters(bucket2));
+
+        db.deleteRegister(bucket2, key2);
+        Assert.assertNull(db.getRegister(bucket1, key1));
+        Assert.assertEquals(ImmutableMap.of().entrySet(), db.getAllRegisters(bucket1));
+        Assert.assertNull(db.getRegister(bucket2, key2));
+        Assert.assertEquals(ImmutableMap.of().entrySet(), db.getAllRegisters(bucket2));
     }
         
     private void assertSlotStatesOrder(List<SlotState> slotStates) {
