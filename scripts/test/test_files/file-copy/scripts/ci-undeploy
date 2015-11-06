@@ -8,6 +8,6 @@ ROOT=$(pwd)
 
 cd $ROOT/scripts/test/test_files/file-copy
 
-java -jar $ROOT/celos-ci/build/libs/celos-ci-fat.jar --workflowName file-copy --mode undeploy --target file://$ROOT/scripts/conf/target_int_test.json --hdfsRoot /user/celos-ci/celos-int-test
+java -jar $ROOT/celos-ci/build/libs/celos-ci.jar --workflowName file-copy --mode undeploy --target file://$ROOT/scripts/conf/target_int_test.json --hdfsRoot /user/celos-ci/celos-int-test
 
 echo You win! All tests OK.
