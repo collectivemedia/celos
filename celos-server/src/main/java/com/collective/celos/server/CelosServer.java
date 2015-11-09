@@ -17,6 +17,8 @@ package com.collective.celos.server;
 
 import com.collective.celos.Constants;
 import com.collective.celos.JettyServer;
+import com.collective.celos.Scheduler;
+import com.collective.celos.servlet.AbstractServlet;
 import com.google.common.collect.ImmutableMap;
 
 import java.io.File;
@@ -73,5 +75,9 @@ public class CelosServer {
     public void stopServer() throws Exception {
         server.stop();
     }
+
+    public Scheduler getScheduler() {
+        return (Scheduler) server.getContext().getAttribute(AbstractServlet.SCHEDULER_ATTR);
+    }    
 
 }

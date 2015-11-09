@@ -16,8 +16,10 @@
 package com.collective.celos;
 
 import com.collective.celos.server.CelosServer;
+import com.collective.celos.servlet.AbstractServlet;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Sets;
+
 import org.apache.commons.io.FileUtils;
 import org.junit.*;
 import org.junit.rules.TemporaryFolder;
@@ -88,16 +90,12 @@ public class CelosTestServerTest {
 
         HashSet<WorkflowID> expectedResult = Sets.newHashSet(new WorkflowID("workflow-1"), new WorkflowID("workflow-2"), new WorkflowID("workflow-Iñtërnâtiônàlizætiøn"), new WorkflowID("workflow-4"));
         workflowIDs = celosClient.getWorkflowList();
-        Assert.assertEquals(Sets.newHashSet(workflowIDs), expectedResult);
 
-        Scheduler scheduler = getScheduler();
+        Scheduler scheduler = Util.requireNonNull(celosServer.getScheduler());
         Set<WorkflowID> schedWfIds=  scheduler.getWorkflowConfiguration().getWorkflows().stream().map( x -> x.getID()).collect(Collectors.toSet());
 
         Assert.assertEquals(schedWfIds, expectedResult);
     }
 
-    private Scheduler getScheduler() {
-        return schedulerRef.get();
-    }
 
 }

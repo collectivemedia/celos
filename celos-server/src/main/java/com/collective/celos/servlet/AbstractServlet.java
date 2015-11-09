@@ -47,7 +47,7 @@ public abstract class AbstractServlet extends HttpServlet {
 
     private static final String TIME_PARAM = "time";
     private static Logger LOGGER = Logger.getLogger(AbstractServlet.class);
-    private static final String SCHEDULER_ATTR = "celos.scheduler";
+    public static final String SCHEDULER_ATTR = "celos.scheduler";
     
     /**
      * This lock serves to synchronize all operations.
