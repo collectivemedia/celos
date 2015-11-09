@@ -60,7 +60,7 @@ public class KillServlet extends AbstractServlet {
                 res.sendError(HttpServletResponse.SC_NOT_FOUND, "Slot is not found: " + slotID);
                 return;
             }
-            try (StateDatabaseConnection db = scheduler.getStateDatabase().openConnection()) {
+            try (StateDatabaseConnection db = getStateDatabase().openConnection()) {
                 SlotState state = db.getSlotState(slotID);
                 LOGGER.info("Killing slot: " + slotID);
                 if (state == null) {

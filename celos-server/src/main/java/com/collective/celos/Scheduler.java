@@ -236,7 +236,7 @@ public class Scheduler {
         return configuration;
     }
 
-    public StateDatabase getStateDatabase() {
+    StateDatabase getStateDatabase() {
         return database;
     }
 

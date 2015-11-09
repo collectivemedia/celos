@@ -86,7 +86,7 @@ public class JSONWorkflowSlotsServlet extends AbstractJSONServlet {
                 res.sendError(HttpServletResponse.SC_BAD_REQUEST, "Time interval between start and end is limited to: " + scheduler.getSlidingWindowHours() + " hours");
                 return;
             }
-            try (StateDatabaseConnection connection = scheduler.getStateDatabase().openConnection()) {
+            try (StateDatabaseConnection connection = getStateDatabase().openConnection()) {
                 List<SlotState> slotStates = scheduler.getSlotStates(wf, startTime, endTime, connection);
                 List<JsonNode> objectNodes = Lists.newArrayList();
                 for (SlotState state : Lists.reverse(slotStates)) {
