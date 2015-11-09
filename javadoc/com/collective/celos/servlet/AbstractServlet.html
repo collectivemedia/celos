@@ -17,7 +17,7 @@
     catch(err) {
     }
 //-->
-var methods = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10};
+var methods = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -198,6 +198,10 @@ extends HttpServlet</pre>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/collective/celos/servlet/AbstractServlet.html#getRequestTime-HttpServletRequest-">getRequestTime</a></span>(HttpServletRequest&nbsp;req)</code>&nbsp;</td>
 </tr>
 <tr id="i4" class="altColor">
+<td class="colFirst"><code>protected <a href="../../../../com/collective/celos/StateDatabase.html" title="interface in com.collective.celos">StateDatabase</a></code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/collective/celos/servlet/AbstractServlet.html#getStateDatabase--">getStateDatabase</a></span>()</code>&nbsp;</td>
+</tr>
+<tr id="i5" class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/collective/celos/servlet/AbstractServlet.html#service-HttpServletRequest-HttpServletResponse-">service</a></span>(HttpServletRequest&nbsp;req,
        HttpServletResponse&nbsp;res)</code>&nbsp;</td>
@@ -329,10 +333,24 @@ extends HttpServlet</pre>
 <a name="clearSchedulerCache--">
 <!--   -->
 </a>
-<ul class="blockListLast">
+<ul class="blockList">
 <li class="blockList">
 <h4>clearSchedulerCache</h4>
 <pre>protected&nbsp;void&nbsp;clearSchedulerCache()</pre>
+</li>
+</ul>
+<a name="getStateDatabase--">
+<!--   -->
+</a>
+<ul class="blockListLast">
+<li class="blockList">
+<h4>getStateDatabase</h4>
+<pre>protected&nbsp;<a href="../../../../com/collective/celos/StateDatabase.html" title="interface in com.collective.celos">StateDatabase</a>&nbsp;getStateDatabase()
+                                  throws java.io.IOException</pre>
+<dl>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code>java.io.IOException</code></dd>
+</dl>
 </li>
 </ul>
 </li>
