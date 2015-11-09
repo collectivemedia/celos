@@ -15,26 +15,25 @@
  */
 package com.collective.celos;
 
-import com.collective.celos.server.CelosServer;
-import com.collective.celos.servlet.AbstractServlet;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Sets;
-
-import org.apache.commons.io.FileUtils;
-import org.junit.*;
-import org.junit.rules.TemporaryFolder;
-
 import java.io.File;
 import java.net.URI;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
-/**
- * Created by akonopko on 22.12.14.
- */
+import org.apache.commons.io.FileUtils;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
+
+import com.collective.celos.server.CelosServer;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Sets;
+
 public class CelosTestServerTest {
 
     public static final String WORKFLOWS_DIR = "workflows";
@@ -49,7 +48,6 @@ public class CelosTestServerTest {
     private File slotDbDir;
     private CelosServer celosServer;
     private CelosClient celosClient;
-    private AtomicReference<Scheduler> schedulerRef;
 
     @Before
     public void setup() throws Exception {
@@ -63,8 +61,6 @@ public class CelosTestServerTest {
 
         this.celosServer = new CelosServer();
         int port = celosServer.startServer(ImmutableMap.<String, String>of(), workflowsDir, defaultsDir, slotDbDir);
-        this.schedulerRef = new AtomicReference<>();
-        celosServer.setAttribute(Constants.SCHEDULER_HOOK, schedulerRef);
         this.celosClient = new CelosClient(URI.create("http://localhost:" + port));
     }
 
@@ -72,7 +68,6 @@ public class CelosTestServerTest {
     public void tearDown() throws Exception {
         celosServer.stopServer();
     }
-
 
     @Test
     public void testGetScheduler() throws Exception {
@@ -87,15 +82,14 @@ public class CelosTestServerTest {
 
         celosClient.clearCache();
 
-
         HashSet<WorkflowID> expectedResult = Sets.newHashSet(new WorkflowID("workflow-1"), new WorkflowID("workflow-2"), new WorkflowID("workflow-Iñtërnâtiônàlizætiøn"), new WorkflowID("workflow-4"));
         workflowIDs = celosClient.getWorkflowList();
-
+        Assert.assertEquals(Sets.newHashSet(workflowIDs), expectedResult);
+        
         Scheduler scheduler = Util.requireNonNull(celosServer.getScheduler());
-        Set<WorkflowID> schedWfIds=  scheduler.getWorkflowConfiguration().getWorkflows().stream().map( x -> x.getID()).collect(Collectors.toSet());
+        Set<WorkflowID> schedWfIds = scheduler.getWorkflowConfiguration().getWorkflows().stream().map(x -> x.getID()).collect(Collectors.toSet());
 
         Assert.assertEquals(schedWfIds, expectedResult);
     }
-
 
 }
