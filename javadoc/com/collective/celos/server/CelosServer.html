@@ -17,7 +17,7 @@
     catch(err) {
     }
 //-->
-var methods = {"i0":10,"i1":10,"i2":10};
+var methods = {"i0":10,"i1":10,"i2":10,"i3":10};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -146,6 +146,10 @@ extends java.lang.Object</pre>
 <th class="colLast" scope="col">Method and Description</th>
 </tr>
 <tr id="i0" class="altColor">
+<td class="colFirst"><code><a href="../../../../com/collective/celos/Scheduler.html" title="class in com.collective.celos">Scheduler</a></code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/collective/celos/server/CelosServer.html#getScheduler--">getScheduler</a></span>()</code>&nbsp;</td>
+</tr>
+<tr id="i1" class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/collective/celos/server/CelosServer.html#startServer-int-java.util.Map-java.io.File-java.io.File-java.io.File-">startServer</a></span>(int&nbsp;port,
            java.util.Map&lt;java.lang.String,java.lang.String&gt;&nbsp;jsVariables,
@@ -153,14 +157,14 @@ extends java.lang.Object</pre>
            java.io.File&nbsp;defaultsDir,
            java.io.File&nbsp;stateDatabase)</code>&nbsp;</td>
 </tr>
-<tr id="i1" class="rowColor">
+<tr id="i2" class="altColor">
 <td class="colFirst"><code>int</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/collective/celos/server/CelosServer.html#startServer-java.util.Map-java.io.File-java.io.File-java.io.File-">startServer</a></span>(java.util.Map&lt;java.lang.String,java.lang.String&gt;&nbsp;jsVariables,
            java.io.File&nbsp;workflowsDir,
            java.io.File&nbsp;defaultsDir,
            java.io.File&nbsp;stateDatabase)</code>&nbsp;</td>
 </tr>
-<tr id="i2" class="altColor">
+<tr id="i3" class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/collective/celos/server/CelosServer.html#stopServer--">stopServer</a></span>()</code>&nbsp;</td>
 </tr>
@@ -241,7 +245,7 @@ extends java.lang.Object</pre>
 <a name="stopServer--">
 <!--   -->
 </a>
-<ul class="blockListLast">
+<ul class="blockList">
 <li class="blockList">
 <h4>stopServer</h4>
 <pre>public&nbsp;void&nbsp;stopServer()
@@ -250,6 +254,15 @@ extends java.lang.Object</pre>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code>java.lang.Exception</code></dd>
 </dl>
+</li>
+</ul>
+<a name="getScheduler--">
+<!--   -->
+</a>
+<ul class="blockListLast">
+<li class="blockList">
+<h4>getScheduler</h4>
+<pre>public&nbsp;<a href="../../../../com/collective/celos/Scheduler.html" title="class in com.collective.celos">Scheduler</a>&nbsp;getScheduler()</pre>
 </li>
 </ul>
 </li>
