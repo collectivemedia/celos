@@ -55,7 +55,7 @@ public class PauseServlet extends AbstractServlet {
             }
 
             Boolean pause = Boolean.parseBoolean(req.getParameter(PAUSE_PARAM));
-            try(StateDatabaseConnection connection = scheduler.getStateDatabase().openConnection()) {
+            try(StateDatabaseConnection connection = getStateDatabase().openConnection()) {
                 connection.setPaused(workflowID, pause);
             }
         } catch(Exception e) {

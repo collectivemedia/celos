@@ -52,7 +52,7 @@ public class SchedulerConfiguration {
         return new WorkflowConfigurationParser(defaultsConfigurationPath, additionalVars).parseConfiguration(workflowConfigurationPath, conn);
     }
 
-    private StateDatabase makeDefaultStateDatabase() throws IOException {
+    public StateDatabase makeDefaultStateDatabase() throws IOException {
         return new FileSystemStateDatabase(stateDatabasePath);
     }
 

@@ -25,6 +25,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.collective.celos.BucketID;
 import com.collective.celos.RegisterKey;
 import com.collective.celos.Scheduler;
+import com.collective.celos.StateDatabase;
 import com.collective.celos.StateDatabaseConnection;
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -37,8 +38,7 @@ public class RegisterServlet extends AbstractJSONServlet {
         try {
             BucketID bucket = getRequestBucketID(req);
             RegisterKey key = getRequestKey(req);
-            Scheduler scheduler = getOrCreateCachedScheduler();
-            try(StateDatabaseConnection connection = scheduler.getStateDatabase().openConnection()) {
+            try(StateDatabaseConnection connection = getStateDatabase().openConnection()) {
                 JsonNode value = connection.getRegister(bucket, key);
                 if (value == null) {
                     res.sendError(HttpServletResponse.SC_NOT_FOUND, "Register not found");
@@ -56,8 +56,7 @@ public class RegisterServlet extends AbstractJSONServlet {
             BucketID bucket = getRequestBucketID(req);
             RegisterKey key = getRequestKey(req);
             JsonNode value = mapper.readTree(new InputStreamReader(req.getInputStream(), StandardCharsets.UTF_8));
-            Scheduler scheduler = getOrCreateCachedScheduler();
-            try(StateDatabaseConnection connection = scheduler.getStateDatabase().openConnection()) {
+            try(StateDatabaseConnection connection = getStateDatabase().openConnection()) {
                 connection.putRegister(bucket, key, value);
             }
         } catch (Exception e) {
@@ -70,8 +69,7 @@ public class RegisterServlet extends AbstractJSONServlet {
         RegisterKey key = getRequestKey(req);
         Scheduler scheduler;
         try {
-            scheduler = getOrCreateCachedScheduler();
-            try(StateDatabaseConnection connection = scheduler.getStateDatabase().openConnection()) {
+            try(StateDatabaseConnection connection = getStateDatabase().openConnection()) {
                 connection.deleteRegister(bucket, key);
             }
         } catch (Exception e) {

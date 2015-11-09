@@ -51,7 +51,7 @@ public class TriggerStatusServlet extends AbstractJSONServlet {
                 res.sendError(HttpServletResponse.SC_NOT_FOUND, "Workflow not found: " + id);
                 return;
             }
-            try(StateDatabaseConnection connection = scheduler.getStateDatabase().openConnection()) {
+            try(StateDatabaseConnection connection = getStateDatabase().openConnection()) {
                 TriggerStatus status = wf.getTrigger().getTriggerStatus(connection, ScheduledTime.now(), getRequestTime(req));
                 writer.writeValue(res.getOutputStream(), status);
             }

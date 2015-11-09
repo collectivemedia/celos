@@ -37,9 +37,8 @@ public class JSONSlotStateServlet extends AbstractJSONServlet {
                 res.sendError(HttpServletResponse.SC_BAD_REQUEST, ID_PARAM + " parameter missing.");
                 return;
             }
-            Scheduler scheduler = getOrCreateCachedScheduler();
             SlotID slotID = new SlotID(new WorkflowID(id), getRequestTime(req));
-            try (StateDatabaseConnection connection = scheduler.getStateDatabase().openConnection()) {
+            try (StateDatabaseConnection connection = getStateDatabase().openConnection()) {
                 SlotState slotState = connection.getSlotState(slotID);
                 if (slotState == null) {
                     res.sendError(HttpServletResponse.SC_NOT_FOUND, "Slot not found: " + id);
