@@ -83,10 +83,6 @@ public class JettyServer {
         }
     }
 
-    public void setAttribute(String name, Object attr) {
-        context.setAttribute(name, attr);
-    }
-
     public ServletContext getContext() {
         return context.getServletHandler().getServletContext();
     }

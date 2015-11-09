@@ -34,7 +34,7 @@ import com.collective.celos.server.CelosServer;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Sets;
 
-public class CelosTestServerTest {
+public class GetSchedulerTest {
 
     public static final String WORKFLOWS_DIR = "workflows";
     public static final String DEFAULTS_DIR = "defaults";
