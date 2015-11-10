@@ -19,6 +19,7 @@ import com.collective.celos.CelosClient;
 import com.collective.celos.Constants;
 import com.collective.celos.Util;
 
+import org.apache.log4j.Logger;
 import java.net.URI;
 import java.util.Collections;
 import java.util.Timer;
@@ -28,6 +29,8 @@ import java.util.TimerTask;
  * Main entry point to the scheduler server.
  */
 public class Main {
+
+    private static Logger LOGGER = Logger.getLogger(Main.class);
 
     public static void main(String... args) throws Exception {
         ServerCommandLineParser serverCommandLineParser = new ServerCommandLineParser();
@@ -58,7 +61,10 @@ public class Main {
             @Override
             public void run() {
                 try {
+                    long timeStart = System.currentTimeMillis();
                     celosClient.iterateScheduler();
+                    long duration = System.currentTimeMillis() - timeStart;
+                    LOGGER.info("Step time on " + port + " is " + duration);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
