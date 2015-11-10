@@ -168,13 +168,13 @@ public class Scheduler {
             SlotState.Status status = slotState.getStatus();
             if (status.equals(SlotState.Status.WAITING)) {
                 if (callTrigger(wf, slotState, current, connection)) {
-                    LOGGER.info("Slot is ready: " + slotID);
+//                    LOGGER.info("Slot is ready: " + slotID);
                     connection.putSlotState(slotState.transitionToReady());
                 } else if (isSlotTimedOut(slotState.getScheduledTime(), current, wf.getWaitTimeoutSeconds())) {
                     LOGGER.info("Slot timed out waiting: " + slotID);
                     connection.putSlotState(slotState.transitionToWaitTimeout());
                 } else {
-                    LOGGER.info("Waiting for slot: " + slotID);
+//                    LOGGER.info("Waiting for slot: " + slotID);
                 }
             } else if (status.equals(SlotState.Status.RUNNING)) {
                 String externalID = slotState.getExternalID();
