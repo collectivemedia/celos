@@ -215,6 +215,8 @@ public class Util {
     public static void setupLogging(File logDir) {
         System.getProperties().setProperty("log4j.defaultInitOverride", "true");
 
+        Logger.getRootLogger().removeAllAppenders();
+
         RollingFileAppender appender = new RollingFileAppender();
         appender.setFile(new File(logDir, "celos.log").getAbsolutePath());
         appender.setAppend(true);
