@@ -33,8 +33,12 @@ public class Main {
     private static Logger LOGGER = Logger.getLogger(Main.class);
 
     public static void main(String... args) throws Exception {
+
         ServerCommandLineParser serverCommandLineParser = new ServerCommandLineParser();
         final ServerCommandLine commandLine = serverCommandLineParser.parse(args);
+
+        Util.setupLogging(commandLine.getLogDir());
+
         CelosServer celosServer = new CelosServer();
         celosServer.startServer(commandLine.getPort(),
                 Collections.<String, String>emptyMap(),
@@ -44,7 +48,6 @@ public class Main {
 
         setupAutoschedule(commandLine.getPort(), commandLine.getAutoSchedule());
 
-        Util.setupLogging(commandLine.getLogDir());
     }
 
     static void setupAutoschedule(int port, int autoSchedule) {
