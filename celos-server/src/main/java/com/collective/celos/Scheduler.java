@@ -16,11 +16,10 @@
 package com.collective.celos;
 
 import java.util.*;
-import java.util.function.Function;
+import java.util.concurrent.ConcurrentMap;
 import java.util.stream.Collectors;
 
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import org.apache.log4j.Logger;
 
 import com.collective.celos.trigger.Trigger;
@@ -67,39 +66,38 @@ public class Scheduler {
      */
     public void step(ScheduledTime current, Set<WorkflowID> workflowIDs, StateDatabaseConnection connection) throws Exception {
         LOGGER.info("Starting scheduler step: " + current + " -- " + getSlidingWindowStartTime(current));
-        for (Workflow wf : configuration.getWorkflows()) {
-            WorkflowID id = wf.getID();
-            boolean shouldProcess = workflowIDs.isEmpty() || workflowIDs.contains(id);
-            if (!shouldProcess) {
-                LOGGER.info("Ignoring workflow: " + id);
-            } else if (connection.isPaused(id)) {
-                LOGGER.info("Workflow is paused: " + id);
-            } else {
-                try {
-                    stepWorkflow(wf, current, connection);
-                } catch (Exception e) {
-                    LOGGER.error("Exception in workflow: " + id + ": " + e.getMessage(), e);
-                }
-            }
-        }
+
+        ConcurrentMap<Workflow, List<SlotState>> workflowToSlots = configuration.getWorkflows().parallelStream().map((wf) ->
+                        Maps.immutableEntry(wf, getSlotStatesIncludingMarkedForRerun(wf, current, getWorkflowStartTime(wf, current), current, connection))
+        ).collect(Collectors.toConcurrentMap(Map.Entry::getKey, Map.Entry::getValue));
+
+        workflowToSlots.entrySet().parallelStream().forEach( x -> runExternalWorkflows(connection, x.getKey(), x.getValue()));
+
+        workflowToSlots.entrySet().parallelStream().forEach( x -> {
+            x.getValue().parallelStream().forEach( slotState -> {
+                updateSlotState(x.getKey(), slotState, current, connection);
+            });
+        });
+
         LOGGER.info("Ending scheduler step: " + current + " -- " + getSlidingWindowStartTime(current));
     }
 
-    /**
-     * Steps a single workflow:
-     * <p>
-     * - Submit any READY slots to the external service.
-     * <p>
-     * - Check any WAITING slots for data availability.
-     * <p>
-     * - Check any RUNNING slots for their current external status.
-     */
-    private void stepWorkflow(Workflow wf, ScheduledTime current, StateDatabaseConnection connection) throws Exception {
-        LOGGER.info("Processing workflow: " + wf.getID() + " at: " + current);
-        List<SlotState> slotStates = getSlotStatesIncludingMarkedForRerun(wf, current, getWorkflowStartTime(wf, current), current, connection);
-        runExternalWorkflows(wf, slotStates, connection);
-        for (SlotState slotState : slotStates) {
-            updateSlotState(wf, slotState, current, connection);
+    private void runExternalWorkflows(StateDatabaseConnection connection, Workflow wf, List<SlotState> slotStates) {
+        try {
+            List<SlotState> scheduledSlots = wf.getSchedulingStrategy().getSchedulingCandidates(slotStates);
+            for (SlotState slotState : scheduledSlots) {
+                if (!slotState.getStatus().equals(SlotState.Status.READY)) {
+                    throw new IllegalStateException("Scheduling strategy returned non-ready slot: " + slotState);
+                }
+                SlotID slotID = slotState.getSlotID();
+                LOGGER.info("Submitting slot to external service: " + slotID);
+                String externalID = wf.getExternalService().submit(slotID);
+                connection.putSlotState(slotState.transitionToRunning(externalID));
+                LOGGER.info("Starting slot: " + slotID + " with external ID: " + externalID);
+                wf.getExternalService().start(slotID, externalID);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -107,17 +105,21 @@ public class Scheduler {
      * Get the slot states of all slots of the workflow from within the window defined by start (inclusive) and end (exclusive),
      * as well as the slots states of all slots marked for rerun in the database.
      */
-    public List<SlotState> getSlotStatesIncludingMarkedForRerun(Workflow wf, ScheduledTime current, ScheduledTime start, ScheduledTime end, StateDatabaseConnection connection) throws Exception {
-        SortedSet<ScheduledTime> timesMarkedForRerun = connection.getTimesMarkedForRerun(wf.getID(), current);
+    public List<SlotState> getSlotStatesIncludingMarkedForRerun(Workflow wf, ScheduledTime current, ScheduledTime start, ScheduledTime end, StateDatabaseConnection connection) throws RuntimeException {
+        try {
+            SortedSet<ScheduledTime> timesMarkedForRerun = connection.getTimesMarkedForRerun(wf.getID(), current);
 
-        SortedSet<ScheduledTime> times = new TreeSet<>();
-        times.addAll(wf.getSchedule().getScheduledTimes(this, start, end));
-        times.addAll(timesMarkedForRerun);
+            SortedSet<ScheduledTime> times = new TreeSet<>();
+            times.addAll(wf.getSchedule().getScheduledTimes(this, start, end));
+            times.addAll(timesMarkedForRerun);
 
-        Map<SlotID, SlotState> fetchedSlots = Maps.newHashMap();
-        fetchedSlots.putAll(connection.getSlotStates(wf.getID(), start, end));
-        fetchedSlots.putAll(connection.getSlotStates(wf.getID(), timesMarkedForRerun));
-        return matchScheduledToFetched(wf, times, fetchedSlots);
+            Map<SlotID, SlotState> fetchedSlots = Maps.newHashMap();
+            fetchedSlots.putAll(connection.getSlotStates(wf.getID(), start, end));
+            fetchedSlots.putAll(connection.getSlotStates(wf.getID(), timesMarkedForRerun));
+            return matchScheduledToFetched(wf, times, fetchedSlots);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
 
@@ -156,60 +158,46 @@ public class Scheduler {
     }
 
     /**
-     * Get scheduled slots from scheduling strategy and submit them to external system.
-     */
-    void runExternalWorkflows(Workflow wf, List<SlotState> slotStates, StateDatabaseConnection connection) throws Exception {
-        List<SlotState> scheduledSlots = wf.getSchedulingStrategy().getSchedulingCandidates(slotStates);
-        for (SlotState slotState : scheduledSlots) {
-            if (!slotState.getStatus().equals(SlotState.Status.READY)) {
-                throw new IllegalStateException("Scheduling strategy returned non-ready slot: " + slotState);
-            }
-            SlotID slotID = slotState.getSlotID();
-            LOGGER.info("Submitting slot to external service: " + slotID);
-            String externalID = wf.getExternalService().submit(slotID);
-            connection.putSlotState(slotState.transitionToRunning(externalID));
-            LOGGER.info("Starting slot: " + slotID + " with external ID: " + externalID);
-            wf.getExternalService().start(slotID, externalID);
-        }
-    }
-
-    /**
      * Check the trigger for all WAITING slots, and update them to READY if data is available.
      * <p>
      * Check the external status of all RUNNING slots, and update them to SUCCESS or FAILURE if they're finished.
      */
-    void updateSlotState(Workflow wf, SlotState slotState, ScheduledTime current, StateDatabaseConnection connection) throws Exception {
-        SlotID slotID = slotState.getSlotID();
-        SlotState.Status status = slotState.getStatus();
-        if (status.equals(SlotState.Status.WAITING)) {
-            if (callTrigger(wf, slotState, current, connection)) {
-                LOGGER.info("Slot is ready: " + slotID);
-                connection.putSlotState(slotState.transitionToReady());
-            } else if (isSlotTimedOut(slotState.getScheduledTime(), current, wf.getWaitTimeoutSeconds())) {
-                LOGGER.info("Slot timed out waiting: " + slotID);
-                connection.putSlotState(slotState.transitionToWaitTimeout());
-            } else {
-                LOGGER.info("Waiting for slot: " + slotID);
-            }
-        } else if (status.equals(SlotState.Status.RUNNING)) {
-            String externalID = slotState.getExternalID();
-            ExternalStatus xStatus = wf.getExternalService().getStatus(slotID, externalID);
-            if (!xStatus.isRunning()) {
-                if (xStatus.isSuccess()) {
-                    LOGGER.info("Slot successful: " + slotID + " external ID: " + externalID);
-                    connection.putSlotState(slotState.transitionToSuccess());
+    void updateSlotState(Workflow wf, SlotState slotState, ScheduledTime current, StateDatabaseConnection connection) {
+        try {
+            SlotID slotID = slotState.getSlotID();
+            SlotState.Status status = slotState.getStatus();
+            if (status.equals(SlotState.Status.WAITING)) {
+                if (callTrigger(wf, slotState, current, connection)) {
+                    LOGGER.info("Slot is ready: " + slotID);
+                    connection.putSlotState(slotState.transitionToReady());
+                } else if (isSlotTimedOut(slotState.getScheduledTime(), current, wf.getWaitTimeoutSeconds())) {
+                    LOGGER.info("Slot timed out waiting: " + slotID);
+                    connection.putSlotState(slotState.transitionToWaitTimeout());
                 } else {
-                    if (slotState.getRetryCount() < wf.getMaxRetryCount()) {
-                        LOGGER.info("Slot failed, preparing for retry: " + slotID + " external ID: " + externalID);
-                        connection.putSlotState(slotState.transitionToRetry());
-                    } else {
-                        LOGGER.info("Slot failed permanently: " + slotID + " external ID: " + externalID);
-                        connection.putSlotState(slotState.transitionToFailure());
-                    }
+                    LOGGER.info("Waiting for slot: " + slotID);
                 }
-            } else {
-                LOGGER.info("Slot still running: " + slotID + " external ID: " + externalID);
+            } else if (status.equals(SlotState.Status.RUNNING)) {
+                String externalID = slotState.getExternalID();
+                ExternalStatus xStatus = wf.getExternalService().getStatus(slotID, externalID);
+                if (!xStatus.isRunning()) {
+                    if (xStatus.isSuccess()) {
+                        LOGGER.info("Slot successful: " + slotID + " external ID: " + externalID);
+                        connection.putSlotState(slotState.transitionToSuccess());
+                    } else {
+                        if (slotState.getRetryCount() < wf.getMaxRetryCount()) {
+                            LOGGER.info("Slot failed, preparing for retry: " + slotID + " external ID: " + externalID);
+                            connection.putSlotState(slotState.transitionToRetry());
+                        } else {
+                            LOGGER.info("Slot failed permanently: " + slotID + " external ID: " + externalID);
+                            connection.putSlotState(slotState.transitionToFailure());
+                        }
+                    }
+                } else {
+                    LOGGER.info("Slot still running: " + slotID + " external ID: " + externalID);
+                }
             }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 

@@ -91,7 +91,18 @@ public class SchedulerTest {
     @Test
     public void runExternalWorkflowsNoCandidates() throws Exception {
         List<SlotState> slotStates = new ArrayList<SlotState>();
-        scheduler.runExternalWorkflows(wf, slotStates, mockedConnection);
+        List<SlotState> scheduledSlots = wf.getSchedulingStrategy().getSchedulingCandidates(slotStates);
+        for (SlotState slotState : scheduledSlots) {
+            if (!slotState.getStatus().equals(SlotState.Status.READY)) {
+                throw new IllegalStateException("Scheduling strategy returned non-ready slot: " + slotState);
+            }
+            SlotID slotID = slotState.getSlotID();
+            //Scheduler.LOGGER.info("Submitting slot to external service: " + slotID);
+            String externalID = wf.getExternalService().submit(slotID);
+            mockedConnection.putSlotState(slotState.transitionToRunning(externalID));
+            //Scheduler.LOGGER.info("Starting slot: " + slotID + " with external ID: " + externalID);
+            wf.getExternalService().start(slotID, externalID);
+        }
         verifyNoMoreInteractions(mockedConnection);
     }
 
@@ -123,7 +134,18 @@ public class SchedulerTest {
 
     private void runExternalWorkflowsWithInvalidCandidate(SlotState.Status... statuses) throws Exception {
         List<SlotState> slotStates = candidate(statuses);
-        scheduler.runExternalWorkflows(wf, slotStates, mockedConnection);
+        List<SlotState> scheduledSlots = wf.getSchedulingStrategy().getSchedulingCandidates(slotStates);
+        for (SlotState slotState : scheduledSlots) {
+            if (!slotState.getStatus().equals(SlotState.Status.READY)) {
+                throw new IllegalStateException("Scheduling strategy returned non-ready slot: " + slotState);
+            }
+            SlotID slotID = slotState.getSlotID();
+            //Scheduler.LOGGER.info("Submitting slot to external service: " + slotID);
+            String externalID = wf.getExternalService().submit(slotID);
+            mockedConnection.putSlotState(slotState.transitionToRunning(externalID));
+            //Scheduler.LOGGER.info("Starting slot: " + slotID + " with external ID: " + externalID);
+            wf.getExternalService().start(slotID, externalID);
+        }
         verifyNoMoreInteractions(mockedConnection);
     }
 
@@ -132,7 +154,18 @@ public class SchedulerTest {
         List<SlotState> slotStates = candidate(SlotState.Status.READY);
         SlotState nextSlotState = slotStates.get(0).transitionToRunning("externalId");
         when(externalService.submit(slotId)).thenReturn("externalId");
-        scheduler.runExternalWorkflows(wf, slotStates, mockedConnection);
+        List<SlotState> scheduledSlots = wf.getSchedulingStrategy().getSchedulingCandidates(slotStates);
+        for (SlotState slotState : scheduledSlots) {
+            if (!slotState.getStatus().equals(SlotState.Status.READY)) {
+                throw new IllegalStateException("Scheduling strategy returned non-ready slot: " + slotState);
+            }
+            SlotID slotID = slotState.getSlotID();
+            //Scheduler.LOGGER.info("Submitting slot to external service: " + slotID);
+            String externalID = wf.getExternalService().submit(slotID);
+            mockedConnection.putSlotState(slotState.transitionToRunning(externalID));
+            //Scheduler.LOGGER.info("Starting slot: " + slotID + " with external ID: " + externalID);
+            wf.getExternalService().start(slotID, externalID);
+        }
         verify(mockedConnection).putSlotState(nextSlotState);
         verifyNoMoreInteractions(mockedConnection);
     }
@@ -141,7 +174,18 @@ public class SchedulerTest {
     public void runExternalWorkflowsCallsSchedulerCorrectly() throws Exception {
         List<SlotState> slotStates = candidate(SlotState.Status.READY);
         when(externalService.submit(slotId)).thenReturn("externalId");
-        scheduler.runExternalWorkflows(wf, slotStates, mockedConnection);
+        List<SlotState> scheduledSlots = wf.getSchedulingStrategy().getSchedulingCandidates(slotStates);
+        for (SlotState slotState : scheduledSlots) {
+            if (!slotState.getStatus().equals(SlotState.Status.READY)) {
+                throw new IllegalStateException("Scheduling strategy returned non-ready slot: " + slotState);
+            }
+            SlotID slotID = slotState.getSlotID();
+            //Scheduler.LOGGER.info("Submitting slot to external service: " + slotID);
+            String externalID = wf.getExternalService().submit(slotID);
+            mockedConnection.putSlotState(slotState.transitionToRunning(externalID));
+            //Scheduler.LOGGER.info("Starting slot: " + slotID + " with external ID: " + externalID);
+            wf.getExternalService().start(slotID, externalID);
+        }
 
         InOrder inOrder = inOrder(externalService);
         inOrder.verify(externalService).submit(slotStates.get(0).getSlotID());
@@ -166,7 +210,18 @@ public class SchedulerTest {
         when(externalService.submit(slotState1.getSlotID())).thenReturn("externalId1");
         when(externalService.submit(slotState2.getSlotID())).thenReturn("externalId2");
 
-        scheduler.runExternalWorkflows(wf, slotStates, mockedConnection);
+        List<SlotState> scheduledSlots = wf.getSchedulingStrategy().getSchedulingCandidates(slotStates);
+        for (SlotState slotState : scheduledSlots) {
+            if (!slotState.getStatus().equals(SlotState.Status.READY)) {
+                throw new IllegalStateException("Scheduling strategy returned non-ready slot: " + slotState);
+            }
+            SlotID slotID = slotState.getSlotID();
+            //Scheduler.LOGGER.info("Submitting slot to external service: " + slotID);
+            String externalID = wf.getExternalService().submit(slotID);
+            mockedConnection.putSlotState(slotState.transitionToRunning(externalID));
+            //Scheduler.LOGGER.info("Starting slot: " + slotID + " with external ID: " + externalID);
+            wf.getExternalService().start(slotID, externalID);
+        }
         verify(mockedConnection).putSlotState(nextSlotState1);
         verify(mockedConnection).putSlotState(nextSlotState2);
         verifyNoMoreInteractions(mockedConnection);
