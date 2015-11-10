@@ -38,7 +38,6 @@ public class TriggerStatusTest {
     public void setUp() {
         when(scheduler.getWorkflowConfiguration()).thenReturn(workflowConfiguration);
         when(workflowConfiguration.findWorkflow(workflowID)).thenReturn(workflow);
-        when(scheduler.getStateDatabase()).thenReturn(stateDatabase);
         when(workflow.getID()).thenReturn(workflowID);
     }
 

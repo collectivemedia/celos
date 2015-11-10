@@ -38,7 +38,6 @@ public class SuccessTriggerTest {
     public void setUp() {
         when(scheduler.getWorkflowConfiguration()).thenReturn(workflowConfiguration);
         when(workflowConfiguration.findWorkflow(workflowID)).thenReturn(workflow);
-        when(scheduler.getStateDatabase()).thenReturn(stateDatabase);
         when(workflow.getID()).thenReturn(workflowID);
     }
 
@@ -76,7 +75,6 @@ public class SuccessTriggerTest {
 
         msd.openConnection().putSlotState(new SlotState(new SlotID(new WorkflowID("foo"), scheduledTime), SlotState.Status.SUCCESS));
 
-        Mockito.when(scheduler.getStateDatabase()).thenReturn(msd);
         SuccessTrigger trigger = new SuccessTrigger("foo");
 
         Assert.assertTrue(trigger.isDataAvailable(msd.openConnection(), stNow, scheduledTime));
@@ -92,7 +90,6 @@ public class SuccessTriggerTest {
 
         msd.openConnection().putSlotState(new SlotState(new SlotID(new WorkflowID("foo"), scheduledTime), SlotState.Status.WAITING));
 
-        Mockito.when(scheduler.getStateDatabase()).thenReturn(msd);
         SuccessTrigger trigger = new SuccessTrigger("foo");
 
 
@@ -109,7 +106,6 @@ public class SuccessTriggerTest {
 
         msd.openConnection().putSlotState(new SlotState(new SlotID(new WorkflowID("foo2"), stNow), SlotState.Status.SUCCESS));
 
-        Mockito.when(scheduler.getStateDatabase()).thenReturn(msd);
         SuccessTrigger trigger = new SuccessTrigger("foo");
 
         Assert.assertFalse(trigger.isDataAvailable(connection, stNow, scheduledTime));

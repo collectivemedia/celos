@@ -353,7 +353,7 @@ public class JavaScriptFunctionsTest {
         conn.putRegister(new BucketID("b1-Iñtërnâtiônàlizætiøn"), new RegisterKey("k1-Iñtërnâtiônàlizætiøn"), v1);
         conn.putRegister(new BucketID("b1-Iñtërnâtiônàlizætiøn"), new RegisterKey("k2-Iñtërnâtiônàlizætiøn"), v2);
         conn.putRegister(new BucketID("b2-Iñtërnâtiônàlizætiøn"), new RegisterKey("k3-Iñtërnâtiônàlizætiøn"), v3);
-        File f = new File("src/test/resources/js-tests/test-registers.js");
+        File f = new File(Thread.currentThread().getContextClassLoader().getResource("js-tests/test-registers.js").toURI());
         parser.evaluateReader(new FileReader(f), f.getName(), conn);
     }
         
