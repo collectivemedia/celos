@@ -16,13 +16,16 @@
 package com.collective.celos;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.apache.log4j.Logger;
 
 import com.collective.celos.trigger.Trigger;
+
+import javax.swing.text.StyledEditorKit;
 
 /**
  * Master control program.
@@ -64,22 +67,59 @@ public class Scheduler {
      * <p>
      * Otherwise, schedule only workflows in the set.
      */
-    public void step(ScheduledTime current, Set<WorkflowID> workflowIDs, StateDatabaseConnection connection) throws Exception {
+    public void step(ScheduledTime current, Set<WorkflowID> workflowIDs, final StateDatabaseConnection connection) throws Exception {
         LOGGER.info("Starting scheduler step: " + current + " -- " + getSlidingWindowStartTime(current));
+        
+        List<Workflow> workflows = new ArrayList<>(getWorkflowConfiguration().getWorkflows());
+        List<List<Workflow>> splited = Lists.partition(workflows, workflows.size() / 40);
 
-        ConcurrentMap<Workflow, List<SlotState>> workflowToSlots = configuration.getWorkflows().parallelStream().map((wf) ->
-                        Maps.immutableEntry(wf, getSlotStatesIncludingMarkedForRerun(wf, current, getWorkflowStartTime(wf, current), current, connection))
-        ).collect(Collectors.toConcurrentMap(Map.Entry::getKey, Map.Entry::getValue));
+        ExecutorService executor = Executors.newFixedThreadPool(40);
+        CompletionService<Void> completionService = new ExecutorCompletionService<Void>(executor);
 
-        workflowToSlots.entrySet().parallelStream().forEach( x -> runExternalWorkflows(connection, x.getKey(), x.getValue()));
+        for(List<Workflow> workflowsSplit: splited) {
+            Callable<Void> callable = () -> {
+                for (Workflow wf : workflowsSplit) {
+                    processWorkflow(wf, workflowIDs, connection, current);
+                }
+                return null;
+            };
+            completionService.submit(callable);
+        }
 
-        workflowToSlots.entrySet().parallelStream().forEach( x -> {
-            x.getValue().parallelStream().forEach( slotState -> {
-                updateSlotState(x.getKey(), slotState, current, connection);
-            });
-        });
+        int received = 0;
+        while(received < 40) {
+            completionService.take(); //blocks if none available
+            received++;
+        }
+        executor.shutdown();
+
 
         LOGGER.info("Ending scheduler step: " + current + " -- " + getSlidingWindowStartTime(current));
+    }
+
+    private void processWorkflow(Workflow wf, Set<WorkflowID> workflowIDs, StateDatabaseConnection connection, ScheduledTime current) throws Exception {
+        WorkflowID id = wf.getID();
+        boolean shouldProcess = workflowIDs.isEmpty() || workflowIDs.contains(id);
+        if (!shouldProcess) {
+            LOGGER.info("Ignoring workflow: " + id);
+        } else if (connection.isPaused(id)) {
+            LOGGER.info("Workflow is paused: " + id);
+        } else {
+            try {
+                stepWorkflow(wf, current, connection);
+            } catch (Exception e) {
+                LOGGER.error("Exception in workflow: " + id + ": " + e.getMessage(), e);
+            }
+        }
+    }
+
+    private void stepWorkflow(Workflow wf, ScheduledTime current, StateDatabaseConnection connection) throws Exception {
+        LOGGER.info("Processing workflow: " + wf.getID() + " at: " + current);
+        List<SlotState> slotStates = getSlotStatesIncludingMarkedForRerun(wf, current, getWorkflowStartTime(wf, current), current, connection);
+        runExternalWorkflows(connection, wf, slotStates);
+        for (SlotState slotState : slotStates) {
+            updateSlotState(wf, slotState, current, connection);
+        }
     }
 
     private void runExternalWorkflows(StateDatabaseConnection connection, Workflow wf, List<SlotState> slotStates) {
