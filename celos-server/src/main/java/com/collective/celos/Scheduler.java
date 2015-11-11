@@ -24,6 +24,7 @@ import com.google.common.collect.Maps;
 import org.apache.log4j.Logger;
 
 import com.collective.celos.trigger.Trigger;
+import org.eclipse.jetty.util.ConcurrentHashSet;
 
 import javax.swing.text.StyledEditorKit;
 
@@ -67,14 +68,15 @@ public class Scheduler {
      * <p>
      * Otherwise, schedule only workflows in the set.
      */
+
+    ExecutorService executor = Executors.newFixedThreadPool(40);
+    CompletionService<Void> completionService = new ExecutorCompletionService<Void>(executor);
+
     public void step(ScheduledTime current, Set<WorkflowID> workflowIDs, final StateDatabaseConnection connection) throws Exception {
         LOGGER.info("Starting scheduler step: " + current + " -- " + getSlidingWindowStartTime(current));
         
         List<Workflow> workflows = new ArrayList<>(getWorkflowConfiguration().getWorkflows());
         List<List<Workflow>> splited = Lists.partition(workflows, workflows.size() / 40);
-
-        ExecutorService executor = Executors.newFixedThreadPool(40);
-        CompletionService<Void> completionService = new ExecutorCompletionService<Void>(executor);
 
         for(List<Workflow> workflowsSplit: splited) {
             Callable<Void> callable = () -> {
@@ -91,11 +93,9 @@ public class Scheduler {
             completionService.take(); //blocks if none available
             received++;
         }
-        executor.shutdown();
-
-
         LOGGER.info("Ending scheduler step: " + current + " -- " + getSlidingWindowStartTime(current));
     }
+
 
     private void processWorkflow(Workflow wf, Set<WorkflowID> workflowIDs, StateDatabaseConnection connection, ScheduledTime current) throws Exception {
         WorkflowID id = wf.getID();
