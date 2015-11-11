@@ -69,8 +69,8 @@ public class Scheduler {
      * Otherwise, schedule only workflows in the set.
      */
 
-    ExecutorService executor = Executors.newFixedThreadPool(40);
-    CompletionService<Void> completionService = new ExecutorCompletionService<Void>(executor);
+    static ExecutorService executor = Executors.newFixedThreadPool(40);
+    static CompletionService<Void> completionService = new ExecutorCompletionService<Void>(executor);
 
     public void step(ScheduledTime current, Set<WorkflowID> workflowIDs, final StateDatabaseConnection connection) throws Exception {
         LOGGER.info("Starting scheduler step: " + current + " -- " + getSlidingWindowStartTime(current));
