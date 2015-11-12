@@ -70,11 +70,11 @@ public class Scheduler {
      * Otherwise, schedule only workflows in the set.
      */
 
-    static ExecutorService executor = Executors.newFixedThreadPool(50);
+    static ExecutorService executor = Executors.newFixedThreadPool(80);
     static CompletionService<Void> completionService = new ExecutorCompletionService<Void>(executor);
     static int stepNum = 0;
 
-    public void step(ScheduledTime current, Set<WorkflowID> workflowIDs, StateDatabaseConnection connection) throws Exception {
+    public void step2(ScheduledTime current, Set<WorkflowID> workflowIDs, StateDatabaseConnection connection) throws Exception {
         LOGGER.info("Starting scheduler step: " + current + " -- " + getSlidingWindowStartTime(current));
 
         ConcurrentMap<Workflow, List<SlotState>> workflowToSlots = configuration.getWorkflows().parallelStream().map((wf) ->
@@ -92,11 +92,11 @@ public class Scheduler {
         LOGGER.info("Ending scheduler step: " + current + " -- " + getSlidingWindowStartTime(current));
     }
 
-    public void step2(ScheduledTime current, Set<WorkflowID> workflowIDs, final StateDatabaseConnection connection) throws Exception {
+    public void step(ScheduledTime current, Set<WorkflowID> workflowIDs, final StateDatabaseConnection connection) throws Exception {
         LOGGER.info("##" +stepNum + ": Starting scheduler step: " + current + " -- " + getSlidingWindowStartTime(current));
         
         List<Workflow> workflows = new ArrayList<>(getWorkflowConfiguration().getWorkflows());
-        List<List<Workflow>> splited = Lists.partition(workflows, workflows.size() / 100);
+        List<List<Workflow>> splited = Lists.partition(workflows, workflows.size() / 80);
         LOGGER.info("##" +stepNum + " there are " + workflows.size());
 
         long time1 = System.currentTimeMillis();
