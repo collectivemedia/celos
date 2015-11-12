@@ -70,7 +70,7 @@ public class Scheduler {
      * Otherwise, schedule only workflows in the set.
      */
 
-    static ExecutorService executor = Executors.newFixedThreadPool(100);
+    static ExecutorService executor = Executors.newFixedThreadPool(50);
     static CompletionService<Void> completionService = new ExecutorCompletionService<Void>(executor);
     static int stepNum = 0;
 
@@ -78,7 +78,7 @@ public class Scheduler {
         LOGGER.info("##" +stepNum + ": Starting scheduler step: " + current + " -- " + getSlidingWindowStartTime(current));
         
         List<Workflow> workflows = new ArrayList<>(getWorkflowConfiguration().getWorkflows());
-        List<List<Workflow>> splited = Lists.partition(workflows, workflows.size() / 100);
+        List<List<Workflow>> splited = Lists.partition(workflows, workflows.size() / 50);
         LOGGER.info("##" +stepNum + " there are " + workflows.size());
 
         long time1 = System.currentTimeMillis();
@@ -190,15 +190,32 @@ public class Scheduler {
             times.addAll(wf.getSchedule().getScheduledTimes(this, start, end));
             times.addAll(timesMarkedForRerun);
 
-            Map<SlotID, SlotState> fetchedSlots = Maps.newHashMap();
-            fetchedSlots.putAll(connection.getSlotStates(wf.getID(), start, end));
-            fetchedSlots.putAll(connection.getSlotStates(wf.getID(), timesMarkedForRerun));
+//          TODO: this is for getting all slots at once with [start, end) period. Performs badly with FSDB, so commented
+//          Map<SlotID, SlotState> fetchedSlots = getFetchedSlotsAllAtOnce(wf, start, end, connection, timesMarkedForRerun);
+
+            Map<SlotID, SlotState> fetchedSlots = getFetchedSlotsOneByOne(wf, connection, times);
+
             return matchScheduledToFetched(wf, times, fetchedSlots);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
+    private Map<SlotID, SlotState> getFetchedSlotsOneByOne(Workflow wf, StateDatabaseConnection connection, SortedSet<ScheduledTime> times) throws Exception {
+        Map<SlotID, SlotState> fetchedSlots = Maps.newHashMap();
+        for (ScheduledTime time: times) {
+            SlotID slotID = new SlotID(wf.getID(), time);
+            fetchedSlots.put(slotID, connection.getSlotState(slotID));
+        }
+        return fetchedSlots;
+    }
+
+    private Map<SlotID, SlotState> getFetchedSlotsAllAtOnce(Workflow wf, ScheduledTime start, ScheduledTime end, StateDatabaseConnection connection, SortedSet<ScheduledTime> timesMarkedForRerun) throws Exception {
+        Map<SlotID, SlotState> fetchedSlots = Maps.newHashMap();
+        fetchedSlots.putAll(connection.getSlotStates(wf.getID(), start, end));
+        fetchedSlots.putAll(connection.getSlotStates(wf.getID(), timesMarkedForRerun));
+        return fetchedSlots;
+    }
 
     /**
      * Get the slot states of all slots of the workflow from within the window defined by start (inclusive) and end (exclusive).
