@@ -74,7 +74,25 @@ public class Scheduler {
     static CompletionService<Void> completionService = new ExecutorCompletionService<Void>(executor);
     static int stepNum = 0;
 
-    public void step(ScheduledTime current, Set<WorkflowID> workflowIDs, final StateDatabaseConnection connection) throws Exception {
+    public void step(ScheduledTime current, Set<WorkflowID> workflowIDs, StateDatabaseConnection connection) throws Exception {
+        LOGGER.info("Starting scheduler step: " + current + " -- " + getSlidingWindowStartTime(current));
+
+        ConcurrentMap<Workflow, List<SlotState>> workflowToSlots = configuration.getWorkflows().parallelStream().map((wf) ->
+                        Maps.immutableEntry(wf, getSlotStatesIncludingMarkedForRerun(wf, current, getWorkflowStartTime(wf, current), current, connection))
+        ).collect(Collectors.toConcurrentMap(Map.Entry::getKey, Map.Entry::getValue));
+
+        workflowToSlots.entrySet().parallelStream().forEach( x -> runExternalWorkflows(connection, x.getKey(), x.getValue()));
+
+        workflowToSlots.entrySet().parallelStream().forEach( x -> {
+            x.getValue().parallelStream().forEach( slotState -> {
+                updateSlotState(x.getKey(), slotState, current, connection);
+            });
+        });
+
+        LOGGER.info("Ending scheduler step: " + current + " -- " + getSlidingWindowStartTime(current));
+    }
+
+    public void step2(ScheduledTime current, Set<WorkflowID> workflowIDs, final StateDatabaseConnection connection) throws Exception {
         LOGGER.info("##" +stepNum + ": Starting scheduler step: " + current + " -- " + getSlidingWindowStartTime(current));
         
         List<Workflow> workflows = new ArrayList<>(getWorkflowConfiguration().getWorkflows());
