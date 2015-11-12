@@ -70,7 +70,7 @@ public class Scheduler {
      * Otherwise, schedule only workflows in the set.
      */
 
-    static ExecutorService executor = Executors.newFixedThreadPool(50);
+    static ExecutorService executor = Executors.newFixedThreadPool(100);
     static CompletionService<Void> completionService = new ExecutorCompletionService<Void>(executor);
     static int stepNum = 0;
 
@@ -85,6 +85,7 @@ public class Scheduler {
 
         final AtomicInteger i = new AtomicInteger(0);
         for(List<Workflow> workflowsSplit: splited) {
+            Thread.sleep(10);
             Callable<Void> callable = () -> {
                 LOGGER.info("##" +stepNum + " part " + i.getAndIncrement() + " processing " + workflowsSplit.size());
                 long max = 0, avg = 0;
