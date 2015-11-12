@@ -184,37 +184,30 @@ public class Scheduler {
      */
     public List<SlotState> getSlotStatesIncludingMarkedForRerun(Workflow wf, ScheduledTime current, ScheduledTime start, ScheduledTime end, StateDatabaseConnection connection) throws RuntimeException {
         try {
-            SortedSet<ScheduledTime> timesMarkedForRerun = connection.getTimesMarkedForRerun(wf.getID(), current);
-
             SortedSet<ScheduledTime> times = new TreeSet<>();
             times.addAll(wf.getSchedule().getScheduledTimes(this, start, end));
-            times.addAll(timesMarkedForRerun);
-
-//          TODO: this is for getting all slots at once with [start, end) period. Performs badly with FSDB, so commented
-//          Map<SlotID, SlotState> fetchedSlots = getFetchedSlotsAllAtOnce(wf, start, end, connection, timesMarkedForRerun);
-
-            Map<SlotID, SlotState> fetchedSlots = getFetchedSlotsOneByOne(wf, connection, times);
-
-            return matchScheduledToFetched(wf, times, fetchedSlots);
+            times.addAll(connection.getTimesMarkedForRerun(wf.getID(), current));
+            return fetchSlotStates(wf, times, connection);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    private Map<SlotID, SlotState> getFetchedSlotsOneByOne(Workflow wf, StateDatabaseConnection connection, SortedSet<ScheduledTime> times) throws Exception {
-        Map<SlotID, SlotState> fetchedSlots = Maps.newHashMap();
-        for (ScheduledTime time: times) {
-            SlotID slotID = new SlotID(wf.getID(), time);
-            fetchedSlots.put(slotID, connection.getSlotState(slotID));
+    private List<SlotState> fetchSlotStates(Workflow wf, SortedSet<ScheduledTime> scheduledTimes, StateDatabaseConnection connection) throws Exception {
+        List<SlotState> slotStates = new ArrayList<SlotState>(scheduledTimes.size());
+        for (ScheduledTime t : scheduledTimes) {
+            SlotID slotID = new SlotID(wf.getID(), t);
+            SlotState slotState = connection.getSlotState(slotID);
+            if (slotState != null) {
+                slotStates.add(slotState);
+            } else {
+                // Database doesn't have any info on the slot yet -
+                // synthesize a fresh waiting slot and put it in the list
+                // (not in the database).
+                slotStates.add(new SlotState(slotID, SlotState.Status.WAITING));
+            }
         }
-        return fetchedSlots;
-    }
-
-    private Map<SlotID, SlotState> getFetchedSlotsAllAtOnce(Workflow wf, ScheduledTime start, ScheduledTime end, StateDatabaseConnection connection, SortedSet<ScheduledTime> timesMarkedForRerun) throws Exception {
-        Map<SlotID, SlotState> fetchedSlots = Maps.newHashMap();
-        fetchedSlots.putAll(connection.getSlotStates(wf.getID(), start, end));
-        fetchedSlots.putAll(connection.getSlotStates(wf.getID(), timesMarkedForRerun));
-        return fetchedSlots;
+        return Collections.unmodifiableList(slotStates);
     }
 
     /**
