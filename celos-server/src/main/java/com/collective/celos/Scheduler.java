@@ -78,7 +78,7 @@ public class Scheduler {
         LOGGER.info("##" +stepNum + ": Starting scheduler step: " + current + " -- " + getSlidingWindowStartTime(current));
         
         List<Workflow> workflows = new ArrayList<>(getWorkflowConfiguration().getWorkflows());
-        List<List<Workflow>> splited = Lists.partition(workflows, workflows.size() / 50);
+        List<List<Workflow>> splited = Lists.partition(workflows, workflows.size() / 100);
         LOGGER.info("##" +stepNum + " there are " + workflows.size());
 
         long time1 = System.currentTimeMillis();
@@ -110,7 +110,6 @@ public class Scheduler {
         }
         stepNum++;
         long time2 = System.currentTimeMillis();
-        executor.shutdown();
         LOGGER.info("##" +stepNum + " is finished in " + (time2-time1));
         LOGGER.info("Ending scheduler step: " + current + " -- " + getSlidingWindowStartTime(current));
     }
