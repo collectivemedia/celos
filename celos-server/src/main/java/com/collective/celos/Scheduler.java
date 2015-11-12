@@ -17,6 +17,7 @@ package com.collective.celos;
 
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import com.google.common.collect.Lists;
@@ -71,22 +72,38 @@ public class Scheduler {
 
     static ExecutorService executor = Executors.newFixedThreadPool(40);
     static CompletionService<Void> completionService = new ExecutorCompletionService<Void>(executor);
+    static int stepNum = 0;
 
     public void step(ScheduledTime current, Set<WorkflowID> workflowIDs, final StateDatabaseConnection connection) throws Exception {
-        LOGGER.info("Starting scheduler step: " + current + " -- " + getSlidingWindowStartTime(current));
+        LOGGER.info("##" +stepNum + ": Starting scheduler step: " + current + " -- " + getSlidingWindowStartTime(current));
         
         List<Workflow> workflows = new ArrayList<>(getWorkflowConfiguration().getWorkflows());
         List<List<Workflow>> splited = Lists.partition(workflows, workflows.size() / 40);
+        LOGGER.info("##" +stepNum + " there are " + workflows.size());
 
+        long time1 = System.currentTimeMillis();
+
+        final AtomicInteger i = new AtomicInteger(0);
         for(List<Workflow> workflowsSplit: splited) {
             Callable<Void> callable = () -> {
+                LOGGER.info("##" +stepNum + " part " + i.getAndIncrement() + " processing " + workflowsSplit.size());
+                long max = 0, avg = 0, overall = 0;
                 for (Workflow wf : workflowsSplit) {
+                    long l1 = System.currentTimeMillis();
                     processWorkflow(wf, workflowIDs, connection, current);
+                    long time = System.currentTimeMillis() - l1;
+                    if (time > max) max  = time;
+                    avg += time;
                 }
+                avg /= workflowsSplit.size();
+                LOGGER.info("##" +stepNum + " part " + i.getAndIncrement() + " finished. Max time is " + max + " Avg is " + avg);
                 return null;
             };
             completionService.submit(callable);
         }
+
+        long time2 = System.currentTimeMillis();
+        LOGGER.info("##" +stepNum + " is finished in " + (time2-time1));
 
         int received = 0;
         while(received < 40) {
