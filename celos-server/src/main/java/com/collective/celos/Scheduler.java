@@ -15,12 +15,7 @@
  */
 package com.collective.celos;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.*;
 
 import org.apache.log4j.Logger;
 
@@ -97,12 +92,30 @@ public class Scheduler {
      * <p>
      * - Check any RUNNING slots for their current external status.
      */
+    static Set<WorkflowID> test = new HashSet<>();
+    static {
+        test.add(new WorkflowID("spawn-1517"));
+        test.add(new WorkflowID("spawn-2517"));
+        test.add(new WorkflowID("spawn-3517"));
+    }
+
+
     private void stepWorkflow(Workflow wf, ScheduledTime current) throws Exception {
-        LOGGER.info("Processing workflow: " + wf.getID() + " at: " + current);
+//        LOGGER.info("Processing workflow: " + wf.getID() + " at: " + current);
+        long t1 = System.currentTimeMillis();
         List<SlotState> slotStates = getSlotStatesIncludingMarkedForRerun(wf, current, getWorkflowStartTime(wf, current), current);
+        long t2 = System.currentTimeMillis();
         runExternalWorkflows(wf, slotStates);
+        long t3 = System.currentTimeMillis();
         for (SlotState slotState : slotStates) {
             updateSlotState(wf, slotState, current);
+        }
+        long t4 = System.currentTimeMillis();
+
+        if (test.contains(wf.getID())) {
+            LOGGER.info(wf.getID() + ": getSlotStatesIncludingMarkedForRerun " + (t2 - t1));
+            LOGGER.info(wf.getID() + ": runExternalWorkflows " + (t3 - t2));
+            LOGGER.info(wf.getID() + ": UpdateSlotStates " + (t4 - t3));
         }
     }
 
