@@ -46,32 +46,44 @@ public class Main {
                 commandLine.getDefaultsDir(),
                 commandLine.getStateDatabase());
 
-        setupAutoschedule(commandLine.getPort(), commandLine.getAutoSchedule());
+        setupAutoSchedule(commandLine);
 
     }
 
-    static void setupAutoschedule(int port, int autoSchedule) {
+    private static void setupAutoSchedule(ServerCommandLine commandLine) throws InterruptedException {
+        int autoSchedule = commandLine.getAutoSchedule();
         if (autoSchedule > 0) {
-            Timer timer = new Timer(true);
-            timer.schedule(createTimerTask(port), 0, autoSchedule * Constants.SECOND_MS);
+            createAutoScheduleThread(autoSchedule, commandLine.getPort(), 0).start();
         }
     }
 
-    private static TimerTask createTimerTask(final int port) {
-        final CelosClient celosClient = new CelosClient(URI.create("http://localhost:" + port));
+    private static Thread createAutoScheduleThread(final int autoSchedule, final Integer port, int delay) {
+        return new Thread(new Runnable() {
+            CelosClient celosClient = new CelosClient(URI.create("http://localhost:" + port));
 
-        return new TimerTask() {
             @Override
             public void run() {
                 try {
-                    long timeStart = System.currentTimeMillis();
-                    celosClient.iterateScheduler();
-                    long duration = System.currentTimeMillis() - timeStart;
-                    LOGGER.info("Step time on " + port + " is " + duration);
-                } catch (Exception e) {
+                    Thread.sleep(delay);
+                } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
+                while (true) {
+                    try {
+                        long timeStart = System.currentTimeMillis();
+                        celosClient.iterateScheduler();
+                        long duration = System.currentTimeMillis() - timeStart;
+                        LOGGER.info("Step time on " + port + " is " + duration);
+
+//                        if (duration < autoSchedule * Constants.SECOND_MS) {
+//                            Thread.sleep(autoSchedule * Constants.SECOND_MS - duration);
+//                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+                }
             }
-        };
+        });
     }
 }
