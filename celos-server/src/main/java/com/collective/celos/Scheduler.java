@@ -70,7 +70,7 @@ public class Scheduler {
      * Otherwise, schedule only workflows in the set.
      */
 
-    static ExecutorService executor = Executors.newFixedThreadPool(40);
+    static ExecutorService executor = Executors.newFixedThreadPool(50);
     static CompletionService<Void> completionService = new ExecutorCompletionService<Void>(executor);
     static int stepNum = 0;
 
@@ -78,7 +78,7 @@ public class Scheduler {
         LOGGER.info("##" +stepNum + ": Starting scheduler step: " + current + " -- " + getSlidingWindowStartTime(current));
         
         List<Workflow> workflows = new ArrayList<>(getWorkflowConfiguration().getWorkflows());
-        List<List<Workflow>> splited = Lists.partition(workflows, workflows.size() / 40);
+        List<List<Workflow>> splited = Lists.partition(workflows, workflows.size() / 100);
         LOGGER.info("##" +stepNum + " there are " + workflows.size());
 
         long time1 = System.currentTimeMillis();
@@ -87,7 +87,7 @@ public class Scheduler {
         for(List<Workflow> workflowsSplit: splited) {
             Callable<Void> callable = () -> {
                 LOGGER.info("##" +stepNum + " part " + i.getAndIncrement() + " processing " + workflowsSplit.size());
-                long max = 0, avg = 0, overall = 0;
+                long max = 0, avg = 0;
                 for (Workflow wf : workflowsSplit) {
                     long l1 = System.currentTimeMillis();
                     processWorkflow(wf, workflowIDs, connection, current);
@@ -96,20 +96,21 @@ public class Scheduler {
                     avg += time;
                 }
                 avg /= workflowsSplit.size();
-                LOGGER.info("##" +stepNum + " part " + i.getAndIncrement() + " finished. Max time is " + max + " Avg is " + avg);
+                LOGGER.info("##" +stepNum + " part " + i.get() + " finished. Max time is " + max + " Avg is " + avg);
                 return null;
             };
             completionService.submit(callable);
         }
 
-        long time2 = System.currentTimeMillis();
-        LOGGER.info("##" +stepNum + " is finished in " + (time2-time1));
-
         int received = 0;
-        while(received < 40) {
+        while(received < splited.size()) {
             completionService.take(); //blocks if none available
             received++;
         }
+        stepNum++;
+        long time2 = System.currentTimeMillis();
+        executor.shutdown();
+        LOGGER.info("##" +stepNum + " is finished in " + (time2-time1));
         LOGGER.info("Ending scheduler step: " + current + " -- " + getSlidingWindowStartTime(current));
     }
 
@@ -130,12 +131,30 @@ public class Scheduler {
         }
     }
 
+    static Set<WorkflowID> test = new HashSet<>();
+    static {
+        test.add(new WorkflowID("spawn-1517"));
+        test.add(new WorkflowID("spawn-2517"));
+        test.add(new WorkflowID("spawn-3517"));
+    }
+
     private void stepWorkflow(Workflow wf, ScheduledTime current, StateDatabaseConnection connection) throws Exception {
-        LOGGER.info("Processing workflow: " + wf.getID() + " at: " + current);
+//        LOGGER.info("Processing workflow: " + wf.getID() + " at: " + current);
+
+        long t1 = System.currentTimeMillis();
         List<SlotState> slotStates = getSlotStatesIncludingMarkedForRerun(wf, current, getWorkflowStartTime(wf, current), current, connection);
+        long t2 = System.currentTimeMillis();
         runExternalWorkflows(connection, wf, slotStates);
+        long t3 = System.currentTimeMillis();
         for (SlotState slotState : slotStates) {
             updateSlotState(wf, slotState, current, connection);
+        }
+        long t4 = System.currentTimeMillis();
+
+        if (test.contains(wf.getID())) {
+            LOGGER.info(wf.getID() + ": getSlotStatesIncludingMarkedForRerun " + (t2 - t1));
+            LOGGER.info(wf.getID() + ": runExternalWorkflows " + (t3 - t2));
+            LOGGER.info(wf.getID() + ": UpdateSlotStates " + (t4 - t3));
         }
     }
 
