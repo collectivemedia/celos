@@ -412,7 +412,7 @@ integration test).
 === Prerequisites
 
 * JDK 1.8
-* link:https://hadoop.apache.org/[Apache Hadoop] 2.5.0
+* link:https://hadoop.apache.org/[Apache Hadoop] 2.6.0
 * link:https://oozie.apache.org/[Apache Oozie] 4.1.0
 
 You can probably get away with slightly older Hadoop and Oozie
