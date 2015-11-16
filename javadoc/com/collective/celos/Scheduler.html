@@ -128,8 +128,7 @@ extends java.lang.Object</pre>
 <th class="colOne" scope="col">Constructor and Description</th>
 </tr>
 <tr class="altColor">
-<td class="colOne"><code><span class="memberNameLink"><a href="../../../com/collective/celos/Scheduler.html#Scheduler-com.collective.celos.WorkflowConfiguration-com.collective.celos.StateDatabase-int-">Scheduler</a></span>(<a href="../../../com/collective/celos/WorkflowConfiguration.html" title="class in com.collective.celos">WorkflowConfiguration</a>&nbsp;configuration,
-         <a href="../../../com/collective/celos/StateDatabase.html" title="interface in com.collective.celos">StateDatabase</a>&nbsp;database,
+<td class="colOne"><code><span class="memberNameLink"><a href="../../../com/collective/celos/Scheduler.html#Scheduler-com.collective.celos.WorkflowConfiguration-int-">Scheduler</a></span>(<a href="../../../com/collective/celos/WorkflowConfiguration.html" title="class in com.collective.celos">WorkflowConfiguration</a>&nbsp;configuration,
          int&nbsp;slidingWindowHours)</code>&nbsp;</td>
 </tr>
 </table>
@@ -182,15 +181,17 @@ extends java.lang.Object</pre>
 </tr>
 <tr id="i5" class="rowColor">
 <td class="colFirst"><code>void</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../com/collective/celos/Scheduler.html#step-com.collective.celos.ScheduledTime-">step</a></span>(<a href="../../../com/collective/celos/ScheduledTime.html" title="class in com.collective.celos">ScheduledTime</a>&nbsp;current)</code>
-<div class="block">Main method, called every minute.</div>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../com/collective/celos/Scheduler.html#step-com.collective.celos.ScheduledTime-java.util.Set-com.collective.celos.StateDatabaseConnection-">step</a></span>(<a href="../../../com/collective/celos/ScheduledTime.html" title="class in com.collective.celos">ScheduledTime</a>&nbsp;current,
+    java.util.Set&lt;<a href="../../../com/collective/celos/WorkflowID.html" title="class in com.collective.celos">WorkflowID</a>&gt;&nbsp;workflowIDs,
+    <a href="../../../com/collective/celos/StateDatabaseConnection.html" title="interface in com.collective.celos">StateDatabaseConnection</a>&nbsp;connection)</code>
+<div class="block">If workflowIDs is empty, schedule all workflows.</div>
 </td>
 </tr>
 <tr id="i6" class="altColor">
 <td class="colFirst"><code>void</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../com/collective/celos/Scheduler.html#step-com.collective.celos.ScheduledTime-java.util.Set-">step</a></span>(<a href="../../../com/collective/celos/ScheduledTime.html" title="class in com.collective.celos">ScheduledTime</a>&nbsp;current,
-    java.util.Set&lt;<a href="../../../com/collective/celos/WorkflowID.html" title="class in com.collective.celos">WorkflowID</a>&gt;&nbsp;workflowIDs)</code>
-<div class="block">If workflowIDs is empty, schedule all workflows.</div>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../com/collective/celos/Scheduler.html#step-com.collective.celos.ScheduledTime-com.collective.celos.StateDatabaseConnection-">step</a></span>(<a href="../../../com/collective/celos/ScheduledTime.html" title="class in com.collective.celos">ScheduledTime</a>&nbsp;current,
+    <a href="../../../com/collective/celos/StateDatabaseConnection.html" title="interface in com.collective.celos">StateDatabaseConnection</a>&nbsp;connection)</code>
+<div class="block">Main method, called every minute.</div>
 </td>
 </tr>
 </table>
@@ -215,14 +216,13 @@ extends java.lang.Object</pre>
 <!--   -->
 </a>
 <h3>Constructor Detail</h3>
-<a name="Scheduler-com.collective.celos.WorkflowConfiguration-com.collective.celos.StateDatabase-int-">
+<a name="Scheduler-com.collective.celos.WorkflowConfiguration-int-">
 <!--   -->
 </a>
 <ul class="blockListLast">
 <li class="blockList">
 <h4>Scheduler</h4>
 <pre>public&nbsp;Scheduler(<a href="../../../com/collective/celos/WorkflowConfiguration.html" title="class in com.collective.celos">WorkflowConfiguration</a>&nbsp;configuration,
-                 <a href="../../../com/collective/celos/StateDatabase.html" title="interface in com.collective.celos">StateDatabase</a>&nbsp;database,
                  int&nbsp;slidingWindowHours)</pre>
 </li>
 </ul>
@@ -234,13 +234,14 @@ extends java.lang.Object</pre>
 <!--   -->
 </a>
 <h3>Method Detail</h3>
-<a name="step-com.collective.celos.ScheduledTime-">
+<a name="step-com.collective.celos.ScheduledTime-com.collective.celos.StateDatabaseConnection-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>step</h4>
-<pre>public&nbsp;void&nbsp;step(<a href="../../../com/collective/celos/ScheduledTime.html" title="class in com.collective.celos">ScheduledTime</a>&nbsp;current)
+<pre>public&nbsp;void&nbsp;step(<a href="../../../com/collective/celos/ScheduledTime.html" title="class in com.collective.celos">ScheduledTime</a>&nbsp;current,
+                 <a href="../../../com/collective/celos/StateDatabaseConnection.html" title="interface in com.collective.celos">StateDatabaseConnection</a>&nbsp;connection)
           throws java.lang.Exception</pre>
 <div class="block">Main method, called every minute.
  <p>
@@ -251,14 +252,15 @@ extends java.lang.Object</pre>
 </dl>
 </li>
 </ul>
-<a name="step-com.collective.celos.ScheduledTime-java.util.Set-">
+<a name="step-com.collective.celos.ScheduledTime-java.util.Set-com.collective.celos.StateDatabaseConnection-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>step</h4>
 <pre>public&nbsp;void&nbsp;step(<a href="../../../com/collective/celos/ScheduledTime.html" title="class in com.collective.celos">ScheduledTime</a>&nbsp;current,
-                 java.util.Set&lt;<a href="../../../com/collective/celos/WorkflowID.html" title="class in com.collective.celos">WorkflowID</a>&gt;&nbsp;workflowIDs)
+                 java.util.Set&lt;<a href="../../../com/collective/celos/WorkflowID.html" title="class in com.collective.celos">WorkflowID</a>&gt;&nbsp;workflowIDs,
+                 <a href="../../../com/collective/celos/StateDatabaseConnection.html" title="interface in com.collective.celos">StateDatabaseConnection</a>&nbsp;connection)
           throws java.lang.Exception</pre>
 <div class="block">If workflowIDs is empty, schedule all workflows.
  <p>
