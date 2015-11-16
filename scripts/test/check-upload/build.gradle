@@ -1,0 +1,30 @@
+repositories {
+    maven { url "http://nexus001.ewr1.collective-media.net:8081/nexus/content/repositories/releases" }
+}
+
+configurations {
+    compile { 
+        transitive = false 
+    }
+}
+
+dependencies {
+    compile "com.collective:celos-ci:2.+"
+    compile "com.collective:celos-server:2.+"
+}
+
+task checkVersion << {
+    checkLib('celos-ci')
+    checkLib('celos-server')
+}
+
+def checkLib(libName) {
+    configurations.compile.files { dep -> dep.name == libName }.each { file ->
+        if (!System.getenv("CELOS_BUILD_NUMBER")) throw new GradleException("CELOS_BUILD_NUMBER env variable should be present")
+        ext.expFilename = libName + "-2.0." + System.getenv("CELOS_BUILD_NUMBER") + ".jar"
+        if (file.name != ext.expFilename) { 
+            throw new GradleException("Failed to get most recently uploaded lib version: last available is " + file.name + " but expected " + ext.expFilename)
+        }
+
+    }
+}
