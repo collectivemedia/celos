@@ -45,7 +45,7 @@ public class SchedulerConfiguration {
             config = getWorkflowConfigurationParser(conn).getWorkflowConfiguration();
         }
         int slidingWindowHours = 24 * SLIDING_WINDOW_DAYS;
-        return new Scheduler(config, db, slidingWindowHours);
+        return new Scheduler(config, slidingWindowHours);
     }
 
     private WorkflowConfigurationParser getWorkflowConfigurationParser(StateDatabaseConnection conn) throws Exception {
