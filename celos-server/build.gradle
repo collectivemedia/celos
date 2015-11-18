@@ -15,8 +15,14 @@ sourceSets {
     }
 }
 
+
+configurations {
+    compileIncluded
+    compile.extendsFrom compileIncluded
+}
+
 dependencies {
-    compile project(':celos-common')
+    compileIncluded project(':celos-common')
 
     compile("com.googlecode.json-simple:json-simple:1.1.1")
     compile("com.jcraft:jsch:0.1.51")
@@ -39,13 +45,30 @@ dependencies {
        exclude module: 'junit'
     }
     testCompile("org.mockito:mockito-all:1.9.5")
-    testCompile project(":celos-server")
 }
 
 jar {
     from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }}
+    baseName "celos-server"
     archiveName "celos-server.jar"
     manifest {
         attributes("Main-Class": mainClassName)
+    }
+}
+
+def repoUser = System.getenv("CELOS_NEXUS_USER");
+def repoPw = System.getenv("CELOS_NEXUS_PASS");
+
+uploadArchives.doFirst {
+    repositories {
+        mavenDeployer {
+            repository(url: System.getenv("NEXUS_MAVEN_REPO")) {
+                authentication(userName: repoUser, password: repoPw)
+            }
+            if (!System.getenv("CELOS_BUILD_NUMBER")) throw new GradleException("CELOS_BUILD_NUMBER env variable should be present")
+            pom.version = "2.0." + System.getenv("CELOS_BUILD_NUMBER")
+            pom.groupId = "com.collective"
+            pom.dependencies.removeAll { it.scope == "compileIncluded" }
+        }
     }
 }

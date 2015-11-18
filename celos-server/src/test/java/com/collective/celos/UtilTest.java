@@ -31,6 +31,16 @@ public class UtilTest {
         Util.requireNonNull(null);
     }
 
+    @Test(expected=IllegalArgumentException.class)
+    public void requireProperBucketIDorRegisterKeyThrowsOnSlash() {
+        Util.requireProperBucketIDorRegisterKey("foo/bar");
+    }
+    
+    @Test(expected=IllegalArgumentException.class)
+    public void requireProperBucketIDorRegisterKeyThrowsOnDot() {
+        Util.requireProperBucketIDorRegisterKey("foo.bar");
+    }
+    
     // DATETIME TESTS
     
     @Test

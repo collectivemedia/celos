@@ -15,10 +15,11 @@
  */
 package com.collective.celos;
 
-import com.collective.celos.trigger.*;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.collect.ImmutableMap;
+import java.io.File;
+import java.io.FileReader;
+import java.io.StringReader;
+import java.util.Properties;
+
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -26,9 +27,17 @@ import org.junit.rules.TemporaryFolder;
 import org.mozilla.javascript.JavaScriptException;
 import org.mozilla.javascript.NativeJavaObject;
 
-import java.io.File;
-import java.io.StringReader;
-import java.util.Properties;
+import com.collective.celos.trigger.AlwaysTrigger;
+import com.collective.celos.trigger.AndTrigger;
+import com.collective.celos.trigger.DelayTrigger;
+import com.collective.celos.trigger.HDFSCheckTrigger;
+import com.collective.celos.trigger.NotTrigger;
+import com.collective.celos.trigger.OffsetTrigger;
+import com.collective.celos.trigger.OrTrigger;
+import com.collective.celos.trigger.SuccessTrigger;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.common.collect.ImmutableMap;
 
 public class JavaScriptFunctionsTest {
 
@@ -277,8 +286,7 @@ public class JavaScriptFunctionsTest {
         Boolean s = (Boolean) runJS(js);
         Assert.assertEquals(s, true);
     }
-
-
+    
     @Test
     public void testHdfsCheckNotExists() throws Exception {
         String js = "var CELOS_DEFAULT_HDFS = ''; " +
@@ -331,10 +339,28 @@ public class JavaScriptFunctionsTest {
 
     }
 
+    @Test
+    public void testRegisters() throws Exception {
+        WorkflowConfigurationParser parser = createParser();
+        StateDatabaseConnection conn = new MemoryStateDatabase().openConnection();
+        
+        ObjectNode v1 = mapper.createObjectNode();
+        v1.put("foo", "bar-Iñtërnâtiônàlizætiøn");
+        ObjectNode v2 = mapper.createObjectNode();
+        v2.put("quux", "meh-Iñtërnâtiônàlizætiøn");
+        ObjectNode v3 = mapper.createObjectNode();
+        v3.put("bla", "baz-Iñtërnâtiônàlizætiøn");
+        conn.putRegister(new BucketID("b1-Iñtërnâtiônàlizætiøn"), new RegisterKey("k1-Iñtërnâtiônàlizætiøn"), v1);
+        conn.putRegister(new BucketID("b1-Iñtërnâtiônàlizætiøn"), new RegisterKey("k2-Iñtërnâtiônàlizætiøn"), v2);
+        conn.putRegister(new BucketID("b2-Iñtërnâtiônàlizætiøn"), new RegisterKey("k3-Iñtërnâtiônàlizætiøn"), v3);
+        File f = new File(Thread.currentThread().getContextClassLoader().getResource("js-tests/test-registers.js").toURI());
+        parser.evaluateReader(new FileReader(f), f.getName(), conn);
+    }
+        
     private Object runJS(String js) throws Exception {
-        WorkflowConfigurationParser parser = new WorkflowConfigurationParser(new File("unused"), ImmutableMap.<String, String>of());
+        WorkflowConfigurationParser parser = createParser();
         // Evaluate JS function call
-        Object jsResult = parser.evaluateReader(new StringReader(js), "string");
+        Object jsResult = parser.evaluateReader(new StringReader(js), "string", new MemoryStateDatabase().openConnection());
         if (jsResult instanceof NativeJavaObject) {
             return ((NativeJavaObject) jsResult).unwrap();
         } else {
@@ -343,11 +369,15 @@ public class JavaScriptFunctionsTest {
     }
 
     private Object runJSNativeResult(String js) throws Exception {
-        WorkflowConfigurationParser parser = new WorkflowConfigurationParser(new File("unused"), ImmutableMap.<String, String>of());
+        WorkflowConfigurationParser parser = createParser();
         // Evaluate JS function call
-        return parser.evaluateReader(new StringReader(js), "string");
+        return parser.evaluateReader(new StringReader(js), "string", new MemoryStateDatabase().openConnection());
     }
 
+    private WorkflowConfigurationParser createParser() throws Exception {
+        WorkflowConfigurationParser parser = new WorkflowConfigurationParser(new File("unused"), ImmutableMap.<String, String>of());
+        return parser;
+    }
 
     private void expectMessage(String js, String string) throws AssertionError {
         try {

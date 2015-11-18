@@ -58,7 +58,7 @@ public class JSONWorkflowServlet extends AbstractJSONServlet {
                 res.sendError(HttpServletResponse.SC_NOT_FOUND, "Workflow not found: " + id);
             } else {
                 ScheduledTime time = getRequestTime(req);
-                try(StateDatabaseConnection connection = scheduler.getStateDatabase().openConnection()) {
+                try(StateDatabaseConnection connection = getStateDatabase().openConnection()) {
                     List<SlotState> slotStates = scheduler.getSlotStates(wf, scheduler.getWorkflowStartTime(wf, time), time, connection);
                     ObjectNode object = createJSONObject(slotStates);
                     writer.writeValue(res.getOutputStream(), object);

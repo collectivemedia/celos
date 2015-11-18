@@ -61,7 +61,7 @@ public class RerunServlet extends AbstractServlet {
                 return;
             }
 
-            try(StateDatabaseConnection db = scheduler.getStateDatabase().openConnection()) {
+            try(StateDatabaseConnection db = getStateDatabase().openConnection()) {
                 SlotState state = db.getSlotState(slot);
                 if (state != null) {
                     updateSlotToRerun(state, db);

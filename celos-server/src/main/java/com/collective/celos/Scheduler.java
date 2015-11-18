@@ -32,17 +32,15 @@ public class Scheduler {
 
     private final int slidingWindowHours;
     private final WorkflowConfiguration configuration;
-    private final StateDatabase database;
 
     private static Logger LOGGER = Logger.getLogger(Scheduler.class);
 
-    public Scheduler(WorkflowConfiguration configuration, StateDatabase database, int slidingWindowHours) {
+    public Scheduler(WorkflowConfiguration configuration, int slidingWindowHours) {
         if (slidingWindowHours <= 0) {
             throw new IllegalArgumentException("Sliding window hours must greater then zero.");
         }
         this.slidingWindowHours = slidingWindowHours;
         this.configuration = Util.requireNonNull(configuration);
-        this.database = Util.requireNonNull(database);
     }
 
     /**
@@ -57,9 +55,9 @@ public class Scheduler {
      * <p>
      * Steps through all workflows.
      */
-    public void step(ScheduledTime current) throws Exception {
+    public void step(ScheduledTime current, StateDatabaseConnection connection) throws Exception {
         // by default, schedule all workflows
-        step(current, Collections.<WorkflowID>emptySet());
+        step(current, Collections.<WorkflowID>emptySet(), connection);
     }
 
     /**
@@ -67,22 +65,20 @@ public class Scheduler {
      * <p>
      * Otherwise, schedule only workflows in the set.
      */
-    public void step(ScheduledTime current, Set<WorkflowID> workflowIDs) throws Exception {
+    public void step(ScheduledTime current, Set<WorkflowID> workflowIDs, StateDatabaseConnection connection) throws Exception {
         LOGGER.info("Starting scheduler step: " + current + " -- " + getSlidingWindowStartTime(current));
-        try(StateDatabaseConnection connection = database.openConnection()) {
-            for (Workflow wf : configuration.getWorkflows()) {
-                WorkflowID id = wf.getID();
-                boolean shouldProcess = workflowIDs.isEmpty() || workflowIDs.contains(id);
-                if (!shouldProcess) {
-                    LOGGER.info("Ignoring workflow: " + id);
-                } else if (connection.isPaused(id)) {
-                    LOGGER.info("Workflow is paused: " + id);
-                } else {
-                    try {
-                        stepWorkflow(wf, current, connection);
-                    } catch (Exception e) {
-                        LOGGER.error("Exception in workflow: " + id + ": " + e.getMessage(), e);
-                    }
+        for (Workflow wf : configuration.getWorkflows()) {
+            WorkflowID id = wf.getID();
+            boolean shouldProcess = workflowIDs.isEmpty() || workflowIDs.contains(id);
+            if (!shouldProcess) {
+                LOGGER.info("Ignoring workflow: " + id);
+            } else if (connection.isPaused(id)) {
+                LOGGER.info("Workflow is paused: " + id);
+            } else {
+                try {
+                    stepWorkflow(wf, current, connection);
+                } catch (Exception e) {
+                    LOGGER.error("Exception in workflow: " + id + ": " + e.getMessage(), e);
                 }
             }
         }
@@ -234,10 +230,6 @@ public class Scheduler {
 
     public WorkflowConfiguration getWorkflowConfiguration() {
         return configuration;
-    }
-
-    public StateDatabase getStateDatabase() {
-        return database;
     }
 
 }

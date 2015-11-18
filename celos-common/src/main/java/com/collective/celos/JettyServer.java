@@ -15,15 +15,17 @@
  */
 package com.collective.celos;
 
+import java.net.URL;
+import java.nio.file.Paths;
+import java.util.Map;
+
+import javax.servlet.ServletContext;
+
 import org.apache.http.client.utils.URIBuilder;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.webapp.WebAppContext;
-
-import java.net.URL;
-import java.nio.file.Paths;
-import java.util.Map;
 
 /**
  * Common Jetty code for Celos server and Celos UI.
@@ -81,5 +83,8 @@ public class JettyServer {
         }
     }
 
+    public ServletContext getContext() {
+        return context.getServletHandler().getServletContext();
+    }
 
 }

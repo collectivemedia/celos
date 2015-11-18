@@ -3,8 +3,13 @@ apply plugin: 'maven'
 mainClassName = 'com.collective.celos.ci.CelosCi'
 version = '0.1'
 
+configurations {
+    compileIncluded
+    compile.extendsFrom compileIncluded
+}
+
 dependencies {
-    compile project(':celos-server')
+    compileIncluded project(':celos-server')
     compile("com.jcraft:jsch:0.1.51")
 
     compile("org.apache.commons:commons-vfs2:2.0")
@@ -24,23 +29,17 @@ dependencies {
     testCompile("org.mockito:mockito-all:1.9.5")
 }
 
-task fatJar(type: Jar) {
+jar {
     from(sourceSets.main.output) {
         include "**/**"
     }
+    archiveName "celos-ci.jar"
+    baseName "celos-ci"
     from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }}
-    archiveName "celos-ci-fat.jar"
     manifest {
         attributes("Main-Class": mainClassName)
     }
     zip64 = true
-}
-
-jar {
-    baseName "celos-ci"
-    manifest {
-        attributes("Main-Class": mainClassName)
-    }
 }
 
 def repoUser = System.getenv("CELOS_NEXUS_USER");
@@ -52,9 +51,10 @@ uploadArchives.doFirst {
             repository(url: System.getenv("NEXUS_MAVEN_REPO")) {
                 authentication(userName: repoUser, password: repoPw)
             }
-            if (!System.getenv("BUILD_NUMBER")) throw new GradleException("BUILD_NUMBER env variable should be present")
-            pom.version = "2.0." + System.getenv("BUILD_NUMBER")
+            if (!System.getenv("CELOS_BUILD_NUMBER")) throw new GradleException("CELOS_BUILD_NUMBER env variable should be present")
+            pom.version = "2.0." + System.getenv("CELOS_BUILD_NUMBER")
             pom.groupId = "com.collective"
+            pom.dependencies.removeAll { it.scope == "compileIncluded" }
         }
     }
 }

@@ -23,9 +23,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.collective.celos.ScheduledTime;
-import com.collective.celos.Scheduler;
-import com.collective.celos.WorkflowID;
+import com.collective.celos.*;
 
 /**
  * Posting to this servlet triggers a scheduler step.
@@ -42,7 +40,9 @@ public class SchedulerServlet extends AbstractServlet {
             Scheduler scheduler = createAndCacheScheduler();
             ScheduledTime current = getRequestTime(req);
             Set<WorkflowID> workflowIDs = getWorkflowIDs(req);
-            scheduler.step(current, workflowIDs);
+            try(StateDatabaseConnection connection = getStateDatabase().openConnection()) {
+                scheduler.step(current, workflowIDs, connection);
+            }
         } catch(Exception e) {
             throw new RuntimeException(e);
         }
