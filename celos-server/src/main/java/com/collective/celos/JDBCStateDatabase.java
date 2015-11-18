@@ -16,11 +16,17 @@
 package com.collective.celos;
 
 import com.collective.celos.servlet.AbstractServlet;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import java.io.File;
 import java.io.IOException;
 import java.sql.*;
 import java.util.*;
@@ -38,19 +44,28 @@ public class JDBCStateDatabase implements StateDatabase {
     private static final String INSERT_PAUSE_WORKFLOW = "INSERT INTO WORKFLOWINFO(WORKFLOWID, PAUSED) VALUES (?, ?)";
     private static final String UPDATE_PAUSE_WORKFLOW = "UPDATE WORKFLOWINFO SET PAUSED = ? WHERE WORKFLOWID = ?";
     private static final String SELECT_PAUSE_WORKFLOW = "SELECT PAUSED FROM WORKFLOWINFO WHERE WORKFLOWID = ?";
+    private static final String SELECT_REGISTER = "SELECT JSON FROM REGISTER WHERE BUCKETID = ? AND KEY = ?";
+    private static final String SELECT_ALL_REGISTERS = "SELECT JSON, KEY FROM REGISTER WHERE BUCKETID = ?";
+    private static final String UPDATE_REGISTER = "UPDATE REGISTER SET JSON = ? WHERE BUCKETID = ? AND KEY = ?";
+    private static final String INSERT_REGISTER = "INSERT INTO REGISTER(BUCKETID, KEY, JSON) VALUES (?, ?, ?)";
+    private static final String DELETE_REGISTER = "DELETE FROM REGISTER WHERE BUCKETID = ? AND KEY = ?";
 
     private static final String STATUS_PARAM = "STATUS";
     private static final String EXTERNAL_ID_PARAM = "EXTERNALID";
     private static final String RETRY_COUNT_PARAM = "RETRYCOUNT";
     private static final String DATE_PARAM = "DATE";
     private static final String PAUSED_PARAM = "PAUSED";
+    private static final String JSON_PARAM = "JSON";
+    private static final String KEY_PARAM = "KEY";
 
     private static final Logger LOGGER = Logger.getLogger(AbstractServlet.class);
-
 
     private final String url;
     private final String name;
     private final String password;
+
+    private static final ObjectMapper mapper = new ObjectMapper();
+    private static final String CHARSET = "UTF-8";
 
     public JDBCStateDatabase(String url, String name, String password) {
         this.url = url;
@@ -62,6 +77,11 @@ public class JDBCStateDatabase implements StateDatabase {
     public StateDatabaseConnection openConnection() throws Exception {
         return new JDBCStateDatabaseConnectionConnection(url, name, password);
     }
+
+    private ObjectNode readJson(String json) throws IOException {
+        return (ObjectNode) mapper.readTree(json);
+    }
+
 
     private class JDBCStateDatabaseConnectionConnection implements StateDatabaseConnection {
 
@@ -214,6 +234,66 @@ public class JDBCStateDatabase implements StateDatabase {
                     statement.execute();
                 }
             }
+        }
+
+        @Override
+        public JsonNode getRegister(BucketID bucket, RegisterKey key) throws Exception {
+            try (PreparedStatement statement = connection.prepareStatement(SELECT_REGISTER)) {
+                statement.setString(1, bucket.toString());
+                statement.setString(2, key.toString());
+                try (ResultSet resultSet = statement.executeQuery()) {
+                    if (resultSet.next()) {
+                        return readJson(resultSet.getString(JSON_PARAM));
+                    } else {
+                        return null;
+                    }
+                }
+            }
+        }
+
+        @Override
+        public void putRegister(BucketID bucket, RegisterKey key, JsonNode value) throws Exception {
+            if (getRegister(bucket, key) == null) {
+                try (PreparedStatement statement = connection.prepareStatement(INSERT_REGISTER)) {
+                    statement.setString(1, bucket.toString());
+                    statement.setString(2, key.toString());
+                    statement.setString(3, mapper.writeValueAsString(value));
+                    statement.execute();
+                }
+            } else {
+                try (PreparedStatement statement = connection.prepareStatement(UPDATE_REGISTER)) {
+                    statement.setString(1, mapper.writeValueAsString(value));
+                    statement.setString(2, bucket.toString());
+                    statement.setString(3, key.toString());
+                    statement.execute();
+                }
+            }
+
+        }
+
+        @Override
+        public void deleteRegister(BucketID bucket, RegisterKey key) throws Exception {
+            try (PreparedStatement statement = connection.prepareStatement(DELETE_REGISTER)) {
+                statement.setString(1, bucket.toString());
+                statement.setString(2, key.toString());
+                statement.execute();
+            }
+        }
+
+        @Override
+        public Iterable<Map.Entry<RegisterKey, JsonNode>> getAllRegisters(BucketID bucket) throws Exception {
+            Map<RegisterKey, JsonNode> result = Maps.newHashMap();
+            try (PreparedStatement statement = connection.prepareStatement(SELECT_ALL_REGISTERS)) {
+                statement.setString(1, bucket.toString());
+                try (ResultSet resultSet = statement.executeQuery()) {
+                    while (resultSet.next()) {
+                        RegisterKey registerKey = new RegisterKey(resultSet.getString(KEY_PARAM));
+                        JsonNode json = readJson(resultSet.getString(JSON_PARAM));
+                        result.put(registerKey, json);
+                    }
+                }
+            }
+            return result.entrySet();
         }
     }
 
