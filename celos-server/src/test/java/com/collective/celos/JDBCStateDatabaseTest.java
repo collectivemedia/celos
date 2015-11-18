@@ -35,6 +35,8 @@ public class JDBCStateDatabaseTest extends AbstractStateDatabaseTest {
     public static final String CREATE_WORKFLOW_INFO_TABLE = "CREATE TABLE WORKFLOWINFO (" +
             "WORKFLOWID VARCHAR(25) NOT NULL, PAUSED BOOLEAN NOT NULL)";
 
+    public static final String CREATE_REGISTERS_TABLE = "CREATE TABLE REGISTER (" +
+            "BUCKETID VARCHAR(125) NOT NULL, KEY VARCHAR(125) NOT NULL, JSON VARCHAR(125) NOT NULL)";
 
     private static Server SERVER;
     private static String URL = "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1";
@@ -51,6 +53,7 @@ public class JDBCStateDatabaseTest extends AbstractStateDatabaseTest {
                 statement.execute(CREATE_SLOT_STATE_TABLE);
                 statement.execute(CREATE_RERUN_SLOT_TABLE);
                 statement.execute(CREATE_WORKFLOW_INFO_TABLE);
+                statement.execute(CREATE_REGISTERS_TABLE);
             }
         }
         db = new JDBCStateDatabase(URL, USERNAME, PASSWORD).openConnection();
