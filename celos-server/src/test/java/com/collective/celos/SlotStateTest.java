@@ -87,16 +87,15 @@ public class SlotStateTest {
     
     @Test
     public void canRoundtripToJSON() throws Exception {
-        ObjectMapper mapper = new ObjectMapper();
         SlotState state1 = new SlotState(id, SlotState.Status.WAITING);
         SlotState state2 = new SlotState(id, SlotState.Status.READY).transitionToRunning("foo-external-ID");
         String json1 = "{\"time\":\"2013-12-04T19:18:00.000Z\",\"status\":\"WAITING\",\"externalID\":null,\"retryCount\":0}";
         String json2 = "{\"time\":\"2013-12-04T19:18:00.000Z\",\"status\":\"RUNNING\",\"externalID\":\"foo-external-ID\",\"retryCount\":0}";
 
-        Assert.assertEquals(json1, mapper.writeValueAsString(state1.toJSONNode()));
-        Assert.assertEquals(json2, mapper.writeValueAsString(state2.toJSONNode()));
-        Assert.assertEquals(state1, SlotState.fromJSONNode(id.getWorkflowID(), (ObjectNode) mapper.readTree(json1)));
-        Assert.assertEquals(state2, SlotState.fromJSONNode(id.getWorkflowID(), (ObjectNode) mapper.readTree(json2)));
+        Assert.assertEquals(json1, Util.JSON_WRITER.writeValueAsString(state1.toJSONNode()));
+        Assert.assertEquals(json2, Util.JSON_WRITER.writeValueAsString(state2.toJSONNode()));
+        Assert.assertEquals(state1, SlotState.fromJSONNode(id.getWorkflowID(), Util.JSON_READER.readTree(json1)));
+        Assert.assertEquals(state2, SlotState.fromJSONNode(id.getWorkflowID(), Util.JSON_READER.readTree(json2)));
     }
 
 }

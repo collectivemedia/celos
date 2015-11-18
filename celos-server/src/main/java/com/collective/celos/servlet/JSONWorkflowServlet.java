@@ -70,7 +70,7 @@ public class JSONWorkflowServlet extends AbstractJSONServlet {
     }
 
     ObjectNode createJSONObject(List<SlotState> slotStates) {
-        ObjectNode node = mapper.createObjectNode();
+        ObjectNode node = Util.MAPPER.createObjectNode();
         for (SlotState state : slotStates) {
             node.put(state.getScheduledTime().toString(), state.toJSONNode());
         }

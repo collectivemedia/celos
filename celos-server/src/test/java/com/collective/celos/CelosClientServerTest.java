@@ -59,7 +59,6 @@ public class CelosClientServerTest {
     private File slotDbDir;
     private CelosServer celosServer;
     private CelosClient celosClient;
-    private ObjectMapper mapper = new ObjectMapper();
 
     @Before
     public void setup() throws Exception {
@@ -773,9 +772,9 @@ public class CelosClientServerTest {
         RegisterKey key2 = new RegisterKey("quux-key-Iñtërnâtiônàlizætiøn");
         Assert.assertNull(celosClient.getRegister(bucket1, key1));
         Assert.assertNull(celosClient.getRegister(bucket2, key2));
-        ObjectNode value1 = mapper.createObjectNode();
+        ObjectNode value1 = Util.MAPPER.createObjectNode();
         value1.put("foo", "Iñtërnâtiônàlizætiøn");
-        ObjectNode value2 = mapper.createObjectNode();
+        ObjectNode value2 = Util.MAPPER.createObjectNode();
         value2.put("bar", "Iñtërnâtiônàlizætiøn");
         celosClient.putRegister(bucket1, key1, value1);
         Assert.assertEquals(value1, celosClient.getRegister(bucket1, key1));

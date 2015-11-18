@@ -16,6 +16,7 @@
 package com.collective.celos.servlet;
 
 import com.collective.celos.Scheduler;
+import com.collective.celos.Util;
 import com.collective.celos.Workflow;
 import com.collective.celos.WorkflowConfiguration;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -56,11 +57,11 @@ public class JSONWorkflowListServlet extends AbstractJSONServlet {
         for (Workflow wf : cfg.getWorkflows()) {
             ids.add(wf.getID().toString());
         }
-        ArrayNode list = mapper.createArrayNode();
+        ArrayNode list = Util.MAPPER.createArrayNode();
         for (String id : ids) {
             list.add(id);
         }
-        ObjectNode object = mapper.createObjectNode();
+        ObjectNode object = Util.MAPPER.createObjectNode();
         object.put("ids", list);
         return object;
     }
