@@ -16,7 +16,6 @@
 package com.collective.celos;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
@@ -34,7 +33,6 @@ public class SlotState extends ValueObject {
     private final int retryCount;
     
     // JSON support
-    private static final ObjectMapper MAPPER = new ObjectMapper();
     private static final String TIME_PROP = "time";
     private static final String STATUS_PROP = "status";
     private static final String EXTERNAL_ID_PROP = "externalID";
@@ -154,7 +152,7 @@ public class SlotState extends ValueObject {
     }
 
     public ObjectNode toJSONNode() {
-        ObjectNode node = MAPPER.createObjectNode();
+        ObjectNode node = Util.MAPPER.createObjectNode();
         node.put(TIME_PROP, this.getScheduledTime().toString());
         node.put(STATUS_PROP, this.getStatus().toString());
         node.put(EXTERNAL_ID_PROP, this.getExternalID());

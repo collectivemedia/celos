@@ -15,6 +15,7 @@
  */
 package com.collective.celos.servlet;
 
+import com.collective.celos.Util;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -30,11 +31,10 @@ public class JSONWorkflowListServletTest {
     public void jsonCorrectlyProduced() throws Exception {
         WorkflowConfiguration cfg =
                 WorkflowConfigurationParserTest.parseDir("json-workflow-list-servlet-test");
-        ObjectMapper mapper = new ObjectMapper();
-        ArrayNode list = mapper.createArrayNode();
+        ArrayNode list = Util.MAPPER.createArrayNode();
         list.add(new String("workflow-1"));
         list.add(new String("workflow-2"));
-        ObjectNode obj = mapper.createObjectNode();
+        ObjectNode obj = Util.MAPPER.createObjectNode();
         obj.put("ids", list);
         Assert.assertEquals(obj, new JSONWorkflowListServlet().createJSONObject(cfg));
     }

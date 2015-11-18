@@ -217,7 +217,7 @@ celos.makePropertiesGen = function (userPropertiesOrFun) {
             theProperties["user.name"] = CELOS_USER_JS_VAR;
         }
 
-        return celosMapper.readTree(JSON.stringify(theProperties));
+        return celosReader.readTree(JSON.stringify(theProperties));
     }
     return new PropertiesGenerator({ getProperties: getPropertiesFun });
 }

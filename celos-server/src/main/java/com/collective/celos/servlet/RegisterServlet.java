@@ -22,11 +22,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.collective.celos.BucketID;
-import com.collective.celos.RegisterKey;
-import com.collective.celos.Scheduler;
-import com.collective.celos.StateDatabase;
-import com.collective.celos.StateDatabaseConnection;
+import com.collective.celos.*;
 import com.fasterxml.jackson.databind.JsonNode;
 
 public class RegisterServlet extends AbstractJSONServlet {
@@ -55,7 +51,7 @@ public class RegisterServlet extends AbstractJSONServlet {
         try {
             BucketID bucket = getRequestBucketID(req);
             RegisterKey key = getRequestKey(req);
-            JsonNode value = mapper.readTree(new InputStreamReader(req.getInputStream(), StandardCharsets.UTF_8));
+            JsonNode value = Util.JSON_READER.readTree(new InputStreamReader(req.getInputStream(), StandardCharsets.UTF_8));
             try(StateDatabaseConnection connection = getStateDatabase().openConnection()) {
                 connection.putRegister(bucket, key, value);
             }
@@ -67,7 +63,6 @@ public class RegisterServlet extends AbstractJSONServlet {
     protected void doDelete(HttpServletRequest req, HttpServletResponse res) throws ServletException {
         BucketID bucket = getRequestBucketID(req);
         RegisterKey key = getRequestKey(req);
-        Scheduler scheduler;
         try {
             try(StateDatabaseConnection connection = getStateDatabase().openConnection()) {
                 connection.deleteRegister(bucket, key);
