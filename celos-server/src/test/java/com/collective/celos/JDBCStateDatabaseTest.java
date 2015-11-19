@@ -15,10 +15,12 @@
  */
 package com.collective.celos;
 
+import junit.framework.Assert;
 import org.h2.tools.Server;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Test;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -91,4 +93,21 @@ public class JDBCStateDatabaseTest extends AbstractStateDatabaseTest {
             }
         }
     }
+
+    @Test
+    public void getAndPutWorksWithExternalID() throws Exception {
+        StateDatabaseConnection db = getStateDatabase();
+        SlotID slotID = new SlotID(new WorkflowID("foo"), new ScheduledTime("2013-11-27T14:50Z"));
+        Assert.assertEquals(null, db.getSlotState(slotID));
+        String externalId = "externalId2";
+        SlotState state1 = new SlotState(slotID, SlotState.Status.READY, "someother", 3);
+        SlotState state = new SlotState(slotID, SlotState.Status.READY, externalId, 5);
+        db.putSlotState(state1);
+        db.putSlotState(state);
+        SlotState newSlotState = db.getSlotState(slotID);
+        Assert.assertEquals(state, newSlotState);
+        Assert.assertEquals(newSlotState.getExternalID(), externalId);
+        Assert.assertEquals(newSlotState.getRetryCount(), 5);
+    }
+
 }

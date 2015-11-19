@@ -224,6 +224,10 @@ public abstract class AbstractStateDatabaseTest {
         
         ObjectNode value1 = Util.MAPPER.createObjectNode();
         value1.put("foo", "Iñtërnâtiônàlizætiøn");
+
+        ObjectNode value2fake = Util.MAPPER.createObjectNode();
+        value2fake.put("bar", "Internatiolization");
+
         ObjectNode value2 = Util.MAPPER.createObjectNode();
         value2.put("bar", "Iñtërnâtiônàlizætiøn");
         db.putRegister(bucket1, key1, value1);
@@ -231,7 +235,8 @@ public abstract class AbstractStateDatabaseTest {
         Assert.assertEquals(ImmutableMap.of(key1, value1).entrySet(), db.getAllRegisters(bucket1));
         Assert.assertNull(db.getRegister(bucket2, key2));
         Assert.assertEquals(ImmutableMap.of().entrySet(), db.getAllRegisters(bucket2));
-        
+
+        db.putRegister(bucket2, key2, value2fake);
         db.putRegister(bucket2, key2, value2);
         Assert.assertEquals(value1, db.getRegister(bucket1, key1));
         Assert.assertEquals(ImmutableMap.of(key1, value1).entrySet(), db.getAllRegisters(bucket1));
@@ -249,7 +254,8 @@ public abstract class AbstractStateDatabaseTest {
         Assert.assertEquals(ImmutableMap.of().entrySet(), db.getAllRegisters(bucket1));
         Assert.assertNull(db.getRegister(bucket2, key2));
         Assert.assertEquals(ImmutableMap.of().entrySet(), db.getAllRegisters(bucket2));
-        
+
+        db.putRegister(bucket2, key2, value2fake);
         db.putRegister(bucket2, key2, value2);
         Assert.assertNull(db.getRegister(bucket1, key1));
         Assert.assertEquals(ImmutableMap.of().entrySet(), db.getAllRegisters(bucket1));
