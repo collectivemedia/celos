@@ -93,8 +93,8 @@ public class JSONWorkflowSlotsServlet extends AbstractJSONServlet {
                     objectNodes.add(state.toJSONNode());
                 }
 
-                ObjectNode node = mapper.createObjectNode();
-                node.put(INFO_PARAM, (JsonNode) mapper.valueToTree(wf.getWorkflowInfo()));
+                ObjectNode node = Util.MAPPER.createObjectNode();
+                node.put(INFO_PARAM, (JsonNode) Util.MAPPER.valueToTree(wf.getWorkflowInfo()));
                 node.put(PAUSED_PARAM, connection.isPaused(wf.getID()));
                 node.putArray(SLOTS_PARAM).addAll(objectNodes);
                 writer.writeValue(res.getOutputStream(), node);

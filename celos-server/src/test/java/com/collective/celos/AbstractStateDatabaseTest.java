@@ -172,7 +172,6 @@ public abstract class AbstractStateDatabaseTest {
     @Test
     public void testRegisters() throws Exception {
         StateDatabaseConnection db = getStateDatabase();
-        ObjectMapper mapper = new ObjectMapper();
         BucketID bucket1 = new BucketID("foo-bucket-Iñtërnâtiônàlizætiøn");
         BucketID bucket2 = new BucketID("another-bucket-Iñtërnâtiônàlizætiøn");
         RegisterKey key1 = new RegisterKey("bar-key-Iñtërnâtiônàlizætiøn");
@@ -183,9 +182,9 @@ public abstract class AbstractStateDatabaseTest {
         Assert.assertNull(db.getRegister(bucket1, key1));
         Assert.assertNull(db.getRegister(bucket2, key2));
         
-        ObjectNode value1 = mapper.createObjectNode();
+        ObjectNode value1 = Util.MAPPER.createObjectNode();
         value1.put("foo", "Iñtërnâtiônàlizætiøn");
-        ObjectNode value2 = mapper.createObjectNode();
+        ObjectNode value2 = Util.MAPPER.createObjectNode();
         value2.put("bar", "Iñtërnâtiônàlizætiøn");
         db.putRegister(bucket1, key1, value1);
         Assert.assertEquals(value1, db.getRegister(bucket1, key1));
