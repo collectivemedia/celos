@@ -99,15 +99,23 @@ public class JDBCStateDatabaseTest extends AbstractStateDatabaseTest {
         StateDatabaseConnection db = getStateDatabase();
         SlotID slotID = new SlotID(new WorkflowID("foo"), new ScheduledTime("2013-11-27T14:50Z"));
         Assert.assertEquals(null, db.getSlotState(slotID));
-        String externalId = "externalId2";
-        SlotState state1 = new SlotState(slotID, SlotState.Status.READY, "someother", 3);
-        SlotState state = new SlotState(slotID, SlotState.Status.READY, externalId, 5);
+        String externalID = "externalId1";
+        String externalID2 = "externalId2";
+
+        SlotState state1 = new SlotState(slotID, SlotState.Status.READY, externalID, 5);
+        SlotState state2 = new SlotState(slotID, SlotState.Status.READY, externalID2, 3);
+
         db.putSlotState(state1);
-        db.putSlotState(state);
         SlotState newSlotState = db.getSlotState(slotID);
-        Assert.assertEquals(state, newSlotState);
-        Assert.assertEquals(newSlotState.getExternalID(), externalId);
+        Assert.assertEquals(state1, newSlotState);
+        Assert.assertEquals(newSlotState.getExternalID(), externalID);
         Assert.assertEquals(newSlotState.getRetryCount(), 5);
+
+        db.putSlotState(state2);
+        SlotState newSlotState2 = db.getSlotState(slotID);
+        Assert.assertEquals(state2, newSlotState2);
+        Assert.assertEquals(newSlotState2.getExternalID(), externalID2);
+        Assert.assertEquals(newSlotState2.getRetryCount(), 3);
     }
 
 }

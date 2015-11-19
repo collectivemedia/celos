@@ -225,18 +225,23 @@ public abstract class AbstractStateDatabaseTest {
         ObjectNode value1 = Util.MAPPER.createObjectNode();
         value1.put("foo", "Iñtërnâtiônàlizætiøn");
 
-        ObjectNode value2fake = Util.MAPPER.createObjectNode();
-        value2fake.put("bar", "Internatiolization");
+        ObjectNode value3 = Util.MAPPER.createObjectNode();
+        value3.put("bar", "Iñtërnâtiônàlizætiøn");
 
         ObjectNode value2 = Util.MAPPER.createObjectNode();
-        value2.put("bar", "Iñtërnâtiônàlizætiøn");
+        value2.put("bar", "Internatiolization");
         db.putRegister(bucket1, key1, value1);
         Assert.assertEquals(value1, db.getRegister(bucket1, key1));
         Assert.assertEquals(ImmutableMap.of(key1, value1).entrySet(), db.getAllRegisters(bucket1));
         Assert.assertNull(db.getRegister(bucket2, key2));
         Assert.assertEquals(ImmutableMap.of().entrySet(), db.getAllRegisters(bucket2));
 
-        db.putRegister(bucket2, key2, value2fake);
+        db.putRegister(bucket2, key2, value3);
+        Assert.assertEquals(value1, db.getRegister(bucket1, key1));
+        Assert.assertEquals(ImmutableMap.of(key1, value1).entrySet(), db.getAllRegisters(bucket1));
+        Assert.assertEquals(value3, db.getRegister(bucket2, key2));
+        Assert.assertEquals(ImmutableMap.of(key2, value3).entrySet(), db.getAllRegisters(bucket2));
+
         db.putRegister(bucket2, key2, value2);
         Assert.assertEquals(value1, db.getRegister(bucket1, key1));
         Assert.assertEquals(ImmutableMap.of(key1, value1).entrySet(), db.getAllRegisters(bucket1));
@@ -255,12 +260,17 @@ public abstract class AbstractStateDatabaseTest {
         Assert.assertNull(db.getRegister(bucket2, key2));
         Assert.assertEquals(ImmutableMap.of().entrySet(), db.getAllRegisters(bucket2));
 
-        db.putRegister(bucket2, key2, value2fake);
         db.putRegister(bucket2, key2, value2);
         Assert.assertNull(db.getRegister(bucket1, key1));
         Assert.assertEquals(ImmutableMap.of().entrySet(), db.getAllRegisters(bucket1));
         Assert.assertEquals(value2, db.getRegister(bucket2, key2));
         Assert.assertEquals(ImmutableMap.of(key2, value2).entrySet(), db.getAllRegisters(bucket2));
+
+        db.putRegister(bucket2, key2, value3);
+        Assert.assertNull(db.getRegister(bucket1, key1));
+        Assert.assertEquals(ImmutableMap.of().entrySet(), db.getAllRegisters(bucket1));
+        Assert.assertEquals(value3, db.getRegister(bucket2, key2));
+        Assert.assertEquals(ImmutableMap.of(key2, value3).entrySet(), db.getAllRegisters(bucket2));
 
         db.deleteRegister(bucket2, key2);
         Assert.assertNull(db.getRegister(bucket1, key1));
