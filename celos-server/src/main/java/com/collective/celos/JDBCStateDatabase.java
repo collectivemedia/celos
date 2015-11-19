@@ -16,21 +16,15 @@
 package com.collective.celos;
 
 import com.collective.celos.servlet.AbstractServlet;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
-import java.io.File;
 import java.io.IOException;
 import java.sql.*;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class JDBCStateDatabase implements StateDatabase {
 
@@ -38,9 +32,9 @@ public class JDBCStateDatabase implements StateDatabase {
     private static final String INSERT_SLOT_STATE = "INSERT INTO SLOTSTATE(WORKFLOWID, DATE, STATUS, EXTERNALID, RETRYCOUNT) VALUES (?, ?, ?, ?, ?)";
     private static final String UPDATE_SLOT_STATE = "UPDATE SLOTSTATE SET STATUS=?, EXTERNALID=?, RETRYCOUNT=? WHERE WORKFLOWID=? AND DATE=?";
     private static final String SELECT_SLOTS_BY_PERIOD = "SELECT STATUS, EXTERNALID, RETRYCOUNT, DATE FROM SLOTSTATE WHERE WORKFLOWID = ? AND DATE >= ? AND DATE < ?";
-    private static final String INSERT_RERUN_SLOT = "INSERT INTO RERUNSLOT(WORKFLOWID, DATE) VALUES (?, ?)";
+    private static final String INSERT_RERUN_SLOT = "INSERT INTO RERUNSLOT(WORKFLOWID, DATE, WALLCLOCK) VALUES (?, ?, ?)";
     private static final String SELECT_RERUN_SLOTS = "SELECT DATE FROM RERUNSLOT WHERE WORKFLOWID = ?";
-    private static final String DELETE_RERUN_SLOTS = "DELETE FROM RERUNSLOT WHERE WORKFLOWID = ? AND DATE = ?";
+    private static final String DELETE_RERUN_SLOTS = "DELETE FROM RERUNSLOT WHERE WORKFLOWID = ? AND WALLCLOCK < ?";
     private static final String INSERT_PAUSE_WORKFLOW = "INSERT INTO WORKFLOWINFO(WORKFLOWID, PAUSED) VALUES (?, ?)";
     private static final String UPDATE_PAUSE_WORKFLOW = "UPDATE WORKFLOWINFO SET PAUSED = ? WHERE WORKFLOWID = ?";
     private static final String SELECT_PAUSE_WORKFLOW = "SELECT PAUSED FROM WORKFLOWINFO WHERE WORKFLOWID = ?";
@@ -65,7 +59,6 @@ public class JDBCStateDatabase implements StateDatabase {
     private final String password;
 
     private static final ObjectMapper mapper = new ObjectMapper();
-    private static final String CHARSET = "UTF-8";
 
     public JDBCStateDatabase(String url, String name, String password) {
         this.url = url;
@@ -168,6 +161,7 @@ public class JDBCStateDatabase implements StateDatabase {
             try (PreparedStatement statement = connection.prepareStatement(INSERT_RERUN_SLOT)) {
                 statement.setString(1, slot.getWorkflowID().toString());
                 statement.setTimestamp(2, Util.toTimestamp(slot.getScheduledTime()));
+                statement.setTimestamp(3, Util.toTimestamp(now));
                 statement.execute();
             }
         }
@@ -175,26 +169,19 @@ public class JDBCStateDatabase implements StateDatabase {
         @Override
         public SortedSet<ScheduledTime> getTimesMarkedForRerun(WorkflowID workflowID, ScheduledTime now) throws Exception {
             TreeSet<ScheduledTime> rerunTimes = new TreeSet<>();
-            List<RerunState> rerunStates = Lists.newArrayList();
             try (PreparedStatement statement = connection.prepareStatement(SELECT_RERUN_SLOTS)) {
                 statement.setString(1, workflowID.toString());
                 try(ResultSet resultSet = statement.executeQuery()) {
                     while (resultSet.next()) {
                         ScheduledTime time = Util.fromTimestamp(resultSet.getTimestamp(DATE_PARAM));
-                        RerunState rerunState = new RerunState(time);
                         rerunTimes.add(time);
-                        if (rerunState.isExpired(now)) {
-                            rerunStates.add(rerunState);
-                        }
                     }
                 }
             }
             try (PreparedStatement statement = connection.prepareStatement(DELETE_RERUN_SLOTS)) {
-                for (RerunState rerunState : rerunStates) {
-                    statement.setString(1, workflowID.toString());
-                    statement.setTimestamp(2, Util.toTimestamp(rerunState.getRerunTime()));
-                    statement.execute();
-                }
+                statement.setString(1, workflowID.toString());
+                statement.setTimestamp(2, Util.toTimestamp(now.minusDays(RerunState.EXPIRATION_DAYS)));
+                statement.execute();
             }
             return rerunTimes;
         }
