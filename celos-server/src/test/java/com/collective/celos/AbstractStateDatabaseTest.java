@@ -134,24 +134,24 @@ public abstract class AbstractStateDatabaseTest {
         ScheduledTime currentTime = new ScheduledTime("2013-12-02T15:00Z");
         Assert.assertEquals(new TreeSet<>(), db.getTimesMarkedForRerun(wf1, currentTime));
         Assert.assertEquals(new TreeSet<>(), db.getTimesMarkedForRerun(wf2, currentTime));
-        ScheduledTime retunTime1 = new ScheduledTime("2011-12-02T13:00Z");
+        ScheduledTime rerunTime1 = new ScheduledTime("2011-12-02T13:00Z");
         ScheduledTime rerunTime2 = new ScheduledTime("2011-12-02T14:00Z");
-        SlotID wf1slot1 = new SlotID(wf1, retunTime1);
+        SlotID wf1slot1 = new SlotID(wf1, rerunTime1);
         SlotID wf1slot2 = new SlotID(wf1, rerunTime2);
-        SlotID wf2slot1 = new SlotID(wf2, retunTime1);
+        SlotID wf2slot1 = new SlotID(wf2, rerunTime1);
         db.markSlotForRerun(wf1slot1, currentTime);
         db.markSlotForRerun(wf1slot2, currentTime);
         db.markSlotForRerun(wf2slot1, currentTime);
-        Assert.assertEquals(new TreeSet<>(ImmutableSet.of(retunTime1, rerunTime2)), db.getTimesMarkedForRerun(wf1, currentTime));
-        Assert.assertEquals(new TreeSet<>(ImmutableSet.of(retunTime1)), db.getTimesMarkedForRerun(wf2, currentTime));
+        Assert.assertEquals(new TreeSet<>(ImmutableSet.of(rerunTime1, rerunTime2)), db.getTimesMarkedForRerun(wf1, currentTime));
+        Assert.assertEquals(new TreeSet<>(ImmutableSet.of(rerunTime1)), db.getTimesMarkedForRerun(wf2, currentTime));
         // Now call wf1 with much later current time and make sure files got expired after first call
         ScheduledTime laterCurrentTime = currentTime.plusYears(1);
-        Assert.assertEquals(new TreeSet<>(ImmutableSet.of(retunTime1, rerunTime2)), db.getTimesMarkedForRerun(wf1, laterCurrentTime));
+        Assert.assertEquals(new TreeSet<>(ImmutableSet.of(rerunTime1, rerunTime2)), db.getTimesMarkedForRerun(wf1, laterCurrentTime));
         Assert.assertEquals(new TreeSet<>(), db.getTimesMarkedForRerun(wf1, laterCurrentTime));
         // wf2 still in there
-        Assert.assertEquals(new TreeSet<>(ImmutableSet.of(retunTime1)), db.getTimesMarkedForRerun(wf2, currentTime));
+        Assert.assertEquals(new TreeSet<>(ImmutableSet.of(rerunTime1)), db.getTimesMarkedForRerun(wf2, currentTime));
         // Now call wf2 with much later current time and make sure files got expired after first call
-        Assert.assertEquals(new TreeSet<>(ImmutableSet.of(retunTime1)), db.getTimesMarkedForRerun(wf2, laterCurrentTime));
+        Assert.assertEquals(new TreeSet<>(ImmutableSet.of(rerunTime1)), db.getTimesMarkedForRerun(wf2, laterCurrentTime));
         Assert.assertEquals(new TreeSet<>(), db.getTimesMarkedForRerun(wf2, laterCurrentTime));
     }
 
