@@ -16,14 +16,7 @@
 package com.collective.celos;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 import junit.framework.Assert;
 
@@ -52,6 +45,53 @@ public abstract class AbstractStateDatabaseTest {
         Assert.assertEquals(state, db.getSlotState(slotID));
         Assert.assertEquals(null, db.getSlotState(new SlotID(new WorkflowID("bar"), new ScheduledTime("2013-11-27T14:50Z"))));
     }
+
+    @Test
+    public void getAndPutWorksWithExternalID() throws Exception {
+        StateDatabaseConnection db = getStateDatabase();
+        SlotID slotID = new SlotID(new WorkflowID("foo"), new ScheduledTime("2013-11-27T14:50Z"));
+        Assert.assertEquals(null, db.getSlotState(slotID));
+        String externalId = "externalId";
+        SlotState state = new SlotState(slotID, SlotState.Status.READY, externalId, 5);
+        db.putSlotState(state);
+        SlotState newSlotState = db.getSlotState(slotID);
+        Assert.assertEquals(state, newSlotState);
+        Assert.assertEquals(newSlotState.getExternalID(), externalId);
+        Assert.assertEquals(newSlotState.getRetryCount(), 5);
+    }
+
+    @Test
+    public void getAndPutWorksWithExternalIDForPeriod() throws Exception {
+        StateDatabaseConnection db = getStateDatabase();
+        WorkflowID workflowID = new WorkflowID("foo");
+        ScheduledTime startTime = new ScheduledTime("2013-11-27T14:50Z");
+        ScheduledTime midTime = new ScheduledTime("2013-11-27T15:50Z");
+        ScheduledTime endTime = new ScheduledTime("2013-11-27T16:50Z");
+
+        SlotID slotID1 = new SlotID(workflowID, startTime);
+        SlotID slotID2 = new SlotID(workflowID, midTime);
+        SlotID slotID3 = new SlotID(workflowID, endTime);
+
+        SlotState state1 = new SlotState(slotID1, SlotState.Status.READY, "externalId1", 1);
+        SlotState state2 = new SlotState(slotID2, SlotState.Status.READY, "externalId2", 2);
+        SlotState state3 = new SlotState(slotID3, SlotState.Status.READY, "externalId3", 3);
+
+        db.putSlotState(state1);
+        db.putSlotState(state2);
+        db.putSlotState(state3);
+
+        Map<SlotID, SlotState> expected = ImmutableMap.of(slotID1, state1, slotID2, state2, slotID3, state3);
+        Map<SlotID, SlotState> anotherExternalId = ImmutableMap.of(slotID1, new SlotState(slotID1, SlotState.Status.READY, "!!!", 1), slotID2, state2, slotID3, state3);
+
+        Map<SlotID, SlotState> slotStates1 = db.getSlotStates(workflowID, Arrays.asList(startTime, midTime, endTime));
+        Map<SlotID, SlotState> slotStates2 = db.getSlotStates(workflowID, startTime, endTime.plusSeconds(1));
+
+        Assert.assertEquals(expected, slotStates1);
+        Assert.assertEquals(expected, slotStates2);
+        Assert.assertNotSame(anotherExternalId, slotStates2);
+
+    }
+
 
     @Test
     public void testGetSlotStatesForPeriod() throws Exception {
@@ -131,26 +171,28 @@ public abstract class AbstractStateDatabaseTest {
         StateDatabaseConnection db = getStateDatabase();
         WorkflowID wf1 = new WorkflowID("foo");
         WorkflowID wf2 = new WorkflowID("bar");
-        Assert.assertEquals(new TreeSet<>(), db.getTimesMarkedForRerun(wf1, new ScheduledTime("2013-12-02T15:00Z")));
-        Assert.assertEquals(new TreeSet<>(), db.getTimesMarkedForRerun(wf2, new ScheduledTime("2013-12-02T15:00Z")));
-        ScheduledTime time1 = new ScheduledTime("2013-12-02T13:00Z");
-        ScheduledTime time2 = new ScheduledTime("2013-12-02T14:00Z");
-        SlotID wf1slot1 = new SlotID(wf1, time1);
-        SlotID wf1slot2 = new SlotID(wf1, time2);
-        SlotID wf2slot1 = new SlotID(wf2, time1);
-        db.markSlotForRerun(wf1slot1, time1);
-        db.markSlotForRerun(wf1slot2, time2);
-        db.markSlotForRerun(wf2slot1, time1);
-        Assert.assertEquals(new TreeSet<>(ImmutableSet.of(time1, time2)), db.getTimesMarkedForRerun(wf1, new ScheduledTime("2013-12-02T15:00Z")));
-        Assert.assertEquals(new TreeSet<>(ImmutableSet.of(time1)), db.getTimesMarkedForRerun(wf2, new ScheduledTime("2013-12-02T15:00Z")));
+        ScheduledTime currentTime = new ScheduledTime("2013-12-02T15:00Z");
+        Assert.assertEquals(new TreeSet<>(), db.getTimesMarkedForRerun(wf1, currentTime));
+        Assert.assertEquals(new TreeSet<>(), db.getTimesMarkedForRerun(wf2, currentTime));
+        ScheduledTime rerunTime1 = new ScheduledTime("2011-12-02T13:00Z");
+        ScheduledTime rerunTime2 = new ScheduledTime("2011-12-02T14:00Z");
+        SlotID wf1slot1 = new SlotID(wf1, rerunTime1);
+        SlotID wf1slot2 = new SlotID(wf1, rerunTime2);
+        SlotID wf2slot1 = new SlotID(wf2, rerunTime1);
+        db.markSlotForRerun(wf1slot1, currentTime);
+        db.markSlotForRerun(wf1slot2, currentTime);
+        db.markSlotForRerun(wf2slot1, currentTime);
+        Assert.assertEquals(new TreeSet<>(ImmutableSet.of(rerunTime1, rerunTime2)), db.getTimesMarkedForRerun(wf1, currentTime));
+        Assert.assertEquals(new TreeSet<>(ImmutableSet.of(rerunTime1)), db.getTimesMarkedForRerun(wf2, currentTime));
         // Now call wf1 with much later current time and make sure files got expired after first call
-        Assert.assertEquals(new TreeSet<>(ImmutableSet.of(time1, time2)), db.getTimesMarkedForRerun(wf1, new ScheduledTime("2015-12-02T15:00Z")));
-        Assert.assertEquals(new TreeSet<>(), db.getTimesMarkedForRerun(wf1, new ScheduledTime("2015-12-02T15:00Z")));
+        ScheduledTime laterCurrentTime = currentTime.plusYears(1);
+        Assert.assertEquals(new TreeSet<>(ImmutableSet.of(rerunTime1, rerunTime2)), db.getTimesMarkedForRerun(wf1, laterCurrentTime));
+        Assert.assertEquals(new TreeSet<>(), db.getTimesMarkedForRerun(wf1, laterCurrentTime));
         // wf2 still in there
-        Assert.assertEquals(new TreeSet<>(ImmutableSet.of(time1)), db.getTimesMarkedForRerun(wf2, new ScheduledTime("2013-12-02T15:00Z")));
+        Assert.assertEquals(new TreeSet<>(ImmutableSet.of(rerunTime1)), db.getTimesMarkedForRerun(wf2, currentTime));
         // Now call wf2 with much later current time and make sure files got expired after first call
-        Assert.assertEquals(new TreeSet<>(ImmutableSet.of(time1)), db.getTimesMarkedForRerun(wf2, new ScheduledTime("2015-12-02T15:00Z")));
-        Assert.assertEquals(new TreeSet<>(), db.getTimesMarkedForRerun(wf2, new ScheduledTime("2015-12-02T15:00Z")));
+        Assert.assertEquals(new TreeSet<>(ImmutableSet.of(rerunTime1)), db.getTimesMarkedForRerun(wf2, laterCurrentTime));
+        Assert.assertEquals(new TreeSet<>(), db.getTimesMarkedForRerun(wf2, laterCurrentTime));
     }
 
     @Test
@@ -182,14 +224,24 @@ public abstract class AbstractStateDatabaseTest {
         
         ObjectNode value1 = Util.MAPPER.createObjectNode();
         value1.put("foo", "Iñtërnâtiônàlizætiøn");
+
+        ObjectNode value3 = Util.MAPPER.createObjectNode();
+        value3.put("bar", "Iñtërnâtiônàlizætiøn");
+
         ObjectNode value2 = Util.MAPPER.createObjectNode();
-        value2.put("bar", "Iñtërnâtiônàlizætiøn");
+        value2.put("bar", "Internatiolization");
         db.putRegister(bucket1, key1, value1);
         Assert.assertEquals(value1, db.getRegister(bucket1, key1));
         Assert.assertEquals(ImmutableMap.of(key1, value1).entrySet(), db.getAllRegisters(bucket1));
         Assert.assertNull(db.getRegister(bucket2, key2));
         Assert.assertEquals(ImmutableMap.of().entrySet(), db.getAllRegisters(bucket2));
-        
+
+        db.putRegister(bucket2, key2, value3);
+        Assert.assertEquals(value1, db.getRegister(bucket1, key1));
+        Assert.assertEquals(ImmutableMap.of(key1, value1).entrySet(), db.getAllRegisters(bucket1));
+        Assert.assertEquals(value3, db.getRegister(bucket2, key2));
+        Assert.assertEquals(ImmutableMap.of(key2, value3).entrySet(), db.getAllRegisters(bucket2));
+
         db.putRegister(bucket2, key2, value2);
         Assert.assertEquals(value1, db.getRegister(bucket1, key1));
         Assert.assertEquals(ImmutableMap.of(key1, value1).entrySet(), db.getAllRegisters(bucket1));
@@ -207,12 +259,18 @@ public abstract class AbstractStateDatabaseTest {
         Assert.assertEquals(ImmutableMap.of().entrySet(), db.getAllRegisters(bucket1));
         Assert.assertNull(db.getRegister(bucket2, key2));
         Assert.assertEquals(ImmutableMap.of().entrySet(), db.getAllRegisters(bucket2));
-        
+
         db.putRegister(bucket2, key2, value2);
         Assert.assertNull(db.getRegister(bucket1, key1));
         Assert.assertEquals(ImmutableMap.of().entrySet(), db.getAllRegisters(bucket1));
         Assert.assertEquals(value2, db.getRegister(bucket2, key2));
         Assert.assertEquals(ImmutableMap.of(key2, value2).entrySet(), db.getAllRegisters(bucket2));
+
+        db.putRegister(bucket2, key2, value3);
+        Assert.assertNull(db.getRegister(bucket1, key1));
+        Assert.assertEquals(ImmutableMap.of().entrySet(), db.getAllRegisters(bucket1));
+        Assert.assertEquals(value3, db.getRegister(bucket2, key2));
+        Assert.assertEquals(ImmutableMap.of(key2, value3).entrySet(), db.getAllRegisters(bucket2));
 
         db.deleteRegister(bucket2, key2);
         Assert.assertNull(db.getRegister(bucket1, key1));
@@ -235,10 +293,9 @@ public abstract class AbstractStateDatabaseTest {
         Set<SlotState> states = new HashSet<SlotState>();
         WorkflowID wf1 = new WorkflowID("workflow-1");
 
-        states.add(new SlotState(new SlotID(wf1, new ScheduledTime("2013-12-02T17:00Z")),
-                SlotState.Status.WAITING));
+        states.add(new SlotState(new SlotID(wf1, new ScheduledTime("2013-12-02T17:00Z")), SlotState.Status.WAITING));
         states.add(new SlotState(new SlotID(wf1, new ScheduledTime("2013-12-02T18:00Z")),
-                SlotState.Status.READY, null, 14));
+                SlotState.Status.READY));
         states.add(new SlotState(new SlotID(wf1, new ScheduledTime("2013-12-02T19:00Z")),
                 SlotState.Status.READY).transitionToRunning("foo-bar"));
         states.add(new SlotState(new SlotID(wf1, new ScheduledTime("2013-12-02T20:00Z")),
