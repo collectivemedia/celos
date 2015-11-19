@@ -16,14 +16,7 @@
 package com.collective.celos;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 import junit.framework.Assert;
 
@@ -52,6 +45,53 @@ public abstract class AbstractStateDatabaseTest {
         Assert.assertEquals(state, db.getSlotState(slotID));
         Assert.assertEquals(null, db.getSlotState(new SlotID(new WorkflowID("bar"), new ScheduledTime("2013-11-27T14:50Z"))));
     }
+
+    @Test
+    public void getAndPutWorksWithExternalID() throws Exception {
+        StateDatabaseConnection db = getStateDatabase();
+        SlotID slotID = new SlotID(new WorkflowID("foo"), new ScheduledTime("2013-11-27T14:50Z"));
+        Assert.assertEquals(null, db.getSlotState(slotID));
+        String externalId = "externalId";
+        SlotState state = new SlotState(slotID, SlotState.Status.READY, externalId, 5);
+        db.putSlotState(state);
+        SlotState newSlotState = db.getSlotState(slotID);
+        Assert.assertEquals(state, newSlotState);
+        Assert.assertEquals(newSlotState.getExternalID(), externalId);
+        Assert.assertEquals(newSlotState.getRetryCount(), 5);
+    }
+
+    @Test
+    public void getAndPutWorksWithExternalIDForPeriod() throws Exception {
+        StateDatabaseConnection db = getStateDatabase();
+        WorkflowID workflowID = new WorkflowID("foo");
+        ScheduledTime startTime = new ScheduledTime("2013-11-27T14:50Z");
+        ScheduledTime midTime = new ScheduledTime("2013-11-27T15:50Z");
+        ScheduledTime endTime = new ScheduledTime("2013-11-27T16:50Z");
+
+        SlotID slotID1 = new SlotID(workflowID, startTime);
+        SlotID slotID2 = new SlotID(workflowID, midTime);
+        SlotID slotID3 = new SlotID(workflowID, endTime);
+
+        SlotState state1 = new SlotState(slotID1, SlotState.Status.READY, "externalId1", 1);
+        SlotState state2 = new SlotState(slotID2, SlotState.Status.READY, "externalId2", 2);
+        SlotState state3 = new SlotState(slotID3, SlotState.Status.READY, "externalId3", 3);
+
+        db.putSlotState(state1);
+        db.putSlotState(state2);
+        db.putSlotState(state3);
+
+        Map<SlotID, SlotState> expected = ImmutableMap.of(slotID1, state1, slotID2, state2, slotID3, state3);
+        Map<SlotID, SlotState> anotherExternalId = ImmutableMap.of(slotID1, new SlotState(slotID1, SlotState.Status.READY, "!!!", 1), slotID2, state2, slotID3, state3);
+
+        Map<SlotID, SlotState> slotStates1 = db.getSlotStates(workflowID, Arrays.asList(startTime, midTime, endTime));
+        Map<SlotID, SlotState> slotStates2 = db.getSlotStates(workflowID, startTime, endTime.plusSeconds(1));
+
+        Assert.assertEquals(expected, slotStates1);
+        Assert.assertEquals(expected, slotStates2);
+        Assert.assertNotSame(anotherExternalId, slotStates2);
+
+    }
+
 
     @Test
     public void testGetSlotStatesForPeriod() throws Exception {
@@ -237,10 +277,9 @@ public abstract class AbstractStateDatabaseTest {
         Set<SlotState> states = new HashSet<SlotState>();
         WorkflowID wf1 = new WorkflowID("workflow-1");
 
-        states.add(new SlotState(new SlotID(wf1, new ScheduledTime("2013-12-02T17:00Z")),
-                SlotState.Status.WAITING));
+        states.add(new SlotState(new SlotID(wf1, new ScheduledTime("2013-12-02T17:00Z")), SlotState.Status.WAITING));
         states.add(new SlotState(new SlotID(wf1, new ScheduledTime("2013-12-02T18:00Z")),
-                SlotState.Status.READY, null, 14));
+                SlotState.Status.READY));
         states.add(new SlotState(new SlotID(wf1, new ScheduledTime("2013-12-02T19:00Z")),
                 SlotState.Status.READY).transitionToRunning("foo-bar"));
         states.add(new SlotState(new SlotID(wf1, new ScheduledTime("2013-12-02T20:00Z")),

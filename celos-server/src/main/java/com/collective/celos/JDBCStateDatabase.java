@@ -15,16 +15,14 @@
  */
 package com.collective.celos;
 
-import com.collective.celos.servlet.AbstractServlet;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.Maps;
 import org.apache.log4j.Logger;
 
-import java.io.IOException;
 import java.sql.*;
-import java.util.*;
+import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 public class JDBCStateDatabase implements StateDatabase {
 

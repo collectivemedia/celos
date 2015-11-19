@@ -17,13 +17,24 @@ package com.collective.celos;
 
 import org.h2.tools.Server;
 import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.BeforeClass;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.sql.Statement;
 
 public class JDBCStateDatabaseTest extends AbstractStateDatabaseTest {
+
+    public static final String CLEAR_SLOT_STATE_TABLE = "DELETE FROM SLOTSTATE";
+
+    public static final String CLEAR_RERUN_SLOT_TABLE = "DELETE FROM RERUNSLOT";
+
+    public static final String CLEAR_WORKFLOW_INFO_TABLE = "DELETE FROM WORKFLOWINFO";
+
+    public static final String CLEAR_REGISTERS_TABLE = "DELETE FROM REGISTER";
+
 
     public static final String CREATE_SLOT_STATE_TABLE = "CREATE TABLE SLOTSTATE (" +
             "WORKFLOWID VARCHAR(25) NOT NULL, DATE TIMESTAMP NOT NULL, STATUS VARCHAR(20) NOT NULL, " +
@@ -69,4 +80,15 @@ public class JDBCStateDatabaseTest extends AbstractStateDatabaseTest {
         return db;
     }
 
+    @Before
+    public void setupTest() throws SQLException {
+        try (Connection connection = DriverManager.getConnection(URL, USERNAME, PASSWORD)) {
+            try (Statement statement = connection.createStatement()) {
+                statement.execute(CLEAR_REGISTERS_TABLE);
+                statement.execute(CLEAR_RERUN_SLOT_TABLE);
+                statement.execute(CLEAR_SLOT_STATE_TABLE);
+                statement.execute(CLEAR_WORKFLOW_INFO_TABLE);
+            }
+        }
+    }
 }
