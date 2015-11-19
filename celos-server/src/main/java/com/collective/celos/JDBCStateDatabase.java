@@ -52,13 +52,11 @@ public class JDBCStateDatabase implements StateDatabase {
     private static final String JSON_PARAM = "JSON";
     private static final String KEY_PARAM = "KEY";
 
-    private static final Logger LOGGER = Logger.getLogger(AbstractServlet.class);
+    private static final Logger LOGGER = Logger.getLogger(JDBCStateDatabase.class);
 
     private final String url;
     private final String name;
     private final String password;
-
-    private static final ObjectMapper mapper = new ObjectMapper();
 
     public JDBCStateDatabase(String url, String name, String password) {
         this.url = url;
@@ -68,19 +66,14 @@ public class JDBCStateDatabase implements StateDatabase {
 
     @Override
     public StateDatabaseConnection openConnection() throws Exception {
-        return new JDBCStateDatabaseConnectionConnection(url, name, password);
+        return new JDBCStateDatabaseConnection(url, name, password);
     }
 
-    private ObjectNode readJson(String json) throws IOException {
-        return (ObjectNode) mapper.readTree(json);
-    }
-
-
-    private class JDBCStateDatabaseConnectionConnection implements StateDatabaseConnection {
+    private class JDBCStateDatabaseConnection implements StateDatabaseConnection {
 
         private final Connection connection;
 
-        public JDBCStateDatabaseConnectionConnection(String url, String name, String password) throws SQLException {
+        public JDBCStateDatabaseConnection(String url, String name, String password) throws SQLException {
             this.connection = DriverManager.getConnection(url, name, password);
         }
 
@@ -230,7 +223,7 @@ public class JDBCStateDatabase implements StateDatabase {
                 statement.setString(2, key.toString());
                 try (ResultSet resultSet = statement.executeQuery()) {
                     if (resultSet.next()) {
-                        return readJson(resultSet.getString(JSON_PARAM));
+                        return Util.JSON_READER.readTree(resultSet.getString(JSON_PARAM));
                     } else {
                         return null;
                     }
@@ -244,12 +237,12 @@ public class JDBCStateDatabase implements StateDatabase {
                 try (PreparedStatement statement = connection.prepareStatement(INSERT_REGISTER)) {
                     statement.setString(1, bucket.toString());
                     statement.setString(2, key.toString());
-                    statement.setString(3, mapper.writeValueAsString(value));
+                    statement.setString(3, Util.JSON_WRITER.writeValueAsString(value));
                     statement.execute();
                 }
             } else {
                 try (PreparedStatement statement = connection.prepareStatement(UPDATE_REGISTER)) {
-                    statement.setString(1, mapper.writeValueAsString(value));
+                    statement.setString(1, Util.JSON_WRITER.writeValueAsString(value));
                     statement.setString(2, bucket.toString());
                     statement.setString(3, key.toString());
                     statement.execute();
@@ -275,7 +268,7 @@ public class JDBCStateDatabase implements StateDatabase {
                 try (ResultSet resultSet = statement.executeQuery()) {
                     while (resultSet.next()) {
                         RegisterKey registerKey = new RegisterKey(resultSet.getString(KEY_PARAM));
-                        JsonNode json = readJson(resultSet.getString(JSON_PARAM));
+                        JsonNode json = Util.JSON_READER.readTree(resultSet.getString(JSON_PARAM));
                         result.put(registerKey, json);
                     }
                 }

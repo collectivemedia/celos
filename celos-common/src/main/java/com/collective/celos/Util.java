@@ -16,12 +16,13 @@
 package com.collective.celos;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.sql.Timestamp;
 import java.util.Map;
 
+import com.fasterxml.jackson.databind.ObjectReader;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
@@ -31,7 +32,6 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -45,8 +45,10 @@ import com.google.common.collect.Maps;
  */
 public class Util {
 
-    private static final ObjectMapper MAPPER = new ObjectMapper();
-    
+    public final static ObjectMapper MAPPER = new ObjectMapper();
+    public final static ObjectReader JSON_READER = MAPPER.reader();
+    public final static ObjectWriter JSON_WRITER = MAPPER.writer();
+
     public static <T> T requireNonNull(T object) {
         if (object == null) throw new NullPointerException();
         else return object;
@@ -155,12 +157,12 @@ public class Util {
 
     public static String jsonNodeToString(JsonNode node) throws Exception {
         Util.requireNonNull(node);
-        return MAPPER.writeValueAsString(node);
+        return JSON_WRITER.writeValueAsString(node);
     }
     
     public static JsonNode stringToJsonNode(String s) throws Exception {
         Util.requireNonNull(s);
-        return MAPPER.readTree(s);
+        return JSON_READER.readTree(s);
     }
     
     public static ScheduledTime max(ScheduledTime a, ScheduledTime b) {
