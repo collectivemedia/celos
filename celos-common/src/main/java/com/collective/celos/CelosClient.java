@@ -41,7 +41,6 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.Lists;
 
@@ -71,7 +70,6 @@ public class CelosClient {
     private final HttpClient client;
     private final ScheduledTimeFormatter timeFormatter;
     private final URI address;
-    private final ObjectMapper objectMapper = new ObjectMapper();
 
     public CelosClient(URI address) {
         this.address = Util.requireNonNull(address);
@@ -153,7 +151,7 @@ public class CelosClient {
         HttpGet workflowListGet = new HttpGet(uriBuilder.build());
         HttpResponse getResponse = execute(workflowListGet);
         InputStream content = getResponse.getEntity().getContent();
-        return SlotState.fromJSONNode(workflowID, objectMapper.readValue(content, ObjectNode.class));
+        return SlotState.fromJSONNode(workflowID, Util.JSON_READER.withType(ObjectNode.class).readValue(content));
     }
     
     public void rerunSlot(SlotID slotID) throws Exception {
@@ -201,7 +199,7 @@ public class CelosClient {
             case HttpServletResponse.SC_NOT_FOUND:
                 return null;
             case HttpServletResponse.SC_OK:
-                return objectMapper.readTree(res.getEntity().getContent());
+                return Util.JSON_READER.readTree(res.getEntity().getContent());
             default:
                 throw new Exception(res.getStatusLine().toString());
             }
@@ -218,7 +216,7 @@ public class CelosClient {
         uriBuilder.setPath(uriBuilder.getPath() + REGISTER_PATH);
         uriBuilder.addParameter(BUCKET_PARAM, bucket.toString());
         uriBuilder.addParameter(KEY_PARAM, key.toString());
-        executePut(uriBuilder.build(), new StringEntity(objectMapper.writeValueAsString(value), StandardCharsets.UTF_8));
+        executePut(uriBuilder.build(), new StringEntity(Util.JSON_WRITER.writeValueAsString(value), StandardCharsets.UTF_8));
     }
     
     /**
@@ -272,15 +270,15 @@ public class CelosClient {
     }
 
     Set<WorkflowID> parseWorkflowIdsList(InputStream content) throws IOException {
-        return objectMapper.readValue(content, WorkflowList.class).getIds();
+        return Util.JSON_READER.withType(WorkflowList.class).<WorkflowList>readValue(content).getIds();
     }
 
     private static final String INFO_NODE = "info";
     private static final String SLOTS_NODE = "slots";
 
     WorkflowStatus parseWorkflowStatus(WorkflowID workflowID, InputStream content) throws IOException {
-        JsonNode node = objectMapper.readValue(content, JsonNode.class);
-        WorkflowInfo info = objectMapper.treeToValue(node.get(INFO_NODE), WorkflowInfo.class);
+        JsonNode node = Util.JSON_READER.withType(JsonNode.class).readValue(content);
+        WorkflowInfo info = Util.JSON_READER.treeToValue(node.get(INFO_NODE), WorkflowInfo.class);
         Boolean paused = node.get(PAUSE_PARAM).asBoolean();
 
         Iterator<JsonNode> elems = node.get(SLOTS_NODE).elements();

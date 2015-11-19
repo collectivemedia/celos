@@ -71,8 +71,6 @@ public class UIServlet extends HttpServlet {
     private static final String UNLISTED_WORKFLOWS_CAPTION = "Unlisted workflows";
     private static final String DEFAULT_CAPTION = "All Workflows";
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
-
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         try {
@@ -382,12 +380,12 @@ public class UIServlet extends HttpServlet {
     }
 
     List<WorkflowGroup> getWorkflowGroups(InputStream configFileIS, Set<WorkflowID> expectedWfs) throws IOException {
-        JsonNode mainNode = objectMapper.readValue(configFileIS, JsonNode.class);
+        JsonNode mainNode = Util.JSON_READER.withType(JsonNode.class).readValue(configFileIS);
         List<WorkflowGroup> configWorkflowGroups = new ArrayList();
         Set<WorkflowID> listedWfs = new TreeSet<>();
 
         for(JsonNode workflowGroupNode: mainNode.get(GROUPS_TAG)) {
-            String[] workflowNames = objectMapper.treeToValue(workflowGroupNode.get(WORKFLOWS_TAG), String[].class);
+            String[] workflowNames = Util.JSON_READER.treeToValue(workflowGroupNode.get(WORKFLOWS_TAG), String[].class);
 
             List<WorkflowID> ids = new ArrayList<>();
             for (String wfName : workflowNames) {

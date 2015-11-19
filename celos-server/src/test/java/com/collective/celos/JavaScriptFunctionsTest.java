@@ -44,8 +44,6 @@ public class JavaScriptFunctionsTest {
     @Rule
     public TemporaryFolder tempFolder = new TemporaryFolder();
 
-    private final ObjectMapper mapper = new ObjectMapper();
-    
     @Test
     public void testHourlySchedule() throws Exception {
         HourlySchedule s = (HourlySchedule) runJS("celos.hourlySchedule()");
@@ -187,7 +185,7 @@ public class JavaScriptFunctionsTest {
     public void testOozieExternalService() throws Exception {
         OozieExternalService s = (OozieExternalService) runJS("celos.oozieExternalService({bla:'hello'}, 'http://foo')");
         Assert.assertEquals("http://foo", s.getOozieURL());
-        ObjectNode props = new ObjectMapper().createObjectNode();
+        ObjectNode props = Util.MAPPER.createObjectNode();
         props.put("bla", "hello");
         Assert.assertEquals(props, s.getProperties(new SlotID(new WorkflowID("foo"), ScheduledTime.now())));
     }
@@ -209,7 +207,7 @@ public class JavaScriptFunctionsTest {
         String js = "var CELOS_DEFAULT_OOZIE_PROPERTIES = {a:'1', b:'2'}; celos.oozieExternalService({b: '3', c:'4'}, 'http://oozie')";
         OozieExternalService s = (OozieExternalService) runJS(js);
         Assert.assertEquals("http://oozie", s.getOozieURL());
-        ObjectNode props = new ObjectMapper().createObjectNode();
+        ObjectNode props = Util.MAPPER.createObjectNode();
         props.put("a", "1");
         props.put("b", "3");
         props.put("c", "4");
@@ -344,11 +342,11 @@ public class JavaScriptFunctionsTest {
         WorkflowConfigurationParser parser = createParser();
         StateDatabaseConnection conn = new MemoryStateDatabase().openConnection();
         
-        ObjectNode v1 = mapper.createObjectNode();
+        ObjectNode v1 = Util.MAPPER.createObjectNode();
         v1.put("foo", "bar-Iñtërnâtiônàlizætiøn");
-        ObjectNode v2 = mapper.createObjectNode();
+        ObjectNode v2 = Util.MAPPER.createObjectNode();
         v2.put("quux", "meh-Iñtërnâtiônàlizætiøn");
-        ObjectNode v3 = mapper.createObjectNode();
+        ObjectNode v3 = Util.MAPPER.createObjectNode();
         v3.put("bla", "baz-Iñtërnâtiônàlizætiøn");
         conn.putRegister(new BucketID("b1-Iñtërnâtiônàlizætiøn"), new RegisterKey("k1-Iñtërnâtiônàlizætiøn"), v1);
         conn.putRegister(new BucketID("b1-Iñtërnâtiônàlizætiøn"), new RegisterKey("k2-Iñtërnâtiônàlizætiøn"), v2);

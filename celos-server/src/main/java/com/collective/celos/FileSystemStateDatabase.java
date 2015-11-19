@@ -26,9 +26,7 @@ import java.util.TreeSet;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.Maps;
 
@@ -84,7 +82,6 @@ public class FileSystemStateDatabase implements StateDatabase {
     private static final String REGISTER_DIR_NAME = "register";
     private static final Logger LOGGER = Logger.getLogger(FileSystemStateDatabase.class);
 
-    private final ObjectMapper mapper = new ObjectMapper();
     private final ScheduledTimeFormatter formatter = new ScheduledTimeFormatter();
     private final File stateDir;
     private final File rerunDir;
@@ -304,14 +301,14 @@ public class FileSystemStateDatabase implements StateDatabase {
                 return Collections.emptySet();
             }
         }
-        
-        private ObjectNode readJson(File file) throws IOException, JsonProcessingException {
+
+        private ObjectNode readJson(File file) throws IOException {
             String json = FileUtils.readFileToString(file, CHARSET);
-            return (ObjectNode) mapper.readTree(json);
+            return (ObjectNode) Util.JSON_READER.readTree(json);
         }
         
         private void writeJson(JsonNode obj, File file) throws IOException {
-            String json = mapper.writeValueAsString(Util.requireNonNull(obj));
+            String json = Util.JSON_WRITER.writeValueAsString(Util.requireNonNull(obj));
             FileUtils.forceMkdir(file.getParentFile());
             FileUtils.write(file, json, CHARSET);
         }
