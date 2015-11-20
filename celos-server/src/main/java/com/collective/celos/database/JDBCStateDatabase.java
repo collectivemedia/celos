@@ -85,6 +85,17 @@ public class JDBCStateDatabase implements StateDatabase {
             return DatabaseType.JDBC;
         }
 
+        public String getUrl() {
+            return url;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public String getPassword() {
+            return password;
+        }
     }
 
     private class JDBCStateDatabaseConnection implements StateDatabaseConnection {

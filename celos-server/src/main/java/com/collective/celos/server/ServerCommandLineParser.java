@@ -15,22 +15,17 @@
  */
 package com.collective.celos.server;
 
-import java.io.File;
-import java.io.OutputStream;
-import java.io.PrintWriter;
-
+import com.collective.celos.Constants;
 import com.collective.celos.Util;
 import com.collective.celos.database.FileSystemStateDatabase;
 import com.collective.celos.database.JDBCStateDatabase;
 import com.collective.celos.database.StateDatabase;
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.GnuParser;
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.Options;
+import org.apache.commons.cli.*;
 import org.apache.log4j.Logger;
 
-import com.collective.celos.Constants;
+import java.io.File;
+import java.io.OutputStream;
+import java.io.PrintWriter;
 
 /**
  * Parses the server command-line options.
@@ -47,7 +42,6 @@ public class ServerCommandLineParser {
     private static final String CLI_STATE_DB_JDBC_URL = "jdbcUrl";
     private static final String CLI_STATE_DB_JDBC_NAME = "jdbcName";
     private static final String CLI_STATE_DB_JDBC_PASSWORD = "jdbcPassword";
-    private static final String DEFAULT_DB_TYPE = "/var/lib/celos/db";
 
     private static final Logger LOGGER = Logger.getLogger(ServerCommandLineParser.class);
     
@@ -74,12 +68,14 @@ public class ServerCommandLineParser {
     }
 
     private StateDatabase.Config getStateDatabaseConfig(CommandLine commandLine) {
-        String stateDbType = getDefault(commandLine, CLI_STATE_DB_TYPE, "filesystem");
-        switch (stateDbType) {
-            case "filesystem":
+        String stateDbType = getDefault(commandLine, CLI_STATE_DB_TYPE, StateDatabase.DatabaseType.FILESYSTEM.toString());
+        StateDatabase.DatabaseType databaseType = StateDatabase.DatabaseType.valueOf(stateDbType.toUpperCase());
+
+        switch (databaseType) {
+            case FILESYSTEM:
                 String stateDbDir = getDefault(commandLine, CLI_STATE_DB_DIR, Constants.DEFAULT_DB_DIR);
                 return new FileSystemStateDatabase.Config(new File(stateDbDir));
-            case "jdbc":
+            case JDBC:
                 String url = Util.requireNonNull(commandLine.getOptionValue(CLI_STATE_DB_JDBC_URL));
                 String username = Util.requireNonNull(commandLine.getOptionValue(CLI_STATE_DB_JDBC_NAME));
                 String password = Util.requireNonNull(commandLine.getOptionValue(CLI_STATE_DB_JDBC_PASSWORD));
