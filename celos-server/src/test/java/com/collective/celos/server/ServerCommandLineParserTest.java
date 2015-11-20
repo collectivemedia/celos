@@ -16,6 +16,8 @@
 package com.collective.celos.server;
 
 import com.collective.celos.Constants;
+import com.collective.celos.database.FileSystemStateDatabase;
+import com.collective.celos.database.StateDatabase;
 import junit.framework.Assert;
 import org.junit.Test;
 
@@ -39,16 +41,20 @@ public class ServerCommandLineParserTest {
         Assert.assertEquals(1337, cmdLine.getPort());
         Assert.assertEquals(new File(Constants.DEFAULT_WORKFLOWS_DIR), cmdLine.getWorkflowsDir());
         Assert.assertEquals(new File(Constants.DEFAULT_DEFAULTS_DIR), cmdLine.getDefaultsDir());
-        Assert.assertEquals(new File(Constants.DEFAULT_DB_DIR), cmdLine.getStateDatabase());
+        Assert.assertEquals(StateDatabase.DatabaseType.FILESYSTEM, cmdLine.getConfig().getDatabaseType());
+        FileSystemStateDatabase.Config config = (FileSystemStateDatabase.Config) cmdLine.getConfig();
+        Assert.assertEquals(new File(Constants.DEFAULT_DB_DIR), config.getDir());
     }
-    
+
     @Test
     public void testOverrideDefaults() throws Exception {
         ServerCommandLine cmdLine = new ServerCommandLineParser().parse(new String[] {"--port", "1337", "--workflows", "/wf", "--db", "/db", "--defaults", "/defaults"});
         Assert.assertEquals(1337, cmdLine.getPort());
         Assert.assertEquals(new File("/wf"), cmdLine.getWorkflowsDir());
         Assert.assertEquals(new File("/defaults"), cmdLine.getDefaultsDir());
-        Assert.assertEquals(new File("/db"), cmdLine.getStateDatabase());
+        Assert.assertEquals(StateDatabase.DatabaseType.FILESYSTEM, cmdLine.getConfig().getDatabaseType());
+        FileSystemStateDatabase.Config config = (FileSystemStateDatabase.Config) cmdLine.getConfig();
+        Assert.assertEquals(new File("/db"), config.getDir());
     }
 
 }

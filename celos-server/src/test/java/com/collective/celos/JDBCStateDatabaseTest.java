@@ -15,6 +15,8 @@
  */
 package com.collective.celos;
 
+import com.collective.celos.database.JDBCStateDatabase;
+import com.collective.celos.database.StateDatabaseConnection;
 import junit.framework.Assert;
 import org.h2.tools.Server;
 import org.junit.AfterClass;
@@ -69,7 +71,8 @@ public class JDBCStateDatabaseTest extends AbstractStateDatabaseTest {
                 statement.execute(CREATE_REGISTERS_TABLE);
             }
         }
-        db = new JDBCStateDatabase(URL, USERNAME, PASSWORD).openConnection();
+        JDBCStateDatabase.Config config = new JDBCStateDatabase.Config(URL, USERNAME, PASSWORD);
+        db = new JDBCStateDatabase(config).openConnection();
     }
 
     @AfterClass

@@ -26,6 +26,8 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.collective.celos.database.StateDatabase;
+import com.collective.celos.database.StateDatabaseConnection;
 import org.joda.time.DateTime;
 
 import com.fasterxml.jackson.databind.JsonNode;

@@ -13,8 +13,9 @@
  * implied.  See the License for the specific language governing
  * permissions and limitations under the License.
  */
-package com.collective.celos;
+package com.collective.celos.database;
 
+import com.collective.celos.*;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.Maps;
 import org.apache.log4j.Logger;
@@ -56,15 +57,34 @@ public class JDBCStateDatabase implements StateDatabase {
     private final String name;
     private final String password;
 
-    public JDBCStateDatabase(String url, String name, String password) {
-        this.url = url;
-        this.name = name;
-        this.password = password;
+    public JDBCStateDatabase(Config config) {
+        this.url = config.url;
+        this.name = config.name;
+        this.password = config.password;
     }
 
     @Override
     public StateDatabaseConnection openConnection() throws Exception {
         return new JDBCStateDatabaseConnection(url, name, password);
+    }
+
+    public static class Config implements StateDatabase.Config {
+
+        private final String url;
+        private final String name;
+        private final String password;
+
+        public Config(String url, String name, String password) {
+            this.url = url;
+            this.name = name;
+            this.password = password;
+        }
+
+        @Override
+        public DatabaseType getDatabaseType() {
+            return DatabaseType.JDBC;
+        }
+
     }
 
     private class JDBCStateDatabaseConnection implements StateDatabaseConnection {
@@ -124,7 +144,7 @@ public class JDBCStateDatabase implements StateDatabase {
 
         @Override
         public void putSlotState(SlotState state) throws Exception {
-            SlotState slotState = getSlotState(state.slotID);
+            SlotState slotState = getSlotState(state.getSlotID());
             if (slotState == null) {
                 try (PreparedStatement statement = connection.prepareStatement(INSERT_SLOT_STATE)) {
                     statement.setString(1, state.getSlotID().getWorkflowID().toString());

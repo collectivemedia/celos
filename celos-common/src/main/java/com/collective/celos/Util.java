@@ -16,6 +16,7 @@
 package com.collective.celos;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.sql.Timestamp;
@@ -243,4 +244,11 @@ public class Util {
     public static ScheduledTime fromTimestamp(Timestamp timestamp) {
         return new ScheduledTime(new DateTime(timestamp.getTime()).withZone(DateTimeZone.UTC));
     }
+
+    public static void validateDirExists(File dir) throws IOException {
+        if (dir == null || !dir.isDirectory() || !dir.exists()) {
+            throw new IOException("ERROR: " + dir + " doesnt exist");
+        }
+    }
+
 }

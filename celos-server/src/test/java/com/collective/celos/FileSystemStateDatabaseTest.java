@@ -15,6 +15,8 @@
  */
 package com.collective.celos;
 
+import com.collective.celos.database.FileSystemStateDatabase;
+import com.collective.celos.database.StateDatabaseConnection;
 import junit.framework.Assert;
 import org.apache.commons.io.IOUtils;
 import org.junit.Rule;
@@ -34,8 +36,8 @@ public class FileSystemStateDatabaseTest extends AbstractStateDatabaseTest {
 
     @Test(expected=IOException.class)
     public void directoryMustExist() throws IOException {
-        File dir = getDatabaseDir();
-        new FileSystemStateDatabase(dir);
+        FileSystemStateDatabase.Config config = new FileSystemStateDatabase.Config(getDatabaseDir());
+        new FileSystemStateDatabase(config);
     }
 
     @Test
@@ -46,7 +48,8 @@ public class FileSystemStateDatabaseTest extends AbstractStateDatabaseTest {
 
     @Override
     public StateDatabaseConnection getStateDatabase() throws IOException {
-        return new FileSystemStateDatabase(makeDatabaseDir()).openConnection();
+        FileSystemStateDatabase.Config config = new FileSystemStateDatabase.Config(makeDatabaseDir());
+        return new FileSystemStateDatabase(config).openConnection();
     }
 
     private File makeDatabaseDir() {
@@ -64,7 +67,8 @@ public class FileSystemStateDatabaseTest extends AbstractStateDatabaseTest {
      */
     @Test
     public void canReadFromFileSystem1() throws Exception {
-        StateDatabaseConnection db = new FileSystemStateDatabase(getResourceDirNoTimestamp()).openConnection();
+        FileSystemStateDatabase.Config config = new FileSystemStateDatabase.Config(getResourceDirNoTimestamp());
+        StateDatabaseConnection db = new FileSystemStateDatabase(config).openConnection();
         for(SlotState state : getStates()) {
             Assert.assertEquals(state, db.getSlotState(state.getSlotID()));
         }
@@ -75,7 +79,8 @@ public class FileSystemStateDatabaseTest extends AbstractStateDatabaseTest {
      */
     @Test
     public void canReadFromFileSystem2() throws Exception {
-        StateDatabaseConnection db = new FileSystemStateDatabase(getResourceDir()).openConnection();
+        FileSystemStateDatabase.Config config = new FileSystemStateDatabase.Config(getResourceDir());
+        StateDatabaseConnection db = new FileSystemStateDatabase(config).openConnection();
         for(SlotState state : getStates()) {
             Assert.assertEquals(state, db.getSlotState(state.getSlotID()));
         }

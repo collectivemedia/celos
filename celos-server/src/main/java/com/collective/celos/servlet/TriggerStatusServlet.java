@@ -20,7 +20,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.collective.celos.*;
-import org.apache.log4j.Logger;
+import com.collective.celos.database.StateDatabaseConnection;
 
 import com.collective.celos.trigger.TriggerStatus;
 

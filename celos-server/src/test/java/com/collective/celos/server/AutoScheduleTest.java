@@ -16,6 +16,7 @@
 package com.collective.celos.server;
 
 import com.collective.celos.*;
+import com.collective.celos.database.FileSystemStateDatabase;
 import com.google.common.collect.ImmutableMap;
 import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
@@ -58,7 +59,8 @@ public class AutoScheduleTest {
         this.slotDbDir.mkdirs();
 
         this.celosServer = new CelosServer();
-        this.port = celosServer.startServer(ImmutableMap.<String, String>of(), workflowsDir, defaultsDir, slotDbDir);
+        FileSystemStateDatabase.Config config = new FileSystemStateDatabase.Config(slotDbDir);
+        this.port = celosServer.startServer(ImmutableMap.<String, String>of(), workflowsDir, defaultsDir, config);
         this.celosClient = new CelosClient(URI.create("http://localhost:" + port));
     }
 

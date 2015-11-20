@@ -15,6 +15,8 @@
  */
 package com.collective.celos;
 
+import com.collective.celos.database.StateDatabase;
+import com.collective.celos.database.StateDatabaseConnection;
 import com.collective.celos.trigger.SuccessTrigger;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;

@@ -15,9 +15,14 @@
  */
 package com.collective.celos.server;
 
+import java.io.File;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 
+import com.collective.celos.Util;
+import com.collective.celos.database.FileSystemStateDatabase;
+import com.collective.celos.database.JDBCStateDatabase;
+import com.collective.celos.database.StateDatabase;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.GnuParser;
@@ -34,10 +39,15 @@ public class ServerCommandLineParser {
 
     private static final String CLI_WF_DIR = "workflows";
     private static final String CLI_DEFAULTS_DIR = "defaults";
-    private static final String CLI_STATE_DB_DIR = "db";
     private static final String CLI_LOG_DIR = "logs";
     private static final String CLI_AUTOSCHEDULE = "autoSchedule";
     private static final String CLI_PORT = "port";
+    private static final String CLI_STATE_DB_TYPE = "dbType";
+    private static final String CLI_STATE_DB_DIR = "db";
+    private static final String CLI_STATE_DB_JDBC_URL = "jdbcUrl";
+    private static final String CLI_STATE_DB_JDBC_NAME = "jdbcName";
+    private static final String CLI_STATE_DB_JDBC_PASSWORD = "jdbcPassword";
+    private static final String DEFAULT_DB_TYPE = "/var/lib/celos/db";
 
     private static final Logger LOGGER = Logger.getLogger(ServerCommandLineParser.class);
     
@@ -52,14 +62,31 @@ public class ServerCommandLineParser {
             throw new IllegalArgumentException("Missing --" + CLI_PORT + " argument");
         }
 
-        String stateDbDir = getDefault(commandLine, CLI_STATE_DB_DIR, Constants.DEFAULT_DB_DIR);
+        StateDatabase.Config config = getStateDatabaseConfig(commandLine);
+
         String defaultsDir = getDefault(commandLine, CLI_DEFAULTS_DIR, Constants.DEFAULT_DEFAULTS_DIR);
         String workflowsDir = getDefault(commandLine, CLI_WF_DIR, Constants.DEFAULT_WORKFLOWS_DIR);
         String logDir = getDefault(commandLine, CLI_LOG_DIR, Constants.DEFAULT_LOG_DIR);
         Integer autoSchedule = Integer.valueOf(getDefault(commandLine, CLI_AUTOSCHEDULE, "-1"));
         Integer port = Integer.valueOf(commandLine.getOptionValue(CLI_PORT));
 
-        return new ServerCommandLine(workflowsDir, defaultsDir, stateDbDir, logDir, port, autoSchedule);
+        return new ServerCommandLine(workflowsDir, defaultsDir, config, logDir, port, autoSchedule);
+    }
+
+    private StateDatabase.Config getStateDatabaseConfig(CommandLine commandLine) {
+        String stateDbType = getDefault(commandLine, CLI_STATE_DB_TYPE, "filesystem");
+        switch (stateDbType) {
+            case "filesystem":
+                String stateDbDir = getDefault(commandLine, CLI_STATE_DB_DIR, Constants.DEFAULT_DB_DIR);
+                return new FileSystemStateDatabase.Config(new File(stateDbDir));
+            case "jdbc":
+                String url = Util.requireNonNull(commandLine.getOptionValue(CLI_STATE_DB_JDBC_URL));
+                String username = Util.requireNonNull(commandLine.getOptionValue(CLI_STATE_DB_JDBC_NAME));
+                String password = Util.requireNonNull(commandLine.getOptionValue(CLI_STATE_DB_JDBC_PASSWORD));
+                return new JDBCStateDatabase.Config(url, username, password);
+            default:
+                throw new IllegalStateException("Unknown Celos DB type: " + stateDbType);
+        }
     }
 
     private String getDefault(CommandLine commandLine, String optionName, String defaultValue) {
@@ -76,8 +103,13 @@ public class ServerCommandLineParser {
         final Options options = new Options();
         options.addOption(CLI_WF_DIR, CLI_WF_DIR, true, "Path to WORKFLOWS dir")
                 .addOption(CLI_DEFAULTS_DIR, CLI_DEFAULTS_DIR, true, "Path to DEFAULTS dir")
-                .addOption(CLI_STATE_DB_DIR, CLI_STATE_DB_DIR, true, "Path to STATE DATABASE dir")
                 .addOption(CLI_PORT, CLI_PORT, true, "Celos Server port")
+                .addOption(CLI_LOG_DIR, CLI_LOG_DIR, true, "Celos logs dir")
+                .addOption(CLI_STATE_DB_TYPE, CLI_STATE_DB_TYPE, true, "Celos state db type: []")
+                .addOption(CLI_STATE_DB_DIR, CLI_STATE_DB_DIR, true, "Path to STATE DATABASE dir")
+                .addOption(CLI_STATE_DB_JDBC_URL, CLI_STATE_DB_JDBC_URL, true, "Celos JDBC db url")
+                .addOption(CLI_STATE_DB_JDBC_NAME, CLI_STATE_DB_JDBC_NAME, true, "Celos JDBC db username")
+                .addOption(CLI_STATE_DB_JDBC_PASSWORD, CLI_STATE_DB_JDBC_PASSWORD, true, "Celos JDBC db password")
                 .addOption(CLI_LOG_DIR, CLI_LOG_DIR, true, "Celos logs dir")
                 .addOption(CLI_AUTOSCHEDULE, CLI_AUTOSCHEDULE, true, "Time period in seconds to automatically run Scheduler. If not specified, Scheduler will not be automatically run");
         return options;
