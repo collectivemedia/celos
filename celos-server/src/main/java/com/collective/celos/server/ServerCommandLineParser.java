@@ -35,6 +35,7 @@ public class ServerCommandLineParser {
     private static final String CLI_WF_DIR = "workflows";
     private static final String CLI_DEFAULTS_DIR = "defaults";
     private static final String CLI_STATE_DB_DIR = "db";
+    private static final String CLI_STATE_DB_TYPE = "dbType";
     private static final String CLI_LOG_DIR = "logs";
     private static final String CLI_AUTOSCHEDULE = "autoSchedule";
     private static final String CLI_PORT = "port";

@@ -16,11 +16,9 @@
 package com.collective.celos;
 
 import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
+import com.collective.celos.database.StateDatabaseConnection;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import org.apache.log4j.Logger;
 
 import com.collective.celos.trigger.Trigger;

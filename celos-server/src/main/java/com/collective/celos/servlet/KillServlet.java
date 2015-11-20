@@ -16,6 +16,7 @@
 package com.collective.celos.servlet;
 
 import com.collective.celos.*;
+import com.collective.celos.database.StateDatabaseConnection;
 import org.apache.log4j.Logger;
 
 import javax.servlet.ServletException;

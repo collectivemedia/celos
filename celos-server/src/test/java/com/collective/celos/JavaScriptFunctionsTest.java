@@ -20,6 +20,7 @@ import java.io.FileReader;
 import java.io.StringReader;
 import java.util.Properties;
 
+import com.collective.celos.database.StateDatabaseConnection;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -35,7 +36,6 @@ import com.collective.celos.trigger.NotTrigger;
 import com.collective.celos.trigger.OffsetTrigger;
 import com.collective.celos.trigger.OrTrigger;
 import com.collective.celos.trigger.SuccessTrigger;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.ImmutableMap;
 

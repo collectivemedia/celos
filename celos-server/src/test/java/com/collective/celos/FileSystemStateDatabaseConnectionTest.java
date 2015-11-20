@@ -15,6 +15,8 @@
  */
 package com.collective.celos;
 
+import com.collective.celos.database.FileSystemStateDatabaseConnection;
+import com.collective.celos.database.StateDatabaseConnection;
 import junit.framework.Assert;
 import org.apache.commons.io.IOUtils;
 import org.junit.Rule;
@@ -27,7 +29,7 @@ import java.net.URISyntaxException;
 import java.util.HashSet;
 import java.util.Set;
 
-public class FileSystemStateDatabaseTest extends AbstractStateDatabaseTest {
+public class FileSystemStateDatabaseConnectionTest extends AbstractStateDatabaseTest {
 
     @Rule
     public TemporaryFolder tempFolder = new TemporaryFolder();
@@ -35,7 +37,7 @@ public class FileSystemStateDatabaseTest extends AbstractStateDatabaseTest {
     @Test(expected=IOException.class)
     public void directoryMustExist() throws IOException {
         File dir = getDatabaseDir();
-        new FileSystemStateDatabase(dir);
+        new FileSystemStateDatabaseConnection(dir);
     }
 
     @Test
@@ -46,7 +48,7 @@ public class FileSystemStateDatabaseTest extends AbstractStateDatabaseTest {
 
     @Override
     public StateDatabaseConnection getStateDatabase() throws IOException {
-        return new FileSystemStateDatabase(makeDatabaseDir()).openConnection();
+        return new FileSystemStateDatabaseConnection(makeDatabaseDir()).openConnection();
     }
 
     private File makeDatabaseDir() {
@@ -64,7 +66,7 @@ public class FileSystemStateDatabaseTest extends AbstractStateDatabaseTest {
      */
     @Test
     public void canReadFromFileSystem1() throws Exception {
-        StateDatabaseConnection db = new FileSystemStateDatabase(getResourceDirNoTimestamp()).openConnection();
+        StateDatabaseConnection db = new FileSystemStateDatabaseConnection(getResourceDirNoTimestamp()).openConnection();
         for(SlotState state : getStates()) {
             Assert.assertEquals(state, db.getSlotState(state.getSlotID()));
         }
@@ -75,7 +77,7 @@ public class FileSystemStateDatabaseTest extends AbstractStateDatabaseTest {
      */
     @Test
     public void canReadFromFileSystem2() throws Exception {
-        StateDatabaseConnection db = new FileSystemStateDatabase(getResourceDir()).openConnection();
+        StateDatabaseConnection db = new FileSystemStateDatabaseConnection(getResourceDir()).openConnection();
         for(SlotState state : getStates()) {
             Assert.assertEquals(state, db.getSlotState(state.getSlotID()));
         }

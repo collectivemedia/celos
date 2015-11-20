@@ -15,6 +15,8 @@
  */
 package com.collective.celos;
 
+import com.collective.celos.database.JDBCStateDatabaseConnection;
+import com.collective.celos.database.StateDatabaseConnection;
 import junit.framework.Assert;
 import org.h2.tools.Server;
 import org.junit.AfterClass;
@@ -27,7 +29,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-public class JDBCStateDatabaseTest extends AbstractStateDatabaseTest {
+public class JDBCStateDatabaseConnectionTest extends AbstractStateDatabaseTest {
 
     public static final String CLEAR_SLOT_STATE_TABLE = "DELETE FROM SLOTSTATE";
 
@@ -69,7 +71,7 @@ public class JDBCStateDatabaseTest extends AbstractStateDatabaseTest {
                 statement.execute(CREATE_REGISTERS_TABLE);
             }
         }
-        db = new JDBCStateDatabase(URL, USERNAME, PASSWORD).openConnection();
+        db = new JDBCStateDatabaseConnection(URL, USERNAME, PASSWORD).openConnection();
     }
 
     @AfterClass

@@ -16,12 +16,11 @@
 package com.collective.celos.servlet;
 
 import com.collective.celos.*;
-import org.apache.log4j.Logger;
+import com.collective.celos.database.StateDatabaseConnection;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Set;
 
 /**
  * Posting to this servlet (un) pauses the specified workflow.
