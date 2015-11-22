@@ -95,7 +95,6 @@ public class FileSystemStateDatabase implements StateDatabase {
      */
     public FileSystemStateDatabase(Config config) throws IOException {
         File dir = config.dir;
-        Util.validateDirExists(config.dir);
         stateDir = new File(dir, STATE_DIR_NAME);
         rerunDir = new File(dir, RERUN_DIR_NAME);
         pausedDir = new File(dir, PAUSED_DIR_NAME);
@@ -119,6 +118,11 @@ public class FileSystemStateDatabase implements StateDatabase {
         @Override
         public DatabaseType getDatabaseType() {
             return DatabaseType.FILESYSTEM;
+        }
+
+        @Override
+        public void validate() throws IOException {
+            Util.validateDirExists(dir);
         }
 
         public File getDir() {

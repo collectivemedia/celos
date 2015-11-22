@@ -15,6 +15,8 @@
  */
 package com.collective.celos.database;
 
+import java.io.IOException;
+
 public interface StateDatabase {
 
     public static enum DatabaseType {
@@ -24,6 +26,8 @@ public interface StateDatabase {
 
     public static interface Config {
         public DatabaseType getDatabaseType();
+
+        public void validate() throws IOException;
     }
 
 

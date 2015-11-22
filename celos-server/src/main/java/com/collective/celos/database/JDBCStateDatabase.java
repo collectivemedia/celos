@@ -85,6 +85,11 @@ public class JDBCStateDatabase implements StateDatabase {
             return DatabaseType.JDBC;
         }
 
+        @Override
+        public void validate() {
+
+        }
+
         public String getUrl() {
             return url;
         }

@@ -6,23 +6,15 @@
 - hosts: host
   gather_facts: no
   vars:
-    root: "../.."
+    root: "/home/akonopko/work/celos_push"
     tests_dir: "{{root}}/celos-server/src/test/resources/com/collective/celos/workflow-configuration-test"
-    service_url: "http://{{inventory_hostname}}:{{service_port}}"
+    service_url: "http://localhost:9123"
+    ansible_ssh_user: "akonopko"
+    celos_workflows_dir: "/home/akonopko/work/celos_push/wrk/workflows"
+    celos_defaults_dir: "/home/akonopko/work/celos_push/wrk/defaults"
+    celos_log_dir: "/home/akonopko/work/celos_push/wrk/logs"
 
   tasks:
-
-  - name: Prepare configuration dir
-    shell: rm -rf {{celos_workflows_dir}}/* && mkdir -p {{celos_workflows_dir}}
-
-  - name: Prepare database dir
-    shell: rm -rf {{celos_db_dir}}/* && mkdir -p {{celos_db_dir}}
-
-  - name: Prepare defaults dir
-    shell: rm -rf {{celos_defaults_dir}}/* && mkdir -p {{celos_defaults_dir}}
-
-  - name: Copy defaults
-    shell: cp /home/celos-ci/celos-settings/defaults/* {{ celos_defaults_dir }}
 
   - register: result
     local_action:
@@ -128,50 +120,6 @@
       status_code: 404
       url: "{{service_url}}/trigger-status?id=not-existing-workflow"
 
-  - name: Upload sample state database
-    synchronize:
-      src: "{{root}}/celos-server/src/test/resources/com/collective/celos/state-database-test/db-1/"
-      dest: "{{celos_db_dir}}/"
-      recursive: yes
-      delete: yes
-    tags: slot-state
-
-  - register: result
-    local_action:
-      module: uri
-      url: "{{service_url}}/workflow?id=workflow-1&time=2013-12-02T20:00Z"
-      return_content: yes
-  - name: Check servlet /celos/workflow returns correct JSON object for workflow-1
-    when: result.content != lookup('file', 'test_files/workflow_states_workflow_1.json')
-    fail:
-
-  - register: result
-    local_action:
-      module: uri
-      url: "{{service_url}}/workflow?id=workflow-2&time=2013-12-02T20:00Z"
-      return_content: yes
-  - name: Check servlet /celos/workflow returns correct JSON object for workflow-2
-    when: result.content != lookup('file', 'test_files/workflow_states_workflow_2.json')
-    fail:
-
-  - register: result
-    local_action:
-      module: uri
-      url: "{{service_url}}/slot-state?id=workflow-1&time=2013-12-02T19:00Z"
-      return_content: yes
-  - name: Check servlet /celos/slot-state returns correct JSON for 1900
-    when: result.content != lookup('file', 'test_files/slot_state_workflow_1_1900.json')
-    fail:
-
-  - register: result
-    local_action:
-      module: uri
-      url: "{{service_url}}/slot-state?id=workflow-1&time=2013-12-02T18:00Z"
-      return_content: yes
-  - name: Check servlet /celos/slot-state returns correct JSON for 1800
-    when: result.content != lookup('file', 'test_files/slot_state_workflow_1_1800.json')
-    fail:
-
   - name: Check servlet /celos/slot-state returns 404 for slot not found
     local_action:
       module: uri
@@ -216,6 +164,9 @@
   - name: Check workflow was successfully undeployed
     when: result.rc == 0
     fail:
+
+  - name: Deploy register-based workflow
+    local_action: command {{ root }}/scripts/test/test_files/register-workflow/scripts/ci-deploy {{ root }}
 
   - name: Run file-copy CCI test
     local_action: command {{ root }}/scripts/test/test_files/file-copy/scripts/ci-test {{ service_url }} {{ root }}
