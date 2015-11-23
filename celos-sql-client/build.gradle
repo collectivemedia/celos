@@ -1,0 +1,31 @@
+apply plugin: 'maven'
+
+mainClassName = 'com.collective.celos.sqlclient.Main'
+version = '0.1'
+
+sourceSets {
+    main {
+        java {
+            srcDir 'src/main/java'
+        }
+    }
+}
+
+configurations {
+    compileIncluded
+    compile.extendsFrom compileIncluded
+}
+
+dependencies {
+    compileIncluded project(':celos-common')
+    compile("org.postgresql:postgresql:9.4-1205-jdbc42")
+}
+
+jar {
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }}
+    baseName "celos-sql-client"
+    archiveName "celos-sql-client.jar"
+    manifest {
+        attributes("Main-Class": mainClassName)
+    }
+}

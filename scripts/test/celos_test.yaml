@@ -136,41 +136,44 @@
 #     delete: yes
 #   tags: slot-state
 
-# - register: result
-#   local_action:
-#     module: uri
-#     url: "{{service_url}}/workflow?id=workflow-1&time=2013-12-02T20:00Z"
-#     return_content: yes
-# - name: Check servlet /celos/workflow returns correct JSON object for workflow-1
-#   when: result.content != lookup('file', 'test_files/workflow_states_workflow_1.json')
-#   fail:
+  - name: Upload sample state database
+    local_action: command java -jar {{ root }}/celos-sql-client/build/libs/celos-sql-client.jar --jdbcUrl jdbc:postgresql://dev-workflow002.ewr004.collective-media.net/celos_test --jdbcName celos --jdbcPassword celos -sqlFile {{ root }}/scripts/test/test_files/test_dump.sql
 
-# - register: result
-#   local_action:
-#     module: uri
-#     url: "{{service_url}}/workflow?id=workflow-2&time=2013-12-02T20:00Z"
-#     return_content: yes
-# - name: Check servlet /celos/workflow returns correct JSON object for workflow-2
-#   when: result.content != lookup('file', 'test_files/workflow_states_workflow_2.json')
-#   fail:
+  - register: result
+    local_action:
+      module: uri
+      url: "{{service_url}}/workflow?id=workflow-1&time=2013-12-02T20:00Z"
+      return_content: yes
+  - name: Check servlet /celos/workflow returns correct JSON object for workflow-1
+    when: result.content != lookup('file', 'test_files/workflow_states_workflow_1.json')
+    fail:
 
-# - register: result
-#   local_action:
-#     module: uri
-#     url: "{{service_url}}/slot-state?id=workflow-1&time=2013-12-02T19:00Z"
-#     return_content: yes
-# - name: Check servlet /celos/slot-state returns correct JSON for 1900
-#   when: result.content != lookup('file', 'test_files/slot_state_workflow_1_1900.json')
-#   fail:
+  - register: result
+    local_action:
+      module: uri
+      url: "{{service_url}}/workflow?id=workflow-2&time=2013-12-02T20:00Z"
+      return_content: yes
+  - name: Check servlet /celos/workflow returns correct JSON object for workflow-2
+    when: result.content != lookup('file', 'test_files/workflow_states_workflow_2.json')
+    fail:
 
-# - register: result
-#   local_action:
-#     module: uri
-#     url: "{{service_url}}/slot-state?id=workflow-1&time=2013-12-02T18:00Z"
-#     return_content: yes
-# - name: Check servlet /celos/slot-state returns correct JSON for 1800
-#   when: result.content != lookup('file', 'test_files/slot_state_workflow_1_1800.json')
-#   fail:
+  - register: result
+    local_action:
+      module: uri
+      url: "{{service_url}}/slot-state?id=workflow-1&time=2013-12-02T19:00Z"
+      return_content: yes
+  - name: Check servlet /celos/slot-state returns correct JSON for 1900
+    when: result.content != lookup('file', 'test_files/slot_state_workflow_1_1900.json')
+    fail:
+
+  - register: result
+    local_action:
+      module: uri
+      url: "{{service_url}}/slot-state?id=workflow-1&time=2013-12-02T18:00Z"
+      return_content: yes
+  - name: Check servlet /celos/slot-state returns correct JSON for 1800
+    when: result.content != lookup('file', 'test_files/slot_state_workflow_1_1800.json')
+    fail:
 
   - name: Check servlet /celos/slot-state returns 404 for slot not found
     local_action:
@@ -285,8 +288,14 @@
       method: POST
       url: "{{service_url}}/clear-cache"
 
+  - name: clear sample state database
+    local_action: command java -jar celos-sql-client.jar --jdbcUrl jdbc:postgresql://dev-workflow002.ewr004.collective-media.net/celos_test --jdbcName celos --jdbcPassword celos -sqlFile {{ root }}/scripts/test/test_files/clear.sql
+
   - name: Run file-copy CCI test
     local_action: command {{ root }}/scripts/test/test_files/file-copy/scripts/ci-test {{ service_url }} {{ root }}
+
+  - name: clear sample state database
+    local_action: command java -jar celos-sql-client.jar --jdbcUrl jdbc:postgresql://dev-workflow002.ewr004.collective-media.net/celos_test --jdbcName celos --jdbcPassword celos -sqlFile {{ root }}/scripts/test/test_files/clear.sql
 
   - name: Clean logs dir
     shell: rm -rf {{celos_log_dir}}/*
