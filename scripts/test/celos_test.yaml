@@ -128,13 +128,13 @@
       status_code: 404
       url: "{{service_url}}/trigger-status?id=not-existing-workflow"
 
-  - name: Upload sample state database
-    synchronize:
-      src: "{{root}}/celos-server/src/test/resources/com/collective/celos/state-database-test/db-1/"
-      dest: "{{celos_db_dir}}/"
-      recursive: yes
-      delete: yes
-    tags: slot-state
+# - name: Upload sample state database
+#   synchronize:
+#     src: "{{root}}/celos-server/src/test/resources/com/collective/celos/state-database-test/db-1/"
+#     dest: "{{celos_db_dir}}/"
+#     recursive: yes
+#     delete: yes
+#   tags: slot-state
 
   - name: Upload sample state database
     local_action: command java -jar {{ root }}/celos-sql-client/build/libs/celos-sql-client.jar --jdbcUrl jdbc:postgresql://dev-workflow002.ewr004.collective-media.net/celos_test --jdbcName celos --jdbcPassword celos -sqlFile {{ root }}/scripts/test/test_files/test_dump.sql
