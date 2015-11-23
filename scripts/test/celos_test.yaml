@@ -288,14 +288,14 @@
       method: POST
       url: "{{service_url}}/clear-cache"
 
-  - name: clear sample state database
-    local_action: command java -jar celos-sql-client.jar --jdbcUrl jdbc:postgresql://dev-workflow002.ewr004.collective-media.net/celos_test --jdbcName celos --jdbcPassword celos -sqlFile {{ root }}/scripts/test/test_files/clear.sql
+  - name: Upload sample state database
+    local_action: command java -jar {{ root }}/celos-sql-client/build/libs/celos-sql-client.jar --jdbcUrl jdbc:postgresql://dev-workflow002.ewr004.collective-media.net/celos_test --jdbcName celos --jdbcPassword celos -sqlFile {{ root }}/scripts/test/test_files/clear.sql
 
   - name: Run file-copy CCI test
     local_action: command {{ root }}/scripts/test/test_files/file-copy/scripts/ci-test {{ service_url }} {{ root }}
 
-  - name: clear sample state database
-    local_action: command java -jar celos-sql-client.jar --jdbcUrl jdbc:postgresql://dev-workflow002.ewr004.collective-media.net/celos_test --jdbcName celos --jdbcPassword celos -sqlFile {{ root }}/scripts/test/test_files/clear.sql
+  - name: Upload sample state database
+    local_action: command java -jar {{ root }}/celos-sql-client/build/libs/celos-sql-client.jar --jdbcUrl jdbc:postgresql://dev-workflow002.ewr004.collective-media.net/celos_test --jdbcName celos --jdbcPassword celos -sqlFile {{ root }}/scripts/test/test_files/clear.sql
 
   - name: Clean logs dir
     shell: rm -rf {{celos_log_dir}}/*
