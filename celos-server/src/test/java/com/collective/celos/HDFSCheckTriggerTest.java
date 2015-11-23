@@ -15,6 +15,7 @@
  */
 package com.collective.celos;
 
+import com.collective.celos.database.StateDatabaseConnection;
 import com.collective.celos.trigger.HDFSCheckTrigger;
 import org.junit.Rule;
 import org.junit.Test;

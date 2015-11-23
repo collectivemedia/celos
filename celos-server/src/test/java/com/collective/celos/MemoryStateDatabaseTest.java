@@ -15,6 +15,8 @@
  */
 package com.collective.celos;
 
+import com.collective.celos.database.StateDatabaseConnection;
+
 import java.io.IOException;
 
 public class MemoryStateDatabaseTest extends AbstractStateDatabaseTest {

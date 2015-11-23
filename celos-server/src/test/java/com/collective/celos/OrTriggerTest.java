@@ -18,6 +18,7 @@ package com.collective.celos;
 import java.util.Arrays;
 import java.util.Collections;
 
+import com.collective.celos.database.StateDatabaseConnection;
 import com.collective.celos.trigger.AlwaysTrigger;
 import com.collective.celos.trigger.OrTrigger;
 import com.collective.celos.trigger.Trigger;
