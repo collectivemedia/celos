@@ -240,6 +240,12 @@
       dirs: yes
       delete: yes
 
+  - name: Clear scheduler cache
+    local_action:
+      module: uri
+      method: POST
+      url: "{{service_url}}/clear-cache"
+
   - register: result
     local_action:
       module: uri
