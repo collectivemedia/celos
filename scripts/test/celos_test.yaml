@@ -255,6 +255,36 @@
     when: result.content != lookup('file', 'test_files/workflow_list_register.json')
     fail:
 
+  - name: DELETE register with data=1
+    local_action:
+      module: uri
+      method: DELETE
+      url: "{{service_url}}/register?bucket=celos-register&key=key1"
+
+  - name: DELETE register with data=2
+    local_action:
+      module: uri
+      method: DELETE
+      url: "{{service_url}}/register?bucket=celos-register&key=key2"
+
+  - name: assure after DELETE register with data=1 is not accessible
+    local_action:
+      module: uri
+      url: "{{service_url}}/register?bucket=celos-register&key=key1"
+      status_code: 404
+
+  - name: assure after DELETE register with data=2 is not accessible
+    local_action:
+      module: uri
+      url: "{{service_url}}/register?bucket=celos-register&key=key2"
+      status_code: 404
+
+  - name: Clear scheduler cache
+    local_action:
+      module: uri
+      method: POST
+      url: "{{service_url}}/clear-cache"
+
   - name: Run file-copy CCI test
     local_action: command {{ root }}/scripts/test/test_files/file-copy/scripts/ci-test {{ service_url }} {{ root }}
 
