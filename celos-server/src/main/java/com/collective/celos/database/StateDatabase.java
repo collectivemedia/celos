@@ -13,9 +13,23 @@
  * implied.  See the License for the specific language governing
  * permissions and limitations under the License.
  */
-package com.collective.celos;
+package com.collective.celos.database;
+
+import java.io.IOException;
 
 public interface StateDatabase {
+
+    public static enum DatabaseType {
+        FILESYSTEM, JDBC
+    }
+
+
+    public static interface Config {
+        public DatabaseType getDatabaseType();
+
+        public void validate() throws IOException;
+    }
+
 
     public StateDatabaseConnection openConnection() throws Exception;
 

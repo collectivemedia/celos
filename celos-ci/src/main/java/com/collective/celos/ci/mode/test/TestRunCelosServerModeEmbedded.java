@@ -19,6 +19,7 @@ import com.collective.celos.Util;
 import com.collective.celos.ci.config.CiCommandLine;
 import com.collective.celos.ci.deploy.JScpWorker;
 import com.collective.celos.ci.deploy.WorkflowFilesDeployer;
+import com.collective.celos.database.FileSystemStateDatabase;
 import com.collective.celos.server.CelosServer;
 import com.google.common.collect.ImmutableMap;
 import org.apache.commons.vfs2.FileObject;
@@ -72,7 +73,8 @@ public class TestRunCelosServerModeEmbedded implements TestRunCelosServerMode {
         defaultsDir.mkdirs();
         stateDatabase.mkdirs();
 
-        Integer port = celosServer.startServer(additionalJSParams, workflowsDir, defaultsDir, stateDatabase);
+        FileSystemStateDatabase.Config config = new FileSystemStateDatabase.Config(stateDatabase);
+        Integer port = celosServer.startServer(additionalJSParams, workflowsDir, defaultsDir, config);
 
         logJsFileExists(WorkflowFilesDeployer.WORKFLOW_FILENAME, testRun);
         logJsFileExists(WorkflowFilesDeployer.DEFAULTS_FILENAME, testRun);

@@ -15,6 +15,8 @@
  */
 package com.collective.celos;
 
+import com.collective.celos.database.*;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
@@ -28,18 +30,17 @@ public class SchedulerConfiguration {
 
     private final File workflowConfigurationPath;
     private final File defaultsConfigurationPath;
-    private final File stateDatabasePath;
+    private final StateDatabase db;
     private final Map<String, String> additionalVars;
 
-    public SchedulerConfiguration(File workflowConfigurationPath, File defaultsConfigurationPath, File stateDatabasePath, Map<String, String> additionalVars) {
+    public SchedulerConfiguration(File workflowConfigurationPath, File defaultsConfigurationPath, StateDatabase.Config config, Map<String, String> additionalVars) throws IOException {
         this.workflowConfigurationPath = workflowConfigurationPath;
         this.defaultsConfigurationPath = defaultsConfigurationPath;
-        this.stateDatabasePath = stateDatabasePath;
         this.additionalVars = additionalVars;
+        this.db = createStateDatabase(config);
     }
 
     public Scheduler makeDefaultScheduler() throws Exception {
-        StateDatabase db = makeDefaultStateDatabase();
         WorkflowConfiguration config;
         try(StateDatabaseConnection conn = db.openConnection()) {
             config = getWorkflowConfigurationParser(conn).getWorkflowConfiguration();
@@ -52,8 +53,19 @@ public class SchedulerConfiguration {
         return new WorkflowConfigurationParser(defaultsConfigurationPath, additionalVars).parseConfiguration(workflowConfigurationPath, conn);
     }
 
-    public StateDatabase makeDefaultStateDatabase() throws IOException {
-        return new FileSystemStateDatabase(stateDatabasePath);
+    public StateDatabase getStateDatabase() {
+        return db;
+    }
+
+    private StateDatabase createStateDatabase(StateDatabase.Config config) throws IOException {
+        switch (config.getDatabaseType()) {
+            case JDBC:
+                return new JDBCStateDatabase((JDBCStateDatabase.Config) config);
+            case FILESYSTEM:
+                return new FileSystemStateDatabase((FileSystemStateDatabase.Config) config);
+            default:
+                throw new IllegalArgumentException("Unsupported Celos DB type: " + config.getDatabaseType());
+        }
     }
 
 }

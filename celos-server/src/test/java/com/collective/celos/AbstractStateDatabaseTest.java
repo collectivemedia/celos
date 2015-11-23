@@ -18,12 +18,12 @@ package com.collective.celos;
 import java.io.IOException;
 import java.util.*;
 
+import com.collective.celos.database.StateDatabaseConnection;
 import junit.framework.Assert;
 
 import org.joda.time.Interval;
 import org.junit.Test;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;

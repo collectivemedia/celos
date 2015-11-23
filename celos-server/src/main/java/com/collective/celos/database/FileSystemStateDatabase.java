@@ -13,22 +13,23 @@
  * implied.  See the License for the specific language governing
  * permissions and limitations under the License.
  */
-package com.collective.celos;
+package com.collective.celos.database;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.text.ParseException;
+import java.util.*;
 
+import com.collective.celos.*;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.Maps;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+import org.quartz.CronExpression;
 
 /**
  * Brutally simple persistent implementation of StateDatabase
@@ -92,10 +93,9 @@ public class FileSystemStateDatabase implements StateDatabase {
     /**
      * Creates a new DB that stores data in the given directory, which must exist.
      */
-    public FileSystemStateDatabase(File dir) throws IOException {
-        if (!Util.requireNonNull(dir).exists()) {
-            throw new IOException("Database directory " + dir + " doesn't exist.");
-        }
+    public FileSystemStateDatabase(Config config) throws IOException {
+        config.validate();
+        File dir = config.dir;
         stateDir = new File(dir, STATE_DIR_NAME);
         rerunDir = new File(dir, RERUN_DIR_NAME);
         pausedDir = new File(dir, PAUSED_DIR_NAME);
@@ -106,6 +106,29 @@ public class FileSystemStateDatabase implements StateDatabase {
     @Override
     public StateDatabaseConnection openConnection() {
         return instance;
+    }
+
+    public static class Config implements StateDatabase.Config {
+
+        private final File dir;
+
+        public Config(File dir) {
+            this.dir = dir;
+        }
+
+        @Override
+        public DatabaseType getDatabaseType() {
+            return DatabaseType.FILESYSTEM;
+        }
+
+        @Override
+        public void validate() throws IOException {
+            Util.validateDirExists(dir);
+        }
+
+        public File getDir() {
+            return dir;
+        }
     }
 
     private class FileSystemStateDatabaseConnection implements StateDatabaseConnection {
@@ -313,5 +336,4 @@ public class FileSystemStateDatabase implements StateDatabase {
             FileUtils.write(file, json, CHARSET);
         }
     };
-
 }

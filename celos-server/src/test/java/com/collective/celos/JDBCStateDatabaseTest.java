@@ -15,6 +15,8 @@
  */
 package com.collective.celos;
 
+import com.collective.celos.database.JDBCStateDatabase;
+import com.collective.celos.database.StateDatabaseConnection;
 import junit.framework.Assert;
 import org.h2.tools.Server;
 import org.junit.AfterClass;
@@ -39,17 +41,17 @@ public class JDBCStateDatabaseTest extends AbstractStateDatabaseTest {
 
 
     public static final String CREATE_SLOT_STATE_TABLE = "CREATE TABLE SLOTSTATE (" +
-            "WORKFLOWID VARCHAR(25) NOT NULL, DATE TIMESTAMP NOT NULL, STATUS VARCHAR(20) NOT NULL, " +
-            "EXTERNALID VARCHAR(25), RETRYCOUNT INTEGER NOT NULL DEFAULT 0)";
+            "WORKFLOWID VARCHAR(512) NOT NULL, DATE TIMESTAMP NOT NULL, STATUS VARCHAR(512) NOT NULL, " +
+            "EXTERNALID VARCHAR(512), RETRYCOUNT INTEGER NOT NULL DEFAULT 0)";
 
     public static final String CREATE_RERUN_SLOT_TABLE = "CREATE TABLE RERUNSLOT (" +
-            "WORKFLOWID VARCHAR(25) NOT NULL, DATE TIMESTAMP NOT NULL, WALLCLOCK TIMESTAMP NOT NULL)";
+            "WORKFLOWID VARCHAR(512) NOT NULL, DATE TIMESTAMP NOT NULL, WALLCLOCK TIMESTAMP NOT NULL)";
 
     public static final String CREATE_WORKFLOW_INFO_TABLE = "CREATE TABLE WORKFLOWINFO (" +
-            "WORKFLOWID VARCHAR(25) NOT NULL, PAUSED BOOLEAN NOT NULL)";
+            "WORKFLOWID VARCHAR(512) NOT NULL, PAUSED BOOLEAN NOT NULL)";
 
     public static final String CREATE_REGISTERS_TABLE = "CREATE TABLE REGISTER (" +
-            "BUCKETID VARCHAR(125) NOT NULL, KEY VARCHAR(125) NOT NULL, JSON VARCHAR(125) NOT NULL)";
+            "BUCKETID VARCHAR(512) NOT NULL, KEY VARCHAR(512) NOT NULL, JSON VARCHAR(512) NOT NULL)";
 
     private static Server SERVER;
     private static String URL = "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1";
@@ -69,7 +71,8 @@ public class JDBCStateDatabaseTest extends AbstractStateDatabaseTest {
                 statement.execute(CREATE_REGISTERS_TABLE);
             }
         }
-        db = new JDBCStateDatabase(URL, USERNAME, PASSWORD).openConnection();
+        JDBCStateDatabase.Config config = new JDBCStateDatabase.Config(URL, USERNAME, PASSWORD);
+        db = new JDBCStateDatabase(config).openConnection();
     }
 
     @AfterClass
