@@ -5,7 +5,7 @@ UI_PARAMS="    -c ssh -u celos-ci -i scripts/test/conf/inventory-ui     -e @scri
 set -x
 set -e
 [[ -z ${GIT_COMMIT} ]] && echo pls specify GIT_COMMIT && exit 1
-# scripts/build.sh
+scripts/build.sh
 ansible-playbook scripts/prod/kinit.yaml ${SERVER_PARAMS}
 ansible-playbook scripts/celos-deploy.yaml ${SERVER_PARAMS}
 ansible-playbook scripts/celos-deploy.yaml ${UI_PARAMS}
