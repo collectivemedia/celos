@@ -89,18 +89,20 @@ public class FileSystemStateDatabase implements StateDatabase {
     private final File pausedDir;
     private final File registerDir;
     private final FileSystemStateDatabaseConnection instance;
+    private final File dir;
+
 
     /**
      * Creates a new DB that stores data in the given directory, which must exist.
      */
-    public FileSystemStateDatabase(Config config) throws IOException {
-        config.validate();
-        File dir = config.dir;
-        stateDir = new File(dir, STATE_DIR_NAME);
-        rerunDir = new File(dir, RERUN_DIR_NAME);
-        pausedDir = new File(dir, PAUSED_DIR_NAME);
-        registerDir = new File(dir, REGISTER_DIR_NAME);
-        instance = new FileSystemStateDatabaseConnection();
+    public FileSystemStateDatabase(File dir) throws IOException {
+        Util.validateDirExists(dir);
+        this.stateDir = new File(dir, STATE_DIR_NAME);
+        this.rerunDir = new File(dir, RERUN_DIR_NAME);
+        this.pausedDir = new File(dir, PAUSED_DIR_NAME);
+        this.registerDir = new File(dir, REGISTER_DIR_NAME);
+        this.dir = dir;
+        this.instance = new FileSystemStateDatabaseConnection();
     }
 
     @Override
@@ -108,27 +110,13 @@ public class FileSystemStateDatabase implements StateDatabase {
         return instance;
     }
 
-    public static class Config implements StateDatabase.Config {
+    @Override
+    public DatabaseType getDatabaseType() {
+        return DatabaseType.FILESYSTEM;
+    }
 
-        private final File dir;
-
-        public Config(File dir) {
-            this.dir = dir;
-        }
-
-        @Override
-        public DatabaseType getDatabaseType() {
-            return DatabaseType.FILESYSTEM;
-        }
-
-        @Override
-        public void validate() throws IOException {
-            Util.validateDirExists(dir);
-        }
-
-        public File getDir() {
-            return dir;
-        }
+    public File getDir() {
+        return dir;
     }
 
     private class FileSystemStateDatabaseConnection implements StateDatabaseConnection {

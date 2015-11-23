@@ -15,21 +15,13 @@
  */
 package com.collective.celos.database;
 
-import java.io.IOException;
-
 public interface StateDatabase {
 
     public static enum DatabaseType {
         FILESYSTEM, JDBC
     }
 
-
-    public static interface Config {
-        public DatabaseType getDatabaseType();
-
-        public void validate() throws IOException;
-    }
-
+    public DatabaseType getDatabaseType();
 
     public StateDatabaseConnection openConnection() throws Exception;
 

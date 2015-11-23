@@ -57,50 +57,32 @@ public class JDBCStateDatabase implements StateDatabase {
     private final String name;
     private final String password;
 
-    public JDBCStateDatabase(Config config) {
-        this.url = config.url;
-        this.name = config.name;
-        this.password = config.password;
+    public JDBCStateDatabase(String url, String name, String password) {
+        this.url = url;
+        this.name = name;
+        this.password = password;
+    }
+
+    @Override
+    public DatabaseType getDatabaseType() {
+        return DatabaseType.JDBC;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getPassword() {
+        return password;
     }
 
     @Override
     public StateDatabaseConnection openConnection() throws Exception {
         return new JDBCStateDatabaseConnection(url, name, password);
-    }
-
-    public static class Config implements StateDatabase.Config {
-
-        private final String url;
-        private final String name;
-        private final String password;
-
-        public Config(String url, String name, String password) {
-            this.url = url;
-            this.name = name;
-            this.password = password;
-        }
-
-        @Override
-        public DatabaseType getDatabaseType() {
-            return DatabaseType.JDBC;
-        }
-
-        @Override
-        public void validate() {
-
-        }
-
-        public String getUrl() {
-            return url;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public String getPassword() {
-            return password;
-        }
     }
 
     private class JDBCStateDatabaseConnection implements StateDatabaseConnection {

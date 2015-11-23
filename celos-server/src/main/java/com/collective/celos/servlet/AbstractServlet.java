@@ -87,14 +87,14 @@ public abstract class AbstractServlet extends HttpServlet {
     private SchedulerConfiguration getSchedulerConfiguration() throws IOException {
         String workflowConfigPath = Util.requireNonNull(getServletContext().getInitParameter(Constants.WORKFLOW_CONFIGURATION_PATH_ATTR));
         String defaultsConfigPath = Util.requireNonNull(getServletContext().getInitParameter(Constants.DEFAULTS_CONFIGURATION_PATH_ATTR));
-        StateDatabase.Config config = (StateDatabase.Config) Util.requireNonNull(getServletContext().getAttribute(Constants.DATABASE_CONFIG));
+        StateDatabase database = (StateDatabase) Util.requireNonNull(getServletContext().getAttribute(Constants.DATABASE));
 
         Map<String, String> additionalVars = (Map<String, String>) getServletContext().getAttribute(Constants.ADDITIONAL_JS_VARIABLES);
         if (additionalVars == null) {
             additionalVars = ImmutableMap.of();
         }
         SchedulerConfiguration schedulerConfiguration = new SchedulerConfiguration(
-                new File(workflowConfigPath), new File(defaultsConfigPath), config, additionalVars
+                new File(workflowConfigPath), new File(defaultsConfigPath), database, additionalVars
         );
         return schedulerConfiguration;
     }

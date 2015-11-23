@@ -57,7 +57,7 @@ public class JDBCStateDatabaseTest extends AbstractStateDatabaseTest {
     private static String URL = "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1";
     private static String USERNAME = "sa";
     private static String PASSWORD = "";
-    private static StateDatabaseConnection db;
+    private static StateDatabaseConnection connection;
 
     @BeforeClass
     public static void setupClass() throws Exception {
@@ -71,8 +71,8 @@ public class JDBCStateDatabaseTest extends AbstractStateDatabaseTest {
                 statement.execute(CREATE_REGISTERS_TABLE);
             }
         }
-        JDBCStateDatabase.Config config = new JDBCStateDatabase.Config(URL, USERNAME, PASSWORD);
-        db = new JDBCStateDatabase(config).openConnection();
+        JDBCStateDatabase config = new JDBCStateDatabase(URL, USERNAME, PASSWORD);
+        connection = config.openConnection();
     }
 
     @AfterClass
@@ -81,8 +81,8 @@ public class JDBCStateDatabaseTest extends AbstractStateDatabaseTest {
     }
 
     @Override
-    public StateDatabaseConnection getStateDatabase() {
-        return db;
+    public StateDatabaseConnection getStateDatabaseConnection() {
+        return connection;
     }
 
     @Before
@@ -99,7 +99,7 @@ public class JDBCStateDatabaseTest extends AbstractStateDatabaseTest {
 
     @Test
     public void getAndPutWorksWithExternalID() throws Exception {
-        StateDatabaseConnection db = getStateDatabase();
+        StateDatabaseConnection db = getStateDatabaseConnection();
         SlotID slotID = new SlotID(new WorkflowID("foo"), new ScheduledTime("2013-11-27T14:50Z"));
         Assert.assertEquals(null, db.getSlotState(slotID));
         String externalID = "externalId1";

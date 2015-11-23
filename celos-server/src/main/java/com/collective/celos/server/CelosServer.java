@@ -33,32 +33,30 @@ public class CelosServer {
 
     private JettyServer server = new JettyServer();
 
-    public int startServer(Map<String, String> jsVariables, File workflowsDir, File defaultsDir, StateDatabase.Config config) throws Exception {
+    public int startServer(Map<String, String> jsVariables, File workflowsDir, File defaultsDir, StateDatabase db) throws Exception {
         Util.validateDirExists(workflowsDir);
         Util.validateDirExists(defaultsDir);
-        config.validate();
 
         int port = server.start();
 
-        setupContext(jsVariables, workflowsDir, defaultsDir, config);
+        setupContext(jsVariables, workflowsDir, defaultsDir, db);
         return port;
     }
 
-    public void startServer(int port, Map<String, String> jsVariables, File workflowsDir, File defaultsDir, StateDatabase.Config config) throws Exception {
+    public void startServer(int port, Map<String, String> jsVariables, File workflowsDir, File defaultsDir, StateDatabase db) throws Exception {
 
         Util.validateDirExists(workflowsDir);
         Util.validateDirExists(defaultsDir);
-        config.validate();
 
         server.start(port);
 
-        setupContext(jsVariables, workflowsDir, defaultsDir, config);
+        setupContext(jsVariables, workflowsDir, defaultsDir, db);
     }
 
-    private void setupContext(Map<String, String> jsVariables, File workflowsDir, File defaultsDir, StateDatabase.Config config) {
+    private void setupContext(Map<String, String> jsVariables, File workflowsDir, File defaultsDir, StateDatabase db) {
         Map<String, Object> attributes = ImmutableMap.of(
                 Constants.ADDITIONAL_JS_VARIABLES, jsVariables,
-                Constants.DATABASE_CONFIG, config
+                Constants.DATABASE, db
         );
         Map<String, String> initParams = ImmutableMap.of(
                 Constants.WORKFLOW_CONFIGURATION_PATH_ATTR, workflowsDir.getAbsolutePath(),

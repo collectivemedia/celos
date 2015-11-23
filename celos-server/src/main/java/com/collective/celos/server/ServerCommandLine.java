@@ -27,16 +27,16 @@ public class ServerCommandLine {
 
     private final File workflowsDir;
     private final File defaultsDir;
-    private final StateDatabase.Config config;
+    private final StateDatabase database;
     private final File logDir;
     private final int port;
     private final int autoSchedule;
 
-    public ServerCommandLine(String workflowsDir, String defaultsDir, StateDatabase.Config config, String logDir, int port, int autoSchedule) {
+    public ServerCommandLine(String workflowsDir, String defaultsDir, StateDatabase db, String logDir, int port, int autoSchedule) {
         this.autoSchedule = autoSchedule;
         this.workflowsDir = new File(Util.requireNonNull(workflowsDir));
         this.defaultsDir = new File(Util.requireNonNull(defaultsDir));
-        this.config = Util.requireNonNull(config);
+        this.database = Util.requireNonNull(db);
         this.port = port;
         this.logDir = new File(Util.requireNonNull(logDir));
     }
@@ -61,7 +61,7 @@ public class ServerCommandLine {
         return logDir;
     }
 
-    public StateDatabase.Config getConfig() {
-        return config;
+    public StateDatabase getDatabase() {
+        return database;
     }
 }

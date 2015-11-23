@@ -47,6 +47,11 @@ public class MemoryStateDatabase implements StateDatabase {
     private final MemoryStateDatabaseConnection instance = new MemoryStateDatabaseConnection();
 
     @Override
+    public DatabaseType getDatabaseType() {
+        return null;
+    }
+
+    @Override
     public StateDatabaseConnection openConnection() {
         return getMemoryStateDatabaseConnection();
     }

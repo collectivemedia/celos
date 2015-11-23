@@ -61,8 +61,8 @@ public class GetSchedulerTest {
         this.slotDbDir.mkdirs();
 
         this.celosServer = new CelosServer();
-        StateDatabase.Config config = new FileSystemStateDatabase.Config(slotDbDir);
-        int port = celosServer.startServer(ImmutableMap.<String, String>of(), workflowsDir, defaultsDir, config);
+        StateDatabase db = new FileSystemStateDatabase(slotDbDir);
+        int port = celosServer.startServer(ImmutableMap.<String, String>of(), workflowsDir, defaultsDir, db);
         this.celosClient = new CelosClient(URI.create("http://localhost:" + port));
     }
 

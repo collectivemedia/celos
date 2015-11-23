@@ -33,11 +33,11 @@ public class SchedulerConfiguration {
     private final StateDatabase db;
     private final Map<String, String> additionalVars;
 
-    public SchedulerConfiguration(File workflowConfigurationPath, File defaultsConfigurationPath, StateDatabase.Config config, Map<String, String> additionalVars) throws IOException {
+    public SchedulerConfiguration(File workflowConfigurationPath, File defaultsConfigurationPath, StateDatabase db, Map<String, String> additionalVars) throws IOException {
         this.workflowConfigurationPath = workflowConfigurationPath;
         this.defaultsConfigurationPath = defaultsConfigurationPath;
         this.additionalVars = additionalVars;
-        this.db = createStateDatabase(config);
+        this.db = db;
     }
 
     public Scheduler makeDefaultScheduler() throws Exception {
@@ -56,16 +56,5 @@ public class SchedulerConfiguration {
     public StateDatabase getStateDatabase() {
         return db;
     }
-
-    private StateDatabase createStateDatabase(StateDatabase.Config config) throws IOException {
-        switch (config.getDatabaseType()) {
-            case JDBC:
-                return new JDBCStateDatabase((JDBCStateDatabase.Config) config);
-            case FILESYSTEM:
-                return new FileSystemStateDatabase((FileSystemStateDatabase.Config) config);
-            default:
-                throw new IllegalArgumentException("Unsupported Celos DB type: " + config.getDatabaseType());
-        }
-    }
-
+    
 }

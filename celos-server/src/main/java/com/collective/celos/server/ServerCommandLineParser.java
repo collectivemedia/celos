@@ -53,9 +53,9 @@ public class ServerCommandLineParser {
         String workflowsDir = getDefault(commandLine, CLI_WF_DIR, Constants.DEFAULT_WORKFLOWS_DIR);
         String logDir = getDefault(commandLine, CLI_LOG_DIR, Constants.DEFAULT_LOG_DIR);
         Integer autoSchedule = Integer.valueOf(getDefault(commandLine, CLI_AUTOSCHEDULE, "-1"));
-        StateDatabase.Config config = getStateDatabaseConfig(commandLine);
+        StateDatabase db = getStateDatabaseConfig(commandLine);
 
-        return new ServerCommandLine(workflowsDir, defaultsDir, config, logDir, port, autoSchedule);
+        return new ServerCommandLine(workflowsDir, defaultsDir, db, logDir, port, autoSchedule);
     }
 
     private String getRequiredArgument(CommandLine commandLine, String argument) {
@@ -66,19 +66,19 @@ public class ServerCommandLineParser {
         return commandLine.getOptionValue(argument);
     }
 
-    private StateDatabase.Config getStateDatabaseConfig(CommandLine commandLine) throws IOException {
+    private StateDatabase getStateDatabaseConfig(CommandLine commandLine) throws IOException {
         String stateDbType = getDefault(commandLine, CLI_STATE_DB_TYPE, StateDatabase.DatabaseType.FILESYSTEM.toString());
         StateDatabase.DatabaseType databaseType = StateDatabase.DatabaseType.valueOf(stateDbType.toUpperCase());
 
         switch (databaseType) {
             case FILESYSTEM:
                 String stateDbDir = getDefault(commandLine, CLI_STATE_DB_DIR, Constants.DEFAULT_DB_DIR);
-                return new FileSystemStateDatabase.Config(new File(stateDbDir));
+                return new FileSystemStateDatabase(new File(stateDbDir));
             case JDBC:
                 String url = getRequiredArgument(commandLine, CLI_STATE_DB_JDBC_URL);
                 String username = getRequiredArgument(commandLine, CLI_STATE_DB_JDBC_NAME);
                 String password = getRequiredArgument(commandLine, CLI_STATE_DB_JDBC_PASSWORD);
-                return new JDBCStateDatabase.Config(url, username, password);
+                return new JDBCStateDatabase(url, username, password);
             default:
                 throw new IllegalStateException("Unknown Celos DB type: " + stateDbType);
         }

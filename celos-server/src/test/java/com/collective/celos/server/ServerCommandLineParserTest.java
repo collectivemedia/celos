@@ -42,9 +42,9 @@ public class ServerCommandLineParserTest {
         Assert.assertEquals(1337, cmdLine.getPort());
         Assert.assertEquals(new File(Constants.DEFAULT_WORKFLOWS_DIR), cmdLine.getWorkflowsDir());
         Assert.assertEquals(new File(Constants.DEFAULT_DEFAULTS_DIR), cmdLine.getDefaultsDir());
-        Assert.assertEquals(StateDatabase.DatabaseType.FILESYSTEM, cmdLine.getConfig().getDatabaseType());
-        FileSystemStateDatabase.Config config = (FileSystemStateDatabase.Config) cmdLine.getConfig();
-        Assert.assertEquals(new File(Constants.DEFAULT_DB_DIR), config.getDir());
+        Assert.assertEquals(StateDatabase.DatabaseType.FILESYSTEM, cmdLine.getDatabase().getDatabaseType());
+        FileSystemStateDatabase db = (FileSystemStateDatabase) cmdLine.getDatabase();
+        Assert.assertEquals(new File(Constants.DEFAULT_DB_DIR), db.getDir());
     }
 
     @Test
@@ -53,9 +53,9 @@ public class ServerCommandLineParserTest {
         Assert.assertEquals(1337, cmdLine.getPort());
         Assert.assertEquals(new File("/wf"), cmdLine.getWorkflowsDir());
         Assert.assertEquals(new File("/defaults"), cmdLine.getDefaultsDir());
-        Assert.assertEquals(StateDatabase.DatabaseType.FILESYSTEM, cmdLine.getConfig().getDatabaseType());
-        FileSystemStateDatabase.Config config = (FileSystemStateDatabase.Config) cmdLine.getConfig();
-        Assert.assertEquals(new File("/db"), config.getDir());
+        Assert.assertEquals(StateDatabase.DatabaseType.FILESYSTEM, cmdLine.getDatabase().getDatabaseType());
+        FileSystemStateDatabase db = (FileSystemStateDatabase) cmdLine.getDatabase();
+        Assert.assertEquals(new File("/db"), db.getDir());
     }
 
     @Test (expected = IllegalArgumentException.class)
@@ -74,8 +74,8 @@ public class ServerCommandLineParserTest {
         Assert.assertEquals(1337, cmdLine.getPort());
         Assert.assertEquals(new File("/wf"), cmdLine.getWorkflowsDir());
         Assert.assertEquals(new File("/defaults"), cmdLine.getDefaultsDir());
-        Assert.assertEquals(StateDatabase.DatabaseType.FILESYSTEM, cmdLine.getConfig().getDatabaseType());
-        FileSystemStateDatabase.Config config = (FileSystemStateDatabase.Config) cmdLine.getConfig();
+        Assert.assertEquals(StateDatabase.DatabaseType.FILESYSTEM, cmdLine.getDatabase().getDatabaseType());
+        FileSystemStateDatabase config = (FileSystemStateDatabase) cmdLine.getDatabase();
         Assert.assertEquals(new File("/db"), config.getDir());
 
     }
@@ -86,8 +86,8 @@ public class ServerCommandLineParserTest {
         Assert.assertEquals(1337, cmdLine.getPort());
         Assert.assertEquals(new File("/wf"), cmdLine.getWorkflowsDir());
         Assert.assertEquals(new File("/defaults"), cmdLine.getDefaultsDir());
-        Assert.assertEquals(StateDatabase.DatabaseType.JDBC, cmdLine.getConfig().getDatabaseType());
-        JDBCStateDatabase.Config config = (JDBCStateDatabase.Config) cmdLine.getConfig();
+        Assert.assertEquals(StateDatabase.DatabaseType.JDBC, cmdLine.getDatabase().getDatabaseType());
+        JDBCStateDatabase config = (JDBCStateDatabase) cmdLine.getDatabase();
         Assert.assertEquals("url", config.getUrl());
         Assert.assertEquals("uname", config.getName());
         Assert.assertEquals("pwd", config.getPassword());

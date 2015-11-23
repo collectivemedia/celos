@@ -40,7 +40,7 @@ public class Main {
                 Collections.<String, String>emptyMap(),
                 commandLine.getWorkflowsDir(),
                 commandLine.getDefaultsDir(),
-                commandLine.getConfig());
+                commandLine.getDatabase());
 
         setupAutoschedule(commandLine.getPort(), commandLine.getAutoSchedule());
 

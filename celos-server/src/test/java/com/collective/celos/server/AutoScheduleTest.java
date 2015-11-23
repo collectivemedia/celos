@@ -59,7 +59,7 @@ public class AutoScheduleTest {
         this.slotDbDir.mkdirs();
 
         this.celosServer = new CelosServer();
-        FileSystemStateDatabase.Config config = new FileSystemStateDatabase.Config(slotDbDir);
+        FileSystemStateDatabase config = new FileSystemStateDatabase(slotDbDir);
         this.port = celosServer.startServer(ImmutableMap.<String, String>of(), workflowsDir, defaultsDir, config);
         this.celosClient = new CelosClient(URI.create("http://localhost:" + port));
     }
