@@ -128,13 +128,16 @@
       status_code: 404
       url: "{{service_url}}/trigger-status?id=not-existing-workflow"
 
+# - name: Upload sample state database
+#   synchronize:
+#     src: "{{root}}/celos-server/src/test/resources/com/collective/celos/state-database-test/db-1/"
+#     dest: "{{celos_db_dir}}/"
+#     recursive: yes
+#     delete: yes
+#   tags: slot-state
+
   - name: Upload sample state database
-    synchronize:
-      src: "{{root}}/celos-server/src/test/resources/com/collective/celos/state-database-test/db-1/"
-      dest: "{{celos_db_dir}}/"
-      recursive: yes
-      delete: yes
-    tags: slot-state
+    local_action: command java -jar {{ root }}/celos-sql-client/build/libs/celos-sql-client.jar --jdbcUrl jdbc:postgresql://dev-workflow002.ewr004.collective-media.net/celos_test --jdbcName celos --jdbcPassword celos -sqlFile {{ root }}/scripts/test/test_files/test_dump.sql
 
   - register: result
     local_action:
@@ -217,8 +220,82 @@
     when: result.rc == 0
     fail:
 
+  - name: PUT register with data=1
+    local_action:
+      module: uri
+      method: PUT
+      url: "{{service_url}}/register?bucket=celos-register&key=key1"
+      body: "{\"data\":\"1\"}"
+      body_format: json
+
+  - name: PUT register with data=2
+    local_action:
+      module: uri
+      method: PUT
+      url: "{{service_url}}/register?bucket=celos-register&key=key2"
+      body: "{\"data\":\"2\"}"
+      body_format: json
+
+  - name: Upload register-based workflow configuration files
+    synchronize:
+      src: "{{tests_dir}}/register-test/"
+      dest: "{{celos_workflows_dir}}/"
+      dirs: yes
+      delete: yes
+
+  - name: Clear scheduler cache
+    local_action:
+      module: uri
+      method: POST
+      url: "{{service_url}}/clear-cache"
+
+  - register: result
+    local_action:
+      module: uri
+      url: "{{service_url}}/workflow-list"
+      return_content: yes
+  - name: Testing servlet /celos/workflow-list looking for register-based workflow
+    when: result.content != lookup('file', 'test_files/workflow_list_register.json')
+    fail:
+
+  - name: DELETE register with data=1
+    local_action:
+      module: uri
+      method: DELETE
+      url: "{{service_url}}/register?bucket=celos-register&key=key1"
+
+  - name: DELETE register with data=2
+    local_action:
+      module: uri
+      method: DELETE
+      url: "{{service_url}}/register?bucket=celos-register&key=key2"
+
+  - name: assure after DELETE register with data=1 is not accessible
+    local_action:
+      module: uri
+      url: "{{service_url}}/register?bucket=celos-register&key=key1"
+      status_code: 404
+
+  - name: assure after DELETE register with data=2 is not accessible
+    local_action:
+      module: uri
+      url: "{{service_url}}/register?bucket=celos-register&key=key2"
+      status_code: 404
+
+  - name: Clear scheduler cache
+    local_action:
+      module: uri
+      method: POST
+      url: "{{service_url}}/clear-cache"
+
+  - name: Upload sample state database
+    local_action: command java -jar {{ root }}/celos-sql-client/build/libs/celos-sql-client.jar --jdbcUrl jdbc:postgresql://dev-workflow002.ewr004.collective-media.net/celos_test --jdbcName celos --jdbcPassword celos -sqlFile {{ root }}/scripts/test/test_files/clear.sql
+
   - name: Run file-copy CCI test
     local_action: command {{ root }}/scripts/test/test_files/file-copy/scripts/ci-test {{ service_url }} {{ root }}
+
+  - name: Upload sample state database
+    local_action: command java -jar {{ root }}/celos-sql-client/build/libs/celos-sql-client.jar --jdbcUrl jdbc:postgresql://dev-workflow002.ewr004.collective-media.net/celos_test --jdbcName celos --jdbcPassword celos -sqlFile {{ root }}/scripts/test/test_files/clear.sql
 
   - name: Clean logs dir
     shell: rm -rf {{celos_log_dir}}/*
