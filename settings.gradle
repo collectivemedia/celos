@@ -1,2 +1,2 @@
 rootProject.name = 'celos'
-include 'celos-ci', 'celos-ui', 'celos-server', 'celos-common'
+include 'celos-ci', 'celos-ui', 'celos-server', 'celos-common', 'celos-sql-client'

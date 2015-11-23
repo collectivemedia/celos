@@ -18,6 +18,7 @@ package com.collective.celos.servlet;
 import com.collective.celos.*;
 import com.collective.celos.SlotState.Status;
 import com.collective.celos.ScheduledTime;
+import com.collective.celos.database.StateDatabaseConnection;
 import org.junit.Assert;
 import org.junit.Test;
 

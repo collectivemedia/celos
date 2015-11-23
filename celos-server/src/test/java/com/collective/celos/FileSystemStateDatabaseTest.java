@@ -15,6 +15,8 @@
  */
 package com.collective.celos;
 
+import com.collective.celos.database.FileSystemStateDatabase;
+import com.collective.celos.database.StateDatabaseConnection;
 import junit.framework.Assert;
 import org.apache.commons.io.IOUtils;
 import org.junit.Rule;
@@ -34,19 +36,19 @@ public class FileSystemStateDatabaseTest extends AbstractStateDatabaseTest {
 
     @Test(expected=IOException.class)
     public void directoryMustExist() throws IOException {
-        File dir = getDatabaseDir();
-        new FileSystemStateDatabase(dir);
+        new FileSystemStateDatabase(getDatabaseDir());
     }
 
     @Test
     public void emptyDatabaseReturnsNull() throws Exception {
-        StateDatabaseConnection db = getStateDatabase();
+        StateDatabaseConnection db = getStateDatabaseConnection();
         Assert.assertNull(db.getSlotState(new SlotID(new WorkflowID("workflow-1"), new ScheduledTime("2013-12-02T13:37Z"))));
     }
 
     @Override
-    public StateDatabaseConnection getStateDatabase() throws IOException {
-        return new FileSystemStateDatabase(makeDatabaseDir()).openConnection();
+    public StateDatabaseConnection getStateDatabaseConnection() throws IOException {
+        FileSystemStateDatabase db = new FileSystemStateDatabase(makeDatabaseDir());
+        return db.openConnection();
     }
 
     private File makeDatabaseDir() {
@@ -64,9 +66,10 @@ public class FileSystemStateDatabaseTest extends AbstractStateDatabaseTest {
      */
     @Test
     public void canReadFromFileSystem1() throws Exception {
-        StateDatabaseConnection db = new FileSystemStateDatabase(getResourceDirNoTimestamp()).openConnection();
+        FileSystemStateDatabase database = new FileSystemStateDatabase(getResourceDirNoTimestamp());
+        StateDatabaseConnection connection = database.openConnection();
         for(SlotState state : getStates()) {
-            Assert.assertEquals(state, db.getSlotState(state.getSlotID()));
+            Assert.assertEquals(state, connection.getSlotState(state.getSlotID()));
         }
     }
 
@@ -75,9 +78,10 @@ public class FileSystemStateDatabaseTest extends AbstractStateDatabaseTest {
      */
     @Test
     public void canReadFromFileSystem2() throws Exception {
-        StateDatabaseConnection db = new FileSystemStateDatabase(getResourceDir()).openConnection();
+        FileSystemStateDatabase database = new FileSystemStateDatabase(getResourceDir());
+        StateDatabaseConnection connection = database.openConnection();
         for(SlotState state : getStates()) {
-            Assert.assertEquals(state, db.getSlotState(state.getSlotID()));
+            Assert.assertEquals(state, connection.getSlotState(state.getSlotID()));
         }
     }
 
@@ -87,7 +91,7 @@ public class FileSystemStateDatabaseTest extends AbstractStateDatabaseTest {
      */
     @Test
     public void canWriteToFileSystem() throws Exception {
-        StateDatabaseConnection db = getStateDatabase();
+        StateDatabaseConnection db = getStateDatabaseConnection();
         for(SlotState state : getStates()) {
             db.putSlotState(state);
         }
@@ -98,7 +102,7 @@ public class FileSystemStateDatabaseTest extends AbstractStateDatabaseTest {
 
     @Test
     public void testPauseFileExistence() throws Exception {
-        StateDatabaseConnection db = getStateDatabase();
+        StateDatabaseConnection db = getStateDatabaseConnection();
         WorkflowID workflowID = new WorkflowID("wf1");
 
         File pauseFile = new File(getDatabaseDir(), "paused/wf1");

@@ -1,0 +1,5 @@
+{
+  "service_args": "--workflows {{ celos_workflows_dir }} --defaults {{ celos_defaults_dir }} --dbType jdbc --jdbcUrl jdbc:postgresql://dev-workflow002.ewr004.collective-media.net/celos_test --jdbcName celos --jdbcPassword celos --logs {{ celos_log_dir }}",
+  "jar_path": "../celos-server/build/libs/celos-server.jar",
+  "main_class": "com.collective.celos.server.Main"
+}

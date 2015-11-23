@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.collective.celos.*;
+import com.collective.celos.database.StateDatabaseConnection;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;

@@ -15,32 +15,27 @@
  */
 package com.collective.celos;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URL;
-import java.util.List;
-import java.util.Set;
-
+import com.collective.celos.database.FileSystemStateDatabase;
+import com.collective.celos.server.CelosServer;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import org.apache.commons.io.FileUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.conn.HttpHostConnectException;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.rules.TemporaryFolder;
 
-import com.collective.celos.server.CelosServer;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
+import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URL;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Created by akonopko on 22.12.14.
@@ -71,7 +66,8 @@ public class CelosClientServerTest {
         this.slotDbDir.mkdirs();
 
         this.celosServer = new CelosServer();
-        int port = celosServer.startServer(ImmutableMap.<String, String>of(), workflowsDir, defaultsDir, slotDbDir);
+        FileSystemStateDatabase db = new FileSystemStateDatabase(slotDbDir);
+        int port = celosServer.startServer(ImmutableMap.<String, String>of(), workflowsDir, defaultsDir, db);
         this.celosClient = new CelosClient(URI.create("http://localhost:" + port));
     }
 

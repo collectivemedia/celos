@@ -26,6 +26,8 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.collective.celos.database.StateDatabase;
+import com.collective.celos.database.StateDatabaseConnection;
 import org.joda.time.DateTime;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -43,6 +45,11 @@ public class MemoryStateDatabase implements StateDatabase {
     protected final SortedMap<BucketID, SortedMap<RegisterKey, JsonNode>> registers = new TreeMap<>();
 
     private final MemoryStateDatabaseConnection instance = new MemoryStateDatabaseConnection();
+
+    @Override
+    public DatabaseType getDatabaseType() {
+        return null;
+    }
 
     @Override
     public StateDatabaseConnection openConnection() {
