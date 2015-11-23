@@ -53,9 +53,7 @@ public class ServerCommandLineParser {
         String workflowsDir = getDefault(commandLine, CLI_WF_DIR, Constants.DEFAULT_WORKFLOWS_DIR);
         String logDir = getDefault(commandLine, CLI_LOG_DIR, Constants.DEFAULT_LOG_DIR);
         Integer autoSchedule = Integer.valueOf(getDefault(commandLine, CLI_AUTOSCHEDULE, "-1"));
-
         StateDatabase.Config config = getStateDatabaseConfig(commandLine);
-        config.validate();
 
         return new ServerCommandLine(workflowsDir, defaultsDir, config, logDir, port, autoSchedule);
     }

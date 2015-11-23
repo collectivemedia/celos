@@ -58,17 +58,17 @@ public class ServerCommandLineParserTest {
         Assert.assertEquals(new File("/db"), config.getDir());
     }
 
-    @Test (expected = NullPointerException.class)
+    @Test (expected = IllegalArgumentException.class)
     public void testJdbcConnectionParamsNoUrl() throws Exception {
         new ServerCommandLineParser().parse(new String[]{"--port", "1337", "--workflows", "/wf", "--dbType", "jdbc", "--defaults", "/defaults"});
     }
 
-    @Test (expected = NullPointerException.class)
+    @Test (expected = IllegalArgumentException.class)
     public void testJdbcConnectionParamsNoUsername() throws Exception {
         new ServerCommandLineParser().parse(new String[] {"--port", "1337", "--workflows", "/wf", "--dbType", "jdbc" , "--jdbcUrl", "url", "--jdbcName", "uname", "--defaults", "/defaults"});
     }
 
-    @Test (expected = NullPointerException.class)
+    @Test (expected = IllegalArgumentException.class)
     public void testJdbcConnectionParamsNoPassword() throws Exception {
         ServerCommandLine cmdLine = new ServerCommandLineParser().parse(new String[]{"--port", "1337", "--workflows", "/wf", "--dbType", "jdbc", "--jdbcUrl", "url", "--jdbcName", "uname", "--defaults", "/defaults"});
         Assert.assertEquals(1337, cmdLine.getPort());

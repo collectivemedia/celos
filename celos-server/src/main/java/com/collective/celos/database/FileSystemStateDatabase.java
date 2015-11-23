@@ -94,6 +94,7 @@ public class FileSystemStateDatabase implements StateDatabase {
      * Creates a new DB that stores data in the given directory, which must exist.
      */
     public FileSystemStateDatabase(Config config) throws IOException {
+        config.validate();
         File dir = config.dir;
         stateDir = new File(dir, STATE_DIR_NAME);
         rerunDir = new File(dir, RERUN_DIR_NAME);
