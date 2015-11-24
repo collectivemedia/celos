@@ -28,34 +28,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
-/**
- * Returns information about the slot states of a single workflow as JSON.
- * 
- * GET /workflow-slots?id=workflow-1
- * ==
- * {
- *   "info": {
- *       "url": "http://myurl",
- *       "contacts": [
- *           { "name": "John Doe", "email": "John.Doe@Gmail.Com"},
- *           { "name": "Jack Smith", "email": "Jack.Smith@Gmail.Com"},
- *       ]
- *   },
- *   "paused": false,
- *   "slots": [
- *      { "time": "2013-12-07T13:00:00.000Z", "status": "RUNNING", "externalID": "237982137-371832798321-W", retryCount: 5 },
- *      { "time": "2013-12-07T14:00:00.000Z", "status": "READY", "externalID": null, retryCount: 0 },
- *     ...
- *   ]
- * }
- * 
- * If the "end" parameter is supplied, information is returned about 
- * slot states up to that time.  Defaults to the current time.
- *
- * If the "start" parameter is supplied, information is returned about 
- * slot states starting at that time.
- * Defaults to the beginning of the sliding window ending at "end".
- */
 @SuppressWarnings("serial")
 public class BackupServlet extends AbstractJSONServlet {
 
@@ -71,7 +43,7 @@ public class BackupServlet extends AbstractJSONServlet {
 
             String startTimeParam = req.getParameter(START_TIME_PARAM);
             if (startTimeParam == null) {
-                res.sendError(HttpServletResponse.SC_BAD_REQUEST, ID_PARAM + " parameter missing.");
+                res.sendError(HttpServletResponse.SC_BAD_REQUEST, START_TIME_PARAM + " parameter missing.");
                 return;
             }
 
