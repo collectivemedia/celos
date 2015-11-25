@@ -26,16 +26,21 @@ import org.joda.time.DateTimeZone;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 @SuppressWarnings("serial")
 public class BackupServlet extends AbstractJSONServlet {
 
     private static final String ID_PARAM = "id";
-    private static final String INFO_PARAM = "info";
     private static final String PAUSED_PARAM = "paused";
     private static final String SLOTS_PARAM = "slots";
     private static final String START_TIME_PARAM = "start";
+    private static final String WORKFLOWS_PARAM = "workflows";
 
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException {
         try {
@@ -53,12 +58,37 @@ public class BackupServlet extends AbstractJSONServlet {
             try (StateDatabaseConnection connection = getStateDatabase().openConnection()) {
                 ArrayNode list = Util.MAPPER.createArrayNode();
                 scheduler.getWorkflowConfiguration().getWorkflows().stream().forEach( wf -> list.add(getWorkflowNode(scheduler, wf, startTime, endTime, connection)));
-                writer.writeValue(res.getOutputStream(), list);
+                ObjectNode node = Util.MAPPER.createObjectNode();
+                node.put(WORKFLOWS_PARAM, list);
+                writer.writeValue(res.getOutputStream(), node);
             }
 
         } catch (Exception e) {
             throw new ServletException(e);
         }
+    }
+
+    protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+        try {
+            try (StateDatabaseConnection connection = getStateDatabase().openConnection()) {
+                JsonNode value = Util.JSON_READER.readTree(new InputStreamReader(req.getInputStream(), StandardCharsets.UTF_8));
+                ArrayNode workflows = (ArrayNode) value.get(WORKFLOWS_PARAM);
+                for (JsonNode node : workflows) {
+                    putWorkflowNode(node, connection);
+                }
+            }
+        } catch (Exception e) {
+            throw new ServletException(e);
+        }
+    }
+
+    private void putWorkflowNode(JsonNode node, StateDatabaseConnection connection) throws Exception {
+        WorkflowID workflowID = new WorkflowID(node.get(ID_PARAM).textValue());
+        Boolean paused = node.get(PAUSED_PARAM).booleanValue();
+        for (JsonNode jsonNode : node.get(SLOTS_PARAM)) {
+            connection.putSlotState(SlotState.fromJSONNode(workflowID, jsonNode));
+        }
+        connection.setPaused(workflowID, paused);
     }
 
     private ObjectNode getWorkflowNode(Scheduler scheduler, Workflow wf, ScheduledTime startTime, ScheduledTime endTime, StateDatabaseConnection connection) {
@@ -71,7 +101,6 @@ public class BackupServlet extends AbstractJSONServlet {
                 objectNodes.add(state.toJSONNode());
             }
             node.put(ID_PARAM, wf.getID().toString());
-            node.put(INFO_PARAM, (JsonNode) Util.MAPPER.valueToTree(wf.getWorkflowInfo()));
             node.put(PAUSED_PARAM, connection.isPaused(wf.getID()));
             node.putArray(SLOTS_PARAM).addAll(objectNodes);
             return node;
