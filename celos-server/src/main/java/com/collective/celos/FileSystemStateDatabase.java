@@ -240,7 +240,7 @@ public class FileSystemStateDatabase implements StateDatabase {
         @Override
         public void setPaused(WorkflowID workflowID, boolean paused) throws IOException {
             File file = getWorkflowPauseFile(workflowID);
-            if (paused & !file.exists()) {
+            if (paused) {
                 FileUtils.touch(file);
             } else if (file.exists()) {
                 FileUtils.forceDelete(file);
