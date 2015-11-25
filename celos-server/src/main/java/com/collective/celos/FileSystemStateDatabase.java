@@ -240,19 +240,19 @@ public class FileSystemStateDatabase implements StateDatabase {
         @Override
         public void setPaused(WorkflowID workflowID, boolean paused) throws IOException {
             File file = getWorkflowPauseFile(workflowID);
-            if (paused) {
+            if (paused & !file.exists()) {
                 FileUtils.touch(file);
-            } else {
+            } else if (file.exists()) {
                 FileUtils.forceDelete(file);
             }
         }
 
         //// Registers
-        
+
         private File getBucketDir(BucketID bucket) {
             return new File(registerDir, bucket.toString());
         }
-        
+
         private File getRegisterFile(BucketID bucket, RegisterKey key) {
             return new File(getBucketDir(bucket), key.toString());
         }
@@ -268,7 +268,7 @@ public class FileSystemStateDatabase implements StateDatabase {
                 return readJson(registerFile);
             }
         }
-        
+
         @Override
         public void putRegister(BucketID bucket, RegisterKey key, JsonNode value) throws Exception {
             Util.requireNonNull(bucket);
@@ -276,7 +276,7 @@ public class FileSystemStateDatabase implements StateDatabase {
             Util.requireNonNull(value);
             writeJson(value, getRegisterFile(bucket, key));
         }
-        
+
         @Override
         public void deleteRegister(BucketID bucket, RegisterKey key) throws Exception {
             Util.requireNonNull(bucket);
@@ -286,7 +286,7 @@ public class FileSystemStateDatabase implements StateDatabase {
                 registerFile.delete();
             }
         }
-        
+
         @Override
         public Iterable<Map.Entry<RegisterKey, JsonNode>> getAllRegisters(BucketID bucket) throws Exception {
             Map<RegisterKey, JsonNode> registers = new HashMap<>();
@@ -306,7 +306,7 @@ public class FileSystemStateDatabase implements StateDatabase {
             String json = FileUtils.readFileToString(file, CHARSET);
             return (ObjectNode) Util.JSON_READER.readTree(json);
         }
-        
+
         private void writeJson(JsonNode obj, File file) throws IOException {
             String json = Util.JSON_WRITER.writeValueAsString(Util.requireNonNull(obj));
             FileUtils.forceMkdir(file.getParentFile());

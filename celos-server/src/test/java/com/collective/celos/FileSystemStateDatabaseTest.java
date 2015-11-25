@@ -106,8 +106,11 @@ public class FileSystemStateDatabaseTest extends AbstractStateDatabaseTest {
         Assert.assertFalse(db.isPaused(workflowID));
         Assert.assertFalse(pauseFile.exists());
 
-        db.setPaused(workflowID, true);
+        db.setPaused(workflowID, false);
+        Assert.assertFalse(db.isPaused(workflowID));
+        Assert.assertFalse(pauseFile.exists());
 
+        db.setPaused(workflowID, true);
         Assert.assertTrue(pauseFile.exists());
         Assert.assertTrue(db.isPaused(workflowID));
 
