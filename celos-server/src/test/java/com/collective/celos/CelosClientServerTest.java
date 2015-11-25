@@ -527,6 +527,25 @@ public class CelosClientServerTest {
 
 
     @Test
+    public void testLeavesClientOKAfterException() throws Exception {
+
+        File src = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/client/wf-list").toURI());
+        FileUtils.copyDirectory(src, workflowsDir);
+
+        File src2 = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/server/slot-db-1").toURI());
+        FileUtils.copyDirectory(src2, slotDbDir);
+
+        try {
+            celosClient.getSlotState(new WorkflowID("workflow-1"), ScheduledTime.now());
+        } catch (Exception e) {
+
+        }
+        ScheduledTime existingSlotTime = new ScheduledTime("2013-12-02T19:00:00.000Z");
+        celosClient.getSlotState(new WorkflowID("workflow-1"), existingSlotTime);
+    }
+
+
+    @Test
     public void testCorrectWorkflowStatesFromDbWf2() throws Exception {
         File src = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/client/wf-list").toURI());
         FileUtils.copyDirectory(src, workflowsDir);
