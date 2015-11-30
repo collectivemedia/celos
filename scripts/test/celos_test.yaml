@@ -217,6 +217,44 @@
     when: result.rc == 0
     fail:
 
+  - name: PUT register with data=1
+    local_action:
+      module: uri
+      method: PUT
+      url: "{{service_url}}/register?bucket=celos-register&key=key1"
+      body: "{\"data\":\"1\"}"
+      body_format: json
+
+  - name: PUT register with data=2
+    local_action:
+      module: uri
+      method: PUT
+      url: "{{service_url}}/register?bucket=celos-register&key=key2"
+      body: "{\"data\":\"2\"}"
+      body_format: json
+
+  - name: Upload register-based workflow configuration files
+    synchronize:
+      src: "{{tests_dir}}/register-test/"
+      dest: "{{celos_workflows_dir}}/"
+      dirs: yes
+      delete: yes
+
+  - name: Clear scheduler cache
+    local_action:
+      module: uri
+      method: POST
+      url: "{{service_url}}/clear-cache"
+
+  - register: result
+    local_action:
+      module: uri
+      url: "{{service_url}}/workflow-list"
+      return_content: yes
+  - name: Testing servlet /celos/workflow-list looking for register-based workflow
+    when: result.content != lookup('file', 'test_files/workflow_list_register.json')
+    fail:
+
   - name: Run file-copy CCI test
     local_action: command {{ root }}/scripts/test/test_files/file-copy/scripts/ci-test {{ service_url }} {{ root }}
 
