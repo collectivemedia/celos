@@ -41,6 +41,8 @@ public class ServerCommandLineParser {
     private static final String CLI_STATE_DB_JDBC_URL = "jdbcUrl";
     private static final String CLI_STATE_DB_JDBC_NAME = "jdbcName";
     private static final String CLI_STATE_DB_JDBC_PASSWORD = "jdbcPassword";
+    public static final String DB_TYPE_FILESYSTEM = "FILESYSTEM";
+    public static final String DB_TYPE_JDBC = "JDBC";
 
     public ServerCommandLine parse(final String[] commandLineArguments) throws Exception {
 
@@ -67,20 +69,19 @@ public class ServerCommandLineParser {
     }
 
     private StateDatabase getStateDatabaseConfig(CommandLine commandLine) throws IOException {
-        String stateDbType = getDefault(commandLine, CLI_STATE_DB_TYPE, StateDatabase.DatabaseType.FILESYSTEM.toString());
-        StateDatabase.DatabaseType databaseType = StateDatabase.DatabaseType.valueOf(stateDbType.toUpperCase());
+        String databaseType = getDefault(commandLine, CLI_STATE_DB_TYPE, "FILESYSTEM").toUpperCase();
 
         switch (databaseType) {
-            case FILESYSTEM:
+            case DB_TYPE_FILESYSTEM:
                 String stateDbDir = getDefault(commandLine, CLI_STATE_DB_DIR, Constants.DEFAULT_DB_DIR);
                 return new FileSystemStateDatabase(new File(stateDbDir));
-            case JDBC:
+            case DB_TYPE_JDBC:
                 String url = getRequiredArgument(commandLine, CLI_STATE_DB_JDBC_URL);
                 String username = getRequiredArgument(commandLine, CLI_STATE_DB_JDBC_NAME);
                 String password = getRequiredArgument(commandLine, CLI_STATE_DB_JDBC_PASSWORD);
                 return new JDBCStateDatabase(url, username, password);
             default:
-                throw new IllegalStateException("Unknown Celos DB type: " + stateDbType);
+                throw new IllegalStateException("Unknown Celos DB type: " + databaseType);
         }
     }
 

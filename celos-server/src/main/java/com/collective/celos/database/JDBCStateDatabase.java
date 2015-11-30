@@ -63,11 +63,6 @@ public class JDBCStateDatabase implements StateDatabase {
         this.password = password;
     }
 
-    @Override
-    public DatabaseType getDatabaseType() {
-        return DatabaseType.JDBC;
-    }
-
     public String getUrl() {
         return url;
     }

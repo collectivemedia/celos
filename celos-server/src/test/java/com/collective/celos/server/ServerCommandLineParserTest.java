@@ -61,7 +61,7 @@ public class ServerCommandLineParserTest {
         Assert.assertEquals(1337, cmdLine.getPort());
         Assert.assertEquals(new File(Constants.DEFAULT_WORKFLOWS_DIR), cmdLine.getWorkflowsDir());
         Assert.assertEquals(new File(Constants.DEFAULT_DEFAULTS_DIR), cmdLine.getDefaultsDir());
-        Assert.assertEquals(StateDatabase.DatabaseType.FILESYSTEM, cmdLine.getDatabase().getDatabaseType());
+        Assert.assertTrue(cmdLine.getDatabase() instanceof FileSystemStateDatabase);
         FileSystemStateDatabase db = (FileSystemStateDatabase) cmdLine.getDatabase();
         Assert.assertEquals(db.getDir(), tmpDir);
     }
@@ -72,7 +72,7 @@ public class ServerCommandLineParserTest {
         Assert.assertEquals(1337, cmdLine.getPort());
         Assert.assertEquals(new File("/wf"), cmdLine.getWorkflowsDir());
         Assert.assertEquals(new File("/defaults"), cmdLine.getDefaultsDir());
-        Assert.assertEquals(StateDatabase.DatabaseType.FILESYSTEM, cmdLine.getDatabase().getDatabaseType());
+        Assert.assertTrue(cmdLine.getDatabase() instanceof FileSystemStateDatabase);
         FileSystemStateDatabase db = (FileSystemStateDatabase) cmdLine.getDatabase();
         Assert.assertEquals(tmpDir, db.getDir());
     }
@@ -93,7 +93,7 @@ public class ServerCommandLineParserTest {
         Assert.assertEquals(1337, cmdLine.getPort());
         Assert.assertEquals(new File("/wf"), cmdLine.getWorkflowsDir());
         Assert.assertEquals(new File("/defaults"), cmdLine.getDefaultsDir());
-        Assert.assertEquals(StateDatabase.DatabaseType.FILESYSTEM, cmdLine.getDatabase().getDatabaseType());
+        Assert.assertTrue(cmdLine.getDatabase() instanceof FileSystemStateDatabase);
         FileSystemStateDatabase config = (FileSystemStateDatabase) cmdLine.getDatabase();
         Assert.assertEquals(new File("/db"), config.getDir());
 
@@ -105,7 +105,7 @@ public class ServerCommandLineParserTest {
         Assert.assertEquals(1337, cmdLine.getPort());
         Assert.assertEquals(new File("/wf"), cmdLine.getWorkflowsDir());
         Assert.assertEquals(new File("/defaults"), cmdLine.getDefaultsDir());
-        Assert.assertEquals(StateDatabase.DatabaseType.JDBC, cmdLine.getDatabase().getDatabaseType());
+        Assert.assertTrue(cmdLine.getDatabase() instanceof JDBCStateDatabase);
         JDBCStateDatabase config = (JDBCStateDatabase) cmdLine.getDatabase();
         Assert.assertEquals("url", config.getUrl());
         Assert.assertEquals("uname", config.getName());

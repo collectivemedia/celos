@@ -17,12 +17,6 @@ package com.collective.celos.database;
 
 public interface StateDatabase {
 
-    public static enum DatabaseType {
-        FILESYSTEM, JDBC
-    }
-
-    public DatabaseType getDatabaseType();
-
     public StateDatabaseConnection openConnection() throws Exception;
 
 }

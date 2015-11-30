@@ -110,11 +110,6 @@ public class FileSystemStateDatabase implements StateDatabase {
         return instance;
     }
 
-    @Override
-    public DatabaseType getDatabaseType() {
-        return DatabaseType.FILESYSTEM;
-    }
-
     public File getDir() {
         return dir;
     }
