@@ -147,9 +147,9 @@ extends java.lang.Object</pre>
 <th class="colOne" scope="col">Constructor and Description</th>
 </tr>
 <tr class="altColor">
-<td class="colOne"><code><span class="memberNameLink"><a href="../../../com/collective/celos/SchedulerConfiguration.html#SchedulerConfiguration-java.io.File-java.io.File-java.io.File-java.util.Map-">SchedulerConfiguration</a></span>(java.io.File&nbsp;workflowConfigurationPath,
+<td class="colOne"><code><span class="memberNameLink"><a href="../../../com/collective/celos/SchedulerConfiguration.html#SchedulerConfiguration-java.io.File-java.io.File-com.collective.celos.database.StateDatabase-java.util.Map-">SchedulerConfiguration</a></span>(java.io.File&nbsp;workflowConfigurationPath,
                       java.io.File&nbsp;defaultsConfigurationPath,
-                      java.io.File&nbsp;stateDatabasePath,
+                      com.collective.celos.database.StateDatabase&nbsp;db,
                       java.util.Map&lt;java.lang.String,java.lang.String&gt;&nbsp;additionalVars)</code>&nbsp;</td>
 </tr>
 </table>
@@ -168,12 +168,12 @@ extends java.lang.Object</pre>
 <th class="colLast" scope="col">Method and Description</th>
 </tr>
 <tr id="i0" class="altColor">
-<td class="colFirst"><code><a href="../../../com/collective/celos/Scheduler.html" title="class in com.collective.celos">Scheduler</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../com/collective/celos/SchedulerConfiguration.html#makeDefaultScheduler--">makeDefaultScheduler</a></span>()</code>&nbsp;</td>
+<td class="colFirst"><code>com.collective.celos.database.StateDatabase</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../com/collective/celos/SchedulerConfiguration.html#getStateDatabase--">getStateDatabase</a></span>()</code>&nbsp;</td>
 </tr>
 <tr id="i1" class="rowColor">
-<td class="colFirst"><code><a href="../../../com/collective/celos/StateDatabase.html" title="interface in com.collective.celos">StateDatabase</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../com/collective/celos/SchedulerConfiguration.html#makeDefaultStateDatabase--">makeDefaultStateDatabase</a></span>()</code>&nbsp;</td>
+<td class="colFirst"><code><a href="../../../com/collective/celos/Scheduler.html" title="class in com.collective.celos">Scheduler</a></code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../com/collective/celos/SchedulerConfiguration.html#makeDefaultScheduler--">makeDefaultScheduler</a></span>()</code>&nbsp;</td>
 </tr>
 </table>
 <ul class="blockList">
@@ -218,7 +218,7 @@ extends java.lang.Object</pre>
 <!--   -->
 </a>
 <h3>Constructor Detail</h3>
-<a name="SchedulerConfiguration-java.io.File-java.io.File-java.io.File-java.util.Map-">
+<a name="SchedulerConfiguration-java.io.File-java.io.File-com.collective.celos.database.StateDatabase-java.util.Map-">
 <!--   -->
 </a>
 <ul class="blockListLast">
@@ -226,8 +226,13 @@ extends java.lang.Object</pre>
 <h4>SchedulerConfiguration</h4>
 <pre>public&nbsp;SchedulerConfiguration(java.io.File&nbsp;workflowConfigurationPath,
                               java.io.File&nbsp;defaultsConfigurationPath,
-                              java.io.File&nbsp;stateDatabasePath,
-                              java.util.Map&lt;java.lang.String,java.lang.String&gt;&nbsp;additionalVars)</pre>
+                              com.collective.celos.database.StateDatabase&nbsp;db,
+                              java.util.Map&lt;java.lang.String,java.lang.String&gt;&nbsp;additionalVars)
+                       throws java.io.IOException</pre>
+<dl>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code>java.io.IOException</code></dd>
+</dl>
 </li>
 </ul>
 </li>
@@ -252,18 +257,13 @@ extends java.lang.Object</pre>
 </dl>
 </li>
 </ul>
-<a name="makeDefaultStateDatabase--">
+<a name="getStateDatabase--">
 <!--   -->
 </a>
 <ul class="blockListLast">
 <li class="blockList">
-<h4>makeDefaultStateDatabase</h4>
-<pre>public&nbsp;<a href="../../../com/collective/celos/StateDatabase.html" title="interface in com.collective.celos">StateDatabase</a>&nbsp;makeDefaultStateDatabase()
-                                       throws java.io.IOException</pre>
-<dl>
-<dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code>java.io.IOException</code></dd>
-</dl>
+<h4>getStateDatabase</h4>
+<pre>public&nbsp;com.collective.celos.database.StateDatabase&nbsp;getStateDatabase()</pre>
 </li>
 </ul>
 </li>

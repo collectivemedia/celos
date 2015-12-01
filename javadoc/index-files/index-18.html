@@ -104,7 +104,7 @@
 <dd>
 <div class="block">Reads configuration and database from filesystem at well-known paths.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="../com/collective/celos/SchedulerConfiguration.html#SchedulerConfiguration-java.io.File-java.io.File-java.io.File-java.util.Map-">SchedulerConfiguration(File, File, File, Map&lt;String, String&gt;)</a></span> - Constructor for class com.collective.celos.<a href="../com/collective/celos/SchedulerConfiguration.html" title="class in com.collective.celos">SchedulerConfiguration</a></dt>
+<dt><span class="memberNameLink"><a href="../com/collective/celos/SchedulerConfiguration.html#SchedulerConfiguration-java.io.File-java.io.File-com.collective.celos.database.StateDatabase-java.util.Map-">SchedulerConfiguration(File, File, StateDatabase, Map&lt;String, String&gt;)</a></span> - Constructor for class com.collective.celos.<a href="../com/collective/celos/SchedulerConfiguration.html" title="class in com.collective.celos">SchedulerConfiguration</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="../com/collective/celos/servlet/SchedulerServlet.html" title="class in com.collective.celos.servlet"><span class="typeNameLink">SchedulerServlet</span></a> - Class in <a href="../com/collective/celos/servlet/package-summary.html">com.collective.celos.servlet</a></dt>
 <dd>
@@ -132,7 +132,7 @@
 <dd>
 <div class="block">Command-line options for the scheduler server.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="../com/collective/celos/server/ServerCommandLine.html#ServerCommandLine-java.lang.String-java.lang.String-java.lang.String-java.lang.String-int-int-">ServerCommandLine(String, String, String, String, int, int)</a></span> - Constructor for class com.collective.celos.server.<a href="../com/collective/celos/server/ServerCommandLine.html" title="class in com.collective.celos.server">ServerCommandLine</a></dt>
+<dt><span class="memberNameLink"><a href="../com/collective/celos/server/ServerCommandLine.html#ServerCommandLine-java.lang.String-java.lang.String-com.collective.celos.database.StateDatabase-java.lang.String-int-int-">ServerCommandLine(String, String, StateDatabase, String, int, int)</a></span> - Constructor for class com.collective.celos.server.<a href="../com/collective/celos/server/ServerCommandLine.html" title="class in com.collective.celos.server">ServerCommandLine</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="../com/collective/celos/server/ServerCommandLineParser.html" title="class in com.collective.celos.server"><span class="typeNameLink">ServerCommandLineParser</span></a> - Class in <a href="../com/collective/celos/server/package-summary.html">com.collective.celos.server</a></dt>
 <dd>
@@ -142,10 +142,6 @@
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="../com/collective/celos/servlet/AbstractServlet.html#service-HttpServletRequest-HttpServletResponse-">service(HttpServletRequest, HttpServletResponse)</a></span> - Method in class com.collective.celos.servlet.<a href="../com/collective/celos/servlet/AbstractServlet.html" title="class in com.collective.celos.servlet">AbstractServlet</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="../com/collective/celos/StateDatabaseConnection.html#setPaused-com.collective.celos.WorkflowID-boolean-">setPaused(WorkflowID, boolean)</a></span> - Method in interface com.collective.celos.<a href="../com/collective/celos/StateDatabaseConnection.html" title="interface in com.collective.celos">StateDatabaseConnection</a></dt>
-<dd>
-<div class="block">Sets paused flag for a workflow.</div>
-</dd>
 <dt><span class="memberNameLink"><a href="../com/collective/celos/JettyServer.html#setupContext-java.util.Map-java.util.Map-">setupContext(Map&lt;String, Object&gt;, Map&lt;String, String&gt;)</a></span> - Method in class com.collective.celos.<a href="../com/collective/celos/JettyServer.html" title="class in com.collective.celos">JettyServer</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="../com/collective/celos/Util.html#setupLogging-java.io.File-">setupLogging(File)</a></span> - Static method in class com.collective.celos.<a href="../com/collective/celos/Util.html" title="class in com.collective.celos">Util</a></dt>
@@ -206,27 +202,19 @@
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="../com/collective/celos/ci/mode/test/TestRunCelosServerModeProvided.html#startServer-com.collective.celos.ci.mode.test.TestRun-">startServer(TestRun)</a></span> - Method in class com.collective.celos.ci.mode.test.<a href="../com/collective/celos/ci/mode/test/TestRunCelosServerModeProvided.html" title="class in com.collective.celos.ci.mode.test">TestRunCelosServerModeProvided</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="../com/collective/celos/server/CelosServer.html#startServer-java.util.Map-java.io.File-java.io.File-java.io.File-">startServer(Map&lt;String, String&gt;, File, File, File)</a></span> - Method in class com.collective.celos.server.<a href="../com/collective/celos/server/CelosServer.html" title="class in com.collective.celos.server">CelosServer</a></dt>
+<dt><span class="memberNameLink"><a href="../com/collective/celos/server/CelosServer.html#startServer-java.util.Map-java.io.File-java.io.File-com.collective.celos.database.StateDatabase-">startServer(Map&lt;String, String&gt;, File, File, StateDatabase)</a></span> - Method in class com.collective.celos.server.<a href="../com/collective/celos/server/CelosServer.html" title="class in com.collective.celos.server">CelosServer</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="../com/collective/celos/server/CelosServer.html#startServer-int-java.util.Map-java.io.File-java.io.File-java.io.File-">startServer(int, Map&lt;String, String&gt;, File, File, File)</a></span> - Method in class com.collective.celos.server.<a href="../com/collective/celos/server/CelosServer.html" title="class in com.collective.celos.server">CelosServer</a></dt>
+<dt><span class="memberNameLink"><a href="../com/collective/celos/server/CelosServer.html#startServer-int-java.util.Map-java.io.File-java.io.File-com.collective.celos.database.StateDatabase-">startServer(int, Map&lt;String, String&gt;, File, File, StateDatabase)</a></span> - Method in class com.collective.celos.server.<a href="../com/collective/celos/server/CelosServer.html" title="class in com.collective.celos.server">CelosServer</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="../com/collective/celos/Constants.html#STATE_DATABASE_PATH_ATTR">STATE_DATABASE_PATH_ATTR</a></span> - Static variable in class com.collective.celos.<a href="../com/collective/celos/Constants.html" title="class in com.collective.celos">Constants</a></dt>
-<dd>&nbsp;</dd>
-<dt><a href="../com/collective/celos/StateDatabase.html" title="interface in com.collective.celos"><span class="typeNameLink">StateDatabase</span></a> - Interface in <a href="../com/collective/celos/package-summary.html">com.collective.celos</a></dt>
-<dd>&nbsp;</dd>
-<dt><a href="../com/collective/celos/StateDatabaseConnection.html" title="interface in com.collective.celos"><span class="typeNameLink">StateDatabaseConnection</span></a> - Interface in <a href="../com/collective/celos/package-summary.html">com.collective.celos</a></dt>
-<dd>
-<div class="block">Stores all state needed by the scheduler.</div>
-</dd>
 <dt><span class="memberNameLink"><a href="../com/collective/celos/SlotState.html#status">status</a></span> - Variable in class com.collective.celos.<a href="../com/collective/celos/SlotState.html" title="class in com.collective.celos">SlotState</a></dt>
 <dd>
 <div class="block">Never null.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="../com/collective/celos/Scheduler.html#step-com.collective.celos.ScheduledTime-com.collective.celos.StateDatabaseConnection-">step(ScheduledTime, StateDatabaseConnection)</a></span> - Method in class com.collective.celos.<a href="../com/collective/celos/Scheduler.html" title="class in com.collective.celos">Scheduler</a></dt>
+<dt><span class="memberNameLink"><a href="../com/collective/celos/Scheduler.html#step-com.collective.celos.ScheduledTime-com.collective.celos.database.StateDatabaseConnection-">step(ScheduledTime, StateDatabaseConnection)</a></span> - Method in class com.collective.celos.<a href="../com/collective/celos/Scheduler.html" title="class in com.collective.celos">Scheduler</a></dt>
 <dd>
 <div class="block">Main method, called every minute.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="../com/collective/celos/Scheduler.html#step-com.collective.celos.ScheduledTime-java.util.Set-com.collective.celos.StateDatabaseConnection-">step(ScheduledTime, Set&lt;WorkflowID&gt;, StateDatabaseConnection)</a></span> - Method in class com.collective.celos.<a href="../com/collective/celos/Scheduler.html" title="class in com.collective.celos">Scheduler</a></dt>
+<dt><span class="memberNameLink"><a href="../com/collective/celos/Scheduler.html#step-com.collective.celos.ScheduledTime-java.util.Set-com.collective.celos.database.StateDatabaseConnection-">step(ScheduledTime, Set&lt;WorkflowID&gt;, StateDatabaseConnection)</a></span> - Method in class com.collective.celos.<a href="../com/collective/celos/Scheduler.html" title="class in com.collective.celos">Scheduler</a></dt>
 <dd>
 <div class="block">If workflowIDs is empty, schedule all workflows.</div>
 </dd>

@@ -152,20 +152,20 @@ extends java.lang.Object</pre>
 </tr>
 <tr id="i1" class="rowColor">
 <td class="colFirst"><code>java.util.List&lt;<a href="../../../com/collective/celos/SlotState.html" title="class in com.collective.celos">SlotState</a>&gt;</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../com/collective/celos/Scheduler.html#getSlotStates-com.collective.celos.Workflow-com.collective.celos.ScheduledTime-com.collective.celos.ScheduledTime-com.collective.celos.StateDatabaseConnection-">getSlotStates</a></span>(<a href="../../../com/collective/celos/Workflow.html" title="class in com.collective.celos">Workflow</a>&nbsp;wf,
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../com/collective/celos/Scheduler.html#getSlotStates-com.collective.celos.Workflow-com.collective.celos.ScheduledTime-com.collective.celos.ScheduledTime-com.collective.celos.database.StateDatabaseConnection-">getSlotStates</a></span>(<a href="../../../com/collective/celos/Workflow.html" title="class in com.collective.celos">Workflow</a>&nbsp;wf,
              <a href="../../../com/collective/celos/ScheduledTime.html" title="class in com.collective.celos">ScheduledTime</a>&nbsp;start,
              <a href="../../../com/collective/celos/ScheduledTime.html" title="class in com.collective.celos">ScheduledTime</a>&nbsp;end,
-             <a href="../../../com/collective/celos/StateDatabaseConnection.html" title="interface in com.collective.celos">StateDatabaseConnection</a>&nbsp;connection)</code>
+             com.collective.celos.database.StateDatabaseConnection&nbsp;connection)</code>
 <div class="block">Get the slot states of all slots of the workflow from within the window defined by start (inclusive) and end (exclusive).</div>
 </td>
 </tr>
 <tr id="i2" class="altColor">
 <td class="colFirst"><code>java.util.List&lt;<a href="../../../com/collective/celos/SlotState.html" title="class in com.collective.celos">SlotState</a>&gt;</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../com/collective/celos/Scheduler.html#getSlotStatesIncludingMarkedForRerun-com.collective.celos.Workflow-com.collective.celos.ScheduledTime-com.collective.celos.ScheduledTime-com.collective.celos.ScheduledTime-com.collective.celos.StateDatabaseConnection-">getSlotStatesIncludingMarkedForRerun</a></span>(<a href="../../../com/collective/celos/Workflow.html" title="class in com.collective.celos">Workflow</a>&nbsp;wf,
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../com/collective/celos/Scheduler.html#getSlotStatesIncludingMarkedForRerun-com.collective.celos.Workflow-com.collective.celos.ScheduledTime-com.collective.celos.ScheduledTime-com.collective.celos.ScheduledTime-com.collective.celos.database.StateDatabaseConnection-">getSlotStatesIncludingMarkedForRerun</a></span>(<a href="../../../com/collective/celos/Workflow.html" title="class in com.collective.celos">Workflow</a>&nbsp;wf,
                                     <a href="../../../com/collective/celos/ScheduledTime.html" title="class in com.collective.celos">ScheduledTime</a>&nbsp;current,
                                     <a href="../../../com/collective/celos/ScheduledTime.html" title="class in com.collective.celos">ScheduledTime</a>&nbsp;start,
                                     <a href="../../../com/collective/celos/ScheduledTime.html" title="class in com.collective.celos">ScheduledTime</a>&nbsp;end,
-                                    <a href="../../../com/collective/celos/StateDatabaseConnection.html" title="interface in com.collective.celos">StateDatabaseConnection</a>&nbsp;connection)</code>
+                                    com.collective.celos.database.StateDatabaseConnection&nbsp;connection)</code>
 <div class="block">Get the slot states of all slots of the workflow from within the window defined by start (inclusive) and end (exclusive),
  as well as the slots states of all slots marked for rerun in the database.</div>
 </td>
@@ -181,16 +181,16 @@ extends java.lang.Object</pre>
 </tr>
 <tr id="i5" class="rowColor">
 <td class="colFirst"><code>void</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../com/collective/celos/Scheduler.html#step-com.collective.celos.ScheduledTime-java.util.Set-com.collective.celos.StateDatabaseConnection-">step</a></span>(<a href="../../../com/collective/celos/ScheduledTime.html" title="class in com.collective.celos">ScheduledTime</a>&nbsp;current,
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../com/collective/celos/Scheduler.html#step-com.collective.celos.ScheduledTime-java.util.Set-com.collective.celos.database.StateDatabaseConnection-">step</a></span>(<a href="../../../com/collective/celos/ScheduledTime.html" title="class in com.collective.celos">ScheduledTime</a>&nbsp;current,
     java.util.Set&lt;<a href="../../../com/collective/celos/WorkflowID.html" title="class in com.collective.celos">WorkflowID</a>&gt;&nbsp;workflowIDs,
-    <a href="../../../com/collective/celos/StateDatabaseConnection.html" title="interface in com.collective.celos">StateDatabaseConnection</a>&nbsp;connection)</code>
+    com.collective.celos.database.StateDatabaseConnection&nbsp;connection)</code>
 <div class="block">If workflowIDs is empty, schedule all workflows.</div>
 </td>
 </tr>
 <tr id="i6" class="altColor">
 <td class="colFirst"><code>void</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../com/collective/celos/Scheduler.html#step-com.collective.celos.ScheduledTime-com.collective.celos.StateDatabaseConnection-">step</a></span>(<a href="../../../com/collective/celos/ScheduledTime.html" title="class in com.collective.celos">ScheduledTime</a>&nbsp;current,
-    <a href="../../../com/collective/celos/StateDatabaseConnection.html" title="interface in com.collective.celos">StateDatabaseConnection</a>&nbsp;connection)</code>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../com/collective/celos/Scheduler.html#step-com.collective.celos.ScheduledTime-com.collective.celos.database.StateDatabaseConnection-">step</a></span>(<a href="../../../com/collective/celos/ScheduledTime.html" title="class in com.collective.celos">ScheduledTime</a>&nbsp;current,
+    com.collective.celos.database.StateDatabaseConnection&nbsp;connection)</code>
 <div class="block">Main method, called every minute.</div>
 </td>
 </tr>
@@ -234,14 +234,14 @@ extends java.lang.Object</pre>
 <!--   -->
 </a>
 <h3>Method Detail</h3>
-<a name="step-com.collective.celos.ScheduledTime-com.collective.celos.StateDatabaseConnection-">
+<a name="step-com.collective.celos.ScheduledTime-com.collective.celos.database.StateDatabaseConnection-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>step</h4>
 <pre>public&nbsp;void&nbsp;step(<a href="../../../com/collective/celos/ScheduledTime.html" title="class in com.collective.celos">ScheduledTime</a>&nbsp;current,
-                 <a href="../../../com/collective/celos/StateDatabaseConnection.html" title="interface in com.collective.celos">StateDatabaseConnection</a>&nbsp;connection)
+                 com.collective.celos.database.StateDatabaseConnection&nbsp;connection)
           throws java.lang.Exception</pre>
 <div class="block">Main method, called every minute.
  <p>
@@ -252,7 +252,7 @@ extends java.lang.Object</pre>
 </dl>
 </li>
 </ul>
-<a name="step-com.collective.celos.ScheduledTime-java.util.Set-com.collective.celos.StateDatabaseConnection-">
+<a name="step-com.collective.celos.ScheduledTime-java.util.Set-com.collective.celos.database.StateDatabaseConnection-">
 <!--   -->
 </a>
 <ul class="blockList">
@@ -260,7 +260,7 @@ extends java.lang.Object</pre>
 <h4>step</h4>
 <pre>public&nbsp;void&nbsp;step(<a href="../../../com/collective/celos/ScheduledTime.html" title="class in com.collective.celos">ScheduledTime</a>&nbsp;current,
                  java.util.Set&lt;<a href="../../../com/collective/celos/WorkflowID.html" title="class in com.collective.celos">WorkflowID</a>&gt;&nbsp;workflowIDs,
-                 <a href="../../../com/collective/celos/StateDatabaseConnection.html" title="interface in com.collective.celos">StateDatabaseConnection</a>&nbsp;connection)
+                 com.collective.celos.database.StateDatabaseConnection&nbsp;connection)
           throws java.lang.Exception</pre>
 <div class="block">If workflowIDs is empty, schedule all workflows.
  <p>
@@ -271,7 +271,7 @@ extends java.lang.Object</pre>
 </dl>
 </li>
 </ul>
-<a name="getSlotStatesIncludingMarkedForRerun-com.collective.celos.Workflow-com.collective.celos.ScheduledTime-com.collective.celos.ScheduledTime-com.collective.celos.ScheduledTime-com.collective.celos.StateDatabaseConnection-">
+<a name="getSlotStatesIncludingMarkedForRerun-com.collective.celos.Workflow-com.collective.celos.ScheduledTime-com.collective.celos.ScheduledTime-com.collective.celos.ScheduledTime-com.collective.celos.database.StateDatabaseConnection-">
 <!--   -->
 </a>
 <ul class="blockList">
@@ -281,7 +281,7 @@ extends java.lang.Object</pre>
                                                                       <a href="../../../com/collective/celos/ScheduledTime.html" title="class in com.collective.celos">ScheduledTime</a>&nbsp;current,
                                                                       <a href="../../../com/collective/celos/ScheduledTime.html" title="class in com.collective.celos">ScheduledTime</a>&nbsp;start,
                                                                       <a href="../../../com/collective/celos/ScheduledTime.html" title="class in com.collective.celos">ScheduledTime</a>&nbsp;end,
-                                                                      <a href="../../../com/collective/celos/StateDatabaseConnection.html" title="interface in com.collective.celos">StateDatabaseConnection</a>&nbsp;connection)
+                                                                      com.collective.celos.database.StateDatabaseConnection&nbsp;connection)
                                                                throws java.lang.Exception</pre>
 <div class="block">Get the slot states of all slots of the workflow from within the window defined by start (inclusive) and end (exclusive),
  as well as the slots states of all slots marked for rerun in the database.</div>
@@ -291,7 +291,7 @@ extends java.lang.Object</pre>
 </dl>
 </li>
 </ul>
-<a name="getSlotStates-com.collective.celos.Workflow-com.collective.celos.ScheduledTime-com.collective.celos.ScheduledTime-com.collective.celos.StateDatabaseConnection-">
+<a name="getSlotStates-com.collective.celos.Workflow-com.collective.celos.ScheduledTime-com.collective.celos.ScheduledTime-com.collective.celos.database.StateDatabaseConnection-">
 <!--   -->
 </a>
 <ul class="blockList">
@@ -300,7 +300,7 @@ extends java.lang.Object</pre>
 <pre>public&nbsp;java.util.List&lt;<a href="../../../com/collective/celos/SlotState.html" title="class in com.collective.celos">SlotState</a>&gt;&nbsp;getSlotStates(<a href="../../../com/collective/celos/Workflow.html" title="class in com.collective.celos">Workflow</a>&nbsp;wf,
                                                <a href="../../../com/collective/celos/ScheduledTime.html" title="class in com.collective.celos">ScheduledTime</a>&nbsp;start,
                                                <a href="../../../com/collective/celos/ScheduledTime.html" title="class in com.collective.celos">ScheduledTime</a>&nbsp;end,
-                                               <a href="../../../com/collective/celos/StateDatabaseConnection.html" title="interface in com.collective.celos">StateDatabaseConnection</a>&nbsp;connection)
+                                               com.collective.celos.database.StateDatabaseConnection&nbsp;connection)
                                         throws java.lang.Exception</pre>
 <div class="block">Get the slot states of all slots of the workflow from within the window defined by start (inclusive) and end (exclusive).
  This is used for servlets that return the slot states within the window, and don't care about rerun slots.</div>

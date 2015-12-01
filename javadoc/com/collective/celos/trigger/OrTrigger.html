@@ -156,7 +156,7 @@ extends <a href="../../../../com/collective/celos/trigger/Trigger.html" title="c
 </tr>
 <tr id="i1" class="rowColor">
 <td class="colFirst"><code><a href="../../../../com/collective/celos/trigger/TriggerStatus.html" title="class in com.collective.celos.trigger">TriggerStatus</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/collective/celos/trigger/OrTrigger.html#getTriggerStatus-com.collective.celos.StateDatabaseConnection-com.collective.celos.ScheduledTime-com.collective.celos.ScheduledTime-">getTriggerStatus</a></span>(<a href="../../../../com/collective/celos/StateDatabaseConnection.html" title="interface in com.collective.celos">StateDatabaseConnection</a>&nbsp;connection,
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/collective/celos/trigger/OrTrigger.html#getTriggerStatus-com.collective.celos.database.StateDatabaseConnection-com.collective.celos.ScheduledTime-com.collective.celos.ScheduledTime-">getTriggerStatus</a></span>(com.collective.celos.database.StateDatabaseConnection&nbsp;connection,
                 <a href="../../../../com/collective/celos/ScheduledTime.html" title="class in com.collective.celos">ScheduledTime</a>&nbsp;now,
                 <a href="../../../../com/collective/celos/ScheduledTime.html" title="class in com.collective.celos">ScheduledTime</a>&nbsp;scheduledTime)</code>
 <div class="block">Returns information about data availablity for the given scheduled time.</div>
@@ -168,7 +168,7 @@ extends <a href="../../../../com/collective/celos/trigger/Trigger.html" title="c
 <!--   -->
 </a>
 <h3>Methods inherited from class&nbsp;com.collective.celos.trigger.<a href="../../../../com/collective/celos/trigger/Trigger.html" title="class in com.collective.celos.trigger">Trigger</a></h3>
-<code><a href="../../../../com/collective/celos/trigger/Trigger.html#isDataAvailable-com.collective.celos.StateDatabaseConnection-com.collective.celos.ScheduledTime-com.collective.celos.ScheduledTime-">isDataAvailable</a>, <a href="../../../../com/collective/celos/trigger/Trigger.html#makeTriggerStatus-boolean-java.lang.String-">makeTriggerStatus</a>, <a href="../../../../com/collective/celos/trigger/Trigger.html#makeTriggerStatus-boolean-java.lang.String-java.util.List-">makeTriggerStatus</a></code></li>
+<code><a href="../../../../com/collective/celos/trigger/Trigger.html#isDataAvailable-com.collective.celos.database.StateDatabaseConnection-com.collective.celos.ScheduledTime-com.collective.celos.ScheduledTime-">isDataAvailable</a>, <a href="../../../../com/collective/celos/trigger/Trigger.html#makeTriggerStatus-boolean-java.lang.String-">makeTriggerStatus</a>, <a href="../../../../com/collective/celos/trigger/Trigger.html#makeTriggerStatus-boolean-java.lang.String-java.util.List-">makeTriggerStatus</a></code></li>
 </ul>
 <ul class="blockList">
 <li class="blockList"><a name="methods.inherited.from.class.java.lang.Object">
@@ -213,21 +213,21 @@ extends <a href="../../../../com/collective/celos/trigger/Trigger.html" title="c
 <!--   -->
 </a>
 <h3>Method Detail</h3>
-<a name="getTriggerStatus-com.collective.celos.StateDatabaseConnection-com.collective.celos.ScheduledTime-com.collective.celos.ScheduledTime-">
+<a name="getTriggerStatus-com.collective.celos.database.StateDatabaseConnection-com.collective.celos.ScheduledTime-com.collective.celos.ScheduledTime-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>getTriggerStatus</h4>
-<pre>public&nbsp;<a href="../../../../com/collective/celos/trigger/TriggerStatus.html" title="class in com.collective.celos.trigger">TriggerStatus</a>&nbsp;getTriggerStatus(<a href="../../../../com/collective/celos/StateDatabaseConnection.html" title="interface in com.collective.celos">StateDatabaseConnection</a>&nbsp;connection,
+<pre>public&nbsp;<a href="../../../../com/collective/celos/trigger/TriggerStatus.html" title="class in com.collective.celos.trigger">TriggerStatus</a>&nbsp;getTriggerStatus(com.collective.celos.database.StateDatabaseConnection&nbsp;connection,
                                       <a href="../../../../com/collective/celos/ScheduledTime.html" title="class in com.collective.celos">ScheduledTime</a>&nbsp;now,
                                       <a href="../../../../com/collective/celos/ScheduledTime.html" title="class in com.collective.celos">ScheduledTime</a>&nbsp;scheduledTime)
                                throws java.lang.Exception</pre>
-<div class="block"><span class="descfrmTypeLabel">Description copied from class:&nbsp;<code><a href="../../../../com/collective/celos/trigger/Trigger.html#getTriggerStatus-com.collective.celos.StateDatabaseConnection-com.collective.celos.ScheduledTime-com.collective.celos.ScheduledTime-">Trigger</a></code></span></div>
+<div class="block"><span class="descfrmTypeLabel">Description copied from class:&nbsp;<code><a href="../../../../com/collective/celos/trigger/Trigger.html#getTriggerStatus-com.collective.celos.database.StateDatabaseConnection-com.collective.celos.ScheduledTime-com.collective.celos.ScheduledTime-">Trigger</a></code></span></div>
 <div class="block">Returns information about data availablity for the given scheduled time.</div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
-<dd><code><a href="../../../../com/collective/celos/trigger/Trigger.html#getTriggerStatus-com.collective.celos.StateDatabaseConnection-com.collective.celos.ScheduledTime-com.collective.celos.ScheduledTime-">getTriggerStatus</a></code>&nbsp;in class&nbsp;<code><a href="../../../../com/collective/celos/trigger/Trigger.html" title="class in com.collective.celos.trigger">Trigger</a></code></dd>
+<dd><code><a href="../../../../com/collective/celos/trigger/Trigger.html#getTriggerStatus-com.collective.celos.database.StateDatabaseConnection-com.collective.celos.ScheduledTime-com.collective.celos.ScheduledTime-">getTriggerStatus</a></code>&nbsp;in class&nbsp;<code><a href="../../../../com/collective/celos/trigger/Trigger.html" title="class in com.collective.celos.trigger">Trigger</a></code></dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code>java.lang.Exception</code></dd>
 </dl>
