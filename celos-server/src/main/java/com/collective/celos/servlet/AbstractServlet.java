@@ -24,15 +24,12 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.collective.celos.*;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
-import com.collective.celos.Constants;
-import com.collective.celos.ScheduledTime;
-import com.collective.celos.Scheduler;
-import com.collective.celos.SchedulerConfiguration;
-import com.collective.celos.StateDatabase;
+import com.collective.celos.database.StateDatabase;
 import com.google.common.collect.ImmutableMap;
 
 /**
@@ -87,16 +84,17 @@ public abstract class AbstractServlet extends HttpServlet {
      * to reset the cache and force a reload of the configuration.
      */
 
-    private SchedulerConfiguration getSchedulerConfiguration() {
-        String workflowConfigPath = getServletContext().getInitParameter(Constants.WORKFLOW_CONFIGURATION_PATH_ATTR);
-        String defaultsConfigPath = getServletContext().getInitParameter(Constants.DEFAULTS_CONFIGURATION_PATH_ATTR);
-        String stateDatabasePath = getServletContext().getInitParameter(Constants.STATE_DATABASE_PATH_ATTR);
+    private SchedulerConfiguration getSchedulerConfiguration() throws IOException {
+        String workflowConfigPath = Util.requireNonNull(getServletContext().getInitParameter(Constants.WORKFLOW_CONFIGURATION_PATH_ATTR));
+        String defaultsConfigPath = Util.requireNonNull(getServletContext().getInitParameter(Constants.DEFAULTS_CONFIGURATION_PATH_ATTR));
+        StateDatabase database = (StateDatabase) Util.requireNonNull(getServletContext().getAttribute(Constants.DATABASE));
+
         Map<String, String> additionalVars = (Map<String, String>) getServletContext().getAttribute(Constants.ADDITIONAL_JS_VARIABLES);
         if (additionalVars == null) {
             additionalVars = ImmutableMap.of();
         }
         SchedulerConfiguration schedulerConfiguration = new SchedulerConfiguration(
-                new File(workflowConfigPath), new File(defaultsConfigPath), new File(stateDatabasePath), additionalVars
+                new File(workflowConfigPath), new File(defaultsConfigPath), database, additionalVars
         );
         return schedulerConfiguration;
     }
@@ -122,7 +120,7 @@ public abstract class AbstractServlet extends HttpServlet {
     }
 
     protected StateDatabase getStateDatabase() throws IOException {
-        return getSchedulerConfiguration().makeDefaultStateDatabase();
+        return getSchedulerConfiguration().getStateDatabase();
     }
     
 }

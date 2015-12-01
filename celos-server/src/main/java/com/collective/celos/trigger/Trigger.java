@@ -19,8 +19,7 @@ import java.util.Collections;
 import java.util.List;
 
 import com.collective.celos.ScheduledTime;
-import com.collective.celos.Scheduler;
-import com.collective.celos.StateDatabaseConnection;
+import com.collective.celos.database.StateDatabaseConnection;
 
 /**
  * A trigger is called to determine data availability for a workflow.

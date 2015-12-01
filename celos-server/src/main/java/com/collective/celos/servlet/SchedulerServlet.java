@@ -24,6 +24,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.collective.celos.*;
+import com.collective.celos.database.StateDatabaseConnection;
 
 /**
  * Posting to this servlet triggers a scheduler step.

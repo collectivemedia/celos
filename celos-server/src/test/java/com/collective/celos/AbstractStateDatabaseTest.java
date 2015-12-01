@@ -18,12 +18,12 @@ package com.collective.celos;
 import java.io.IOException;
 import java.util.*;
 
+import com.collective.celos.database.StateDatabaseConnection;
 import junit.framework.Assert;
 
 import org.joda.time.Interval;
 import org.junit.Test;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
@@ -31,13 +31,13 @@ import com.google.common.collect.Lists;
 
 public abstract class AbstractStateDatabaseTest {
 
-    public abstract StateDatabaseConnection getStateDatabase() throws IOException;
+    public abstract StateDatabaseConnection getStateDatabaseConnection() throws IOException;
 
     private final Comparator<SlotState> comparator = (o1, o2) -> o1.getScheduledTime().compareTo(o2.getScheduledTime());
 
     @Test
     public void getAndPutWorks() throws Exception {
-        StateDatabaseConnection db = getStateDatabase();
+        StateDatabaseConnection db = getStateDatabaseConnection();
         SlotID slotID = new SlotID(new WorkflowID("foo"), new ScheduledTime("2013-11-27T14:50Z"));
         Assert.assertEquals(null, db.getSlotState(slotID));
         SlotState state = new SlotState(slotID, SlotState.Status.READY);
@@ -48,7 +48,7 @@ public abstract class AbstractStateDatabaseTest {
 
     @Test
     public void getAndPutWorksWithExternalID() throws Exception {
-        StateDatabaseConnection db = getStateDatabase();
+        StateDatabaseConnection db = getStateDatabaseConnection();
         SlotID slotID = new SlotID(new WorkflowID("foo"), new ScheduledTime("2013-11-27T14:50Z"));
         Assert.assertEquals(null, db.getSlotState(slotID));
         String externalId = "externalId";
@@ -62,7 +62,7 @@ public abstract class AbstractStateDatabaseTest {
 
     @Test
     public void getAndPutWorksWithExternalIDForPeriod() throws Exception {
-        StateDatabaseConnection db = getStateDatabase();
+        StateDatabaseConnection db = getStateDatabaseConnection();
         WorkflowID workflowID = new WorkflowID("foo");
         ScheduledTime startTime = new ScheduledTime("2013-11-27T14:50Z");
         ScheduledTime midTime = new ScheduledTime("2013-11-27T15:50Z");
@@ -95,7 +95,7 @@ public abstract class AbstractStateDatabaseTest {
 
     @Test
     public void testGetSlotStatesForPeriod() throws Exception {
-        StateDatabaseConnection db = getStateDatabase();
+        StateDatabaseConnection db = getStateDatabaseConnection();
         for (SlotState state : getStatesForSeveralDays()) {
             db.putSlotState(state);
         }
@@ -138,7 +138,7 @@ public abstract class AbstractStateDatabaseTest {
 
     @Test
     public void testGetSlotStatesForParticularTimes() throws Exception {
-        StateDatabaseConnection db = getStateDatabase();
+        StateDatabaseConnection db = getStateDatabaseConnection();
         for (SlotState state : getStatesForSeveralDays()) {
             db.putSlotState(state);
         }
@@ -161,14 +161,14 @@ public abstract class AbstractStateDatabaseTest {
 
     @Test
     public void testGetSlotStatesForPeriodEmptyList() throws Exception {
-        StateDatabaseConnection db = getStateDatabase();
+        StateDatabaseConnection db = getStateDatabaseConnection();
         Map<SlotID, SlotState> slotStates = db.getSlotStates(new WorkflowID("id"), new ScheduledTime("2013-12-03T00:01Z"), new ScheduledTime("2013-12-03T00:00Z"));
         Assert.assertEquals(slotStates.size(), 0);
     }
 
     @Test
     public void testRerunExpiration() throws Exception {
-        StateDatabaseConnection db = getStateDatabase();
+        StateDatabaseConnection db = getStateDatabaseConnection();
         WorkflowID wf1 = new WorkflowID("foo");
         WorkflowID wf2 = new WorkflowID("bar");
         ScheduledTime currentTime = new ScheduledTime("2013-12-02T15:00Z");
@@ -197,7 +197,7 @@ public abstract class AbstractStateDatabaseTest {
 
     @Test
     public void testPause() throws Exception {
-        StateDatabaseConnection db = getStateDatabase();
+        StateDatabaseConnection db = getStateDatabaseConnection();
         WorkflowID workflowID = new WorkflowID("wf1");
 
         Assert.assertFalse(db.isPaused(workflowID));
@@ -211,7 +211,7 @@ public abstract class AbstractStateDatabaseTest {
 
     @Test
     public void testRegisters() throws Exception {
-        StateDatabaseConnection db = getStateDatabase();
+        StateDatabaseConnection db = getStateDatabaseConnection();
         BucketID bucket1 = new BucketID("foo-bucket-Iñtërnâtiônàlizætiøn");
         BucketID bucket2 = new BucketID("another-bucket-Iñtërnâtiônàlizætiøn");
         RegisterKey key1 = new RegisterKey("bar-key-Iñtërnâtiônàlizætiøn");

@@ -13,8 +13,9 @@
  * implied.  See the License for the specific language governing
  * permissions and limitations under the License.
  */
-package com.collective.celos;
+package com.collective.celos.database;
 
+import com.collective.celos.*;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.Maps;
 import org.apache.log4j.Logger;
@@ -60,6 +61,18 @@ public class JDBCStateDatabase implements StateDatabase {
         this.url = url;
         this.name = name;
         this.password = password;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getPassword() {
+        return password;
     }
 
     @Override
@@ -124,7 +137,7 @@ public class JDBCStateDatabase implements StateDatabase {
 
         @Override
         public void putSlotState(SlotState state) throws Exception {
-            SlotState slotState = getSlotState(state.slotID);
+            SlotState slotState = getSlotState(state.getSlotID());
             if (slotState == null) {
                 try (PreparedStatement statement = connection.prepareStatement(INSERT_SLOT_STATE)) {
                     statement.setString(1, state.getSlotID().getWorkflowID().toString());

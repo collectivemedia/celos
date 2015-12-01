@@ -16,6 +16,7 @@
 package com.collective.celos.servlet;
 
 import com.collective.celos.*;
+import com.collective.celos.database.StateDatabaseConnection;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.Lists;

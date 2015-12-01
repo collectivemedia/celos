@@ -16,8 +16,7 @@
 package com.collective.celos.trigger;
 
 import com.collective.celos.ScheduledTime;
-import com.collective.celos.Scheduler;
-import com.collective.celos.StateDatabaseConnection;
+import com.collective.celos.database.StateDatabaseConnection;
 
 /**
  * Trivial trigger that always signals data availability,

@@ -15,11 +15,10 @@
  */
 package com.collective.celos;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.StringReader;
-import java.util.Properties;
-
+import com.collective.celos.database.StateDatabaseConnection;
+import com.collective.celos.trigger.*;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.common.collect.ImmutableMap;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -27,17 +26,10 @@ import org.junit.rules.TemporaryFolder;
 import org.mozilla.javascript.JavaScriptException;
 import org.mozilla.javascript.NativeJavaObject;
 
-import com.collective.celos.trigger.AlwaysTrigger;
-import com.collective.celos.trigger.AndTrigger;
-import com.collective.celos.trigger.DelayTrigger;
-import com.collective.celos.trigger.HDFSCheckTrigger;
-import com.collective.celos.trigger.NotTrigger;
-import com.collective.celos.trigger.OffsetTrigger;
-import com.collective.celos.trigger.OrTrigger;
-import com.collective.celos.trigger.SuccessTrigger;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.collect.ImmutableMap;
+import java.io.File;
+import java.io.FileReader;
+import java.io.StringReader;
+import java.util.Properties;
 
 public class JavaScriptFunctionsTest {
 
