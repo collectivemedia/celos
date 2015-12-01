@@ -36,6 +36,7 @@ public class CelosServer {
     public int startServer(Map<String, String> jsVariables, File workflowsDir, File defaultsDir, StateDatabase db) throws Exception {
         Util.validateDirExists(workflowsDir);
         Util.validateDirExists(defaultsDir);
+        Util.requireNonNull(db);
 
         int port = server.start();
 
@@ -44,9 +45,9 @@ public class CelosServer {
     }
 
     public void startServer(int port, Map<String, String> jsVariables, File workflowsDir, File defaultsDir, StateDatabase db) throws Exception {
-
         Util.validateDirExists(workflowsDir);
         Util.validateDirExists(defaultsDir);
+        Util.requireNonNull(db);
 
         server.start(port);
 
