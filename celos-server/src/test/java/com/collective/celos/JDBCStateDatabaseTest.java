@@ -19,10 +19,7 @@ import com.collective.celos.database.JDBCStateDatabase;
 import com.collective.celos.database.StateDatabaseConnection;
 import junit.framework.Assert;
 import org.h2.tools.Server;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -30,15 +27,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 public class JDBCStateDatabaseTest extends AbstractStateDatabaseTest {
-
-    public static final String CLEAR_SLOT_STATE_TABLE = "DELETE FROM SLOTSTATE";
-
-    public static final String CLEAR_RERUN_SLOT_TABLE = "DELETE FROM RERUNSLOT";
-
-    public static final String CLEAR_WORKFLOW_INFO_TABLE = "DELETE FROM WORKFLOWINFO";
-
-    public static final String CLEAR_REGISTERS_TABLE = "DELETE FROM REGISTER";
-
 
     public static final String CREATE_SLOT_STATE_TABLE = "CREATE TABLE SLOTSTATE (" +
             "WORKFLOWID VARCHAR(512) NOT NULL, DATE TIMESTAMP NOT NULL, STATUS VARCHAR(512) NOT NULL, " +
@@ -57,7 +45,7 @@ public class JDBCStateDatabaseTest extends AbstractStateDatabaseTest {
     private static String URL = "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1";
     private static String USERNAME = "sa";
     private static String PASSWORD = "";
-    private static StateDatabaseConnection connection;
+    private StateDatabaseConnection connection;
 
     @BeforeClass
     public static void setupClass() throws Exception {
@@ -71,8 +59,6 @@ public class JDBCStateDatabaseTest extends AbstractStateDatabaseTest {
                 statement.execute(CREATE_REGISTERS_TABLE);
             }
         }
-        JDBCStateDatabase config = new JDBCStateDatabase(URL, USERNAME, PASSWORD);
-        connection = config.openConnection();
     }
 
     @AfterClass
@@ -80,21 +66,15 @@ public class JDBCStateDatabaseTest extends AbstractStateDatabaseTest {
         SERVER.stop();
     }
 
+    @Before
+    public void setUp() throws Exception {
+        JDBCStateDatabase config = new JDBCStateDatabase(URL, USERNAME, PASSWORD);
+        connection = config.openConnection();
+    }
+
     @Override
     public StateDatabaseConnection getStateDatabaseConnection() {
         return connection;
-    }
-
-    @Before
-    public void setupTest() throws SQLException {
-        try (Connection connection = DriverManager.getConnection(URL, USERNAME, PASSWORD)) {
-            try (Statement statement = connection.createStatement()) {
-                statement.execute(CLEAR_REGISTERS_TABLE);
-                statement.execute(CLEAR_RERUN_SLOT_TABLE);
-                statement.execute(CLEAR_SLOT_STATE_TABLE);
-                statement.execute(CLEAR_WORKFLOW_INFO_TABLE);
-            }
-        }
     }
 
     @Test
