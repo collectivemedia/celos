@@ -17,11 +17,13 @@ package com.collective.celos.database;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.Set;
 import java.util.SortedSet;
 
 import com.collective.celos.*;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 
 /**
  * Stores all state needed by the scheduler.
@@ -89,11 +91,18 @@ public interface StateDatabaseConnection extends AutoCloseable {
      * Set the value of the specified register.
      */
     public void putRegister(BucketID bucket, RegisterKey key, JsonNode value) throws Exception;
-    
+
     /**
      * Delete the value of the specified register.
      */
-    public void deleteRegister(BucketID bucket, RegisterKey key) throws Exception;
+    public default void deleteRegister(BucketID bucket, RegisterKey key) throws Exception {
+        deleteRegisters(bucket, Sets.newHashSet(key));
+    }
+
+    /**
+     * Delete the values of the specified registers.
+     */
+    public void deleteRegisters(BucketID bucket, Set<RegisterKey> key) throws Exception;
     
     /**
      * Get all registers in the specified bucket.

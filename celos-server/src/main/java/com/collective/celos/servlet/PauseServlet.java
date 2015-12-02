@@ -34,14 +34,11 @@ import javax.servlet.http.HttpServletResponse;
 @SuppressWarnings("serial")
 public class PauseServlet extends AbstractServlet {
 
-    private static final String ID_PARAM = "id";
-    private static final String PAUSE_PARAM = "paused";
-
     protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException {
         try {
-            String id = req.getParameter(ID_PARAM);
+            String id = req.getParameter(CelosClient.ID_PARAM);
             if (id == null) {
-                res.sendError(HttpServletResponse.SC_BAD_REQUEST, ID_PARAM + " parameter missing.");
+                res.sendError(HttpServletResponse.SC_BAD_REQUEST, CelosClient.ID_PARAM + " parameter missing.");
                 return;
             }
 
@@ -53,7 +50,7 @@ public class PauseServlet extends AbstractServlet {
                 return;
             }
 
-            Boolean pause = Boolean.parseBoolean(req.getParameter(PAUSE_PARAM));
+            Boolean pause = Boolean.parseBoolean(req.getParameter(CelosClient.PAUSE_PARAM));
             try(StateDatabaseConnection connection = getStateDatabase().openConnection()) {
                 connection.setPaused(workflowID, pause);
             }

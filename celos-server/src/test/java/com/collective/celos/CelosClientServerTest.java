@@ -803,6 +803,14 @@ public class CelosClientServerTest {
         celosClient.deleteRegister(bucket2, key2);
         Assert.assertNull(celosClient.getRegister(bucket1, key1));
         Assert.assertNull(celosClient.getRegister(bucket2, key2));
+
+        celosClient.putRegister(bucket2, key1, value1);
+        celosClient.putRegister(bucket2, key2, value2);
+        Assert.assertEquals(value1, celosClient.getRegister(bucket2, key1));
+        Assert.assertEquals(value2, celosClient.getRegister(bucket2, key2));
+        celosClient.deleteRegisters(bucket2, Sets.newHashSet(key1, key2));
+        Assert.assertNull(celosClient.getRegister(bucket2, key1));
+        Assert.assertNull(celosClient.getRegister(bucket2, key2));
     }
 
 

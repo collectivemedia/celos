@@ -136,24 +136,24 @@ public class MemoryStateDatabase implements StateDatabase {
             Util.requireNonNull(value);
             SortedMap<RegisterKey, JsonNode> bucketMap = registers.get(bucket);
             if (bucketMap == null) {
-                bucketMap = new TreeMap<RegisterKey, JsonNode>();
+                bucketMap = new TreeMap<>();
                 registers.put(bucket, bucketMap);
             }
             bucketMap.put(key, value);
         }
-        
+
         @Override
-        public void deleteRegister(BucketID bucket, RegisterKey key) throws Exception {
+        public void deleteRegisters(BucketID bucket, Set<RegisterKey> keys) throws Exception {
             Util.requireNonNull(bucket);
-            Util.requireNonNull(key);
+            Util.requireNonNull(keys);
             SortedMap<RegisterKey, JsonNode> bucketMap = registers.get(bucket);
-            if (bucketMap == null) {
-                return;
-            } else {
-                bucketMap.remove(key);
+            if (bucketMap != null) {
+                for (RegisterKey key: keys) {
+                    bucketMap.remove(key);
+                }
             }
         }
-        
+
         @Override
         public Iterable<Map.Entry<RegisterKey, JsonNode>> getAllRegisters(BucketID bucket) throws Exception {
             SortedMap<RegisterKey, JsonNode> bucketMap = registers.get(bucket);

@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.util.*;
 
 import com.collective.celos.database.StateDatabaseConnection;
+import com.google.common.collect.Sets;
 import junit.framework.Assert;
 
 import org.joda.time.Interval;
@@ -277,6 +278,20 @@ public abstract class AbstractStateDatabaseTest {
         Assert.assertEquals(ImmutableMap.of().entrySet(), db.getAllRegisters(bucket1));
         Assert.assertNull(db.getRegister(bucket2, key2));
         Assert.assertEquals(ImmutableMap.of().entrySet(), db.getAllRegisters(bucket2));
+
+        db.putRegister(bucket1, key1, value2);
+        db.putRegister(bucket1, key2, value3);
+        db.putRegister(bucket2, key1, value1);
+        Assert.assertEquals(value2, db.getRegister(bucket1, key1));
+        Assert.assertEquals(value3, db.getRegister(bucket1, key2));
+        Assert.assertEquals(value1, db.getRegister(bucket2, key1));
+
+        db.deleteRegisters(bucket1, Sets.newHashSet(key1, key2));
+        Assert.assertNull(db.getRegister(bucket1, key1));
+        Assert.assertNull(db.getRegister(bucket1, key2));
+        Assert.assertEquals(ImmutableMap.of().entrySet(), db.getAllRegisters(bucket1));
+        Assert.assertEquals(value1, db.getRegister(bucket2, key1));
+
     }
         
     private void assertSlotStatesOrder(List<SlotState> slotStates) {

@@ -26,6 +26,7 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.common.collect.Sets;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -58,14 +59,20 @@ public class CelosClient {
     private static final String WORKFLOW_LIST_PATH = "/workflow-list";
     private static final String WORKFLOW_SLOTS_PATH = "/workflow-slots";
     private static final String REGISTER_PATH = "/register";
-    private static final String START_TIME_PARAM = "start";
-    private static final String END_TIME_PARAM = "end";
-    private static final String TIME_PARAM = "time";
-    private static final String PAUSE_PARAM = "paused";
-    private static final String ID_PARAM = "id";
-    private static final String IDS_PARAM = "ids";
-    private static final String BUCKET_PARAM = "bucket";
-    private static final String KEY_PARAM = "key";
+
+    public static final String TIME_PARAM = "time";
+    public static final String PAUSE_PARAM = "paused";
+    public static final String ID_PARAM = "id";
+    public static final String INFO_NODE = "info";
+    public static final String SLOTS_NODE = "slots";
+    public static final String IDS_PARAM = "ids";
+    public static final String START_TIME_PARAM = "start";
+    public static final String END_TIME_PARAM = "end";
+    public static final String BUCKET_PARAM = "bucket";
+    public static final String KEY_PARAM = "key";
+    public static final String KEYS_PARAM = "keys";
+    public static final String KEYS_DELIMITER = ",";
+    public static final String IDS_DELIMITER = ",";
 
     private final HttpClient client;
     private final ScheduledTimeFormatter timeFormatter;
@@ -130,7 +137,7 @@ public class CelosClient {
         URIBuilder uriBuilder = new URIBuilder(address);
         uriBuilder.setPath(uriBuilder.getPath() + SCHEDULER_PATH);
         if (!workflowIDs.isEmpty()) {
-            uriBuilder.addParameter(IDS_PARAM, StringUtils.join(workflowIDs, ","));
+            uriBuilder.addParameter(IDS_PARAM, StringUtils.join(workflowIDs, CelosClient.IDS_DELIMITER));
         }
         uriBuilder.addParameter(TIME_PARAM, timeFormatter.formatPretty(scheduledTime));
         executePost(uriBuilder.build());
@@ -223,10 +230,14 @@ public class CelosClient {
      * Deletes the specified register value.
      */
     public void deleteRegister(BucketID bucket, RegisterKey key) throws Exception {
+        deleteRegisters(bucket, Sets.newHashSet(key));
+    }
+
+    public void deleteRegisters(BucketID bucket, Set<RegisterKey> keys) throws Exception {
         URIBuilder uriBuilder = new URIBuilder(address);
         uriBuilder.setPath(uriBuilder.getPath() + REGISTER_PATH);
         uriBuilder.addParameter(BUCKET_PARAM, bucket.toString());
-        uriBuilder.addParameter(KEY_PARAM, key.toString());
+        uriBuilder.addParameter(KEYS_PARAM, StringUtils.join(keys, ","));
         executeDelete(uriBuilder.build());
     }
 
@@ -273,9 +284,6 @@ public class CelosClient {
     Set<WorkflowID> parseWorkflowIdsList(InputStream content) throws IOException {
         return Util.JSON_READER.withType(WorkflowList.class).<WorkflowList>readValue(content).getIds();
     }
-
-    private static final String INFO_NODE = "info";
-    private static final String SLOTS_NODE = "slots";
 
     WorkflowStatus parseWorkflowStatus(WorkflowID workflowID, InputStream content) throws IOException {
         JsonNode node = Util.JSON_READER.withType(JsonNode.class).readValue(content);

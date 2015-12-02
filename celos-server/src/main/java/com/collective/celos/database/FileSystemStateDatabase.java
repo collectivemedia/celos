@@ -17,7 +17,6 @@ package com.collective.celos.database;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.ParseException;
 import java.util.*;
 
 import com.collective.celos.*;
@@ -27,9 +26,6 @@ import org.apache.log4j.Logger;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.Maps;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
-import org.quartz.CronExpression;
 
 /**
  * Brutally simple persistent implementation of StateDatabase
@@ -284,12 +280,14 @@ public class FileSystemStateDatabase implements StateDatabase {
         }
 
         @Override
-        public void deleteRegister(BucketID bucket, RegisterKey key) throws Exception {
+        public void deleteRegisters(BucketID bucket, Set<RegisterKey> keys) throws Exception {
             Util.requireNonNull(bucket);
-            Util.requireNonNull(key);
-            File registerFile = getRegisterFile(bucket, key);
-            if (registerFile.exists()) {
-                registerFile.delete();
+            Util.requireNonNull(keys);
+            for (RegisterKey key : keys) {
+                File registerFile = getRegisterFile(bucket, key);
+                if (registerFile.exists()) {
+                    registerFile.delete();
+                }
             }
         }
 
