@@ -1,7 +1,0 @@
-{
-  "celos_wrk_dir": "/home/celos/conflux",
-  "server_service_name": "conflux-server",
-  "server_service_port": 11091,
-  "ui_service_name": "conflux-ui",
-  "ui_service_port": 11092
-}

@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-export ANSIBLE_SSH_ARGS=""
-SERVER_PARAMS="-c ssh -u celos-ci -i scripts/test/conf/inventory-server -e @scripts/test/conf/integration-params.json -e @scripts/conf/common-params-server.json -e service_version=${GIT_COMMIT}"
-UI_PARAMS="    -c ssh -u celos-ci -i scripts/test/conf/inventory-ui     -e @scripts/test/conf/integration-params.json -e @scripts/conf/common-params-ui.json     -e service_version=${GIT_COMMIT}"
+[[ -z ${GIT_COMMIT} ]] && echo pls specify GIT_COMMIT && exit 1
+SERVER_PARAMS="-c ssh -u celos-ci -i scripts/test/conf/integration-server -e @scripts/test/conf/integration-params.json -e @scripts/conf/common-server.json -e service_version=${GIT_COMMIT}"
+UI_PARAMS="    -c ssh -u celos-ci -i scripts/test/conf/testing-ui     -e @scripts/test/conf/integration-params.json -e @scripts/conf/common-ui.json     -e service_version=${GIT_COMMIT}"
 set -x
 set -e
-[[ -z ${GIT_COMMIT} ]] && echo pls specify GIT_COMMIT && exit 1
+export ANSIBLE_SSH_ARGS=""
 scripts/build.sh
 ansible-playbook scripts/prod/kinit.yaml ${SERVER_PARAMS}
 ansible-playbook scripts/celos-deploy.yaml ${SERVER_PARAMS}
