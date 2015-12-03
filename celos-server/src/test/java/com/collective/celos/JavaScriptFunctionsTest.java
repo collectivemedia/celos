@@ -15,8 +15,8 @@
  */
 package com.collective.celos;
 
+import com.collective.celos.database.StateDatabaseConnection;
 import com.collective.celos.trigger.*;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.ImmutableMap;
 import org.junit.Assert;
@@ -27,6 +27,7 @@ import org.mozilla.javascript.JavaScriptException;
 import org.mozilla.javascript.NativeJavaObject;
 
 import java.io.File;
+import java.io.FileReader;
 import java.io.StringReader;
 import java.util.Properties;
 
@@ -35,8 +36,6 @@ public class JavaScriptFunctionsTest {
     @Rule
     public TemporaryFolder tempFolder = new TemporaryFolder();
 
-    private final ObjectMapper mapper = new ObjectMapper();
-    
     @Test
     public void testHourlySchedule() throws Exception {
         HourlySchedule s = (HourlySchedule) runJS("celos.hourlySchedule()");
@@ -178,7 +177,7 @@ public class JavaScriptFunctionsTest {
     public void testOozieExternalService() throws Exception {
         OozieExternalService s = (OozieExternalService) runJS("celos.oozieExternalService({bla:'hello'}, 'http://foo')");
         Assert.assertEquals("http://foo", s.getOozieURL());
-        ObjectNode props = new ObjectMapper().createObjectNode();
+        ObjectNode props = Util.MAPPER.createObjectNode();
         props.put("bla", "hello");
         Assert.assertEquals(props, s.getProperties(new SlotID(new WorkflowID("foo"), ScheduledTime.now())));
     }
@@ -200,7 +199,7 @@ public class JavaScriptFunctionsTest {
         String js = "var CELOS_DEFAULT_OOZIE_PROPERTIES = {a:'1', b:'2'}; celos.oozieExternalService({b: '3', c:'4'}, 'http://oozie')";
         OozieExternalService s = (OozieExternalService) runJS(js);
         Assert.assertEquals("http://oozie", s.getOozieURL());
-        ObjectNode props = new ObjectMapper().createObjectNode();
+        ObjectNode props = Util.MAPPER.createObjectNode();
         props.put("a", "1");
         props.put("b", "3");
         props.put("c", "4");
@@ -277,8 +276,7 @@ public class JavaScriptFunctionsTest {
         Boolean s = (Boolean) runJS(js);
         Assert.assertEquals(s, true);
     }
-
-
+    
     @Test
     public void testHdfsCheckNotExists() throws Exception {
         String js = "var CELOS_DEFAULT_HDFS = ''; " +
@@ -331,10 +329,28 @@ public class JavaScriptFunctionsTest {
 
     }
 
+    @Test
+    public void testRegisters() throws Exception {
+        WorkflowConfigurationParser parser = createParser();
+        StateDatabaseConnection conn = new MemoryStateDatabase().openConnection();
+        
+        ObjectNode v1 = Util.MAPPER.createObjectNode();
+        v1.put("foo", "bar-Iñtërnâtiônàlizætiøn");
+        ObjectNode v2 = Util.MAPPER.createObjectNode();
+        v2.put("quux", "meh-Iñtërnâtiônàlizætiøn");
+        ObjectNode v3 = Util.MAPPER.createObjectNode();
+        v3.put("bla", "baz-Iñtërnâtiônàlizætiøn");
+        conn.putRegister(new BucketID("b1-Iñtërnâtiônàlizætiøn"), new RegisterKey("k1-Iñtërnâtiônàlizætiøn"), v1);
+        conn.putRegister(new BucketID("b1-Iñtërnâtiônàlizætiøn"), new RegisterKey("k2-Iñtërnâtiônàlizætiøn"), v2);
+        conn.putRegister(new BucketID("b2-Iñtërnâtiônàlizætiøn"), new RegisterKey("k3-Iñtërnâtiônàlizætiøn"), v3);
+        File f = new File(Thread.currentThread().getContextClassLoader().getResource("js-tests/test-registers.js").toURI());
+        parser.evaluateReader(new FileReader(f), f.getName(), conn);
+    }
+        
     private Object runJS(String js) throws Exception {
-        WorkflowConfigurationParser parser = new WorkflowConfigurationParser(new File("unused"), ImmutableMap.<String, String>of());
+        WorkflowConfigurationParser parser = createParser();
         // Evaluate JS function call
-        Object jsResult = parser.evaluateReader(new StringReader(js), "string");
+        Object jsResult = parser.evaluateReader(new StringReader(js), "string", new MemoryStateDatabase().openConnection());
         if (jsResult instanceof NativeJavaObject) {
             return ((NativeJavaObject) jsResult).unwrap();
         } else {
@@ -343,11 +359,15 @@ public class JavaScriptFunctionsTest {
     }
 
     private Object runJSNativeResult(String js) throws Exception {
-        WorkflowConfigurationParser parser = new WorkflowConfigurationParser(new File("unused"), ImmutableMap.<String, String>of());
+        WorkflowConfigurationParser parser = createParser();
         // Evaluate JS function call
-        return parser.evaluateReader(new StringReader(js), "string");
+        return parser.evaluateReader(new StringReader(js), "string", new MemoryStateDatabase().openConnection());
     }
 
+    private WorkflowConfigurationParser createParser() throws Exception {
+        WorkflowConfigurationParser parser = new WorkflowConfigurationParser(new File("unused"), ImmutableMap.<String, String>of());
+        return parser;
+    }
 
     private void expectMessage(String js, String string) throws AssertionError {
         try {

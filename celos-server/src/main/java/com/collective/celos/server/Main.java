@@ -30,18 +30,20 @@ import java.util.TimerTask;
 public class Main {
 
     public static void main(String... args) throws Exception {
+
         ServerCommandLineParser serverCommandLineParser = new ServerCommandLineParser();
         final ServerCommandLine commandLine = serverCommandLineParser.parse(args);
+        Util.setupLogging(commandLine.getLogDir());
+
         CelosServer celosServer = new CelosServer();
         celosServer.startServer(commandLine.getPort(),
                 Collections.<String, String>emptyMap(),
                 commandLine.getWorkflowsDir(),
                 commandLine.getDefaultsDir(),
-                commandLine.getStateDatabase());
+                commandLine.getDatabase());
 
         setupAutoschedule(commandLine.getPort(), commandLine.getAutoSchedule());
 
-        Util.setupLogging(commandLine.getLogDir());
     }
 
     static void setupAutoschedule(int port, int autoSchedule) {

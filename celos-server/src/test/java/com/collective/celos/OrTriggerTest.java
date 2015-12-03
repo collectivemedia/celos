@@ -18,6 +18,7 @@ package com.collective.celos;
 import java.util.Arrays;
 import java.util.Collections;
 
+import com.collective.celos.database.StateDatabaseConnection;
 import com.collective.celos.trigger.AlwaysTrigger;
 import com.collective.celos.trigger.OrTrigger;
 import com.collective.celos.trigger.Trigger;
@@ -31,29 +32,29 @@ public class OrTriggerTest {
     @Test
     public void returnsTrueWhenAllSubTriggersReturnTrue() throws Exception {
         OrTrigger trigger = new OrTrigger(Arrays.asList(new Trigger[] { createAlwaysTrigger(), createAlwaysTrigger(), createAlwaysTrigger() }));
-        Scheduler scheduler = mock(Scheduler.class);
-        Assert.assertTrue(trigger.isDataAvailable(scheduler, ScheduledTime.now(), new ScheduledTime("2014-02-26T16:13:00Z")));
+        StateDatabaseConnection connection = mock(StateDatabaseConnection.class);
+        Assert.assertTrue(trigger.isDataAvailable(connection, ScheduledTime.now(), new ScheduledTime("2014-02-26T16:13:00Z")));
     }
     
     @Test
     public void returnsTrueWhenOnlyOneSubTriggerReturnsTrue() throws Exception {
         OrTrigger trigger = new OrTrigger(Arrays.asList(new Trigger[] { createNeverTrigger(), createAlwaysTrigger(), createNeverTrigger() }));
-        Scheduler scheduler = mock(Scheduler.class);
-        Assert.assertTrue(trigger.isDataAvailable(scheduler, ScheduledTime.now(), new ScheduledTime("2014-02-26T16:13:00Z")));
+        StateDatabaseConnection connection = mock(StateDatabaseConnection.class);
+        Assert.assertTrue(trigger.isDataAvailable(connection, ScheduledTime.now(), new ScheduledTime("2014-02-26T16:13:00Z")));
     }
 
     @Test
     public void returnsFalseWhenNoSubTriggersReturnsTrue() throws Exception {
         OrTrigger trigger = new OrTrigger(Arrays.asList(new Trigger[] { createNeverTrigger(), createNeverTrigger(), createNeverTrigger() }));
-        Scheduler scheduler = mock(Scheduler.class);
-        Assert.assertFalse(trigger.isDataAvailable(scheduler, ScheduledTime.now(), new ScheduledTime("2014-02-26T16:13:00Z")));
+        StateDatabaseConnection connection = mock(StateDatabaseConnection.class);
+        Assert.assertFalse(trigger.isDataAvailable(connection, ScheduledTime.now(), new ScheduledTime("2014-02-26T16:13:00Z")));
     }
     
     @Test
     public void returnsFalseWhenThereAreNoSubTriggers() throws Exception {
         OrTrigger trigger = new OrTrigger(Collections.<Trigger>emptyList());
-        Scheduler scheduler = mock(Scheduler.class);
-        Assert.assertFalse(trigger.isDataAvailable(scheduler, ScheduledTime.now(), new ScheduledTime("2014-02-26T16:13:00Z")));
+        StateDatabaseConnection connection = mock(StateDatabaseConnection.class);
+        Assert.assertFalse(trigger.isDataAvailable(connection, ScheduledTime.now(), new ScheduledTime("2014-02-26T16:13:00Z")));
     }
     
     public static Trigger createAlwaysTrigger() {

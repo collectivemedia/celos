@@ -15,10 +15,10 @@
  */
 package com.collective.celos.ci.mode.test;
 
-import com.collective.celos.Util;
 import com.collective.celos.ci.config.CiCommandLine;
 import com.collective.celos.ci.deploy.JScpWorker;
 import com.collective.celos.ci.deploy.WorkflowFilesDeployer;
+import com.collective.celos.database.FileSystemStateDatabase;
 import com.collective.celos.server.CelosServer;
 import com.google.common.collect.ImmutableMap;
 import org.apache.commons.vfs2.FileObject;
@@ -48,13 +48,13 @@ public class TestRunCelosServerModeEmbedded implements TestRunCelosServerMode {
     private final CelosServer celosServer = new CelosServer();
     private final File workflowsDir;
     private final File defaultsDir;
-    private final File stateDatabase;
+    private final File dbDir;
     private final String hdfsPrefix;
 
     public TestRunCelosServerModeEmbedded(CiCommandLine commandLine, File testCaseTempDir, UUID testUUID) {
         this.workflowsDir = new File(testCaseTempDir, WORKFLOW_DIR_CELOS_PATH);
         this.defaultsDir = new File(testCaseTempDir, DEFAULTS_DIR_CELOS_PATH);
-        this.stateDatabase = new File(testCaseTempDir, DB_DIR_CELOS_PATH);
+        this.dbDir = new File(testCaseTempDir, DB_DIR_CELOS_PATH);
         this.hdfsPrefix = String.format(HDFS_PREFIX_PATTERN, commandLine.getUserName(), commandLine.getWorkflowName(), testUUID);
     }
 
@@ -70,9 +70,9 @@ public class TestRunCelosServerModeEmbedded implements TestRunCelosServerMode {
 
         workflowsDir.mkdirs();
         defaultsDir.mkdirs();
-        stateDatabase.mkdirs();
+        dbDir.mkdirs();
 
-        Integer port = celosServer.startServer(additionalJSParams, workflowsDir, defaultsDir, stateDatabase);
+        Integer port = celosServer.startServer(additionalJSParams, workflowsDir, defaultsDir, new FileSystemStateDatabase(dbDir));
 
         logJsFileExists(WorkflowFilesDeployer.WORKFLOW_FILENAME, testRun);
         logJsFileExists(WorkflowFilesDeployer.DEFAULTS_FILENAME, testRun);

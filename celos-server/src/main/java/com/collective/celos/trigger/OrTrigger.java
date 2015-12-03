@@ -16,7 +16,7 @@
 package com.collective.celos.trigger;
 
 import com.collective.celos.ScheduledTime;
-import com.collective.celos.Scheduler;
+import com.collective.celos.database.StateDatabaseConnection;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -43,10 +43,10 @@ public class OrTrigger extends Trigger {
     }
 
     @Override
-    public TriggerStatus getTriggerStatus(Scheduler scheduler, ScheduledTime now, ScheduledTime scheduledTime) throws Exception {
+    public TriggerStatus getTriggerStatus(StateDatabaseConnection connection, ScheduledTime now, ScheduledTime scheduledTime) throws Exception {
         final List<TriggerStatus> subStatuses = new ArrayList<>();
         for (Trigger trigger : triggers) {
-            subStatuses.add(trigger.getTriggerStatus(scheduler, now, scheduledTime));
+            subStatuses.add(trigger.getTriggerStatus(connection, now, scheduledTime));
         }
         boolean ready = this.checkSubTriggers(subStatuses);
         return makeTriggerStatus(ready, humanReadableDescription(ready), subStatuses);

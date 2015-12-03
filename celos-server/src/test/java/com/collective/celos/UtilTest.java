@@ -22,6 +22,8 @@ import org.joda.time.format.DateTimeFormat;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.sql.Timestamp;
+
 public class UtilTest {
     
     @Test(expected=NullPointerException.class)
@@ -29,6 +31,16 @@ public class UtilTest {
         Util.requireNonNull(null);
     }
 
+    @Test(expected=IllegalArgumentException.class)
+    public void requireProperBucketIDorRegisterKeyThrowsOnSlash() {
+        Util.requireProperBucketIDorRegisterKey("foo/bar");
+    }
+    
+    @Test(expected=IllegalArgumentException.class)
+    public void requireProperBucketIDorRegisterKeyThrowsOnDot() {
+        Util.requireProperBucketIDorRegisterKey("foo.bar");
+    }
+    
     // DATETIME TESTS
     
     @Test
@@ -153,6 +165,13 @@ public class UtilTest {
     public void toNominalTimeFormat() {
         String formatted = new DateTime(2013, 1, 3, 12, 10).toString(DateTimeFormat.forPattern("YYYY-MM-dd'T'HH:mm'Z"));
         Assert.assertEquals(formatted, "2013-01-03T12:10Z");
+    }
+
+    @Test
+    public void toSQLTimestampAndBack() {
+        ScheduledTime time = new ScheduledTime("2014-02-03T12:13Z");
+        Timestamp timestamp = Util.toTimestamp(time);
+        Assert.assertEquals(Util.fromTimestamp(timestamp), time);
     }
     
 }

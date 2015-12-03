@@ -16,12 +16,11 @@
 package com.collective.celos.servlet;
 
 import com.collective.celos.*;
-import org.apache.log4j.Logger;
+import com.collective.celos.database.StateDatabaseConnection;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Set;
 
 /**
  * Posting to this servlet (un) pauses the specified workflow.
@@ -55,7 +54,9 @@ public class PauseServlet extends AbstractServlet {
             }
 
             Boolean pause = Boolean.parseBoolean(req.getParameter(PAUSE_PARAM));
-            scheduler.getStateDatabase().setPaused(workflowID, pause);
+            try(StateDatabaseConnection connection = getStateDatabase().openConnection()) {
+                connection.setPaused(workflowID, pause);
+            }
         } catch(Exception e) {
             throw new ServletException(e);
         }

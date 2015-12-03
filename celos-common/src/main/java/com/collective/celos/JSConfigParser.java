@@ -16,7 +16,6 @@
 package com.collective.celos;
 
 import org.mozilla.javascript.*;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.mozilla.javascript.tools.shell.Global;
 
 import java.io.IOException;
@@ -31,7 +30,6 @@ public class JSConfigParser {
     public static final int JS_PARSE_START_LINE = 1;
 
     private final Context context;
-    private final ObjectMapper mapper = new ObjectMapper();
 
     public JSConfigParser() {
         context = Context.enter();
@@ -49,8 +47,8 @@ public class JSConfigParser {
     public Global createGlobalScope() {
         Global scope = new Global();
         scope.initStandardObjects(context, true);
-        Object wrappedMapper = Context.javaToJS(mapper, scope);
-        ScriptableObject.putProperty(scope, "celosMapper", wrappedMapper);
+        Object wrappedMapper = Context.javaToJS(Util.JSON_READER, scope);
+        ScriptableObject.putProperty(scope, "celosReader", wrappedMapper);
         Object wrappedScope = Context.javaToJS(scope, scope);
         ScriptableObject.putProperty(scope, "celosScope", wrappedScope);
 

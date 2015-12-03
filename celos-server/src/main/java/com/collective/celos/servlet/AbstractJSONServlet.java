@@ -15,6 +15,7 @@
  */
 package com.collective.celos.servlet;
 
+import com.collective.celos.Util;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
@@ -24,7 +25,6 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 @SuppressWarnings("serial")
 public class AbstractJSONServlet extends AbstractServlet {
 
-    protected final ObjectMapper mapper = new ObjectMapper();
-    protected final ObjectWriter writer = mapper.writerWithDefaultPrettyPrinter();
+    protected final ObjectWriter writer = Util.JSON_WRITER.withDefaultPrettyPrinter();
 
 }

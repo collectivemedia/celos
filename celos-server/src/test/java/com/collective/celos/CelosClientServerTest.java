@@ -15,7 +15,9 @@
  */
 package com.collective.celos;
 
+import com.collective.celos.database.FileSystemStateDatabase;
 import com.collective.celos.server.CelosServer;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -64,7 +66,8 @@ public class CelosClientServerTest {
         this.slotDbDir.mkdirs();
 
         this.celosServer = new CelosServer();
-        int port = celosServer.startServer(ImmutableMap.<String, String>of(), workflowsDir, defaultsDir, slotDbDir);
+        FileSystemStateDatabase db = new FileSystemStateDatabase(slotDbDir);
+        int port = celosServer.startServer(ImmutableMap.<String, String>of(), workflowsDir, defaultsDir, db);
         this.celosClient = new CelosClient(URI.create("http://localhost:" + port));
     }
 
@@ -520,6 +523,25 @@ public class CelosClientServerTest {
 
 
     @Test
+    public void testLeavesClientOKAfterException() throws Exception {
+
+        File src = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/client/wf-list").toURI());
+        FileUtils.copyDirectory(src, workflowsDir);
+
+        File src2 = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/server/slot-db-1").toURI());
+        FileUtils.copyDirectory(src2, slotDbDir);
+
+        try {
+            celosClient.getSlotState(new WorkflowID("workflow-1"), ScheduledTime.now());
+        } catch (Exception e) {
+
+        }
+        ScheduledTime existingSlotTime = new ScheduledTime("2013-12-02T19:00:00.000Z");
+        celosClient.getSlotState(new WorkflowID("workflow-1"), existingSlotTime);
+    }
+
+
+    @Test
     public void testCorrectWorkflowStatesFromDbWf2() throws Exception {
         File src = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/client/wf-list").toURI());
         FileUtils.copyDirectory(src, workflowsDir);
@@ -756,5 +778,32 @@ public class CelosClientServerTest {
 
         celosClient.kill(workflowID, slotStateLast.getScheduledTime());
     }
+    
+    @Test()
+    public void testRegisters() throws Exception {
+        BucketID bucket1 = new BucketID("foo-bucket-Iñtërnâtiônàlizætiøn");
+        BucketID bucket2 = new BucketID("another-bucket-Iñtërnâtiônàlizætiøn");
+        RegisterKey key1 = new RegisterKey("bar-key-Iñtërnâtiônàlizætiøn");
+        RegisterKey key2 = new RegisterKey("quux-key-Iñtërnâtiônàlizætiøn");
+        Assert.assertNull(celosClient.getRegister(bucket1, key1));
+        Assert.assertNull(celosClient.getRegister(bucket2, key2));
+        ObjectNode value1 = Util.MAPPER.createObjectNode();
+        value1.put("foo", "Iñtërnâtiônàlizætiøn");
+        ObjectNode value2 = Util.MAPPER.createObjectNode();
+        value2.put("bar", "Iñtërnâtiônàlizætiøn");
+        celosClient.putRegister(bucket1, key1, value1);
+        Assert.assertEquals(value1, celosClient.getRegister(bucket1, key1));
+        Assert.assertNull(celosClient.getRegister(bucket2, key2));
+        celosClient.putRegister(bucket2, key2, value2);
+        Assert.assertEquals(value1, celosClient.getRegister(bucket1, key1));
+        Assert.assertEquals(value2, celosClient.getRegister(bucket2, key2));
+        celosClient.deleteRegister(bucket1, key1);
+        Assert.assertNull(celosClient.getRegister(bucket1, key1));
+        Assert.assertEquals(value2, celosClient.getRegister(bucket2, key2));
+        celosClient.deleteRegister(bucket2, key2);
+        Assert.assertNull(celosClient.getRegister(bucket1, key1));
+        Assert.assertNull(celosClient.getRegister(bucket2, key2));
+    }
+
 
 }

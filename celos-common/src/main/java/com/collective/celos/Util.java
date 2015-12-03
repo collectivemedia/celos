@@ -17,20 +17,25 @@ package com.collective.celos;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.ServerSocket;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.sql.Timestamp;
 import java.util.Map;
 
+import com.fasterxml.jackson.databind.ObjectReader;
+import com.fasterxml.jackson.databind.ObjectWriter;
+import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 import org.apache.log4j.rolling.RollingFileAppender;
 import org.apache.log4j.rolling.TimeBasedRollingPolicy;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -42,9 +47,26 @@ import com.google.common.collect.Maps;
  */
 public class Util {
 
+    public final static ObjectMapper MAPPER = new ObjectMapper();
+    public final static ObjectReader JSON_READER = MAPPER.reader();
+    public final static ObjectWriter JSON_WRITER = MAPPER.writer();
+
     public static <T> T requireNonNull(T object) {
         if (object == null) throw new NullPointerException();
         else return object;
+    }
+
+    public static String requireProperBucketIDorRegisterKey(String s) {
+        Util.requireNonNull(s);
+        prohibitCharacter(s, "/");
+        prohibitCharacter(s, ".");
+        return s;
+    }
+
+    private static void prohibitCharacter(String s, String c) {
+        if (s.indexOf(c) != -1) {
+            throw new IllegalArgumentException("Bucket IDs and register keys must not contain the " + c + " character:" + s);
+        }
     }
 
     // DATETIME UTILITIES
@@ -135,6 +157,16 @@ public class Util {
         }
     }
 
+    public static String jsonNodeToString(JsonNode node) throws Exception {
+        Util.requireNonNull(node);
+        return JSON_WRITER.writeValueAsString(node);
+    }
+    
+    public static JsonNode stringToJsonNode(String s) throws Exception {
+        Util.requireNonNull(s);
+        return JSON_READER.readTree(s);
+    }
+    
     public static ScheduledTime max(ScheduledTime a, ScheduledTime b) {
         requireNonNull(a);
         requireNonNull(b);
@@ -204,6 +236,20 @@ public class Util {
         appender.activateOptions();
         Logger.getRootLogger().addAppender(appender);
         Logger.getRootLogger().setLevel(Level.INFO);
+    }
+
+    public static Timestamp toTimestamp(ScheduledTime time) {
+        return new Timestamp(time.getDateTime().getMillis());
+    }
+
+    public static ScheduledTime fromTimestamp(Timestamp timestamp) {
+        return new ScheduledTime(new DateTime(timestamp.getTime()).withZone(DateTimeZone.UTC));
+    }
+
+    public static void validateDirExists(File dir) throws IOException {
+        if (dir == null || !dir.isDirectory() || !dir.exists()) {
+            throw new IOException("ERROR: " + dir + " doesnt exist");
+        }
     }
 
 }

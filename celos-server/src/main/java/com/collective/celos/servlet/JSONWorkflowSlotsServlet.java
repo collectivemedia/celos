@@ -16,6 +16,7 @@
 package com.collective.celos.servlet;
 
 import com.collective.celos.*;
+import com.collective.celos.database.StateDatabaseConnection;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.Lists;
@@ -86,18 +87,19 @@ public class JSONWorkflowSlotsServlet extends AbstractJSONServlet {
                 res.sendError(HttpServletResponse.SC_BAD_REQUEST, "Time interval between start and end is limited to: " + scheduler.getSlidingWindowHours() + " hours");
                 return;
             }
+            try (StateDatabaseConnection connection = getStateDatabase().openConnection()) {
+                List<SlotState> slotStates = scheduler.getSlotStates(wf, startTime, endTime, connection);
+                List<JsonNode> objectNodes = Lists.newArrayList();
+                for (SlotState state : Lists.reverse(slotStates)) {
+                    objectNodes.add(state.toJSONNode());
+                }
 
-            List<SlotState> slotStates = scheduler.getSlotStates(wf, startTime, endTime);
-            List<JsonNode> objectNodes = Lists.newArrayList();
-            for (SlotState state : Lists.reverse(slotStates)) {
-                objectNodes.add(state.toJSONNode());
+                ObjectNode node = Util.MAPPER.createObjectNode();
+                node.put(INFO_PARAM, (JsonNode) Util.MAPPER.valueToTree(wf.getWorkflowInfo()));
+                node.put(PAUSED_PARAM, connection.isPaused(wf.getID()));
+                node.putArray(SLOTS_PARAM).addAll(objectNodes);
+                writer.writeValue(res.getOutputStream(), node);
             }
-
-            ObjectNode node = mapper.createObjectNode();
-            node.put(INFO_PARAM, (JsonNode) mapper.valueToTree(wf.getWorkflowInfo()));
-            node.put(PAUSED_PARAM, scheduler.getStateDatabase().isPaused(wf.getID()));
-            node.putArray(SLOTS_PARAM).addAll(objectNodes);
-            writer.writeValue(res.getOutputStream(), node);
         } catch (Exception e) {
             throw new ServletException(e);
         }

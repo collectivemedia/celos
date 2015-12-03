@@ -24,14 +24,12 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.collective.celos.*;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
-import com.collective.celos.Constants;
-import com.collective.celos.ScheduledTime;
-import com.collective.celos.Scheduler;
-import com.collective.celos.SchedulerConfiguration;
+import com.collective.celos.database.StateDatabase;
 import com.google.common.collect.ImmutableMap;
 
 /**
@@ -44,9 +42,8 @@ public abstract class AbstractServlet extends HttpServlet {
 
     private static final String TIME_PARAM = "time";
     private static Logger LOGGER = Logger.getLogger(AbstractServlet.class);
-
-    private static final String SCHEDULER_ATTR = "celos.scheduler";
-
+    public static final String SCHEDULER_ATTR = "celos.scheduler";
+    
     /**
      * This lock serves to synchronize all operations.
      */
@@ -87,19 +84,24 @@ public abstract class AbstractServlet extends HttpServlet {
      * to reset the cache and force a reload of the configuration.
      */
 
-    protected Scheduler createAndCacheScheduler() throws Exception {
-        String workflowConfigPath = getServletContext().getInitParameter(Constants.WORKFLOW_CONFIGURATION_PATH_ATTR);
-        String defaultsConfigPath = getServletContext().getInitParameter(Constants.DEFAULTS_CONFIGURATION_PATH_ATTR);
-        String stateDatabasePath = getServletContext().getInitParameter(Constants.STATE_DATABASE_PATH_ATTR);
+    private SchedulerConfiguration getSchedulerConfiguration() throws IOException {
+        String workflowConfigPath = Util.requireNonNull(getServletContext().getInitParameter(Constants.WORKFLOW_CONFIGURATION_PATH_ATTR));
+        String defaultsConfigPath = Util.requireNonNull(getServletContext().getInitParameter(Constants.DEFAULTS_CONFIGURATION_PATH_ATTR));
+        StateDatabase database = (StateDatabase) Util.requireNonNull(getServletContext().getAttribute(Constants.DATABASE));
+
         Map<String, String> additionalVars = (Map<String, String>) getServletContext().getAttribute(Constants.ADDITIONAL_JS_VARIABLES);
         if (additionalVars == null) {
             additionalVars = ImmutableMap.of();
         }
+        SchedulerConfiguration schedulerConfiguration = new SchedulerConfiguration(
+                new File(workflowConfigPath), new File(defaultsConfigPath), database, additionalVars
+        );
+        return schedulerConfiguration;
+    }
 
-        Scheduler sch = new SchedulerConfiguration(
-                new File(workflowConfigPath), new File(defaultsConfigPath), new File(stateDatabasePath), additionalVars
-        ).makeDefaultScheduler();
-
+    protected Scheduler createAndCacheScheduler() throws Exception {
+        SchedulerConfiguration schedulerConfiguration = getSchedulerConfiguration();
+        Scheduler sch = schedulerConfiguration.makeDefaultScheduler();
         getServletContext().setAttribute(SCHEDULER_ATTR, sch);
         return sch;
     }
@@ -117,4 +119,8 @@ public abstract class AbstractServlet extends HttpServlet {
         getServletContext().removeAttribute(SCHEDULER_ATTR);
     }
 
+    protected StateDatabase getStateDatabase() throws IOException {
+        return getSchedulerConfiguration().getStateDatabase();
+    }
+    
 }
