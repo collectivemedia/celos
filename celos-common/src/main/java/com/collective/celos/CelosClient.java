@@ -23,11 +23,9 @@ import java.util.*;
 
 import javax.servlet.http.HttpServletResponse;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -195,14 +193,14 @@ public class CelosClient {
      * Returns the specified register value, or null if not found.
      */
     public JsonNode getRegister(BucketID bucket, RegisterKey key) throws Exception {
-        return getRegister(bucket, Sets.newHashSet(key)).get(key);
+        return getRegisters(bucket, Sets.newHashSet(key)).get(key);
     }
 
 
     /**
      * Returns the specified register value, or null if not found.
      */
-    public Map<RegisterKey, JsonNode> getRegister(BucketID bucket, Set<RegisterKey> key) throws Exception {
+    public Map<RegisterKey, JsonNode> getRegisters(BucketID bucket, Set<RegisterKey> key) throws Exception {
         URIBuilder uriBuilder = new URIBuilder(address);
         uriBuilder.setPath(uriBuilder.getPath() + REGISTER_PATH);
         uriBuilder.addParameter(BUCKET_PARAM, bucket.toString());
@@ -230,13 +228,13 @@ public class CelosClient {
      * Sets the specified register value.
      */
     public void putRegister(BucketID bucket, RegisterKey key, JsonNode value) throws Exception {
-        putRegister(bucket, ImmutableMap.of(key, value));
+        putRegisters(bucket, ImmutableMap.of(key, value));
     }
 
     /**
      * Sets the specified registers values.
      */
-    public void putRegister(BucketID bucket, Map<RegisterKey, JsonNode> keyValues) throws Exception {
+    public void putRegisters(BucketID bucket, Map<RegisterKey, JsonNode> keyValues) throws Exception {
         URIBuilder uriBuilder = new URIBuilder(address);
         uriBuilder.setPath(uriBuilder.getPath() + REGISTER_PATH);
         uriBuilder.addParameter(BUCKET_PARAM, bucket.toString());
@@ -250,6 +248,9 @@ public class CelosClient {
         deleteRegisters(bucket, Sets.newHashSet(key));
     }
 
+    /**
+     * Deletes the specified register values.
+     */
     public void deleteRegisters(BucketID bucket, Set<RegisterKey> keys) throws Exception {
         URIBuilder uriBuilder = new URIBuilder(address);
         uriBuilder.setPath(uriBuilder.getPath() + REGISTER_PATH);
