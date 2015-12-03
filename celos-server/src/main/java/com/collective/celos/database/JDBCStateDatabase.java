@@ -18,10 +18,12 @@ package com.collective.celos.database;
 import com.collective.celos.*;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import org.apache.log4j.Logger;
 
 import java.sql.*;
 import java.util.Map;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -86,10 +88,16 @@ public class JDBCStateDatabase implements StateDatabase {
 
         public JDBCStateDatabaseConnection(String url, String name, String password) throws SQLException {
             this.connection = DriverManager.getConnection(url, name, password);
+            this.connection.setAutoCommit(false);
         }
 
         @Override
         public void close() {
+            try {
+                connection.commit();
+            } catch (SQLException e) {
+                LOGGER.error("Transaction is rolled back", e);
+            }
             try {
                 connection.close();
             } catch (Exception e) {
