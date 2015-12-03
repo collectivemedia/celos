@@ -260,23 +260,26 @@ public class FileSystemStateDatabase implements StateDatabase {
         }
 
         @Override
-        public JsonNode getRegister(BucketID bucket, RegisterKey key) throws Exception {
+        public Map<RegisterKey, JsonNode> getRegisters(BucketID bucket, Set<RegisterKey> keys) throws Exception {
             Util.requireNonNull(bucket);
-            Util.requireNonNull(key);
-            File registerFile = getRegisterFile(bucket, key);
-            if (!registerFile.exists()) {
-                return null;
-            } else {
-                return readJson(registerFile);
+            Util.requireNonNull(keys);
+            Map<RegisterKey, JsonNode> result = Maps.newHashMap();
+            for (RegisterKey key : keys) {
+                File registerFile = getRegisterFile(bucket, key);
+                if (registerFile.exists()) {
+                    result.put(key, readJson(registerFile));
+                }
             }
+            return result;
         }
 
         @Override
-        public void putRegister(BucketID bucket, RegisterKey key, JsonNode value) throws Exception {
+        public void putRegisters(BucketID bucket, Map<RegisterKey, JsonNode> keyValues) throws Exception {
             Util.requireNonNull(bucket);
-            Util.requireNonNull(key);
-            Util.requireNonNull(value);
-            writeJson(value, getRegisterFile(bucket, key));
+            Util.requireNonNull(keyValues);
+            for(Map.Entry<RegisterKey, JsonNode> keyValue : keyValues.entrySet()) {
+                writeJson(keyValue.getValue(), getRegisterFile(bucket, keyValue.getKey()));
+            }
         }
 
         @Override

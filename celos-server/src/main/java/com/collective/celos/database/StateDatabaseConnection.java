@@ -22,6 +22,8 @@ import java.util.SortedSet;
 
 import com.collective.celos.*;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
@@ -85,12 +87,26 @@ public interface StateDatabaseConnection extends AutoCloseable {
     /**
      * Get the value of the specified register, or null if not found.
      */
-    public JsonNode getRegister(BucketID bucket, RegisterKey key) throws Exception;
-    
+    public default JsonNode getRegister(BucketID bucket, RegisterKey key) throws Exception {
+        return getRegisters(bucket, ImmutableSet.of(key)).get(key);
+    }
+
+    /**
+     * Get the values of the specified registers, or empty Collection if not found.
+     */
+    public Map<RegisterKey, JsonNode> getRegisters(BucketID bucket, Set<RegisterKey> key) throws Exception;
+
     /**
      * Set the value of the specified register.
      */
-    public void putRegister(BucketID bucket, RegisterKey key, JsonNode value) throws Exception;
+    public default void putRegister(BucketID bucket, RegisterKey key, JsonNode value) throws Exception {
+        putRegisters(bucket, ImmutableMap.of(key, value));
+    }
+
+    /**
+     * Set the value of the specified register.
+     */
+    public void putRegisters(BucketID bucket, Map<RegisterKey, JsonNode> keyValues) throws Exception;
 
     /**
      * Delete the value of the specified register.
