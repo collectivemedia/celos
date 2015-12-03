@@ -217,20 +217,12 @@
     when: result.rc == 0
     fail:
 
-  - name: PUT register with data=1
+  - name: PUT register with data
     local_action:
       module: uri
       method: PUT
       url: "{{service_url}}/register?bucket=celos-register&key=key1"
-      body: "{\"data\":\"1\"}"
-      body_format: json
-
-  - name: PUT register with data=2
-    local_action:
-      module: uri
-      method: PUT
-      url: "{{service_url}}/register?bucket=celos-register&key=key2"
-      body: "{\"data\":\"2\"}"
+      body: "{\"key1\": {\"data\": \"1\"}, \"key2\": {\"data\": \"2\"}}"
       body_format: json
 
   - name: Upload register-based workflow configuration files
