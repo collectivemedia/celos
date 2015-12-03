@@ -9,7 +9,7 @@ export INVENTORY_SERVER=scripts/inventory/integration-server
 export INVENTORY_UI=scripts/inventory/integration-ui
 
 scripts/build.sh
-ansible-playbook scripts/playbooks/kinit.yaml -i ${INVENTORY_SERVER}
+ansible-playbook scripts/playbooks/kinit.yaml -c ssh -u ${CELOS_USER} -i ${INVENTORY_SERVER}
 
 ./scripts/server-and-ui-action.sh deploy
 # begin stop-strat
