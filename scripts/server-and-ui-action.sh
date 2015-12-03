@@ -28,8 +28,8 @@ fi
 export ANSIBLE_SSH_ARGS=""
 # use custom params from inventory file it they are not specified
 if [ -z "$(grep celos_workflows_dir ${INVENTORY_SERVER})" ]
-then ansible-playbook "scripts/playbooks/celos-${CELOS_ACTION}.yaml" -c ssh -u ${CELOS_USER} -i ${INVENTORY_SERVER} -e "@scripts/params/custom-server.json" -e service_version=${GIT_COMMIT}
-else ansible-playbook "scripts/playbooks/celos-${CELOS_ACTION}.yaml" -c ssh -u ${CELOS_USER} -i ${INVENTORY_SERVER} -e "@scripts/params/common-server.json" -e service_version=${GIT_COMMIT}
+then ansible-playbook "scripts/playbooks/celos-${CELOS_ACTION}.yaml" -c ssh -u ${CELOS_USER} -i ${INVENTORY_SERVER} -e "@scripts/params/common-server.json" -e service_version=${GIT_COMMIT}
+else ansible-playbook "scripts/playbooks/celos-${CELOS_ACTION}.yaml" -c ssh -u ${CELOS_USER} -i ${INVENTORY_SERVER} -e "@scripts/params/custom-server.json" -e service_version=${GIT_COMMIT}
 fi
 # parse server host and port from inventory file
 TMP1="$(grep service_name ${INVENTORY_SERVER} | cut -d '=' -f 2)"

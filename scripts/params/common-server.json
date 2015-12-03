@@ -7,3 +7,4 @@
   "celos_db_dir": "{{ celos_wrk_dir }}/db",
   "celos_log_dir": "{{ celos_wrk_dir }}/logs"
 }
+
