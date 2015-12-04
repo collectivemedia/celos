@@ -30,9 +30,11 @@ public class ServerCommandLine {
     private final File logDir;
     private final int port;
     private final int autoSchedule;
+    private final File digestConfig;
 
-    public ServerCommandLine(String workflowsDir, String defaultsDir, String stateDatabase, String logDir, int port, int autoSchedule) {
+    public ServerCommandLine(String workflowsDir, String defaultsDir, String stateDatabase, String logDir, int port, int autoSchedule, String digestConfig) {
         this.autoSchedule = autoSchedule;
+        this.digestConfig = digestConfig == null ? null : new File(digestConfig);
         this.workflowsDir = new File(Util.requireNonNull(workflowsDir));
         this.defaultsDir = new File(Util.requireNonNull(defaultsDir));
         this.stateDatabase = new File(Util.requireNonNull(stateDatabase));
@@ -63,4 +65,9 @@ public class ServerCommandLine {
     public File getLogDir() {
         return logDir;
     }
+
+    public File getDigestConfig() {
+        return digestConfig;
+    }
+
 }

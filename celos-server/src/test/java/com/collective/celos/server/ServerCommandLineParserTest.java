@@ -40,6 +40,7 @@ public class ServerCommandLineParserTest {
         Assert.assertEquals(new File(Constants.DEFAULT_WORKFLOWS_DIR), cmdLine.getWorkflowsDir());
         Assert.assertEquals(new File(Constants.DEFAULT_DEFAULTS_DIR), cmdLine.getDefaultsDir());
         Assert.assertEquals(new File(Constants.DEFAULT_DB_DIR), cmdLine.getStateDatabase());
+        Assert.assertNull(cmdLine.getDigestConfig());
     }
     
     @Test

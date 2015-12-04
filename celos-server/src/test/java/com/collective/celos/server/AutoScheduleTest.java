@@ -58,7 +58,7 @@ public class AutoScheduleTest {
         this.slotDbDir.mkdirs();
 
         this.celosServer = new CelosServer();
-        this.port = celosServer.startServer(ImmutableMap.<String, String>of(), workflowsDir, defaultsDir, slotDbDir);
+        this.port = celosServer.start(ImmutableMap.<String, String>of(), workflowsDir, defaultsDir, slotDbDir);
         this.celosClient = new CelosClient(URI.create("http://localhost:" + port));
     }
 
