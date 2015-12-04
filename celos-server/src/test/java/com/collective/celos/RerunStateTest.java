@@ -35,11 +35,10 @@ public class RerunStateTest {
     
     @Test
     public void testJSON() throws IOException {
-        ObjectMapper mapper = new ObjectMapper();
         RerunState st = new RerunState(new ScheduledTime("2015-09-07T00:00Z"));
-        String json = mapper.writeValueAsString(st.toJSONNode());
+        String json = Util.JSON_WRITER.writeValueAsString(st.toJSONNode());
         Assert.assertEquals("{\"rerunTime\":\"2015-09-07T00:00:00.000Z\"}", json);
-        Assert.assertEquals(st, RerunState.fromJSONNode((ObjectNode) mapper.readTree(json)));
+        Assert.assertEquals(st, RerunState.fromJSONNode((ObjectNode) Util.JSON_READER.readTree(json)));
     }
     
 }

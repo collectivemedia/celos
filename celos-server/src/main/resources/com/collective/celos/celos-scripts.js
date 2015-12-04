@@ -217,7 +217,7 @@ celos.makePropertiesGen = function (userPropertiesOrFun) {
             theProperties["user.name"] = CELOS_USER_JS_VAR;
         }
 
-        return celosMapper.readTree(JSON.stringify(theProperties));
+        return celosReader.readTree(JSON.stringify(theProperties));
     }
     return new PropertiesGenerator({ getProperties: getPropertiesFun });
 }
@@ -256,6 +256,26 @@ celos.databaseName = function (database) {
 
 celos.isRunningInTestMode = function() {
     return (typeof HDFS_PREFIX_JS_VAR !== "undefined");
+}
+
+celos.getRegister = function(bucket, key) {
+    var node = celosConnection.getRegister(new BucketID(bucket), new RegisterKey(key));
+    if (node === null) {
+        return null;
+    } else {
+        return JSON.parse(Util.jsonNodeToString(node));
+    }
+}
+
+celos.forEachRegister = function(bucket, fn) {
+    var bucketID = new BucketID(bucket);
+    var iterator = celosConnection.getAllRegisters(bucketID).iterator();
+    while(iterator.hasNext()) {
+        var mapEntry = iterator.next();
+        var key = mapEntry.getKey().toString();
+        var value = JSON.parse(Util.jsonNodeToString(mapEntry.getValue()));
+        fn(key, value);
+    }
 }
 
 var importDefaults = celos.importDefaults;

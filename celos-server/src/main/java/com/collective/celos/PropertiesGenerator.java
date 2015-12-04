@@ -28,7 +28,7 @@ public interface PropertiesGenerator {
     public static final PropertiesGenerator EMPTY = new PropertiesGenerator() {
         @Override
         public ObjectNode getProperties(SlotID id) {
-            return new ObjectMapper().createObjectNode();
+            return Util.MAPPER.createObjectNode();
         }
     };
     

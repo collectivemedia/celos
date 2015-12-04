@@ -16,7 +16,7 @@
 package com.collective.celos.trigger;
 
 import com.collective.celos.ScheduledTime;
-import com.collective.celos.Scheduler;
+import com.collective.celos.database.StateDatabaseConnection;
 import com.collective.celos.Util;
 
 import java.util.Collections;
@@ -35,8 +35,8 @@ public class OffsetTrigger extends Trigger {
     }
 
     @Override
-    public TriggerStatus getTriggerStatus(Scheduler scheduler, ScheduledTime now, ScheduledTime scheduledTime) throws Exception {
-        TriggerStatus status = trigger.getTriggerStatus(scheduler, now, scheduledTime.plusSeconds(seconds));
+    public TriggerStatus getTriggerStatus(StateDatabaseConnection connection, ScheduledTime now, ScheduledTime scheduledTime) throws Exception {
+        TriggerStatus status = trigger.getTriggerStatus(connection, now, scheduledTime.plusSeconds(seconds));
         boolean ready = status.isReady();
         return makeTriggerStatus(ready, humanReadableDescription(ready), Collections.singletonList(status));
     }

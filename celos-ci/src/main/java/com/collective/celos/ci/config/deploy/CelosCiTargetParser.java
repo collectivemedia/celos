@@ -15,10 +15,10 @@
  */
 package com.collective.celos.ci.config.deploy;
 
+import com.collective.celos.Util;
 import com.collective.celos.ci.deploy.JScpWorker;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemException;
-import org.codehaus.jackson.map.ObjectMapper;
 
 import java.io.InputStream;
 import java.net.URI;
@@ -55,7 +55,7 @@ public class CelosCiTargetParser {
     public CelosCiTarget parse(URI targetFileUri) throws Exception {
         FileObject file = worker.getFileObjectByUri(targetFileUri);
         InputStream is = file.getContent().getInputStream();
-        HashMap<String, String> result = new ObjectMapper().readValue(is, HashMap.class);
+        HashMap<String, String> result = Util.JSON_READER.withType(HashMap.class).readValue(is);
 
         URI hdfsSiteXml = URI.create(getNotNull(result, HADOOP_HDFS_SITE_XML));
         URI hdfsCoreXml = URI.create(getNotNull(result, HADOOP_CORE_SITE_XML));

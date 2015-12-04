@@ -15,9 +15,11 @@
  */
 package com.collective.celos;
 
+import com.collective.celos.database.StateDatabaseConnection;
 import com.collective.celos.trigger.Trigger;
 import com.collective.celos.trigger.TriggerStatus;
 import com.google.common.collect.ImmutableMap;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.mozilla.javascript.NativeJavaObject;
@@ -79,7 +81,7 @@ public class WorkflowConfigurationParserTest {
     public static class TestTrigger extends Trigger {
 
         @Override
-        public TriggerStatus getTriggerStatus(Scheduler scheduler, ScheduledTime now, ScheduledTime scheduledTime) throws Exception {
+        public TriggerStatus getTriggerStatus(StateDatabaseConnection connection, ScheduledTime now, ScheduledTime scheduledTime) throws Exception {
             return makeTriggerStatus(false, "TestTrigger");
         }
 
@@ -212,7 +214,7 @@ public class WorkflowConfigurationParserTest {
     public void evaluatesAdditionalVar() throws Exception {
         WorkflowConfigurationParser parser = new WorkflowConfigurationParser(new File("unused"), ImmutableMap.of("var1", "val1"));
         // Evaluate JS function call
-        Object jsResult = parser.evaluateReader(new StringReader("var1"), "string");
+        Object jsResult = parser.evaluateReader(new StringReader("var1"), "string",  new MemoryStateDatabase().openConnection());
         Assert.assertEquals(jsResult, "val1");
     }
 
@@ -233,7 +235,7 @@ public class WorkflowConfigurationParserTest {
                 "    }";
 
         String str = "importDefaults(\"test\"); celos.makePropertiesGen(" + func + "); ";
-        NativeJavaObject jsResult = (NativeJavaObject) parser.evaluateReader(new StringReader(str), "string");
+        NativeJavaObject jsResult = (NativeJavaObject) parser.evaluateReader(new StringReader(str), "string",  new MemoryStateDatabase().openConnection());
         PropertiesGenerator generator = (PropertiesGenerator) jsResult.unwrap();
         Assert.assertEquals(generator.getProperties(null).get("user.name").asText(), "default");
     }
@@ -255,7 +257,7 @@ public class WorkflowConfigurationParserTest {
                 "    }";
 
         String str = "importDefaults(\"test\"); celos.makePropertiesGen(" + func + "); ";
-        NativeJavaObject jsResult = (NativeJavaObject) parser.evaluateReader(new StringReader(str), "string");
+        NativeJavaObject jsResult = (NativeJavaObject) parser.evaluateReader(new StringReader(str), "string",  new MemoryStateDatabase().openConnection());
         PropertiesGenerator generator = (PropertiesGenerator) jsResult.unwrap();
         Assert.assertEquals(generator.getProperties(null).get("user.name").asText(), "nameIsChanged");
     }
@@ -265,7 +267,7 @@ public class WorkflowConfigurationParserTest {
     public void doesntEvaluateAdditionalVar() throws Exception {
         WorkflowConfigurationParser parser = new WorkflowConfigurationParser(new File("unused"), ImmutableMap.<String, String>of());
         try {
-            parser.evaluateReader(new StringReader("var1"), "string");
+            parser.evaluateReader(new StringReader("var1"), "string",  new MemoryStateDatabase().openConnection());
         } catch (Exception e) {
             if (e.getMessage().contains("\"var1\" is not defined")) {
                 return;
@@ -284,14 +286,14 @@ public class WorkflowConfigurationParserTest {
         File defaults = getDefaultsDir();
         File workflow = new File(dir, workflowName + "." + WorkflowConfigurationParser.WORKFLOW_FILE_EXTENSION);
         WorkflowConfigurationParser workflowConfigurationParser = new WorkflowConfigurationParser(defaults, ImmutableMap.<String, String>of());
-        workflowConfigurationParser.parseFile(workflow);
+        workflowConfigurationParser.parseFile(workflow,  new MemoryStateDatabase().openConnection());
         return workflowConfigurationParser.getWorkflowConfiguration();
     }
     
     public static WorkflowConfiguration parseDir(String label) throws Exception {
         File dir = getConfigurationDir(label);
         File defaults = getDefaultsDir();
-        return new WorkflowConfigurationParser(defaults, ImmutableMap.<String, String>of()).parseConfiguration(dir).getWorkflowConfiguration();
+        return new WorkflowConfigurationParser(defaults, ImmutableMap.<String, String>of()).parseConfiguration(dir,  new MemoryStateDatabase().openConnection()).getWorkflowConfiguration();
     }
 
     public static File getConfigurationDir(String label) throws URISyntaxException {

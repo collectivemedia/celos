@@ -22,7 +22,6 @@ public class RerunState extends ValueObject {
 
     public static final int EXPIRATION_DAYS = 14;
 
-    private static final ObjectMapper MAPPER = new ObjectMapper();
     private static final String RERUN_TIME_PROP = "rerunTime";
 
     // The wallclock time at which the slot was marked for rerun
@@ -41,7 +40,7 @@ public class RerunState extends ValueObject {
     }
     
     public ObjectNode toJSONNode() {
-        ObjectNode node = MAPPER.createObjectNode();
+        ObjectNode node = Util.MAPPER.createObjectNode();
         node.put(RERUN_TIME_PROP, rerunTime.toString());
         return node;
     }

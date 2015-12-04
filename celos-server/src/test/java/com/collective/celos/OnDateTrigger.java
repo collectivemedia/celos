@@ -15,6 +15,7 @@
  */
 package com.collective.celos;
 
+import com.collective.celos.database.StateDatabaseConnection;
 import com.collective.celos.trigger.Trigger;
 import com.collective.celos.trigger.TriggerStatus;
 
@@ -34,7 +35,7 @@ public class OnDateTrigger extends Trigger {
 
 
     @Override
-    public TriggerStatus getTriggerStatus(Scheduler scheduler, ScheduledTime now, ScheduledTime time) throws Exception {
+    public TriggerStatus getTriggerStatus(StateDatabaseConnection connection, ScheduledTime now, ScheduledTime time) throws Exception {
         return makeTriggerStatus(time.equals(scheduledTime), "unused", Collections.<TriggerStatus>emptyList());
     }
 

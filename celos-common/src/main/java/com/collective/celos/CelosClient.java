@@ -19,23 +19,30 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.Lists;
-import org.apache.commons.lang.StringUtils;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.client.utils.URIBuilder;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.util.EntityUtils;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpDelete;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
 
 /**
  * Utility class to talk to the Celos server HTTP API.
@@ -51,17 +58,19 @@ public class CelosClient {
     private static final String CLEAR_CACHE_PATH = "/clear-cache";
     private static final String WORKFLOW_LIST_PATH = "/workflow-list";
     private static final String WORKFLOW_SLOTS_PATH = "/workflow-slots";
+    private static final String REGISTER_PATH = "/register";
     private static final String START_TIME_PARAM = "start";
     private static final String END_TIME_PARAM = "end";
     private static final String TIME_PARAM = "time";
     private static final String PAUSE_PARAM = "paused";
     private static final String ID_PARAM = "id";
     private static final String IDS_PARAM = "ids";
+    private static final String BUCKET_PARAM = "bucket";
+    private static final String KEY_PARAM = "key";
 
     private final HttpClient client;
     private final ScheduledTimeFormatter timeFormatter;
     private final URI address;
-    private final ObjectMapper objectMapper = new ObjectMapper();
 
     public CelosClient(URI address) {
         this.address = Util.requireNonNull(address);
@@ -143,8 +152,10 @@ public class CelosClient {
         HttpGet workflowListGet = new HttpGet(uriBuilder.build());
         HttpResponse getResponse = execute(workflowListGet);
         InputStream content = getResponse.getEntity().getContent();
-        return SlotState.fromJSONNode(workflowID, objectMapper.readValue(content, ObjectNode.class));
+        return SlotState.fromJSONNode(workflowID, Util.JSON_READER.withType(ObjectNode.class).readValue(content));
     }
+
+    public final static ObjectMapper MAPPER = new ObjectMapper();
 
     public JsonNode getTriggerStatusAsText(String workflowID, String scheduledTime) throws Exception {
         URIBuilder uriBuilder = new URIBuilder(address);
@@ -155,10 +166,8 @@ public class CelosClient {
         HttpGet workflowListGet = new HttpGet(uriBuilder.build());
         HttpResponse getResponse = execute(workflowListGet);
         InputStream content = getResponse.getEntity().getContent();
-        return objectMapper.readTree(content);
+        return MAPPER.readTree(content);
     }
-
-
 
     public void rerunSlot(SlotID slotID) throws Exception {
         rerunSlot(slotID.getWorkflowID(), slotID.getScheduledTime());
@@ -187,16 +196,78 @@ public class CelosClient {
         uriBuilder.addParameter(TIME_PARAM, scheduledTime.toString());
         executePost(uriBuilder.build());
     }
+    
+    //// Registers
+    
+    /**
+     * Returns the specified register value, or null if not found.
+     */
+    public JsonNode getRegister(BucketID bucket, RegisterKey key) throws Exception {
+        URIBuilder uriBuilder = new URIBuilder(address);
+        uriBuilder.setPath(uriBuilder.getPath() + REGISTER_PATH);
+        uriBuilder.addParameter(BUCKET_PARAM, bucket.toString());
+        uriBuilder.addParameter(KEY_PARAM, key.toString());
+
+        HttpResponse res = client.execute(new HttpGet(uriBuilder.build()));
+        try {
+            switch(res.getStatusLine().getStatusCode()) {
+            case HttpServletResponse.SC_NOT_FOUND:
+                return null;
+            case HttpServletResponse.SC_OK:
+                return Util.JSON_READER.readTree(res.getEntity().getContent());
+            default:
+                throw new Exception(res.getStatusLine().toString());
+            }
+        } finally {
+            EntityUtils.consume(res.getEntity());
+        }
+    }
+    
+    /**
+     * Sets the specified register value.
+     */
+    public void putRegister(BucketID bucket, RegisterKey key, JsonNode value) throws Exception {
+        URIBuilder uriBuilder = new URIBuilder(address);
+        uriBuilder.setPath(uriBuilder.getPath() + REGISTER_PATH);
+        uriBuilder.addParameter(BUCKET_PARAM, bucket.toString());
+        uriBuilder.addParameter(KEY_PARAM, key.toString());
+        executePut(uriBuilder.build(), new StringEntity(Util.JSON_WRITER.writeValueAsString(value), StandardCharsets.UTF_8));
+    }
+    
+    /**
+     * Deletes the specified register value.
+     */
+    public void deleteRegister(BucketID bucket, RegisterKey key) throws Exception {
+        URIBuilder uriBuilder = new URIBuilder(address);
+        uriBuilder.setPath(uriBuilder.getPath() + REGISTER_PATH);
+        uriBuilder.addParameter(BUCKET_PARAM, bucket.toString());
+        uriBuilder.addParameter(KEY_PARAM, key.toString());
+        executeDelete(uriBuilder.build());
+    }
 
     private void executePost(URI request) throws IOException {
-        HttpPost post = new HttpPost(request);
-        HttpResponse postResponse = execute(post);
+        executeAndConsume(new HttpPost(request));
+    }
+    
+    private void executePut(URI request, HttpEntity entity) throws IOException {
+        HttpPut put = new HttpPut(request);
+        put.setEntity(entity);
+        executeAndConsume(put);
+    }
+    
+    private void executeDelete(URI request) throws IOException {
+        executeAndConsume(new HttpDelete(request));
+    }
+
+    private void executeAndConsume(HttpUriRequest msg) throws IOException {
+        HttpResponse postResponse = execute(msg);
         EntityUtils.consume(postResponse.getEntity());
     }
 
     private HttpResponse execute(HttpUriRequest request) throws IOException {
         HttpResponse getResponse = client.execute(request);
         if (errorResponse(getResponse)) {
+            EntityUtils.consume(getResponse.getEntity());
             throw new IOException(getResponse.getStatusLine().toString());
         }
         return getResponse;
@@ -215,15 +286,15 @@ public class CelosClient {
     }
 
     Set<WorkflowID> parseWorkflowIdsList(InputStream content) throws IOException {
-        return objectMapper.readValue(content, WorkflowList.class).getIds();
+        return Util.JSON_READER.withType(WorkflowList.class).<WorkflowList>readValue(content).getIds();
     }
 
     private static final String INFO_NODE = "info";
     private static final String SLOTS_NODE = "slots";
 
     WorkflowStatus parseWorkflowStatus(WorkflowID workflowID, InputStream content) throws IOException {
-        JsonNode node = objectMapper.readValue(content, JsonNode.class);
-        WorkflowInfo info = objectMapper.treeToValue(node.get(INFO_NODE), WorkflowInfo.class);
+        JsonNode node = Util.JSON_READER.withType(JsonNode.class).readValue(content);
+        WorkflowInfo info = Util.JSON_READER.treeToValue(node.get(INFO_NODE), WorkflowInfo.class);
         Boolean paused = node.get(PAUSE_PARAM).asBoolean();
 
         Iterator<JsonNode> elems = node.get(SLOTS_NODE).elements();

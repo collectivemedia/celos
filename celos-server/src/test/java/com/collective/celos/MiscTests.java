@@ -15,6 +15,7 @@
  */
 package com.collective.celos;
 
+import com.collective.celos.database.StateDatabaseConnection;
 import com.collective.celos.trigger.AlwaysTrigger;
 import org.junit.Assert;
 import org.junit.Test;
@@ -115,8 +116,8 @@ public class MiscTests {
     
     @Test
     public void tooTrivialButStill_alwaysTriggerAlwaysTriggers() throws Exception {
-        Scheduler scheduler = mock(Scheduler.class);
-        Assert.assertTrue(new AlwaysTrigger().isDataAvailable(scheduler, ScheduledTime.now(), new ScheduledTime("2013-11-21T20:00Z")));
+        StateDatabaseConnection connection = mock(StateDatabaseConnection.class);
+        Assert.assertTrue(new AlwaysTrigger().isDataAvailable(connection, ScheduledTime.now(), new ScheduledTime("2013-11-21T20:00Z")));
     }
         
 }

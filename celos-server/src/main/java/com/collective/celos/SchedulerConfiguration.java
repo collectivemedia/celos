@@ -15,6 +15,8 @@
  */
 package com.collective.celos;
 
+import com.collective.celos.database.*;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
@@ -28,29 +30,31 @@ public class SchedulerConfiguration {
 
     private final File workflowConfigurationPath;
     private final File defaultsConfigurationPath;
-    private final File stateDatabasePath;
+    private final StateDatabase db;
     private final Map<String, String> additionalVars;
 
-    public SchedulerConfiguration(File workflowConfigurationPath, File defaultsConfigurationPath, File stateDatabasePath, Map<String, String> additionalVars) {
+    public SchedulerConfiguration(File workflowConfigurationPath, File defaultsConfigurationPath, StateDatabase db, Map<String, String> additionalVars) throws IOException {
         this.workflowConfigurationPath = workflowConfigurationPath;
         this.defaultsConfigurationPath = defaultsConfigurationPath;
-        this.stateDatabasePath = stateDatabasePath;
         this.additionalVars = additionalVars;
+        this.db = db;
     }
 
     public Scheduler makeDefaultScheduler() throws Exception {
-        WorkflowConfiguration config = getWorkflowConfigurationParser().getWorkflowConfiguration();
-        StateDatabase db = makeDefaultStateDatabase();
+        WorkflowConfiguration config;
+        try(StateDatabaseConnection conn = db.openConnection()) {
+            config = getWorkflowConfigurationParser(conn).getWorkflowConfiguration();
+        }
         int slidingWindowHours = 24 * SLIDING_WINDOW_DAYS;
-        return new Scheduler(config, db, slidingWindowHours);
+        return new Scheduler(config, slidingWindowHours);
     }
 
-    private WorkflowConfigurationParser getWorkflowConfigurationParser() throws Exception {
-        return new WorkflowConfigurationParser(defaultsConfigurationPath, additionalVars).parseConfiguration(workflowConfigurationPath);
+    private WorkflowConfigurationParser getWorkflowConfigurationParser(StateDatabaseConnection conn) throws Exception {
+        return new WorkflowConfigurationParser(defaultsConfigurationPath, additionalVars).parseConfiguration(workflowConfigurationPath, conn);
     }
 
-    private StateDatabase makeDefaultStateDatabase() throws IOException {
-        return new FileSystemStateDatabase(stateDatabasePath);
+    public StateDatabase getStateDatabase() {
+        return db;
     }
-
+    
 }

@@ -16,6 +16,7 @@
 package com.collective.celos.servlet;
 
 import com.collective.celos.*;
+import com.collective.celos.database.StateDatabaseConnection;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import javax.servlet.ServletException;
@@ -58,9 +59,11 @@ public class JSONWorkflowServlet extends AbstractJSONServlet {
                 res.sendError(HttpServletResponse.SC_NOT_FOUND, "Workflow not found: " + id);
             } else {
                 ScheduledTime time = getRequestTime(req);
-                List<SlotState> slotStates = scheduler.getSlotStates(wf, scheduler.getWorkflowStartTime(wf, time), time);
-                ObjectNode object = createJSONObject(slotStates);
-                writer.writeValue(res.getOutputStream(), object);
+                try(StateDatabaseConnection connection = getStateDatabase().openConnection()) {
+                    List<SlotState> slotStates = scheduler.getSlotStates(wf, scheduler.getWorkflowStartTime(wf, time), time, connection);
+                    ObjectNode object = createJSONObject(slotStates);
+                    writer.writeValue(res.getOutputStream(), object);
+                }
             }
         } catch (Exception e) {
             throw new ServletException(e);
@@ -68,7 +71,7 @@ public class JSONWorkflowServlet extends AbstractJSONServlet {
     }
 
     ObjectNode createJSONObject(List<SlotState> slotStates) {
-        ObjectNode node = mapper.createObjectNode();
+        ObjectNode node = Util.MAPPER.createObjectNode();
         for (SlotState state : slotStates) {
             node.put(state.getScheduledTime().toString(), state.toJSONNode());
         }

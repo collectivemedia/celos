@@ -15,66 +15,42 @@
  */
 package com.collective.celos;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.TreeSet;
-
+import com.collective.celos.database.FileSystemStateDatabase;
+import com.collective.celos.database.StateDatabaseConnection;
 import junit.framework.Assert;
-
 import org.apache.commons.io.IOUtils;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import com.google.common.collect.ImmutableSet;
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.util.HashSet;
+import java.util.Set;
 
-public class FileSystemStateDatabaseTest {
+public class FileSystemStateDatabaseTest extends AbstractStateDatabaseTest {
 
     @Rule
     public TemporaryFolder tempFolder = new TemporaryFolder();
-    
+
     @Test(expected=IOException.class)
     public void directoryMustExist() throws IOException {
-        File dir = getDatabaseDir();
-        new FileSystemStateDatabase(dir);
+        new FileSystemStateDatabase(getDatabaseDir());
     }
 
     @Test
     public void emptyDatabaseReturnsNull() throws Exception {
-        StateDatabase db = new FileSystemStateDatabase(makeDatabaseDir());
+        StateDatabaseConnection db = getStateDatabaseConnection();
         Assert.assertNull(db.getSlotState(new SlotID(new WorkflowID("workflow-1"), new ScheduledTime("2013-12-02T13:37Z"))));
     }
 
-    @Test
-    public void testRerunExpiration() throws Exception {
-        WorkflowID wf1 = new WorkflowID("foo");
-        WorkflowID wf2 = new WorkflowID("bar");
-        StateDatabase db = new FileSystemStateDatabase(makeDatabaseDir());
-        Assert.assertEquals(new TreeSet<>(), db.getTimesMarkedForRerun(wf1, new ScheduledTime("2013-12-02T15:00Z")));
-        Assert.assertEquals(new TreeSet<>(), db.getTimesMarkedForRerun(wf2, new ScheduledTime("2013-12-02T15:00Z")));
-        ScheduledTime time1 = new ScheduledTime("2013-12-02T13:00Z");
-        ScheduledTime time2 = new ScheduledTime("2013-12-02T14:00Z");
-        SlotID wf1slot1 = new SlotID(wf1, time1);
-        SlotID wf1slot2 = new SlotID(wf1, time2);
-        SlotID wf2slot1 = new SlotID(wf2, time1);
-        db.markSlotForRerun(wf1slot1, time1);
-        db.markSlotForRerun(wf1slot2, time2);
-        db.markSlotForRerun(wf2slot1, time1);
-        Assert.assertEquals(new TreeSet<>(ImmutableSet.of(time1, time2)), db.getTimesMarkedForRerun(wf1, new ScheduledTime("2013-12-02T15:00Z")));
-        Assert.assertEquals(new TreeSet<>(ImmutableSet.of(time1)), db.getTimesMarkedForRerun(wf2, new ScheduledTime("2013-12-02T15:00Z")));
-        // Now call wf1 with much later current time and make sure files got expired after first call
-        Assert.assertEquals(new TreeSet<>(ImmutableSet.of(time1, time2)), db.getTimesMarkedForRerun(wf1, new ScheduledTime("2015-12-02T15:00Z")));
-        Assert.assertEquals(new TreeSet<>(), db.getTimesMarkedForRerun(wf1, new ScheduledTime("2015-12-02T15:00Z")));
-        // wf2 still in there
-        Assert.assertEquals(new TreeSet<>(ImmutableSet.of(time1)), db.getTimesMarkedForRerun(wf2, new ScheduledTime("2013-12-02T15:00Z")));
-        // Now call wf2 with much later current time and make sure files got expired after first call
-        Assert.assertEquals(new TreeSet<>(ImmutableSet.of(time1)), db.getTimesMarkedForRerun(wf2, new ScheduledTime("2015-12-02T15:00Z")));
-        Assert.assertEquals(new TreeSet<>(), db.getTimesMarkedForRerun(wf2, new ScheduledTime("2015-12-02T15:00Z")));
+    @Override
+    public StateDatabaseConnection getStateDatabaseConnection() throws IOException {
+        FileSystemStateDatabase db = new FileSystemStateDatabase(makeDatabaseDir());
+        return db.openConnection();
     }
-    
+
     private File makeDatabaseDir() {
         File dir = getDatabaseDir();
         dir.mkdir();
@@ -84,15 +60,16 @@ public class FileSystemStateDatabaseTest {
     private File getDatabaseDir() {
         return new File(tempFolder.getRoot(), "db");
     }
-    
+
     /**
      * Compare slot states returned by getStates against those under src/test/resources.
      */
     @Test
     public void canReadFromFileSystem1() throws Exception {
-        StateDatabase db = new FileSystemStateDatabase(getResourceDirNoTimestamp());
+        FileSystemStateDatabase database = new FileSystemStateDatabase(getResourceDirNoTimestamp());
+        StateDatabaseConnection connection = database.openConnection();
         for(SlotState state : getStates()) {
-            Assert.assertEquals(state, db.getSlotState(state.getSlotID()));
+            Assert.assertEquals(state, connection.getSlotState(state.getSlotID()));
         }
     }
 
@@ -101,9 +78,10 @@ public class FileSystemStateDatabaseTest {
      */
     @Test
     public void canReadFromFileSystem2() throws Exception {
-        StateDatabase db = new FileSystemStateDatabase(getResourceDir());
+        FileSystemStateDatabase database = new FileSystemStateDatabase(getResourceDir());
+        StateDatabaseConnection connection = database.openConnection();
         for(SlotState state : getStates()) {
-            Assert.assertEquals(state, db.getSlotState(state.getSlotID()));
+            Assert.assertEquals(state, connection.getSlotState(state.getSlotID()));
         }
     }
 
@@ -113,7 +91,7 @@ public class FileSystemStateDatabaseTest {
      */
     @Test
     public void canWriteToFileSystem() throws Exception {
-        StateDatabase db = new FileSystemStateDatabase(makeDatabaseDir());
+        StateDatabaseConnection db = getStateDatabaseConnection();
         for(SlotState state : getStates()) {
             db.putSlotState(state);
         }
@@ -123,8 +101,8 @@ public class FileSystemStateDatabaseTest {
     }
 
     @Test
-    public void testPause() throws IOException {
-        StateDatabase db = new FileSystemStateDatabase(makeDatabaseDir());
+    public void testPauseFileExistence() throws Exception {
+        StateDatabaseConnection db = getStateDatabaseConnection();
         WorkflowID workflowID = new WorkflowID("wf1");
 
         File pauseFile = new File(getDatabaseDir(), "paused/wf1");
@@ -132,8 +110,11 @@ public class FileSystemStateDatabaseTest {
         Assert.assertFalse(db.isPaused(workflowID));
         Assert.assertFalse(pauseFile.exists());
 
-        db.setPaused(workflowID, true);
+        db.setPaused(workflowID, false);
+        Assert.assertFalse(db.isPaused(workflowID));
+        Assert.assertFalse(pauseFile.exists());
 
+        db.setPaused(workflowID, true);
         Assert.assertTrue(pauseFile.exists());
         Assert.assertTrue(db.isPaused(workflowID));
 
@@ -179,7 +160,7 @@ public class FileSystemStateDatabaseTest {
         Set<SlotState> states = new HashSet<SlotState>();
         WorkflowID wf1 = new WorkflowID("workflow-1");
         WorkflowID wf2 = new WorkflowID("workflow-2");
-        
+
         states.add(new SlotState(new SlotID(wf1, new ScheduledTime("2013-12-02T17:00Z")),
                 SlotState.Status.WAITING));
         states.add(new SlotState(new SlotID(wf1, new ScheduledTime("2013-12-02T18:00Z")),
@@ -193,7 +174,7 @@ public class FileSystemStateDatabaseTest {
                 SlotState.Status.READY));
         states.add(new SlotState(new SlotID(wf2, new ScheduledTime("2013-12-02T19:00Z")),
                 SlotState.Status.READY, null, 2).transitionToRunning("quux"));
-        
+
         return states;
     }
 

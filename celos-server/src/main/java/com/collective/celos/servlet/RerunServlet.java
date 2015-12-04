@@ -20,6 +20,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.collective.celos.*;
+import com.collective.celos.database.StateDatabaseConnection;
 import org.apache.log4j.Logger;
 
 /**
@@ -61,18 +62,19 @@ public class RerunServlet extends AbstractServlet {
                 return;
             }
 
-            StateDatabase db = scheduler.getStateDatabase();
-            SlotState state = db.getSlotState(slot);
-            if (state != null) {
-                updateSlotToRerun(state, db);
+            try(StateDatabaseConnection db = getStateDatabase().openConnection()) {
+                SlotState state = db.getSlotState(slot);
+                if (state != null) {
+                    updateSlotToRerun(state, db);
+                }
+                db.markSlotForRerun(slot, ScheduledTime.now());
             }
-            db.markSlotForRerun(slot, ScheduledTime.now());
         } catch(Exception e) {
             throw new ServletException(e);
         }
     }
 
-    void updateSlotToRerun(SlotState state, StateDatabase db) throws Exception {
+    void updateSlotToRerun(SlotState state, StateDatabaseConnection db) throws Exception {
         LOGGER.info("Scheduling Slot for rerun: " + state.getSlotID());
         SlotState newState = state.transitionToRerun();
         db.putSlotState(newState);
