@@ -15,23 +15,22 @@
  */
 package com.collective.celos.server;
 
+
 import com.collective.celos.Constants;
 import com.collective.celos.JettyServer;
 import com.collective.celos.Scheduler;
 import com.collective.celos.Util;
+import com.collective.celos.database.StateDatabase;
 import com.collective.celos.servlet.AbstractServlet;
 import com.google.common.collect.ImmutableMap;
 import org.eclipse.jetty.security.ConstraintMapping;
 import org.eclipse.jetty.security.ConstraintSecurityHandler;
 import org.eclipse.jetty.security.HashLoginService;
-import org.eclipse.jetty.security.SecurityHandler;
 import org.eclipse.jetty.security.authentication.DigestAuthenticator;
 import org.eclipse.jetty.util.security.Constraint;
-import org.eclipse.jetty.webapp.WebAppContext;
 
 import java.io.File;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -42,29 +41,31 @@ public class CelosServer extends JettyServer {
     public static final String[] DIGEST_ROLES = new String[]{"user", "admin"};
     public static final String CONSTRAINT_NAME = "auth";
 
-    public CelosServer() throws Exception {}
-
-    public int start(Map<String, String> jsVariables, File workflowsDir, File defaultsDir, File stateDatabase) throws Exception {
+    public int start( Map<String, String> jsVariables, File workflowsDir, File defaultsDir, StateDatabase stateDatabase) throws Exception {
         int port = super.start();
-        setupContext(jsVariables, workflowsDir, defaultsDir,stateDatabase);
+        setupContext(jsVariables, workflowsDir, defaultsDir, stateDatabase);
         return port;
     }
 
-    public int start(int port, Map<String, String> jsVariables, File workflowsDir, File defaultsDir, File stateDatabase) throws Exception {
+    public int start(int port, Map<String, String> jsVariables, File workflowsDir, File defaultsDir, StateDatabase stateDatabase) throws Exception {
         super.start(port);
         setupContext(jsVariables, workflowsDir, defaultsDir, stateDatabase);
         return port;
     }
 
-    private void setupContext(Map<String, String> jsVariables, File workflowsDir, File defaultsDir, File stateDatabase) {
+    private void setupContext(Map<String, String> jsVariables, File workflowsDir, File defaultsDir, StateDatabase db) {
         validateDirExists(workflowsDir);
         validateDirExists(defaultsDir);
-        validateDirExists(stateDatabase);
+        Util.requireNonNull(db);
 
-        Map<String, Object> attributes = ImmutableMap.<String, Object>of(Constants.ADDITIONAL_JS_VARIABLES, jsVariables);
-        Map<String, String> initParams = ImmutableMap.of(Constants.WORKFLOW_CONFIGURATION_PATH_ATTR, workflowsDir.getAbsolutePath(),
-                Constants.DEFAULTS_CONFIGURATION_PATH_ATTR, defaultsDir.getAbsolutePath(),
-                Constants.STATE_DATABASE_PATH_ATTR, stateDatabase.getAbsolutePath());
+        Map<String, Object> attributes = ImmutableMap.of(
+                Constants.ADDITIONAL_JS_VARIABLES, jsVariables,
+                Constants.DATABASE, db
+        );
+        Map<String, String> initParams = ImmutableMap.of(
+                Constants.WORKFLOW_CONFIGURATION_PATH_ATTR, workflowsDir.getAbsolutePath(),
+                Constants.DEFAULTS_CONFIGURATION_PATH_ATTR, defaultsDir.getAbsolutePath()
+        );
 
         setupContext(attributes, initParams);
     }
@@ -117,6 +118,5 @@ public class CelosServer extends JettyServer {
 
         setSecurityHandler(securityHandler);
     }
-
 
 }

@@ -15,12 +15,11 @@
  */
 package com.collective.celos;
 
+import com.collective.celos.database.JDBCStateDatabase;
+import com.collective.celos.database.StateDatabaseConnection;
 import junit.framework.Assert;
 import org.h2.tools.Server;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -29,33 +28,24 @@ import java.sql.Statement;
 
 public class JDBCStateDatabaseTest extends AbstractStateDatabaseTest {
 
-    public static final String CLEAR_SLOT_STATE_TABLE = "DELETE FROM SLOTSTATE";
-
-    public static final String CLEAR_RERUN_SLOT_TABLE = "DELETE FROM RERUNSLOT";
-
-    public static final String CLEAR_WORKFLOW_INFO_TABLE = "DELETE FROM WORKFLOWINFO";
-
-    public static final String CLEAR_REGISTERS_TABLE = "DELETE FROM REGISTER";
-
-
     public static final String CREATE_SLOT_STATE_TABLE = "CREATE TABLE SLOTSTATE (" +
-            "WORKFLOWID VARCHAR(25) NOT NULL, DATE TIMESTAMP NOT NULL, STATUS VARCHAR(20) NOT NULL, " +
-            "EXTERNALID VARCHAR(25), RETRYCOUNT INTEGER NOT NULL DEFAULT 0)";
+            "WORKFLOWID VARCHAR(512) NOT NULL, DATE TIMESTAMP NOT NULL, STATUS VARCHAR(512) NOT NULL, " +
+            "EXTERNALID VARCHAR(512), RETRYCOUNT INTEGER NOT NULL DEFAULT 0)";
 
     public static final String CREATE_RERUN_SLOT_TABLE = "CREATE TABLE RERUNSLOT (" +
-            "WORKFLOWID VARCHAR(25) NOT NULL, DATE TIMESTAMP NOT NULL, WALLCLOCK TIMESTAMP NOT NULL)";
+            "WORKFLOWID VARCHAR(512) NOT NULL, DATE TIMESTAMP NOT NULL, WALLCLOCK TIMESTAMP NOT NULL)";
 
     public static final String CREATE_WORKFLOW_INFO_TABLE = "CREATE TABLE WORKFLOWINFO (" +
-            "WORKFLOWID VARCHAR(25) NOT NULL, PAUSED BOOLEAN NOT NULL)";
+            "WORKFLOWID VARCHAR(512) NOT NULL, PAUSED BOOLEAN NOT NULL)";
 
     public static final String CREATE_REGISTERS_TABLE = "CREATE TABLE REGISTER (" +
-            "BUCKETID VARCHAR(125) NOT NULL, KEY VARCHAR(125) NOT NULL, JSON VARCHAR(125) NOT NULL)";
+            "BUCKETID VARCHAR(512) NOT NULL, KEY VARCHAR(512) NOT NULL, JSON VARCHAR(512) NOT NULL)";
 
     private static Server SERVER;
     private static String URL = "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1";
     private static String USERNAME = "sa";
     private static String PASSWORD = "";
-    private static StateDatabaseConnection db;
+    private StateDatabaseConnection connection;
 
     @BeforeClass
     public static void setupClass() throws Exception {
@@ -69,7 +59,6 @@ public class JDBCStateDatabaseTest extends AbstractStateDatabaseTest {
                 statement.execute(CREATE_REGISTERS_TABLE);
             }
         }
-        db = new JDBCStateDatabase(URL, USERNAME, PASSWORD).openConnection();
     }
 
     @AfterClass
@@ -77,26 +66,20 @@ public class JDBCStateDatabaseTest extends AbstractStateDatabaseTest {
         SERVER.stop();
     }
 
-    @Override
-    public StateDatabaseConnection getStateDatabase() {
-        return db;
+    @Before
+    public void setUp() throws Exception {
+        JDBCStateDatabase config = new JDBCStateDatabase(URL, USERNAME, PASSWORD);
+        connection = config.openConnection();
     }
 
-    @Before
-    public void setupTest() throws SQLException {
-        try (Connection connection = DriverManager.getConnection(URL, USERNAME, PASSWORD)) {
-            try (Statement statement = connection.createStatement()) {
-                statement.execute(CLEAR_REGISTERS_TABLE);
-                statement.execute(CLEAR_RERUN_SLOT_TABLE);
-                statement.execute(CLEAR_SLOT_STATE_TABLE);
-                statement.execute(CLEAR_WORKFLOW_INFO_TABLE);
-            }
-        }
+    @Override
+    public StateDatabaseConnection getStateDatabaseConnection() {
+        return connection;
     }
 
     @Test
     public void getAndPutWorksWithExternalID() throws Exception {
-        StateDatabaseConnection db = getStateDatabase();
+        StateDatabaseConnection db = getStateDatabaseConnection();
         SlotID slotID = new SlotID(new WorkflowID("foo"), new ScheduledTime("2013-11-27T14:50Z"));
         Assert.assertEquals(null, db.getSlotState(slotID));
         String externalID = "externalId1";

@@ -13,14 +13,17 @@
  * implied.  See the License for the specific language governing
  * permissions and limitations under the License.
  */
-package com.collective.celos;
+package com.collective.celos.database;
 
+import com.collective.celos.*;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import org.apache.log4j.Logger;
 
 import java.sql.*;
 import java.util.Map;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -62,6 +65,18 @@ public class JDBCStateDatabase implements StateDatabase {
         this.password = password;
     }
 
+    public String getUrl() {
+        return url;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
     @Override
     public StateDatabaseConnection openConnection() throws Exception {
         return new JDBCStateDatabaseConnection(url, name, password);
@@ -73,10 +88,16 @@ public class JDBCStateDatabase implements StateDatabase {
 
         public JDBCStateDatabaseConnection(String url, String name, String password) throws SQLException {
             this.connection = DriverManager.getConnection(url, name, password);
+            this.connection.setAutoCommit(false);
         }
 
         @Override
         public void close() {
+            try {
+                connection.commit();
+            } catch (SQLException e) {
+                LOGGER.error("Transaction is rolled back", e);
+            }
             try {
                 connection.close();
             } catch (Exception e) {
@@ -124,7 +145,7 @@ public class JDBCStateDatabase implements StateDatabase {
 
         @Override
         public void putSlotState(SlotState state) throws Exception {
-            SlotState slotState = getSlotState(state.slotID);
+            SlotState slotState = getSlotState(state.getSlotID());
             if (slotState == null) {
                 try (PreparedStatement statement = connection.prepareStatement(INSERT_SLOT_STATE)) {
                     statement.setString(1, state.getSlotID().getWorkflowID().toString());

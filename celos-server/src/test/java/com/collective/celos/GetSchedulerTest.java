@@ -22,6 +22,8 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
+import com.collective.celos.database.FileSystemStateDatabase;
+import com.collective.celos.database.StateDatabase;
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Assert;
@@ -39,7 +41,6 @@ public class GetSchedulerTest {
     public static final String WORKFLOWS_DIR = "workflows";
     public static final String DEFAULTS_DIR = "defaults";
     public static final String DB_DIR = "db";
-    public static final int SLOTS_IN_CELOS_SERVER_SLIDING_WINDOW = SchedulerConfiguration.SLIDING_WINDOW_DAYS * 24;
 
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
@@ -60,7 +61,8 @@ public class GetSchedulerTest {
         this.slotDbDir.mkdirs();
 
         this.celosServer = new CelosServer();
-        int port = celosServer.start(ImmutableMap.<String, String>of(), workflowsDir, defaultsDir, slotDbDir);
+        StateDatabase db = new FileSystemStateDatabase(slotDbDir);
+        int port = celosServer.start(ImmutableMap.<String, String>of(), workflowsDir, defaultsDir, db);
         this.celosClient = new CelosClient(URI.create("http://localhost:" + port));
     }
 

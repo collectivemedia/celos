@@ -13,22 +13,23 @@
  * implied.  See the License for the specific language governing
  * permissions and limitations under the License.
  */
-package com.collective.celos;
+package com.collective.celos.database;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.text.ParseException;
+import java.util.*;
 
+import com.collective.celos.*;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.Maps;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+import org.quartz.CronExpression;
 
 /**
  * Brutally simple persistent implementation of StateDatabase
@@ -88,24 +89,29 @@ public class FileSystemStateDatabase implements StateDatabase {
     private final File pausedDir;
     private final File registerDir;
     private final FileSystemStateDatabaseConnection instance;
+    private final File dir;
+
 
     /**
      * Creates a new DB that stores data in the given directory, which must exist.
      */
     public FileSystemStateDatabase(File dir) throws IOException {
-        if (!Util.requireNonNull(dir).exists()) {
-            throw new IOException("Database directory " + dir + " doesn't exist.");
-        }
-        stateDir = new File(dir, STATE_DIR_NAME);
-        rerunDir = new File(dir, RERUN_DIR_NAME);
-        pausedDir = new File(dir, PAUSED_DIR_NAME);
-        registerDir = new File(dir, REGISTER_DIR_NAME);
-        instance = new FileSystemStateDatabaseConnection();
+        Util.validateDirExists(dir);
+        this.stateDir = new File(dir, STATE_DIR_NAME);
+        this.rerunDir = new File(dir, RERUN_DIR_NAME);
+        this.pausedDir = new File(dir, PAUSED_DIR_NAME);
+        this.registerDir = new File(dir, REGISTER_DIR_NAME);
+        this.dir = dir;
+        this.instance = new FileSystemStateDatabaseConnection();
     }
 
     @Override
     public StateDatabaseConnection openConnection() {
         return instance;
+    }
+
+    public File getDir() {
+        return dir;
     }
 
     private class FileSystemStateDatabaseConnection implements StateDatabaseConnection {
@@ -242,17 +248,17 @@ public class FileSystemStateDatabase implements StateDatabase {
             File file = getWorkflowPauseFile(workflowID);
             if (paused) {
                 FileUtils.touch(file);
-            } else {
+            } else if (file.exists()) {
                 FileUtils.forceDelete(file);
             }
         }
 
         //// Registers
-        
+
         private File getBucketDir(BucketID bucket) {
             return new File(registerDir, bucket.toString());
         }
-        
+
         private File getRegisterFile(BucketID bucket, RegisterKey key) {
             return new File(getBucketDir(bucket), key.toString());
         }
@@ -268,7 +274,7 @@ public class FileSystemStateDatabase implements StateDatabase {
                 return readJson(registerFile);
             }
         }
-        
+
         @Override
         public void putRegister(BucketID bucket, RegisterKey key, JsonNode value) throws Exception {
             Util.requireNonNull(bucket);
@@ -276,7 +282,7 @@ public class FileSystemStateDatabase implements StateDatabase {
             Util.requireNonNull(value);
             writeJson(value, getRegisterFile(bucket, key));
         }
-        
+
         @Override
         public void deleteRegister(BucketID bucket, RegisterKey key) throws Exception {
             Util.requireNonNull(bucket);
@@ -286,7 +292,7 @@ public class FileSystemStateDatabase implements StateDatabase {
                 registerFile.delete();
             }
         }
-        
+
         @Override
         public Iterable<Map.Entry<RegisterKey, JsonNode>> getAllRegisters(BucketID bucket) throws Exception {
             Map<RegisterKey, JsonNode> registers = new HashMap<>();
@@ -306,12 +312,11 @@ public class FileSystemStateDatabase implements StateDatabase {
             String json = FileUtils.readFileToString(file, CHARSET);
             return (ObjectNode) Util.JSON_READER.readTree(json);
         }
-        
+
         private void writeJson(JsonNode obj, File file) throws IOException {
             String json = Util.JSON_WRITER.writeValueAsString(Util.requireNonNull(obj));
             FileUtils.forceMkdir(file.getParentFile());
             FileUtils.write(file, json, CHARSET);
         }
     };
-
 }

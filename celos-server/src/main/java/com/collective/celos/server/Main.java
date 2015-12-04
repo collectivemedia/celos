@@ -30,10 +30,12 @@ import java.util.TimerTask;
 public class Main {
 
     public static void main(String... args) throws Exception {
-        args = "--port 9123 --db /home/akonopko/work/celos_push/wrk --workflows /home/akonopko/work/celos_push/wrk/workflows --defaults /home/akonopko/work/celos_push/wrk/defaults --logs /home/akonopko/work/celos_push/wrk/logs".split(" ");
+//        args = "--port 9123 --db /home/akonopko/work/celos_push/wrk --workflows /home/akonopko/work/celos_push/wrk/workflows --defaults /home/akonopko/work/celos_push/wrk/defaults --logs /home/akonopko/work/celos_push/wrk/logs".split(" ");
 
         ServerCommandLineParser serverCommandLineParser = new ServerCommandLineParser();
         final ServerCommandLine commandLine = serverCommandLineParser.parse(args);
+        Util.setupLogging(commandLine.getLogDir());
+
         CelosServer celosServer = new CelosServer();
         if (commandLine.getDigestConfig() != null) {
             celosServer.setupDigestSecurity(commandLine.getDigestConfig());
@@ -42,11 +44,10 @@ public class Main {
                 Collections.<String, String>emptyMap(),
                 commandLine.getWorkflowsDir(),
                 commandLine.getDefaultsDir(),
-                commandLine.getStateDatabase());
+                commandLine.getDatabase());
 
         setupAutoschedule(commandLine.getPort(), commandLine.getAutoSchedule());
 
-        Util.setupLogging(commandLine.getLogDir());
     }
 
     static void setupAutoschedule(int port, int autoSchedule) {

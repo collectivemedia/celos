@@ -35,9 +35,7 @@ dependencies {
     compile("org.apache.hadoop:hadoop-hdfs:2.5.0-cdh5.3.1") { exclude group: 'javax.servlet', module: 'servlet-api' }
     compile("org.apache.oozie:oozie-client:4.0.0-cdh5.3.1")
     compile("org.quartz-scheduler:quartz:2.1.1")
-    compile("net.sourceforge.spnego:spnego-pac:7.0-with-chromium-fix")
-    compile("com.cloudera.alfredo:alfredo:0.1.6")
-    compile("com.cloudera.alfredo:alfredo-main:0.1.6")
+    compile("org.postgresql:postgresql:9.4-1205-jdbc42")
 
     testCompile('com.h2database:h2:1.4.190')
     testCompile("junit:junit:4.8.2")

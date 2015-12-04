@@ -278,6 +278,7 @@ public class CelosClient {
     private HttpResponse execute(HttpUriRequest request) throws IOException {
         HttpResponse getResponse = client.execute(request, localContext);
         if (errorResponse(getResponse)) {
+            EntityUtils.consume(getResponse.getEntity());
             throw new IOException(getResponse.getStatusLine().toString());
         }
         return getResponse;

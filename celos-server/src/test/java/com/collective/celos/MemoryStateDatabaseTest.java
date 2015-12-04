@@ -15,12 +15,14 @@
  */
 package com.collective.celos;
 
+import com.collective.celos.database.StateDatabaseConnection;
+
 import java.io.IOException;
 
 public class MemoryStateDatabaseTest extends AbstractStateDatabaseTest {
 
     @Override
-    public StateDatabaseConnection getStateDatabase() throws IOException {
+    public StateDatabaseConnection getStateDatabaseConnection() throws IOException {
         return new MemoryStateDatabase().openConnection();
     }
 }

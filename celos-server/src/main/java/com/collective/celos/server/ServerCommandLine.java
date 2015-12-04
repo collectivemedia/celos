@@ -16,6 +16,7 @@
 package com.collective.celos.server;
 
 import com.collective.celos.Util;
+import com.collective.celos.database.StateDatabase;
 
 import java.io.File;
 
@@ -26,18 +27,18 @@ public class ServerCommandLine {
 
     private final File workflowsDir;
     private final File defaultsDir;
-    private final File stateDatabase;
+    private final StateDatabase database;
     private final File logDir;
     private final int port;
     private final int autoSchedule;
     private final File digestConfig;
 
-    public ServerCommandLine(String workflowsDir, String defaultsDir, String stateDatabase, String logDir, int port, int autoSchedule, String digestConfig) {
+    public ServerCommandLine(String workflowsDir, String defaultsDir, StateDatabase db, String logDir, int port, int autoSchedule, String digestConfig) {
         this.autoSchedule = autoSchedule;
         this.digestConfig = digestConfig == null ? null : new File(digestConfig);
         this.workflowsDir = new File(Util.requireNonNull(workflowsDir));
         this.defaultsDir = new File(Util.requireNonNull(defaultsDir));
-        this.stateDatabase = new File(Util.requireNonNull(stateDatabase));
+        this.database = Util.requireNonNull(db);
         this.port = port;
         this.logDir = new File(Util.requireNonNull(logDir));
     }
@@ -54,10 +55,6 @@ public class ServerCommandLine {
         return defaultsDir;
     }
 
-    public File getStateDatabase() {
-        return stateDatabase;
-    }
-
     public int getPort() {
         return port;
     }
@@ -68,6 +65,10 @@ public class ServerCommandLine {
 
     public File getDigestConfig() {
         return digestConfig;
+    }
+
+    public StateDatabase getDatabase() {
+        return database;
     }
 
 }
