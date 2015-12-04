@@ -2,6 +2,7 @@
 set -x
 set -e
 export CELOS_USER=obaskakov
+export ANSIBLE_SSH_ARGS=""
 
 #scripts/build.sh
 #ansible-playbook scripts/playbooks/kinit.yaml -c ssh -u ${CELOS_USER} -i ${INVENTORY_SERVER}

@@ -7,6 +7,7 @@ set -e
 export CELOS_USER=celos-ci
 export INVENTORY_SERVER=scripts/inventory/integration-server
 export INVENTORY_UI=scripts/inventory/integration-ui
+export ANSIBLE_SSH_ARGS=""
 
 scripts/build.sh
 ansible-playbook scripts/playbooks/kinit.yaml -c ssh -u ${CELOS_USER} -i ${INVENTORY_SERVER}

@@ -4,6 +4,7 @@ set -e
 export CELOS_USER=celos
 export INVENTORY_SERVER=scripts/inventory/production-server
 export INVENTORY_UI=scripts/inventory/production-ui
+export ANSIBLE_SSH_ARGS=""
 scripts/build.sh
 ansible-playbook scripts/playbooks/kinit.yaml -c ssh -u ${CELOS_USER} -i ${INVENTORY_SERVER}
 ./scripts/server-and-ui-action.sh deploy
