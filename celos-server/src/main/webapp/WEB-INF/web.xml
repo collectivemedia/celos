@@ -131,4 +131,13 @@
         <url-pattern>/register</url-pattern>
     </servlet-mapping>
 
+    <servlet>
+        <servlet-name>BackupServlet</servlet-name>
+        <servlet-class>com.collective.celos.servlet.BackupServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>BackupServlet</servlet-name>
+        <url-pattern>/backup</url-pattern>
+    </servlet-mapping>
+
 </web-app>
