@@ -9,3 +9,4 @@ celos_workflows_dir=/etc/celos/workflows
 celos_defaults_dir=/etc/celos/defaults
 celos_db_dir=/var/lib/celos/db
 celos_log_dir=/var/log/celos
+extra_args="--db {{ celos_db_dir }}"

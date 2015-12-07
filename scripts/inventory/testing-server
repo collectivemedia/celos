@@ -5,3 +5,4 @@ oj002.ewr004.collective-media.net
 service_name=testing-server
 service_port=11093
 celos_wrk_dir="/home/{{ ansible_ssh_user }}/testing"
+extra_args="--db {{ celos_db_dir }}"

@@ -3,5 +3,6 @@ oj002.ewr004.collective-media.net
 
 [host:vars]
 service_name=celos-integration-server
-service_port=19091
+service_port=19095
 celos_wrk_dir="/home/{{ ansible_ssh_user }}/integration"
+extra_args="--db {{ celos_db_dir }}"
