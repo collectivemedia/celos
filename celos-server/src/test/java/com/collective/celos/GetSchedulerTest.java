@@ -62,13 +62,13 @@ public class GetSchedulerTest {
 
         this.celosServer = new CelosServer();
         StateDatabase db = new FileSystemStateDatabase(slotDbDir);
-        int port = celosServer.startServer(ImmutableMap.<String, String>of(), workflowsDir, defaultsDir, db);
+        int port = celosServer.start(ImmutableMap.<String, String>of(), workflowsDir, defaultsDir, db);
         this.celosClient = new CelosClient(URI.create("http://localhost:" + port));
     }
 
     @After
     public void tearDown() throws Exception {
-        celosServer.stopServer();
+        celosServer.stop();
     }
 
     @Test

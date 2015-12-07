@@ -45,17 +45,18 @@ public class TestRunCelosServerModeEmbedded implements TestRunCelosServerMode {
     private static final String DB_DIR_CELOS_PATH = "db";
 
 
-    private final CelosServer celosServer = new CelosServer();
+    private final CelosServer celosServer;
     private final File workflowsDir;
     private final File defaultsDir;
     private final File dbDir;
     private final String hdfsPrefix;
 
-    public TestRunCelosServerModeEmbedded(CiCommandLine commandLine, File testCaseTempDir, UUID testUUID) {
+    public TestRunCelosServerModeEmbedded(CiCommandLine commandLine, File testCaseTempDir, UUID testUUID) throws Exception {
         this.workflowsDir = new File(testCaseTempDir, WORKFLOW_DIR_CELOS_PATH);
         this.defaultsDir = new File(testCaseTempDir, DEFAULTS_DIR_CELOS_PATH);
         this.dbDir = new File(testCaseTempDir, DB_DIR_CELOS_PATH);
         this.hdfsPrefix = String.format(HDFS_PREFIX_PATTERN, commandLine.getUserName(), commandLine.getWorkflowName(), testUUID);
+        this.celosServer = new CelosServer();
     }
 
     public String getHdfsPrefix() {
@@ -72,7 +73,7 @@ public class TestRunCelosServerModeEmbedded implements TestRunCelosServerMode {
         defaultsDir.mkdirs();
         dbDir.mkdirs();
 
-        Integer port = celosServer.startServer(additionalJSParams, workflowsDir, defaultsDir, new FileSystemStateDatabase(dbDir));
+        Integer port = celosServer.start(additionalJSParams, workflowsDir, defaultsDir, new FileSystemStateDatabase(dbDir));
 
         logJsFileExists(WorkflowFilesDeployer.WORKFLOW_FILENAME, testRun);
         logJsFileExists(WorkflowFilesDeployer.DEFAULTS_FILENAME, testRun);
@@ -106,7 +107,7 @@ public class TestRunCelosServerModeEmbedded implements TestRunCelosServerMode {
         try {
             System.out.println(testRun.getTestCase().getName() + ": Stopping Celos");
             System.out.flush();
-            celosServer.stopServer();
+            celosServer.stop();
         } catch (Exception e) {
             e.printStackTrace(System.err);
         }

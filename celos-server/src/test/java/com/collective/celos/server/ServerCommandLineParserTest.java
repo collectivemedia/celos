@@ -61,6 +61,7 @@ public class ServerCommandLineParserTest {
         Assert.assertEquals(1337, cmdLine.getPort());
         Assert.assertEquals(new File(Constants.DEFAULT_WORKFLOWS_DIR), cmdLine.getWorkflowsDir());
         Assert.assertEquals(new File(Constants.DEFAULT_DEFAULTS_DIR), cmdLine.getDefaultsDir());
+        Assert.assertNull(cmdLine.getDigestConfig());
         Assert.assertTrue(cmdLine.getDatabase() instanceof FileSystemStateDatabase);
         FileSystemStateDatabase db = (FileSystemStateDatabase) cmdLine.getDatabase();
         Assert.assertEquals(db.getDir(), tmpDir);

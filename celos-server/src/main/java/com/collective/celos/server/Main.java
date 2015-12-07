@@ -30,13 +30,15 @@ import java.util.TimerTask;
 public class Main {
 
     public static void main(String... args) throws Exception {
-
         ServerCommandLineParser serverCommandLineParser = new ServerCommandLineParser();
         final ServerCommandLine commandLine = serverCommandLineParser.parse(args);
         Util.setupLogging(commandLine.getLogDir());
 
         CelosServer celosServer = new CelosServer();
-        celosServer.startServer(commandLine.getPort(),
+        if (commandLine.getDigestConfig() != null) {
+            celosServer.setupDigestSecurity(commandLine.getDigestConfig());
+        }
+        celosServer.start(commandLine.getPort(),
                 Collections.<String, String>emptyMap(),
                 commandLine.getWorkflowsDir(),
                 commandLine.getDefaultsDir(),

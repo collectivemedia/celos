@@ -36,6 +36,7 @@ public class ServerCommandLineParser {
     private static final String CLI_LOG_DIR = "logs";
     private static final String CLI_AUTOSCHEDULE = "autoSchedule";
     private static final String CLI_PORT = "port";
+    private static final String CLI_DIGEST_CONFIG = "digest";
     private static final String CLI_STATE_DB_TYPE = "dbType";
     private static final String CLI_STATE_DB_DIR = "db";
     private static final String CLI_STATE_DB_JDBC_URL = "jdbcUrl";
@@ -54,10 +55,11 @@ public class ServerCommandLineParser {
         String defaultsDir = getDefault(commandLine, CLI_DEFAULTS_DIR, Constants.DEFAULT_DEFAULTS_DIR);
         String workflowsDir = getDefault(commandLine, CLI_WF_DIR, Constants.DEFAULT_WORKFLOWS_DIR);
         String logDir = getDefault(commandLine, CLI_LOG_DIR, Constants.DEFAULT_LOG_DIR);
+        String digestConfig = commandLine.getOptionValue(CLI_DIGEST_CONFIG);
         Integer autoSchedule = Integer.valueOf(getDefault(commandLine, CLI_AUTOSCHEDULE, "-1"));
         StateDatabase db = getStateDatabaseConfig(commandLine);
 
-        return new ServerCommandLine(workflowsDir, defaultsDir, db, logDir, port, autoSchedule);
+        return new ServerCommandLine(workflowsDir, defaultsDir, db, logDir, port, autoSchedule, digestConfig);
     }
 
     private String getRequiredArgument(CommandLine commandLine, String argument) {
@@ -101,6 +103,8 @@ public class ServerCommandLineParser {
                 .addOption(CLI_DEFAULTS_DIR, CLI_DEFAULTS_DIR, true, "Path to DEFAULTS dir")
                 .addOption(CLI_PORT, CLI_PORT, true, "Celos Server port")
                 .addOption(CLI_LOG_DIR, CLI_LOG_DIR, true, "Celos logs dir")
+                .addOption(CLI_AUTOSCHEDULE, CLI_AUTOSCHEDULE, true, "Time period in seconds to automatically run Scheduler. If not specified, Scheduler will not be automatically run")
+                .addOption(CLI_DIGEST_CONFIG, CLI_DIGEST_CONFIG, true, "Path to digest realms file (enables authorisation if provided)")
                 .addOption(CLI_STATE_DB_TYPE, CLI_STATE_DB_TYPE, true, "Celos state db type: [FILESYSTEM, JDBC]")
                 .addOption(CLI_STATE_DB_DIR, CLI_STATE_DB_DIR, true, "Path to STATE DATABASE dir")
                 .addOption(CLI_STATE_DB_JDBC_URL, CLI_STATE_DB_JDBC_URL, true, "Celos JDBC db url")

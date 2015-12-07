@@ -15,6 +15,7 @@
  */
 package com.collective.celos;
 
+
 import com.collective.celos.database.FileSystemStateDatabase;
 import com.collective.celos.server.CelosServer;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -22,15 +23,16 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
 import org.apache.http.conn.HttpHostConnectException;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.junit.*;
 import org.junit.rules.TemporaryFolder;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
@@ -46,56 +48,71 @@ public class CelosClientServerTest {
     public static final String DEFAULTS_DIR = "defaults";
     public static final String DB_DIR = "db";
     public static final int SLOTS_IN_CELOS_SERVER_SLIDING_WINDOW = SchedulerConfiguration.SLIDING_WINDOW_DAYS * 24;
+    public static final String REALMS_FILE = "realms";
+
+    //If DIGEST Authentication is used, the password must be in a recoverable
+    //format, either plain text or OBF:.
+    private final String REALMS =
+            "other: OBF:1xmk1w261u9r1w1c1xmq,user\n" +
+                    "plain: plain,user";
 
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
 
+    private File realmFile;
+    private File defaultsDir;
     private File workflowsDir;
     private File slotDbDir;
     private CelosServer celosServer;
-    private CelosClient celosClient;
+    private CelosClient celosClientNoAuth;
+    private CelosClient celosClientAuth;
 
     @Before
     public void setup() throws Exception {
         File tmpDir = folder.newFolder();
+        this.realmFile = folder.newFile();
         this.workflowsDir = new File(tmpDir, WORKFLOWS_DIR);
-        File defaultsDir = new File(tmpDir, DEFAULTS_DIR);
+        this.defaultsDir = new File(tmpDir, DEFAULTS_DIR);
         this.slotDbDir = new File(tmpDir, DB_DIR);
         this.workflowsDir.mkdirs();
         defaultsDir.mkdirs();
         this.slotDbDir.mkdirs();
+        IOUtils.write(REALMS, new FileOutputStream(realmFile));
 
         this.celosServer = new CelosServer();
+        this.celosServer.setupDigestSecurity(realmFile);
         FileSystemStateDatabase db = new FileSystemStateDatabase(slotDbDir);
-        int port = celosServer.startServer(ImmutableMap.<String, String>of(), workflowsDir, defaultsDir, db);
-        this.celosClient = new CelosClient(URI.create("http://localhost:" + port));
+
+        int port = celosServer.start(ImmutableMap.<String, String>of(), workflowsDir, defaultsDir, db);
+        this.celosClientNoAuth = new CelosClient(URI.create("http://localhost:" + port));
+        this.celosClientAuth = new CelosClient(URI.create("http://localhost:" + port), "plain", "plain");
     }
 
     @After
     public void tearDown() throws Exception {
-        celosServer.stopServer();
+        celosServer.stop();
     }
 
     @Test
     public void testGetWorkflowListEmpty() throws Exception {
-        Set<WorkflowID> workflowIDs = celosClient.getWorkflowList();
+        Set<WorkflowID> workflowIDs = celosClientNoAuth.getWorkflowList();
         Assert.assertTrue(workflowIDs.isEmpty());
     }
 
     @Test
     public void testGetWorkflowListEmptyBeforeClearCache() throws Exception {
-        Set<WorkflowID> workflowIDs = celosClient.getWorkflowList();
+        Set<WorkflowID> workflowIDs = celosClientNoAuth.getWorkflowList();
         Assert.assertTrue(workflowIDs.isEmpty());
 
         File src = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/client/wf-list").toURI());
         FileUtils.copyDirectory(src, workflowsDir);
 
-        workflowIDs = celosClient.getWorkflowList();
+        workflowIDs = celosClientNoAuth.getWorkflowList();
         Assert.assertTrue(workflowIDs.isEmpty());
 
-        celosClient.clearCache();
+        celosClientAuth.clearCache();
 
-        workflowIDs = celosClient.getWorkflowList();
+        workflowIDs = celosClientNoAuth.getWorkflowList();
         Assert.assertEquals(
                 Sets.newHashSet(workflowIDs),
                 Sets.newHashSet(new WorkflowID("workflow-1"), new WorkflowID("workflow-2"), new WorkflowID("workflow-Iñtërnâtiônàlizætiøn"), new WorkflowID("workflow-4"))
@@ -104,14 +121,14 @@ public class CelosClientServerTest {
 
     @Test(expected = HttpHostConnectException.class)
     public void testServerStops() throws Exception {
-        celosClient.getWorkflowList();
-        celosServer.stopServer();
-        celosClient.getWorkflowList();
+        celosClientNoAuth.getWorkflowList();
+        celosServer.stop();
+        celosClientNoAuth.getWorkflowList();
     }
 
     @Test(expected = IOException.class)
     public void testGetWorkflowStatusFailsNoId() throws Exception {
-        celosClient.getWorkflowStatus(new WorkflowID("noid"));
+        celosClientNoAuth.getWorkflowStatus(new WorkflowID("noid"));
     }
 
     @Test(expected = IOException.class)
@@ -119,7 +136,7 @@ public class CelosClientServerTest {
         File src = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/client/wf-list").toURI());
         FileUtils.copyDirectory(src, workflowsDir);
 
-        celosClient.getWorkflowStatus(new WorkflowID("noid"));
+        celosClientNoAuth.getWorkflowStatus(new WorkflowID("noid"));
     }
 
     @Test
@@ -127,7 +144,7 @@ public class CelosClientServerTest {
         File src = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/client/wf-list").toURI());
         FileUtils.copyDirectory(src, workflowsDir);
 
-        List<SlotState> slotStates = celosClient.getWorkflowStatus(new WorkflowID("workflow-2")).getSlotStates();
+        List<SlotState> slotStates = celosClientNoAuth.getWorkflowStatus(new WorkflowID("workflow-2")).getSlotStates();
         Assert.assertEquals(slotStates.size(), SLOTS_IN_CELOS_SERVER_SLIDING_WINDOW);
 
         for (SlotState slotState : slotStates) {
@@ -143,7 +160,7 @@ public class CelosClientServerTest {
         File src = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/client/wf-list").toURI());
         FileUtils.copyDirectory(src, workflowsDir);
 
-        List<SlotState> slotStates = celosClient.getWorkflowStatus(new WorkflowID("workflow-2")).getSlotStates();
+        List<SlotState> slotStates = celosClientNoAuth.getWorkflowStatus(new WorkflowID("workflow-2")).getSlotStates();
         Assert.assertEquals(slotStates.size(), SLOTS_IN_CELOS_SERVER_SLIDING_WINDOW);
 
         for (int i = 0; i < slotStates.size() - 1; i++) {
@@ -159,8 +176,8 @@ public class CelosClientServerTest {
         File src = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/client/wf-list").toURI());
         FileUtils.copyDirectory(src, workflowsDir);
 
-        celosClient.iterateScheduler();
-        List<SlotState> slotStates = celosClient.getWorkflowStatus(new WorkflowID("workflow-2")).getSlotStates();
+        celosClientAuth.iterateScheduler();
+        List<SlotState> slotStates = celosClientNoAuth.getWorkflowStatus(new WorkflowID("workflow-2")).getSlotStates();
         Assert.assertEquals(slotStates.size(), SLOTS_IN_CELOS_SERVER_SLIDING_WINDOW);
 
         for (SlotState slotState : slotStates) {
@@ -176,8 +193,8 @@ public class CelosClientServerTest {
         File src = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/client/wf-list").toURI());
         FileUtils.copyDirectory(src, workflowsDir);
 
-        celosClient.iterateScheduler();
-        WorkflowStatus status = celosClient.getWorkflowStatus(new WorkflowID("workflow-1"));
+        celosClientAuth.iterateScheduler();
+        WorkflowStatus status = celosClientNoAuth.getWorkflowStatus(new WorkflowID("workflow-1"));
         Assert.assertNull(status.getInfo().getUrl());
         Assert.assertTrue(status.getInfo().getContacts().isEmpty());
     }
@@ -188,8 +205,8 @@ public class CelosClientServerTest {
         File src = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/client/wf-list").toURI());
         FileUtils.copyDirectory(src, workflowsDir);
 
-        celosClient.iterateScheduler();
-        WorkflowStatus status = celosClient.getWorkflowStatus(new WorkflowID("workflow-2"));
+        celosClientAuth.iterateScheduler();
+        WorkflowStatus status = celosClientNoAuth.getWorkflowStatus(new WorkflowID("workflow-2"));
 
         Assert.assertEquals(new URL("http://collective.com"), status.getInfo().getUrl());
         Assert.assertEquals(1, status.getInfo().getContacts().size());
@@ -204,9 +221,9 @@ public class CelosClientServerTest {
         File src = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/client/wf-list").toURI());
         FileUtils.copyDirectory(src, workflowsDir);
 
-        celosClient.iterateScheduler();
-        celosClient.iterateScheduler();
-        List<SlotState> slotStates = celosClient.getWorkflowStatus(new WorkflowID("workflow-1")).getSlotStates();
+        celosClientAuth.iterateScheduler();
+        celosClientAuth.iterateScheduler();
+        List<SlotState> slotStates = celosClientNoAuth.getWorkflowStatus(new WorkflowID("workflow-1")).getSlotStates();
         Assert.assertEquals(slotStates.size(), SLOTS_IN_CELOS_SERVER_SLIDING_WINDOW);
 
         for (SlotState slotState : slotStates) {
@@ -222,9 +239,9 @@ public class CelosClientServerTest {
         File src = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/client/wf-list").toURI());
         FileUtils.copyDirectory(src, workflowsDir);
 
-        celosClient.iterateScheduler();
-        celosClient.iterateScheduler();
-        List<SlotState> slotStates = celosClient.getWorkflowStatus(new WorkflowID("workflow-2")).getSlotStates();
+        celosClientAuth.iterateScheduler();
+        celosClientAuth.iterateScheduler();
+        List<SlotState> slotStates = celosClientNoAuth.getWorkflowStatus(new WorkflowID("workflow-2")).getSlotStates();
         Assert.assertEquals(slotStates.size(), SLOTS_IN_CELOS_SERVER_SLIDING_WINDOW);
 
         List<SlotState> slotStatesOther = slotStates.subList(0, slotStates.size() - 1);
@@ -246,11 +263,11 @@ public class CelosClientServerTest {
         File src = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/client/wf-list").toURI());
         FileUtils.copyDirectory(src, workflowsDir);
 
-        celosClient.iterateScheduler();
-        celosClient.iterateScheduler();
-        celosClient.iterateScheduler();
+        celosClientAuth.iterateScheduler();
+        celosClientAuth.iterateScheduler();
+        celosClientAuth.iterateScheduler();
 
-        List<SlotState> slotStates = celosClient.getWorkflowStatus(new WorkflowID("workflow-2")).getSlotStates();
+        List<SlotState> slotStates = celosClientNoAuth.getWorkflowStatus(new WorkflowID("workflow-2")).getSlotStates();
         Assert.assertEquals(slotStates.size(), SLOTS_IN_CELOS_SERVER_SLIDING_WINDOW);
 
         SlotState slotStateLst = slotStates.get(slotStates.size() - 1);
@@ -272,12 +289,12 @@ public class CelosClientServerTest {
         File src = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/client/wf-list").toURI());
         FileUtils.copyDirectory(src, workflowsDir);
 
-        celosClient.iterateScheduler();
-        celosClient.iterateScheduler();
-        celosClient.iterateScheduler();
-        celosClient.iterateScheduler();
+        celosClientAuth.iterateScheduler();
+        celosClientAuth.iterateScheduler();
+        celosClientAuth.iterateScheduler();
+        celosClientAuth.iterateScheduler();
 
-        List<SlotState> slotStates = celosClient.getWorkflowStatus(new WorkflowID("workflow-2")).getSlotStates();
+        List<SlotState> slotStates = celosClientNoAuth.getWorkflowStatus(new WorkflowID("workflow-2")).getSlotStates();
         Assert.assertEquals(slotStates.size(), SLOTS_IN_CELOS_SERVER_SLIDING_WINDOW);
 
         SlotState slotStateLst = slotStates.get(slotStates.size() - 1);
@@ -305,11 +322,11 @@ public class CelosClientServerTest {
         File src = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/client/wf-list").toURI());
         FileUtils.copyDirectory(src, workflowsDir);
 
-        celosClient.iterateScheduler();
-        celosClient.iterateScheduler();
-        celosClient.iterateScheduler();
+        celosClientAuth.iterateScheduler();
+        celosClientAuth.iterateScheduler();
+        celosClientAuth.iterateScheduler();
 
-        List<SlotState> slotStates = celosClient.getWorkflowStatus(new WorkflowID("workflow-Iñtërnâtiônàlizætiøn")).getSlotStates();
+        List<SlotState> slotStates = celosClientNoAuth.getWorkflowStatus(new WorkflowID("workflow-Iñtërnâtiônàlizætiøn")).getSlotStates();
         Assert.assertEquals(slotStates.size(), SLOTS_IN_CELOS_SERVER_SLIDING_WINDOW);
 
         SlotState slotStateFst = slotStates.get(slotStates.size() - 1);
@@ -325,15 +342,15 @@ public class CelosClientServerTest {
         File src = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/client/wf-list").toURI());
         FileUtils.copyDirectory(src, workflowsDir);
 
-        List<SlotState> slotStates = celosClient.getWorkflowStatus(new WorkflowID("workflow-4")).getSlotStates();
+        List<SlotState> slotStates = celosClientNoAuth.getWorkflowStatus(new WorkflowID("workflow-4")).getSlotStates();
         Assert.assertEquals(slotStates.size(), SLOTS_IN_CELOS_SERVER_SLIDING_WINDOW);
         Assert.assertTrue(slotStates.get(slotStates.size() - 1).getScheduledTime().getDateTime().isAfter(timeInPast.getDateTime().plusYears(1)));
 
-        slotStates = celosClient.getWorkflowStatus(new WorkflowID("workflow-4"), timeInPast).getSlotStates();
+        slotStates = celosClientNoAuth.getWorkflowStatus(new WorkflowID("workflow-4"), timeInPast).getSlotStates();
         Assert.assertEquals(slotStates.get(slotStates.size() - 1).getScheduledTime(), timeInPast.minusDays(SchedulerConfiguration.SLIDING_WINDOW_DAYS));
         Assert.assertEquals(slotStates.get(0).getScheduledTime(), timeInPast.minusHours(1));
 
-        slotStates = celosClient.getWorkflowStatus(new WorkflowID("workflow-4"), timeInPast.plusSeconds(1)).getSlotStates();
+        slotStates = celosClientNoAuth.getWorkflowStatus(new WorkflowID("workflow-4"), timeInPast.plusSeconds(1)).getSlotStates();
         Assert.assertEquals(slotStates.get(0).getScheduledTime(), timeInPast);
     }
 
@@ -344,13 +361,13 @@ public class CelosClientServerTest {
         File src = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/client/wf-list").toURI());
         FileUtils.copyDirectory(src, workflowsDir);
 
-        List<SlotState> slotStates = celosClient.getWorkflowStatus(new WorkflowID("workflow-4")).getSlotStates();
+        List<SlotState> slotStates = celosClientNoAuth.getWorkflowStatus(new WorkflowID("workflow-4")).getSlotStates();
         Assert.assertEquals(slotStates.size(), SLOTS_IN_CELOS_SERVER_SLIDING_WINDOW);
 
-        celosClient.iterateScheduler(timeInPast);
+        celosClientAuth.iterateScheduler(timeInPast);
 
         ScheduledTime inclusivePeriod = timeInPast.plusSeconds(1);
-        slotStates = celosClient.getWorkflowStatus(new WorkflowID("workflow-4"), inclusivePeriod).getSlotStates();
+        slotStates = celosClientNoAuth.getWorkflowStatus(new WorkflowID("workflow-4"), inclusivePeriod).getSlotStates();
 
         for (SlotState slotState : slotStates) {
             Assert.assertEquals(slotState.getStatus(), SlotState.Status.WAITING);
@@ -358,8 +375,8 @@ public class CelosClientServerTest {
             Assert.assertEquals(slotState.getRetryCount(), 0);
         }
 
-        celosClient.iterateScheduler(timeInPast);
-        slotStates = celosClient.getWorkflowStatus(new WorkflowID("workflow-4"), inclusivePeriod).getSlotStates();
+        celosClientAuth.iterateScheduler(timeInPast);
+        slotStates = celosClientNoAuth.getWorkflowStatus(new WorkflowID("workflow-4"), inclusivePeriod).getSlotStates();
 
         for (SlotState slotState : slotStates) {
             Assert.assertEquals(slotState.getStatus(), SlotState.Status.WAITING);
@@ -368,8 +385,8 @@ public class CelosClientServerTest {
         }
 
 
-        celosClient.iterateScheduler(inclusivePeriod);
-        slotStates = celosClient.getWorkflowStatus(new WorkflowID("workflow-4"), inclusivePeriod).getSlotStates();
+        celosClientAuth.iterateScheduler(inclusivePeriod);
+        slotStates = celosClientNoAuth.getWorkflowStatus(new WorkflowID("workflow-4"), inclusivePeriod).getSlotStates();
         Assert.assertEquals(slotStates.get(0).getStatus(), SlotState.Status.READY);
         for (SlotState slotState : slotStates.subList(1, slotStates.size())) {
             Assert.assertEquals(slotState.getStatus(), SlotState.Status.WAITING);
@@ -380,19 +397,12 @@ public class CelosClientServerTest {
 
     @Test
     public void testServerRespondsToScheduler() throws Exception {
-        celosClient.iterateScheduler();
-    }
-
-    @Test
-    public void testServerRespondsToSchedulerPOST() throws IOException {
-        HttpPost request = new HttpPost(celosClient.getAddress() + "/scheduler");
-        HttpResponse response = new DefaultHttpClient().execute(request);
-        Assert.assertEquals(response.getStatusLine().getStatusCode(), 200);
+        celosClientAuth.iterateScheduler();
     }
 
     @Test
     public void testSchedulerNoRespondToGet() throws IOException {
-        HttpGet request = new HttpGet(celosClient.getAddress() + "/scheduler");
+        HttpGet request = new HttpGet(celosClientNoAuth.getAddress() + "/scheduler");
         HttpResponse response = new DefaultHttpClient().execute(request);
         Assert.assertEquals(response.getStatusLine().getStatusCode(), 405);
         Assert.assertEquals(response.getStatusLine().getReasonPhrase(), "HTTP method GET is not supported by this URL");
@@ -403,7 +413,7 @@ public class CelosClientServerTest {
         File src = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/client/wf-list").toURI());
         FileUtils.copyDirectory(src, workflowsDir);
 
-        HttpGet request = new HttpGet(celosClient.getAddress() + "/workflow");
+        HttpGet request = new HttpGet(celosClientNoAuth.getAddress() + "/workflow");
         HttpResponse response = new DefaultHttpClient().execute(request);
         Assert.assertEquals(response.getStatusLine().getStatusCode(), 400);
         Assert.assertEquals(response.getStatusLine().getReasonPhrase(), "id parameter missing.");
@@ -415,7 +425,7 @@ public class CelosClientServerTest {
         File src2 = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/server/slot-db-1").toURI());
         FileUtils.copyDirectory(src2, slotDbDir);
 
-        celosClient.getWorkflowStatus(new WorkflowID("workflow-1"), new ScheduledTime("2013-12-02T20:00Z"));
+        celosClientNoAuth.getWorkflowStatus(new WorkflowID("workflow-1"), new ScheduledTime("2013-12-02T20:00Z"));
     }
 
 
@@ -447,7 +457,7 @@ public class CelosClientServerTest {
             time = time.minusHours(1);
         }
 
-        List<SlotState> resultSlotStates = celosClient.getWorkflowStatus(new WorkflowID("workflow-1"), new ScheduledTime("2013-12-02T20:00Z")).getSlotStates();
+        List<SlotState> resultSlotStates = celosClientNoAuth.getWorkflowStatus(new WorkflowID("workflow-1"), new ScheduledTime("2013-12-02T20:00Z")).getSlotStates();
 
         Assert.assertEquals(expectedSlotStates, resultSlotStates);
     }
@@ -483,7 +493,7 @@ public class CelosClientServerTest {
 
         ScheduledTime reqTimeEnd = new ScheduledTime("2013-12-02T20:00Z");
         ScheduledTime reqTimeStart = new ScheduledTime("2013-12-02T10:00Z");
-        List<SlotState> resultSlotStates = celosClient.getWorkflowStatus(new WorkflowID("workflow-1"), reqTimeStart, reqTimeEnd).getSlotStates();
+        List<SlotState> resultSlotStates = celosClientNoAuth.getWorkflowStatus(new WorkflowID("workflow-1"), reqTimeStart, reqTimeEnd).getSlotStates();
 
         Assert.assertEquals(expectedSlotStates, resultSlotStates);
     }
@@ -495,7 +505,7 @@ public class CelosClientServerTest {
 
         ScheduledTime reqTimeEnd = new ScheduledTime("2013-12-07T20:00Z");
         ScheduledTime reqTimeStart = new ScheduledTime("2013-12-02T10:00Z");
-        celosClient.getWorkflowStatus(new WorkflowID("workflow-1"), reqTimeStart, reqTimeEnd);
+        celosClientNoAuth.getWorkflowStatus(new WorkflowID("workflow-1"), reqTimeStart, reqTimeEnd);
     }
 
     @Test(expected = IOException.class)
@@ -505,7 +515,7 @@ public class CelosClientServerTest {
 
         ScheduledTime reqTimeEnd = new ScheduledTime("2013-12-27T20:00Z");
         ScheduledTime reqTimeStart = new ScheduledTime("2013-12-02T10:00Z");
-        celosClient.getWorkflowStatus(new WorkflowID("workflow-1"), reqTimeStart, reqTimeEnd);
+        celosClientNoAuth.getWorkflowStatus(new WorkflowID("workflow-1"), reqTimeStart, reqTimeEnd);
     }
 
 
@@ -517,7 +527,7 @@ public class CelosClientServerTest {
 
         ScheduledTime reqTimeEnd = new ScheduledTime("2013-12-02T20:00Z");
         ScheduledTime reqTimeStart = new ScheduledTime("2013-12-02T21:00Z");
-        WorkflowStatus workflowStatus = celosClient.getWorkflowStatus(new WorkflowID("workflow-1"), reqTimeStart, reqTimeEnd);
+        WorkflowStatus workflowStatus = celosClientNoAuth.getWorkflowStatus(new WorkflowID("workflow-1"), reqTimeStart, reqTimeEnd);
         Assert.assertEquals(workflowStatus.getSlotStates().size(), 0);
     }
 
@@ -532,12 +542,12 @@ public class CelosClientServerTest {
         FileUtils.copyDirectory(src2, slotDbDir);
 
         try {
-            celosClient.getSlotState(new WorkflowID("workflow-1"), ScheduledTime.now());
+            celosClientNoAuth.getSlotState(new WorkflowID("workflow-1"), ScheduledTime.now());
         } catch (Exception e) {
 
         }
         ScheduledTime existingSlotTime = new ScheduledTime("2013-12-02T19:00:00.000Z");
-        celosClient.getSlotState(new WorkflowID("workflow-1"), existingSlotTime);
+        celosClientNoAuth.getSlotState(new WorkflowID("workflow-1"), existingSlotTime);
     }
 
 
@@ -569,7 +579,7 @@ public class CelosClientServerTest {
             time = time.minusHours(1);
         }
 
-        List<SlotState> resultSlotStates = celosClient.getWorkflowStatus(new WorkflowID("workflow-2"), new ScheduledTime("2013-12-02T20:00Z")).getSlotStates();
+        List<SlotState> resultSlotStates = celosClientNoAuth.getWorkflowStatus(new WorkflowID("workflow-2"), new ScheduledTime("2013-12-02T20:00Z")).getSlotStates();
 
         Assert.assertEquals(expectedSlotStates, resultSlotStates);
     }
@@ -588,8 +598,8 @@ public class CelosClientServerTest {
         ScheduledTime scheduledTime1 = new ScheduledTime("2013-12-02T19:00Z");
         ScheduledTime scheduledTime2 = new ScheduledTime("2013-12-02T18:00Z");
 
-        SlotState slotState1 = celosClient.getSlotState(workflowID, scheduledTime1);
-        SlotState slotState2 = celosClient.getSlotState(workflowID, scheduledTime2);
+        SlotState slotState1 = celosClientNoAuth.getSlotState(workflowID, scheduledTime1);
+        SlotState slotState2 = celosClientNoAuth.getSlotState(workflowID, scheduledTime2);
 
         SlotState expectedSlotState1 = new SlotState(new SlotID(workflowID, scheduledTime1), SlotState.Status.RUNNING, "foo-bar", 0);
         SlotState expectedSlotState2 = new SlotState(new SlotID(workflowID, scheduledTime2), SlotState.Status.READY, null, 14);
@@ -610,7 +620,7 @@ public class CelosClientServerTest {
         WorkflowID workflowID = new WorkflowID("workflow-1");
         ScheduledTime scheduledTime1 = new ScheduledTime("2000-12-02T19:00Z");
 
-        celosClient.getSlotState(workflowID, scheduledTime1);
+        celosClientNoAuth.getSlotState(workflowID, scheduledTime1);
     }
 
     @Test(expected = IOException.class)
@@ -625,7 +635,7 @@ public class CelosClientServerTest {
         WorkflowID workflowID = new WorkflowID("workflow-doesnt-exist");
         ScheduledTime scheduledTime1 = new ScheduledTime("2000-12-02T19:00Z");
 
-        celosClient.getSlotState(workflowID, scheduledTime1);
+        celosClientNoAuth.getSlotState(workflowID, scheduledTime1);
     }
 
     @Test
@@ -634,21 +644,21 @@ public class CelosClientServerTest {
         File src = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/client/wf-list").toURI());
         FileUtils.copyDirectory(src, workflowsDir);
 
-        celosClient.iterateScheduler();
-        celosClient.iterateScheduler();
-        celosClient.iterateScheduler();
+        celosClientAuth.iterateScheduler();
+        celosClientAuth.iterateScheduler();
+        celosClientAuth.iterateScheduler();
 
         WorkflowID workflowID = new WorkflowID("workflow-Iñtërnâtiônàlizætiøn");
 
-        List<SlotState> slotStates = celosClient.getWorkflowStatus(workflowID).getSlotStates();
+        List<SlotState> slotStates = celosClientNoAuth.getWorkflowStatus(workflowID).getSlotStates();
         Assert.assertEquals(slotStates.size(), SLOTS_IN_CELOS_SERVER_SLIDING_WINDOW);
 
         SlotState slotStateLst = slotStates.get(slotStates.size() - 1);
         Assert.assertEquals(slotStateLst.getStatus(), SlotState.Status.FAILURE);
         ScheduledTime scheduledTime = slotStateLst.getScheduledTime();
 
-        celosClient.rerunSlot(workflowID, scheduledTime);
-        SlotState slotStateUpdated = celosClient.getSlotState(workflowID, scheduledTime);
+        celosClientAuth.rerunSlot(workflowID, scheduledTime);
+        SlotState slotStateUpdated = celosClientNoAuth.getSlotState(workflowID, scheduledTime);
 
         Assert.assertEquals(slotStateUpdated.getStatus(), SlotState.Status.WAITING);
     }
@@ -660,7 +670,7 @@ public class CelosClientServerTest {
         FileUtils.copyDirectory(src, workflowsDir);
 
         WorkflowID workflowID = new WorkflowID("workflow-2");
-        celosClient.rerunSlot(workflowID, new ScheduledTime("2013-11-20T12:00Z"));
+        celosClientAuth.rerunSlot(workflowID, new ScheduledTime("2013-11-20T12:00Z"));
     }
 
     @Test(expected = IOException.class)
@@ -670,7 +680,7 @@ public class CelosClientServerTest {
         FileUtils.copyDirectory(src, workflowsDir);
 
         WorkflowID workflowID = new WorkflowID("unknown-workflow");
-        celosClient.rerunSlot(workflowID, ScheduledTime.now());
+        celosClientAuth.rerunSlot(workflowID, ScheduledTime.now());
     }
 
     @Test(expected = IOException.class)
@@ -680,7 +690,7 @@ public class CelosClientServerTest {
         FileUtils.copyDirectory(src, workflowsDir);
 
         WorkflowID workflowID = new WorkflowID("workflow-2");
-        celosClient.rerunSlot(workflowID, new ScheduledTime("2013-11-20T12:34Z"));
+        celosClientAuth.rerunSlot(workflowID, new ScheduledTime("2013-11-20T12:34Z"));
     }
 
     @Test
@@ -690,29 +700,29 @@ public class CelosClientServerTest {
 
         WorkflowID workflowID = new WorkflowID("workflow-2");
 
-        WorkflowStatus workflowStatus = celosClient.getWorkflowStatus(workflowID);
+        WorkflowStatus workflowStatus = celosClientNoAuth.getWorkflowStatus(workflowID);
         List<SlotState> slotStates = workflowStatus.getSlotStates();
         SlotState slotStateLast = slotStates.get(slotStates.size() - 1);
         Assert.assertEquals(slotStateLast.getStatus(), SlotState.Status.WAITING);
         Assert.assertFalse(workflowStatus.isPaused());
 
-        celosClient.setWorkflowPaused(workflowID, true);
+        celosClientAuth.setWorkflowPaused(workflowID, true);
 
-        celosClient.iterateScheduler();
-        celosClient.iterateScheduler();
+        celosClientAuth.iterateScheduler();
+        celosClientAuth.iterateScheduler();
 
-        WorkflowStatus workflowStatus2 = celosClient.getWorkflowStatus(workflowID);
+        WorkflowStatus workflowStatus2 = celosClientNoAuth.getWorkflowStatus(workflowID);
         List<SlotState> slotStates2 = workflowStatus2.getSlotStates();
         SlotState slotStateLast2 = workflowStatus2.getSlotStates().get(slotStates2.size() - 1);
         Assert.assertEquals(slotStateLast2.getStatus(), SlotState.Status.WAITING);
         Assert.assertTrue(workflowStatus2.isPaused());
 
-        celosClient.setWorkflowPaused(workflowID, false);
+        celosClientAuth.setWorkflowPaused(workflowID, false);
 
-        celosClient.iterateScheduler();
-        celosClient.iterateScheduler();
+        celosClientAuth.iterateScheduler();
+        celosClientAuth.iterateScheduler();
 
-        WorkflowStatus workflowStatus3 = celosClient.getWorkflowStatus(workflowID);
+        WorkflowStatus workflowStatus3 = celosClientNoAuth.getWorkflowStatus(workflowID);
         List<SlotState> slotStates3 = workflowStatus3.getSlotStates();
         SlotState slotStateLast3 = workflowStatus3.getSlotStates().get(slotStates3.size() - 1);
         Assert.assertEquals(slotStateLast3.getStatus(), SlotState.Status.RUNNING);
@@ -728,31 +738,31 @@ public class CelosClientServerTest {
 
         WorkflowID workflowID = new WorkflowID("workflow-2");
 
-        WorkflowStatus workflowStatus = celosClient.getWorkflowStatus(workflowID, endTime);
+        WorkflowStatus workflowStatus = celosClientNoAuth.getWorkflowStatus(workflowID, endTime);
         List<SlotState> slotStates = workflowStatus.getSlotStates();
         SlotState slotStateLast = workflowStatus.getSlotStates().get(slotStates.size() - 1);
         Assert.assertEquals(slotStateLast.getStatus(), SlotState.Status.WAITING);
 
-        celosClient.kill(workflowID, slotStateLast.getScheduledTime());
+        celosClientAuth.kill(workflowID, slotStateLast.getScheduledTime());
 
-        WorkflowStatus workflowStatus2 = celosClient.getWorkflowStatus(workflowID, endTime);
+        WorkflowStatus workflowStatus2 = celosClientNoAuth.getWorkflowStatus(workflowID, endTime);
         List<SlotState> slotStates2 = workflowStatus2.getSlotStates();
         SlotState slotStateLast2 = workflowStatus2.getSlotStates().get(slotStates2.size() - 1);
         Assert.assertEquals(slotStateLast2.getStatus(), SlotState.Status.KILLED);
 
-        celosClient.rerunSlot(workflowID, slotStateLast.getScheduledTime());
+        celosClientAuth.rerunSlot(workflowID, slotStateLast.getScheduledTime());
 
-        celosClient.iterateScheduler();
-        celosClient.iterateScheduler();
+        celosClientAuth.iterateScheduler();
+        celosClientAuth.iterateScheduler();
 
-        WorkflowStatus workflowStatus3 = celosClient.getWorkflowStatus(workflowID, endTime);
+        WorkflowStatus workflowStatus3 = celosClientNoAuth.getWorkflowStatus(workflowID, endTime);
         List<SlotState> slotStates3 = workflowStatus3.getSlotStates();
         SlotState slotStateLast3 = workflowStatus3.getSlotStates().get(slotStates3.size() - 1);
         Assert.assertEquals(slotStateLast3.getStatus(), SlotState.Status.RUNNING);
 
-        celosClient.kill(workflowID, slotStateLast3.getScheduledTime());
+        celosClientAuth.kill(workflowID, slotStateLast3.getScheduledTime());
 
-        WorkflowStatus workflowStatus4 = celosClient.getWorkflowStatus(workflowID, endTime);
+        WorkflowStatus workflowStatus4 = celosClientNoAuth.getWorkflowStatus(workflowID, endTime);
         List<SlotState> slotStates4 = workflowStatus4.getSlotStates();
         SlotState slotStateLast4 = workflowStatus4.getSlotStates().get(slotStates4.size() - 1);
         Assert.assertEquals(slotStateLast4.getStatus(), SlotState.Status.KILLED);
@@ -767,43 +777,81 @@ public class CelosClientServerTest {
 
         WorkflowID workflowID = new WorkflowID("workflow-2");
 
-        celosClient.iterateScheduler();
-        celosClient.iterateScheduler();
-        celosClient.iterateScheduler();
+        celosClientAuth.iterateScheduler();
+        celosClientAuth.iterateScheduler();
+        celosClientAuth.iterateScheduler();
 
-        WorkflowStatus workflowStatus = celosClient.getWorkflowStatus(workflowID, endTime);
+        WorkflowStatus workflowStatus = celosClientNoAuth.getWorkflowStatus(workflowID, endTime);
         List<SlotState> slotStates = workflowStatus.getSlotStates();
         SlotState slotStateLast = workflowStatus.getSlotStates().get(slotStates.size() - 1);
         Assert.assertEquals(slotStateLast.getStatus(), SlotState.Status.SUCCESS);
 
-        celosClient.kill(workflowID, slotStateLast.getScheduledTime());
+        celosClientAuth.kill(workflowID, slotStateLast.getScheduledTime());
     }
     
-    @Test()
+    @Test
     public void testRegisters() throws Exception {
         BucketID bucket1 = new BucketID("foo-bucket-Iñtërnâtiônàlizætiøn");
         BucketID bucket2 = new BucketID("another-bucket-Iñtërnâtiônàlizætiøn");
         RegisterKey key1 = new RegisterKey("bar-key-Iñtërnâtiônàlizætiøn");
         RegisterKey key2 = new RegisterKey("quux-key-Iñtërnâtiônàlizætiøn");
-        Assert.assertNull(celosClient.getRegister(bucket1, key1));
-        Assert.assertNull(celosClient.getRegister(bucket2, key2));
+        Assert.assertNull(celosClientNoAuth.getRegister(bucket1, key1));
+        Assert.assertNull(celosClientNoAuth.getRegister(bucket2, key2));
         ObjectNode value1 = Util.MAPPER.createObjectNode();
         value1.put("foo", "Iñtërnâtiônàlizætiøn");
         ObjectNode value2 = Util.MAPPER.createObjectNode();
         value2.put("bar", "Iñtërnâtiônàlizætiøn");
-        celosClient.putRegister(bucket1, key1, value1);
-        Assert.assertEquals(value1, celosClient.getRegister(bucket1, key1));
-        Assert.assertNull(celosClient.getRegister(bucket2, key2));
-        celosClient.putRegister(bucket2, key2, value2);
-        Assert.assertEquals(value1, celosClient.getRegister(bucket1, key1));
-        Assert.assertEquals(value2, celosClient.getRegister(bucket2, key2));
-        celosClient.deleteRegister(bucket1, key1);
-        Assert.assertNull(celosClient.getRegister(bucket1, key1));
-        Assert.assertEquals(value2, celosClient.getRegister(bucket2, key2));
-        celosClient.deleteRegister(bucket2, key2);
-        Assert.assertNull(celosClient.getRegister(bucket1, key1));
-        Assert.assertNull(celosClient.getRegister(bucket2, key2));
+        celosClientAuth.putRegister(bucket1, key1, value1);
+        Assert.assertEquals(value1, celosClientNoAuth.getRegister(bucket1, key1));
+        Assert.assertNull(celosClientNoAuth.getRegister(bucket2, key2));
+        celosClientAuth.putRegister(bucket2, key2, value2);
+        Assert.assertEquals(value1, celosClientNoAuth.getRegister(bucket1, key1));
+        Assert.assertEquals(value2, celosClientNoAuth.getRegister(bucket2, key2));
+        celosClientAuth.deleteRegister(bucket1, key1);
+        celosClientAuth.deleteRegister(bucket1, key1);
+        Assert.assertNull(celosClientNoAuth.getRegister(bucket1, key1));
+        Assert.assertEquals(value2, celosClientNoAuth.getRegister(bucket2, key2));
+        celosClientAuth.deleteRegister(bucket2, key2);
+        Assert.assertNull(celosClientNoAuth.getRegister(bucket1, key1));
+        Assert.assertNull(celosClientNoAuth.getRegister(bucket2, key2));
     }
 
+
+    @Test(expected = IOException.class)
+    public void testServerRespondsToSchedulerPOSTFailsAuth() throws Exception {
+        celosClientNoAuth.iterateScheduler();
+    }
+
+    @Test(expected = IOException.class)
+    public void testPauseWorkflowFailsAuth() throws Exception {
+        File src = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/client/wf-list").toURI());
+        FileUtils.copyDirectory(src, workflowsDir);
+
+        WorkflowID workflowID = new WorkflowID("workflow-2");
+        celosClientNoAuth.setWorkflowPaused(workflowID, true);
+    }
+
+    @Test(expected = IOException.class)
+    public void testKillFailsAuth() throws Exception {
+        File src = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/client/wf-list").toURI());
+        FileUtils.copyDirectory(src, workflowsDir);
+
+        WorkflowID workflowID = new WorkflowID("workflow-2");
+        celosClientNoAuth.kill(workflowID, ScheduledTime.now());
+    }
+
+    @Test(expected = IOException.class)
+    public void testRegistersDeleteAuthFails() throws Exception {
+        BucketID bucket1 = new BucketID("foo-bucket-Iñtërnâtiônàlizætiøn");
+        RegisterKey key1 = new RegisterKey("bar-key-Iñtërnâtiônàlizætiøn");
+        celosClientNoAuth.deleteRegister(bucket1, key1);
+    }
+
+    @Test(expected = IOException.class)
+    public void testRegistersPutAuthFails() throws Exception {
+        BucketID bucket1 = new BucketID("foo-bucket-Iñtërnâtiônàlizætiøn");
+        RegisterKey key1 = new RegisterKey("bar-key-Iñtërnâtiônàlizætiøn");
+        celosClientNoAuth.putRegister(bucket1, key1, Util.MAPPER.createObjectNode());
+    }
 
 }

@@ -15,16 +15,18 @@
  */
 package com.collective.celos;
 
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Paths;
+import java.util.Collections;
 import java.util.Map;
 
-import javax.servlet.ServletContext;
-
 import org.apache.http.client.utils.URIBuilder;
+import org.eclipse.jetty.security.*;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
+import org.eclipse.jetty.util.security.Constraint;
 import org.eclipse.jetty.webapp.WebAppContext;
 
 /**
@@ -34,34 +36,35 @@ public class JettyServer {
 
     private Server server;
     private WebAppContext context;
-
-    public void start(int port) throws Exception {
-        server = new Server(port);
-        startServer();
-    }
+    private SecurityHandler securityHandler = createDefaultSecurityHandler();
 
     public int start() throws Exception {
-        server = new Server();
+        this.server = new Server();
+        this.context = createWebAppContext();
+
         ServerConnector serverConnector = new ServerConnector(server);
         server.setConnectors(new Connector[]{serverConnector});
 
-        startServer();
+        securityHandler.setHandler(context);
+        server.setHandler(securityHandler);
+        server.start();
 
         return serverConnector.getLocalPort();
     }
 
-    private void startServer() throws Exception {
-        URL url = Thread.currentThread().getContextClassLoader().getResource("WEB-INF");
-        URIBuilder uriBuilder = new URIBuilder(url.toURI());
-        uriBuilder.setPath(Paths.get(url.getPath()).getParent().toString());
+    public int start(int port) throws Exception {
+        this.server = new Server(port);
+        this.context = createWebAppContext();
 
-        context = new WebAppContext(uriBuilder.toString() + "/", "/");
-        context.setInitParameter("org.eclipse.jetty.servlet.Default.dirAllowed", "false");
-
-        context.setExtractWAR(false);
-
-        server.setHandler(context);
+        securityHandler.setHandler(context);
+        server.setHandler(securityHandler);
         server.start();
+
+        return port;
+    }
+
+    protected void setSecurityHandler(SecurityHandler securityHandler) {
+        this.securityHandler = securityHandler;
     }
 
     public void stop() throws Exception {
@@ -73,7 +76,6 @@ public class JettyServer {
         server.join();
     }
 
-
     public void setupContext(Map<String, Object> attributes, Map<String, String> initParam) {
         for (Map.Entry<String, Object> entry: attributes.entrySet()) {
             context.setAttribute(entry.getKey(), entry.getValue());
@@ -83,8 +85,36 @@ public class JettyServer {
         }
     }
 
-    public ServletContext getContext() {
-        return context.getServletHandler().getServletContext();
+    protected WebAppContext getContext() {
+        return context;
+    }
+
+    private WebAppContext createWebAppContext() throws URISyntaxException {
+        URL url = Thread.currentThread().getContextClassLoader().getResource("WEB-INF");
+        URIBuilder uriBuilder = new URIBuilder(url.toURI());
+        uriBuilder.setPath(Paths.get(url.getPath()).getParent().toString());
+
+        WebAppContext context = new WebAppContext(uriBuilder.toString() + "/", "/");
+        context.setInitParameter("org.eclipse.jetty.servlet.Default.dirAllowed", "false");
+        context.setExtractWAR(false);
+        context.setServer(server);
+
+        return context;
+    }
+
+    private static SecurityHandler createDefaultSecurityHandler() {
+        ConstraintSecurityHandler securityHandler = new ConstraintSecurityHandler();
+
+        Constraint constraint = new Constraint();
+        constraint.setAuthenticate(false);
+
+        ConstraintMapping mapping = new ConstraintMapping();
+        mapping.setPathSpec("/*");
+        mapping.setConstraint(constraint);
+
+        securityHandler.setConstraintMappings(Collections.singletonList(mapping));
+
+        return securityHandler;
     }
 
 }

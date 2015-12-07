@@ -25,19 +25,28 @@ import java.util.List;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.xml.ws.spi.http.HttpContext;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.AuthCache;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.client.protocol.ClientContext;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.auth.DigestScheme;
+import org.apache.http.impl.client.BasicAuthCache;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.util.EntityUtils;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -67,14 +76,31 @@ public class CelosClient {
     private static final String BUCKET_PARAM = "bucket";
     private static final String KEY_PARAM = "key";
 
-    private final HttpClient client;
+    private final DefaultHttpClient client;
     private final ScheduledTimeFormatter timeFormatter;
     private final URI address;
+    private final BasicHttpContext localContext;
 
     public CelosClient(URI address) {
         this.address = Util.requireNonNull(address);
         this.client = new DefaultHttpClient();
         this.timeFormatter = new ScheduledTimeFormatter();
+        this.localContext = new BasicHttpContext();
+    }
+
+    public CelosClient(URI address, String userName, String password) {
+        this(address);
+        Util.requireNonNull(userName);
+        Util.requireNonNull(password);
+
+        HttpHost targetHost = new HttpHost(address.getHost(), address.getPort(), address.getScheme());
+        UsernamePasswordCredentials credentials = new UsernamePasswordCredentials(userName, password);
+        client.getCredentialsProvider().setCredentials(new AuthScope(address.getHost(), address.getPort()), credentials);
+
+        AuthCache authCache = new BasicAuthCache();
+        DigestScheme digestAuth = new DigestScheme();
+        authCache.put(targetHost, digestAuth);
+        localContext.setAttribute(ClientContext.AUTH_CACHE, authCache);
     }
 
     public URI getAddress() {
@@ -193,7 +219,7 @@ public class CelosClient {
         uriBuilder.addParameter(BUCKET_PARAM, bucket.toString());
         uriBuilder.addParameter(KEY_PARAM, key.toString());
 
-        HttpResponse res = client.execute(new HttpGet(uriBuilder.build()));
+        HttpResponse res = client.execute(new HttpGet(uriBuilder.build()), localContext);
         try {
             switch(res.getStatusLine().getStatusCode()) {
             case HttpServletResponse.SC_NOT_FOUND:
@@ -250,7 +276,7 @@ public class CelosClient {
     }
 
     private HttpResponse execute(HttpUriRequest request) throws IOException {
-        HttpResponse getResponse = client.execute(request);
+        HttpResponse getResponse = client.execute(request, localContext);
         if (errorResponse(getResponse)) {
             EntityUtils.consume(getResponse.getEntity());
             throw new IOException(getResponse.getStatusLine().toString());
