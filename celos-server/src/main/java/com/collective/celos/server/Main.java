@@ -30,8 +30,6 @@ import java.util.TimerTask;
 public class Main {
 
     public static void main(String... args) throws Exception {
-//        args = "--port 9123 --db /home/akonopko/work/celos_push/wrk --workflows /home/akonopko/work/celos_push/wrk/workflows --defaults /home/akonopko/work/celos_push/wrk/defaults --logs /home/akonopko/work/celos_push/wrk/logs".split(" ");
-
         ServerCommandLineParser serverCommandLineParser = new ServerCommandLineParser();
         final ServerCommandLine commandLine = serverCommandLineParser.parse(args);
         Util.setupLogging(commandLine.getLogDir());
