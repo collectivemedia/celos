@@ -106,7 +106,8 @@ var WorkflowsGroup = React.createClass({
                         React.DOM.th({ className: "groupName" },
                             React.DOM.a({ href: newUrl }, this.props.groupName)),
                         this.props.days
-                            .slice(-slotsNum)
+                            .reverse()
+                            .take(slotsNum)
                             .map(function (tt, i) {
                                 return React.DOM.th({ className: "timeHeader", key: i },
                                     React.DOM.strong(null, tt))
@@ -115,7 +116,8 @@ var WorkflowsGroup = React.createClass({
                     React.DOM.tr(null,
                         React.DOM.th({ className: "groupName" }),
                         this.props.times
-                            .slice(-slotsNum)
+                            .reverse()
+                            .take(slotsNum)
                             .map(function (tt, i) {
                                 return React.DOM.th({ className: "timeHeader", key: i }, tt)
                             })
@@ -160,7 +162,9 @@ var ProductRow = React.createClass({
         return React.DOM.tr(null,
             React.DOM.th({ className: "workflowName" }, this.props.workflowName),
             this.props.slots
-                .slice(-slotsNum)
+                .reverse()
+                .take(slotsNum)
+                //.slice(-slotsNum)
                 .map(function (slot1, i1) {
                     var i = i1 + shift;
                     return React.createElement(TimeSlot, {
