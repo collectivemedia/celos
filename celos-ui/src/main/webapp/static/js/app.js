@@ -117,14 +117,14 @@ var getNavigation = function (zoomStr, timeStr, now) {
 
 
     var result = {};
-    result.left = minusMinutes(timeShift, PAGE_SIZE * zoom).toISOString();
+    result.right = minusMinutes(timeShift, PAGE_SIZE * zoom).toISOString();
     // right link
     var tmp = plusMinutes(timeShift, PAGE_SIZE * zoom);
 
     if (tmp >= now) {
-        result.right = null;
+        result.left = null;
     } else {
-        result.right = tmp.toISOString();
+        result.left = tmp.toISOString();
     }
     // makeZoomButtons
     var last = ZOOM_LEVEL_MINUTES.length - 1;

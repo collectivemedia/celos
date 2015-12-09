@@ -29,7 +29,14 @@ var ajaxGetJson = function(url0, data, successCallback) {
     var query = [];
     for (var key in data) {
         if (data.hasOwnProperty(key) && data[key] !== undefined) {
-            query.push(encodeURIComponent(key) + '=' + encodeURIComponent(data[key]));
+            var elem = data[key];
+            if (typeof(ss) == "object" && "forEach" in elem) {
+                elem.forEach(function(value) {
+                    query.push(encodeURIComponent(key) + '=' + encodeURIComponent(value));
+                })
+            } else {
+                query.push(encodeURIComponent(key) + '=' + encodeURIComponent(elem));
+            }
         }
     }
     var urlQuery = url0 + (query.length ? '?' + query.join('&') : '');
