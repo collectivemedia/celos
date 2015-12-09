@@ -3,7 +3,6 @@ set -x
 set -e
 [[ -z ${GIT_COMMIT} ]] && echo pls specify GIT_COMMIT && exit 1
 
-# FIXME
 export CELOS_USER=celos-ci
 export INVENTORY_SERVER=scripts/inventory/integration-server
 export INVENTORY_UI=scripts/inventory/integration-ui
