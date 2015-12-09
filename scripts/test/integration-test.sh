@@ -1,26 +1,16 @@
 #!/usr/bin/env bash
+export ANSIBLE_SSH_ARGS=""
+SERVER_PARAMS="-c ssh -u celos-ci -i scripts/test/conf/inventory-server -e @scripts/test/conf/integration-params.json -e @scripts/conf/common-params-server.json -e service_version=${GIT_COMMIT}"
+UI_PARAMS="    -c ssh -u celos-ci -i scripts/test/conf/inventory-ui     -e @scripts/test/conf/integration-params.json -e @scripts/conf/common-params-ui.json     -e service_version=${GIT_COMMIT}"
 set -x
 set -e
 [[ -z ${GIT_COMMIT} ]] && echo pls specify GIT_COMMIT && exit 1
-
-# FIXME
-export CELOS_USER=celos-ci
-export INVENTORY_SERVER=scripts/inventory/integration-server
-export INVENTORY_UI=scripts/inventory/integration-ui
-export ANSIBLE_SSH_ARGS=""
-
 scripts/build.sh
-ansible-playbook scripts/playbooks/kinit.yaml -c ssh -u ${CELOS_USER} -i ${INVENTORY_SERVER}
-
-./scripts/server-and-ui-action.sh deploy
-# begin stop-strat
-./scripts/server-and-ui-action.sh check
-./scripts/server-and-ui-action.sh stop
-! ./scripts/server-and-ui-action.sh check
-./scripts/server-and-ui-action.sh start
-./scripts/server-and-ui-action.sh check
-# end stop-strat
-ansible-playbook scripts/test/celos_test.yaml -c ssh -u ${CELOS_USER} -i ${INVENTORY_SERVER} -e @scripts/params/common-server.json -e service_version=${GIT_COMMIT}
-ansible-playbook scripts/test/ui-test.yaml  -c ssh -u ${CELOS_USER} -i ${INVENTORY_UI} -e @scripts/params/common-ui.json -e service_version=${GIT_COMMIT}
-# cleanup
-./scripts/server-and-ui-action.sh purge
+ansible-playbook scripts/prod/kinit.yaml ${SERVER_PARAMS}
+ansible-playbook scripts/celos-deploy.yaml ${SERVER_PARAMS}
+ansible-playbook scripts/celos-deploy.yaml ${UI_PARAMS}
+./scripts/test/stop-start-test.sh
+ansible-playbook scripts/test/celos_test.yaml ${SERVER_PARAMS}
+ansible-playbook scripts/test/ui-test.yaml ${UI_PARAMS}
+ansible-playbook scripts/celos-purge.yaml ${SERVER_PARAMS}
+ansible-playbook scripts/celos-purge.yaml ${UI_PARAMS}

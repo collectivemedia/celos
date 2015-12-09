@@ -6,7 +6,7 @@
 - hosts: host
   gather_facts: no
   vars:
-    root: "../.."
+    root: ".."
     service_user: "{{ ansible_ssh_user }}"
     prefix: "/home/{{ service_user }}/local"
     service_dir: "{{ prefix }}/service/{{ service_name }}"
@@ -42,11 +42,11 @@
     ignore_errors: yes
 
   - file: state=directory dest={{ prefix }}/bin
-  - template: src={{root}}/scripts/templates/service-start.tpl dest={{ start_script_path }} owner={{ service_user }} mode=0755
+  - template: src=templates/service-start.tpl dest={{ start_script_path }} owner={{ service_user }} mode=0755
 
-  - template: src={{root}}/scripts/templates/run.tpl dest="{{ service_dir }}/run" owner={{ service_user }} mode=0755
-  - template: src={{root}}/scripts/templates/check.tpl dest="{{ service_dir }}/check" owner={{ service_user }} mode=0755
-  - template: src={{root}}/scripts/templates/log-run.tpl dest="{{ service_dir }}/log/run" owner={{ service_user }} mode=0755
+  - template: src=templates/run.tpl dest="{{ service_dir }}/run" owner={{ service_user }} mode=0755
+  - template: src=templates/check.tpl dest="{{ service_dir }}/check" owner={{ service_user }} mode=0755
+  - template: src=templates/log-run.tpl dest="{{ service_dir }}/log/run" owner={{ service_user }} mode=0755
 
   - file: state=directory dest={{ service_dir }}/supervise mode=0755
   - shell: "[ -p {{ service_dir }}/supervise/ok ]      || mkfifo {{ service_dir }}/supervise/ok"
