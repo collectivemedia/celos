@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.util.*;
 
 import com.collective.celos.database.StateDatabaseConnection;
+import com.google.common.collect.Sets;
 import junit.framework.Assert;
 
 import org.joda.time.Interval;
@@ -277,8 +278,60 @@ public abstract class AbstractStateDatabaseTest {
         Assert.assertEquals(ImmutableMap.of().entrySet(), db.getAllRegisters(bucket1));
         Assert.assertNull(db.getRegister(bucket2, key2));
         Assert.assertEquals(ImmutableMap.of().entrySet(), db.getAllRegisters(bucket2));
+
+        db.putRegister(bucket1, key1, value2);
+        db.putRegister(bucket1, key2, value3);
+        db.putRegister(bucket2, key1, value1);
+        Assert.assertEquals(value2, db.getRegister(bucket1, key1));
+        Assert.assertEquals(value3, db.getRegister(bucket1, key2));
+        Assert.assertEquals(value1, db.getRegister(bucket2, key1));
+
+        db.deleteRegisters(bucket1, Sets.newHashSet(key1, key2));
+        Assert.assertNull(db.getRegister(bucket1, key1));
+        Assert.assertNull(db.getRegister(bucket1, key2));
+        Assert.assertEquals(ImmutableMap.of().entrySet(), db.getAllRegisters(bucket1));
+        Assert.assertEquals(value1, db.getRegister(bucket2, key1));
+
     }
-        
+
+    @Test
+    public void testRegistersMultipleKeys() throws Exception {
+        StateDatabaseConnection db = getStateDatabaseConnection();
+        BucketID bucket1 = new BucketID("foo-bucket-Iñtërnâtiônàlizætiøn");
+        BucketID bucket2 = new BucketID("another-bucket-Iñtërnâtiônàlizætiøn");
+        RegisterKey key1 = new RegisterKey("bar-key-Iñtërnâtiônàlizætiøn");
+        RegisterKey key2 = new RegisterKey("quux-key-Iñtërnâtiônàlizætiøn");
+        RegisterKey key3 = new RegisterKey("key3");
+        RegisterKey key4 = new RegisterKey("key4");
+
+        Assert.assertEquals(ImmutableMap.of().entrySet(), db.getAllRegisters(bucket1));
+        Assert.assertEquals(ImmutableMap.of().entrySet(), db.getAllRegisters(bucket2));
+        Assert.assertEquals(Collections.emptyMap(), db.getRegisters(bucket1, ImmutableSet.of(key1, key2)));
+
+        ObjectNode value1 = Util.MAPPER.createObjectNode();
+        value1.put("foo", "Iñtërnâtiônàlizætiøn");
+
+        ObjectNode value3 = Util.MAPPER.createObjectNode();
+        value3.put("bar", "Iñtërnâtiônàlizætiøn");
+
+        ObjectNode value2 = Util.MAPPER.createObjectNode();
+        value2.put("bar", "Internatiolization");
+        db.putRegisters(bucket1, ImmutableMap.of(key1, value1, key2, value2));
+        db.putRegisters(bucket2, ImmutableMap.of(key3, value1, key4, value2));
+
+        Assert.assertEquals(ImmutableMap.of(key1, value1, key2, value2), db.getRegisters(bucket1, ImmutableSet.of(key1, key2)));
+        Assert.assertEquals(ImmutableMap.of(key3, value1, key4, value2), db.getRegisters(bucket2, ImmutableSet.of(key3, key4)));
+
+        Assert.assertEquals(ImmutableMap.of(key1, value1, key2, value2).entrySet(), db.getAllRegisters(bucket1));
+        Assert.assertEquals(ImmutableMap.of(key3, value1, key4, value2).entrySet(), db.getAllRegisters(bucket2));
+
+        db.putRegisters(bucket2, ImmutableMap.of(key1, value1, key2, value2, key3, value2, key4, value1));
+        Assert.assertEquals(ImmutableMap.of(key1, value1, key2, value2, key3, value2, key4, value1), db.getRegisters(bucket2, ImmutableSet.of(key1, key2, key3, key4)));
+
+        db.deleteRegisters(bucket1, ImmutableSet.of(key1, key2));
+        Assert.assertEquals(ImmutableMap.of(key3, value2, key4, value1), db.getRegisters(bucket2, ImmutableSet.of(key3, key4)));
+    }
+
     private void assertSlotStatesOrder(List<SlotState> slotStates) {
         SlotState slotState = slotStates.get(0);
         for (int i = 1; i < slotStates.size(); i++) {

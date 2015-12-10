@@ -19,6 +19,7 @@ import com.collective.celos.database.FileSystemStateDatabase;
 import com.collective.celos.server.CelosServer;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import org.apache.commons.io.FileUtils;
@@ -34,6 +35,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -803,6 +805,25 @@ public class CelosClientServerTest {
         celosClient.deleteRegister(bucket2, key2);
         Assert.assertNull(celosClient.getRegister(bucket1, key1));
         Assert.assertNull(celosClient.getRegister(bucket2, key2));
+
+        celosClient.putRegister(bucket2, key1, value1);
+        celosClient.putRegister(bucket2, key2, value2);
+        Assert.assertEquals(value1, celosClient.getRegister(bucket2, key1));
+        Assert.assertEquals(value2, celosClient.getRegister(bucket2, key2));
+        Assert.assertEquals(ImmutableMap.of(key1, value1, key2, value2), celosClient.getRegisters(bucket2, ImmutableSet.of(key1, key2)));
+
+        celosClient.deleteRegisters(bucket2, ImmutableSet.of(key1, key2));
+        Assert.assertEquals(Collections.emptyMap(), celosClient.getRegisters(bucket2, ImmutableSet.of(key1, key2)));
+
+        celosClient.putRegisters(bucket2, ImmutableMap.of(key1, value1, key2, value2));
+        Assert.assertEquals(value1, celosClient.getRegister(bucket2, key1));
+        Assert.assertEquals(value2, celosClient.getRegister(bucket2, key2));
+        Assert.assertEquals(ImmutableMap.of(key1, value1, key2, value2), celosClient.getRegisters(bucket2, ImmutableSet.of(key1, key2)));
+
+        celosClient.deleteRegisters(bucket2, Sets.newHashSet(key1, key2));
+        Assert.assertNull(celosClient.getRegister(bucket2, key1));
+        Assert.assertNull(celosClient.getRegister(bucket2, key2));
+        Assert.assertEquals(Collections.emptyMap(), celosClient.getRegisters(bucket2, ImmutableSet.of(key1, key2)));
     }
 
 

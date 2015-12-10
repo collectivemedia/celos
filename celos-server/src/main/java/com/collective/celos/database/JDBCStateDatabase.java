@@ -236,46 +236,53 @@ public class JDBCStateDatabase implements StateDatabase {
         }
 
         @Override
-        public JsonNode getRegister(BucketID bucket, RegisterKey key) throws Exception {
+        public Map<RegisterKey, JsonNode> getRegisters(BucketID bucket, Set<RegisterKey> keys) throws Exception {
+            Map<RegisterKey, JsonNode> result = Maps.newHashMap();
             try (PreparedStatement statement = connection.prepareStatement(SELECT_REGISTER)) {
-                statement.setString(1, bucket.toString());
-                statement.setString(2, key.toString());
-                try (ResultSet resultSet = statement.executeQuery()) {
-                    if (resultSet.next()) {
-                        return Util.JSON_READER.readTree(resultSet.getString(JSON_PARAM));
-                    } else {
-                        return null;
+                for (RegisterKey key : keys) {
+                    statement.setString(1, bucket.toString());
+                    statement.setString(2, key.toString());
+                    try (ResultSet resultSet = statement.executeQuery()) {
+                        if (resultSet.next()) {
+                            result.put(key, Util.JSON_READER.readTree(resultSet.getString(JSON_PARAM)));
+                        }
+                    }
+                }
+            }
+            return result;
+        }
+
+        @Override
+        public void putRegisters(BucketID bucket, Map<RegisterKey, JsonNode> keyValues) throws Exception {
+            Map<RegisterKey, JsonNode> existingRegisters = getRegisters(bucket, keyValues.keySet());
+
+            for (Map.Entry<RegisterKey, JsonNode> entry : keyValues.entrySet()) {
+                if (!existingRegisters.containsKey(entry.getKey())) {
+                    try (PreparedStatement statement = connection.prepareStatement(INSERT_REGISTER)) {
+                        statement.setString(1, bucket.toString());
+                        statement.setString(2, entry.getKey().toString());
+                        statement.setString(3, Util.JSON_WRITER.writeValueAsString(entry.getValue()));
+                        statement.execute();
+                    }
+                } else {
+                    try (PreparedStatement statement = connection.prepareStatement(UPDATE_REGISTER)) {
+                        statement.setString(1, Util.JSON_WRITER.writeValueAsString(entry.getValue()));
+                        statement.setString(2, bucket.toString());
+                        statement.setString(3, entry.getKey().toString());
+                        statement.execute();
                     }
                 }
             }
         }
 
         @Override
-        public void putRegister(BucketID bucket, RegisterKey key, JsonNode value) throws Exception {
-            if (getRegister(bucket, key) == null) {
-                try (PreparedStatement statement = connection.prepareStatement(INSERT_REGISTER)) {
+        public void deleteRegisters(BucketID bucket, Set<RegisterKey> keys) throws Exception {
+            try (PreparedStatement statement = connection.prepareStatement(DELETE_REGISTER)) {
+                for (RegisterKey key: keys) {
                     statement.setString(1, bucket.toString());
                     statement.setString(2, key.toString());
-                    statement.setString(3, Util.JSON_WRITER.writeValueAsString(value));
                     statement.execute();
                 }
-            } else {
-                try (PreparedStatement statement = connection.prepareStatement(UPDATE_REGISTER)) {
-                    statement.setString(1, Util.JSON_WRITER.writeValueAsString(value));
-                    statement.setString(2, bucket.toString());
-                    statement.setString(3, key.toString());
-                    statement.execute();
-                }
-            }
-
-        }
-
-        @Override
-        public void deleteRegister(BucketID bucket, RegisterKey key) throws Exception {
-            try (PreparedStatement statement = connection.prepareStatement(DELETE_REGISTER)) {
-                statement.setString(1, bucket.toString());
-                statement.setString(2, key.toString());
-                statement.execute();
             }
         }
 

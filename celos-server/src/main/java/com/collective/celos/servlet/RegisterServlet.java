@@ -15,8 +15,13 @@
  */
 package com.collective.celos.servlet;
 
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -25,18 +30,19 @@ import javax.servlet.http.HttpServletResponse;
 import com.collective.celos.*;
 import com.collective.celos.database.StateDatabaseConnection;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 
 public class RegisterServlet extends AbstractJSONServlet {
-    
-    private static final String BUCKET_PARAM = "bucket";
-    private static final String KEY_PARAM = "key";
 
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException {
         try {
             BucketID bucket = getRequestBucketID(req);
-            RegisterKey key = getRequestKey(req);
+            Set<RegisterKey> keys = getRequestKeys(req);
             try(StateDatabaseConnection connection = getStateDatabase().openConnection()) {
-                JsonNode value = connection.getRegister(bucket, key);
+                Map<RegisterKey, JsonNode> value = connection.getRegisters(bucket, keys);
                 if (value == null) {
                     res.sendError(HttpServletResponse.SC_NOT_FOUND, "Register not found");
                 } else {
@@ -47,14 +53,17 @@ public class RegisterServlet extends AbstractJSONServlet {
             throw new ServletException(e);
         }
     }
-    
+
     protected void doPut(HttpServletRequest req, HttpServletResponse res) throws ServletException {
         try {
             BucketID bucket = getRequestBucketID(req);
-            RegisterKey key = getRequestKey(req);
-            JsonNode value = Util.JSON_READER.readTree(new InputStreamReader(req.getInputStream(), StandardCharsets.UTF_8));
+            JsonNode payload = Util.JSON_READER.readTree(new InputStreamReader(req.getInputStream(), StandardCharsets.UTF_8));
+
+            Map<RegisterKey, JsonNode> keyValues = Maps.newHashMap();
+            payload.fields().forEachRemaining(x -> keyValues.put(new RegisterKey(x.getKey()), x.getValue()));
+
             try(StateDatabaseConnection connection = getStateDatabase().openConnection()) {
-                connection.putRegister(bucket, key, value);
+                connection.putRegisters(bucket, keyValues);
             }
         } catch (Exception e) {
             throw new ServletException(e);
@@ -63,10 +72,10 @@ public class RegisterServlet extends AbstractJSONServlet {
     
     protected void doDelete(HttpServletRequest req, HttpServletResponse res) throws ServletException {
         BucketID bucket = getRequestBucketID(req);
-        RegisterKey key = getRequestKey(req);
+        Set<RegisterKey> keys = getRequestKeys(req);
         try {
             try(StateDatabaseConnection connection = getStateDatabase().openConnection()) {
-                connection.deleteRegister(bucket, key);
+                connection.deleteRegisters(bucket, keys);
             }
         } catch (Exception e) {
             throw new ServletException(e);
@@ -74,11 +83,15 @@ public class RegisterServlet extends AbstractJSONServlet {
     }
     
     private BucketID getRequestBucketID(HttpServletRequest req) {
-        return new BucketID(req.getParameter(BUCKET_PARAM));
+        return new BucketID(req.getParameter(CelosClient.BUCKET_PARAM));
     }
-    
-    private RegisterKey getRequestKey(HttpServletRequest req) {
-        return new RegisterKey(req.getParameter(KEY_PARAM));
+
+    private Set<RegisterKey> getRequestKeys(HttpServletRequest req) {
+        Set<RegisterKey> keys = Sets.newHashSet();
+        for(String key: req.getParameter(CelosClient.KEYS_PARAM).split(CelosClient.KEYS_DELIMITER)) {
+            keys.add(new RegisterKey(key));
+        }
+        return keys;
     }
-    
+
 }
