@@ -155,9 +155,9 @@ var ProductRow = React.createClass({
     render: function () {
         console.log("RENDER WORKFLOW", this.props.workflowName);
         // shift needs to calculate correct breadcrumbs
-        var shift = (this.props.slots.count() > slotsNum)
-            ? this.props.slots.count() - slotsNum
-            : 0;
+        //var shift = (this.props.slots.count() > slotsNum)
+        //    ? this.props.slots.count() - slotsNum
+        //    : 0;
 
         return React.DOM.tr(null,
             React.DOM.th({ className: "workflowName" }, this.props.workflowName),
@@ -166,12 +166,12 @@ var ProductRow = React.createClass({
                 .take(slotsNum)
                 //.slice(-slotsNum)
                 .map(function (slot1, i1) {
-                    var i = i1 + shift;
+                    //var i = i1 + shift;
                     return React.createElement(TimeSlot, {
-                        key: i,
+                        key: i1,
                         store: slot1,
                         workflowName: this.props.workflowName,
-                        breadcrumbs: this.props.breadcrumbs.concat("rows", i)
+                        breadcrumbs: this.props.breadcrumbs.concat("rows", i1)
                     })
                 }.bind(this))
         )
@@ -248,6 +248,7 @@ var TimeSlot = React.createClass({
         if (this.props.store.get("inFocus")) {
             console.log("this.props.inFocus")
         }
+        console.log(this.props.breadcrumbs + "");
         var slotInfo = this.props.store.toJS();
         var quantity = slotInfo.quantity;
         return (

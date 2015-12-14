@@ -33,6 +33,7 @@ import java.io.*;
 import java.net.URL;
 import java.time.ZonedDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 
@@ -100,7 +101,8 @@ public class ReactWorkflowsServlet extends HttpServlet {
 
         final WorkflowGroupPOJO group = new WorkflowGroupPOJO();
         group.name = name;
-        final NavigableSet<ScheduledTime> tileTimes = conf.getTileTimes();
+        final List<ScheduledTime> tileTimes = conf.getTileTimes().stream().collect(toList());
+        Collections.reverse(tileTimes);
         group.times = tileTimes.stream()
                 .map(tileTime -> HEADER_FORMAT.print(tileTime.getDateTime()))
                 .collect(toList());
@@ -125,7 +127,7 @@ public class ReactWorkflowsServlet extends HttpServlet {
             if (workflowStatus == null) {
                 continue;
             }
-            Map<ScheduledTime, Set<SlotState>> buckets = bucketSlotsByTime(workflowStatus.getSlotStates(), tileTimes);
+            Map<ScheduledTime, Set<SlotState>> buckets = bucketSlotsByTime(workflowStatus.getSlotStates(), conf.getTileTimes());
             workflow.rows = new ArrayList<>();
             for (ScheduledTime tileTime : tileTimes) {
                 List<SlotState> slots = buckets.getOrDefault(tileTime, new HashSet<>()).stream()
@@ -143,7 +145,6 @@ public class ReactWorkflowsServlet extends HttpServlet {
     private static int MAX_MINUTES_TO_FETCH = 7 * 60 * 24;
     private static int MAX_TILES_TO_DISPLAY = 48;
 
-    private static final int[] ZOOM_LEVEL_MINUTES = new int[]{1, 5, 15, 30, 60, 60*24};
     static final int DEFAULT_ZOOM_LEVEL_MINUTES = 60;
     static final int MIN_ZOOM_LEVEL_MINUTES = 1;
     static final int MAX_ZOOM_LEVEL_MINUTES = 60*24; // Code won't work with higher level, because of toFullDay()
@@ -199,8 +200,8 @@ public class ReactWorkflowsServlet extends HttpServlet {
             final ScheduledTime now = ScheduledTime.now();
         ScheduledTime timeShift = getDisplayTime(timeParam, now);
         int zoomLevelMinutes = getZoomLevel(zoomParam);
-        NavigableSet<ScheduledTime> tileTimes = getTileTimesSet(getFirstTileTime(timeShift, zoomLevelMinutes), zoomLevelMinutes, MAX_MINUTES_TO_FETCH, MAX_TILES_TO_DISPLAY);
-        ScheduledTime start = tileTimes.first();
+        final NavigableSet<ScheduledTime> tileTimesSet = getTileTimesSet(getFirstTileTime(timeShift, zoomLevelMinutes), zoomLevelMinutes, MAX_MINUTES_TO_FETCH, MAX_TILES_TO_DISPLAY);
+        ScheduledTime start = tileTimesSet.first();
         Set<WorkflowID> workflowIDs = client.getWorkflowList();
 
         List<WorkflowGroup> groups;
@@ -222,7 +223,7 @@ public class ReactWorkflowsServlet extends HttpServlet {
                 .collect(toList());
 
         Map<WorkflowID, WorkflowStatus> statuses = fetchStatuses(client, ids, start, timeShift);
-        UIConfiguration conf = new UIConfiguration(start, timeShift, tileTimes, groups, statuses, hueURL);
+        UIConfiguration conf = new UIConfiguration(start, timeShift, tileTimesSet, groups, statuses, hueURL);
 
         final WorkflowGroupPOJO groupData = processWorkflowGroup(conf, workflowGroup.getName(), ids);
 
