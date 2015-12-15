@@ -21,7 +21,10 @@ import java.text.ParseException;
 import java.util.*;
 
 import com.collective.celos.*;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -273,6 +276,18 @@ public class FileSystemStateDatabase implements StateDatabase {
             } else {
                 return readJson(registerFile);
             }
+        }
+
+        @Override
+        public Set<RegisterKey> getRegisterKeys(BucketID bucketId, String prefix) throws Exception {
+            File bucket = getBucketDir(bucketId);
+            Set<RegisterKey> keys = Sets.newHashSet();
+            for (File file: bucket.listFiles()) {
+                if (StringUtils.isEmpty(prefix) || file.getName().startsWith(prefix)) {
+                    keys.add(new RegisterKey(file.getName()));
+                }
+            }
+            return keys;
         }
 
         @Override

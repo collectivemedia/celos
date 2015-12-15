@@ -28,12 +28,15 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.conn.HttpHostConnectException;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.junit.*;
+import org.junit.Assert;
+import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -778,7 +781,7 @@ public class CelosClientServerTest {
 
         celosClient.kill(workflowID, slotStateLast.getScheduledTime());
     }
-    
+
     @Test()
     public void testRegisters() throws Exception {
         BucketID bucket1 = new BucketID("foo-bucket-Iñtërnâtiônàlizætiøn");
@@ -803,6 +806,41 @@ public class CelosClientServerTest {
         celosClient.deleteRegister(bucket2, key2);
         Assert.assertNull(celosClient.getRegister(bucket1, key1));
         Assert.assertNull(celosClient.getRegister(bucket2, key2));
+    }
+
+    @Test()
+    public void testRegisterKeys() throws Exception {
+        BucketID bucket1 = new BucketID("foo-bucket-Iñtërnâtiônàlizætiøn");
+        BucketID bucket2 = new BucketID("another-bucket-Iñtërnâtiônàlizætiøn");
+        RegisterKey key1 = new RegisterKey("bar-key-Iñtërnâtiônàlizætiøn");
+        RegisterKey key2 = new RegisterKey("quux-key-Iñtërnâtiônàlizætiøn");
+        RegisterKey key3 = new RegisterKey("quux2-key-Iñtërnâtiônàlizætiøn");
+        String key1Prefix = "bar";
+        String key23Prefix = "quux";
+        String prefixDoesntExist = "zxc";
+
+        ObjectNode value1 = Util.MAPPER.createObjectNode();
+        value1.put("foo", "Iñtërnâtiônàlizætiøn");
+
+        ObjectNode value3 = Util.MAPPER.createObjectNode();
+        value3.put("bar", "Iñtërnâtiônàlizætiøn");
+
+        ObjectNode value2 = Util.MAPPER.createObjectNode();
+        value2.put("bar", "Internatiolization");
+        celosClient.putRegister(bucket1, key1, value1);
+        celosClient.putRegister(bucket1, key2, value2);
+        celosClient.putRegister(bucket1, key3, value3);
+        celosClient.putRegister(bucket2, key1, value1);
+        celosClient.putRegister(bucket2, key2, value2);
+
+        Assert.assertEquals(Lists.newArrayList(key1, key2, key3), celosClient.getRegisterKeys(bucket1));
+        Assert.assertEquals(Lists.newArrayList(key1, key2), celosClient.getRegisterKeys(bucket2));
+        Assert.assertEquals(Lists.newArrayList(key2, key3), celosClient.getRegisterKeys(bucket1, key23Prefix));
+        Assert.assertEquals(Lists.newArrayList(key1), celosClient.getRegisterKeys(bucket1, key1Prefix));
+        Assert.assertEquals(Lists.newArrayList(key2), celosClient.getRegisterKeys(bucket2, key23Prefix));
+        Assert.assertEquals(Lists.newArrayList(key1), celosClient.getRegisterKeys(bucket2, key1Prefix));
+        Assert.assertEquals(Collections.emptyList(), celosClient.getRegisterKeys(bucket1, prefixDoesntExist));
+        Assert.assertEquals(Collections.emptyList(), celosClient.getRegisterKeys(bucket2, prefixDoesntExist));
     }
 
 
