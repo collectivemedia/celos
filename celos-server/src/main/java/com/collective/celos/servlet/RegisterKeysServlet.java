@@ -39,7 +39,7 @@ public class RegisterKeysServlet extends AbstractJSONServlet {
                 Set<RegisterKey> keys = connection.getRegisterKeys(bucket, prefix);
                 ObjectNode object = Util.MAPPER.createObjectNode();
                 ArrayNode list = Util.MAPPER.createArrayNode();
-                object.put(CelosClient.KEYS_FIELD, list);
+                object.put(CelosClient.KEYS_NODE, list);
                 keys.stream().sorted().forEach(x -> list.add(x.toString()));
                 writer.writeValue(res.getOutputStream(), object);
             }

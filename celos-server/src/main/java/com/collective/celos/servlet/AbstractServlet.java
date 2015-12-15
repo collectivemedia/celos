@@ -40,7 +40,6 @@ import com.google.common.collect.ImmutableMap;
 @SuppressWarnings("serial")
 public abstract class AbstractServlet extends HttpServlet {
 
-    private static final String TIME_PARAM = "time";
     private static Logger LOGGER = Logger.getLogger(AbstractServlet.class);
     public static final String SCHEDULER_ATTR = "celos.scheduler";
     
@@ -63,7 +62,7 @@ public abstract class AbstractServlet extends HttpServlet {
     }
 
     protected ScheduledTime getRequestTime(HttpServletRequest req) {
-        String t = req.getParameter(TIME_PARAM);
+        String t = req.getParameter(CelosClient.TIME_PARAM);
         if (t == null) {
             return new ScheduledTime(DateTime.now(DateTimeZone.UTC));
         } else {

@@ -60,17 +60,20 @@ public class CelosClient {
     private static final String WORKFLOW_LIST_PATH = "/workflow-list";
     private static final String WORKFLOW_SLOTS_PATH = "/workflow-slots";
     private static final String REGISTER_PATH = "/register";
-    private static final String START_TIME_PARAM = "start";
-    private static final String END_TIME_PARAM = "end";
-    private static final String TIME_PARAM = "time";
-    private static final String PAUSE_PARAM = "paused";
-    private static final String ID_PARAM = "id";
-    private static final String IDS_PARAM = "ids";
-    private static final String KEY_PARAM = "key";
+
+    public static final String START_TIME_PARAM = "start";
+    public static final String END_TIME_PARAM = "end";
+    public static final String TIME_PARAM = "time";
+    public static final String ID_PARAM = "id";
+    public static final String IDS_PARAM = "ids";
+    public static final String KEY_PARAM = "key";
     public static final String BUCKET_PARAM = "bucket";
     public static final String PREFIX_PARAM = "prefix";
-    public static final String KEYS_FIELD = "keys";
 
+    public static final String KEYS_NODE = "keys";
+    public static final String PAUSE_NODE = "paused";
+    public static final String INFO_NODE = "info";
+    public static final String SLOTS_NODE = "slots";
 
     private final HttpClient client;
     private final ScheduledTimeFormatter timeFormatter;
@@ -175,7 +178,7 @@ public class CelosClient {
         URIBuilder uriBuilder = new URIBuilder(address);
         uriBuilder.setPath(uriBuilder.getPath() + PAUSE_PATH);
         uriBuilder.addParameter(ID_PARAM, workflowID.toString());
-        uriBuilder.addParameter(PAUSE_PARAM, paused.toString());
+        uriBuilder.addParameter(PAUSE_NODE, paused.toString());
         executePost(uriBuilder.build());
     }
 
@@ -305,14 +308,11 @@ public class CelosClient {
     Set<WorkflowID> parseWorkflowIdsList(InputStream content) throws IOException {
         return Util.JSON_READER.withType(WorkflowList.class).<WorkflowList>readValue(content).getIds();
     }
-
-    private static final String INFO_NODE = "info";
-    private static final String SLOTS_NODE = "slots";
-
+    
     WorkflowStatus parseWorkflowStatus(WorkflowID workflowID, InputStream content) throws IOException {
         JsonNode node = Util.JSON_READER.withType(JsonNode.class).readValue(content);
         WorkflowInfo info = Util.JSON_READER.treeToValue(node.get(INFO_NODE), WorkflowInfo.class);
-        Boolean paused = node.get(PAUSE_PARAM).asBoolean();
+        Boolean paused = node.get(PAUSE_NODE).asBoolean();
 
         Iterator<JsonNode> elems = node.get(SLOTS_NODE).elements();
         List<SlotState> result = Lists.newArrayList();
