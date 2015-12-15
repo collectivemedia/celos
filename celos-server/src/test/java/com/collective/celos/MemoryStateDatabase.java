@@ -17,6 +17,7 @@ package com.collective.celos;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import com.collective.celos.database.StateDatabase;
@@ -157,7 +158,23 @@ public class MemoryStateDatabase implements StateDatabase {
                 bucketMap.remove(key);
             }
         }
-        
+
+        @Override
+        public void deleteRegister(BucketID bucket, String prefix) throws Exception {
+            Util.requireNonNull(bucket);
+            Util.requireNonNull(prefix);
+            SortedMap<RegisterKey, JsonNode> bucketMap = registers.get(bucket);
+            if (bucketMap == null) {
+                return;
+            } else {
+                for (RegisterKey key : new ArrayList<>(bucketMap.keySet())) {
+                    if (key.toString().startsWith(prefix)) {
+                        bucketMap.remove(key);
+                    }
+                }
+            }
+        }
+
         @Override
         public Iterable<Map.Entry<RegisterKey, JsonNode>> getAllRegisters(BucketID bucket) throws Exception {
             SortedMap<RegisterKey, JsonNode> bucketMap = registers.get(bucket);

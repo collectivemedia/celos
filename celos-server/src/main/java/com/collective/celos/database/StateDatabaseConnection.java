@@ -92,12 +92,17 @@ public interface StateDatabaseConnection extends AutoCloseable {
      * Set the value of the specified register.
      */
     public void putRegister(BucketID bucket, RegisterKey key, JsonNode value) throws Exception;
-    
+
     /**
      * Delete the value of the specified register.
      */
     public void deleteRegister(BucketID bucket, RegisterKey key) throws Exception;
-    
+
+    /**
+     * Delete the values of all registers with specified prefix.
+     */
+    public void deleteRegister(BucketID bucket, String prefix) throws Exception;
+
     /**
      * Get all registers in the specified bucket.
      */

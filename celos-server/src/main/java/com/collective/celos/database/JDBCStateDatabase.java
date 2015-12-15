@@ -38,13 +38,14 @@ public class JDBCStateDatabase implements StateDatabase {
     private static final String INSERT_PAUSE_WORKFLOW = "INSERT INTO WORKFLOWINFO(WORKFLOWID, PAUSED) VALUES (?, ?)";
     private static final String UPDATE_PAUSE_WORKFLOW = "UPDATE WORKFLOWINFO SET PAUSED = ? WHERE WORKFLOWID = ?";
     private static final String SELECT_PAUSE_WORKFLOW = "SELECT PAUSED FROM WORKFLOWINFO WHERE WORKFLOWID = ?";
-    private static final String SELECT_REGISTER = "SELECT KEY FROM REGISTER WHERE BUCKETID = ? AND KEY = ?";
+    private static final String SELECT_REGISTER = "SELECT JSON FROM REGISTER WHERE BUCKETID = ? AND KEY = ?";
     private static final String SELECT_REGISTER_KEYS = "SELECT KEY FROM REGISTER WHERE BUCKETID = ?";
     private static final String SELECT_REGISTER_KEYS_WITH_PREFIX = "SELECT KEY FROM REGISTER WHERE BUCKETID = ? AND KEY LIKE ?";
     private static final String SELECT_ALL_REGISTERS = "SELECT JSON, KEY FROM REGISTER WHERE BUCKETID = ?";
     private static final String UPDATE_REGISTER = "UPDATE REGISTER SET JSON = ? WHERE BUCKETID = ? AND KEY = ?";
     private static final String INSERT_REGISTER = "INSERT INTO REGISTER(BUCKETID, KEY, JSON) VALUES (?, ?, ?)";
     private static final String DELETE_REGISTER = "DELETE FROM REGISTER WHERE BUCKETID = ? AND KEY = ?";
+    private static final String DELETE_REGISTER_BY_PREFIX = "DELETE FROM REGISTER WHERE BUCKETID = ? AND KEY LIKE ?";
 
     private static final String STATUS_PARAM = "STATUS";
     private static final String EXTERNAL_ID_PARAM = "EXTERNALID";
@@ -302,6 +303,15 @@ public class JDBCStateDatabase implements StateDatabase {
             try (PreparedStatement statement = connection.prepareStatement(DELETE_REGISTER)) {
                 statement.setString(1, bucket.toString());
                 statement.setString(2, key.toString());
+                statement.execute();
+            }
+        }
+
+        @Override
+        public void deleteRegister(BucketID bucket, String prefix) throws Exception {
+            try (PreparedStatement statement = connection.prepareStatement(DELETE_REGISTER_BY_PREFIX)) {
+                statement.setString(1, bucket.toString());
+                statement.setString(2, prefix.toString() + "%");
                 statement.execute();
             }
         }

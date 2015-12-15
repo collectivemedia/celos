@@ -315,6 +315,10 @@ public abstract class AbstractStateDatabaseTest {
         Assert.assertEquals(Collections.emptySet(), db.getRegisterKeys(bucket1, prefixDoesntExist));
         Assert.assertEquals(Collections.emptySet(), db.getRegisterKeys(bucket2, prefixDoesntExist));
 
+        db.deleteRegister(bucket1, "quux");
+        Assert.assertEquals(Sets.newHashSet(key1), db.getRegisterKeys(bucket1, null));
+        Assert.assertEquals(Sets.newHashSet(key1, key2), db.getRegisterKeys(bucket2, null));
+
     }
 
     private void assertSlotStatesOrder(List<SlotState> slotStates) {
