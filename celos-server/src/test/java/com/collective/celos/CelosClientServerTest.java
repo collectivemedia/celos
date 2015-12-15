@@ -788,6 +788,7 @@ public class CelosClientServerTest {
         BucketID bucket2 = new BucketID("another-bucket-Iñtërnâtiônàlizætiøn");
         RegisterKey key1 = new RegisterKey("bar-key-Iñtërnâtiônàlizætiøn");
         RegisterKey key2 = new RegisterKey("quux-key-Iñtërnâtiônàlizætiøn");
+        RegisterKey key3 = new RegisterKey("quux2-key-Iñtërnâtiônàlizætiøn");
         Assert.assertNull(celosClient.getRegister(bucket1, key1));
         Assert.assertNull(celosClient.getRegister(bucket2, key2));
         ObjectNode value1 = Util.MAPPER.createObjectNode();
@@ -806,6 +807,13 @@ public class CelosClientServerTest {
         celosClient.deleteRegister(bucket2, key2);
         Assert.assertNull(celosClient.getRegister(bucket1, key1));
         Assert.assertNull(celosClient.getRegister(bucket2, key2));
+
+        celosClient.putRegister(bucket1, key1, value1);
+        celosClient.putRegister(bucket1, key2, value2);
+        celosClient.putRegister(bucket1, key3, value1);
+        celosClient.deleteRegister(bucket1, "quux");
+        Assert.assertEquals(value1, celosClient.getRegister(bucket1, key1));
+
     }
 
     @Test()

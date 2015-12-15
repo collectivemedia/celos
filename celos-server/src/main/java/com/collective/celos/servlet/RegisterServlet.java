@@ -60,10 +60,14 @@ public class RegisterServlet extends AbstractJSONServlet {
     
     protected void doDelete(HttpServletRequest req, HttpServletResponse res) throws ServletException {
         BucketID bucket = getRequestBucketID(req);
-        RegisterKey key = getRequestKey(req);
         try {
             try(StateDatabaseConnection connection = getStateDatabase().openConnection()) {
-                connection.deleteRegister(bucket, key);
+                if (req.getParameter(CelosClient.KEY_PARAM) != null) {
+                    connection.deleteRegister(bucket, getRequestKey(req));
+                }
+                if (req.getParameter(CelosClient.PREFIX_PARAM) != null) {
+                    connection.deleteRegister(bucket, req.getParameter(CelosClient.PREFIX_PARAM));
+                }
             }
         } catch (Exception e) {
             throw new ServletException(e);
