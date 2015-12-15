@@ -260,9 +260,10 @@ public class JDBCStateDatabase implements StateDatabase {
                     return listRegisterKeysInternal(statement);
                 }
             } else {
+                validatePrefix(prefix);
                 try (PreparedStatement statement = connection.prepareStatement(SELECT_REGISTER_KEYS_WITH_PREFIX)) {
                     statement.setString(1, bucket.toString());
-                    statement.setString(2, prefix.toString() + "%");
+                    statement.setString(2, prefix + "%");
                     return listRegisterKeysInternal(statement);
                 }
             }
@@ -308,7 +309,8 @@ public class JDBCStateDatabase implements StateDatabase {
         }
 
         @Override
-        public void deleteRegister(BucketID bucket, String prefix) throws Exception {
+        public void deleteRegisterWithPrefix(BucketID bucket, String prefix) throws Exception {
+            validatePrefix(prefix);
             try (PreparedStatement statement = connection.prepareStatement(DELETE_REGISTER_BY_PREFIX)) {
                 statement.setString(1, bucket.toString());
                 statement.setString(2, prefix.toString() + "%");
@@ -330,6 +332,12 @@ public class JDBCStateDatabase implements StateDatabase {
                 }
             }
             return result.entrySet();
+        }
+    }
+
+    private static void validatePrefix(String prefix) {
+        if (prefix.contains("%")) {
+            throw new IllegalArgumentException("% is prohibited");
         }
     }
 

@@ -286,10 +286,10 @@ public abstract class AbstractStateDatabaseTest {
         BucketID bucket1 = new BucketID("foo-bucket-Iñtërnâtiônàlizætiøn");
         BucketID bucket2 = new BucketID("another-bucket-Iñtërnâtiônàlizætiøn");
         RegisterKey key1 = new RegisterKey("bar-key-Iñtërnâtiônàlizætiøn");
-        RegisterKey key2 = new RegisterKey("quux%-key-Iñtërnâtiônàlizætiøn");
-        RegisterKey key3 = new RegisterKey("quux%2-key-Iñtërnâtiônàlizætiøn");
+        RegisterKey key2 = new RegisterKey("quux-key-Iñtërnâtiônàlizætiøn");
+        RegisterKey key3 = new RegisterKey("quux2-key-Iñtërnâtiônàlizætiøn");
         String key1Prefix = "bar";
-        String key23Prefix = "quux%";
+        String key23Prefix = "quux";
         String prefixDoesntExist = "zxc";
 
         ObjectNode value1 = Util.MAPPER.createObjectNode();
@@ -315,7 +315,7 @@ public abstract class AbstractStateDatabaseTest {
         Assert.assertEquals(Collections.emptySet(), db.getRegisterKeys(bucket1, prefixDoesntExist));
         Assert.assertEquals(Collections.emptySet(), db.getRegisterKeys(bucket2, prefixDoesntExist));
 
-        db.deleteRegister(bucket1, key23Prefix);
+        db.deleteRegisterWithPrefix(bucket1, key23Prefix);
         Assert.assertEquals(Sets.newHashSet(key1), db.getRegisterKeys(bucket1, null));
         Assert.assertEquals(Sets.newHashSet(key1, key2), db.getRegisterKeys(bucket2, null));
 
