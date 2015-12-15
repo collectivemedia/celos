@@ -308,6 +308,16 @@ public class FileSystemStateDatabase implements StateDatabase {
             }
         }
 
+        public void deleteRegistersWithPrefix(BucketID bucket, String prefix) throws Exception {
+            Util.requireNonNull(bucket);
+            Util.requireNonNull(prefix);
+            for (File registerFile: getBucketDir(bucket).listFiles()) {
+                if (registerFile.getName().startsWith(prefix)) {
+                    registerFile.delete();
+                }
+            }
+        }
+
         @Override
         public Iterable<Map.Entry<RegisterKey, JsonNode>> getAllRegisters(BucketID bucket) throws Exception {
             Map<RegisterKey, JsonNode> registers = new HashMap<>();

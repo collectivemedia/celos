@@ -60,10 +60,15 @@ public class RegisterServlet extends AbstractJSONServlet {
     
     protected void doDelete(HttpServletRequest req, HttpServletResponse res) throws ServletException {
         BucketID bucket = getRequestBucketID(req);
-        RegisterKey key = getRequestKey(req);
         try {
             try(StateDatabaseConnection connection = getStateDatabase().openConnection()) {
-                connection.deleteRegister(bucket, key);
+                if (req.getParameter(CelosClient.KEY_PARAM) != null) {
+                    connection.deleteRegister(bucket, getRequestKey(req));
+                } else if (req.getParameter(CelosClient.PREFIX_PARAM) != null) {
+                    connection.deleteRegistersWithPrefix(bucket, req.getParameter(CelosClient.PREFIX_PARAM));
+                } else {
+                    throw new IllegalArgumentException("Either " + CelosClient.KEY_PARAM + " or " + CelosClient.PREFIX_PARAM + " should be specified");
+                }
             }
         } catch (Exception e) {
             throw new ServletException(e);

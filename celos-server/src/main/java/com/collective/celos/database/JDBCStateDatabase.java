@@ -45,6 +45,7 @@ public class JDBCStateDatabase implements StateDatabase {
     private static final String UPDATE_REGISTER = "UPDATE REGISTER SET JSON = ? WHERE BUCKETID = ? AND KEY = ?";
     private static final String INSERT_REGISTER = "INSERT INTO REGISTER(BUCKETID, KEY, JSON) VALUES (?, ?, ?)";
     private static final String DELETE_REGISTER = "DELETE FROM REGISTER WHERE BUCKETID = ? AND KEY = ?";
+    private static final String DELETE_REGISTER_BY_PREFIX = "DELETE FROM REGISTER WHERE BUCKETID = ? AND KEY LIKE ?";
 
     private static final String STATUS_PARAM = "STATUS";
     private static final String EXTERNAL_ID_PARAM = "EXTERNALID";
@@ -259,9 +260,10 @@ public class JDBCStateDatabase implements StateDatabase {
                     return listRegisterKeysInternal(statement);
                 }
             } else {
+                validatePrefix(prefix);
                 try (PreparedStatement statement = connection.prepareStatement(SELECT_REGISTER_KEYS_WITH_PREFIX)) {
                     statement.setString(1, bucket.toString());
-                    statement.setString(2, prefix.toString() + "%");
+                    statement.setString(2, prefix + "%");
                     return listRegisterKeysInternal(statement);
                 }
             }
@@ -307,6 +309,16 @@ public class JDBCStateDatabase implements StateDatabase {
         }
 
         @Override
+        public void deleteRegistersWithPrefix(BucketID bucket, String prefix) throws Exception {
+            validatePrefix(prefix);
+            try (PreparedStatement statement = connection.prepareStatement(DELETE_REGISTER_BY_PREFIX)) {
+                statement.setString(1, bucket.toString());
+                statement.setString(2, prefix.toString() + "%");
+                statement.execute();
+            }
+        }
+
+        @Override
         public Iterable<Map.Entry<RegisterKey, JsonNode>> getAllRegisters(BucketID bucket) throws Exception {
             Map<RegisterKey, JsonNode> result = Maps.newHashMap();
             try (PreparedStatement statement = connection.prepareStatement(SELECT_ALL_REGISTERS)) {
@@ -320,6 +332,12 @@ public class JDBCStateDatabase implements StateDatabase {
                 }
             }
             return result.entrySet();
+        }
+    }
+
+    private static void validatePrefix(String prefix) {
+        if (prefix.contains("%")) {
+            throw new IllegalArgumentException("% is prohibited");
         }
     }
 

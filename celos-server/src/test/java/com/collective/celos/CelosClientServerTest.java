@@ -23,6 +23,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import org.apache.commons.io.FileUtils;
 import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.conn.HttpHostConnectException;
@@ -36,6 +37,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -788,6 +790,7 @@ public class CelosClientServerTest {
         BucketID bucket2 = new BucketID("another-bucket-Iñtërnâtiônàlizætiøn");
         RegisterKey key1 = new RegisterKey("bar-key-Iñtërnâtiônàlizætiøn");
         RegisterKey key2 = new RegisterKey("quux-key-Iñtërnâtiônàlizætiøn");
+        RegisterKey key3 = new RegisterKey("quux2-key-Iñtërnâtiônàlizætiøn");
         Assert.assertNull(celosClient.getRegister(bucket1, key1));
         Assert.assertNull(celosClient.getRegister(bucket2, key2));
         ObjectNode value1 = Util.MAPPER.createObjectNode();
@@ -806,6 +809,12 @@ public class CelosClientServerTest {
         celosClient.deleteRegister(bucket2, key2);
         Assert.assertNull(celosClient.getRegister(bucket1, key1));
         Assert.assertNull(celosClient.getRegister(bucket2, key2));
+
+        celosClient.putRegister(bucket1, key1, value1);
+        celosClient.putRegister(bucket1, key2, value2);
+        celosClient.putRegister(bucket1, key3, value1);
+        celosClient.deleteRegistersWithPrefix(bucket1, "quux");
+        Assert.assertEquals(Arrays.asList(key1), celosClient.getRegisterKeys(bucket1));
     }
 
     @Test()
@@ -843,5 +852,12 @@ public class CelosClientServerTest {
         Assert.assertEquals(Collections.emptyList(), celosClient.getRegisterKeys(bucket2, prefixDoesntExist));
     }
 
+
+    @Test
+    public void testRegisterDeleteFailsNoKeyOrPrefix() throws IOException {
+        HttpDelete request = new HttpDelete(celosClient.getAddress() + "/register");
+        HttpResponse response = new DefaultHttpClient().execute(request);
+        Assert.assertEquals(response.getStatusLine().getStatusCode(), 400);
+    }
 
 }
