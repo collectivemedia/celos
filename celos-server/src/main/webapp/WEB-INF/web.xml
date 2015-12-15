@@ -131,4 +131,13 @@
         <url-pattern>/register</url-pattern>
     </servlet-mapping>
 
+    <servlet>
+        <servlet-name>RegisterKeysServlet</servlet-name>
+        <servlet-class>com.collective.celos.servlet.RegisterKeysServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>RegisterKeysServlet</servlet-name>
+        <url-pattern>/list-register-keys</url-pattern>
+    </servlet-mapping>
+
 </web-app>

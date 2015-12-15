@@ -18,6 +18,7 @@ package com.collective.celos;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.Iterator;
@@ -49,6 +50,7 @@ import com.google.common.collect.Lists;
  */
 public class CelosClient {
 
+    private static final String LIST_REGISTER_KEYS_PATH = "/list-register-keys";
     private static final String SCHEDULER_PATH = "/scheduler";
     private static final String RERUN_PATH = "/rerun";
     private static final String KILL_PATH = "/kill";
@@ -64,9 +66,11 @@ public class CelosClient {
     public static final String TIME_PARAM = "time";
     public static final String ID_PARAM = "id";
     public static final String IDS_PARAM = "ids";
-    public static final String BUCKET_PARAM = "bucket";
     public static final String KEY_PARAM = "key";
+    public static final String BUCKET_PARAM = "bucket";
+    public static final String PREFIX_PARAM = "prefix";
 
+    public static final String KEYS_NODE = "keys";
     public static final String PAUSE_NODE = "paused";
     public static final String INFO_NODE = "info";
     public static final String SLOTS_NODE = "slots";
@@ -234,6 +238,21 @@ public class CelosClient {
         executeDelete(uriBuilder.build());
     }
 
+    public List<RegisterKey> getRegisterKeys(BucketID bucket) throws Exception {
+        return getRegisterKeys(bucket, null);
+    }
+
+    public List<RegisterKey> getRegisterKeys(BucketID bucket, String prefix) throws Exception {
+        URIBuilder uriBuilder = new URIBuilder(address);
+        uriBuilder.setPath(uriBuilder.getPath() + LIST_REGISTER_KEYS_PATH);
+        uriBuilder.addParameter(BUCKET_PARAM, bucket.toString());
+        if (!StringUtils.isEmpty(prefix)) {
+            uriBuilder.addParameter(PREFIX_PARAM, prefix);
+        }
+        InputStream contentStream = execute(new HttpGet(uriBuilder.build())).getEntity().getContent();
+        return parseKeyList(contentStream);
+    }
+
     private void executePost(URI request) throws IOException {
         executeAndConsume(new HttpPost(request));
     }
@@ -272,6 +291,18 @@ public class CelosClient {
         public Set<WorkflowID> getIds() {
             return ids;
         }
+    }
+
+    private static class KeyList {
+        private List<RegisterKey> keys;
+
+        public List<RegisterKey> getKeys() {
+            return keys;
+        }
+    }
+
+    List<RegisterKey> parseKeyList(InputStream content) throws IOException {
+        return Util.JSON_READER.withType(KeyList.class).<KeyList>readValue(content).getKeys();
     }
 
     Set<WorkflowID> parseWorkflowIdsList(InputStream content) throws IOException {

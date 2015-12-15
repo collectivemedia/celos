@@ -15,9 +15,7 @@
  */
 package com.collective.celos.database;
 
-import java.util.Collection;
-import java.util.Map;
-import java.util.SortedSet;
+import java.util.*;
 
 import com.collective.celos.*;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -84,7 +82,12 @@ public interface StateDatabaseConnection extends AutoCloseable {
      * Get the value of the specified register, or null if not found.
      */
     public JsonNode getRegister(BucketID bucket, RegisterKey key) throws Exception;
-    
+
+    /**
+     * Get all keys for given BucketID. Optionally filter by prefix.
+     */
+    public Set<RegisterKey> getRegisterKeys(BucketID bucket, String prefix) throws Exception;
+
     /**
      * Set the value of the specified register.
      */
