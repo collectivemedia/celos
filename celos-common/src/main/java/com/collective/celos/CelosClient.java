@@ -238,7 +238,7 @@ public class CelosClient {
         executeDelete(uriBuilder.build());
     }
 
-    public void deleteRegister(BucketID bucket, String prefix) throws Exception {
+    public void deleteRegistersWithPrefix(BucketID bucket, String prefix) throws Exception {
         URIBuilder uriBuilder = new URIBuilder(address);
         uriBuilder.setPath(uriBuilder.getPath() + REGISTER_PATH);
         uriBuilder.addParameter(BUCKET_PARAM, bucket.toString());

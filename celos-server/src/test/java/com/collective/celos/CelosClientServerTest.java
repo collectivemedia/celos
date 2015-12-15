@@ -813,7 +813,7 @@ public class CelosClientServerTest {
         celosClient.putRegister(bucket1, key1, value1);
         celosClient.putRegister(bucket1, key2, value2);
         celosClient.putRegister(bucket1, key3, value1);
-        celosClient.deleteRegister(bucket1, "quux");
+        celosClient.deleteRegistersWithPrefix(bucket1, "quux");
         Assert.assertEquals(Arrays.asList(key1), celosClient.getRegisterKeys(bucket1));
     }
 
