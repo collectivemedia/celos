@@ -65,7 +65,7 @@ public class RegisterServlet extends AbstractJSONServlet {
                 if (req.getParameter(CelosClient.KEY_PARAM) != null) {
                     connection.deleteRegister(bucket, getRequestKey(req));
                 } else if (req.getParameter(CelosClient.PREFIX_PARAM) != null) {
-                    connection.deleteRegisterWithPrefix(bucket, req.getParameter(CelosClient.PREFIX_PARAM));
+                    connection.deleteRegistersWithPrefix(bucket, req.getParameter(CelosClient.PREFIX_PARAM));
                 } else {
                     throw new IllegalArgumentException("Either " + CelosClient.KEY_PARAM + " or " + CelosClient.PREFIX_PARAM + " should be specified");
                 }

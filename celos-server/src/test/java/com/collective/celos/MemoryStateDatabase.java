@@ -160,7 +160,7 @@ public class MemoryStateDatabase implements StateDatabase {
         }
 
         @Override
-        public void deleteRegisterWithPrefix(BucketID bucket, String prefix) throws Exception {
+        public void deleteRegistersWithPrefix(BucketID bucket, String prefix) throws Exception {
             Util.requireNonNull(bucket);
             Util.requireNonNull(prefix);
             SortedMap<RegisterKey, JsonNode> bucketMap = registers.get(bucket);

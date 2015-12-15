@@ -308,7 +308,7 @@ public class FileSystemStateDatabase implements StateDatabase {
             }
         }
 
-        public void deleteRegisterWithPrefix(BucketID bucket, String prefix) throws Exception {
+        public void deleteRegistersWithPrefix(BucketID bucket, String prefix) throws Exception {
             Util.requireNonNull(bucket);
             Util.requireNonNull(prefix);
             for (File registerFile: getBucketDir(bucket).listFiles()) {

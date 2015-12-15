@@ -309,7 +309,7 @@ public class JDBCStateDatabase implements StateDatabase {
         }
 
         @Override
-        public void deleteRegisterWithPrefix(BucketID bucket, String prefix) throws Exception {
+        public void deleteRegistersWithPrefix(BucketID bucket, String prefix) throws Exception {
             validatePrefix(prefix);
             try (PreparedStatement statement = connection.prepareStatement(DELETE_REGISTER_BY_PREFIX)) {
                 statement.setString(1, bucket.toString());

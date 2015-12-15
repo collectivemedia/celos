@@ -101,7 +101,7 @@ public interface StateDatabaseConnection extends AutoCloseable {
     /**
      * Delete the values of all registers with specified prefix.
      */
-    public void deleteRegisterWithPrefix(BucketID bucket, String prefix) throws Exception;
+    public void deleteRegistersWithPrefix(BucketID bucket, String prefix) throws Exception;
 
     /**
      * Get all registers in the specified bucket.
