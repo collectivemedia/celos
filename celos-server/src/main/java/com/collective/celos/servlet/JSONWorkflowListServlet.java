@@ -15,10 +15,7 @@
  */
 package com.collective.celos.servlet;
 
-import com.collective.celos.Scheduler;
-import com.collective.celos.Util;
-import com.collective.celos.Workflow;
-import com.collective.celos.WorkflowConfiguration;
+import com.collective.celos.*;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
@@ -62,7 +59,7 @@ public class JSONWorkflowListServlet extends AbstractJSONServlet {
             list.add(id);
         }
         ObjectNode object = Util.MAPPER.createObjectNode();
-        object.put("ids", list);
+        object.put(CelosClient.IDS_PARAM, list);
         return object;
     }
 

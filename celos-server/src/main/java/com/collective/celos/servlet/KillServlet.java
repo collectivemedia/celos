@@ -37,14 +37,12 @@ public class KillServlet extends AbstractServlet {
     
     private static Logger LOGGER = Logger.getLogger(KillServlet.class);
     
-    private static final String ID_PARAM = "id";
-
     protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException {
         try {
             ScheduledTime time = getRequestTime(req);
-            String id = req.getParameter(ID_PARAM);
+            String id = req.getParameter(CelosClient.ID_PARAM);
             if (id == null) {
-                res.sendError(HttpServletResponse.SC_BAD_REQUEST, ID_PARAM + " parameter missing.");
+                res.sendError(HttpServletResponse.SC_BAD_REQUEST, CelosClient.ID_PARAM + " parameter missing.");
                 return;
             }
 

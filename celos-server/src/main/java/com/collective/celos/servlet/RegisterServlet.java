@@ -27,9 +27,6 @@ import com.collective.celos.database.StateDatabaseConnection;
 import com.fasterxml.jackson.databind.JsonNode;
 
 public class RegisterServlet extends AbstractJSONServlet {
-    
-    private static final String BUCKET_PARAM = "bucket";
-    private static final String KEY_PARAM = "key";
 
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException {
         try {
@@ -74,11 +71,11 @@ public class RegisterServlet extends AbstractJSONServlet {
     }
     
     private BucketID getRequestBucketID(HttpServletRequest req) {
-        return new BucketID(req.getParameter(BUCKET_PARAM));
+        return new BucketID(req.getParameter(CelosClient.BUCKET_PARAM));
     }
     
     private RegisterKey getRequestKey(HttpServletRequest req) {
-        return new RegisterKey(req.getParameter(KEY_PARAM));
+        return new RegisterKey(req.getParameter(CelosClient.KEY_PARAM));
     }
     
 }
