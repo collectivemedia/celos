@@ -124,12 +124,6 @@ var addOrRemoveClass = function(elem, className) {
     }
 };
 
-window.onclick = function(e) {
-    // close context menu
-    ReactDOM.render(React.createElement(ContextMenu, {showElement: false}),
-        document.getElementById('contextMenu'));
-    return true;
-};
 
 
 

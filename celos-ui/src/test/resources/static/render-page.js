@@ -14,7 +14,6 @@ var TEST_CONFIG = {
   } ]
 };
 
-
 var ajaxGetJson = function(url0, data, successCallback) {
 
     console.log(url0);
@@ -36,7 +35,6 @@ var request = { groups: ["Flume"], zoom: undefined, time: undefined };
 var result = ReactDOMServer.renderToStaticMarkup(
     React.createElement(CelosMainFetch, { url: "/main", request: request })
 );
-
 
 console.log(result);
 
