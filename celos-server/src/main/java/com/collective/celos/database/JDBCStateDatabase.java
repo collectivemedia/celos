@@ -17,15 +17,14 @@ package com.collective.celos.database;
 
 import com.collective.celos.*;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.sql.*;
-import java.util.Map;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.*;
 
 public class JDBCStateDatabase implements StateDatabase {
 
@@ -40,10 +39,13 @@ public class JDBCStateDatabase implements StateDatabase {
     private static final String UPDATE_PAUSE_WORKFLOW = "UPDATE WORKFLOWINFO SET PAUSED = ? WHERE WORKFLOWID = ?";
     private static final String SELECT_PAUSE_WORKFLOW = "SELECT PAUSED FROM WORKFLOWINFO WHERE WORKFLOWID = ?";
     private static final String SELECT_REGISTER = "SELECT JSON FROM REGISTER WHERE BUCKETID = ? AND KEY = ?";
+    private static final String SELECT_REGISTER_KEYS = "SELECT KEY FROM REGISTER WHERE BUCKETID = ?";
+    private static final String SELECT_REGISTER_KEYS_WITH_PREFIX = "SELECT KEY FROM REGISTER WHERE BUCKETID = ? AND KEY LIKE ?";
     private static final String SELECT_ALL_REGISTERS = "SELECT JSON, KEY FROM REGISTER WHERE BUCKETID = ?";
     private static final String UPDATE_REGISTER = "UPDATE REGISTER SET JSON = ? WHERE BUCKETID = ? AND KEY = ?";
     private static final String INSERT_REGISTER = "INSERT INTO REGISTER(BUCKETID, KEY, JSON) VALUES (?, ?, ?)";
     private static final String DELETE_REGISTER = "DELETE FROM REGISTER WHERE BUCKETID = ? AND KEY = ?";
+    private static final String DELETE_REGISTER_BY_PREFIX = "DELETE FROM REGISTER WHERE BUCKETID = ? AND KEY LIKE ?";
 
     private static final String STATUS_PARAM = "STATUS";
     private static final String EXTERNAL_ID_PARAM = "EXTERNALID";
@@ -251,6 +253,33 @@ public class JDBCStateDatabase implements StateDatabase {
         }
 
         @Override
+        public Set<RegisterKey> getRegisterKeys(BucketID bucket, String prefix) throws Exception {
+            if (StringUtils.isEmpty(prefix)) {
+                try (PreparedStatement statement = connection.prepareStatement(SELECT_REGISTER_KEYS)) {
+                    statement.setString(1, bucket.toString());
+                    return listRegisterKeysInternal(statement);
+                }
+            } else {
+                validatePrefix(prefix);
+                try (PreparedStatement statement = connection.prepareStatement(SELECT_REGISTER_KEYS_WITH_PREFIX)) {
+                    statement.setString(1, bucket.toString());
+                    statement.setString(2, prefix + "%");
+                    return listRegisterKeysInternal(statement);
+                }
+            }
+        }
+
+        private Set<RegisterKey> listRegisterKeysInternal(PreparedStatement statement) throws SQLException {
+            Set<RegisterKey> keys = Sets.newHashSet();
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    keys.add(new RegisterKey(resultSet.getString(KEY_PARAM)));
+                }
+            }
+            return keys;
+        }
+
+        @Override
         public void putRegister(BucketID bucket, RegisterKey key, JsonNode value) throws Exception {
             if (getRegister(bucket, key) == null) {
                 try (PreparedStatement statement = connection.prepareStatement(INSERT_REGISTER)) {
@@ -280,6 +309,16 @@ public class JDBCStateDatabase implements StateDatabase {
         }
 
         @Override
+        public void deleteRegistersWithPrefix(BucketID bucket, String prefix) throws Exception {
+            validatePrefix(prefix);
+            try (PreparedStatement statement = connection.prepareStatement(DELETE_REGISTER_BY_PREFIX)) {
+                statement.setString(1, bucket.toString());
+                statement.setString(2, prefix.toString() + "%");
+                statement.execute();
+            }
+        }
+
+        @Override
         public Iterable<Map.Entry<RegisterKey, JsonNode>> getAllRegisters(BucketID bucket) throws Exception {
             Map<RegisterKey, JsonNode> result = Maps.newHashMap();
             try (PreparedStatement statement = connection.prepareStatement(SELECT_ALL_REGISTERS)) {
@@ -293,6 +332,12 @@ public class JDBCStateDatabase implements StateDatabase {
                 }
             }
             return result.entrySet();
+        }
+    }
+
+    private static void validatePrefix(String prefix) {
+        if (prefix.contains("%")) {
+            throw new IllegalArgumentException("% is prohibited");
         }
     }
 

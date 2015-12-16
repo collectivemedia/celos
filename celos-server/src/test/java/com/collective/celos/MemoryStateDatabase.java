@@ -15,19 +15,14 @@
  */
 package com.collective.celos;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.SortedMap;
-import java.util.SortedSet;
-import java.util.TreeMap;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import com.collective.celos.database.StateDatabase;
 import com.collective.celos.database.StateDatabaseConnection;
+import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -128,7 +123,17 @@ public class MemoryStateDatabase implements StateDatabase {
                 return bucketMap.get(key);
             }
         }
-        
+
+        @Override
+        public Set<RegisterKey> getRegisterKeys(BucketID bucket, String prefix) throws Exception {
+            Set<RegisterKey> keys = registers.get(bucket).keySet();
+            if (StringUtils.isEmpty(prefix)) {
+                return keys;
+            } else {
+                return keys.stream().filter( x -> x.toString().startsWith(prefix)).collect(Collectors.toSet());
+            }
+        }
+
         @Override
         public void putRegister(BucketID bucket, RegisterKey key, JsonNode value) throws Exception {
             Util.requireNonNull(bucket);
@@ -153,7 +158,23 @@ public class MemoryStateDatabase implements StateDatabase {
                 bucketMap.remove(key);
             }
         }
-        
+
+        @Override
+        public void deleteRegistersWithPrefix(BucketID bucket, String prefix) throws Exception {
+            Util.requireNonNull(bucket);
+            Util.requireNonNull(prefix);
+            SortedMap<RegisterKey, JsonNode> bucketMap = registers.get(bucket);
+            if (bucketMap == null) {
+                return;
+            } else {
+                for (RegisterKey key : new ArrayList<>(bucketMap.keySet())) {
+                    if (key.toString().startsWith(prefix)) {
+                        bucketMap.remove(key);
+                    }
+                }
+            }
+        }
+
         @Override
         public Iterable<Map.Entry<RegisterKey, JsonNode>> getAllRegisters(BucketID bucket) throws Exception {
             SortedMap<RegisterKey, JsonNode> bucketMap = registers.get(bucket);

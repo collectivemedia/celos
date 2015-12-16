@@ -34,8 +34,6 @@ import com.collective.celos.database.StateDatabaseConnection;
 @SuppressWarnings("serial")
 public class SchedulerServlet extends AbstractServlet {
 
-    static final String IDS_PARAM = "ids";
-
     protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException {
         try {
             Scheduler scheduler = createAndCacheScheduler();
@@ -50,7 +48,7 @@ public class SchedulerServlet extends AbstractServlet {
     }
 
     Set<WorkflowID> getWorkflowIDs(HttpServletRequest req) {
-        String idString = req.getParameter(IDS_PARAM);
+        String idString = req.getParameter(CelosClient.IDS_PARAM);
         if (idString == null) {
             return Collections.<WorkflowID>emptySet();
         } else {

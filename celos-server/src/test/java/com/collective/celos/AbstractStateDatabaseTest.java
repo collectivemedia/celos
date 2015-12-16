@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.util.*;
 
 import com.collective.celos.database.StateDatabaseConnection;
+import com.google.common.collect.Sets;
 import junit.framework.Assert;
 
 import org.joda.time.Interval;
@@ -278,7 +279,48 @@ public abstract class AbstractStateDatabaseTest {
         Assert.assertNull(db.getRegister(bucket2, key2));
         Assert.assertEquals(ImmutableMap.of().entrySet(), db.getAllRegisters(bucket2));
     }
-        
+
+    @Test
+    public void testRegisterKeys() throws Exception {
+        StateDatabaseConnection db = getStateDatabaseConnection();
+        BucketID bucket1 = new BucketID("foo-bucket-Iñtërnâtiônàlizætiøn");
+        BucketID bucket2 = new BucketID("another-bucket-Iñtërnâtiônàlizætiøn");
+        RegisterKey key1 = new RegisterKey("bar-key-Iñtërnâtiônàlizætiøn");
+        RegisterKey key2 = new RegisterKey("quux-key-Iñtërnâtiônàlizætiøn");
+        RegisterKey key3 = new RegisterKey("quux2-key-Iñtërnâtiônàlizætiøn");
+        String key1Prefix = "bar";
+        String key23Prefix = "quux";
+        String prefixDoesntExist = "zxc";
+
+        ObjectNode value1 = Util.MAPPER.createObjectNode();
+        value1.put("foo", "Iñtërnâtiônàlizætiøn");
+
+        ObjectNode value3 = Util.MAPPER.createObjectNode();
+        value3.put("bar", "Iñtërnâtiônàlizætiøn");
+
+        ObjectNode value2 = Util.MAPPER.createObjectNode();
+        value2.put("bar", "Internatiolization");
+        db.putRegister(bucket1, key1, value1);
+        db.putRegister(bucket1, key2, value2);
+        db.putRegister(bucket1, key3, value3);
+        db.putRegister(bucket2, key1, value1);
+        db.putRegister(bucket2, key2, value2);
+
+        Assert.assertEquals(Sets.newHashSet(key1, key2, key3), db.getRegisterKeys(bucket1, null));
+        Assert.assertEquals(Sets.newHashSet(key1, key2), db.getRegisterKeys(bucket2, null));
+        Assert.assertEquals(Sets.newHashSet(key2, key3), db.getRegisterKeys(bucket1, key23Prefix));
+        Assert.assertEquals(Sets.newHashSet(key1), db.getRegisterKeys(bucket1, key1Prefix));
+        Assert.assertEquals(Sets.newHashSet(key2), db.getRegisterKeys(bucket2, key23Prefix));
+        Assert.assertEquals(Sets.newHashSet(key1), db.getRegisterKeys(bucket2, key1Prefix));
+        Assert.assertEquals(Collections.emptySet(), db.getRegisterKeys(bucket1, prefixDoesntExist));
+        Assert.assertEquals(Collections.emptySet(), db.getRegisterKeys(bucket2, prefixDoesntExist));
+
+        db.deleteRegistersWithPrefix(bucket1, key23Prefix);
+        Assert.assertEquals(Sets.newHashSet(key1), db.getRegisterKeys(bucket1, null));
+        Assert.assertEquals(Sets.newHashSet(key1, key2), db.getRegisterKeys(bucket2, null));
+
+    }
+
     private void assertSlotStatesOrder(List<SlotState> slotStates) {
         SlotState slotState = slotStates.get(0);
         for (int i = 1; i < slotStates.size(); i++) {

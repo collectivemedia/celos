@@ -21,7 +21,10 @@ import java.text.ParseException;
 import java.util.*;
 
 import com.collective.celos.*;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -276,6 +279,18 @@ public class FileSystemStateDatabase implements StateDatabase {
         }
 
         @Override
+        public Set<RegisterKey> getRegisterKeys(BucketID bucketId, String prefix) throws Exception {
+            File bucket = getBucketDir(bucketId);
+            Set<RegisterKey> keys = Sets.newHashSet();
+            for (File file: bucket.listFiles()) {
+                if (StringUtils.isEmpty(prefix) || file.getName().startsWith(prefix)) {
+                    keys.add(new RegisterKey(file.getName()));
+                }
+            }
+            return keys;
+        }
+
+        @Override
         public void putRegister(BucketID bucket, RegisterKey key, JsonNode value) throws Exception {
             Util.requireNonNull(bucket);
             Util.requireNonNull(key);
@@ -290,6 +305,16 @@ public class FileSystemStateDatabase implements StateDatabase {
             File registerFile = getRegisterFile(bucket, key);
             if (registerFile.exists()) {
                 registerFile.delete();
+            }
+        }
+
+        public void deleteRegistersWithPrefix(BucketID bucket, String prefix) throws Exception {
+            Util.requireNonNull(bucket);
+            Util.requireNonNull(prefix);
+            for (File registerFile: getBucketDir(bucket).listFiles()) {
+                if (registerFile.getName().startsWith(prefix)) {
+                    registerFile.delete();
+                }
             }
         }
 

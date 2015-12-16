@@ -36,13 +36,11 @@ import com.collective.celos.trigger.TriggerStatus;
 @SuppressWarnings("serial")
 public class TriggerStatusServlet extends AbstractJSONServlet {
     
-    protected static final String ID_PARAM = "id";
-
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException {
         try {
-            String id = req.getParameter(ID_PARAM);
+            String id = req.getParameter(CelosClient.ID_PARAM);
             if (id == null) {
-                res.sendError(HttpServletResponse.SC_BAD_REQUEST, ID_PARAM + " parameter missing.");
+                res.sendError(HttpServletResponse.SC_BAD_REQUEST, CelosClient.ID_PARAM + " parameter missing.");
                 return;
             }
             Scheduler scheduler = getOrCreateCachedScheduler();

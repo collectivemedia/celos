@@ -22,6 +22,7 @@ import com.google.common.collect.Lists;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.Iterator;
@@ -49,6 +50,7 @@ import org.apache.http.util.EntityUtils;
  */
 public class CelosClient {
 
+    private static final String LIST_REGISTER_KEYS_PATH = "/list-register-keys";
     private static final String SCHEDULER_PATH = "/scheduler";
     private static final String RERUN_PATH = "/rerun";
     private static final String KILL_PATH = "/kill";
@@ -59,14 +61,20 @@ public class CelosClient {
     private static final String WORKFLOW_LIST_PATH = "/workflow-list";
     private static final String WORKFLOW_SLOTS_PATH = "/workflow-slots";
     private static final String REGISTER_PATH = "/register";
-    private static final String START_TIME_PARAM = "start";
-    private static final String END_TIME_PARAM = "end";
-    private static final String TIME_PARAM = "time";
-    private static final String PAUSE_PARAM = "paused";
-    private static final String ID_PARAM = "id";
-    private static final String IDS_PARAM = "ids";
-    private static final String BUCKET_PARAM = "bucket";
-    private static final String KEY_PARAM = "key";
+
+    public static final String START_TIME_PARAM = "start";
+    public static final String END_TIME_PARAM = "end";
+    public static final String TIME_PARAM = "time";
+    public static final String ID_PARAM = "id";
+    public static final String IDS_PARAM = "ids";
+    public static final String KEY_PARAM = "key";
+    public static final String BUCKET_PARAM = "bucket";
+    public static final String PREFIX_PARAM = "prefix";
+
+    public static final String KEYS_NODE = "keys";
+    public static final String PAUSE_NODE = "paused";
+    public static final String INFO_NODE = "info";
+    public static final String SLOTS_NODE = "slots";
 
     private final HttpClient client;
     private final ScheduledTimeFormatter timeFormatter;
@@ -185,7 +193,7 @@ public class CelosClient {
         URIBuilder uriBuilder = new URIBuilder(address);
         uriBuilder.setPath(uriBuilder.getPath() + PAUSE_PATH);
         uriBuilder.addParameter(ID_PARAM, workflowID.toString());
-        uriBuilder.addParameter(PAUSE_PARAM, paused.toString());
+        uriBuilder.addParameter(PAUSE_NODE, paused.toString());
         executePost(uriBuilder.build());
     }
 
@@ -245,6 +253,29 @@ public class CelosClient {
         executeDelete(uriBuilder.build());
     }
 
+    public void deleteRegistersWithPrefix(BucketID bucket, String prefix) throws Exception {
+        URIBuilder uriBuilder = new URIBuilder(address);
+        uriBuilder.setPath(uriBuilder.getPath() + REGISTER_PATH);
+        uriBuilder.addParameter(BUCKET_PARAM, bucket.toString());
+        uriBuilder.addParameter(PREFIX_PARAM, prefix);
+        executeDelete(uriBuilder.build());
+    }
+
+    public List<RegisterKey> getRegisterKeys(BucketID bucket) throws Exception {
+        return getRegisterKeys(bucket, null);
+    }
+
+    public List<RegisterKey> getRegisterKeys(BucketID bucket, String prefix) throws Exception {
+        URIBuilder uriBuilder = new URIBuilder(address);
+        uriBuilder.setPath(uriBuilder.getPath() + LIST_REGISTER_KEYS_PATH);
+        uriBuilder.addParameter(BUCKET_PARAM, bucket.toString());
+        if (!StringUtils.isEmpty(prefix)) {
+            uriBuilder.addParameter(PREFIX_PARAM, prefix);
+        }
+        InputStream contentStream = execute(new HttpGet(uriBuilder.build())).getEntity().getContent();
+        return parseKeyList(contentStream);
+    }
+
     private void executePost(URI request) throws IOException {
         executeAndConsume(new HttpPost(request));
     }
@@ -285,17 +316,26 @@ public class CelosClient {
         }
     }
 
+    private static class KeyList {
+        private List<RegisterKey> keys;
+
+        public List<RegisterKey> getKeys() {
+            return keys;
+        }
+    }
+
+    List<RegisterKey> parseKeyList(InputStream content) throws IOException {
+        return Util.JSON_READER.withType(KeyList.class).<KeyList>readValue(content).getKeys();
+    }
+
     Set<WorkflowID> parseWorkflowIdsList(InputStream content) throws IOException {
         return Util.JSON_READER.withType(WorkflowList.class).<WorkflowList>readValue(content).getIds();
     }
-
-    private static final String INFO_NODE = "info";
-    private static final String SLOTS_NODE = "slots";
-
+    
     WorkflowStatus parseWorkflowStatus(WorkflowID workflowID, InputStream content) throws IOException {
         JsonNode node = Util.JSON_READER.withType(JsonNode.class).readValue(content);
         WorkflowInfo info = Util.JSON_READER.treeToValue(node.get(INFO_NODE), WorkflowInfo.class);
-        Boolean paused = node.get(PAUSE_PARAM).asBoolean();
+        Boolean paused = node.get(PAUSE_NODE).asBoolean();
 
         Iterator<JsonNode> elems = node.get(SLOTS_NODE).elements();
         List<SlotState> result = Lists.newArrayList();
