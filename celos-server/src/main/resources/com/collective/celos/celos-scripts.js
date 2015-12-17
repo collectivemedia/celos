@@ -159,14 +159,14 @@ celos.notTrigger = function (subTrigger) {
 }
 
 celos.delayTrigger = function (seconds) {
-    if (!seconds) {
+    if (typeof(seconds) !== "number") {
         throw "Undefined seconds";
     }
     return new DelayTrigger(seconds);
 }
 
 celos.offsetTrigger = function (seconds, trigger) {
-    if (!seconds) {
+    if (typeof(seconds) !== "number") {
         throw "Undefined seconds";
     }
     if (!trigger) {

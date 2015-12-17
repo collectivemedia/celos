@@ -141,6 +141,13 @@ public class JavaScriptFunctionsTest {
     }
 
     @Test
+    public void testOffsetTriggerWorksWithZeroSeconds() throws Exception {
+        OffsetTrigger t = (OffsetTrigger) runJS("celos.offsetTrigger(0, celos.alwaysTrigger())");
+        Assert.assertEquals(0, t.getSeconds());
+        Assert.assertEquals(AlwaysTrigger.class, t.getTrigger().getClass());
+    }
+
+    @Test
     public void testOffsetTriggerRequiresSeconds() throws Exception {
         expectMessage("celos.offsetTrigger()", "Undefined seconds");
     }
@@ -155,6 +162,12 @@ public class JavaScriptFunctionsTest {
     public void testDelayTrigger() throws Exception {
         DelayTrigger t = (DelayTrigger) runJS("celos.delayTrigger(25)");
         Assert.assertEquals(25, t.getSeconds());
+    }
+    
+    @Test
+    public void testDelayTriggerWorksWithZeroSeconds() throws Exception {
+        DelayTrigger t = (DelayTrigger) runJS("celos.delayTrigger(0)");
+        Assert.assertEquals(0, t.getSeconds());
     }
     
     @Test
