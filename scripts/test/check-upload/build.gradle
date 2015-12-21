@@ -1,5 +1,5 @@
 repositories {
-    maven { url "http://nexus001.ewr1.collective-media.net:8081/nexus/content/repositories/releases" }
+    maven { url "$System.env.NEXUS_MAVEN_REPO" }
 }
 
 configurations {
