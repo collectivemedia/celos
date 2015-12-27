@@ -18,7 +18,6 @@ package com.collective.celos;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.Iterator;
@@ -69,6 +68,10 @@ public class CelosClient {
     public static final String KEY_PARAM = "key";
     public static final String BUCKET_PARAM = "bucket";
     public static final String PREFIX_PARAM = "prefix";
+    public static final String CELOSES_NUMBER_PARAM = "celosesNumber";
+    public static final String CELOS_INDEX_PARAM = "index";
+    public static final Integer CELOSES_NUMBER_PARAM_DEFAULT = 1;
+    public static final Integer CELOS_INDEX_PARAM_DEFAULT = 0;
 
     public static final String KEYS_NODE = "keys";
     public static final String PAUSE_NODE = "paused";
@@ -127,18 +130,30 @@ public class CelosClient {
     }
 
     public void iterateScheduler() throws Exception {
-        iterateScheduler(ScheduledTime.now());
+        iterateScheduler(ScheduledTime.now(), Collections.<WorkflowID>emptySet(), CELOS_INDEX_PARAM_DEFAULT, CELOSES_NUMBER_PARAM_DEFAULT);
     }
 
     public void iterateScheduler(ScheduledTime scheduledTime) throws Exception {
-        iterateScheduler(scheduledTime, Collections.<WorkflowID>emptySet());
+        iterateScheduler(scheduledTime, Collections.<WorkflowID>emptySet(), CELOS_INDEX_PARAM_DEFAULT, CELOSES_NUMBER_PARAM_DEFAULT);
+    }
+
+    public void iterateScheduler(Integer celosIndex, Integer celosesNumber) throws Exception {
+        iterateScheduler(ScheduledTime.now(), Collections.<WorkflowID>emptySet(), celosIndex, celosesNumber);
     }
 
     public void iterateScheduler(ScheduledTime scheduledTime, Set<WorkflowID> workflowIDs) throws Exception {
+        iterateScheduler(scheduledTime, workflowIDs, 0, 1);
+    }
+
+    public void iterateScheduler(ScheduledTime scheduledTime, Set<WorkflowID> workflowIDs, Integer celosIndex, Integer celosesNumber) throws Exception {
         URIBuilder uriBuilder = new URIBuilder(address);
         uriBuilder.setPath(uriBuilder.getPath() + SCHEDULER_PATH);
         if (!workflowIDs.isEmpty()) {
             uriBuilder.addParameter(IDS_PARAM, StringUtils.join(workflowIDs, ","));
+        }
+        if (celosIndex != null && celosesNumber != null) {
+            uriBuilder.addParameter(CELOS_INDEX_PARAM, celosIndex.toString());
+            uriBuilder.addParameter(CELOSES_NUMBER_PARAM, celosesNumber.toString());
         }
         uriBuilder.addParameter(TIME_PARAM, timeFormatter.formatPretty(scheduledTime));
         executePost(uriBuilder.build());

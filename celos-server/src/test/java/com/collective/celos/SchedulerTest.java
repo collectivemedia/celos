@@ -902,8 +902,6 @@ public class SchedulerTest {
         cfg.addWorkflow(wf1);
         cfg.addWorkflow(wf2);
 
-        MemoryStateDatabase db = new MemoryStateDatabase();
-
         SlotID id1 = new SlotID(wfID1, new ScheduledTime("2013-11-27T20:00Z"));
         SlotID id2 = new SlotID(wfID2, new ScheduledTime("2013-11-27T20:00Z"));
 
@@ -920,7 +918,7 @@ public class SchedulerTest {
         DateTime current = DateTime.parse("2013-11-27T22:01Z");
 
         Scheduler sched = new Scheduler(cfg, slidingWindowHours);
-        sched.step(new ScheduledTime(current), subset, connection);
+        sched.step(new ScheduledTime(current), subset, connection, 0, 1);
 
         SlotState slot1After = connection.getSlotState(id1);
         Assert.assertEquals(SlotState.Status.READY, slot1After.getStatus());
@@ -928,6 +926,76 @@ public class SchedulerTest {
         SlotState slot2After = connection.getSlotState(id2);
         Assert.assertEquals(SlotState.Status.WAITING, slot2After.getStatus());
     }
+
+    @Test
+    public void schedulingOnlySubsetOfWorkflowsByHash() throws Exception {
+        WorkflowID wfID1 = new WorkflowID("some-wf1");
+        WorkflowID wfID2 = new WorkflowID("some-wf2");
+        WorkflowID wfID3 = new WorkflowID("some-wf3");
+        WorkflowID wfID4 = new WorkflowID("some-wf4");
+        WorkflowID wfID5 = new WorkflowID("some-wf5");
+
+        Assert.assertEquals(Math.abs(wfID1.toString().hashCode()) % 3, 0);
+        Assert.assertEquals(Math.abs(wfID2.toString().hashCode()) % 3, 1);
+        Assert.assertEquals(Math.abs(wfID3.toString().hashCode()) % 3, 2);
+        Assert.assertEquals(Math.abs(wfID4.toString().hashCode()) % 3, 0);
+        Assert.assertEquals(Math.abs(wfID5.toString().hashCode()) % 3, 1);
+
+        Schedule sch1 = makeHourlySchedule();
+        SchedulingStrategy str1 = makeSerialSchedulingStrategy();
+        Trigger tr1 = makeAlwaysTrigger();
+        MockExternalService srv1 = new MockExternalService(new MockExternalService.MockExternalStatusRunning());
+        int maxRetryCount = 0;
+        Workflow wf1 = new Workflow(wfID1, sch1, str1, tr1, srv1, maxRetryCount, Workflow.DEFAULT_START_TIME, Workflow.DEFAULT_WAIT_TIMEOUT_SECONDS, emptyWorkflowInfo);
+        Workflow wf2 = new Workflow(wfID2, sch1, str1, tr1, srv1, maxRetryCount, Workflow.DEFAULT_START_TIME, Workflow.DEFAULT_WAIT_TIMEOUT_SECONDS, emptyWorkflowInfo);
+        Workflow wf3 = new Workflow(wfID3, sch1, str1, tr1, srv1, maxRetryCount, Workflow.DEFAULT_START_TIME, Workflow.DEFAULT_WAIT_TIMEOUT_SECONDS, emptyWorkflowInfo);
+        Workflow wf4 = new Workflow(wfID4, sch1, str1, tr1, srv1, maxRetryCount, Workflow.DEFAULT_START_TIME, Workflow.DEFAULT_WAIT_TIMEOUT_SECONDS, emptyWorkflowInfo);
+        Workflow wf5 = new Workflow(wfID5, sch1, str1, tr1, srv1, maxRetryCount, Workflow.DEFAULT_START_TIME, Workflow.DEFAULT_WAIT_TIMEOUT_SECONDS, emptyWorkflowInfo);
+
+        WorkflowConfiguration cfg = new WorkflowConfiguration();
+        cfg.addWorkflow(wf1);
+        cfg.addWorkflow(wf2);
+        cfg.addWorkflow(wf3);
+        cfg.addWorkflow(wf4);
+        cfg.addWorkflow(wf5);
+
+        SlotID id1 = new SlotID(wfID1, new ScheduledTime("2013-11-27T20:00Z"));
+        SlotID id2 = new SlotID(wfID2, new ScheduledTime("2013-11-27T20:00Z"));
+        SlotID id3 = new SlotID(wfID3, new ScheduledTime("2013-11-27T20:00Z"));
+        SlotID id4 = new SlotID(wfID4, new ScheduledTime("2013-11-27T20:00Z"));
+        SlotID id5 = new SlotID(wfID5, new ScheduledTime("2013-11-27T20:00Z"));
+
+        SlotState slot1 = new SlotState(id1, SlotState.Status.WAITING);
+        SlotState slot2 = new SlotState(id2, SlotState.Status.WAITING);
+        SlotState slot3 = new SlotState(id3, SlotState.Status.WAITING);
+        SlotState slot4 = new SlotState(id4, SlotState.Status.WAITING);
+        SlotState slot5 = new SlotState(id5, SlotState.Status.WAITING);
+
+        connection.putSlotState(slot1);
+        connection.putSlotState(slot2);
+        connection.putSlotState(slot3);
+        connection.putSlotState(slot4);
+        connection.putSlotState(slot5);
+
+        int slidingWindowHours = 3;
+        DateTime current = DateTime.parse("2013-11-27T22:01Z");
+
+        Scheduler sched = new Scheduler(cfg, slidingWindowHours);
+        sched.step(new ScheduledTime(current), Collections.emptySet(), connection, 1, 3);
+
+        SlotState slot1After = connection.getSlotState(id1);
+        SlotState slot2After = connection.getSlotState(id2);
+        SlotState slot3After = connection.getSlotState(id3);
+        SlotState slot4After = connection.getSlotState(id4);
+        SlotState slot5After = connection.getSlotState(id5);
+
+        Assert.assertEquals(SlotState.Status.WAITING, slot1After.getStatus());
+        Assert.assertEquals(SlotState.Status.READY, slot2After.getStatus());
+        Assert.assertEquals(SlotState.Status.WAITING, slot3After.getStatus());
+        Assert.assertEquals(SlotState.Status.WAITING, slot4After.getStatus());
+        Assert.assertEquals(SlotState.Status.READY, slot5After.getStatus());
+    }
+
 
     @Test
     public void testTimeoutCalculation() {
