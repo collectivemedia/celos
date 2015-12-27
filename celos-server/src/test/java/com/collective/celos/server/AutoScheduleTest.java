@@ -28,6 +28,7 @@ import org.junit.rules.TemporaryFolder;
 import java.io.File;
 import java.net.URI;
 import java.util.List;
+import java.util.Timer;
 
 /**
  * Created by akonopko on 31.08.15.
@@ -71,9 +72,10 @@ public class AutoScheduleTest {
         File src = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/client/wf-list").toURI());
         FileUtils.copyDirectory(src, workflowsDir);
 
-        Main.setupAutoschedule(port, 1);
+        Timer timer = Main.setupAutoschedule(port, 1);
 
         Assert.assertTrue(autoScheduleWorked());
+        timer.cancel();
     }
 
     private boolean autoScheduleWorked() throws Exception {
