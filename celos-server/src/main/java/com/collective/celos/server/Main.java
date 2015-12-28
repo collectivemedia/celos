@@ -15,14 +15,9 @@
  */
 package com.collective.celos.server;
 
-import com.collective.celos.CelosClient;
-import com.collective.celos.Constants;
 import com.collective.celos.Util;
 
-import java.net.URI;
 import java.util.Collections;
-import java.util.Timer;
-import java.util.TimerTask;
 
 /**
  * Main entry point to the scheduler server.
@@ -37,34 +32,21 @@ public class Main {
 
         CelosServer celosServer = new CelosServer();
         celosServer.startServer(commandLine.getPort(),
-                Collections.<String, String>emptyMap(),
+                Collections.emptyMap(),
                 commandLine.getWorkflowsDir(),
                 commandLine.getDefaultsDir(),
                 commandLine.getDatabase());
 
-        setupAutoschedule(commandLine.getPort(), commandLine.getAutoSchedule());
-
-    }
-
-    static void setupAutoschedule(int port, int autoSchedule) {
-        if (autoSchedule > 0) {
-            Timer timer = new Timer(true);
-            timer.schedule(createTimerTask(port), 0, autoSchedule * Constants.SECOND_MS);
-        }
-    }
-
-    private static TimerTask createTimerTask(final int port) {
-        final CelosClient celosClient = new CelosClient(URI.create("http://localhost:" + port));
-
-        return new TimerTask() {
-            @Override
-            public void run() {
-                try {
-                    celosClient.iterateScheduler();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+        if (commandLine.getAutoSchedule() > 0) {
+            CelosIterator celosIterator = new CelosIterator(commandLine.getPort(), commandLine.getAutoSchedule());
+            if (commandLine.getZookeeperConnection() != null) {
+                ZookeeperSupport zookeeperSupport = new ZookeeperSupport(commandLine.getZookeeperConnection());
+                celosIterator.start(zookeeperSupport);
+            } else {
+                celosIterator.start();
             }
-        };
+        }
+
     }
+
 }

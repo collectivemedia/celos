@@ -39,12 +39,18 @@ public class SchedulerServlet extends AbstractServlet {
             Scheduler scheduler = createAndCacheScheduler();
             ScheduledTime current = getRequestTime(req);
             Set<WorkflowID> workflowIDs = getWorkflowIDs(req);
+            Integer celosIndex = getInteger(req, CelosClient.CELOS_INDEX_PARAM, CelosClient.CELOS_INDEX_PARAM_DEFAULT);
+            Integer celosesNumber = getInteger(req, CelosClient.CELOSES_NUMBER_PARAM, CelosClient.CELOSES_NUMBER_PARAM_DEFAULT);
             try(StateDatabaseConnection connection = getStateDatabase().openConnection()) {
-                scheduler.step(current, workflowIDs, connection);
+                scheduler.step(current, workflowIDs, connection, celosIndex, celosesNumber);
             }
         } catch(Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private Integer getInteger(HttpServletRequest req, String str, Integer defaultVal) {
+        return req.getParameter(str) == null ? defaultVal : Integer.valueOf(req.getParameter(str));
     }
 
     Set<WorkflowID> getWorkflowIDs(HttpServletRequest req) {
@@ -60,5 +66,6 @@ public class SchedulerServlet extends AbstractServlet {
             return workflowIDs;
         }
     }
+
 
 }
