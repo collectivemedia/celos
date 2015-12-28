@@ -71,7 +71,7 @@ public class AutoScheduleTest {
         File src = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/client/wf-list").toURI());
         FileUtils.copyDirectory(src, workflowsDir);
 
-        Main.setupAutoschedule(port, 1);
+//        Main.setupAutoschedule(port, 1);
 
         Assert.assertTrue(autoScheduleWorked());
     }
