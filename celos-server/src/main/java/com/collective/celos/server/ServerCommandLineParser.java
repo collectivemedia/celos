@@ -41,8 +41,10 @@ public class ServerCommandLineParser {
     private static final String CLI_STATE_DB_JDBC_URL = "jdbcUrl";
     private static final String CLI_STATE_DB_JDBC_NAME = "jdbcName";
     private static final String CLI_STATE_DB_JDBC_PASSWORD = "jdbcPassword";
-    public static final String DB_TYPE_FILESYSTEM = "FILESYSTEM";
-    public static final String DB_TYPE_JDBC = "JDBC";
+    private static final String CLI_ZOOKEEPER_URI = "zooKeeper";
+
+    private static final String DB_TYPE_FILESYSTEM = "FILESYSTEM";
+    private static final String DB_TYPE_JDBC = "JDBC";
 
     public ServerCommandLine parse(final String[] commandLineArguments) throws Exception {
 
@@ -54,10 +56,11 @@ public class ServerCommandLineParser {
         String defaultsDir = getDefault(commandLine, CLI_DEFAULTS_DIR, Constants.DEFAULT_DEFAULTS_DIR);
         String workflowsDir = getDefault(commandLine, CLI_WF_DIR, Constants.DEFAULT_WORKFLOWS_DIR);
         String logDir = getDefault(commandLine, CLI_LOG_DIR, Constants.DEFAULT_LOG_DIR);
+        String zookeeperConnection = commandLine.getOptionValue(CLI_ZOOKEEPER_URI);
         Integer autoSchedule = Integer.valueOf(getDefault(commandLine, CLI_AUTOSCHEDULE, "-1"));
         StateDatabase db = getStateDatabaseConfig(commandLine);
 
-        return new ServerCommandLine(workflowsDir, defaultsDir, db, logDir, port, autoSchedule);
+        return new ServerCommandLine(workflowsDir, defaultsDir, db, logDir, port, autoSchedule, zookeeperConnection);
     }
 
     private String getRequiredArgument(CommandLine commandLine, String argument) {
@@ -107,7 +110,8 @@ public class ServerCommandLineParser {
                 .addOption(CLI_STATE_DB_JDBC_NAME, CLI_STATE_DB_JDBC_NAME, true, "Celos JDBC db username")
                 .addOption(CLI_STATE_DB_JDBC_PASSWORD, CLI_STATE_DB_JDBC_PASSWORD, true, "Celos JDBC db password")
                 .addOption(CLI_LOG_DIR, CLI_LOG_DIR, true, "Celos logs dir")
-                .addOption(CLI_AUTOSCHEDULE, CLI_AUTOSCHEDULE, true, "Time period in seconds to automatically run Scheduler. If not specified, Scheduler will not be automatically run");
+                .addOption(CLI_AUTOSCHEDULE, CLI_AUTOSCHEDULE, true, "Time period in seconds to automatically run Scheduler. If not specified, Scheduler will not be automatically run")
+                .addOption(CLI_ZOOKEEPER_URI, CLI_ZOOKEEPER_URI, true, "Zookeeper cluster connection string");
         return options;
     }
 

@@ -142,7 +142,7 @@ public class CelosClient {
     }
 
     public void iterateScheduler(ScheduledTime scheduledTime, Set<WorkflowID> workflowIDs) throws Exception {
-        iterateScheduler(scheduledTime, workflowIDs, 0, 1);
+        iterateScheduler(scheduledTime, workflowIDs, CELOS_INDEX_PARAM_DEFAULT, CELOSES_NUMBER_PARAM_DEFAULT);
     }
 
     public void iterateScheduler(ScheduledTime scheduledTime, Set<WorkflowID> workflowIDs, Integer celosIndex, Integer celosesNumber) throws Exception {

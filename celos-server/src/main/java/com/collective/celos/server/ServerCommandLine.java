@@ -31,9 +31,11 @@ public class ServerCommandLine {
     private final File logDir;
     private final int port;
     private final int autoSchedule;
+    private final String zookeeperUri;
 
-    public ServerCommandLine(String workflowsDir, String defaultsDir, StateDatabase db, String logDir, int port, int autoSchedule) {
+    public ServerCommandLine(String workflowsDir, String defaultsDir, StateDatabase db, String logDir, int port, int autoSchedule, String zookeeperUri) {
         this.autoSchedule = autoSchedule;
+        this.zookeeperUri = zookeeperUri;
         this.workflowsDir = new File(Util.requireNonNull(workflowsDir));
         this.defaultsDir = new File(Util.requireNonNull(defaultsDir));
         this.database = Util.requireNonNull(db);
@@ -63,5 +65,9 @@ public class ServerCommandLine {
 
     public StateDatabase getDatabase() {
         return database;
+    }
+
+    public String getZookeeperUri() {
+        return zookeeperUri;
     }
 }
