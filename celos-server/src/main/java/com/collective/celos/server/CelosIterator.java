@@ -10,38 +10,49 @@ import java.util.TimerTask;
 
 public class CelosIterator {
 
-    private final int autoSchedule;
+    private final int autoScheduleSec;
     private final Timer timer;
     private final CelosClient celosClient;
+    private final ZookeeperSupport zookeeperSupport;
+    private final TimerTask timerTask;
+    private final CelosInstance celosInstance;
 
-    public CelosIterator(int port, int autoSchedule) throws Exception {
-        this.autoSchedule = autoSchedule;
+    public CelosIterator(int port, int autoSchedule, ZookeeperSupport zookeeperSupport) throws Exception {
+        this.autoScheduleSec = autoSchedule;
         this.timer = new Timer(true);
         this.celosClient = new CelosClient(URI.create("http://localhost:" + port));
+        this.zookeeperSupport = zookeeperSupport;
+        if (zookeeperSupport != null) {
+            this.celosInstance = zookeeperSupport.createEphemeralNode();
+            this.timerTask = createTimerTaskZookeeper();
+        } else {
+            this.celosInstance = null;
+            this.timerTask = createTimerTaskRegular();
+        }
     }
 
-    public void start(ZookeeperSupport zookeeperSupport) throws Exception {
-        CelosInstance ephemeralNode = zookeeperSupport.createEphemeralNode();
-        timer.schedule(createTimerZookeeper(ephemeralNode, zookeeperSupport), 0, autoSchedule * Constants.SECOND_MS);
-    }
 
     public void start() throws Exception {
-        timer.schedule(createTimerTask(), 0, autoSchedule * Constants.SECOND_MS);
+        timer.schedule(timerTask, 0, autoScheduleSec * Constants.SECOND_MS);
     }
 
     public void stop() {
         timer.cancel();
     }
 
-    private TimerTask createTimerZookeeper(CelosInstance celosInstance, ZookeeperSupport zookeeperSupport) {
+    void iterateRespectingZookeeper() throws Exception {
+        List<CelosInstance> celosInstances = zookeeperSupport.getCelosInstances();
+        int index = celosInstances.indexOf(celosInstance);
+        celosClient.iterateScheduler(index, celosInstances.size());
+    }
+
+    private TimerTask createTimerTaskZookeeper() {
 
         return new TimerTask() {
             @Override
             public void run() {
                 try {
-                    List<CelosInstance> celosInstances = zookeeperSupport.getCelosInstances();
-                    int index = celosInstances.indexOf(celosInstance);
-                    celosClient.iterateScheduler(index, celosInstances.size());
+                    iterateRespectingZookeeper();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -49,7 +60,7 @@ public class CelosIterator {
         };
     }
 
-    private TimerTask createTimerTask() {
+    private TimerTask createTimerTaskRegular() {
 
         return new TimerTask() {
             @Override

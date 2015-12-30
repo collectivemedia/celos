@@ -18,7 +18,6 @@ package com.collective.celos.server;
 import com.collective.celos.Constants;
 import com.collective.celos.database.FileSystemStateDatabase;
 import com.collective.celos.database.JDBCStateDatabase;
-import com.collective.celos.database.StateDatabase;
 import junit.framework.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -64,6 +63,7 @@ public class ServerCommandLineParserTest {
         Assert.assertTrue(cmdLine.getDatabase() instanceof FileSystemStateDatabase);
         FileSystemStateDatabase db = (FileSystemStateDatabase) cmdLine.getDatabase();
         Assert.assertEquals(db.getDir(), tmpDir);
+        Assert.assertNull(cmdLine.getZookeeperUri());
     }
 
     @Test
@@ -75,6 +75,7 @@ public class ServerCommandLineParserTest {
         Assert.assertTrue(cmdLine.getDatabase() instanceof FileSystemStateDatabase);
         FileSystemStateDatabase db = (FileSystemStateDatabase) cmdLine.getDatabase();
         Assert.assertEquals(tmpDir, db.getDir());
+        Assert.assertNull(cmdLine.getZookeeperUri());
     }
 
     @Test (expected = IllegalArgumentException.class)
@@ -96,7 +97,7 @@ public class ServerCommandLineParserTest {
         Assert.assertTrue(cmdLine.getDatabase() instanceof FileSystemStateDatabase);
         FileSystemStateDatabase config = (FileSystemStateDatabase) cmdLine.getDatabase();
         Assert.assertEquals(new File("/db"), config.getDir());
-
+        Assert.assertNull(cmdLine.getZookeeperUri());
     }
 
     @Test
@@ -110,7 +111,21 @@ public class ServerCommandLineParserTest {
         Assert.assertEquals("url", config.getUrl());
         Assert.assertEquals("uname", config.getName());
         Assert.assertEquals("pwd", config.getPassword());
+        Assert.assertNull(cmdLine.getZookeeperUri());
+    }
 
+    @Test
+    public void testZookeeperConnectionParams() throws Exception {
+        ServerCommandLine cmdLine = new ServerCommandLineParser().parse(new String[]{"--port", "1337", "--workflows", "/wf", "--dbType", "jdbc", "--jdbcUrl", "url", "--jdbcName", "uname", "--jdbcPassword", "pwd", "--defaults", "/defaults", "--zooKeeper", "somezookeeperstring"});
+        Assert.assertEquals(1337, cmdLine.getPort());
+        Assert.assertEquals(new File("/wf"), cmdLine.getWorkflowsDir());
+        Assert.assertEquals(new File("/defaults"), cmdLine.getDefaultsDir());
+        Assert.assertTrue(cmdLine.getDatabase() instanceof JDBCStateDatabase);
+        JDBCStateDatabase config = (JDBCStateDatabase) cmdLine.getDatabase();
+        Assert.assertEquals("url", config.getUrl());
+        Assert.assertEquals("uname", config.getName());
+        Assert.assertEquals("pwd", config.getPassword());
+        Assert.assertEquals("somezookeeperstring", cmdLine.getZookeeperUri());
     }
 
 }

@@ -38,15 +38,10 @@ public class Main {
                 commandLine.getDatabase());
 
         if (commandLine.getAutoSchedule() > 0) {
-            CelosIterator celosIterator = new CelosIterator(commandLine.getPort(), commandLine.getAutoSchedule());
-            if (commandLine.getZookeeperConnection() != null) {
-                ZookeeperSupport zookeeperSupport = new ZookeeperSupport(commandLine.getZookeeperConnection());
-                celosIterator.start(zookeeperSupport);
-            } else {
-                celosIterator.start();
-            }
+            ZookeeperSupport zookeeperSupport = commandLine.getZookeeperUri() == null ? null : new ZookeeperSupport(commandLine.getZookeeperUri());
+            CelosIterator celosIterator = new CelosIterator(commandLine.getPort(), commandLine.getAutoSchedule(), zookeeperSupport);
+            celosIterator.start();
         }
-
     }
 
 }

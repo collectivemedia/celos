@@ -17,6 +17,10 @@ public class ZookeeperSupport {
 
     private final CuratorFramework client;
 
+    ZookeeperSupport(CuratorFramework client) {
+        this.client = client;
+    }
+
     public ZookeeperSupport(String connectionString) throws Exception {
         RetryPolicy retryPolicy = new RetryForever(RETRY_INTERVAL_MS);
         this.client = CuratorFrameworkFactory.newClient(connectionString, retryPolicy);
