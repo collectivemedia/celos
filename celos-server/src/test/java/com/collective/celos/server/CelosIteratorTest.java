@@ -79,6 +79,7 @@ public class CelosIteratorTest {
         celosIterator.start();
 
         Assert.assertTrue(autoScheduleWorked("workflow-2"));
+        celosIterator.stop();
     }
 
     @Test
@@ -97,14 +98,14 @@ public class CelosIteratorTest {
         celosIterator.start();
 
         Assert.assertTrue(autoScheduleWorked("workflow-2"));
+        celosIterator.stop();
     }
 
     @Test
     public void testZookeeperIteration2Celoses() throws Exception {
 
-        File src = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/client/wf-list").toURI());
+        File src = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/client/wf-list-autoschedule").toURI());
         FileUtils.copyDirectory(src, workflowsDir);
-
 
         CelosInstance celosInstance1 = new CelosInstance("/some/node/path1");
         CelosInstance celosInstance2 = new CelosInstance("/some/node/path2");
@@ -120,16 +121,17 @@ public class CelosIteratorTest {
         Assert.assertTrue(autoScheduleWorked("workflow-2"));
         Assert.assertTrue(workflowStatusDidntChange("workflow-1"));
 
-
         ZookeeperSupport zookeeperSupport2 = mock(ZookeeperSupport.class);
         when(zookeeperSupport2.createEphemeralNode()).thenReturn(celosInstance2);
         when(zookeeperSupport2.getCelosInstances()).thenReturn(Arrays.asList(celosInstance1, celosInstance2));
+        celosIterator.stop();
 
         CelosIterator celosIterator2 = new CelosIterator(port, 1, zookeeperSupport2);
         celosIterator2.start();
 
         Assert.assertEquals(Math.abs("workflow-1".hashCode()) % 2, 1);
         Assert.assertTrue(autoScheduleWorked("workflow-1"));
+        celosIterator2.stop();
     }
 
     private boolean workflowStatusDidntChange(String id) throws Exception {
