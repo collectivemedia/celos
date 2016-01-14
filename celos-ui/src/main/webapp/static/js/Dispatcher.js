@@ -99,7 +99,7 @@ var AppDispatcher = {
                 action: "kill",
                 slots: SlotsStore.getSelectedSlots()
             },
-            function (res) { return }
+            function (res) { }
         )
     },
 
@@ -108,7 +108,7 @@ var AppDispatcher = {
                 action: "rerun",
                 slots: SlotsStore.getSelectedSlots()
             },
-            function (res) { return }
+            function (res) { }
         )
     },
 

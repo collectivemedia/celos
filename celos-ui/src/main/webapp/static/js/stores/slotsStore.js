@@ -53,12 +53,9 @@ var SlotsStore = Object.assign({}, EventEmitter.prototype, {
 
 AppDispatcher.register(function (payload) {
 
-//    console.log("dispatcherIndex: AppDispatcher.register", payload.action);
-
     switch (payload.source) {
 
         case TodoConstants.CLEAR_SELECTION:
-            console.log("case TodoConstants.CLEAR_SELECTION");
             var oldVal = payload.breadcrumbs && _internalSlotsData.getIn(payload.breadcrumbs);
             _internalSlotsData = _internalSlotsData.update("rows", function (allGroups) {
                 return allGroups.map(function (group) {
@@ -80,14 +77,12 @@ AppDispatcher.register(function (payload) {
             break;
 
         case TodoConstants.TODO_UPDATE:
-            console.log("case TodoConstants.TODO_UPDATE");
             var treePath1 = payload.breadcrumbs.concat("isSelected");
             _internalSlotsData = _internalSlotsData.updateIn(treePath1, function (x) {return !x});
             SlotsStore.emit(CHANGE_EVENT);
             break;
 
         case TodoConstants.FOCUS_ON_SLOT:
-            console.log("case TodoConstants.FOCUS_ON_SLOT", payload.breadcrumbs.toJS());
             var newPath = payload.breadcrumbs;
             var oldPath = _internalLastSelectedSlotPath;
             var newState = _internalSlotsData;
@@ -110,7 +105,6 @@ AppDispatcher.register(function (payload) {
             break;
 
         case TodoConstants.RECTANGLE_UPDATE:
-            console.log("case TodoConstants.RECTANGLE_UPDATE");
             var newPath1 = payload.breadcrumbs;
             var oldPath1 = _internalLastSelectedSlotPath;
             if (oldPath1 == undefined) {
@@ -124,7 +118,6 @@ AppDispatcher.register(function (payload) {
             var g1 = newPath1.get(1);
             var g2 = oldPath1.get(1);
             if (g1 != g2) {
-                console.log("g1 == g2");
                 break
             }
             // else
@@ -157,7 +150,6 @@ AppDispatcher.register(function (payload) {
             break;
 
         case TodoConstants.LOAD_SLOTS:
-            console.log("case LOAD_SLOTS:");
                 ajaxGetJson(
                     /*url=*/ "/group",
                     /*data=*/ {
@@ -181,7 +173,6 @@ AppDispatcher.register(function (payload) {
             break;
 
         case TodoConstants.LOAD_NAVIGATION:
-            console.log("case LOAD_NAVIGATION:");
             var nav = getNavigation(payload.action.zoom, payload.action.time, new Date());
 
             _internalSlotsData = _internalSlotsData.set("navigation", Immutable.fromJS(nav));

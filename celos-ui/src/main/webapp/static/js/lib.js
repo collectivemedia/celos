@@ -23,6 +23,7 @@ var startsWith = function startsWith(searchString, str) {
 
 var ajaxGetJson = function(url0, data, successCallback) {
     var _ajaxErrorCallback = function (xhr, status, err) {
+        // FIXME, err is not a string
         console.error(url0, status, err.toString())
     };
     var request = new XMLHttpRequest();
@@ -56,6 +57,7 @@ var ajaxGetJson = function(url0, data, successCallback) {
 
 var ajaxPostJSON = function (url0, jsondata, successCallback) {
     var _ajaxErrorCallback = function (xhr, status, err) {
+        // FIXME, err is not a string
         console.error(url0, status, err.toString())
     };
     var request = new XMLHttpRequest();
