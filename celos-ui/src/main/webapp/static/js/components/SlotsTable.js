@@ -44,7 +44,7 @@ var WorkflowsGroupFetch = React.createClass({
     },
 
     render: function render() {
-        console.log("WorkflowsGroupFetch", this.props.store.toJS());
+//        console.log("WorkflowsGroupFetch", this.props.store.toJS());
         if (!this.props.store.get("rows").isEmpty()) {
             return React.createElement(WorkflowsGroup, {
                 request: this.props.request,
@@ -97,7 +97,7 @@ var WorkflowsGroup = React.createClass({
     },
 
     render: function () {
-        console.log("WorkflowsGroup", this.props.rows.toJS());
+//        console.log("WorkflowsGroup", this.props.rows.toJS());
         var newUrl = this.makeNewUrl();
         return (
             React.DOM.table({ className: "workflowTable"},
@@ -154,10 +154,13 @@ var ProductRow = React.createClass({
 
     render: function () {
         console.log("RENDER WORKFLOW", this.props.workflowName);
+
         // shift needs to calculate correct breadcrumbs
         //var shift = (this.props.slots.count() > slotsNum)
         //    ? this.props.slots.count() - slotsNum
         //    : 0;
+
+
 
         return React.DOM.tr(null,
             React.DOM.th({ className: "workflowName" }, this.props.workflowName),
@@ -171,7 +174,8 @@ var ProductRow = React.createClass({
                         key: i1,
                         store: slot1,
                         workflowName: this.props.workflowName,
-                        breadcrumbs: this.props.breadcrumbs.concat("rows", i1)
+                        // slots were reversed, so it should have different indexes in the model and in owr view
+                        breadcrumbs: this.props.breadcrumbs.concat("rows", this.props.slots.count() - i1 - 1)
                     })
                 }.bind(this))
         )
@@ -203,7 +207,6 @@ var TimeSlot = React.createClass({
         if (this.props.store.get("status") == "EMPTY") {
             return
         }
-        console.log("click", e);
         var focusArgs = {
             ts: this.props.store.get("timestamps"),
             workflowName: this.props.workflowName,
@@ -245,10 +248,11 @@ var TimeSlot = React.createClass({
     },
 
     render: function () {
+//        console.log("JDFIUASUDAISOUHDUIASHD TimeSlot", this.props.breadcrumbs.toJS());
+
         if (this.props.store.get("inFocus")) {
             console.log("this.props.inFocus")
         }
-        console.log(this.props.breadcrumbs + "");
         var slotInfo = this.props.store.toJS();
         var quantity = slotInfo.quantity;
         return (

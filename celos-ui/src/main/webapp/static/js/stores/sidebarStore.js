@@ -35,7 +35,7 @@ var SidebarStore = Object.assign({}, EventEmitter.prototype, {
 
 AppDispatcher.register(function (payload) {
 
-    console.log("dispatcherIndex: AppDispatcher.register", payload.action);
+//    console.log("dispatcherIndex: AppDispatcher.register", payload.action);
 
     switch (payload.source) {
         case TodoConstants.FOCUS_ON_SLOT:

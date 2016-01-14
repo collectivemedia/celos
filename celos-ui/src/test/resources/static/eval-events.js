@@ -5,9 +5,8 @@
 
     // don't use network in test mode
 var ajaxGetJson = function(url0, data, successCallback) {
-    console.log("ajaxGetJson" + url0);
-    return;
-}
+    console.log("ajaxGetJson fake" + url0);
+};
 
 var slotsNum = 42;
 
@@ -20,11 +19,11 @@ _internalSlotsData = _internalSlotsData.setIn(["rows", 1], Immutable.fromJS(MOCK
 
 console.log("config loaded", _internalSlotsData.toJS());
 var request = { groups: ["Flume", "Parquetify"], zoom: undefined, time: undefined };
-var result = ReactDOMServer.renderToStaticMarkup(
-    React.createElement(CelosMainFetch, { url: "/main", request: request })
-);
 
-console.log(JSON.stringify(_internalSlotsData.toJS()));
+AppDispatcher.clearSelection();
 
-document.getElementById('content').innerHTML = result;
+
+console.log(JSON.stringify(_internalSlotsData.toJS(), null, 2));
+
+//document.getElementById('content').innerHTML = result;
 

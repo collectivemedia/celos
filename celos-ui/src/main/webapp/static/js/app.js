@@ -43,7 +43,7 @@ ajaxGetJson(
     /*success=*/ (function (data) {
         // deep merge works fine with empty lists
         _internalSlotsData = Immutable.fromJS(data).set("navigation", Immutable.Map());
-        console.log("config loaded", _internalSlotsData.toJS());
+//        console.log("config loaded", _internalSlotsData.toJS());
         defaultController();
     })
 );

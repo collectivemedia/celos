@@ -53,7 +53,7 @@ var SlotsStore = Object.assign({}, EventEmitter.prototype, {
 
 AppDispatcher.register(function (payload) {
 
-    console.log("dispatcherIndex: AppDispatcher.register", payload.action);
+//    console.log("dispatcherIndex: AppDispatcher.register", payload.action);
 
     switch (payload.source) {
 
@@ -87,7 +87,7 @@ AppDispatcher.register(function (payload) {
             break;
 
         case TodoConstants.FOCUS_ON_SLOT:
-            console.log("case TodoConstants.FOCUS_ON_SLOT", payload.breadcrumbs);
+            console.log("case TodoConstants.FOCUS_ON_SLOT", payload.breadcrumbs.toJS());
             var newPath = payload.breadcrumbs;
             var oldPath = _internalLastSelectedSlotPath;
             var newState = _internalSlotsData;
@@ -167,17 +167,12 @@ AppDispatcher.register(function (payload) {
                         time: payload.action.time
                     },
                     /*success=*/ function (data) {
-                        console.log("payload.breadcrumbs");
-                        console.log(payload.breadcrumbs);
                         var newState = _internalSlotsData;
                         newState = newState.updateIn(payload.breadcrumbs.concat("rows"), function (wfs) {
                                 return wfs.map(function (workflow) {
                                     return workflow.set("rows", Immutable.List())
                             })
                         });
-                        console.log("XXXXXX");
-                        console.log(newState);
-                        console.log("YYYYYY");
                         newState = newState.mergeDeepIn(payload.breadcrumbs, Immutable.fromJS(data));
                         _internalSlotsData = newState;
                         SlotsStore.emit(CHANGE_EVENT);
@@ -190,7 +185,7 @@ AppDispatcher.register(function (payload) {
             var nav = getNavigation(payload.action.zoom, payload.action.time, new Date());
 
             _internalSlotsData = _internalSlotsData.set("navigation", Immutable.fromJS(nav));
-            console.log("new state", _internalSlotsData.get("navigation").toJS());
+//            console.log("new state", _internalSlotsData.get("navigation").toJS());
             SlotsStore.emit(CHANGE_EVENT);
             break;
 

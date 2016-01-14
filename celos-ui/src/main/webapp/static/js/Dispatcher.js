@@ -40,7 +40,6 @@ var AppDispatcher = {
      * @param  {object} action The data coming from the view.
      */
     focusOnSlot: function (action) {
-        console.log("focusOnSlot", action.breadcrumbs + "");
         this.dispatch({
             source: TodoConstants.FOCUS_ON_SLOT,
             action: action,
@@ -49,7 +48,6 @@ var AppDispatcher = {
     },
 
     markSlotAsSelected: function (action) {
-        console.log("markSlotAsSelected", action.breadcrumbs + "");
         this.dispatch({
             source: TodoConstants.TODO_UPDATE,
             action: action,
@@ -58,7 +56,6 @@ var AppDispatcher = {
     },
 
     rectangleSlotSelection: function (action) {
-        console.log("markSlotAsSelected", action.breadcrumbs + "");
         this.dispatch({
             source: TodoConstants.RECTANGLE_UPDATE,
             action: action,
@@ -67,7 +64,6 @@ var AppDispatcher = {
     },
 
     clearSelection: function (action) {
-        console.log("clearSelection", action);
         this.dispatch({
             source: TodoConstants.CLEAR_SELECTION,
             breadcrumbs: action && action.breadcrumbs
@@ -75,7 +71,6 @@ var AppDispatcher = {
     },
 
     handleLoadSlotsFromServer: function (action) {
-        console.log("handleLoadSlotsFromServer", action);
         this.dispatch({
             source: TodoConstants.LOAD_SLOTS,
             action: action,
@@ -91,7 +86,6 @@ var AppDispatcher = {
     //},
 
     handleLoadNavigation: function (action) {
-        console.log("handleLoadNavigation", action);
         this.dispatch({
             source: TodoConstants.LOAD_NAVIGATION,
             action: action,
@@ -101,27 +95,24 @@ var AppDispatcher = {
     },
 
     killSelectedSlots: function () {
-        console.log("KILL ACTION");
         ajaxPostJSON("/multiplex-rpc", {
                 action: "kill",
                 slots: SlotsStore.getSelectedSlots()
             },
-            function (res) { console.log(res)}
+            function (res) { return }
         )
     },
 
     rerunSelectedSlots: function () {
-        console.log("RERUN ACTION");
         ajaxPostJSON("/multiplex-rpc", {
                 action: "rerun",
                 slots: SlotsStore.getSelectedSlots()
             },
-            function (res) { console.log(res)}
+            function (res) { return }
         )
     },
 
     modalBoxAction: function (action) {
-        console.log("modalBoxAction");
         this.dispatch({
             source: TodoConstants.MODAL_BOX,
             action: action
@@ -143,7 +134,7 @@ var AppDispatcher = {
      * @param  {object} payload The data from the action.
      */
     dispatch: function (payload) {
-        console.log("AppDispatcher.dispatch", payload);
+        console.log("EVENT: " + payload.source + " -- " + JSON.stringify(payload.breadcrumbs ? payload.breadcrumbs.toJS() : undefined));
         // First create array of promises for callbacks to reference.
         var resolves = [];
         var rejects = [];

@@ -59,7 +59,6 @@ var CelosMainFetch = React.createClass({
 
     render: function () {
         var tmp = this.state.data.get("rows");
-        console.log("CelosMainFetch", tmp);
         if (tmp === undefined) {
             return React.DOM.div()
         }
@@ -103,7 +102,7 @@ var CelosMain = React.createClass({
     },
 
     render: function () {
-        console.log("CelosMain", this.props);
+//        console.log("CelosMain", this.props);
         return React.DOM.div({id: "page-content"},
             React.createElement(ContextMenu, {}),
             React.createElement(ModalBox, {store: this.props.modalBox}),
