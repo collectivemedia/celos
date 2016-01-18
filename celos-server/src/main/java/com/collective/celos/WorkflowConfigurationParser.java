@@ -20,6 +20,7 @@ import com.google.common.collect.Maps;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.mozilla.javascript.Context;
+import org.mozilla.javascript.JavaScriptException;
 import org.mozilla.javascript.tools.shell.Global;
 
 import java.io.*;
@@ -40,6 +41,8 @@ public class WorkflowConfigurationParser {
     public static final String WORKFLOW_FILE_EXTENSION = "js";
 
     private static final Logger LOGGER = Logger.getLogger(WorkflowConfigurationParser.class);
+    private static final String CELOS_SCRIPTS_FILENAME = "celos-scripts.js";
+    private static final String CELOS_SCRIPTS_EXC_PREFIX = CELOS_SCRIPTS_FILENAME + ": ";
 
     private final WorkflowConfiguration cfg = new WorkflowConfiguration();
     private final JSConfigParser jsConfigParser = new JSConfigParser();
@@ -83,10 +86,24 @@ public class WorkflowConfigurationParser {
 
         jsConfigParser.putPropertiesInScope(jsProperties, scope);
 
-        InputStream scripts = WorkflowConfigurationParser.class.getResourceAsStream("celos-scripts.js");
+        InputStream scripts = WorkflowConfigurationParser.class.getResourceAsStream(CELOS_SCRIPTS_FILENAME);
         jsConfigParser.evaluateReader(scope, new InputStreamReader(scripts), fileName);
 
-        return jsConfigParser.evaluateReader(scope, r, fileName);
+        try {
+            return jsConfigParser.evaluateReader(scope, r, fileName);
+        } catch (JavaScriptException e) {
+            return rethrowException(e);
+        }
+    }
+
+    private Object rethrowException(JavaScriptException e) {
+        if (e.getValue() instanceof String) {
+            String message = (String) e.getValue();
+            if (message.startsWith(CELOS_SCRIPTS_EXC_PREFIX)) {
+                throw new JavaScriptException(message.substring(CELOS_SCRIPTS_EXC_PREFIX.length()), CELOS_SCRIPTS_FILENAME, e.lineNumber());
+            }
+        }
+        throw e;
     }
 
     public WorkflowConfiguration getWorkflowConfiguration() {
