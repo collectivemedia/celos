@@ -43,7 +43,7 @@ celos.defineWorkflow = function (json) {
 
 
     if (typeof(json.id) !== "string") {
-        throw "celos-scripts.js: Workflow ID must be a string: " + json.id;
+        throw "Workflow ID must be a string: " + json.id;
     }
 
     var waitTimeoutSeconds;
@@ -53,7 +53,7 @@ celos.defineWorkflow = function (json) {
         if (typeof(json.waitTimeoutSeconds) === "number") {
             waitTimeoutSeconds = json.waitTimeoutSeconds;
         } else {
-            throw "celos-scripts.js: waitTimeoutSeconds must be a number: " + json.waitTimeoutSeconds;
+            throw "waitTimeoutSeconds must be a number: " + json.waitTimeoutSeconds;
         }
     }
 
@@ -88,7 +88,7 @@ celos.minutelySchedule = function () {
 
 celos.cronSchedule = function (cronExpression) {
     if (!cronExpression) {
-        throw "celos-scripts.js: Undefined cron expression";
+        throw "Undefined cron expression";
     }
     return new CronSchedule(cronExpression);
 }
@@ -113,7 +113,7 @@ celos.hdfsCheck = function (path, slotID, fs) {
         scheduledTime = ScheduledTime.now();
     } else {
         if (typeof slotID != "object" || slotID.getClass().getName() !== "com.collective.celos.SlotID") {
-            throw "celos-scripts.js: slotID should be instance of com.collective.celos.SlotID";
+            throw "slotID should be instance of com.collective.celos.SlotID";
         }
         scheduledTime = slotID.getScheduledTime();
     }
@@ -123,13 +123,13 @@ celos.hdfsCheck = function (path, slotID, fs) {
 // Pass fs as last parameter so we can later use a default if parameter not supplied
 celos.hdfsCheckTrigger = function (path, fs) {
     if (!path) {
-        throw "celos-scripts.js: Undefined path in hdfsCheckTrigger";
+        throw "Undefined path in hdfsCheckTrigger";
     }
     if (!fs) {
         if (typeof CELOS_DEFAULT_HDFS !== "undefined") {
             fs = CELOS_DEFAULT_HDFS;
         } else {
-            throw "celos-scripts.js: Undefined fs in hdfsCheckTrigger and CELOS_DEFAULT_HDFS not set";
+            throw "Undefined fs in hdfsCheckTrigger and CELOS_DEFAULT_HDFS not set";
         }
     }
     return new HDFSCheckTrigger(path, fs);
@@ -153,31 +153,31 @@ celos.orTrigger = function () {
 
 celos.notTrigger = function (subTrigger) {
     if (!subTrigger) {
-        throw "celos-scripts.js: Undefined sub trigger";
+        throw "Undefined sub trigger";
     }
     return new NotTrigger(subTrigger);
 }
 
 celos.delayTrigger = function (seconds) {
     if (typeof(seconds) !== "number") {
-        throw "celos-scripts.js: Undefined seconds";
+        throw "Undefined seconds";
     }
     return new DelayTrigger(seconds);
 }
 
 celos.offsetTrigger = function (seconds, trigger) {
     if (typeof(seconds) !== "number") {
-        throw "celos-scripts.js: Undefined seconds";
+        throw "Undefined seconds";
     }
     if (!trigger) {
-        throw "celos-scripts.js: Undefined trigger";
+        throw "Undefined trigger";
     }
     return new OffsetTrigger(seconds, trigger);
 }
 
 celos.successTrigger = function (workflowName) {
     if (!workflowName) {
-        throw "celos-scripts.js: Undefined workflow name in success trigger";
+        throw "Undefined workflow name in success trigger";
     }
     return new SuccessTrigger(workflowName);
 }
@@ -190,7 +190,7 @@ celos.mergeProperties = function (source, target) {
 
 celos.hdfsPath = function (path) {
     if (!path) {
-        throw "celos-scripts.js: Undefined path in hdfsPath";
+        throw "Undefined path in hdfsPath";
     }
     if (typeof HDFS_PREFIX_JS_VAR !== "undefined") {
         return Packages.com.collective.celos.Util.augmentHdfsPath(HDFS_PREFIX_JS_VAR, path);
@@ -229,7 +229,7 @@ celos.oozieExternalService = function (userPropertiesOrFun, oozieURL) {
         if (typeof CELOS_DEFAULT_OOZIE !== "undefined") {
             oozieURL = CELOS_DEFAULT_OOZIE;
         } else {
-            throw "celos-scripts.js: Undefined Oozie URL";
+            throw "Undefined Oozie URL";
         }
     }
     var propertiesGen = celos.makePropertiesGen(userPropertiesOrFun);

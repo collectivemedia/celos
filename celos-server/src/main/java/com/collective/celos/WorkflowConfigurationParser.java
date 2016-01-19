@@ -42,7 +42,6 @@ public class WorkflowConfigurationParser {
 
     private static final Logger LOGGER = Logger.getLogger(WorkflowConfigurationParser.class);
     private static final String CELOS_SCRIPTS_FILENAME = "celos-scripts.js";
-    private static final String CELOS_SCRIPTS_EXC_PREFIX = CELOS_SCRIPTS_FILENAME + ": ";
 
     private final WorkflowConfiguration cfg = new WorkflowConfiguration();
     private final JSConfigParser jsConfigParser = new JSConfigParser();
@@ -87,23 +86,9 @@ public class WorkflowConfigurationParser {
         jsConfigParser.putPropertiesInScope(jsProperties, scope);
 
         InputStream scripts = WorkflowConfigurationParser.class.getResourceAsStream(CELOS_SCRIPTS_FILENAME);
-        jsConfigParser.evaluateReader(scope, new InputStreamReader(scripts), fileName);
+        jsConfigParser.evaluateReader(scope, new InputStreamReader(scripts), CELOS_SCRIPTS_FILENAME);
 
-        try {
-            return jsConfigParser.evaluateReader(scope, r, fileName);
-        } catch (JavaScriptException e) {
-            return rethrowException(e);
-        }
-    }
-
-    private Object rethrowException(JavaScriptException e) {
-        if (e.getValue() instanceof String) {
-            String message = (String) e.getValue();
-            if (message.startsWith(CELOS_SCRIPTS_EXC_PREFIX)) {
-                throw new JavaScriptException(message.substring(CELOS_SCRIPTS_EXC_PREFIX.length()), CELOS_SCRIPTS_FILENAME, e.lineNumber());
-            }
-        }
-        throw e;
+        return jsConfigParser.evaluateReader(scope, r, fileName);
     }
 
     public WorkflowConfiguration getWorkflowConfiguration() {
