@@ -20,11 +20,15 @@ _internalSlotsData = _internalSlotsData.setIn(["rows", 1], Immutable.fromJS(MOCK
 
 console.log("config loaded", _internalSlotsData.toJS());
 var request = { groups: ["Flume", "Parquetify"], zoom: undefined, time: undefined };
-var result = ReactDOMServer.renderToStaticMarkup(
+//var result = ReactDOMServer.renderToStaticMarkup(
+var result = ReactDOMServer.renderToString(
     React.createElement(CelosMainFetch, { url: "/main", request: request })
 );
 
-console.log(JSON.stringify(_internalSlotsData.toJS()));
 
-document.getElementById('content').innerHTML = result;
+console.log(result);
+
+//console.log(JSON.stringify(_internalSlotsData.toJS()));
+
+//document.getElementById('content').innerHTML = result;
 

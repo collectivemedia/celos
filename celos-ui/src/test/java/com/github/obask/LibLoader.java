@@ -50,7 +50,7 @@ public class LibLoader {
 
     static final ArrayList<String> renderLibs = new ArrayList<String>() {{
 
-            add("/static/node_modules/react/dist/react.js");
+            add("/static/node_modules/react/dist/react.min.js");
             add("/static/node_modules/react-dom/dist/react-dom-server.js");
             add("/static/js/components/Nav.js");
             add("/static/js/components/Sidebar.js");
