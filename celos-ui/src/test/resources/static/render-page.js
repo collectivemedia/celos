@@ -2,12 +2,10 @@
 "use strict";
 
 
-
-    // don't use network in test mode
+// don't use network in test mode
 var ajaxGetJson = function(url0, data, successCallback) {
     console.log("ajaxGetJson" + url0);
-    return;
-}
+};
 
 var slotsNum = 42;
 
@@ -24,7 +22,6 @@ var request = { groups: ["Flume", "Parquetify"], zoom: undefined, time: undefine
 var result = ReactDOMServer.renderToString(
     React.createElement(CelosMainFetch, { url: "/main", request: request })
 );
-
 
 console.log(result);
 
