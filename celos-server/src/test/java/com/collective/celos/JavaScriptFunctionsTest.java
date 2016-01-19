@@ -60,7 +60,7 @@ public class JavaScriptFunctionsTest {
 
     @Test
     public void testCronScheduleRequiresExpr() throws Exception {
-        expectMessage("celos.cronSchedule()", "Undefined cron expression");
+        expectMessage("celos.cronSchedule()", "Undefined cron expression (celos-scripts.js#");
     }
     
     @Test
@@ -89,12 +89,12 @@ public class JavaScriptFunctionsTest {
     
     @Test
     public void testHDFSCheckTriggerRequiresPath() {
-        expectMessage("celos.hdfsCheckTrigger()", "Undefined path");
+        expectMessage("celos.hdfsCheckTrigger()", "Undefined path in hdfsCheckTrigger (celos-scripts.js#");
     }
 
     @Test
     public void testHDFSCheckTriggerRequiresFs() {
-        expectMessage("celos.hdfsCheckTrigger('/foo')", "Undefined fs");
+        expectMessage("celos.hdfsCheckTrigger('/foo')", "Undefined fs in hdfsCheckTrigger and CELOS_DEFAULT_HDFS not set (celos-scripts.js#");
     }
 
     @Test
@@ -130,7 +130,7 @@ public class JavaScriptFunctionsTest {
     
     @Test
     public void testNotTriggerRequiresSubTrigger() throws Exception {
-        expectMessage("celos.notTrigger()", "Undefined sub trigger");
+        expectMessage("celos.notTrigger()", "Undefined sub trigger (celos-scripts.js#");
     }
 
     @Test
@@ -149,12 +149,12 @@ public class JavaScriptFunctionsTest {
 
     @Test
     public void testOffsetTriggerRequiresSeconds() throws Exception {
-        expectMessage("celos.offsetTrigger()", "Undefined seconds");
+        expectMessage("celos.offsetTrigger()", "Undefined seconds (celos-scripts.js#");
     }
 
     @Test
     public void testOffsetTriggerRequiresSecondsAndTrigger() throws Exception {
-        expectMessage("celos.offsetTrigger(25)", "Undefined trigger");
+        expectMessage("celos.offsetTrigger(25)", "Undefined trigger (celos-scripts.js#");
     }
 
 
@@ -172,7 +172,7 @@ public class JavaScriptFunctionsTest {
     
     @Test
     public void testDelayTriggerRequiresSeconds() throws Exception {
-        expectMessage("celos.delayTrigger()", "Undefined seconds");
+        expectMessage("celos.delayTrigger()", "Undefined seconds (celos-scripts.js#");
     }
 
     @Test
@@ -183,7 +183,7 @@ public class JavaScriptFunctionsTest {
     
     @Test
     public void testSuccessTriggerRequiresWorkflowName() throws Exception {
-        expectMessage("celos.successTrigger()", "Undefined workflow name");
+        expectMessage("celos.successTrigger()", "Undefined workflow name in success trigger (celos-scripts.js#");
     }
 
     @Test
@@ -197,7 +197,7 @@ public class JavaScriptFunctionsTest {
     
     @Test
     public void testOozieURLRequired() throws Exception {
-        expectMessage("celos.oozieExternalService({bla:'hello'})", "Undefined Oozie URL");
+        expectMessage("celos.oozieExternalService({bla:'hello'})", "Undefined Oozie URL (celos-scripts.js#");
     }
 
     @Test
@@ -389,8 +389,14 @@ public class JavaScriptFunctionsTest {
             if (e.getMessage().contains(string)) {
                 return;
             }
+            throw new AssertionError(e.getMessage());
         }
-        throw new AssertionError();
+
     }
-    
+
+    @Test
+    public void testErrorNotInCelosScripts() throws Exception {
+        expectMessage("throw \"some exception\";", "some exception (string#1)");
+    }
+
 }
