@@ -15,6 +15,10 @@
  */
 package com.collective.celos;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.common.collect.Lists;
+import org.apache.commons.io.IOUtils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -41,9 +45,7 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.collect.Lists;
+import java.nio.charset.Charset;
 
 /**
  * Utility class to talk to the Celos server HTTP API.
@@ -56,6 +58,7 @@ public class CelosClient {
     private static final String KILL_PATH = "/kill";
     private static final String PAUSE_PATH = "/pause";
     private static final String SLOT_STATE_PATH = "/slot-state";
+    private static final String TRIGGER_STATUS_PATH = "/trigger-status";
     private static final String CLEAR_CACHE_PATH = "/clear-cache";
     private static final String WORKFLOW_LIST_PATH = "/workflow-list";
     private static final String WORKFLOW_SLOTS_PATH = "/workflow-slots";
@@ -161,7 +164,21 @@ public class CelosClient {
         InputStream content = getResponse.getEntity().getContent();
         return SlotState.fromJSONNode(workflowID, Util.JSON_READER.withType(ObjectNode.class).readValue(content));
     }
-    
+
+    public String getTriggerStatusAsText(String workflowID, String scheduledTime) throws Exception {
+        URIBuilder uriBuilder = new URIBuilder(address);
+        uriBuilder.setPath(uriBuilder.getPath() + TRIGGER_STATUS_PATH);
+        uriBuilder.addParameter(ID_PARAM, workflowID);
+        uriBuilder.addParameter(TIME_PARAM, scheduledTime);
+
+        HttpGet workflowListGet = new HttpGet(uriBuilder.build());
+        HttpResponse getResponse = execute(workflowListGet);
+        InputStream content = getResponse.getEntity().getContent();
+        return IOUtils.toString(content, Charset.defaultCharset());
+    }
+
+
+
     public void rerunSlot(SlotID slotID) throws Exception {
         rerunSlot(slotID.getWorkflowID(), slotID.getScheduledTime());
     }
