@@ -97,7 +97,7 @@ var AppDispatcher = {
     killSelectedSlots: function () {
         ajaxPostJSON("/multiplex-rpc", {
                 action: "kill",
-                slots: SlotsStore.getSelectedSlots()
+                slots: SlotsStore.getSelectedSlots().toJS()
             },
             function (res) { }
         )
@@ -106,7 +106,7 @@ var AppDispatcher = {
     rerunSelectedSlots: function () {
         ajaxPostJSON("/multiplex-rpc", {
                 action: "rerun",
-                slots: SlotsStore.getSelectedSlots()
+                slots: SlotsStore.getSelectedSlots().toJS()
             },
             function (res) { }
         )
