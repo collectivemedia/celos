@@ -16,8 +16,12 @@
 
 "use strict";
 
+var SidebarRecord = Immutable.Record({
+    selectedSlots: null,
+    inFocus: null
+});
 
-var _internalSidebarData = Immutable.Map();
+var _internalSidebarData = SidebarRecord({selectedSlots: Immutable.Seq()});
 
 var SidebarStore = Object.assign({}, EventEmitter.prototype, {
 
@@ -31,6 +35,7 @@ var SidebarStore = Object.assign({}, EventEmitter.prototype, {
 
 });
 
+
 //dispatcherIndex: .bind(this))
 
 AppDispatcher.register(function (payload) {
@@ -38,11 +43,18 @@ AppDispatcher.register(function (payload) {
 //    console.log("dispatcherIndex: AppDispatcher.register", payload.action);
 
     switch (payload.source) {
+
         case TodoConstants.FOCUS_ON_SLOT:
-            console.log("case TodoConstants.FOCUS_ON_SLOT");
-            _internalSidebarData = _internalSidebarData.setIn(["selected"], Immutable.Map({
-                ts: payload.action.ts,
-                workflowName: payload.action.workflowName}));
+            console.log("SidebarStore: case TodoConstants.FOCUS_ON_SLOT");
+            var newState = Immutable.fromJS(
+                SlotRecord({
+                    ts: payload.action.ts,
+                    breadcrumbs: payload.action.breadcrumbs,
+                    workflowName: payload.action.workflowName
+                })
+            );
+            _internalSidebarData = _internalSidebarData.set("inFocus", newState);
+            _internalSidebarData = _internalSidebarData.set("selectedSlots", SlotsStore.getSelectedSlots());
             SidebarStore.emit(CHANGE_EVENT);
             break;
 

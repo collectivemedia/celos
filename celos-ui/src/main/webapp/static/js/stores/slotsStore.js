@@ -39,14 +39,20 @@ var SlotsStore = Object.assign({}, EventEmitter.prototype, {
             table.get("rows").forEach(function (row, i2) {
                 row.get("rows").forEach(function (slot, i3) {
                     if (slot.get("isSelected", false)) {
-                        slot.getIn(["timestamps"]).forEach(function(tmp) {
-                            result.push({ workflow: row.get("workflowName"), ts: tmp, bc: ["rows", i1, "rows", i2, "rows", i3]})
+                        slot.getIn(["timestamps"]).forEach(function(tsValue, i4) {
+                            result.push(
+                                SlotRecord({
+                                    workflowName: row.get("workflowName"),
+                                    ts: tsValue,
+                                    breadcrumbs: Immutable.Seq(["rows", i1, "rows", i2, "rows", i3, "timestamps", i4])
+                                })
+                            )
                         })
                     }
                 })
             })
         });
-        return result;
+        return Immutable.fromJS(result);
     }
 
 });
@@ -83,8 +89,11 @@ AppDispatcher.register(function (payload) {
             break;
 
         case TodoConstants.FOCUS_ON_SLOT:
-            var newPath = payload.breadcrumbs;
-            var oldPath = _internalLastSelectedSlotPath;
+        // TODO split FOCUS_ON_SLOT in two actions: select and focus
+            // 6 = 2 * (group -> row -> cell)
+            var cellPathLength = 6;
+            var newPath = payload.breadcrumbs && payload.breadcrumbs.take(cellPathLength);
+            var oldPath = _internalLastSelectedSlotPath && _internalLastSelectedSlotPath.take(cellPathLength);
             var newState = _internalSlotsData;
             if (oldPath != undefined) {
                 newState = newState.setIn(oldPath.concat("inFocus"), false);

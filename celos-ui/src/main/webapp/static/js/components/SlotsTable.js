@@ -106,7 +106,6 @@ var WorkflowsGroup = React.createClass({
                         React.DOM.th({ className: "groupName" },
                             React.DOM.a({ href: newUrl }, this.props.groupName)),
                         this.props.days
-                            .reverse()
                             .take(slotsNum)
                             .map(function (tt, i) {
                                 return React.DOM.th({ className: "timeHeader", key: i },
@@ -116,13 +115,13 @@ var WorkflowsGroup = React.createClass({
                     React.DOM.tr(null,
                         React.DOM.th({ className: "groupName" }),
                         this.props.times
-                            .reverse()
                             .take(slotsNum)
                             .map(function (tt, i) {
                                 return React.DOM.th({ className: "timeHeader", key: i }, tt)
                             })
                     )
                 ),
+                // this is table rows, don't reverse them
                 React.DOM.tbody(null,
                     this.props.rows
                         .map(function (product, i) {
@@ -148,8 +147,13 @@ var ProductRow = React.createClass({
     },
 
     shouldComponentUpdate: function(nextProps) {
-        return nextProps.slots !== this.props.slots
-            || nextProps.workflowName != this.props.workflowName;
+//    FIXME improve speed here
+//        var res = nextProps.slots !== this.props.slots
+//            || nextProps.workflowName != this.props.workflowName;
+//        console.log("shouldComponentUpdate", res);
+        return !(
+                nextProps.slots.equals(this.props.slots)
+             && nextProps.workflowName == this.props.workflowName)
     },
 
     render: function () {
@@ -160,12 +164,9 @@ var ProductRow = React.createClass({
         //    ? this.props.slots.count() - slotsNum
         //    : 0;
 
-
-
         return React.DOM.tr(null,
             React.DOM.th({ className: "workflowName" }, this.props.workflowName),
             this.props.slots
-                .reverse()
                 .take(slotsNum)
                 //.slice(-slotsNum)
                 .map(function (slot1, i1) {
@@ -175,7 +176,7 @@ var ProductRow = React.createClass({
                         store: slot1,
                         workflowName: this.props.workflowName,
                         // slots were reversed, so it should have different indexes in the model and in owr view
-                        breadcrumbs: this.props.breadcrumbs.concat("rows", this.props.slots.count() - i1 - 1)
+                        breadcrumbs: this.props.breadcrumbs.concat("rows", i1)
                     })
                 }.bind(this))
         )
@@ -207,11 +208,11 @@ var TimeSlot = React.createClass({
         if (this.props.store.get("status") == "EMPTY") {
             return
         }
-        var focusArgs = {
+        var focusArgs = SlotRecord({
             ts: this.props.store.get("timestamps"),
             workflowName: this.props.workflowName,
-            breadcrumbs: this.props.breadcrumbs
-        };
+            breadcrumbs: this.props.breadcrumbs.concat("timestamps", 0)
+        });
         if (e.altKey) {
             AppDispatcher.markSlotAsSelected({
                 breadcrumbs: this.props.breadcrumbs

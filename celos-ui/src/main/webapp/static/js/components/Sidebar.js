@@ -23,6 +23,11 @@ var SIDEBAR_TABS = {
     JAVASCRIPT: "Javascript"
 };
 
+var SlotRecord = Immutable.Record({
+    ts: null,
+    workflowName: null,
+    breadcrumbs: null
+});
 
 var CelosSidebar = React.createClass({
     displayName: "CelosSidebar",
@@ -31,16 +36,14 @@ var CelosSidebar = React.createClass({
         return {
             store: SidebarStore.getAll(),
             dropdownActivated: false,
-            selectedTab: SIDEBAR_TABS.TRIGGER,
-            selectedSlots: []
+            selectedTab: SIDEBAR_TABS.TRIGGER
         }
     },
 
     _onChange: function() {
 //        console.log("_onChange", SidebarStore.getAll().toJS());
         this.setState({
-            store: SidebarStore.getAll(),
-            selectedSlots: SlotsStore.getSelectedSlots()
+            store: SidebarStore.getAll()
         })
     },
 
@@ -58,18 +61,27 @@ var CelosSidebar = React.createClass({
 //        console.log("this.state.selectedSlots");
 //        console.log(this.state.selectedSlots);
         return React.DOM.div({ className: "dropdown-menu overflow-scroll", "aria-labelledby": "dropdownMenu1" },
-            (this.state.selectedSlots.length == 0)
+            (this.state.store.selectedSlots.count() == 0)
                 ? React.DOM.div({ className: "dropdown-item"}, "empty list...")
-                : this.state.selectedSlots.map(function (elem, i) {
-                    return React.DOM.button(
-                        { className: "dropdown-item", type: "button", key: i,
-                        onClick: function () {
-                            // hide sidebar
-                            AppDispatcher.focusOnSlot({breadcrumbs: Immutable.Seq(elem.bc)})
-                        }},
-                        "" + elem.workflow + "@" + elem.ts
+                : this.state.store.selectedSlots.map(function (elem, i) {
+                    return React.DOM.button({
+                            key: i,
+                            className: "dropdown-item",
+                            type: "button",
+                            onClick: function () {
+                                AppDispatcher.focusOnSlot(
+                                    SlotRecord({
+                                        ts: Immutable.Seq([elem.get("ts")]),
+                                        workflowName: elem.get("workflowName"),
+                                        breadcrumbs: elem.get("breadcrumbs")
+                                    })
+                                );
+                                this.setState({dropdownActivated: false})
+                            }.bind(this)
+                        },
+                        "" + elem.get("workflowName") + "@" + elem.get("ts")
                     )
-                })
+                }.bind(this))
         )
     },
 
@@ -119,10 +131,10 @@ var CelosSidebar = React.createClass({
             case SIDEBAR_TABS.OVERVIEW:
                 return "in development...";
             case SIDEBAR_TABS.TRIGGER:
-                if (this.state.store.getIn(["selected", "workflowName"])) {
+                if (this.state.store.getIn(["inFocus", "workflowName"])) {
                     return React.createElement(TriggerStatusFetch, {
-                        id: this.state.store.getIn(["selected", "workflowName"]),
-                        timestamps: this.state.store.getIn(["selected", "ts"]),
+                        id: this.state.store.getIn(["inFocus", "workflowName"]),
+                        timestamps: this.state.store.getIn(["inFocus", "ts"]).toJS(),
                         quantity: 13})
                 } else {
                     return "slot is not selected"
@@ -150,14 +162,14 @@ var CelosSidebar = React.createClass({
 
     render: function () {
 //        console.log("CelosSidebar", this.state.store.toJS());
-        var wfName = this.state.store.getIn(["selected", "workflowName"]);
+        var wfName = this.state.store.getIn(["inFocus", "workflowName"]);
         return React.DOM.div({id: "sidebar-wrapper"},
             React.DOM.h4({style: {textAlign: "center"}},
-                "Selection (" + this.state.selectedSlots.length + " slots)"
+                "Selection (" + this.state.store.selectedSlots.count() + " slots)"
             ),
             React.DOM.h6({style: {textAlign: "left"}},
                 (wfName)
-                    ? wfName + "@" + this.state.store.getIn(["selected", "ts", 0])
+                    ? wfName + "@" + this.state.store.getIn(["inFocus", "ts", 0])
                     : "not selected"
             ),
             React.DOM.ul({ className: "my-row" },
