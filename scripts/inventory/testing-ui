@@ -2,8 +2,7 @@
 oj002.ewr004.collective-media.net
 
 [host:vars]
-celos_server_host="oj002.ewr004.collective-media.net"
-service_name={{ui_service_name}}
-service_port={{ui_service_port}}
+service_name=testing-ui
+service_port=11094
 ui_hue_url="http://cldmgr001.ewr004.collective-media.net:8888/oozie"
 ui_config_file="/home/celos/prod/ui/config.json"

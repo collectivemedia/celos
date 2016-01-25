@@ -1,0 +1,5 @@
+{
+  "jar_path": "{{ root }}/celos-ui/build/libs/celos-ui.jar",
+  "main_class": "com.collective.celos.ui.Main",
+  "service_args": "--celos {{ service_discovery }} --hue {{ ui_hue_url }}  --config {{ ui_config_file }}"
+}
