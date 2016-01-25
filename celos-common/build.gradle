@@ -1,3 +1,5 @@
+apply plugin: 'maven'
+
 version = '0.1'
 
 dependencies {
@@ -37,7 +39,6 @@ uploadArchives.doFirst {
             if (!System.getenv("CELOS_BUILD_NUMBER")) throw new GradleException("CELOS_BUILD_NUMBER env variable should be present")
             pom.version = "2.0." + System.getenv("CELOS_BUILD_NUMBER")
             pom.groupId = "com.collective"
-            pom.dependencies.removeAll { it.scope == "compileIncluded" }
         }
     }
 }
