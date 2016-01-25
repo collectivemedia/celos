@@ -1,7 +1,0 @@
-{
-  "celos_wrk_dir": "/home/celos/prod",
-  "server_service_name": "celos-server",
-  "server_service_port": 9091,
-  "ui_service_name": "celos-ui",
-  "ui_service_port": 9092
-}
