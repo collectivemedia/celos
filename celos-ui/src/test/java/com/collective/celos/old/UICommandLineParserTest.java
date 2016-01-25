@@ -18,6 +18,8 @@ package com.collective.celos.old;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import com.collective.celos.ui.UICommandLine;
+import com.collective.celos.ui.UICommandLineParser;
 import org.junit.Assert;
 import org.junit.Test;
 
