@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 set -x
 set -e
-ansible-playbook ./scripts/prod/celos-stop.yaml -u celos -i scripts/prod/conf/inventory-server -e "@scripts/prod/conf/celos-params.json"
-ansible-playbook ./scripts/prod/celos-stop.yaml -u celos -i scripts/prod/conf/inventory-ui -e "@scripts/prod/conf/celos-params.json"
+export CELOS_USER=celos
+export INVENTORY_SERVER=scripts/inventory/production-server
+export INVENTORY_UI=scripts/inventory/production-ui
+./scripts/server-and-ui-action.sh stop
