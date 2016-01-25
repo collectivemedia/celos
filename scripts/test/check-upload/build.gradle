@@ -16,6 +16,7 @@ dependencies {
 task checkVersion << {
     checkLib('celos-ci')
     checkLib('celos-server')
+    checkLib('celos-common')
 }
 
 def checkLib(libName) {
