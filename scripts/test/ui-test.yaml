@@ -15,3 +15,9 @@
       module: uri
       status_code: 200
       url: "{{service_url}}/static/style.css"
+
+  - name: Check dynamic content is served
+    local_action:
+      module: uri
+      status_code: 200
+      url: "{{service_url}}/ui"
