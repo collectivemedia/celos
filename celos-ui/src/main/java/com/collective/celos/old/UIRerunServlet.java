@@ -13,7 +13,7 @@
  * implied.  See the License for the specific language governing
  * permissions and limitations under the License.
  */
-package com.collective.celos.ui;
+package com.collective.celos.old;
 
 import java.io.IOException;
 import java.net.URL;
@@ -26,6 +26,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.collective.celos.CelosClient;
 import com.collective.celos.SlotID;
 import com.collective.celos.Util;
+import com.collective.celos.ui.Main;
 
 /**
  * Called from the browser to rerun a slot.

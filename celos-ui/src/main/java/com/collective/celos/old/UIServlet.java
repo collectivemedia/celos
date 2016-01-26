@@ -13,7 +13,7 @@
  * implied.  See the License for the specific language governing
  * permissions and limitations under the License.
  */
-package com.collective.celos.ui;
+package com.collective.celos.old;
 
 import static j2html.TagCreator.a;
 import static j2html.TagCreator.body;
@@ -29,8 +29,10 @@ import static j2html.TagCreator.title;
 import static j2html.TagCreator.tr;
 import static j2html.TagCreator.unsafeHtml;
 
+import com.collective.celos.ui.Main;
+import com.collective.celos.ui.UIConfiguration;
+import com.collective.celos.ui.WorkflowGroup;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Sets;
 import j2html.tags.Tag;
 
