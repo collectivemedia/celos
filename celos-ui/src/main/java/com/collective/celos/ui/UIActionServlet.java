@@ -24,6 +24,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.swing.text.html.parser.Entity;
 import java.io.IOException;
 import java.net.URL;
 
@@ -34,6 +35,13 @@ public class UIActionServlet extends HttpServlet {
     
     private static final String SLOT_ID = "id";
 
+
+    private static void processOne(JsonNode x) {
+        System.out.println("---");
+        System.out.println(x.get("workflowName").asText());
+        System.out.println(x.get("ts").asText());
+    }
+
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try {
@@ -42,14 +50,15 @@ public class UIActionServlet extends HttpServlet {
 
             ObjectMapper mapper = new ObjectMapper();
             final JsonNode jsonNode = mapper.readTree(request.getReader());
+            System.out.println("SUCCESS123!!!!");
+            final String action = jsonNode.get("action").asText();
+            jsonNode.get("slots").forEach(UIActionServlet::processOne);
 
 //            client.kill(id.getWorkflowID(), id.getScheduledTime());
 //            client.getWorkflowStatus(new WorkflowID("DUMMY"), ScheduledTime.now());
 
-            System.out.println("SUCCESS123!!!!");
-            System.out.println(mapper.writeValueAsString(jsonNode));
-
             mapper.writeValue(response.getWriter(), jsonNode);
+//            System.out.println(mapper.writeValueAsString(jsonNode));
 
             response.setStatus(HttpServletResponse.SC_OK);
         } catch(Exception e) {
