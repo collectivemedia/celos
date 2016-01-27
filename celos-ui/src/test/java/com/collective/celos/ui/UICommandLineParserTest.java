@@ -13,7 +13,7 @@
  * implied.  See the License for the specific language governing
  * permissions and limitations under the License.
  */
-package com.collective.celos.old;
+package com.collective.celos.ui;
 
 import java.net.MalformedURLException;
 import java.net.URL;

@@ -52,10 +52,7 @@ public class UIActionServlet extends HttpServlet {
             final JsonNode jsonNode = mapper.readTree(request.getReader());
             System.out.println("SUCCESS123!!!!");
             final String action = jsonNode.get("action").asText();
-            jsonNode.get("slots").forEach(UIActionServlet::processOne);
-
-//            client.kill(id.getWorkflowID(), id.getScheduledTime());
-//            client.getWorkflowStatus(new WorkflowID("DUMMY"), ScheduledTime.now());
+            method1(action, jsonNode);
 
             mapper.writeValue(response.getWriter(), jsonNode);
 //            System.out.println(mapper.writeValueAsString(jsonNode));
@@ -64,5 +61,12 @@ public class UIActionServlet extends HttpServlet {
         } catch(Exception e) {
             throw new ServletException(e);
         }
+    }
+
+    protected static void method1(String action, JsonNode jsonNode) {
+        jsonNode.get("slots").forEach(UIActionServlet::processOne);
+
+//            client.kill(id.getWorkflowID(), id.getScheduledTime());
+//            client.getWorkflowStatus(new WorkflowID("DUMMY"), ScheduledTime.now());
     }
 }
