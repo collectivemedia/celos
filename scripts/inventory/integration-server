@@ -5,4 +5,8 @@ oj002.ewr004.collective-media.net
 service_name=celos-integration-server
 service_port=19095
 celos_wrk_dir="/home/{{ ansible_ssh_user }}/integration"
+celos_workflows_dir="{{ celos_wrk_dir }}/workflows"
+celos_defaults_dir="{{ celos_wrk_dir }}/defaults"
+celos_log_dir="{{ celos_wrk_dir }}/logs"
+celos_db_dir="{{ celos_wrk_dir }}/db"
 extra_args="--db {{ celos_db_dir }}"
