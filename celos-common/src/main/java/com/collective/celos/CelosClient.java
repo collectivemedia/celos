@@ -89,6 +89,10 @@ public class CelosClient {
         return address;
     }
 
+    public void checkStatus() throws Exception {
+        getWorkflowList();
+    }
+    
     public Set<WorkflowID> getWorkflowList() throws Exception {
         URIBuilder uriBuilder = new URIBuilder(address);
         uriBuilder.setPath(uriBuilder.getPath() + WORKFLOW_LIST_PATH);
