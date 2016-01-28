@@ -18,7 +18,7 @@
 
 var slotsNum = Math.trunc((window.innerWidth * 0.7 - 250) / (30 + 4)) - 1;
 
-var defaultController = function defaultController() {
+var defaultController = function () {
     if (window.location.hash === "" || window.location.hash === "#ui") {
         ReactDOM.render(React.createElement(CelosMainFetch, { url: "/main", request: {} }), document.getElementById('content'));
     } else if (startsWith("#ui?", window.location.hash)) {

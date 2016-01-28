@@ -16,7 +16,9 @@
 package com.collective.celos.ui;
 
 import com.collective.celos.CelosClient;
+import com.collective.celos.ScheduledTime;
 import com.collective.celos.Util;
+import com.collective.celos.WorkflowID;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -25,6 +27,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.swing.text.html.parser.Entity;
+import javax.swing.tree.ExpandVetoException;
 import java.io.IOException;
 import java.net.URL;
 
@@ -35,11 +38,26 @@ public class UIActionServlet extends HttpServlet {
     
     private static final String SLOT_ID = "id";
 
-
-    private static void processOne(JsonNode x) {
-        System.out.println("---");
-        System.out.println(x.get("workflowName").asText());
-        System.out.println(x.get("ts").asText());
+    protected static void method1(CelosClient client, String action, JsonNode jsonNode) throws Exception {
+        jsonNode.get("slots").forEach(x -> {
+            try {
+                System.out.println("---");
+                System.out.println(x.get("workflowName").asText());
+                System.out.println(x.get("ts").asText());
+                final WorkflowID workflowName = new WorkflowID(x.get("workflowName").asText());
+                final ScheduledTime ts = new ScheduledTime(x.get("ts").asText());
+                if ("kill".equals(action)) {
+                    client.kill(workflowName, ts);
+                } else if ("rerun".equals(action)) {
+                    client.rerunSlot(workflowName, ts);
+                } else {
+                    throw new Exception("UIActionServlet failed");
+                }
+            } catch (Exception e) {
+                // FIXME it shouldn't be like this
+                e.printStackTrace();
+            }
+        });
     }
 
     @Override
@@ -50,12 +68,11 @@ public class UIActionServlet extends HttpServlet {
 
             ObjectMapper mapper = new ObjectMapper();
             final JsonNode jsonNode = mapper.readTree(request.getReader());
-            System.out.println("SUCCESS123!!!!");
+            System.out.println(mapper.writeValueAsString(jsonNode));
             final String action = jsonNode.get("action").asText();
-            method1(action, jsonNode);
+            method1(client, action, jsonNode);
 
             mapper.writeValue(response.getWriter(), jsonNode);
-//            System.out.println(mapper.writeValueAsString(jsonNode));
 
             response.setStatus(HttpServletResponse.SC_OK);
         } catch(Exception e) {
@@ -63,10 +80,4 @@ public class UIActionServlet extends HttpServlet {
         }
     }
 
-    protected static void method1(String action, JsonNode jsonNode) {
-        jsonNode.get("slots").forEach(UIActionServlet::processOne);
-
-//            client.kill(id.getWorkflowID(), id.getScheduledTime());
-//            client.getWorkflowStatus(new WorkflowID("DUMMY"), ScheduledTime.now());
-    }
 }

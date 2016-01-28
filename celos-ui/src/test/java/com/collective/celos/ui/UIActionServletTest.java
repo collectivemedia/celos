@@ -16,6 +16,8 @@
 package com.collective.celos.ui;
 
 import com.collective.celos.CelosClient;
+import com.collective.celos.ScheduledTime;
+import com.collective.celos.WorkflowID;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import org.junit.Assert;
@@ -38,33 +40,33 @@ public class UIActionServletTest {
         HttpServletRequest req = Mockito.mock(HttpServletRequest.class);
 
         final String ss = "{\n" +
-                "  \"type\" : \"AndTrigger\",\n" +
-                "  \"ready\" : false,\n" +
-                "  \"description\" : \"Not all nested triggers are ready\",\n" +
-                "  \"subStatuses\" : [ {\n" +
-                "    \"type\" : \"DelayTrigger\",\n" +
-                "    \"ready\" : false,\n" +
-                "    \"description\" : \"Delayed until 2015-09-14T16:00:00.000Z\",\n" +
-                "    \"subStatuses\" : [ ]\n" +
-                "  }, {\n" +
-                "    \"type\" : \"HDFSCheckTrigger\",\n" +
-                "    \"ready\" : true,\n" +
-                "    \"description\" : \"HDFS path hdfs://nameservice1/logs/dc3/2015-09-14/1500 is ready\",\n" +
-                "    \"subStatuses\" : [ ]\n" +
-                "  } ]\n" +
+                "\"action\": \"kill\",\n" +
+                "\"slots\": [{\n" +
+                "\"ts\": \"2016-01-28T09:00Z\",\n" +
+                "\"workflowName\": \"flume-tmp-file-closer\",\n" +
+                "\"breadcrumbs\": [\"rows\", 0, \"rows\", 2, \"rows\", 11, \"timestamps\", 0]\n" +
+                "}, {\n" +
+                "\"ts\": \"2016-01-28T09:15Z\",\n" +
+                "\"workflowName\": \"flume-tmp-file-closer\",\n" +
+                "\"breadcrumbs\": [\"rows\", 0, \"rows\", 2, \"rows\", 11, \"timestamps\", 1]\n" +
+                "}, {\n" +
+                "\"ts\": \"2016-01-28T09:30Z\",\n" +
+                "\"workflowName\": \"flume-tmp-file-closer\",\n" +
+                "\"breadcrumbs\": [\"rows\", 0, \"rows\", 2, \"rows\", 11, \"timestamps\", 2]\n" +
+                "}, {\n" +
+                "\"ts\": \"2016-01-28T09:45Z\",\n" +
+                "\"workflowName\": \"flume-tmp-file-closer\",\n" +
+                "\"breadcrumbs\": [\"rows\", 0, \"rows\", 2, \"rows\", 11, \"timestamps\", 3]\n" +
+                "}]\n" +
                 "}";
 
-        Mockito.when(client.getTriggerStatusAsText(Mockito.anyString(), Mockito.anyString()))
-               .thenReturn(MAPPER.readTree(ss));
-//        Mockito.when(req.getParameter(TriggerStatusServlet.ID_PARAM))
-//                .thenReturn("workflow-1");
-//        Mockito.when(req.getParameter(TriggerStatusServlet.TIME_PARAM))
-//                .thenReturn("2015-09-13T13:00Z,2015-09-13T13:00Z");
+        UIActionServlet.method1(client, "kill", MAPPER.readTree(ss));
 
-//        ArrayNode xx = TriggerStatusServlet.getJsonNodes(req, client);
+        Mockito.verify(client, Mockito.atLeastOnce())
+                .kill(new WorkflowID("flume-tmp-file-closer"), new ScheduledTime("2016-01-28T09:00Z"));
 
-//        Assert.assertEquals(xx.size(), 2);
-//        Assert.assertNotNull(MAPPER.writeValueAsString(xx));
+        Mockito.verify(client, Mockito.never())
+                .rerunSlot(Mockito.any(WorkflowID.class), Mockito.any(ScheduledTime.class));
 
     }
 
