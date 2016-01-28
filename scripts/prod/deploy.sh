@@ -4,14 +4,17 @@ set -e
 [[ -z ${GIT_COMMIT} ]] && echo pls specify GIT_COMMIT && exit 1
 
 export CELOS_USER=celos
-export INVENTORY_SERVER=scripts/inventory/production-server
-export INVENTORY_UI=scripts/inventory/production-ui
 export ANSIBLE_SSH_ARGS=""
 
 scripts/build.sh
 
+export INVENTORY_SERVER=scripts/inventory/production-server
+export INVENTORY_UI=scripts/inventory/production-ui
 scripts/server-and-ui-action.sh deploy
 
+export INVENTORY_SERVER=scripts/inventory/jdbc-production-server
+export INVENTORY_UI=scripts/inventory/jdbc-production-ui
+scripts/server-and-ui-action.sh deploy
 
 MINUTES_JAN01_2015=23667720
 MINUTES_SINCE_JAN01_2015=$(($(date +%s) / 60 - MINUTES_JAN01_2015))
