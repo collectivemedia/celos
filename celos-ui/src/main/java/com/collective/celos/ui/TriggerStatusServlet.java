@@ -37,30 +37,34 @@ import static java.util.stream.Collectors.toList;
  */
 public class TriggerStatusServlet extends HttpServlet {
 
-    private static final String ID_PARAM = "id";
-    private static final String TIME_PARAM = "time";
+    protected static final String ID_PARAM = "id";
+    protected static final String TIME_PARAM = "time";
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private static final ObjectMapper mapper = new ObjectMapper();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse response) throws ServletException, IOException {
         try {
             URL celosURL = (URL) Util.requireNonNull(getServletContext().getAttribute(Main.CELOS_URL_ATTR));
-            URL hueURL = (URL) getServletContext().getAttribute(Main.HUE_URL_ATTR);
-            File configFile = (File) getServletContext().getAttribute(Main.CONFIG_FILE_ATTR);
-            final List<String> timestamps = Arrays.stream(req.getParameter(TIME_PARAM).split(","))
-                    .limit(ReactWorkflowsServlet.MULTI_SLOT_INFO_LIMIT)
-                    .collect(toList());
             ObjectMapper mapper = new ObjectMapper();
+
             CelosClient client = new CelosClient(celosURL.toURI());
-            final ArrayNode node = mapper.createArrayNode();
-            for (String ts : timestamps) {
-                node.add(client.getTriggerStatusAsText(req.getParameter(ID_PARAM), ts));
-            }
+            final ArrayNode node = getJsonNodes(req, client);
             response.setContentType("application/json;charset=UTF-8");
             mapper.writeValue(response.getWriter(), node);
         } catch (Exception e) {
             throw new ServletException(e);
         }
+    }
+
+    protected static ArrayNode getJsonNodes(HttpServletRequest req, CelosClient client) throws Exception {
+        final List<String> timestamps = Arrays.stream(req.getParameter(TIME_PARAM).split(","))
+                .limit(ReactWorkflowsServlet.MULTI_SLOT_INFO_LIMIT)
+                .collect(toList());
+        final ArrayNode node = mapper.createArrayNode();
+        for (String ts : timestamps) {
+            node.add(client.getTriggerStatusAsText(req.getParameter(ID_PARAM), ts));
+        }
+        return node;
     }
 }
