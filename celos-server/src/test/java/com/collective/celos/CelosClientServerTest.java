@@ -82,6 +82,11 @@ public class CelosClientServerTest {
     }
 
     @Test
+    public void testCheckStatus() throws Exception {
+        celosClient.checkStatus();
+    }
+    
+    @Test
     public void testGetWorkflowListEmpty() throws Exception {
         Set<WorkflowID> workflowIDs = celosClient.getWorkflowList();
         Assert.assertTrue(workflowIDs.isEmpty());

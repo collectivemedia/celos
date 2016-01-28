@@ -42,6 +42,12 @@ public class CelosClientTest {
         celosClient.getWorkflowList();
     }
 
+    @Test (expected = UnknownHostException.class)
+    public void testCheckStatusFailsNoServer() throws Exception {
+        CelosClient celosClient = new CelosClient(URI.create("http://thereisnosuchhost:1234"));
+        celosClient.checkStatus();
+    }
+
 
     @Test
     public void testParseWorkflowStatusesMap() throws IOException {
