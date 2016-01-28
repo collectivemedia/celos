@@ -1,0 +1,11 @@
+[host]
+celos002.ewr004.collective-media.net
+
+[host:vars]
+service_name=jdbc-celos-server
+service_port=9093
+celos_wrk_dir=/home/celos/jdbc-prod
+celos_workflows_dir="{{ celos_wrk_dir }}/workflows"
+celos_defaults_dir="{{ celos_wrk_dir }}/defaults"
+celos_log_dir="{{ celos_wrk_dir }}/logs"
+extra_args="--dbType JDBC --jdbcUrl jdbc:postgresql://dev-workflow002.ewr004.collective-media.net/celos_test --jdbcName celos --jdbcPassword celos"
