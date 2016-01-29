@@ -15,68 +15,93 @@
  */
 package com.collective.celos.ui;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.net.URL;
 import java.util.*;
 
 import com.collective.celos.*;
-import com.collective.celos.ui.ConfigServlet;
-import com.collective.celos.ui.UIConfiguration;
-import com.collective.celos.ui.WorkflowGroup;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.*;
 import org.junit.Assert;
 import org.junit.Test;
-
-import com.gargoylesoftware.htmlunit.StringWebResponse;
-import com.gargoylesoftware.htmlunit.TopLevelWindow;
-import com.gargoylesoftware.htmlunit.WebClient;
-import com.gargoylesoftware.htmlunit.html.HTMLParser;
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
-import com.gargoylesoftware.htmlunit.html.HtmlTableDataCell;
-import org.mockito.Mockito;
-
-import javax.servlet.ServletContext;
 
 public class ConfigServletTest {
 
     protected final static ObjectMapper mapper = new ObjectMapper();
 
+    final String check = "{" +
+            "  \"rows\" : [ {" +
+            "    \"name\" : \"Group1\"," +
+            "    \"times\" : [ ]," +
+            "    \"days\" : [ ]," +
+            "    \"rows\" : [ {" +
+            "      \"workflowName\" : \"Group1-1\"," +
+            "      \"slots\" : [ ]" +
+            "    }, {" +
+            "      \"workflowName\" : \"Group1-2\"," +
+            "      \"slots\" : [ ]" +
+            "    }, {" +
+            "      \"workflowName\" : \"Group1-3\"," +
+            "      \"slots\" : [ ]" +
+            "    } ]" +
+            "  }, {" +
+            "    \"name\" : \"Group2\"," +
+            "    \"times\" : [ ]," +
+            "    \"days\" : [ ]," +
+            "    \"rows\" : [ {" +
+            "      \"workflowName\" : \"Group2-1\"," +
+            "      \"slots\" : [ ]" +
+            "    } ]" +
+            "  }, {" +
+            "    \"name\" : \"Group3\"," +
+            "    \"times\" : [ ]," +
+            "    \"days\" : [ ]," +
+            "    \"rows\" : [ ]" +
+            "  }, {" +
+            "    \"name\" : \"Unlisted workflows\"," +
+            "    \"times\" : [ ]," +
+            "    \"days\" : [ ]," +
+            "    \"rows\" : [ {" +
+            "      \"workflowName\" : \"Group2-1\"," +
+            "      \"slots\" : [ ]" +
+            "    } ]" +
+            "  } ]" +
+            "}";
+
+    final String input = "{" +
+            "  \"groups\": [" +
+            "    {" +
+            "      \"name\": \"Group1\"," +
+            "      \"workflows\": [" +
+            "        \"Group1-1\"," +
+            "        \"Group1-2\"," +
+            "        \"Group1-3\"" +
+            "      ]" +
+            "    }," +
+            "    {" +
+            "      \"name\": \"Group2\"," +
+            "      \"workflows\": [" +
+            "        \"Group2-1\"" +
+            "      ]" +
+            "    }," +
+            "    {" +
+            "      \"name\": \"Group3\"," +
+            "      \"workflows\": [" +
+            "      ]" +
+            "    }" +
+            "  ]" +
+            "}";
+
     @Test
     public void testUIConfig() throws Exception {
-        String input = "{\n" +
-                "  \"groups\": [\n" +
-                "    {\n" +
-                "      \"name\": \"Group1\",\n" +
-                "      \"workflows\": [\n" +
-                "        \"Group1-1\",\n" +
-                "        \"Group1-2\",\n" +
-                "        \"Group1-3\"\n" +
-                "      ]\n" +
-                "    },\n" +
-                "    {\n" +
-                "      \"name\": \"Group2\",\n" +
-                "      \"workflows\": [\n" +
-                "        \"Group2-1\"\n" +
-                "      ]\n" +
-                "    },\n" +
-                "    {\n" +
-                "      \"name\": \"Group3\",\n" +
-                "      \"workflows\": [\n" +
-                "      ]\n" +
-                "    }\n" +
-                "  ]\n" +
-                "}\n";
 
-        final Set<WorkflowID> workflowIDs = new TreeSet<>();
-        workflowIDs.add(new WorkflowID("Group2-1"));
-        workflowIDs.add(new WorkflowID("abiurvalg"));
+        final List<String> workflowIDs = new ArrayList<>();
+        workflowIDs.add("Group2-1");
+        workflowIDs.add("abiurvalg");
         final String result = ConfigServlet.processGet(workflowIDs, Optional.of(input));
-        System.out.println(result);
         final JsonNode jsonNode = mapper.readTree(result);
         Assert.assertEquals(4, jsonNode.get("rows").size());
+
+        Assert.assertEquals(jsonNode, mapper.readTree(check));
+
     }
 
 }

@@ -13,7 +13,7 @@
  * implied.  See the License for the specific language governing
  * permissions and limitations under the License.
  */
-package com.collective.celos.ui;
+package com.collective.celos.old;
 
 import java.util.Collections;
 import java.util.List;
@@ -22,24 +22,24 @@ import com.collective.celos.Util;
 import com.collective.celos.WorkflowID;
 
 /**
- * A named group of workflows, for rendering the workflows list.
+ * A named group of rows, for rendering the rows list.
  */
 public class WorkflowGroup {
     
     private final String name;
-    private final List<WorkflowID> workflows;
+    private final List<WorkflowID> rows;
     
     public WorkflowGroup(String name, List<WorkflowID> workflows) {
         this.name = Util.requireNonNull(name);
-        this.workflows = Collections.unmodifiableList(Util.requireNonNull(workflows));
+        this.rows = Collections.unmodifiableList(Util.requireNonNull(workflows));
     }
 
     public String getName() {
         return name;
     }
 
-    public List<WorkflowID> getWorkflows() {
-        return workflows;
+    public List<WorkflowID> getRows() {
+        return rows;
     }
     
 }

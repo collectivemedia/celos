@@ -16,12 +16,12 @@
 package com.collective.celos.ui;
 
 import com.collective.celos.*;
+import com.collective.celos.pojo.WorkflowGroupPOJO;
+import com.collective.celos.pojo.WorkflowPOJO;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.google.common.collect.Sets;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -34,6 +34,10 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
 
 /**
  * Renders the UI JSON.
@@ -48,16 +52,11 @@ public class ConfigServlet extends HttpServlet {
 
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
-    protected static class WorkflowGroupRef {
-        public String name;
-        public List<Object> rows;
-    }
-
     protected final static ObjectMapper mapper = new ObjectMapper();
     protected final static ObjectWriter writer = mapper.writerWithDefaultPrettyPrinter();
 
     protected static class ConfigUI {
-        public List<WorkflowGroupRef> rows;
+        public List<WorkflowGroupPOJO> rows;
     }
 
     @Override
@@ -70,7 +69,7 @@ public class ConfigServlet extends HttpServlet {
             final Optional<String> config = (Files.exists(configFile))
                     ? Optional.of(new String(Files.readAllBytes(configFile), StandardCharsets.UTF_8))
                     : Optional.empty();
-            Set<WorkflowID> workflowIDs = client.getWorkflowList();
+            List<String> workflowIDs = client.getWorkflowList().stream().map(WorkflowID::toString).collect(toList());
             final String tmp = processGet(workflowIDs, config);
             response.setContentType("application/json;charset=UTF-8");
             response.getWriter().write(tmp);
@@ -79,8 +78,8 @@ public class ConfigServlet extends HttpServlet {
         }
     }
 
-    public static String processGet(Set<WorkflowID> workflowIDs, Optional<String> configFile) throws Exception {
-        List<WorkflowGroup> groups;
+    public static String processGet(List<String> workflowIDs, Optional<String> configFile) throws Exception {
+        List<WorkflowGroupPOJO> groups;
 
         if (configFile.isPresent()) {
             groups = getWorkflowGroups(configFile.get(), workflowIDs);
@@ -88,43 +87,46 @@ public class ConfigServlet extends HttpServlet {
             groups = getDefaultGroups(workflowIDs);
         }
         final ConfigUI result = new ConfigUI();
-        result.rows = new ArrayList<>();
-        for (WorkflowGroup g : groups) {
-            final WorkflowGroupRef group = new WorkflowGroupRef();
-            group.name = g.getName();
-            group.rows = Collections.emptyList();
-            result.rows.add(group);
-        }
+        result.rows = groups;
         return writer.writeValueAsString(result);
     }
 
-    static List<WorkflowGroup> getWorkflowGroups(String configFileIS, Set<WorkflowID> expectedWfs) throws IOException {
+    static List<WorkflowGroupPOJO> getWorkflowGroups(String configFileIS, List<String> expectedWfs) throws IOException {
         JsonNode mainNode = objectMapper.readValue(configFileIS, JsonNode.class);
-        List<WorkflowGroup> configWorkflowGroups = new ArrayList<>();
-        Set<WorkflowID> listedWfs = new TreeSet<>();
+        List<WorkflowGroupPOJO> configWorkflowGroups = new ArrayList<>();
+        Set<String> listedWfs = new TreeSet<>();
 
         for(JsonNode workflowGroupNode: mainNode.get(GROUPS_TAG)) {
             String[] workflowNames = objectMapper.treeToValue(workflowGroupNode.get(WORKFLOWS_TAG), String[].class);
 
-            List<WorkflowID> ids = new ArrayList<>();
-            for (String wfName : workflowNames) {
-                ids.add(new WorkflowID(wfName));
-            }
-
             String name = workflowGroupNode.get(NAME_TAG).textValue();
-            configWorkflowGroups.add(new WorkflowGroup(name, ids));
-            listedWfs.addAll(ids);
+            final List<WorkflowPOJO> collect = Arrays.stream(workflowNames)
+                    .map(WorkflowPOJO::new)
+                    .collect(toList());
+            configWorkflowGroups.add(new WorkflowGroupPOJO(name).setRows(collect));
+            listedWfs.addAll(Arrays.stream(workflowNames).collect(toSet()));
         }
 
-        TreeSet<WorkflowID> diff = new TreeSet<>(Sets.difference(expectedWfs, listedWfs));
-        if (!diff.isEmpty()) {
-            configWorkflowGroups.add(new WorkflowGroup(UNLISTED_WORKFLOWS_CAPTION, new ArrayList<>(diff)));
+        final List<WorkflowPOJO> collect = expectedWfs.stream()
+                .filter(listedWfs::contains)
+                .map(WorkflowPOJO::new)
+                .collect(toList());
+        if (!collect.isEmpty()) {
+            configWorkflowGroups.add(new WorkflowGroupPOJO(UNLISTED_WORKFLOWS_CAPTION)
+                                        .setRows(collect)
+            );
         }
         return configWorkflowGroups;
     }
 
-    private static List<WorkflowGroup> getDefaultGroups(Set<WorkflowID> workflows) {
-        return Collections.singletonList(new WorkflowGroup(DEFAULT_CAPTION, new LinkedList<>(new TreeSet<>(workflows))));
+    private static List<WorkflowGroupPOJO> getDefaultGroups(List<String> workflows) {
+        return Collections.singletonList(
+                new WorkflowGroupPOJO(DEFAULT_CAPTION)
+                        .setRows(workflows.stream()
+                                .map(WorkflowPOJO::new)
+                                .collect(toList())
+                        )
+        );
     }
 
 }
