@@ -19,12 +19,18 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.collective.celos.JettyServer;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 
 /**
  * Main class that launches the Celos UI.
  */
 public class Main {
-    
+
+    public final static ObjectMapper mapper = new ObjectMapper();
+    public final static ObjectWriter writer = mapper.writerWithDefaultPrettyPrinter();
+
+
     public static String CELOS_URL_ATTR = "CELOS_URL";
     public static String HUE_URL_ATTR = "HUE_URL";
     public static String CONFIG_FILE_ATTR = "CONFIG_FILE";

@@ -24,6 +24,7 @@ import com.collective.celos.ScheduledTime;
 import com.collective.celos.Util;
 import com.collective.celos.WorkflowID;
 import com.collective.celos.WorkflowStatus;
+import com.collective.celos.old.WorkflowGroup;
 
 /**
  * All data required by the UI for rendering.
