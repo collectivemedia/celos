@@ -5,4 +5,4 @@ oj002.ewr004.collective-media.net
 service_name="jdbc-celos-ui"
 service_port=9094
 ui_hue_url="http://cldmgr001.ewr004.collective-media.net:8888/oozie"
-ui_config_file="/home/celos/prod/ui/config.json"
+ui_config_file="/home/celos/prod/ui/config-jdbc.json"
