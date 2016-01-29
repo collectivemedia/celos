@@ -17,7 +17,6 @@ package com.collective.celos.ui;
 
 import com.collective.celos.CelosClient;
 import com.collective.celos.ui.UIConfiguration;
-import com.collective.celos.ui.WorkflowGroup;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;

@@ -34,6 +34,7 @@ public class Main {
     public static String CELOS_URL_ATTR = "CELOS_URL";
     public static String HUE_URL_ATTR = "HUE_URL";
     public static String CONFIG_FILE_ATTR = "CONFIG_FILE";
+    public static final int MULTI_SLOT_INFO_LIMIT = 20;
 
     public static void main(String... args) throws Exception {
         UICommandLineParser UICommandLineParser = new UICommandLineParser();

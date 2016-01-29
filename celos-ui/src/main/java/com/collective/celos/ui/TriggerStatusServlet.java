@@ -59,7 +59,7 @@ public class TriggerStatusServlet extends HttpServlet {
 
     protected static ArrayNode getJsonNodes(HttpServletRequest req, CelosClient client) throws Exception {
         final List<String> timestamps = Arrays.stream(req.getParameter(TIME_PARAM).split(","))
-                .limit(ReactWorkflowsServlet.MULTI_SLOT_INFO_LIMIT)
+                .limit(Main.MULTI_SLOT_INFO_LIMIT)
                 .collect(toList());
         final ArrayNode node = mapper.createArrayNode();
         for (String ts : timestamps) {
