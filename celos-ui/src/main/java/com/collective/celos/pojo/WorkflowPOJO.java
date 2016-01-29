@@ -6,15 +6,15 @@ import java.util.List;
 public class WorkflowPOJO {
 
     public String workflowName;
-    public List<SlotPOJO> slots;
+    public List<SlotPOJO> rows;
 
     public WorkflowPOJO(String workflowName) {
         this.workflowName = workflowName;
-        this.slots = new ArrayList<>();
+        this.rows = new ArrayList<>();
     }
 
-    public WorkflowPOJO setSlots(List<SlotPOJO> slots) {
-        this.slots = slots;
+    public WorkflowPOJO setRows(List<SlotPOJO> rows) {
+        this.rows = rows;
         return this;
     }
 

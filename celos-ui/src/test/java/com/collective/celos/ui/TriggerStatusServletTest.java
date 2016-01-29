@@ -16,20 +16,13 @@
 package com.collective.celos.ui;
 
 import com.collective.celos.CelosClient;
-import com.collective.celos.ui.UIConfiguration;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.google.common.collect.*;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.File;
-import java.net.URL;
-
-import static org.mockito.Mockito.doReturn;
 
 
 /**

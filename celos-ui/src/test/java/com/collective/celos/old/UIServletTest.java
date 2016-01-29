@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.*;
 
-import com.collective.celos.ui.UIConfiguration;
 import com.google.common.collect.*;
 import org.junit.Assert;
 import org.junit.Test;

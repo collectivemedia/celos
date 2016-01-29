@@ -30,7 +30,6 @@ import static j2html.TagCreator.tr;
 import static j2html.TagCreator.unsafeHtml;
 
 import com.collective.celos.ui.Main;
-import com.collective.celos.ui.UIConfiguration;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.Sets;
 import j2html.tags.Tag;
