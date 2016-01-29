@@ -18,6 +18,7 @@ package com.collective.celos.server;
 import com.collective.celos.CelosClient;
 import com.collective.celos.Constants;
 import com.collective.celos.Util;
+import org.apache.log4j.Logger;
 
 import java.net.URI;
 import java.util.Collections;
@@ -28,6 +29,8 @@ import java.util.TimerTask;
  * Main entry point to the scheduler server.
  */
 public class Main {
+
+    private static Logger LOGGER = Logger.getLogger(Main.class);
 
     public static void main(String... args) throws Exception {
 
@@ -62,7 +65,7 @@ public class Main {
                 try {
                     celosClient.iterateScheduler();
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    LOGGER.error(e.getMessage(), e);
                 }
             }
         };
