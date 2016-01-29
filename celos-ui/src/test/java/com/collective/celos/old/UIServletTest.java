@@ -13,13 +13,15 @@
  * implied.  See the License for the specific language governing
  * permissions and limitations under the License.
  */
-package com.collective.celos.ui;
+package com.collective.celos.old;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.util.*;
 
+import com.collective.celos.ui.UIConfiguration;
+import com.collective.celos.ui.WorkflowGroup;
 import com.google.common.collect.*;
 import org.junit.Assert;
 import org.junit.Test;
