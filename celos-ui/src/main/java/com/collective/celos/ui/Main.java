@@ -27,24 +27,20 @@ import com.fasterxml.jackson.databind.ObjectWriter;
  */
 public class Main {
 
-    public final static ObjectMapper mapper = new ObjectMapper();
-    public final static ObjectWriter writer = mapper.writerWithDefaultPrettyPrinter();
-
-
     public static String CELOS_URL_ATTR = "CELOS_URL";
     public static String HUE_URL_ATTR = "HUE_URL";
     public static String CONFIG_FILE_ATTR = "CONFIG_FILE";
     public static final int MULTI_SLOT_INFO_LIMIT = 20;
 
     public static void main(String... args) throws Exception {
-        UICommandLineParser UICommandLineParser = new UICommandLineParser();
-        UICommandLine commandLine = UICommandLineParser.parse(args);
+        CommandLineParser UICommandLineParser = new CommandLineParser();
+        CommandLine commandLine = UICommandLineParser.parse(args);
         JettyServer jettyServer = new JettyServer();
         jettyServer.start(commandLine.getPort());
         jettyServer.setupContext(getAttributes(commandLine), new HashMap<String, String>());
     }
 
-    private static Map<String, Object> getAttributes(UICommandLine commandLine) {
+    private static Map<String, Object> getAttributes(CommandLine commandLine) {
         Map<String, Object> attrs = new HashMap<>();
         attrs.put(CELOS_URL_ATTR, commandLine.getCelosUrl());
         attrs.put(HUE_URL_ATTR, commandLine.getHueUrl());
