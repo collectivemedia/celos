@@ -5,10 +5,17 @@ import java.util.List;
 
 public class WorkflowGroup {
 
-    private String name;
-    private List<String> times;
-    private List<String> days;
-    private List<Workflow> rows;
+    private final String name;
+    private final List<String> times;
+    private final List<String> days;
+    private final List<Workflow> rows;
+
+    private WorkflowGroup(String name, List<String> times, List<String> days, List<Workflow> rows) {
+        this.name = name;
+        this.times = times;
+        this.days = days;
+        this.rows = rows;
+    }
 
     public WorkflowGroup(String name) {
         this.name = name;
@@ -17,19 +24,16 @@ public class WorkflowGroup {
         this.rows = new ArrayList<>();
     }
 
-    public WorkflowGroup setTimes(List<String> times) {
-        this.times = times;
-        return this;
+    public WorkflowGroup withTimes(List<String> times) {
+        return new WorkflowGroup(this.name, times, this.days, this.rows);
     }
 
-    public WorkflowGroup setDays(List<String> days) {
-        this.days = days;
-        return this;
+    public WorkflowGroup withDays(List<String> days) {
+        return new WorkflowGroup(this.name, this.times, days, this.rows);
     }
 
-    public WorkflowGroup setRows(List<Workflow> rows) {
-        this.rows = rows;
-        return this;
+    public WorkflowGroup withRows(List<Workflow> rows) {
+        return new WorkflowGroup(this.name, this.times, this.days, rows);
     }
 
     public String getName() {

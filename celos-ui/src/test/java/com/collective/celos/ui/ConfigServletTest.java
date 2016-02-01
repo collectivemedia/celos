@@ -33,13 +33,13 @@ public class ConfigServletTest {
             "    \"days\" : [ ]," +
             "    \"rows\" : [ {" +
             "      \"workflowName\" : \"Group1-1\"," +
-            "      \"slots\" : [ ]" +
+            "      \"rows\" : [ ]" +
             "    }, {" +
             "      \"workflowName\" : \"Group1-2\"," +
-            "      \"slots\" : [ ]" +
+            "      \"rows\" : [ ]" +
             "    }, {" +
             "      \"workflowName\" : \"Group1-3\"," +
-            "      \"slots\" : [ ]" +
+            "      \"rows\" : [ ]" +
             "    } ]" +
             "  }, {" +
             "    \"name\" : \"Group2\"," +
@@ -47,7 +47,7 @@ public class ConfigServletTest {
             "    \"days\" : [ ]," +
             "    \"rows\" : [ {" +
             "      \"workflowName\" : \"Group2-1\"," +
-            "      \"slots\" : [ ]" +
+            "      \"rows\" : [ ]" +
             "    } ]" +
             "  }, {" +
             "    \"name\" : \"Group3\"," +
@@ -60,7 +60,7 @@ public class ConfigServletTest {
             "    \"days\" : [ ]," +
             "    \"rows\" : [ {" +
             "      \"workflowName\" : \"Group2-1\"," +
-            "      \"slots\" : [ ]" +
+            "      \"rows\" : [ ]" +
             "    } ]" +
             "  } ]" +
             "}";
