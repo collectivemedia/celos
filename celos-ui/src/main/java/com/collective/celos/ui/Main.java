@@ -15,12 +15,18 @@
  */
 package com.collective.celos.ui;
 
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.collective.celos.CelosClient;
 import com.collective.celos.JettyServer;
+import com.collective.celos.Util;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+
+import javax.servlet.ServletContext;
 
 /**
  * Main class that launches the Celos UI.
@@ -38,6 +44,11 @@ public class Main {
         JettyServer jettyServer = new JettyServer();
         jettyServer.start(commandLine.getPort());
         jettyServer.setupContext(getAttributes(commandLine), new HashMap<String, String>());
+    }
+
+    public static CelosClient getCelosClient(ServletContext servletContext) throws URISyntaxException {
+        URL celosURL = (URL) Util.requireNonNull(servletContext.getAttribute(Main.CELOS_URL_ATTR));
+        return new CelosClient(celosURL.toURI());
     }
 
     private static Map<String, Object> getAttributes(CommandLine commandLine) {

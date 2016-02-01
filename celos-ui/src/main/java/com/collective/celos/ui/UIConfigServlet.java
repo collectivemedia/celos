@@ -27,7 +27,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -51,8 +50,7 @@ public class UIConfigServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse response) throws ServletException, IOException {
         try {
             final ServletContext servletContext = getServletContext();
-            final URL celosURL = (URL) Util.requireNonNull(servletContext.getAttribute(Main.CELOS_URL_ATTR));
-            final CelosClient client = new CelosClient(celosURL.toURI());
+            CelosClient client = Main.getCelosClient(servletContext);
             final Path configFile = ((File) servletContext.getAttribute(Main.CONFIG_FILE_ATTR)).toPath();
             final Optional<String> config = (Files.exists(configFile))
                     ? Optional.of(new String(Files.readAllBytes(configFile), StandardCharsets.UTF_8))
@@ -66,7 +64,7 @@ public class UIConfigServlet extends HttpServlet {
         }
     }
 
-    public static String processGet(List<String> workflowIDs, Optional<String> configFile) throws Exception {
+    public String processGet(List<String> workflowIDs, Optional<String> configFile) throws Exception {
         List<WorkflowGroup> groups;
 
         if (configFile.isPresent()) {
@@ -78,7 +76,7 @@ public class UIConfigServlet extends HttpServlet {
         return Util.JSON_PRETTY.writeValueAsString(result);
     }
 
-    static List<WorkflowGroup> getWorkflowGroups(String configFileIS, List<String> expectedWfs) throws IOException {
+    List<WorkflowGroup> getWorkflowGroups(String configFileIS, List<String> expectedWfs) throws IOException {
         JsonNode mainNode = Util.MAPPER.readValue(configFileIS, JsonNode.class);
         List<WorkflowGroup> configWorkflowGroups = new ArrayList<>();
         Set<String> listedWfs = new TreeSet<>();
@@ -106,7 +104,7 @@ public class UIConfigServlet extends HttpServlet {
         return configWorkflowGroups;
     }
 
-    private static List<WorkflowGroup> getDefaultGroups(List<String> workflows) {
+    private List<WorkflowGroup> getDefaultGroups(List<String> workflows) {
         return Collections.singletonList(
                 new WorkflowGroup(DEFAULT_CAPTION)
                         .setRows(workflows.stream()

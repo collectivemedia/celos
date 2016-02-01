@@ -16,20 +16,13 @@
 package com.collective.celos.ui;
 
 import com.collective.celos.CelosClient;
-import com.collective.celos.ui.UIConfiguration;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.google.common.collect.*;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.File;
-import java.net.URL;
-
-import static org.mockito.Mockito.doReturn;
 
 
 /**
@@ -63,12 +56,12 @@ public class TriggerStatusServletTest {
 
         Mockito.when(client.getTriggerStatusAsText(Mockito.anyString(), Mockito.anyString()))
                .thenReturn(MAPPER.readTree(ss));
-        Mockito.when(req.getParameter(TriggerStatusServlet.ID_PARAM))
+        Mockito.when(req.getParameter(UITriggerStatusServlet.ID_PARAM))
                 .thenReturn("workflow-1");
-        Mockito.when(req.getParameter(TriggerStatusServlet.TIME_PARAM))
+        Mockito.when(req.getParameter(UITriggerStatusServlet.TIME_PARAM))
                 .thenReturn("2015-09-13T13:00Z,2015-09-13T13:00Z");
 
-        ArrayNode xx = TriggerStatusServlet.getJsonNodes(req, client);
+        ArrayNode xx = new UITriggerStatusServlet().getJsonNodes(req, client);
 
         Assert.assertEquals(xx.size(), 2);
         Assert.assertNotNull(MAPPER.writeValueAsString(xx));
