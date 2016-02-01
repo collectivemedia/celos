@@ -5,6 +5,18 @@ import java.util.List;
 
 public class WorkflowGroup {
 
+    private final String name;
+    private final List<String> times;
+    private final List<String> days;
+    private final List<Workflow> rows;
+
+    private WorkflowGroup(String name, List<String> times, List<String> days, List<Workflow> rows) {
+        this.name = name;
+        this.times = times;
+        this.days = days;
+        this.rows = rows;
+    }
+
     public WorkflowGroup(String name) {
         this.name = name;
         this.times = new ArrayList<>();
@@ -39,17 +51,5 @@ public class WorkflowGroup {
     public List<Workflow> getRows() {
         return rows;
     }
-
-    private WorkflowGroup(String name, List<String> times, List<String> days, List<Workflow> rows) {
-        this.name = name;
-        this.times = times;
-        this.days = days;
-        this.rows = rows;
-    }
-
-    private final String name;
-    private final List<String> times;
-    private final List<String> days;
-    private final List<Workflow> rows;
 
 }

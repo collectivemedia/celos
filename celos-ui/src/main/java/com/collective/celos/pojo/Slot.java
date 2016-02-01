@@ -5,11 +5,23 @@ import java.util.List;
 
 public class Slot {
 
+    private final String status;
+    private final String url;
+    private final List<String> timestamps;
+    private final Integer quantity;
+
     private Slot(String status, String url, List<String> timestamps, Integer quantity) {
         this.status = status;
         this.url = url;
         this.timestamps = timestamps;
         this.quantity = quantity;
+    }
+
+    public Slot(String status) {
+        this.status = status;
+        this.url = null;
+        this.timestamps = new ArrayList<>();
+        this.quantity = 1;
     }
 
     public String getStatus() {
@@ -31,17 +43,5 @@ public class Slot {
     public Slot withQuantity(Integer quantity) {
         return new Slot(this.status, this.url, this.timestamps, quantity);
     }
-
-    public Slot(String status) {
-        this.status = status;
-        this.url = null;
-        this.timestamps = new ArrayList<>();
-        this.quantity = 1;
-    }
-
-    private final String status;
-    private final String url;
-    private final List<String> timestamps;
-    private final Integer quantity;
 
 }
