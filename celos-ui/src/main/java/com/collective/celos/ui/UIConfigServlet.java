@@ -88,7 +88,7 @@ public class UIConfigServlet extends HttpServlet {
             final List<Workflow> collect = Arrays.stream(workflowNames)
                     .map(Workflow::new)
                     .collect(toList());
-            configWorkflowGroups.add(new WorkflowGroup(name).setRows(collect));
+            configWorkflowGroups.add(new WorkflowGroup(name).withRows(collect));
             listedWfs.addAll(Arrays.stream(workflowNames).collect(toSet()));
         }
 
@@ -98,7 +98,7 @@ public class UIConfigServlet extends HttpServlet {
                 .collect(toList());
         if (!collect.isEmpty()) {
             configWorkflowGroups.add(new WorkflowGroup(UNLISTED_WORKFLOWS_CAPTION)
-                                         .setRows(collect)
+                                         .withRows(collect)
             );
         }
         return configWorkflowGroups;
@@ -107,7 +107,7 @@ public class UIConfigServlet extends HttpServlet {
     private List<WorkflowGroup> getDefaultGroups(List<String> workflows) {
         return Collections.singletonList(
                 new WorkflowGroup(DEFAULT_CAPTION)
-                        .setRows(workflows.stream()
+                        .withRows(workflows.stream()
                                 .map(Workflow::new)
                                 .collect(toList())
                         )

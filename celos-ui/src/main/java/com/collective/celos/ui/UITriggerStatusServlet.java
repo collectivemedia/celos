@@ -17,18 +17,13 @@ package com.collective.celos.ui;
 
 import com.collective.celos.CelosClient;
 import com.collective.celos.Util;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 
@@ -60,7 +55,7 @@ public class UITriggerStatusServlet extends HttpServlet {
                 .collect(toList());
         final ArrayNode node = Util.MAPPER.createArrayNode();
         for (String ts : timestamps) {
-            node.add(client.getTriggerStatusAsText(req.getParameter(ID_PARAM), ts));
+            node.add(client.getTriggerStatus(req.getParameter(ID_PARAM), ts));
         }
         return node;
     }

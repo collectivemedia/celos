@@ -54,7 +54,7 @@ public class TriggerStatusServletTest {
                 "  } ]\n" +
                 "}";
 
-        Mockito.when(client.getTriggerStatusAsText(Mockito.anyString(), Mockito.anyString()))
+        Mockito.when(client.getTriggerStatus(Mockito.anyString(), Mockito.anyString()))
                .thenReturn(MAPPER.readTree(ss));
         Mockito.when(req.getParameter(UITriggerStatusServlet.ID_PARAM))
                 .thenReturn("workflow-1");
