@@ -15,21 +15,23 @@
  */
 package com.collective.celos.ui;
 
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.collective.celos.CelosClient;
 import com.collective.celos.JettyServer;
+import com.collective.celos.Util;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+
+import javax.servlet.ServletContext;
 
 /**
  * Main class that launches the Celos UI.
  */
 public class Main {
-
-    public final static ObjectMapper mapper = new ObjectMapper();
-    public final static ObjectWriter writer = mapper.writerWithDefaultPrettyPrinter();
-
 
     public static String CELOS_URL_ATTR = "CELOS_URL";
     public static String HUE_URL_ATTR = "HUE_URL";
@@ -37,14 +39,19 @@ public class Main {
     public static final int MULTI_SLOT_INFO_LIMIT = 20;
 
     public static void main(String... args) throws Exception {
-        UICommandLineParser UICommandLineParser = new UICommandLineParser();
-        UICommandLine commandLine = UICommandLineParser.parse(args);
+        CommandLineParser UICommandLineParser = new CommandLineParser();
+        CommandLine commandLine = UICommandLineParser.parse(args);
         JettyServer jettyServer = new JettyServer();
         jettyServer.start(commandLine.getPort());
         jettyServer.setupContext(getAttributes(commandLine), new HashMap<String, String>());
     }
 
-    private static Map<String, Object> getAttributes(UICommandLine commandLine) {
+    public static CelosClient getCelosClient(ServletContext servletContext) throws URISyntaxException {
+        URL celosURL = (URL) Util.requireNonNull(servletContext.getAttribute(Main.CELOS_URL_ATTR));
+        return new CelosClient(celosURL.toURI());
+    }
+
+    private static Map<String, Object> getAttributes(CommandLine commandLine) {
         Map<String, Object> attrs = new HashMap<>();
         attrs.put(CELOS_URL_ATTR, commandLine.getCelosUrl());
         attrs.put(HUE_URL_ATTR, commandLine.getHueUrl());

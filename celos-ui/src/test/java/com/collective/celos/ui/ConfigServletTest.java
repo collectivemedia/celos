@@ -17,7 +17,6 @@ package com.collective.celos.ui;
 
 import java.util.*;
 
-import com.collective.celos.*;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Assert;
@@ -96,7 +95,7 @@ public class ConfigServletTest {
         final List<String> workflowIDs = new ArrayList<>();
         workflowIDs.add("Group2-1");
         workflowIDs.add("abiurvalg");
-        final String result = ConfigServlet.processGet(workflowIDs, Optional.of(input));
+        final String result = new UIConfigServlet().processGet(workflowIDs, Optional.of(input));
         final JsonNode jsonNode = mapper.readTree(result);
         Assert.assertEquals(4, jsonNode.get("rows").size());
 

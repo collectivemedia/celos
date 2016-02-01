@@ -29,7 +29,7 @@ import com.collective.celos.old.WorkflowGroup;
 /**
  * All data required by the UI for rendering.
  */
-public class UIConfiguration {
+public class Configuration {
 
     private final ScheduledTime start;
     private final ScheduledTime end;
@@ -38,7 +38,7 @@ public class UIConfiguration {
     private final Map<WorkflowID, WorkflowStatus> statuses;
     private final URL hueURL; // may be null
     
-    public UIConfiguration(ScheduledTime start, ScheduledTime end, NavigableSet<ScheduledTime> tileTimes, List<WorkflowGroup> groups, Map<WorkflowID, WorkflowStatus> statuses, URL hueURL) {
+    public Configuration(ScheduledTime start, ScheduledTime end, NavigableSet<ScheduledTime> tileTimes, List<WorkflowGroup> groups, Map<WorkflowID, WorkflowStatus> statuses, URL hueURL) {
         this.start = Util.requireNonNull(start);
         this.end = Util.requireNonNull(end);
         this.tileTimes = Util.requireNonNull(tileTimes);

@@ -56,12 +56,12 @@ public class TriggerStatusServletTest {
 
         Mockito.when(client.getTriggerStatusAsText(Mockito.anyString(), Mockito.anyString()))
                .thenReturn(MAPPER.readTree(ss));
-        Mockito.when(req.getParameter(TriggerStatusServlet.ID_PARAM))
+        Mockito.when(req.getParameter(UITriggerStatusServlet.ID_PARAM))
                 .thenReturn("workflow-1");
-        Mockito.when(req.getParameter(TriggerStatusServlet.TIME_PARAM))
+        Mockito.when(req.getParameter(UITriggerStatusServlet.TIME_PARAM))
                 .thenReturn("2015-09-13T13:00Z,2015-09-13T13:00Z");
 
-        ArrayNode xx = TriggerStatusServlet.getJsonNodes(req, client);
+        ArrayNode xx = new UITriggerStatusServlet().getJsonNodes(req, client);
 
         Assert.assertEquals(xx.size(), 2);
         Assert.assertNotNull(MAPPER.writeValueAsString(xx));

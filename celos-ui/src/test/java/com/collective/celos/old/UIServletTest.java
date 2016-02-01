@@ -129,7 +129,7 @@ public class UIServletTest {
         SlotState state2 = new SlotState(new SlotID(id, new ScheduledTime("2015-09-03T13:12Z")), SlotState.Status.WAITING);
         List<SlotState> slotStates = ImmutableList.of(state1, state2);
         Map<WorkflowID, WorkflowStatus> statuses = ImmutableMap.of(id, new WorkflowStatus(workflowInfo, slotStates, false));
-        UIConfiguration conf = new UIConfiguration(start, end, tileTimes, groups, statuses, new URL("http://example.com"));
+        Configuration conf = new Configuration(start, end, tileTimes, groups, statuses, new URL("http://example.com"));
         
         StringWebResponse response = new StringWebResponse(UIServlet.render(conf), new URL("http://example.com"));
         WebClient webClient = new WebClient();
