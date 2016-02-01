@@ -16,12 +16,10 @@
 package com.collective.celos.ui;
 
 import com.collective.celos.*;
-import com.collective.celos.pojo.SlotPOJO;
-import com.collective.celos.pojo.WorkflowGroupPOJO;
-import com.collective.celos.pojo.WorkflowPOJO;
+import com.collective.celos.pojo.Slot;
+import com.collective.celos.pojo.WorkflowGroup;
+import com.collective.celos.pojo.Workflow;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
 import com.google.common.collect.Sets;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
@@ -36,7 +34,6 @@ import java.io.*;
 import java.net.URL;
 import java.time.ZonedDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
@@ -44,7 +41,7 @@ import static java.util.stream.Collectors.toSet;
 /**
  * Renders the UI JSON.
  */
-public class ReactWorkflowsServlet extends HttpServlet {
+public class UIReactWorkflowsServlet extends HttpServlet {
 
     private static final String ZOOM_PARAM = "zoom";
     private static final String TIME_PARAM = "time";
@@ -54,64 +51,57 @@ public class ReactWorkflowsServlet extends HttpServlet {
     private static final String NAME_TAG = "name";
     private static final String UNLISTED_WORKFLOWS_CAPTION = "Unlisted workflows";
     private static final String DEFAULT_CAPTION = "All Workflows";
-    static final int MULTI_SLOT_INFO_LIMIT = 16;
 
-    protected static final ObjectMapper mapper = new ObjectMapper();
-    protected static final ObjectWriter writer = mapper.writerWithDefaultPrettyPrinter();
-
-    private static SlotPOJO makeSlot(URL hueURL, List<SlotState> states) {
-        final SlotPOJO slot = new SlotPOJO("EMPTY");
+    private static Slot makeSlot(URL hueURL, List<SlotState> states) {
         if (states.isEmpty()) {
-            slot.quantity = 0;
-            return slot;
+            return new Slot("EMPTY").withQuantity(0);
         }
+        Slot slot = new Slot(printTileClass(states));
         if (states.size() == 1 && hueURL != null && states.get(0).getExternalID() != null) {
-            slot.url = printWorkflowURL(hueURL, states.get(0));
+            slot = slot.withUrl(printWorkflowURL(hueURL, states.get(0)));
         }
-        slot.status = printTileClass(states);
-        slot.quantity = states.size();
-        slot.timestamps = states.stream()
+        slot = slot.withQuantity(states.size());
+        slot = slot.withTimestamps(states.stream()
                 .map(x -> ZonedDateTime.parse(x.getScheduledTime().toString()).toString())
-                .limit(MULTI_SLOT_INFO_LIMIT)
-                .collect(toList());
+                .limit(Main.MULTI_SLOT_INFO_LIMIT)
+                .collect(toList()));
         return slot;
     }
 
-    protected static WorkflowGroupPOJO processWorkflowGroup(String name, List<WorkflowID> ids, NavigableSet<ScheduledTime> tileTimesSet, Map<WorkflowID, WorkflowStatus> statuses, URL hueURL) {
+    protected static WorkflowGroup processWorkflowGroup(String name, List<WorkflowID> ids, NavigableSet<ScheduledTime> tileTimesSet, Map<WorkflowID, WorkflowStatus> statuses, URL hueURL) {
 
-        final WorkflowGroupPOJO group = new WorkflowGroupPOJO(name);
+        WorkflowGroup group = new WorkflowGroup(name);
         final List<ScheduledTime> tileTimes = tileTimesSet.stream().collect(toList());
         Collections.reverse(tileTimes);
-        group.times = tileTimes.stream()
+        group = group.withTimes(tileTimes.stream()
                 .map(tileTime -> HEADER_FORMAT.print(tileTime.getDateTime()))
-                .collect(toList());
+                .collect(toList()));
 
         // Mark full days as date, half day as "<>"
-        group.days = tileTimes.stream()
+        group = group.withDays(tileTimes.stream()
                 .map(tileTime ->
                         (Util.isFullDay(tileTime.getDateTime()))
-                            ? DAY_FORMAT.print(tileTime.getDateTime())
-                            : (Util.isFullDay(tileTime.plusHours(12).getDateTime()))
+                                ? DAY_FORMAT.print(tileTime.getDateTime())
+                                : (Util.isFullDay(tileTime.plusHours(12).getDateTime()))
                                 ? "<>"
                                 : null)
-                .collect(toList());
+                .collect(toList()));
 
-        group.rows = new ArrayList<>();
+        group = group.withRows(new ArrayList<>());
         for (WorkflowID id : ids) {
-            final WorkflowPOJO workflow = new WorkflowPOJO(id.toString());
-            group.rows.add(workflow);
-
+            Workflow workflow = new Workflow(id.toString());
+            group.getRows().add(workflow);
             WorkflowStatus workflowStatus = statuses.get(id);
             if (workflowStatus == null) {
                 continue;
             }
             Map<ScheduledTime, Set<SlotState>> buckets = bucketSlotsByTime(workflowStatus.getSlotStates(), tileTimesSet);
-            workflow.rows = new ArrayList<>();
+            workflow = workflow.withRows(new ArrayList<>());
             for (ScheduledTime tileTime : tileTimes) {
                 List<SlotState> slots = buckets.getOrDefault(tileTime, new HashSet<>()).stream()
                         .sorted((foo, bar) -> foo.getScheduledTime().compareTo(bar.getScheduledTime()))
                         .collect(toList());
-                workflow.rows.add(makeSlot(hueURL, slots));
+                workflow.getRows().add(makeSlot(hueURL, slots));
             }
         }
 
@@ -143,69 +133,66 @@ public class ReactWorkflowsServlet extends HttpServlet {
     }
 
 
-    static List<WorkflowGroupPOJO> getWorkflowGroups(InputStream configFileIS, Set<WorkflowID> expectedWfs) throws IOException {
-        JsonNode mainNode = Main.mapper.readValue(configFileIS, JsonNode.class);
-        List<WorkflowGroupPOJO> configWorkflowGroups = new ArrayList<>();
+    static List<WorkflowGroup> getWorkflowGroups(InputStream configFileIS, Set<WorkflowID> expectedWfs) throws IOException {
+        JsonNode mainNode = Util.MAPPER.readValue(configFileIS, JsonNode.class);
+        List<WorkflowGroup> configWorkflowGroups = new ArrayList<>();
         Set<String> listedWfs = new TreeSet<>();
 
         for(JsonNode workflowGroupNode: mainNode.get(GROUPS_TAG)) {
-            String[] workflowNames = Main.mapper.treeToValue(workflowGroupNode.get(WORKFLOWS_TAG), String[].class);
+            String[] workflowNames = Util.MAPPER.treeToValue(workflowGroupNode.get(WORKFLOWS_TAG), String[].class);
 
             String name = workflowGroupNode.get(NAME_TAG).textValue();
-            final List<WorkflowPOJO> collect = Arrays.stream(workflowNames)
-                    .map(WorkflowPOJO::new)
+            final List<Workflow> collect = Arrays.stream(workflowNames)
+                    .map(Workflow::new)
                     .collect(toList());
-            configWorkflowGroups.add(new WorkflowGroupPOJO(name).setRows(collect));
+            configWorkflowGroups.add(new WorkflowGroup(name).withRows(collect));
             listedWfs.addAll(Arrays.stream(workflowNames).collect(toSet()));
         }
 
         TreeSet<WorkflowID> diff = new TreeSet<>(Sets.difference(expectedWfs, listedWfs));
         if (!diff.isEmpty()) {
-            final List<WorkflowPOJO> collect = diff.stream()
-                    .map(x -> new WorkflowPOJO(x.toString()))
+            final List<Workflow> collect = diff.stream()
+                    .map(x -> new Workflow(x.toString()))
                     .collect(toList());
-            configWorkflowGroups.add(new WorkflowGroupPOJO(UNLISTED_WORKFLOWS_CAPTION).setRows(collect));
+            configWorkflowGroups.add(new WorkflowGroup(UNLISTED_WORKFLOWS_CAPTION).withRows(collect));
         }
         return configWorkflowGroups;
     }
 
     public static String processGet(ServletContext servletContext, String timeParam, String zoomParam, String wfGroup) throws Exception {
-
-        URL celosURL = (URL) servletContext.getAttribute(Main.CELOS_URL_ATTR);
         URL hueURL = (URL) servletContext.getAttribute(Main.HUE_URL_ATTR);
         File configFile = (File) servletContext.getAttribute(Main.CONFIG_FILE_ATTR);
-
-        CelosClient client = new CelosClient(celosURL.toURI());
-            final ScheduledTime now = ScheduledTime.now();
+        CelosClient client = Main.getCelosClient(servletContext);
+        final ScheduledTime now = ScheduledTime.now();
         ScheduledTime timeShift = getDisplayTime(timeParam, now);
         int zoomLevelMinutes = getZoomLevel(zoomParam);
         final NavigableSet<ScheduledTime> tileTimesSet = getTileTimesSet(getFirstTileTime(timeShift, zoomLevelMinutes), zoomLevelMinutes, MAX_MINUTES_TO_FETCH, MAX_TILES_TO_DISPLAY);
         ScheduledTime start = tileTimesSet.first();
         Set<WorkflowID> workflowIDs = client.getWorkflowList();
 
-        List<WorkflowGroupPOJO> groups;
+        List<WorkflowGroup> groups;
         if (configFile != null) {
             groups = getWorkflowGroups(new FileInputStream(configFile), workflowIDs);
         } else {
             groups = getDefaultGroups(workflowIDs);
         }
-        final List<WorkflowGroupPOJO> groupsMatchedName = groups.stream()
-                .filter(u -> u.name.equals(wfGroup))
+        final List<WorkflowGroup> groupsMatchedName = groups.stream()
+                .filter(u -> u.getName().equals(wfGroup))
                 .collect(toList());
         if (groupsMatchedName.isEmpty()) {
             throw new Exception("group not found");
         }
-        final WorkflowGroupPOJO workflowGroup = groupsMatchedName.get(0);
+        final WorkflowGroup workflowGroup = groupsMatchedName.get(0);
 
         final List<WorkflowID> ids = workflowIDs.stream()
-                .filter(workflowGroup.rows::contains)
+                .filter(workflowGroup.getRows()::contains)
                 .collect(toList());
 
         Map<WorkflowID, WorkflowStatus> statuses = fetchStatuses(client, ids, start, timeShift);
 
-        final WorkflowGroupPOJO groupData = processWorkflowGroup(workflowGroup.name, ids, tileTimesSet, statuses, hueURL);
+        final WorkflowGroup groupData = processWorkflowGroup(workflowGroup.getName(), ids, tileTimesSet, statuses, hueURL);
 
-        return writer.writeValueAsString(groupData);
+        return Util.JSON_PRETTY.writeValueAsString(groupData);
     }
 
     static ScheduledTime getDisplayTime(String timeStr, ScheduledTime now) {
@@ -340,9 +327,9 @@ public class ReactWorkflowsServlet extends HttpServlet {
         return times;
     }
 
-    private static List<WorkflowGroupPOJO> getDefaultGroups(Set<WorkflowID> workflows) {
-        final List<WorkflowPOJO> collect = workflows.stream().map(x -> new WorkflowPOJO(x.toString())).collect(toList());
-        return Collections.singletonList(new WorkflowGroupPOJO(DEFAULT_CAPTION).setRows(collect));
+    private static List<WorkflowGroup> getDefaultGroups(Set<WorkflowID> workflows) {
+        final List<Workflow> collect = workflows.stream().map(x -> new Workflow(x.toString())).collect(toList());
+        return Collections.singletonList(new WorkflowGroup(DEFAULT_CAPTION).withRows(collect));
     }
 
 }

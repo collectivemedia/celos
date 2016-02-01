@@ -18,8 +18,7 @@ package com.collective.celos.ui;
 import com.collective.celos.CelosClient;
 import com.collective.celos.ScheduledTime;
 import com.collective.celos.WorkflowID;
-import com.collective.celos.old.UIConfiguration;
-import com.collective.celos.pojo.WorkflowGroupPOJO;
+import com.collective.celos.pojo.WorkflowGroup;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Assert;
 import org.junit.Test;
@@ -41,7 +40,6 @@ public class ReactWorkflowsServletTest {
     public void testParsesOk() throws Exception {
         CelosClient client = Mockito.mock(CelosClient.class);
         HttpServletRequest req = Mockito.mock(HttpServletRequest.class);
-        UIConfiguration conf = Mockito.mock(UIConfiguration.class);
 
         NavigableSet<ScheduledTime> tileTimes = new TreeSet<>();
         tileTimes.add(new ScheduledTime("2015-09-14T16:00Z"));
@@ -49,12 +47,10 @@ public class ReactWorkflowsServletTest {
         tileTimes.add(new ScheduledTime("2015-09-14T18:00Z"));
         tileTimes.add(new ScheduledTime("2015-09-14T19:00Z"));
 
-        Mockito.when(conf.getTileTimes()).thenReturn(tileTimes);
-
         final ArrayList<WorkflowID> ids = new ArrayList<>();
         ids.add(new WorkflowID("asdasdas"));
 
-        WorkflowGroupPOJO xx = ReactWorkflowsServlet.processWorkflowGroup("dsad", ids, tileTimes, new HashMap<>(), new URL("http://hue"));
+        WorkflowGroup xx = UIReactWorkflowsServlet.processWorkflowGroup("dsad", ids, tileTimes, new HashMap<>(), new URL("http://hue"));
 
         String check = "{\"name\":\"dsad\",\"times\":[\"1900\",\"1800\",\"1700\",\"1600\"],\"days\":[null,null,null,null],\"rows\":[{\"workflowName\":\"asdasdas\",\"rows\":[]}]}";
 
