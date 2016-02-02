@@ -33,13 +33,13 @@ public class ConfigServletTest {
             "    \"days\" : [ ]," +
             "    \"rows\" : [ {" +
             "      \"workflowName\" : \"Group1-1\"," +
-            "      \"slots\" : [ ]" +
+            "      \"rows\" : [ ]" +
             "    }, {" +
             "      \"workflowName\" : \"Group1-2\"," +
-            "      \"slots\" : [ ]" +
+            "      \"rows\" : [ ]" +
             "    }, {" +
             "      \"workflowName\" : \"Group1-3\"," +
-            "      \"slots\" : [ ]" +
+            "      \"rows\" : [ ]" +
             "    } ]" +
             "  }, {" +
             "    \"name\" : \"Group2\"," +
@@ -47,7 +47,7 @@ public class ConfigServletTest {
             "    \"days\" : [ ]," +
             "    \"rows\" : [ {" +
             "      \"workflowName\" : \"Group2-1\"," +
-            "      \"slots\" : [ ]" +
+            "      \"rows\" : [ ]" +
             "    } ]" +
             "  }, {" +
             "    \"name\" : \"Group3\"," +
@@ -60,7 +60,7 @@ public class ConfigServletTest {
             "    \"days\" : [ ]," +
             "    \"rows\" : [ {" +
             "      \"workflowName\" : \"Group2-1\"," +
-            "      \"slots\" : [ ]" +
+            "      \"rows\" : [ ]" +
             "    } ]" +
             "  } ]" +
             "}";
@@ -95,7 +95,7 @@ public class ConfigServletTest {
         final List<String> workflowIDs = new ArrayList<>();
         workflowIDs.add("Group2-1");
         workflowIDs.add("abiurvalg");
-        final String result = ConfigServlet.processGet(workflowIDs, Optional.of(input));
+        final String result = new ConfigServlet().processGet(workflowIDs, Optional.of(input));
         final JsonNode jsonNode = mapper.readTree(result);
         Assert.assertEquals(4, jsonNode.get("rows").size());
 

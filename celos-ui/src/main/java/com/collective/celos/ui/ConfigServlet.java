@@ -66,7 +66,7 @@ public class ConfigServlet extends HttpServlet {
         }
     }
 
-    public static String processGet(List<String> workflowIDs, Optional<String> configFile) throws Exception {
+    public String processGet(List<String> workflowIDs, Optional<String> configFile) throws Exception {
         List<WorkflowGroup> groups;
 
         if (configFile.isPresent()) {
@@ -78,7 +78,7 @@ public class ConfigServlet extends HttpServlet {
         return Util.JSON_PRETTY.writeValueAsString(result);
     }
 
-    static List<WorkflowGroup> getWorkflowGroups(String configFileIS, List<String> expectedWfs) throws IOException {
+    List<WorkflowGroup> getWorkflowGroups(String configFileIS, List<String> expectedWfs) throws IOException {
         JsonNode mainNode = Util.MAPPER.readValue(configFileIS, JsonNode.class);
         List<WorkflowGroup> configWorkflowGroups = new ArrayList<>();
         Set<String> listedWfs = new TreeSet<>();
@@ -90,7 +90,7 @@ public class ConfigServlet extends HttpServlet {
             final List<Workflow> collect = Arrays.stream(workflowNames)
                     .map(Workflow::new)
                     .collect(toList());
-            configWorkflowGroups.add(new WorkflowGroup(name).setRows(collect));
+            configWorkflowGroups.add(new WorkflowGroup(name).withRows(collect));
             listedWfs.addAll(Arrays.stream(workflowNames).collect(toSet()));
         }
 
@@ -100,16 +100,16 @@ public class ConfigServlet extends HttpServlet {
                 .collect(toList());
         if (!collect.isEmpty()) {
             configWorkflowGroups.add(new WorkflowGroup(UNLISTED_WORKFLOWS_CAPTION)
-                                         .setRows(collect)
+                                         .withRows(collect)
             );
         }
         return configWorkflowGroups;
     }
 
-    private static List<WorkflowGroup> getDefaultGroups(List<String> workflows) {
+    private List<WorkflowGroup> getDefaultGroups(List<String> workflows) {
         return Collections.singletonList(
                 new WorkflowGroup(DEFAULT_CAPTION)
-                        .setRows(workflows.stream()
+                        .withRows(workflows.stream()
                                 .map(Workflow::new)
                                 .collect(toList())
                         )
