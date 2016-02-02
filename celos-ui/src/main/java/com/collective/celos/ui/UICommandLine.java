@@ -23,14 +23,14 @@ import java.net.URL;
 /**
  * UI command-line options.
  */
-public class CommandLine {
+public class UICommandLine {
 
     private final URL celosUrl;
     private final URL hueUrl;
     private final int port;
     private final File configFile;
 
-    public CommandLine(URL celosUrl, URL hueURL, int port, File configFile) {
+    public UICommandLine(URL celosUrl, URL hueURL, int port, File configFile) {
         this.celosUrl =  Util.requireNonNull(celosUrl);
         this.configFile = configFile;
         this.hueUrl = hueURL;

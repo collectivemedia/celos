@@ -32,7 +32,7 @@ import static java.util.stream.Collectors.toList;
 /**
  * Renders the UI HTML.
  */
-public class UITriggerStatusServlet extends HttpServlet {
+public class TriggerStatusServlet extends HttpServlet {
 
     protected static final String ID_PARAM = "id";
     protected static final String TIME_PARAM = "time";
