@@ -18,8 +18,8 @@ package com.collective.celos.old;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import com.collective.celos.ui.CommandLine;
-import com.collective.celos.ui.CommandLineParser;
+import com.collective.celos.ui.UICommandLine;
+import com.collective.celos.ui.UICommandLineParser;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -27,10 +27,10 @@ public class UICommandLineParserTest {
 
     @Test
     public void testParsesOk() throws Exception {
-        CommandLineParser parser = new CommandLineParser();
+        UICommandLineParser parser = new UICommandLineParser();
         String[] clParams = ("--celos http://localhost:8888 --port 1234").split(" ");
 
-        CommandLine commandLine = parser.parse(clParams);
+        UICommandLine commandLine = parser.parse(clParams);
         Assert.assertEquals(commandLine.getCelosUrl(), new URL("http://localhost:8888"));
         Assert.assertEquals(commandLine.getHueUrl(), null);
         Assert.assertEquals(commandLine.getPort(), 1234);
@@ -39,10 +39,10 @@ public class UICommandLineParserTest {
     
     @Test
     public void testParsesHueURL() throws Exception {
-        CommandLineParser parser = new CommandLineParser();
+        UICommandLineParser parser = new UICommandLineParser();
         String[] clParams = ("--celos http://localhost:8888 --port 1234 --hue http://example.com").split(" ");
 
-        CommandLine commandLine = parser.parse(clParams);
+        UICommandLine commandLine = parser.parse(clParams);
         Assert.assertEquals(commandLine.getCelosUrl(), new URL("http://localhost:8888"));
         Assert.assertEquals(commandLine.getHueUrl(), new URL("http://example.com"));
         Assert.assertEquals(commandLine.getPort(), 1234);
@@ -51,7 +51,7 @@ public class UICommandLineParserTest {
     
     @Test(expected = IllegalArgumentException.class)
     public void testPortMissing() throws Exception {
-        CommandLineParser parser = new CommandLineParser();
+        UICommandLineParser parser = new UICommandLineParser();
         String[] clParams = ("--celos localhost:8888").split(" ");
 
         parser.parse(clParams);
@@ -59,7 +59,7 @@ public class UICommandLineParserTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testCelosURLMissing() throws Exception {
-        CommandLineParser parser = new CommandLineParser();
+        UICommandLineParser parser = new UICommandLineParser();
         String[] clParams = ("--port 8888").split(" ");
 
         parser.parse(clParams);
@@ -67,7 +67,7 @@ public class UICommandLineParserTest {
 
     @Test(expected = MalformedURLException.class)
     public void testWrongAddress() throws Exception {
-        CommandLineParser parser = new CommandLineParser();
+        UICommandLineParser parser = new UICommandLineParser();
         String[] clParams = ("--celos localhost:8888 --port 1234").split(" ");
 
         parser.parse(clParams);
@@ -75,7 +75,7 @@ public class UICommandLineParserTest {
 
     @Test(expected = NumberFormatException.class)
     public void testWrongPort() throws Exception {
-        CommandLineParser parser = new CommandLineParser();
+        UICommandLineParser parser = new UICommandLineParser();
         String[] clParams = ("--celos http://localhost:8888 --port abc").split(" ");
 
         parser.parse(clParams);
