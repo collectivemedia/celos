@@ -24,7 +24,7 @@ import com.collective.celos.JettyServer;
  * Main class that launches the Celos UI.
  */
 public class Main {
-    
+
     public static String CELOS_URL_ATTR = "CELOS_URL";
     public static String HUE_URL_ATTR = "HUE_URL";
     public static String CONFIG_FILE_ATTR = "CONFIG_FILE";
