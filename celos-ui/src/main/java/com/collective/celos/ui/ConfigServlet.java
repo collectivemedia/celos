@@ -39,7 +39,7 @@ import static java.util.stream.Collectors.toSet;
 /**
  * Renders the UI JSON.
  */
-public class UIConfigServlet extends HttpServlet {
+public class ConfigServlet extends HttpServlet {
 
     private static final String GROUPS_TAG = "groups";
     private static final String WORKFLOWS_TAG = "workflows";

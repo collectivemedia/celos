@@ -19,8 +19,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.collective.celos.JettyServer;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
 
 /**
  * Main class that launches the Celos UI.
@@ -32,14 +30,14 @@ public class Main {
     public static String CONFIG_FILE_ATTR = "CONFIG_FILE";
 
     public static void main(String... args) throws Exception {
-        CommandLineParser UICommandLineParser = new CommandLineParser();
-        CommandLine commandLine = UICommandLineParser.parse(args);
+        UICommandLineParser UICommandLineParser = new UICommandLineParser();
+        UICommandLine commandLine = UICommandLineParser.parse(args);
         JettyServer jettyServer = new JettyServer();
         jettyServer.start(commandLine.getPort());
         jettyServer.setupContext(getAttributes(commandLine), new HashMap<String, String>());
     }
 
-    private static Map<String, Object> getAttributes(CommandLine commandLine) {
+    private static Map<String, Object> getAttributes(UICommandLine commandLine) {
         Map<String, Object> attrs = new HashMap<>();
         attrs.put(CELOS_URL_ATTR, commandLine.getCelosUrl());
         attrs.put(HUE_URL_ATTR, commandLine.getHueUrl());

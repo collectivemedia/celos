@@ -26,16 +26,16 @@ import java.net.URL;
 /**
  * Parses for UI command-line options.
  */
-public class CommandLineParser {
+public class UICommandLineParser {
 
     private static final String CLI_CELOS_ADDRESS = "celos";
     private static final String CLI_HUE_ADDRESS = "hue";
     private static final String CLI_PORT = "port";
     private static final String CLI_CONFIG = "config";
 
-    private static final Logger LOGGER = Logger.getLogger(CommandLineParser.class);
+    private static final Logger LOGGER = Logger.getLogger(UICommandLineParser.class);
     
-    public CommandLine parse(final String[] commandLineArguments) throws Exception {
+    public UICommandLine parse(final String[] commandLineArguments) throws Exception {
 
         final org.apache.commons.cli.CommandLineParser cmdLineGnuParser = new GnuParser();
         final Options gnuOptions = constructOptions();
@@ -56,7 +56,7 @@ public class CommandLineParser {
             }
         }
 
-        return new CommandLine(celosAddress, hueAddress, port, configFile);
+        return new UICommandLine(celosAddress, hueAddress, port, configFile);
     }
 
     private void validateHasOption(org.apache.commons.cli.CommandLine commandLine, String option) {
