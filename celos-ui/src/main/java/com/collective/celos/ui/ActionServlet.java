@@ -16,7 +16,9 @@
 package com.collective.celos.ui;
 
 import com.collective.celos.CelosClient;
+import com.collective.celos.ScheduledTime;
 import com.collective.celos.Util;
+import com.collective.celos.WorkflowID;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -24,15 +26,39 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.swing.text.html.parser.Entity;
+import javax.swing.tree.ExpandVetoException;
 import java.io.IOException;
 import java.net.URL;
 
 /**
  * Called from the browser to rerun a slot.
  */
-public class UIActionServlet extends HttpServlet {
+public class ActionServlet extends HttpServlet {
     
     private static final String SLOT_ID = "id";
+
+    protected void method1(CelosClient client, String action, JsonNode jsonNode) throws Exception {
+        jsonNode.get("slots").forEach(x -> {
+            try {
+                System.out.println("---");
+                System.out.println(x.get("workflowName").asText());
+                System.out.println(x.get("ts").asText());
+                final WorkflowID workflowName = new WorkflowID(x.get("workflowName").asText());
+                final ScheduledTime ts = new ScheduledTime(x.get("ts").asText());
+                if ("kill".equals(action)) {
+                    client.kill(workflowName, ts);
+                } else if ("rerun".equals(action)) {
+                    client.rerunSlot(workflowName, ts);
+                } else {
+                    throw new Exception("ActionServlet failed");
+                }
+            } catch (Exception e) {
+                // FIXME it shouldn't be like this
+                e.printStackTrace();
+            }
+        });
+    }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -42,12 +68,9 @@ public class UIActionServlet extends HttpServlet {
 
             ObjectMapper mapper = new ObjectMapper();
             final JsonNode jsonNode = mapper.readTree(request.getReader());
-
-//            client.kill(id.getWorkflowID(), id.getScheduledTime());
-//            client.getWorkflowStatus(new WorkflowID("DUMMY"), ScheduledTime.now());
-
-            System.out.println("SUCCESS123!!!!");
             System.out.println(mapper.writeValueAsString(jsonNode));
+            final String action = jsonNode.get("action").asText();
+            method1(client, action, jsonNode);
 
             mapper.writeValue(response.getWriter(), jsonNode);
 
@@ -56,4 +79,5 @@ public class UIActionServlet extends HttpServlet {
             throw new ServletException(e);
         }
     }
+
 }
