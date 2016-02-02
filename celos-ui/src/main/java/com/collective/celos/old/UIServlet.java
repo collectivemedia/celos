@@ -140,20 +140,20 @@ public class UIServlet extends HttpServlet {
             throw new Error("STATUS_TO_SHORT_NAME mapping is incomplete");
         }
     }
-    
+
     private static final int[] ZOOM_LEVEL_MINUTES = new int[]{1, 5, 15, 30, 60, 60*24};
     static final int DEFAULT_ZOOM_LEVEL_MINUTES = 60;
     static final int MIN_ZOOM_LEVEL_MINUTES = 1;
     static final int MAX_ZOOM_LEVEL_MINUTES = 60*24; // Code won't work with higher level, because of toFullDay()
-    
+
     // We never want to fetch more data than for a week from Celos so as not to overload the server
     private static int MAX_MINUTES_TO_FETCH = 7 * 60 * 24;
     private static int MAX_TILES_TO_DISPLAY = 48;
-    
+
     private static final DateTimeFormatter DAY_FORMAT = DateTimeFormat.forPattern("dd");
     private static final DateTimeFormatter HEADER_FORMAT = DateTimeFormat.forPattern("HHmm");
     private static final DateTimeFormatter FULL_FORMAT = DateTimeFormat.forPattern("YYYY-MM-dd HH:mm");
-    
+
     static String render(UIConfiguration conf) throws Exception {
         return html().with(makeHead(), makeBody(conf)).render();
     }

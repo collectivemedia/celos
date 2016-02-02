@@ -32,8 +32,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.ZonedDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
@@ -51,6 +55,33 @@ public class WorkflowsServlet extends HttpServlet {
     private static final String NAME_TAG = "name";
     private static final String UNLISTED_WORKFLOWS_CAPTION = "Unlisted workflows";
     private static final String DEFAULT_CAPTION = "All Workflows";
+
+    // We never want to fetch more data than for a week from Celos so as not to overload the server
+    private static final int MAX_MINUTES_TO_FETCH = 7 * 60 * 24;
+    private static final int MAX_TILES_TO_DISPLAY = 48;
+
+    static final int DEFAULT_ZOOM_LEVEL_MINUTES = 60;
+    static final int MIN_ZOOM_LEVEL_MINUTES = 1;
+    static final int MAX_ZOOM_LEVEL_MINUTES = 60*24; // Code won't work with higher level, because of toFullDay()
+
+    static final Map<SlotState.Status, String> STATUS_TO_SHORT_NAME = new HashMap<>();
+    static {
+        STATUS_TO_SHORT_NAME.put(SlotState.Status.FAILURE, "fail");
+        STATUS_TO_SHORT_NAME.put(SlotState.Status.READY, "rdy&nbsp;");
+        STATUS_TO_SHORT_NAME.put(SlotState.Status.RUNNING, "run&nbsp;");
+        STATUS_TO_SHORT_NAME.put(SlotState.Status.SUCCESS, "&nbsp;&nbsp;&nbsp;&nbsp;");
+        STATUS_TO_SHORT_NAME.put(SlotState.Status.WAIT_TIMEOUT, "time");
+        STATUS_TO_SHORT_NAME.put(SlotState.Status.WAITING, "wait");
+        STATUS_TO_SHORT_NAME.put(SlotState.Status.KILLED, "kill");
+        if (STATUS_TO_SHORT_NAME.size() != SlotState.Status.values().length) {
+            throw new Error("STATUS_TO_SHORT_NAME mapping is incomplete");
+        }
+    }
+
+    private static final DateTimeFormatter DAY_FORMAT = DateTimeFormat.forPattern("dd");
+    private static final DateTimeFormatter HEADER_FORMAT = DateTimeFormat.forPattern("HHmm");
+    private static final DateTimeFormatter FULL_FORMAT = DateTimeFormat.forPattern("YYYY-MM-dd HH:mm");
+
 
     private Slot makeSlot(URL hueURL, List<SlotState> states) {
         if (states.isEmpty()) {
@@ -92,30 +123,20 @@ public class WorkflowsServlet extends HttpServlet {
             Workflow workflow = new Workflow(id.toString());
             group.getRows().add(workflow);
             WorkflowStatus workflowStatus = statuses.get(id);
-            if (workflowStatus == null) {
-                continue;
-            }
-            Map<ScheduledTime, Set<SlotState>> buckets = bucketSlotsByTime(workflowStatus.getSlotStates(), tileTimesSet);
-            workflow = workflow.withRows(new ArrayList<>());
-            for (ScheduledTime tileTime : tileTimes) {
-                List<SlotState> slots = buckets.getOrDefault(tileTime, new HashSet<>()).stream()
-                        .sorted((foo, bar) -> foo.getScheduledTime().compareTo(bar.getScheduledTime()))
-                        .collect(toList());
-                workflow.getRows().add(makeSlot(hueURL, slots));
+            if (workflowStatus != null) {
+                Map<ScheduledTime, Set<SlotState>> buckets = bucketSlotsByTime(workflowStatus.getSlotStates(), tileTimesSet);
+                workflow = workflow.withRows(new ArrayList<>());
+                for (ScheduledTime tileTime : tileTimes) {
+                    List<SlotState> slots = buckets.getOrDefault(tileTime, new HashSet<>()).stream()
+                            .sorted((foo, bar) -> foo.getScheduledTime().compareTo(bar.getScheduledTime()))
+                            .collect(toList());
+                    workflow.getRows().add(makeSlot(hueURL, slots));
+                }
             }
         }
 
         return group;
     }
-
-
-    // We never want to fetch more data than for a week from Celos so as not to overload the server
-    private static int MAX_MINUTES_TO_FETCH = 7 * 60 * 24;
-    private static int MAX_TILES_TO_DISPLAY = 48;
-
-    static final int DEFAULT_ZOOM_LEVEL_MINUTES = 60;
-    static final int MIN_ZOOM_LEVEL_MINUTES = 1;
-    static final int MAX_ZOOM_LEVEL_MINUTES = 60*24; // Code won't work with higher level, because of toFullDay()
 
 
     @Override
@@ -132,8 +153,7 @@ public class WorkflowsServlet extends HttpServlet {
         }
     }
 
-
-    List<WorkflowGroup> getWorkflowGroups(InputStream configFileIS, Set<WorkflowID> expectedWfs) throws IOException {
+    static List<WorkflowGroup> getWorkflowGroups(String configFileIS, List<String> expectedWfs) throws IOException {
         JsonNode mainNode = Util.MAPPER.readValue(configFileIS, JsonNode.class);
         List<WorkflowGroup> configWorkflowGroups = new ArrayList<>();
         Set<String> listedWfs = new TreeSet<>();
@@ -149,30 +169,33 @@ public class WorkflowsServlet extends HttpServlet {
             listedWfs.addAll(Arrays.stream(workflowNames).collect(toSet()));
         }
 
-        TreeSet<WorkflowID> diff = new TreeSet<>(Sets.difference(expectedWfs, listedWfs));
-        if (!diff.isEmpty()) {
-            final List<Workflow> collect = diff.stream()
-                    .map(x -> new Workflow(x.toString()))
-                    .collect(toList());
-            configWorkflowGroups.add(new WorkflowGroup(UNLISTED_WORKFLOWS_CAPTION).withRows(collect));
+        final List<Workflow> collect = expectedWfs.stream()
+                .filter(listedWfs::contains)
+                .map(Workflow::new)
+                .collect(toList());
+        if (!collect.isEmpty()) {
+            configWorkflowGroups.add(new WorkflowGroup(UNLISTED_WORKFLOWS_CAPTION)
+                    .withRows(collect)
+            );
         }
         return configWorkflowGroups;
     }
 
     public String processGet(ServletContext servletContext, String timeParam, String zoomParam, String wfGroup) throws Exception {
         URL hueURL = (URL) servletContext.getAttribute(Main.HUE_URL_ATTR);
-        File configFile = (File) servletContext.getAttribute(Main.CONFIG_FILE_ATTR);
         CelosClient client = Main.getCelosClient(servletContext);
         final ScheduledTime now = ScheduledTime.now();
         ScheduledTime timeShift = getDisplayTime(timeParam, now);
         int zoomLevelMinutes = getZoomLevel(zoomParam);
         final NavigableSet<ScheduledTime> tileTimesSet = getTileTimesSet(getFirstTileTime(timeShift, zoomLevelMinutes), zoomLevelMinutes, MAX_MINUTES_TO_FETCH, MAX_TILES_TO_DISPLAY);
         ScheduledTime start = tileTimesSet.first();
-        Set<WorkflowID> workflowIDs = client.getWorkflowList();
+        Set<WorkflowID> workflowIDs0 = client.getWorkflowList();
+        final List<String> workflowIDs = workflowIDs0.stream().map(WorkflowID::toString).collect(toList());
 
+        final Optional<String> celosConfig = Main.getCelosConfig(servletContext);
         List<WorkflowGroup> groups;
-        if (configFile != null) {
-            groups = getWorkflowGroups(new FileInputStream(configFile), workflowIDs);
+        if (celosConfig.isPresent()) {
+            groups = getWorkflowGroups(celosConfig.get(), workflowIDs);
         } else {
             groups = getDefaultGroups(workflowIDs);
         }
@@ -184,7 +207,7 @@ public class WorkflowsServlet extends HttpServlet {
         }
         final WorkflowGroup workflowGroup = groupsMatchedName.get(0);
 
-        final List<WorkflowID> ids = workflowIDs.stream()
+        final List<WorkflowID> ids = workflowIDs0.stream()
                 .filter(workflowGroup.getRows()::contains)
                 .collect(toList());
 
@@ -223,25 +246,6 @@ public class WorkflowsServlet extends HttpServlet {
         }
     }
 
-    static final Map<SlotState.Status, String> STATUS_TO_SHORT_NAME = new HashMap<>();
-    static {
-        STATUS_TO_SHORT_NAME.put(SlotState.Status.FAILURE, "fail");
-        STATUS_TO_SHORT_NAME.put(SlotState.Status.READY, "rdy&nbsp;");
-        STATUS_TO_SHORT_NAME.put(SlotState.Status.RUNNING, "run&nbsp;");
-        STATUS_TO_SHORT_NAME.put(SlotState.Status.SUCCESS, "&nbsp;&nbsp;&nbsp;&nbsp;");
-        STATUS_TO_SHORT_NAME.put(SlotState.Status.WAIT_TIMEOUT, "time");
-        STATUS_TO_SHORT_NAME.put(SlotState.Status.WAITING, "wait");
-        STATUS_TO_SHORT_NAME.put(SlotState.Status.KILLED, "kill");
-        if (STATUS_TO_SHORT_NAME.size() != SlotState.Status.values().length) {
-            throw new Error("STATUS_TO_SHORT_NAME mapping is incomplete");
-        }
-    }
-
-
-    private static final DateTimeFormatter DAY_FORMAT = DateTimeFormat.forPattern("dd");
-    private static final DateTimeFormatter HEADER_FORMAT = DateTimeFormat.forPattern("HHmm");
-    private static final DateTimeFormatter FULL_FORMAT = DateTimeFormat.forPattern("YYYY-MM-dd HH:mm");
-    
 
     String printTileClass(List<SlotState> slots) {
         if (slots == null) {
@@ -327,9 +331,15 @@ public class WorkflowsServlet extends HttpServlet {
         return times;
     }
 
-    private List<WorkflowGroup> getDefaultGroups(Set<WorkflowID> workflows) {
-        final List<Workflow> collect = workflows.stream().map(x -> new Workflow(x.toString())).collect(toList());
-        return Collections.singletonList(new WorkflowGroup(DEFAULT_CAPTION).withRows(collect));
+    public static List<WorkflowGroup> getDefaultGroups(List<String> workflows) {
+        return Collections.singletonList(
+                new WorkflowGroup(DEFAULT_CAPTION)
+                        .withRows(workflows.stream()
+                                .map(Workflow::new)
+                                .collect(toList())
+                        )
+        );
     }
+
 
 }

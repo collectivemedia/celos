@@ -15,10 +15,16 @@
  */
 package com.collective.celos.ui;
 
+import java.io.File;
+import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import com.collective.celos.CelosClient;
 import com.collective.celos.JettyServer;
@@ -47,6 +53,13 @@ public class Main {
     public static CelosClient getCelosClient(ServletContext servletContext) throws URISyntaxException {
         URL celosURL = (URL) Util.requireNonNull(servletContext.getAttribute(Main.CELOS_URL_ATTR));
         return new CelosClient(celosURL.toURI());
+    }
+
+    public static Optional<String> getCelosConfig(ServletContext servletContext) throws IOException {
+        final Path configFile = ((File) servletContext.getAttribute(Main.CONFIG_FILE_ATTR)).toPath();
+        return  (Files.exists(configFile))
+                ? Optional.of(new String(Files.readAllBytes(configFile), StandardCharsets.UTF_8))
+                : Optional.empty();
     }
 
     private static Map<String, Object> getAttributes(UICommandLine commandLine) {
