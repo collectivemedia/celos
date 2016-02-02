@@ -32,7 +32,7 @@ import java.util.*;
 /**
  * Renders the UI HTML.
  */
-public class ReactWorkflowsServletTest {
+public class WorkflowsServletTest {
 
     public final static ObjectMapper MAPPER = new ObjectMapper();
 
@@ -50,7 +50,7 @@ public class ReactWorkflowsServletTest {
         final ArrayList<WorkflowID> ids = new ArrayList<>();
         ids.add(new WorkflowID("asdasdas"));
 
-        WorkflowGroup xx = UIReactWorkflowsServlet.processWorkflowGroup("dsad", ids, tileTimes, new HashMap<>(), new URL("http://hue"));
+        WorkflowGroup xx = new WorkflowsServlet().processWorkflowGroup("dsad", ids, tileTimes, new HashMap<>(), new URL("http://hue"));
 
         String check = "{\"name\":\"dsad\",\"times\":[\"1900\",\"1800\",\"1700\",\"1600\"],\"days\":[null,null,null,null],\"rows\":[{\"workflowName\":\"asdasdas\",\"rows\":[]}]}";
 

@@ -41,7 +41,7 @@ import static java.util.stream.Collectors.toSet;
 /**
  * Renders the UI JSON.
  */
-public class UIReactWorkflowsServlet extends HttpServlet {
+public class WorkflowsServlet extends HttpServlet {
 
     private static final String ZOOM_PARAM = "zoom";
     private static final String TIME_PARAM = "time";
@@ -52,7 +52,7 @@ public class UIReactWorkflowsServlet extends HttpServlet {
     private static final String UNLISTED_WORKFLOWS_CAPTION = "Unlisted workflows";
     private static final String DEFAULT_CAPTION = "All Workflows";
 
-    private static Slot makeSlot(URL hueURL, List<SlotState> states) {
+    private Slot makeSlot(URL hueURL, List<SlotState> states) {
         if (states.isEmpty()) {
             return new Slot("EMPTY").withQuantity(0);
         }
@@ -68,7 +68,7 @@ public class UIReactWorkflowsServlet extends HttpServlet {
         return slot;
     }
 
-    protected static WorkflowGroup processWorkflowGroup(String name, List<WorkflowID> ids, NavigableSet<ScheduledTime> tileTimesSet, Map<WorkflowID, WorkflowStatus> statuses, URL hueURL) {
+    protected WorkflowGroup processWorkflowGroup(String name, List<WorkflowID> ids, NavigableSet<ScheduledTime> tileTimesSet, Map<WorkflowID, WorkflowStatus> statuses, URL hueURL) {
 
         WorkflowGroup group = new WorkflowGroup(name);
         final List<ScheduledTime> tileTimes = tileTimesSet.stream().collect(toList());
@@ -133,7 +133,7 @@ public class UIReactWorkflowsServlet extends HttpServlet {
     }
 
 
-    static List<WorkflowGroup> getWorkflowGroups(InputStream configFileIS, Set<WorkflowID> expectedWfs) throws IOException {
+    List<WorkflowGroup> getWorkflowGroups(InputStream configFileIS, Set<WorkflowID> expectedWfs) throws IOException {
         JsonNode mainNode = Util.MAPPER.readValue(configFileIS, JsonNode.class);
         List<WorkflowGroup> configWorkflowGroups = new ArrayList<>();
         Set<String> listedWfs = new TreeSet<>();
@@ -159,7 +159,7 @@ public class UIReactWorkflowsServlet extends HttpServlet {
         return configWorkflowGroups;
     }
 
-    public static String processGet(ServletContext servletContext, String timeParam, String zoomParam, String wfGroup) throws Exception {
+    public String processGet(ServletContext servletContext, String timeParam, String zoomParam, String wfGroup) throws Exception {
         URL hueURL = (URL) servletContext.getAttribute(Main.HUE_URL_ATTR);
         File configFile = (File) servletContext.getAttribute(Main.CONFIG_FILE_ATTR);
         CelosClient client = Main.getCelosClient(servletContext);
@@ -195,7 +195,7 @@ public class UIReactWorkflowsServlet extends HttpServlet {
         return Util.JSON_PRETTY.writeValueAsString(groupData);
     }
 
-    static ScheduledTime getDisplayTime(String timeStr, ScheduledTime now) {
+    ScheduledTime getDisplayTime(String timeStr, ScheduledTime now) {
         if (timeStr == null || timeStr.isEmpty()) {
             return now;
         } else {
@@ -208,7 +208,7 @@ public class UIReactWorkflowsServlet extends HttpServlet {
         }
     }
     
-    static int getZoomLevel(String zoomStr) {
+    int getZoomLevel(String zoomStr) {
         if (zoomStr == null || zoomStr.isEmpty()) {
             return DEFAULT_ZOOM_LEVEL_MINUTES;
         } else {
@@ -243,7 +243,7 @@ public class UIReactWorkflowsServlet extends HttpServlet {
     private static final DateTimeFormatter FULL_FORMAT = DateTimeFormat.forPattern("YYYY-MM-dd HH:mm");
     
 
-    static String printTileClass(List<SlotState> slots) {
+    String printTileClass(List<SlotState> slots) {
         if (slots == null) {
             return "";
         } else if (slots.size() == 1) {
@@ -253,7 +253,7 @@ public class UIReactWorkflowsServlet extends HttpServlet {
         }
     }
 
-    static String printMultiSlotClass(List<SlotState> slots) {
+    String printMultiSlotClass(List<SlotState> slots) {
         boolean hasIndeterminate = false;
         for (SlotState slot : slots) {
             if (slot.getStatus().getType() == SlotState.StatusType.FAILURE) {
@@ -270,11 +270,11 @@ public class UIReactWorkflowsServlet extends HttpServlet {
     }
 
 
-    private static String printWorkflowURL(URL hueURL, SlotState state) {
+    private String printWorkflowURL(URL hueURL, SlotState state) {
         return hueURL.toString() + "/list_oozie_workflow/" + state.getExternalID();
     }
 
-    private static Map<WorkflowID, WorkflowStatus> fetchStatuses(CelosClient client, List<WorkflowID> workflows, ScheduledTime start, ScheduledTime end) throws Exception {
+    private Map<WorkflowID, WorkflowStatus> fetchStatuses(CelosClient client, List<WorkflowID> workflows, ScheduledTime start, ScheduledTime end) throws Exception {
         Map<WorkflowID, WorkflowStatus> statuses = new HashMap<>();
         for (WorkflowID id : workflows) {
             WorkflowStatus status = client.getWorkflowStatus(id, start, end);
@@ -283,7 +283,7 @@ public class UIReactWorkflowsServlet extends HttpServlet {
         return statuses;
     }
 
-    static Map<ScheduledTime, Set<SlotState>> bucketSlotsByTime(List<SlotState> slotStates, NavigableSet<ScheduledTime> tileTimes) {
+    Map<ScheduledTime, Set<SlotState>> bucketSlotsByTime(List<SlotState> slotStates, NavigableSet<ScheduledTime> tileTimes) {
         Map<ScheduledTime, Set<SlotState>> buckets = new HashMap<>();
         for (SlotState state : slotStates) {
             ScheduledTime bucketTime = tileTimes.floor(state.getScheduledTime());
@@ -297,17 +297,17 @@ public class UIReactWorkflowsServlet extends HttpServlet {
         return buckets;
     }
     
-    static int getNumTiles(int zoomLevelMinutes, int maxMinutesToFetch, int maxTilesToDisplay) {
+    int getNumTiles(int zoomLevelMinutes, int maxMinutesToFetch, int maxTilesToDisplay) {
         return Math.min(maxMinutesToFetch / zoomLevelMinutes, maxTilesToDisplay);
     }
 
 
-    private static DateTime toFullDay(DateTime dt) {
+    private DateTime toFullDay(DateTime dt) {
         return dt.withHourOfDay(0).withMinuteOfHour(0).withSecondOfMinute(0).withMillisOfSecond(0);
     }
     
     // Get first tile, e.g. for now=2015-09-01T20:21Z with zoom=5 returns 2015-09-01T20:20Z
-    static ScheduledTime getFirstTileTime(ScheduledTime now, int zoomLevelMinutes) {
+    ScheduledTime getFirstTileTime(ScheduledTime now, int zoomLevelMinutes) {
         DateTime dt = now.getDateTime();
         DateTime t = toFullDay(dt.plusDays(1));
         while(t.isAfter(dt)) {
@@ -316,7 +316,7 @@ public class UIReactWorkflowsServlet extends HttpServlet {
         return new ScheduledTime(t);
     }
     
-    static NavigableSet<ScheduledTime> getTileTimesSet(ScheduledTime firstTileTime, int zoomLevelMinutes, int maxMinutesToFetch, int maxTilesToDisplay) {
+    NavigableSet<ScheduledTime> getTileTimesSet(ScheduledTime firstTileTime, int zoomLevelMinutes, int maxMinutesToFetch, int maxTilesToDisplay) {
         int numTiles = getNumTiles(zoomLevelMinutes, maxMinutesToFetch, maxTilesToDisplay);
         TreeSet<ScheduledTime> times = new TreeSet<>();
         ScheduledTime t = firstTileTime;
@@ -327,7 +327,7 @@ public class UIReactWorkflowsServlet extends HttpServlet {
         return times;
     }
 
-    private static List<WorkflowGroup> getDefaultGroups(Set<WorkflowID> workflows) {
+    private List<WorkflowGroup> getDefaultGroups(Set<WorkflowID> workflows) {
         final List<Workflow> collect = workflows.stream().map(x -> new Workflow(x.toString())).collect(toList());
         return Collections.singletonList(new WorkflowGroup(DEFAULT_CAPTION).withRows(collect));
     }
