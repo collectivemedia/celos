@@ -20,12 +20,14 @@ import com.collective.celos.Util;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
@@ -35,33 +37,28 @@ import static java.util.stream.Collectors.toList;
 /**
  * Renders the UI HTML.
  */
-public class TriggerStatusServlet extends HttpServlet {
+public class UITriggerStatusServlet extends HttpServlet {
 
     protected static final String ID_PARAM = "id";
     protected static final String TIME_PARAM = "time";
 
-    private static final ObjectMapper mapper = new ObjectMapper();
-
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse response) throws ServletException, IOException {
         try {
-            URL celosURL = (URL) Util.requireNonNull(getServletContext().getAttribute(Main.CELOS_URL_ATTR));
-            ObjectMapper mapper = new ObjectMapper();
-
-            CelosClient client = new CelosClient(celosURL.toURI());
+            CelosClient client = Main.getCelosClient(getServletContext());
             final ArrayNode node = getJsonNodes(req, client);
             response.setContentType("application/json;charset=UTF-8");
-            mapper.writeValue(response.getWriter(), node);
+            Util.MAPPER.writeValue(response.getWriter(), node);
         } catch (Exception e) {
             throw new ServletException(e);
         }
     }
 
-    protected static ArrayNode getJsonNodes(HttpServletRequest req, CelosClient client) throws Exception {
+    protected ArrayNode getJsonNodes(HttpServletRequest req, CelosClient client) throws Exception {
         final List<String> timestamps = Arrays.stream(req.getParameter(TIME_PARAM).split(","))
-                .limit(ReactWorkflowsServlet.MULTI_SLOT_INFO_LIMIT)
+                .limit(Main.MULTI_SLOT_INFO_LIMIT)
                 .collect(toList());
-        final ArrayNode node = mapper.createArrayNode();
+        final ArrayNode node = Util.MAPPER.createArrayNode();
         for (String ts : timestamps) {
             node.add(client.getTriggerStatusAsText(req.getParameter(ID_PARAM), ts));
         }

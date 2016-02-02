@@ -50,6 +50,8 @@ public class Util {
     public final static ObjectMapper MAPPER = new ObjectMapper();
     public final static ObjectReader JSON_READER = MAPPER.reader();
     public final static ObjectWriter JSON_WRITER = MAPPER.writer();
+    public final static ObjectWriter JSON_PRETTY = MAPPER.writerWithDefaultPrettyPrinter();
+
 
     public static <T> T requireNonNull(T object) {
         if (object == null) throw new NullPointerException();
