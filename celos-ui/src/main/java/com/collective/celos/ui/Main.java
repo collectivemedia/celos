@@ -15,10 +15,16 @@
  */
 package com.collective.celos.ui;
 
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.collective.celos.CelosClient;
 import com.collective.celos.JettyServer;
+import com.collective.celos.Util;
+
+import javax.servlet.ServletContext;
 
 /**
  * Main class that launches the Celos UI.
@@ -28,6 +34,7 @@ public class Main {
     public static String CELOS_URL_ATTR = "CELOS_URL";
     public static String HUE_URL_ATTR = "HUE_URL";
     public static String CONFIG_FILE_ATTR = "CONFIG_FILE";
+    public static final int MULTI_SLOT_INFO_LIMIT = 20;
 
     public static void main(String... args) throws Exception {
         UICommandLineParser UICommandLineParser = new UICommandLineParser();
@@ -35,6 +42,11 @@ public class Main {
         JettyServer jettyServer = new JettyServer();
         jettyServer.start(commandLine.getPort());
         jettyServer.setupContext(getAttributes(commandLine), new HashMap<String, String>());
+    }
+
+    public static CelosClient getCelosClient(ServletContext servletContext) throws URISyntaxException {
+        URL celosURL = (URL) Util.requireNonNull(servletContext.getAttribute(Main.CELOS_URL_ATTR));
+        return new CelosClient(celosURL.toURI());
     }
 
     private static Map<String, Object> getAttributes(UICommandLine commandLine) {
