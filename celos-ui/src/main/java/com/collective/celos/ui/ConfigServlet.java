@@ -38,7 +38,7 @@ import static java.util.stream.Collectors.toSet;
 /**
  * Renders the UI JSON.
  */
-public class UIConfigServlet extends HttpServlet {
+public class ConfigServlet extends HttpServlet {
 
     private static final String GROUPS_TAG = "groups";
     private static final String WORKFLOWS_TAG = "workflows";
@@ -51,12 +51,9 @@ public class UIConfigServlet extends HttpServlet {
         try {
             final ServletContext servletContext = getServletContext();
             CelosClient client = Main.getCelosClient(servletContext);
-            final Path configFile = ((File) servletContext.getAttribute(Main.CONFIG_FILE_ATTR)).toPath();
-            final Optional<String> config = (Files.exists(configFile))
-                    ? Optional.of(new String(Files.readAllBytes(configFile), StandardCharsets.UTF_8))
-                    : Optional.empty();
             List<String> workflowIDs = client.getWorkflowList().stream().map(WorkflowID::toString).collect(toList());
-            final String tmp = processGet(workflowIDs, config);
+            final Optional<String> celosConfig = Main.getCelosConfig(servletContext);
+            final String tmp = processGet(workflowIDs, celosConfig);
             response.setContentType("application/json;charset=UTF-8");
             response.getWriter().write(tmp);
         } catch (Exception e) {
@@ -68,50 +65,14 @@ public class UIConfigServlet extends HttpServlet {
         List<WorkflowGroup> groups;
 
         if (configFile.isPresent()) {
-            groups = getWorkflowGroups(configFile.get(), workflowIDs);
+            groups = WorkflowsServlet.getWorkflowGroups(configFile.get(), workflowIDs);
         } else {
-            groups = getDefaultGroups(workflowIDs);
+            groups = WorkflowsServlet.getDefaultGroups(workflowIDs);
         }
         final Config result = new Config(groups);
         return Util.JSON_PRETTY.writeValueAsString(result);
     }
 
-    List<WorkflowGroup> getWorkflowGroups(String configFileIS, List<String> expectedWfs) throws IOException {
-        JsonNode mainNode = Util.MAPPER.readValue(configFileIS, JsonNode.class);
-        List<WorkflowGroup> configWorkflowGroups = new ArrayList<>();
-        Set<String> listedWfs = new TreeSet<>();
 
-        for(JsonNode workflowGroupNode: mainNode.get(GROUPS_TAG)) {
-            String[] workflowNames = Util.MAPPER.treeToValue(workflowGroupNode.get(WORKFLOWS_TAG), String[].class);
-
-            String name = workflowGroupNode.get(NAME_TAG).textValue();
-            final List<Workflow> collect = Arrays.stream(workflowNames)
-                    .map(Workflow::new)
-                    .collect(toList());
-            configWorkflowGroups.add(new WorkflowGroup(name).withRows(collect));
-            listedWfs.addAll(Arrays.stream(workflowNames).collect(toSet()));
-        }
-
-        final List<Workflow> collect = expectedWfs.stream()
-                .filter(listedWfs::contains)
-                .map(Workflow::new)
-                .collect(toList());
-        if (!collect.isEmpty()) {
-            configWorkflowGroups.add(new WorkflowGroup(UNLISTED_WORKFLOWS_CAPTION)
-                                         .withRows(collect)
-            );
-        }
-        return configWorkflowGroups;
-    }
-
-    private List<WorkflowGroup> getDefaultGroups(List<String> workflows) {
-        return Collections.singletonList(
-                new WorkflowGroup(DEFAULT_CAPTION)
-                        .withRows(workflows.stream()
-                                .map(Workflow::new)
-                                .collect(toList())
-                        )
-        );
-    }
 
 }

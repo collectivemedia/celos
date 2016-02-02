@@ -163,9 +163,7 @@ public class CelosClient {
         return SlotState.fromJSONNode(workflowID, Util.JSON_READER.withType(ObjectNode.class).readValue(content));
     }
 
-    public final static ObjectMapper MAPPER = new ObjectMapper();
-
-    public JsonNode getTriggerStatusAsText(String workflowID, String scheduledTime) throws Exception {
+    public JsonNode getTriggerStatus(String workflowID, String scheduledTime) throws Exception {
         URIBuilder uriBuilder = new URIBuilder(address);
         uriBuilder.setPath(uriBuilder.getPath() + TRIGGER_STATUS_PATH);
         uriBuilder.addParameter(ID_PARAM, workflowID);
@@ -174,7 +172,7 @@ public class CelosClient {
         HttpGet workflowListGet = new HttpGet(uriBuilder.build());
         HttpResponse getResponse = execute(workflowListGet);
         InputStream content = getResponse.getEntity().getContent();
-        return MAPPER.readTree(content);
+        return Util.MAPPER.readTree(content);
     }
 
     public void rerunSlot(SlotID slotID) throws Exception {

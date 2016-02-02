@@ -15,31 +15,33 @@
  */
 package com.collective.celos.ui;
 
+import com.collective.celos.*;
 import org.apache.commons.cli.*;
 import org.apache.log4j.Logger;
 
 import java.io.File;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.net.URI;
 import java.net.URL;
 
 /**
  * Parses for UI command-line options.
  */
-public class CommandLineParser {
+public class UICommandLineParser {
 
     private static final String CLI_CELOS_ADDRESS = "celos";
     private static final String CLI_HUE_ADDRESS = "hue";
     private static final String CLI_PORT = "port";
     private static final String CLI_CONFIG = "config";
 
-    private static final Logger LOGGER = Logger.getLogger(CommandLineParser.class);
+    private static final Logger LOGGER = Logger.getLogger(UICommandLineParser.class);
     
-    public CommandLine parse(final String[] commandLineArguments) throws Exception {
+    public UICommandLine parse(final String[] commandLineArguments) throws Exception {
 
-        final org.apache.commons.cli.CommandLineParser cmdLineGnuParser = new GnuParser();
+        final CommandLineParser cmdLineGnuParser = new GnuParser();
         final Options gnuOptions = constructOptions();
-        org.apache.commons.cli.CommandLine commandLine = cmdLineGnuParser.parse(gnuOptions, commandLineArguments);
+        CommandLine commandLine = cmdLineGnuParser.parse(gnuOptions, commandLineArguments);
 
         validateHasOption(commandLine, CLI_PORT);
         validateHasOption(commandLine, CLI_CELOS_ADDRESS);
@@ -56,10 +58,10 @@ public class CommandLineParser {
             }
         }
 
-        return new CommandLine(celosAddress, hueAddress, port, configFile);
+        return new UICommandLine(celosAddress, hueAddress, port, configFile);
     }
 
-    private void validateHasOption(org.apache.commons.cli.CommandLine commandLine, String option) {
+    private void validateHasOption(CommandLine commandLine, String option) {
         if (!commandLine.hasOption(option)) {
             printHelp(80, 5, 3, true, System.out);
             throw new IllegalArgumentException("Missing --" + option + " argument");

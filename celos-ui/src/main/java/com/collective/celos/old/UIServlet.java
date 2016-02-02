@@ -97,7 +97,7 @@ public class UIServlet extends HttpServlet {
                 groups = getDefaultGroups(workflowIDs);
             }
 
-            Configuration conf = new Configuration(start, end, tileTimes, groups, statuses, hueURL);
+            UIConfiguration conf = new UIConfiguration(start, end, tileTimes, groups, statuses, hueURL);
             res.getWriter().append(render(conf));
         } catch (Exception e) {
             throw new ServletException(e);
@@ -140,21 +140,21 @@ public class UIServlet extends HttpServlet {
             throw new Error("STATUS_TO_SHORT_NAME mapping is incomplete");
         }
     }
-    
+
     private static final int[] ZOOM_LEVEL_MINUTES = new int[]{1, 5, 15, 30, 60, 60*24};
     static final int DEFAULT_ZOOM_LEVEL_MINUTES = 60;
     static final int MIN_ZOOM_LEVEL_MINUTES = 1;
     static final int MAX_ZOOM_LEVEL_MINUTES = 60*24; // Code won't work with higher level, because of toFullDay()
-    
+
     // We never want to fetch more data than for a week from Celos so as not to overload the server
     private static int MAX_MINUTES_TO_FETCH = 7 * 60 * 24;
     private static int MAX_TILES_TO_DISPLAY = 48;
-    
+
     private static final DateTimeFormatter DAY_FORMAT = DateTimeFormat.forPattern("dd");
     private static final DateTimeFormatter HEADER_FORMAT = DateTimeFormat.forPattern("HHmm");
     private static final DateTimeFormatter FULL_FORMAT = DateTimeFormat.forPattern("YYYY-MM-dd HH:mm");
-    
-    static String render(Configuration conf) throws Exception {
+
+    static String render(UIConfiguration conf) throws Exception {
         return html().with(makeHead(), makeBody(conf)).render();
     }
 
@@ -165,22 +165,22 @@ public class UIServlet extends HttpServlet {
                            script().withType("text/javascript").withSrc("/static/script.js"));
     }
 
-    private static Tag makeBody(Configuration conf) {
+    private static Tag makeBody(UIConfiguration conf) {
         return body().with(makeTable(conf), div().with(text("(Shift-click a slot to rerun it.)")));
     }
 
-    private static Tag makeTable(Configuration conf) {
+    private static Tag makeTable(UIConfiguration conf) {
         List<Tag> contents = new LinkedList<>();
         contents.addAll(makeTableHeader(conf));
         contents.addAll(makeTableRows(conf));
         return table().withClass("mainTable").with(contents);
     }
 
-    private static List<Tag> makeTableHeader(Configuration conf) {
+    private static List<Tag> makeTableHeader(UIConfiguration conf) {
         return ImmutableList.of(makeDayHeader(conf), makeTimeHeader(conf));
     }
 
-    private static Tag makeDayHeader(Configuration conf) {
+    private static Tag makeDayHeader(UIConfiguration conf) {
         List<Tag> cells = new LinkedList<>();
         cells.add(td().with(unsafeHtml("&nbsp;")));
         for (ScheduledTime time : conf.getTileTimes().descendingSet()) {
@@ -197,7 +197,7 @@ public class UIServlet extends HttpServlet {
         }
     }
     
-    private static Tag makeTimeHeader(Configuration conf) {
+    private static Tag makeTimeHeader(UIConfiguration conf) {
         List<Tag> cells = new LinkedList<>();
         cells.add(td(FULL_FORMAT.print(conf.getEnd().getDateTime()) + " UTC").withClass("currentDate"));
         for (ScheduledTime time : conf.getTileTimes().descendingSet()) {
@@ -210,7 +210,7 @@ public class UIServlet extends HttpServlet {
         return td(HEADER_FORMAT.print(time.getDateTime())).withClass("hour");
     }
     
-    private static List<Tag> makeTableRows(Configuration conf) {
+    private static List<Tag> makeTableRows(UIConfiguration conf) {
         List<Tag> rows = new LinkedList<>();
         for (WorkflowGroup g : conf.getGroups()) {
             rows.addAll(makeGroupRows(conf, g));
@@ -218,7 +218,7 @@ public class UIServlet extends HttpServlet {
         return rows;
     }
 
-    private static List<Tag> makeGroupRows(Configuration conf, WorkflowGroup g) {
+    private static List<Tag> makeGroupRows(UIConfiguration conf, WorkflowGroup g) {
         List<Tag> rows = new LinkedList<>();
         rows.add(tr().with(td(g.getName()).withClass("workflowGroup")));
         for (WorkflowID id : g.getWorkflows()) {
@@ -227,7 +227,7 @@ public class UIServlet extends HttpServlet {
         return rows;
     }
 
-    private static Tag makeWorkflowRow(Configuration conf, WorkflowID id) {
+    private static Tag makeWorkflowRow(UIConfiguration conf, WorkflowID id) {
         WorkflowStatus workflowStatus = conf.getStatuses().get(id);
         if (workflowStatus == null) {
             return tr().with(td(id.toString() + " (missing)").withClass("workflow missing"));
@@ -269,7 +269,7 @@ public class UIServlet extends HttpServlet {
         }
     }
 
-    private static Tag makeTile(Configuration conf, Set<SlotState> slots) {
+    private static Tag makeTile(UIConfiguration conf, Set<SlotState> slots) {
         if (slots == null) {
             return unsafeHtml("&nbsp;&nbsp;&nbsp;&nbsp;");
         } else if (slots.size() == 1) {
@@ -279,7 +279,7 @@ public class UIServlet extends HttpServlet {
         }
     }
 
-    static Tag makeMultiSlot(Configuration conf, int slotsCount) {
+    static Tag makeMultiSlot(UIConfiguration conf, int slotsCount) {
         String num = Integer.toString(slotsCount);
         if (num.length() > 4) {
             return unsafeHtml("999+");
@@ -288,7 +288,7 @@ public class UIServlet extends HttpServlet {
         }
     }
 
-    private static Tag makeSingleSlot(Configuration conf, SlotState state) {
+    private static Tag makeSingleSlot(UIConfiguration conf, SlotState state) {
         Tag label = unsafeHtml(STATUS_TO_SHORT_NAME.get(state.getStatus()));
         if (conf.getHueURL() != null && state.getExternalID() != null) {
             return a().withHref(printWorkflowURL(conf, state)).withClass("slotLink").attr("data-slot-id", state.getSlotID().toString()).with(label);
@@ -297,7 +297,7 @@ public class UIServlet extends HttpServlet {
         }
     }
 
-    private static String printWorkflowURL(Configuration conf, SlotState state) {
+    private static String printWorkflowURL(UIConfiguration conf, SlotState state) {
         return conf.getHueURL().toString() + "/list_oozie_workflow/" + state.getExternalID();
     }
 
