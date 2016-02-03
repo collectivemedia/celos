@@ -59,13 +59,11 @@ public class ActionServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try {
-            final URL celosURL = (URL) Util.requireNonNull(getServletContext().getAttribute(Main.CELOS_URL_ATTR));
-            final CelosClient client = new CelosClient(celosURL.toURI());
-            final ObjectMapper mapper = new ObjectMapper();
-            final JsonNode jsonNode = mapper.readTree(request.getReader());
+            final CelosClient client = UICommon.getCelosClient(getServletContext());
+            final JsonNode jsonNode = Util.MAPPER.readTree(request.getReader());
             final String action = jsonNode.get(ACTION_PARAM).asText();
             processPost(client, action, jsonNode);
-            mapper.writeValue(response.getWriter(), jsonNode);
+            Util.JSON_PRETTY.writeValue(response.getWriter(), jsonNode);
             response.setStatus(HttpServletResponse.SC_OK);
         } catch(Exception e) {
             throw new ServletException(e);
