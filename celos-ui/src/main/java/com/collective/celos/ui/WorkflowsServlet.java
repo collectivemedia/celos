@@ -112,7 +112,6 @@ public class WorkflowsServlet extends HttpServlet {
         final List<Workflow> workflows = new ArrayList<>();
         for (WorkflowID id : ids) {
             Workflow workflow = new Workflow(id.toString());
-            workflows.add(workflow);
             WorkflowStatus workflowStatus = statuses.get(id);
             if (workflowStatus != null) {
                 Map<ScheduledTime, Set<SlotState>> buckets = bucketSlotsByTime(workflowStatus.getSlotStates(), tileTimesSet);
@@ -182,16 +181,11 @@ public class WorkflowsServlet extends HttpServlet {
     }
 
 
-    ScheduledTime getDisplayTime(String timeStr, ScheduledTime now) {
+    ScheduledTime getDisplayTime(String timeStr, ScheduledTime now) throws UnsupportedEncodingException {
         if (timeStr == null || timeStr.isEmpty()) {
             return now;
         } else {
-            try {
-                return new ScheduledTime(java.net.URLDecoder.decode(timeStr, "UTF-8"));
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-                return now;
-            }
+            return new ScheduledTime(java.net.URLDecoder.decode(timeStr, "UTF-8"));
         }
     }
     

@@ -38,7 +38,7 @@ public class WorkflowsServletTest {
     public final static ObjectMapper MAPPER = new ObjectMapper();
 
     @Test
-    public void testParsesOk() throws Exception {
+    public void testProcessWorkflowGroup() throws Exception {
         CelosClient client = Mockito.mock(CelosClient.class);
         HttpServletRequest req = Mockito.mock(HttpServletRequest.class);
 
@@ -49,11 +49,11 @@ public class WorkflowsServletTest {
         tileTimes.add(new ScheduledTime("2015-09-14T19:00Z"));
 
         final ArrayList<WorkflowID> ids = new ArrayList<>();
-        ids.add(new WorkflowID("asdasdas"));
+        ids.add(new WorkflowID("abcdef"));
 
         WorkflowGroup xx = new WorkflowsServlet().processWorkflowGroup("dsad", ids, tileTimes, new HashMap<>(), new URL("http://hue"));
 
-        String check = "{\"name\":\"dsad\",\"times\":[\"1900\",\"1800\",\"1700\",\"1600\"],\"days\":[null,null,null,null],\"rows\":[{\"workflowName\":\"asdasdas\",\"rows\":[]}]}";
+        String check = "{\"name\":\"dsad\",\"times\":[\"1900\",\"1800\",\"1700\",\"1600\"],\"days\":[null,null,null,null],\"rows\":[{\"workflowName\":\"abcdef\",\"rows\":[]}]}";
 
         final String content = Util.JSON_PRETTY.writeValueAsString(xx);
         System.out.println("content =");
