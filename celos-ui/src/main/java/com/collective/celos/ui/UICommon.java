@@ -49,28 +49,28 @@ import static java.util.stream.Collectors.toSet;
  */
 class UICommon {
 
-    static final int MULTI_SLOT_INFO_LIMIT = 20;
+    public static final int MULTI_SLOT_INFO_LIMIT = 20;
 
-    static final String ZOOM_PARAM = "zoom";
-    static final String TIME_PARAM = "time";
-    static final String ID_PARAM = "id";
-    static final String WF_GROUP_PARAM = "group";
-    static final String GROUPS_TAG = "groups";
-    static final String WORKFLOWS_TAG = "workflows";
-    static final String NAME_TAG = "name";
-    static final String UNLISTED_WORKFLOWS_CAPTION = "Unlisted workflows";
-    static final String DEFAULT_CAPTION = "All Workflows";
+    public static final String ZOOM_PARAM = "zoom";
+    public static final String TIME_PARAM = "time";
+    public static final String ID_PARAM = "id";
+    public static final String WF_GROUP_PARAM = "group";
+    public static final String GROUPS_TAG = "groups";
+    public static final String WORKFLOWS_TAG = "workflows";
+    public static final String NAME_TAG = "name";
+    public static final String UNLISTED_WORKFLOWS_CAPTION = "Unlisted workflows";
+    public static final String DEFAULT_CAPTION = "All Workflows";
 
-    static final int DEFAULT_ZOOM_LEVEL_MINUTES = 60;
-    static final int MIN_ZOOM_LEVEL_MINUTES = 1;
-    static final int MAX_ZOOM_LEVEL_MINUTES = 60*24; // Code won't work with higher level, because of toFullDay()
+    public static final int DEFAULT_ZOOM_LEVEL_MINUTES = 60;
+    public static final int MIN_ZOOM_LEVEL_MINUTES = 1;
+    public static final int MAX_ZOOM_LEVEL_MINUTES = 60*24; // Code won't work with higher level, because of toFullDay()
 
-    static CelosClient getCelosClient(ServletContext servletContext) throws URISyntaxException {
+    public static CelosClient getCelosClient(ServletContext servletContext) throws URISyntaxException {
         URL celosURL = (URL) Util.requireNonNull(servletContext.getAttribute(Main.CELOS_URL_ATTR));
         return new CelosClient(celosURL.toURI());
     }
 
-    static Optional<String> getCelosConfig(ServletContext servletContext) throws IOException {
+    public static Optional<String> getCelosConfig(ServletContext servletContext) throws IOException {
         final Path configFile = ((File) servletContext.getAttribute(Main.CONFIG_FILE_ATTR)).toPath();
         return  (Files.exists(configFile))
                 ? Optional.of(new String(Files.readAllBytes(configFile), StandardCharsets.UTF_8))
