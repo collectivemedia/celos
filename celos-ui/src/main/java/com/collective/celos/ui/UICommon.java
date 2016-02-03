@@ -61,17 +61,9 @@ class UICommon {
     static final String UNLISTED_WORKFLOWS_CAPTION = "Unlisted workflows";
     static final String DEFAULT_CAPTION = "All Workflows";
 
-    // We never want to fetch more data than for a week from Celos so as not to overload the server
-    static final int MAX_MINUTES_TO_FETCH = 7 * 60 * 24;
-    static final int MAX_TILES_TO_DISPLAY = 48;
-
     static final int DEFAULT_ZOOM_LEVEL_MINUTES = 60;
     static final int MIN_ZOOM_LEVEL_MINUTES = 1;
     static final int MAX_ZOOM_LEVEL_MINUTES = 60*24; // Code won't work with higher level, because of toFullDay()
-
-    static final DateTimeFormatter DAY_FORMAT = DateTimeFormat.forPattern("dd");
-    static final DateTimeFormatter HEADER_FORMAT = DateTimeFormat.forPattern("HHmm");
-    static final DateTimeFormatter FULL_FORMAT = DateTimeFormat.forPattern("YYYY-MM-dd HH:mm");
 
     static CelosClient getCelosClient(ServletContext servletContext) throws URISyntaxException {
         URL celosURL = (URL) Util.requireNonNull(servletContext.getAttribute(Main.CELOS_URL_ATTR));

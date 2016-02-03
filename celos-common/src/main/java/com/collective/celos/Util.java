@@ -72,7 +72,11 @@ public class Util {
     }
 
     // DATETIME UTILITIES
-    
+
+    public static DateTime toFullDay(DateTime dt) {
+        return dt.withHourOfDay(0).withMinuteOfHour(0).withSecondOfMinute(0).withMillisOfSecond(0);
+    }
+
     public static DateTime toFullHour(DateTime dt) {
         return toFullMinute(dt).withMinuteOfHour(0);
     }
