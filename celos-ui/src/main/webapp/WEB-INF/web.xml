@@ -19,8 +19,8 @@
     </servlet>
 
     <servlet>
-        <servlet-name>GroupServlet</servlet-name>
-        <servlet-class>com.collective.celos.ui.WorkflowsServlet</servlet-class>
+        <servlet-name>WorkflowGroupsServlet</servlet-name>
+        <servlet-class>com.collective.celos.ui.WorkflowGroupsServlet</servlet-class>
     </servlet>
 
     <servlet-mapping>
@@ -39,7 +39,7 @@
     </servlet-mapping>
 
     <servlet-mapping>
-        <servlet-name>GroupServlet</servlet-name>
+        <servlet-name>WorkflowGroupsServlet</servlet-name>
         <url-pattern>/groups</url-pattern>
     </servlet-mapping>
 

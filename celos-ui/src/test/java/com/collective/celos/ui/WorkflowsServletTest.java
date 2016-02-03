@@ -19,7 +19,6 @@ import com.collective.celos.CelosClient;
 import com.collective.celos.ScheduledTime;
 import com.collective.celos.Util;
 import com.collective.celos.WorkflowID;
-import com.collective.celos.pojo.Workflow;
 import com.collective.celos.pojo.WorkflowGroup;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Assert;
@@ -51,7 +50,7 @@ public class WorkflowsServletTest {
         final ArrayList<WorkflowID> ids = new ArrayList<>();
         ids.add(new WorkflowID("abcdef"));
 
-        WorkflowGroup xx = new WorkflowsServlet().processWorkflowGroup("dsad", ids, tileTimes, new HashMap<>(), new URL("http://hue"));
+        WorkflowGroup xx = new WorkflowGroupsServlet().processWorkflowGroup("dsad", ids, tileTimes, new HashMap<>(), new URL("http://hue"));
 
         String check = "{\"name\":\"dsad\",\"times\":[\"1900\",\"1800\",\"1700\",\"1600\"],\"days\":[null,null,null,null],\"rows\":[{\"workflowName\":\"abcdef\",\"rows\":[]}]}";
 
