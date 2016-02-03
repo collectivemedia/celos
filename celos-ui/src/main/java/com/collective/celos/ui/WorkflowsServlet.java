@@ -41,13 +41,21 @@ import static java.util.stream.Collectors.toSet;
 
 /**
  * Renders the full UI JSON.
- * If @groups parameter is present, returns full state and fetch requested @groups data from server.
+ * If @group URI parameter is present, returns full state and fetch requested @group data from server.
  * Otherwise returns full state with each workflow = [].
  * format = {rows: [$group1, $group2 ...] }
  */
 public class WorkflowsServlet extends HttpServlet {
 
-    static final Map<SlotState.Status, String> STATUS_TO_SHORT_NAME = new HashMap<>();
+    private static final DateTimeFormatter DAY_FORMAT = DateTimeFormat.forPattern("dd");
+    private static final DateTimeFormatter HEADER_FORMAT = DateTimeFormat.forPattern("HHmm");
+    private static final DateTimeFormatter FULL_FORMAT = DateTimeFormat.forPattern("YYYY-MM-dd HH:mm");
+
+    // We never want to fetch more data than for a week from Celos so as not to overload the server
+    private static final int MAX_MINUTES_TO_FETCH = 7 * 60 * 24;
+    private static final int MAX_TILES_TO_DISPLAY = 48;
+
+    private static final Map<SlotState.Status, String> STATUS_TO_SHORT_NAME = new HashMap<>();
     static {
         STATUS_TO_SHORT_NAME.put(SlotState.Status.FAILURE, "fail");
         STATUS_TO_SHORT_NAME.put(SlotState.Status.READY, "rdy&nbsp;");
@@ -77,29 +85,34 @@ public class WorkflowsServlet extends HttpServlet {
         return slot;
     }
 
-    protected WorkflowGroup processWorkflowGroup(String name, List<WorkflowID> ids, NavigableSet<ScheduledTime> tileTimesSet, Map<WorkflowID, WorkflowStatus> statuses, URL hueURL) {
+    protected WorkflowGroup processWorkflowGroup(String groupName, List<WorkflowID> ids,
+                                                 NavigableSet<ScheduledTime> tileTimesSet,
+                                                 Map<WorkflowID, WorkflowStatus> statuses,
+                                                 URL hueURL) {
 
-        WorkflowGroup group = new WorkflowGroup(name);
         final List<ScheduledTime> tileTimes = tileTimesSet.stream().collect(toList());
         Collections.reverse(tileTimes);
-        group = group.withTimes(tileTimes.stream()
-                .map(tileTime -> UICommon.HEADER_FORMAT.print(tileTime.getDateTime()))
-                .collect(toList()));
+        // Collect times marks
+        final List<String> groupTimes = tileTimes.stream()
+                .map(tileTime -> HEADER_FORMAT.print(tileTime.getDateTime()))
+                .collect(toList());
 
         // Mark full days as date, half day as "<>"
-        group = group.withDays(tileTimes.stream()
-                .map(tileTime ->
-                        (Util.isFullDay(tileTime.getDateTime()))
-                                ? UICommon.DAY_FORMAT.print(tileTime.getDateTime())
-                                : (Util.isFullDay(tileTime.plusHours(12).getDateTime()))
-                                ? "<>"
-                                : null)
-                .collect(toList()));
-
-        group = group.withRows(new ArrayList<>());
+        final List<String> groupsDays = new ArrayList<>();
+        for (ScheduledTime tileTime : tileTimes) {
+            if (Util.isFullDay(tileTime.getDateTime())) {
+                groupsDays.add(DAY_FORMAT.print(tileTime.getDateTime()));
+            } else if (Util.isFullDay(tileTime.plusHours(12).getDateTime())) {
+                groupsDays.add("<>");
+            } else {
+                groupsDays.add(null);
+            }
+        }
+        // collect all table rows
+        final List<Workflow> workflows = new ArrayList<>();
         for (WorkflowID id : ids) {
             Workflow workflow = new Workflow(id.toString());
-            group.getRows().add(workflow);
+            workflows.add(workflow);
             WorkflowStatus workflowStatus = statuses.get(id);
             if (workflowStatus != null) {
                 Map<ScheduledTime, Set<SlotState>> buckets = bucketSlotsByTime(workflowStatus.getSlotStates(), tileTimesSet);
@@ -111,9 +124,9 @@ public class WorkflowsServlet extends HttpServlet {
                     workflow.getRows().add(makeSlot(hueURL, slots));
                 }
             }
+            workflows.add(workflow);
         }
-
-        return group;
+        return new WorkflowGroup(groupName).withRows(workflows).withDays(groupsDays).withTimes(groupTimes);
     }
 
 
@@ -139,8 +152,8 @@ public class WorkflowsServlet extends HttpServlet {
         int zoomLevelMinutes = getZoomLevel(zoomParam);
         final NavigableSet<ScheduledTime> tileTimesSet = getTileTimesSet(getFirstTileTime(timeShift, zoomLevelMinutes),
                 zoomLevelMinutes,
-                UICommon.MAX_MINUTES_TO_FETCH,
-                UICommon.MAX_TILES_TO_DISPLAY
+                MAX_MINUTES_TO_FETCH,
+                MAX_TILES_TO_DISPLAY
         );
         ScheduledTime start = tileTimesSet.first();
         Set<WorkflowID> workflowIDs0 = client.getWorkflowList();
