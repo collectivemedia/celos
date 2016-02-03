@@ -26,38 +26,33 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.swing.text.html.parser.Entity;
-import javax.swing.tree.ExpandVetoException;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Enumeration;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
+import static java.util.stream.Collectors.toList;
 
 /**
  * Called from the browser to rerun a slot.
  */
 public class ActionServlet extends HttpServlet {
-    
-    private static final String SLOT_ID = "id";
 
-    protected void method1(CelosClient client, String action, JsonNode jsonNode) throws Exception {
-        jsonNode.get("slots").forEach(x -> {
-            try {
-                System.out.println("---");
-                System.out.println(x.get("workflowName").asText());
-                System.out.println(x.get("ts").asText());
-                final WorkflowID workflowName = new WorkflowID(x.get("workflowName").asText());
-                final ScheduledTime ts = new ScheduledTime(x.get("ts").asText());
-                if ("kill".equals(action)) {
-                    client.kill(workflowName, ts);
-                } else if ("rerun".equals(action)) {
-                    client.rerunSlot(workflowName, ts);
-                } else {
-                    throw new Exception("ActionServlet failed");
-                }
-            } catch (Exception e) {
-                // FIXME it shouldn't be like this
-                e.printStackTrace();
+    protected void processPost(CelosClient client, String action, JsonNode jsonNode) throws Exception {
+        final JsonNode slots = jsonNode.get("slots");
+        for (Integer i : IntStream.range(0, slots.size()).toArray()) {
+            final JsonNode x = slots.get(i);
+            final WorkflowID workflowName = new WorkflowID(x.get("workflowName").asText());
+            final ScheduledTime ts = new ScheduledTime(x.get("ts").asText());
+            if ("kill".equals(action)) {
+                client.kill(workflowName, ts);
+            } else if ("rerun".equals(action)) {
+                client.rerunSlot(workflowName, ts);
+            } else {
+                throw new Exception(action + "not found");
             }
-        });
+        }
     }
 
     @Override
@@ -70,7 +65,7 @@ public class ActionServlet extends HttpServlet {
             final JsonNode jsonNode = mapper.readTree(request.getReader());
             System.out.println(mapper.writeValueAsString(jsonNode));
             final String action = jsonNode.get("action").asText();
-            method1(client, action, jsonNode);
+            processPost(client, action, jsonNode);
 
             mapper.writeValue(response.getWriter(), jsonNode);
 

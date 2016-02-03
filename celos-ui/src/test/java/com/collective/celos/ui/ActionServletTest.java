@@ -33,7 +33,7 @@ public class ActionServletTest {
     public final static ObjectMapper MAPPER = new ObjectMapper();
 
     @Test
-    public void testParsesOk() throws Exception {
+    public void testProcessPost() throws Exception {
         CelosClient client = Mockito.mock(CelosClient.class);
         HttpServletRequest req = Mockito.mock(HttpServletRequest.class);
 
@@ -58,7 +58,7 @@ public class ActionServletTest {
                 "}]\n" +
                 "}";
 
-        new ActionServlet().method1(client, "kill", MAPPER.readTree(ss));
+        new ActionServlet().processPost(client, "kill", MAPPER.readTree(ss));
 
         Mockito.verify(client, Mockito.atLeastOnce())
                 .kill(new WorkflowID("flume-tmp-file-closer"), new ScheduledTime("2016-01-28T09:00Z"));
