@@ -18,6 +18,11 @@
         <servlet-class>com.collective.celos.servlet.VersionServlet</servlet-class>
     </servlet>
 
+    <servlet>
+        <servlet-name>WorkflowGroupsServlet</servlet-name>
+        <servlet-class>com.collective.celos.ui.WorkflowGroupsServlet</servlet-class>
+    </servlet>
+
     <servlet-mapping>
         <servlet-name>UIServlet</servlet-name>
         <url-pattern>/ui</url-pattern>
@@ -33,5 +38,9 @@
         <url-pattern>/version</url-pattern>
     </servlet-mapping>
 
+    <servlet-mapping>
+        <servlet-name>WorkflowGroupsServlet</servlet-name>
+        <url-pattern>/groups</url-pattern>
+    </servlet-mapping>
 
 </web-app>
