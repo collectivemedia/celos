@@ -17,6 +17,7 @@ package com.collective.celos.ui;
 
 import com.collective.celos.CelosClient;
 import com.collective.celos.ScheduledTime;
+import com.collective.celos.Util;
 import com.collective.celos.WorkflowID;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
@@ -29,8 +30,6 @@ import javax.servlet.http.HttpServletRequest;
  * Renders the UI HTML.
  */
 public class ActionServletTest {
-
-    public final static ObjectMapper MAPPER = new ObjectMapper();
 
     @Test
     public void testProcessPost() throws Exception {
@@ -58,7 +57,7 @@ public class ActionServletTest {
                 "}]\n" +
                 "}";
 
-        new ActionServlet().processPost(client, "kill", MAPPER.readTree(ss));
+        new ActionServlet().processPost(client, "kill", Util.MAPPER.readTree(ss));
 
         Mockito.verify(client, Mockito.atLeastOnce())
                 .kill(new WorkflowID("flume-tmp-file-closer"), new ScheduledTime("2016-01-28T09:00Z"));

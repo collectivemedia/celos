@@ -34,12 +34,8 @@ public class WorkflowsServletTest {
 
     // TODO create new test for groups == null
 
-    public final static ObjectMapper MAPPER = new ObjectMapper();
-
     @Test
     public void testProcessWorkflowGroup() throws Exception {
-        CelosClient client = Mockito.mock(CelosClient.class);
-        HttpServletRequest req = Mockito.mock(HttpServletRequest.class);
 
         NavigableSet<ScheduledTime> tileTimes = new TreeSet<>();
         tileTimes.add(new ScheduledTime("2015-09-14T16:00Z"));
@@ -57,7 +53,7 @@ public class WorkflowsServletTest {
         final String content = Util.JSON_PRETTY.writeValueAsString(xx);
         System.out.println("content =");
         System.out.println(content);
-        Assert.assertEquals(MAPPER.readTree(check), MAPPER.readTree(content));
+        Assert.assertEquals(Util.MAPPER.readTree(check), Util.MAPPER.readTree(content));
     }
 
 }

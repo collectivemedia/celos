@@ -28,29 +28,30 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URL;
-import java.util.Enumeration;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-
-import static java.util.stream.Collectors.toList;
 
 /**
  * Called from the browser to rerun a slot.
  */
 public class ActionServlet extends HttpServlet {
 
+    private final static String ACTION_PARAM = "action";
+    private final static String WORKFLOW_NAME_PARAM = "workflowName";
+    private final static String TIMESTAMP_PARAM = "ts";
+    private final static String SLOTS_PARAM = "slots";
+    private final static String KILL_ACTION = "kill";
+    private final static String RERUN_ACTION = "rerun";
+
     protected void processPost(CelosClient client, String action, JsonNode jsonNode) throws Exception {
-        final JsonNode slots = jsonNode.get("slots");
-        for (Integer i : IntStream.range(0, slots.size()).toArray()) {
-            final JsonNode x = slots.get(i);
-            final WorkflowID workflowName = new WorkflowID(x.get("workflowName").asText());
-            final ScheduledTime ts = new ScheduledTime(x.get("ts").asText());
-            if ("kill".equals(action)) {
+        for (JsonNode x : jsonNode.get(SLOTS_PARAM)) {
+            final WorkflowID workflowName = new WorkflowID(x.get(WORKFLOW_NAME_PARAM).asText());
+            final ScheduledTime ts = new ScheduledTime(x.get(TIMESTAMP_PARAM).asText());
+            if (KILL_ACTION.equals(action)) {
                 client.kill(workflowName, ts);
-            } else if ("rerun".equals(action)) {
+            } else if (RERUN_ACTION.equals(action)) {
                 client.rerunSlot(workflowName, ts);
             } else {
-                throw new Exception(action + "not found");
+                throw new Exception("action " + action + " not found");
             }
         }
     }
@@ -58,17 +59,13 @@ public class ActionServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try {
-            URL celosURL = (URL) Util.requireNonNull(getServletContext().getAttribute(Main.CELOS_URL_ATTR));
-            CelosClient client = new CelosClient(celosURL.toURI());
-
-            ObjectMapper mapper = new ObjectMapper();
+            final URL celosURL = (URL) Util.requireNonNull(getServletContext().getAttribute(Main.CELOS_URL_ATTR));
+            final CelosClient client = new CelosClient(celosURL.toURI());
+            final ObjectMapper mapper = new ObjectMapper();
             final JsonNode jsonNode = mapper.readTree(request.getReader());
-            System.out.println(mapper.writeValueAsString(jsonNode));
-            final String action = jsonNode.get("action").asText();
+            final String action = jsonNode.get(ACTION_PARAM).asText();
             processPost(client, action, jsonNode);
-
             mapper.writeValue(response.getWriter(), jsonNode);
-
             response.setStatus(HttpServletResponse.SC_OK);
         } catch(Exception e) {
             throw new ServletException(e);

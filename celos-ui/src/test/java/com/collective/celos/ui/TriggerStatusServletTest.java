@@ -16,6 +16,7 @@
 package com.collective.celos.ui;
 
 import com.collective.celos.CelosClient;
+import com.collective.celos.Util;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import org.junit.Assert;
@@ -29,8 +30,6 @@ import javax.servlet.http.HttpServletRequest;
  * Renders the UI HTML.
  */
 public class TriggerStatusServletTest {
-
-    public final static ObjectMapper MAPPER = new ObjectMapper();
 
     @Test
     public void testParsesOk() throws Exception {
@@ -55,7 +54,7 @@ public class TriggerStatusServletTest {
                 "}";
 
         Mockito.when(client.getTriggerStatus(Mockito.anyString(), Mockito.anyString()))
-               .thenReturn(MAPPER.readTree(ss));
+               .thenReturn(Util.MAPPER.readTree(ss));
         Mockito.when(req.getParameter(UICommon.ID_PARAM))
                 .thenReturn("workflow-1");
         Mockito.when(req.getParameter(UICommon.TIME_PARAM))
@@ -64,7 +63,7 @@ public class TriggerStatusServletTest {
         ArrayNode xx = new TriggerStatusServlet().getJsonNodes(req, client);
 
         Assert.assertEquals(xx.size(), 2);
-        Assert.assertNotNull(MAPPER.writeValueAsString(xx));
+        Assert.assertNotNull(Util.MAPPER.writeValueAsString(xx));
 
     }
 
