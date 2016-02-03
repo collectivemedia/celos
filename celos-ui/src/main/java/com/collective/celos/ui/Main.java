@@ -29,6 +29,7 @@ import java.util.Optional;
 import com.collective.celos.CelosClient;
 import com.collective.celos.JettyServer;
 import com.collective.celos.Util;
+import com.collective.celos.WorkflowID;
 
 import javax.servlet.ServletContext;
 
@@ -40,26 +41,13 @@ public class Main {
     public static final String CELOS_URL_ATTR = "CELOS_URL";
     public static final String HUE_URL_ATTR = "HUE_URL";
     public static final String CONFIG_FILE_ATTR = "CONFIG_FILE";
-    public static final int MULTI_SLOT_INFO_LIMIT = 20;
 
     public static void main(String... args) throws Exception {
         UICommandLineParser UICommandLineParser = new UICommandLineParser();
         UICommandLine commandLine = UICommandLineParser.parse(args);
         JettyServer jettyServer = new JettyServer();
         jettyServer.start(commandLine.getPort());
-        jettyServer.setupContext(getAttributes(commandLine), new HashMap<String, String>());
-    }
-
-    public static CelosClient getCelosClient(ServletContext servletContext) throws URISyntaxException {
-        URL celosURL = (URL) Util.requireNonNull(servletContext.getAttribute(Main.CELOS_URL_ATTR));
-        return new CelosClient(celosURL.toURI());
-    }
-
-    public static Optional<String> getCelosConfig(ServletContext servletContext) throws IOException {
-        final Path configFile = ((File) servletContext.getAttribute(Main.CONFIG_FILE_ATTR)).toPath();
-        return  (Files.exists(configFile))
-                ? Optional.of(new String(Files.readAllBytes(configFile), StandardCharsets.UTF_8))
-                : Optional.empty();
+        jettyServer.setupContext(getAttributes(commandLine), new HashMap<>());
     }
 
     private static Map<String, Object> getAttributes(UICommandLine commandLine) {
