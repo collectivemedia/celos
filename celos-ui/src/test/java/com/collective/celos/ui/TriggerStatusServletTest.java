@@ -56,9 +56,9 @@ public class TriggerStatusServletTest {
 
         Mockito.when(client.getTriggerStatus(Mockito.anyString(), Mockito.anyString()))
                .thenReturn(MAPPER.readTree(ss));
-        Mockito.when(req.getParameter(TriggerStatusServlet.ID_PARAM))
+        Mockito.when(req.getParameter(UICommon.ID_PARAM))
                 .thenReturn("workflow-1");
-        Mockito.when(req.getParameter(TriggerStatusServlet.TIME_PARAM))
+        Mockito.when(req.getParameter(UICommon.TIME_PARAM))
                 .thenReturn("2015-09-13T13:00Z,2015-09-13T13:00Z");
 
         ArrayNode xx = new TriggerStatusServlet().getJsonNodes(req, client);

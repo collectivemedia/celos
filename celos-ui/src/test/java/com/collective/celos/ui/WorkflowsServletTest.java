@@ -17,7 +17,9 @@ package com.collective.celos.ui;
 
 import com.collective.celos.CelosClient;
 import com.collective.celos.ScheduledTime;
+import com.collective.celos.Util;
 import com.collective.celos.WorkflowID;
+import com.collective.celos.pojo.Workflow;
 import com.collective.celos.pojo.WorkflowGroup;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Assert;
@@ -29,10 +31,9 @@ import java.net.URL;
 import java.util.*;
 
 
-/**
- * Renders the UI HTML.
- */
 public class WorkflowsServletTest {
+
+    // TODO create new test for groups == null
 
     public final static ObjectMapper MAPPER = new ObjectMapper();
 
@@ -54,8 +55,10 @@ public class WorkflowsServletTest {
 
         String check = "{\"name\":\"dsad\",\"times\":[\"1900\",\"1800\",\"1700\",\"1600\"],\"days\":[null,null,null,null],\"rows\":[{\"workflowName\":\"asdasdas\",\"rows\":[]}]}";
 
-        Assert.assertEquals(MAPPER.readTree(check), MAPPER.readTree(MAPPER.writeValueAsString(xx)));
-
+        final String content = Util.JSON_PRETTY.writeValueAsString(xx);
+        System.out.println("content =");
+        System.out.println(content);
+        Assert.assertEquals(MAPPER.readTree(check), MAPPER.readTree(content));
     }
 
 }

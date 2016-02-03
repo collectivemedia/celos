@@ -34,13 +34,10 @@ import static java.util.stream.Collectors.toList;
  */
 public class TriggerStatusServlet extends HttpServlet {
 
-    protected static final String ID_PARAM = "id";
-    protected static final String TIME_PARAM = "time";
-
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse response) throws ServletException, IOException {
         try {
-            CelosClient client = Main.getCelosClient(getServletContext());
+            final CelosClient client = UICommon.getCelosClient(getServletContext());
             final ArrayNode node = getJsonNodes(req, client);
             response.setContentType("application/json;charset=UTF-8");
             Util.MAPPER.writeValue(response.getWriter(), node);
@@ -50,12 +47,12 @@ public class TriggerStatusServlet extends HttpServlet {
     }
 
     protected ArrayNode getJsonNodes(HttpServletRequest req, CelosClient client) throws Exception {
-        final List<String> timestamps = Arrays.stream(req.getParameter(TIME_PARAM).split(","))
-                .limit(Main.MULTI_SLOT_INFO_LIMIT)
+        final List<String> timestamps = Arrays.stream(req.getParameter(UICommon.TIME_PARAM).split(","))
+                .limit(UICommon.MULTI_SLOT_INFO_LIMIT)
                 .collect(toList());
         final ArrayNode node = Util.MAPPER.createArrayNode();
         for (String ts : timestamps) {
-            node.add(client.getTriggerStatus(req.getParameter(ID_PARAM), ts));
+            node.add(client.getTriggerStatus(req.getParameter(UICommon.ID_PARAM), ts));
         }
         return node;
     }

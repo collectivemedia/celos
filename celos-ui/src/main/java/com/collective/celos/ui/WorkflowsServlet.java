@@ -16,11 +16,11 @@
 package com.collective.celos.ui;
 
 import com.collective.celos.*;
+import com.collective.celos.pojo.Config;
 import com.collective.celos.pojo.Slot;
 import com.collective.celos.pojo.WorkflowGroup;
 import com.collective.celos.pojo.Workflow;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.google.common.collect.Sets;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -32,9 +32,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -43,26 +40,12 @@ import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 
 /**
- * Renders the UI JSON.
+ * Renders the full UI JSON.
+ * If @groups parameter is present, returns full state and fetch requested @groups data from server.
+ * Otherwise returns full state with each workflow = [].
+ * format = {rows: [$group1, $group2 ...] }
  */
 public class WorkflowsServlet extends HttpServlet {
-
-    private static final String ZOOM_PARAM = "zoom";
-    private static final String TIME_PARAM = "time";
-    private static final String WF_GROUP_PARAM = "group";
-    private static final String GROUPS_TAG = "groups";
-    private static final String WORKFLOWS_TAG = "workflows";
-    private static final String NAME_TAG = "name";
-    private static final String UNLISTED_WORKFLOWS_CAPTION = "Unlisted workflows";
-    private static final String DEFAULT_CAPTION = "All Workflows";
-
-    // We never want to fetch more data than for a week from Celos so as not to overload the server
-    private static final int MAX_MINUTES_TO_FETCH = 7 * 60 * 24;
-    private static final int MAX_TILES_TO_DISPLAY = 48;
-
-    static final int DEFAULT_ZOOM_LEVEL_MINUTES = 60;
-    static final int MIN_ZOOM_LEVEL_MINUTES = 1;
-    static final int MAX_ZOOM_LEVEL_MINUTES = 60*24; // Code won't work with higher level, because of toFullDay()
 
     static final Map<SlotState.Status, String> STATUS_TO_SHORT_NAME = new HashMap<>();
     static {
@@ -78,11 +61,6 @@ public class WorkflowsServlet extends HttpServlet {
         }
     }
 
-    private static final DateTimeFormatter DAY_FORMAT = DateTimeFormat.forPattern("dd");
-    private static final DateTimeFormatter HEADER_FORMAT = DateTimeFormat.forPattern("HHmm");
-    private static final DateTimeFormatter FULL_FORMAT = DateTimeFormat.forPattern("YYYY-MM-dd HH:mm");
-
-
     private Slot makeSlot(URL hueURL, List<SlotState> states) {
         if (states.isEmpty()) {
             return new Slot("EMPTY").withQuantity(0);
@@ -94,7 +72,7 @@ public class WorkflowsServlet extends HttpServlet {
         slot = slot.withQuantity(states.size());
         slot = slot.withTimestamps(states.stream()
                 .map(x -> ZonedDateTime.parse(x.getScheduledTime().toString()).toString())
-                .limit(Main.MULTI_SLOT_INFO_LIMIT)
+                .limit(UICommon.MULTI_SLOT_INFO_LIMIT)
                 .collect(toList()));
         return slot;
     }
@@ -105,14 +83,14 @@ public class WorkflowsServlet extends HttpServlet {
         final List<ScheduledTime> tileTimes = tileTimesSet.stream().collect(toList());
         Collections.reverse(tileTimes);
         group = group.withTimes(tileTimes.stream()
-                .map(tileTime -> HEADER_FORMAT.print(tileTime.getDateTime()))
+                .map(tileTime -> UICommon.HEADER_FORMAT.print(tileTime.getDateTime()))
                 .collect(toList()));
 
         // Mark full days as date, half day as "<>"
         group = group.withDays(tileTimes.stream()
                 .map(tileTime ->
                         (Util.isFullDay(tileTime.getDateTime()))
-                                ? DAY_FORMAT.print(tileTime.getDateTime())
+                                ? UICommon.DAY_FORMAT.print(tileTime.getDateTime())
                                 : (Util.isFullDay(tileTime.plusHours(12).getDateTime()))
                                 ? "<>"
                                 : null)
@@ -143,9 +121,9 @@ public class WorkflowsServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse response) throws ServletException, IOException {
         try {
             String tmp = processGet(getServletContext(),
-                    req.getParameter(TIME_PARAM),
-                    req.getParameter(ZOOM_PARAM),
-                    req.getParameter(WF_GROUP_PARAM));
+                    req.getParameter(UICommon.TIME_PARAM),
+                    req.getParameter(UICommon.ZOOM_PARAM),
+                    req.getParameter(UICommon.WF_GROUP_PARAM));
             response.setContentType("application/json;charset=UTF-8");
             response.getWriter().write(tmp);
         } catch (Exception e) {
@@ -153,70 +131,43 @@ public class WorkflowsServlet extends HttpServlet {
         }
     }
 
-    static List<WorkflowGroup> getWorkflowGroups(String configFileIS, List<String> expectedWfs) throws IOException {
-        JsonNode mainNode = Util.MAPPER.readValue(configFileIS, JsonNode.class);
-        List<WorkflowGroup> configWorkflowGroups = new ArrayList<>();
-        Set<String> listedWfs = new TreeSet<>();
-
-        for(JsonNode workflowGroupNode: mainNode.get(GROUPS_TAG)) {
-            String[] workflowNames = Util.MAPPER.treeToValue(workflowGroupNode.get(WORKFLOWS_TAG), String[].class);
-
-            String name = workflowGroupNode.get(NAME_TAG).textValue();
-            final List<Workflow> collect = Arrays.stream(workflowNames)
-                    .map(Workflow::new)
-                    .collect(toList());
-            configWorkflowGroups.add(new WorkflowGroup(name).withRows(collect));
-            listedWfs.addAll(Arrays.stream(workflowNames).collect(toSet()));
-        }
-
-        final List<Workflow> collect = expectedWfs.stream()
-                .filter(listedWfs::contains)
-                .map(Workflow::new)
-                .collect(toList());
-        if (!collect.isEmpty()) {
-            configWorkflowGroups.add(new WorkflowGroup(UNLISTED_WORKFLOWS_CAPTION)
-                    .withRows(collect)
-            );
-        }
-        return configWorkflowGroups;
-    }
-
     public String processGet(ServletContext servletContext, String timeParam, String zoomParam, String wfGroup) throws Exception {
         URL hueURL = (URL) servletContext.getAttribute(Main.HUE_URL_ATTR);
-        CelosClient client = Main.getCelosClient(servletContext);
+        CelosClient client = UICommon.getCelosClient(servletContext);
         final ScheduledTime now = ScheduledTime.now();
         ScheduledTime timeShift = getDisplayTime(timeParam, now);
         int zoomLevelMinutes = getZoomLevel(zoomParam);
-        final NavigableSet<ScheduledTime> tileTimesSet = getTileTimesSet(getFirstTileTime(timeShift, zoomLevelMinutes), zoomLevelMinutes, MAX_MINUTES_TO_FETCH, MAX_TILES_TO_DISPLAY);
+        final NavigableSet<ScheduledTime> tileTimesSet = getTileTimesSet(getFirstTileTime(timeShift, zoomLevelMinutes),
+                zoomLevelMinutes,
+                UICommon.MAX_MINUTES_TO_FETCH,
+                UICommon.MAX_TILES_TO_DISPLAY
+        );
         ScheduledTime start = tileTimesSet.first();
         Set<WorkflowID> workflowIDs0 = client.getWorkflowList();
         final List<String> workflowIDs = workflowIDs0.stream().map(WorkflowID::toString).collect(toList());
 
-        final Optional<String> celosConfig = Main.getCelosConfig(servletContext);
-        List<WorkflowGroup> groups;
-        if (celosConfig.isPresent()) {
-            groups = getWorkflowGroups(celosConfig.get(), workflowIDs);
-        } else {
-            groups = getDefaultGroups(workflowIDs);
+        final Optional<String> celosConfig = UICommon.getCelosConfig(servletContext);
+
+        List<WorkflowGroup> groups = getWorkflowGroups(celosConfig, workflowIDs);
+        final List<WorkflowGroup> groupsMatchedName = new ArrayList<>();
+        for (WorkflowGroup g : groups) {
+            if (g.getName().equals(wfGroup)) {
+                final List<WorkflowID> ids = g.getRows().stream()
+                        .map(Workflow::toString)
+                        .map(WorkflowID::new)
+                        .collect(toList());
+                final List<WorkflowID> filteredIds = ids.stream().filter(workflowIDs0::contains).collect(toList());
+                final Map<WorkflowID, WorkflowStatus> statuses = fetchStatuses(client, filteredIds, start, timeShift);
+                final WorkflowGroup res = processWorkflowGroup(g.getName(), ids, tileTimesSet, statuses, hueURL);
+                groupsMatchedName.add(res);
+            } else {
+                groupsMatchedName.add(g);
+            }
         }
-        final List<WorkflowGroup> groupsMatchedName = groups.stream()
-                .filter(u -> u.getName().equals(wfGroup))
-                .collect(toList());
-        if (groupsMatchedName.isEmpty()) {
-            throw new Exception("group not found");
-        }
-        final WorkflowGroup workflowGroup = groupsMatchedName.get(0);
-
-        final List<WorkflowID> ids = workflowIDs0.stream()
-                .filter(workflowGroup.getRows()::contains)
-                .collect(toList());
-
-        Map<WorkflowID, WorkflowStatus> statuses = fetchStatuses(client, ids, start, timeShift);
-
-        final WorkflowGroup groupData = processWorkflowGroup(workflowGroup.getName(), ids, tileTimesSet, statuses, hueURL);
-
-        return Util.JSON_PRETTY.writeValueAsString(groupData);
+        final Config config = new Config(groupsMatchedName);
+        return Util.JSON_PRETTY.writeValueAsString(config);
     }
+
 
     ScheduledTime getDisplayTime(String timeStr, ScheduledTime now) {
         if (timeStr == null || timeStr.isEmpty()) {
@@ -233,13 +184,13 @@ public class WorkflowsServlet extends HttpServlet {
     
     int getZoomLevel(String zoomStr) {
         if (zoomStr == null || zoomStr.isEmpty()) {
-            return DEFAULT_ZOOM_LEVEL_MINUTES;
+            return UICommon.DEFAULT_ZOOM_LEVEL_MINUTES;
         } else {
             int zoom = Integer.parseInt(zoomStr);
-            if (zoom < MIN_ZOOM_LEVEL_MINUTES) {
-                return MIN_ZOOM_LEVEL_MINUTES;
-            } else if (zoom > MAX_ZOOM_LEVEL_MINUTES) {
-                return MAX_ZOOM_LEVEL_MINUTES;
+            if (zoom < UICommon.MIN_ZOOM_LEVEL_MINUTES) {
+                return UICommon.MIN_ZOOM_LEVEL_MINUTES;
+            } else if (zoom > UICommon.MAX_ZOOM_LEVEL_MINUTES) {
+                return UICommon.MAX_ZOOM_LEVEL_MINUTES;
             } else {
                 return zoom;
             }
@@ -331,15 +282,46 @@ public class WorkflowsServlet extends HttpServlet {
         return times;
     }
 
-    public static List<WorkflowGroup> getDefaultGroups(List<String> workflows) {
+    List<WorkflowGroup> getWorkflowGroups(Optional<String> celosConfig, List<String> expectedWfs) throws IOException {
+        if (!celosConfig.isPresent()) {
+            return getDefaultGroups(expectedWfs);
+        }
+        // else
+        JsonNode mainNode = Util.MAPPER.readValue(celosConfig.get(), JsonNode.class);
+        List<WorkflowGroup> configWorkflowGroups = new ArrayList<>();
+        Set<String> listedWfs = new TreeSet<>();
+
+        for(JsonNode workflowGroupNode: mainNode.get(UICommon.GROUPS_TAG)) {
+            String[] workflowNames = Util.MAPPER.treeToValue(workflowGroupNode.get(UICommon.WORKFLOWS_TAG), String[].class);
+
+            String name = workflowGroupNode.get(UICommon.NAME_TAG).textValue();
+            final List<Workflow> collect = Arrays.stream(workflowNames)
+                    .map(Workflow::new)
+                    .collect(toList());
+            configWorkflowGroups.add(new WorkflowGroup(name).withRows(collect));
+            listedWfs.addAll(Arrays.stream(workflowNames).collect(toSet()));
+        }
+
+        final List<Workflow> collect = expectedWfs.stream()
+                .filter(listedWfs::contains)
+                .map(Workflow::new)
+                .collect(toList());
+        if (!collect.isEmpty()) {
+            configWorkflowGroups.add(new WorkflowGroup(UICommon.UNLISTED_WORKFLOWS_CAPTION)
+                    .withRows(collect)
+            );
+        }
+        return configWorkflowGroups;
+    }
+
+    public List<WorkflowGroup> getDefaultGroups(List<String> workflows) {
         return Collections.singletonList(
-                new WorkflowGroup(DEFAULT_CAPTION)
+                new WorkflowGroup(UICommon.DEFAULT_CAPTION)
                         .withRows(workflows.stream()
                                 .map(Workflow::new)
                                 .collect(toList())
                         )
         );
     }
-
 
 }
