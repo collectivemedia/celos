@@ -31,6 +31,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.time.ZonedDateTime;
 import java.util.*;
@@ -67,6 +68,12 @@ public class WorkflowGroupsServlet extends HttpServlet {
         }
     }
 
+    CelosClient client;
+
+    public WorkflowGroupsServlet() throws URISyntaxException {
+        client = UICommon.getCelosClient(getServletContext());
+    }
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse response) throws ServletException, IOException {
         try {
@@ -83,7 +90,6 @@ public class WorkflowGroupsServlet extends HttpServlet {
 
     protected String processGet(ServletContext servletContext, String timeParam, String zoomParam, String wfGroup) throws Exception {
         URL hueURL = (URL) servletContext.getAttribute(Main.HUE_URL_ATTR);
-        CelosClient client = UICommon.getCelosClient(servletContext);
         final ScheduledTime now = ScheduledTime.now();
         ScheduledTime timeShift = getDisplayTime(timeParam, now);
         int zoomLevelMinutes = getZoomLevel(zoomParam);

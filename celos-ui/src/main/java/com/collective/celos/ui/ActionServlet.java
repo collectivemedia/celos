@@ -27,6 +27,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.stream.IntStream;
 
@@ -41,6 +42,12 @@ public class ActionServlet extends HttpServlet {
     private final static String SLOTS_PARAM = "slots";
     private final static String KILL_ACTION = "kill";
     private final static String RERUN_ACTION = "rerun";
+
+    final CelosClient client;
+
+    public ActionServlet() throws URISyntaxException {
+        client = UICommon.getCelosClient(getServletContext());
+    }
 
     protected void processPost(CelosClient client, String action, JsonNode jsonNode) throws Exception {
         for (JsonNode x : jsonNode.get(SLOTS_PARAM)) {
@@ -59,7 +66,6 @@ public class ActionServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try {
-            final CelosClient client = UICommon.getCelosClient(getServletContext());
             final JsonNode jsonNode = Util.MAPPER.readTree(request.getReader());
             final String action = jsonNode.get(ACTION_PARAM).asText();
             processPost(client, action, jsonNode);

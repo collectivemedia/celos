@@ -24,6 +24,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -34,10 +35,15 @@ import static java.util.stream.Collectors.toList;
  */
 public class TriggerStatusServlet extends HttpServlet {
 
+    final CelosClient client;
+
+    public TriggerStatusServlet() throws URISyntaxException {
+        client = UICommon.getCelosClient(getServletContext());
+    }
+
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse response) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest req, HttpServletResponse response) throws ServletException {
         try {
-            final CelosClient client = UICommon.getCelosClient(getServletContext());
             final ArrayNode node = getJsonNodes(req, client);
             response.setContentType("application/json;charset=UTF-8");
             Util.MAPPER.writeValue(response.getWriter(), node);
