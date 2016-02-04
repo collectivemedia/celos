@@ -68,7 +68,7 @@ public class WorkflowGroupsServlet extends HttpServlet {
         }
     }
 
-    CelosClient client;
+    private CelosClient client;
 
     @Override
     public void init() throws ServletException {

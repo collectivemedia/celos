@@ -35,7 +35,7 @@ import static java.util.stream.Collectors.toList;
  */
 public class TriggerStatusServlet extends HttpServlet {
 
-    CelosClient client;
+    private CelosClient client;
 
     @Override
     public void init() throws ServletException {

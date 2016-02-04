@@ -43,7 +43,7 @@ public class ActionServlet extends HttpServlet {
     private final static String KILL_ACTION = "kill";
     private final static String RERUN_ACTION = "rerun";
 
-    CelosClient client;
+    private CelosClient client;
 
     @Override
     public void init() throws ServletException {
