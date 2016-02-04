@@ -70,8 +70,14 @@ public class WorkflowGroupsServlet extends HttpServlet {
 
     CelosClient client;
 
-    public WorkflowGroupsServlet() throws URISyntaxException {
-        client = UICommon.getCelosClient(getServletContext());
+    @Override
+    public void init() throws ServletException {
+        super.init();
+        try {
+            client = UICommon.getCelosClient(getServletContext());
+        } catch (URISyntaxException e) {
+            throw new ServletException(e);
+        }
     }
 
     @Override

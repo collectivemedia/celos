@@ -43,10 +43,16 @@ public class ActionServlet extends HttpServlet {
     private final static String KILL_ACTION = "kill";
     private final static String RERUN_ACTION = "rerun";
 
-    final CelosClient client;
+    CelosClient client;
 
-    public ActionServlet() throws URISyntaxException {
-        client = UICommon.getCelosClient(getServletContext());
+    @Override
+    public void init() throws ServletException {
+        super.init();
+        try {
+            client = UICommon.getCelosClient(getServletContext());
+        } catch (URISyntaxException e) {
+            throw new ServletException(e);
+        }
     }
 
     protected void processPost(CelosClient client, String action, JsonNode jsonNode) throws Exception {

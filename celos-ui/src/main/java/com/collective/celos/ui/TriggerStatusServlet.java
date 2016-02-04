@@ -35,10 +35,16 @@ import static java.util.stream.Collectors.toList;
  */
 public class TriggerStatusServlet extends HttpServlet {
 
-    final CelosClient client;
+    CelosClient client;
 
-    public TriggerStatusServlet() throws URISyntaxException {
-        client = UICommon.getCelosClient(getServletContext());
+    @Override
+    public void init() throws ServletException {
+        super.init();
+        try {
+            client = UICommon.getCelosClient(getServletContext());
+        } catch (URISyntaxException e) {
+            throw new ServletException(e);
+        }
     }
 
     @Override
