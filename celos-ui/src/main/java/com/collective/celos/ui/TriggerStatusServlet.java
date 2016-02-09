@@ -40,7 +40,7 @@ public class TriggerStatusServlet extends HttpServlet {
             final CelosClient client = UICommon.getCelosClient(getServletContext());
             final ArrayNode node = getJsonNodes(req, client);
             response.setContentType("application/json;charset=UTF-8");
-            Util.MAPPER.writeValue(response.getWriter(), node);
+            Util.JSON_PRETTY.writeValue(response.getWriter(), node);
         } catch (Exception e) {
             throw new ServletException(e);
         }

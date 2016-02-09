@@ -4,28 +4,8 @@
 <web-app>
 
     <servlet>
-        <servlet-name>ConfigServlet</servlet-name>
-        <servlet-class>com.collective.celos.ui.UIConfigServlet</servlet-class>
-    </servlet>
-
-    <servlet>
         <servlet-name>UIServlet</servlet-name>
         <servlet-class>com.collective.celos.old.UIServlet</servlet-class>
-    </servlet>
-
-    <servlet>
-        <servlet-name>WorkflowsServlet</servlet-name>
-        <servlet-class>com.collective.celos.ui.UIReactWorkflowsServlet</servlet-class>
-    </servlet>
-
-    <servlet>
-        <servlet-name>TriggerStatusServlet</servlet-name>
-        <servlet-class>com.collective.celos.ui.TriggerStatusServlet</servlet-class>
-    </servlet>
-
-    <servlet>
-        <servlet-name>UIActionServlet</servlet-name>
-        <servlet-class>com.collective.celos.ui.UIActionServlet</servlet-class>
     </servlet>
 
     <servlet>
@@ -39,33 +19,30 @@
     </servlet>
 
     <servlet>
+        <servlet-name>TriggerStatusServlet</servlet-name>
+        <servlet-class>com.collective.celos.ui.TriggerStatusServlet</servlet-class>
+    </servlet>
+
+    <servlet>
         <servlet-name>WorkflowGroupsServlet</servlet-name>
         <servlet-class>com.collective.celos.ui.WorkflowGroupsServlet</servlet-class>
     </servlet>
 
     <servlet>
-        <servlet-name>UIActionServlet</servlet-name>
-        <servlet-class>com.collective.celos.ui.UIActionServlet</servlet-class>
+        <servlet-name>ActionServlet</servlet-name>
+        <servlet-class>com.collective.celos.ui.ActionServlet</servlet-class>
     </servlet>
 
+    <!--===============================================================================-->
+
     <servlet-mapping>
-        <servlet-name>ConfigServlet</servlet-name>
-        <url-pattern>/config</url-pattern>
+        <servlet-name>UIServlet</servlet-name>
+        <url-pattern>/ui</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>
-        <servlet-name>WorkflowsServlet</servlet-name>
-        <url-pattern>/group</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
-        <servlet-name>TriggerStatusServlet</servlet-name>
-        <url-pattern>/trigger-status</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
-        <servlet-name>UIActionServlet</servlet-name>
-        <url-pattern>/multiplex-rpc</url-pattern>
+        <servlet-name>UIRerunServlet</servlet-name>
+        <url-pattern>/rerun</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>
@@ -74,13 +51,18 @@
     </servlet-mapping>
 
     <servlet-mapping>
+        <servlet-name>TriggerStatusServlet</servlet-name>
+        <url-pattern>/trigger-status</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
         <servlet-name>WorkflowGroupsServlet</servlet-name>
         <url-pattern>/groups</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>
-        <servlet-name>UIActionServlet</servlet-name>
-        <url-pattern>/multiplex-rpc</url-pattern>
+        <servlet-name>ActionServlet</servlet-name>
+        <url-pattern>/action</url-pattern>
     </servlet-mapping>
 
 </web-app>

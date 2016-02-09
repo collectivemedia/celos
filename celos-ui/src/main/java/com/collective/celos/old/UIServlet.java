@@ -194,7 +194,7 @@ public class UIServlet extends HttpServlet {
         List<Tag> cells = new LinkedList<>();
         cells.add(td(id.getWorkflowName()).withClass("workflow"));
         for (ScheduledTime tileTime : conf.getTileTimes().descendingSet()) {
-            Set<SlotState> slots = buckets.get(tileTime);
+            Set<SlotState> slots = buckets.getOrDefault(tileTime, Collections.emptySet());
             String slotClass = "slot " + printTileClass(slots.stream().collect(toList()));
             cells.add(td().with(makeTile(conf, slots)).withClass(slotClass));
         }
@@ -202,7 +202,7 @@ public class UIServlet extends HttpServlet {
     }
 
     private static Tag makeTile(UIConfiguration conf, Set<SlotState> slots) {
-        if (slots == null) {
+        if (slots.isEmpty()) {
             return unsafeHtml("&nbsp;&nbsp;&nbsp;&nbsp;");
         } else if (slots.size() == 1) {
             return makeSingleSlot(conf, slots.iterator().next());

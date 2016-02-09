@@ -205,7 +205,7 @@ public class UICommon {
     }
 
     public static String printTileClass(List<SlotState> slots) {
-        if (slots == null) {
+        if (slots.isEmpty()) {
             return "";
         } else if (slots.size() == 1) {
             return slots.iterator().next().getStatus().name();
