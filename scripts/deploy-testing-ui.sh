@@ -16,4 +16,4 @@ TMP1="$(head -2 ${INVENTORY_SERVER} | tail -1)"
 TMP2="$(grep service_port ${INVENTORY_SERVER} | cut -d '=' -f 2)"
 SERVER_URL="http://${TMP1}:${TMP2}"
 
-ansible-playbook "scripts/playbooks/celos-${CELOS_ACTION}.yaml" -c ssh -u ${CELOS_USER} -i ${INVENTORY_UI} -e "@scripts/params/common-ui.json" -e service_discovery=${SERVER_URL} -e service_version=${GIT_COMMIT}
+ansible-playbook "scripts/playbooks/celos-deploy.yaml" -c ssh -u ${CELOS_USER} -i ${INVENTORY_UI} -e "@scripts/params/common-ui.json" -e service_discovery=${SERVER_URL} -e service_version=${GIT_COMMIT}
