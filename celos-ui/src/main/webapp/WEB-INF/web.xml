@@ -7,7 +7,7 @@
         <servlet-name>UIServlet</servlet-name>
         <servlet-class>com.collective.celos.old.UIServlet</servlet-class>
     </servlet>
-    
+
     <servlet>
         <servlet-name>UIRerunServlet</servlet-name>
         <servlet-class>com.collective.celos.old.UIRerunServlet</servlet-class>
@@ -17,6 +17,23 @@
         <servlet-name>VersionServlet</servlet-name>
         <servlet-class>com.collective.celos.servlet.VersionServlet</servlet-class>
     </servlet>
+
+    <servlet>
+        <servlet-name>TriggerStatusServlet</servlet-name>
+        <servlet-class>com.collective.celos.ui.TriggerStatusServlet</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>WorkflowGroupsServlet</servlet-name>
+        <servlet-class>com.collective.celos.ui.WorkflowGroupsServlet</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>ActionServlet</servlet-name>
+        <servlet-class>com.collective.celos.ui.ActionServlet</servlet-class>
+    </servlet>
+
+    <!--===============================================================================-->
 
     <servlet-mapping>
         <servlet-name>UIServlet</servlet-name>
@@ -33,5 +50,19 @@
         <url-pattern>/version</url-pattern>
     </servlet-mapping>
 
+    <servlet-mapping>
+        <servlet-name>TriggerStatusServlet</servlet-name>
+        <url-pattern>/trigger-status</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>WorkflowGroupsServlet</servlet-name>
+        <url-pattern>/groups</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>ActionServlet</servlet-name>
+        <url-pattern>/action</url-pattern>
+    </servlet-mapping>
 
 </web-app>

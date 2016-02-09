@@ -13,7 +13,7 @@
  * implied.  See the License for the specific language governing
  * permissions and limitations under the License.
  */
-package com.collective.celos.ui;
+package com.collective.celos.old;
 
 import java.net.URL;
 import java.util.List;
@@ -22,8 +22,9 @@ import java.util.NavigableSet;
 
 import com.collective.celos.ScheduledTime;
 import com.collective.celos.Util;
-import com.collective.celos.WorkflowID;
 import com.collective.celos.WorkflowStatus;
+import com.collective.celos.pojo.Workflow;
+import com.collective.celos.pojo.WorkflowGroup;
 
 /**
  * All data required by the UI for rendering.
@@ -34,10 +35,10 @@ public class UIConfiguration {
     private final ScheduledTime end;
     private final NavigableSet<ScheduledTime> tileTimes;
     private final List<WorkflowGroup> groups;
-    private final Map<WorkflowID, WorkflowStatus> statuses;
+    private final Map<Workflow, WorkflowStatus> statuses;
     private final URL hueURL; // may be null
     
-    public UIConfiguration(ScheduledTime start, ScheduledTime end, NavigableSet<ScheduledTime> tileTimes, List<WorkflowGroup> groups, Map<WorkflowID, WorkflowStatus> statuses, URL hueURL) {
+    public UIConfiguration(ScheduledTime start, ScheduledTime end, NavigableSet<ScheduledTime> tileTimes, List<WorkflowGroup> groups, Map<Workflow, WorkflowStatus> statuses, URL hueURL) {
         this.start = Util.requireNonNull(start);
         this.end = Util.requireNonNull(end);
         this.tileTimes = Util.requireNonNull(tileTimes);
@@ -62,7 +63,7 @@ public class UIConfiguration {
         return groups;
     }
 
-    public Map<WorkflowID, WorkflowStatus> getStatuses() {
+    public Map<Workflow, WorkflowStatus> getStatuses() {
         return statuses;
     }
 

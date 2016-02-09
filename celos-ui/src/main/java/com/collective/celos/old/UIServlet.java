@@ -15,6 +15,7 @@
  */
 package com.collective.celos.old;
 
+import static com.collective.celos.ui.UICommon.*;
 import static j2html.TagCreator.a;
 import static j2html.TagCreator.body;
 import static j2html.TagCreator.div;
@@ -28,20 +29,21 @@ import static j2html.TagCreator.td;
 import static j2html.TagCreator.title;
 import static j2html.TagCreator.tr;
 import static j2html.TagCreator.unsafeHtml;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
 
+import com.collective.celos.*;
+import com.collective.celos.pojo.Workflow;
+import com.collective.celos.pojo.WorkflowGroup;
 import com.collective.celos.ui.Main;
-import com.collective.celos.ui.UIConfiguration;
-import com.collective.celos.ui.WorkflowGroup;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.google.common.collect.Sets;
+import com.collective.celos.ui.UICommon;
 import j2html.tags.Tag;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -52,12 +54,6 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
-import com.collective.celos.CelosClient;
-import com.collective.celos.ScheduledTime;
-import com.collective.celos.SlotState;
-import com.collective.celos.Util;
-import com.collective.celos.WorkflowID;
-import com.collective.celos.WorkflowStatus;
 import com.google.common.collect.ImmutableList;
 
 /**
@@ -70,8 +66,6 @@ public class UIServlet extends HttpServlet {
     private static final String GROUPS_TAG = "groups";
     private static final String WORKFLOWS_TAG = "workflows";
     private static final String NAME_TAG = "name";
-    private static final String UNLISTED_WORKFLOWS_CAPTION = "Unlisted workflows";
-    private static final String DEFAULT_CAPTION = "All Workflows";
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
@@ -79,27 +73,18 @@ public class UIServlet extends HttpServlet {
             URL celosURL = (URL) Util.requireNonNull(getServletContext().getAttribute(Main.CELOS_URL_ATTR));
             URL hueURL = (URL) getServletContext().getAttribute(Main.HUE_URL_ATTR);
             File configFile = (File) getServletContext().getAttribute(Main.CONFIG_FILE_ATTR);
-
-            CelosClient client = new CelosClient(celosURL.toURI());
+            final CelosClient client = new CelosClient(celosURL.toURI());
             res.setContentType("text/html;charset=utf-8");
             res.setStatus(HttpServletResponse.SC_OK);
-            ScheduledTime end = getDisplayTime(req.getParameter(TIME_PARAM));
+            final ScheduledTime end = getDisplayTime(req.getParameter(TIME_PARAM));
             int zoomLevelMinutes = getZoomLevel(req.getParameter(ZOOM_PARAM));
-            NavigableSet<ScheduledTime> tileTimes = getTileTimesSet(getFirstTileTime(end, zoomLevelMinutes), zoomLevelMinutes, MAX_MINUTES_TO_FETCH, MAX_TILES_TO_DISPLAY);
-            ScheduledTime start = tileTimes.first();
-            Set<WorkflowID> workflowIDs = client.getWorkflowList();
-
-            Map<WorkflowID, WorkflowStatus> statuses = fetchStatuses(client, workflowIDs, start, end);
-
-            List<WorkflowGroup> groups;
-
-            if (configFile != null) {
-                groups = getWorkflowGroups(new FileInputStream(configFile), workflowIDs);
-            } else {
-                groups = getDefaultGroups(workflowIDs);
-            }
-
-            UIConfiguration conf = new UIConfiguration(start, end, tileTimes, groups, statuses, hueURL);
+            final NavigableSet<ScheduledTime> tileTimes = getTileTimesSet(getFirstTileTime(end, zoomLevelMinutes), zoomLevelMinutes, MAX_MINUTES_TO_FETCH, MAX_TILES_TO_DISPLAY);
+            final ScheduledTime start = tileTimes.first();
+            final List<Workflow> workflows = client.getWorkflowList().stream().map(WorkflowID::toString).sorted().map(Workflow::new).collect(toList());
+            final Map<Workflow, WorkflowStatus> statuses = fetchStatuses(client, workflows, start, end);
+            final Optional<String> celosConfig = UICommon.getCelosConfig(getServletContext());
+            final List<WorkflowGroup> groups = getWorkflowGroups(celosConfig, workflows);
+            final UIConfiguration conf = new UIConfiguration(start, end, tileTimes, groups, statuses, hueURL);
             res.getWriter().append(render(conf));
         } catch (Exception e) {
             throw new ServletException(e);
@@ -113,49 +98,20 @@ public class UIServlet extends HttpServlet {
             return new ScheduledTime(timeStr);
         }
     }
-    
-    static int getZoomLevel(String zoomStr) {
-        if (zoomStr == null) {
-            return DEFAULT_ZOOM_LEVEL_MINUTES;
-        } else {
-            int zoom = Integer.parseInt(zoomStr);
-            if (zoom < MIN_ZOOM_LEVEL_MINUTES) {
-                return MIN_ZOOM_LEVEL_MINUTES;
-            } else if (zoom > MAX_ZOOM_LEVEL_MINUTES) {
-                return MAX_ZOOM_LEVEL_MINUTES;
-            } else {
-                return zoom;
-            }
-        }
-    }
 
-    static final Map<SlotState.Status, String> STATUS_TO_SHORT_NAME = new HashMap<SlotState.Status, String>();
-    static {
-        STATUS_TO_SHORT_NAME.put(SlotState.Status.FAILURE, "fail");
-        STATUS_TO_SHORT_NAME.put(SlotState.Status.READY, "rdy&nbsp;");
-        STATUS_TO_SHORT_NAME.put(SlotState.Status.RUNNING, "run&nbsp;");
-        STATUS_TO_SHORT_NAME.put(SlotState.Status.SUCCESS, "&nbsp;&nbsp;&nbsp;&nbsp;");
-        STATUS_TO_SHORT_NAME.put(SlotState.Status.WAIT_TIMEOUT, "time");
-        STATUS_TO_SHORT_NAME.put(SlotState.Status.WAITING, "wait");
-        STATUS_TO_SHORT_NAME.put(SlotState.Status.KILLED, "kill");
-        if (STATUS_TO_SHORT_NAME.size() != SlotState.Status.values().length) {
-            throw new Error("STATUS_TO_SHORT_NAME mapping is incomplete");
-        }
-    }
-    
     private static final int[] ZOOM_LEVEL_MINUTES = new int[]{1, 5, 15, 30, 60, 60*24};
     static final int DEFAULT_ZOOM_LEVEL_MINUTES = 60;
     static final int MIN_ZOOM_LEVEL_MINUTES = 1;
     static final int MAX_ZOOM_LEVEL_MINUTES = 60*24; // Code won't work with higher level, because of toFullDay()
-    
+
     // We never want to fetch more data than for a week from Celos so as not to overload the server
     private static int MAX_MINUTES_TO_FETCH = 7 * 60 * 24;
     private static int MAX_TILES_TO_DISPLAY = 48;
-    
+
     private static final DateTimeFormatter DAY_FORMAT = DateTimeFormat.forPattern("dd");
     private static final DateTimeFormatter HEADER_FORMAT = DateTimeFormat.forPattern("HHmm");
     private static final DateTimeFormatter FULL_FORMAT = DateTimeFormat.forPattern("YYYY-MM-dd HH:mm");
-    
+
     static String render(UIConfiguration conf) throws Exception {
         return html().with(makeHead(), makeBody(conf)).render();
     }
@@ -223,65 +179,39 @@ public class UIServlet extends HttpServlet {
     private static List<Tag> makeGroupRows(UIConfiguration conf, WorkflowGroup g) {
         List<Tag> rows = new LinkedList<>();
         rows.add(tr().with(td(g.getName()).withClass("workflowGroup")));
-        for (WorkflowID id : g.getWorkflows()) {
+        for (Workflow id : g.getRows()) {
             rows.add(makeWorkflowRow(conf, id));
         }
         return rows;
     }
 
-    private static Tag makeWorkflowRow(UIConfiguration conf, WorkflowID id) {
+    private static Tag makeWorkflowRow(UIConfiguration conf, Workflow id) {
         WorkflowStatus workflowStatus = conf.getStatuses().get(id);
         if (workflowStatus == null) {
-            return tr().with(td(id.toString() + " (missing)").withClass("workflow missing"));
+            return tr().with(td(id.getWorkflowName() + " (missing)").withClass("workflow missing"));
         }
         Map<ScheduledTime, Set<SlotState>> buckets = bucketSlotsByTime(workflowStatus.getSlotStates(), conf.getTileTimes());
         List<Tag> cells = new LinkedList<>();
-        cells.add(td(id.toString()).withClass("workflow"));
+        cells.add(td(id.getWorkflowName()).withClass("workflow"));
         for (ScheduledTime tileTime : conf.getTileTimes().descendingSet()) {
-            Set<SlotState> slots = buckets.get(tileTime);
-            String slotClass = "slot " + printTileClass(slots);
+            Set<SlotState> slots = buckets.getOrDefault(tileTime, Collections.emptySet());
+            String slotClass = "slot " + printTileClass(slots.stream().collect(toList()));
             cells.add(td().with(makeTile(conf, slots)).withClass(slotClass));
         }
         return tr().with(cells);
     }
 
-    static String printTileClass(Set<SlotState> slots) {
-        if (slots == null) {
-            return "";
-        } else if (slots.size() == 1) {
-            return slots.iterator().next().getStatus().name();
-        } else {
-            return printMultiSlotClass(slots);
-        }
-    }
-
-    static String printMultiSlotClass(Set<SlotState> slots) {
-        boolean hasIndeterminate = false;
-        for (SlotState slot : slots) {
-            if (slot.getStatus().getType() == SlotState.StatusType.FAILURE) {
-                return SlotState.Status.FAILURE.name();
-            } else if (slot.getStatus().getType() == SlotState.StatusType.INDETERMINATE) {
-                hasIndeterminate = true;
-            }
-        }
-        if (hasIndeterminate) {
-            return SlotState.Status.WAITING.name();
-        } else {
-            return SlotState.Status.SUCCESS.name();
-        }
-    }
-
     private static Tag makeTile(UIConfiguration conf, Set<SlotState> slots) {
-        if (slots == null) {
+        if (slots.isEmpty()) {
             return unsafeHtml("&nbsp;&nbsp;&nbsp;&nbsp;");
         } else if (slots.size() == 1) {
             return makeSingleSlot(conf, slots.iterator().next());
         } else {
-            return makeMultiSlot(conf, slots.size());
+            return makeMultiSlot(slots.size());
         }
     }
 
-    static Tag makeMultiSlot(UIConfiguration conf, int slotsCount) {
+    static Tag makeMultiSlot(int slotsCount) {
         String num = Integer.toString(slotsCount);
         if (num.length() > 4) {
             return unsafeHtml("999+");
@@ -293,121 +223,13 @@ public class UIServlet extends HttpServlet {
     private static Tag makeSingleSlot(UIConfiguration conf, SlotState state) {
         Tag label = unsafeHtml(STATUS_TO_SHORT_NAME.get(state.getStatus()));
         if (conf.getHueURL() != null && state.getExternalID() != null) {
-            return a().withHref(printWorkflowURL(conf, state)).withClass("slotLink").attr("data-slot-id", state.getSlotID().toString()).with(label);
+            return a().withHref(printWorkflowURL(conf.getHueURL(), state))
+                      .withClass("slotLink")
+                      .attr("data-slot-id", state.getSlotID().toString())
+                      .with(label);
         } else {
             return label;
         }
-    }
-
-    private static String printWorkflowURL(UIConfiguration conf, SlotState state) {
-        return conf.getHueURL().toString() + "/list_oozie_workflow/" + state.getExternalID();
-    }
-
-    private Map<WorkflowID, WorkflowStatus> fetchStatuses(CelosClient client, Set<WorkflowID> workflows, ScheduledTime start, ScheduledTime end) throws Exception {
-        Map<WorkflowID, WorkflowStatus> statuses = new HashMap<>();
-        for (WorkflowID id : workflows) {
-            WorkflowStatus status = client.getWorkflowStatus(id, start, end);
-            statuses.put(id, status);
-        }
-        return statuses;
-    }
-
-    static Map<ScheduledTime, Set<SlotState>> bucketSlotsByTime(List<SlotState> slotStates, NavigableSet<ScheduledTime> tileTimes) {
-        Map<ScheduledTime, Set<SlotState>> buckets = new HashMap<>();
-        for (SlotState state : slotStates) {
-            ScheduledTime bucketTime = tileTimes.floor(state.getScheduledTime());
-            Set<SlotState> slotsForBucket = buckets.get(bucketTime);
-            if (slotsForBucket == null) {
-                slotsForBucket = new HashSet<>();
-                buckets.put(bucketTime, slotsForBucket);
-            }
-            slotsForBucket.add(state);
-        }
-        return buckets;
-    }
-    
-    static List<ScheduledTime> getDefaultTileTimes(ScheduledTime now, int zoomLevelMinutes) {
-        return getTileTimes(now, zoomLevelMinutes, MAX_MINUTES_TO_FETCH, MAX_TILES_TO_DISPLAY);
-    }
-    
-    static List<ScheduledTime> getTileTimes(ScheduledTime now, int zoomLevelMinutes, int maxMinutesToFetch, int maxTilesToDisplay) {
-        int numTiles = getNumTiles(zoomLevelMinutes, maxMinutesToFetch, maxTilesToDisplay);
-        List<ScheduledTime> times = new LinkedList<>();
-        ScheduledTime t = now;
-        for (int i = 1; i <= numTiles; i++) {
-            times.add(bucketTime(t, zoomLevelMinutes));
-            t = t.minusMinutes(zoomLevelMinutes);
-        }
-        return times;
-    }
-
-    static int getNumTiles(int zoomLevelMinutes, int maxMinutesToFetch, int maxTilesToDisplay) {
-        return Math.min(maxMinutesToFetch / zoomLevelMinutes, maxTilesToDisplay);
-    }
-
-    static ScheduledTime bucketTime(ScheduledTime t, int zoomLevelMinutes) {
-        DateTime dtNow = t.getDateTime();
-        DateTime dtFullDay = toFullDay(dtNow);
-        DateTime dt = dtFullDay;
-        while(dt.isBefore(dtNow)) {
-            dt = dt.plusMinutes(zoomLevelMinutes);
-        }
-        return new ScheduledTime(dt);
-    }
-
-    private static DateTime toFullDay(DateTime dt) {
-        return dt.withHourOfDay(0).withMinuteOfHour(0).withSecondOfMinute(0).withMillisOfSecond(0);
-    }
-    
-    // Get first tile, e.g. for now=2015-09-01T20:21Z with zoom=5 returns 2015-09-01T20:20Z
-    static ScheduledTime getFirstTileTime(ScheduledTime now, int zoomLevelMinutes) {
-        DateTime dt = now.getDateTime();
-        DateTime nextDay = toFullDay(dt.plusDays(1));
-        DateTime t = nextDay;
-        while(t.isAfter(dt)) {
-            t = t.minusMinutes(zoomLevelMinutes);
-        }
-        return new ScheduledTime(t);
-    }
-    
-    static NavigableSet<ScheduledTime> getTileTimesSet(ScheduledTime firstTileTime, int zoomLevelMinutes, int maxMinutesToFetch, int maxTilesToDisplay) {
-        int numTiles = getNumTiles(zoomLevelMinutes, maxMinutesToFetch, maxTilesToDisplay);
-        TreeSet<ScheduledTime> times = new TreeSet<>();
-        ScheduledTime t = firstTileTime;
-        for (int i = 1; i <= numTiles; i++) {
-            times.add(t);
-            t = t.minusMinutes(zoomLevelMinutes);
-        }
-        return times;
-    }
-
-    List<WorkflowGroup> getWorkflowGroups(InputStream configFileIS, Set<WorkflowID> expectedWfs) throws IOException {
-        JsonNode mainNode = Util.JSON_READER.withType(JsonNode.class).readValue(configFileIS);
-        List<WorkflowGroup> configWorkflowGroups = new ArrayList();
-        Set<WorkflowID> listedWfs = new TreeSet<>();
-
-        for(JsonNode workflowGroupNode: mainNode.get(GROUPS_TAG)) {
-            String[] workflowNames = Util.JSON_READER.treeToValue(workflowGroupNode.get(WORKFLOWS_TAG), String[].class);
-
-            List<WorkflowID> ids = new ArrayList<>();
-            for (String wfName : workflowNames) {
-                ids.add(new WorkflowID(wfName));
-            }
-
-            String name = workflowGroupNode.get(NAME_TAG).textValue();
-            configWorkflowGroups.add(new WorkflowGroup(name, ids));
-            listedWfs.addAll(ids);
-        }
-
-        TreeSet<WorkflowID> diff = new TreeSet<>(Sets.difference(expectedWfs, listedWfs));
-        if (!diff.isEmpty()) {
-            configWorkflowGroups.add(new WorkflowGroup(UNLISTED_WORKFLOWS_CAPTION, new ArrayList<>(diff)));
-        }
-        return configWorkflowGroups;
-    }
-
-    private List<WorkflowGroup> getDefaultGroups(Set<WorkflowID> workflows) {
-        return ImmutableList.of(new WorkflowGroup(DEFAULT_CAPTION, new LinkedList<WorkflowID>(new TreeSet<WorkflowID>(workflows))));
     }
 
 }
