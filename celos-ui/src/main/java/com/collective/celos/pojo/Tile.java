@@ -11,6 +11,7 @@ public class Tile {
     private final List<String> timestamps;
     private final Integer quantity;
 
+
     private Tile(String status, String url, List<String> timestamps, Integer quantity) {
         this.status = status;
         this.url = url;
@@ -28,6 +29,14 @@ public class Tile {
 
     public String getUrl() {
         return url;
+    }
+
+    public List<String> getTimestamps() {
+        return timestamps;
+    }
+
+    public Integer getQuantity() {
+        return quantity;
     }
 
     public Tile withUrl(String url) {
