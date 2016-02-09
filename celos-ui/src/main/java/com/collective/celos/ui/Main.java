@@ -15,26 +15,40 @@
  */
 package com.collective.celos.ui;
 
+import com.collective.celos.CelosClient;
+
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import com.collective.celos.JettyServer;
+import com.collective.celos.Util;
+import com.collective.celos.WorkflowID;
+
+import javax.servlet.ServletContext;
 
 /**
  * Main class that launches the Celos UI.
  */
 public class Main {
-    
-    public static String CELOS_URL_ATTR = "CELOS_URL";
-    public static String HUE_URL_ATTR = "HUE_URL";
-    public static String CONFIG_FILE_ATTR = "CONFIG_FILE";
+
+    public static final String CELOS_URL_ATTR = "CELOS_URL";
+    public static final String HUE_URL_ATTR = "HUE_URL";
+    public static final String CONFIG_FILE_ATTR = "CONFIG_FILE";
 
     public static void main(String... args) throws Exception {
         UICommandLineParser UICommandLineParser = new UICommandLineParser();
         UICommandLine commandLine = UICommandLineParser.parse(args);
         JettyServer jettyServer = new JettyServer();
         jettyServer.start(commandLine.getPort());
-        jettyServer.setupContext(getAttributes(commandLine), new HashMap<String, String>());
+        jettyServer.setupContext(getAttributes(commandLine), new HashMap<>());
     }
 
     private static Map<String, Object> getAttributes(UICommandLine commandLine) {
