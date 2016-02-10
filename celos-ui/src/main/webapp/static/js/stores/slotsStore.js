@@ -183,11 +183,8 @@ var SlotsStore = Object.assign({}, EventEmitter.prototype, {
 
     LOAD_NAVIGATION: function (payload) {
         var nav = getNavigation(payload.params.zoom, payload.params.time, new Date());
-
         _internalSlotsData = _internalSlotsData.set("navigation", Immutable.fromJS(nav));
-    //            console.log("new state", _internalSlotsData.get("navigation").toJS());
         SlotsStore.emit(CHANGE_EVENT);
-
     },
     MODAL_BOX: function (payload) {
         _internalSlotsData = _internalSlotsData.set("modalBox", Immutable.Map(payload.params));

@@ -102,7 +102,6 @@ var CelosMain = React.createClass({
     },
 
     render: function () {
-//        console.log("CelosMain", this.props);
         return React.DOM.div({id: "page-content"},
             React.createElement(ContextMenu, {}),
             React.createElement(ModalBox, {store: this.props.modalBox}),

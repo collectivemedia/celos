@@ -36,16 +36,11 @@ var SidebarStore = Object.assign({}, EventEmitter.prototype, {
 });
 
 
-//dispatcherIndex: .bind(this))
-
 AppDispatcher.register(function (payload) {
-
-//    console.log("dispatcherIndex: AppDispatcher.register", payload.action);
 
     switch (payload.actionType) {
 
         case TodoConstants.FOCUS_ON_SLOT:
-            console.log("SidebarStore: case TodoConstants.FOCUS_ON_SLOT");
             var newState = Immutable.fromJS(
                 SlotRecord({
                     ts: payload.params.ts,

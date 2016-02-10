@@ -44,7 +44,6 @@ var WorkflowsGroupFetch = React.createClass({
     },
 
     render: function render() {
-//        console.log("WorkflowsGroupFetch", this.props.store.toJS());
         if (!this.props.store.get("rows").isEmpty()) {
             return React.createElement(WorkflowsGroup, {
                 request: this.props.request,
@@ -71,17 +70,6 @@ var WorkflowsGroup = React.createClass({
         breadcrumbs: React.PropTypes.instanceOf(Immutable.Seq).isRequired
     },
 
-    //clickOnSlot: function (wfName, slotTimestamp) {
-    //    if (slotTimestamp !== null) {
-    //        var newSlots = this.state.selectedSlots.updateIn([wfName, slotTimestamp, "isSelected"], false, function (x) {
-    //            return !x;
-    //        });
-    //        this.setState({
-    //            selectedSlots: newSlots
-    //        })
-    //    }
-    //},
-
     makeNewUrl: function () {
         var req = this.props.request;
         var groupName = this.props.groupName;
@@ -97,7 +85,6 @@ var WorkflowsGroup = React.createClass({
     },
 
     render: function () {
-//        console.log("WorkflowsGroup", this.props.rows.toJS());
         var newUrl = this.makeNewUrl();
         return (
             React.DOM.table({ className: "workflowTable"},
@@ -147,23 +134,13 @@ var ProductRow = React.createClass({
     },
 
     shouldComponentUpdate: function(nextProps) {
-//    FIXME improve speed here
-//        var res = nextProps.slots !== this.props.slots
-//            || nextProps.workflowName != this.props.workflowName;
-//        console.log("shouldComponentUpdate", res);
+//    FIXME improve speed here, change equals to ===
         return !(
                 nextProps.slots.equals(this.props.slots)
              && nextProps.workflowName == this.props.workflowName)
     },
 
     render: function () {
-        console.log("RENDER WORKFLOW", this.props.workflowName);
-
-        // shift needs to calculate correct breadcrumbs
-        //var shift = (this.props.slots.count() > slotsNum)
-        //    ? this.props.slots.count() - slotsNum
-        //    : 0;
-
         return React.DOM.tr(null,
             React.DOM.th({ className: "workflowName" }, this.props.workflowName),
             this.props.slots
@@ -233,11 +210,6 @@ var TimeSlot = React.createClass({
             AppDispatcher.focusOnSlot(focusArgs);
         }
     },
-    //handleOnMouseLeave: function () {
-    //    this.setState({
-    //        showPopup: false
-    //    })
-    //},
 
     getCellConfig: function (slotInfo) {
         var selectedClass = slotInfo.isSelected ? "selected" : "";
@@ -249,11 +221,6 @@ var TimeSlot = React.createClass({
     },
 
     render: function () {
-//        console.log("JDFIUASUDAISOUHDUIASHD TimeSlot", this.props.breadcrumbs.toJS());
-
-        if (this.props.store.get("inFocus")) {
-            console.log("this.props.inFocus")
-        }
         var slotInfo = this.props.store.toJS();
         var quantity = slotInfo.quantity;
         return (

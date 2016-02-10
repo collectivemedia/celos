@@ -41,7 +41,6 @@ var CelosSidebar = React.createClass({
     },
 
     _onChange: function() {
-//        console.log("_onChange", SidebarStore.getAll().toJS());
         this.setState({
             store: SidebarStore.getAll()
         })
@@ -58,8 +57,6 @@ var CelosSidebar = React.createClass({
     },
 
     menuInternals: function () {
-//        console.log("this.state.selectedSlots");
-//        console.log(this.state.selectedSlots);
         return React.DOM.div({ className: "dropdown-menu overflow-scroll", "aria-labelledby": "dropdownMenu1" },
             (this.state.store.selectedSlots.count() == 0)
                 ? React.DOM.div({ className: "dropdown-item"}, "empty list...")
@@ -161,7 +158,6 @@ var CelosSidebar = React.createClass({
     },
 
     render: function () {
-//        console.log("CelosSidebar", this.state.store.toJS());
         var wfName = this.state.store.getIn(["inFocus", "workflowName"]);
         return React.DOM.div({id: "sidebar-wrapper"},
             React.DOM.h4({style: {textAlign: "center"}},
@@ -210,7 +206,6 @@ var TriggerStatusFetch = React.createClass({
                 id: props.id,
                 time: props.timestamps.join(",")},
             /*success=*/ function (data) {
-//                console.log("set State:", data);
                 this.setState({ data: data })
             }.bind(this)
         )

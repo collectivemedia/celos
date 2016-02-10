@@ -15,10 +15,7 @@
  */
 package com.collective.celos.ui;
 
-import com.collective.celos.CelosClient;
-import com.collective.celos.ScheduledTime;
-import com.collective.celos.Util;
-import com.collective.celos.WorkflowID;
+import com.collective.celos.*;
 import com.collective.celos.pojo.Workflow;
 import com.collective.celos.pojo.WorkflowGroup;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -57,11 +54,59 @@ public class WorkflowGroupsServletTest {
                 "\"rows\":[{\"workflowName\":\"abcdef\",\"rows\":[]}]}";
 
         final String content = Util.JSON_PRETTY.writeValueAsString(xx);
-        System.out.println("content =");
-        System.out.println(content);
         Assert.assertEquals(Util.MAPPER.readTree(check), Util.MAPPER.readTree(content));
     }
 
+    @Test
+    public void testProcessWorkflowGroup2() throws Exception {
 
+        NavigableSet<ScheduledTime> tileTimes = new TreeSet<>();
+        tileTimes.add(new ScheduledTime("2015-09-14T16:00Z"));
+        tileTimes.add(new ScheduledTime("2015-09-14T17:00Z"));
+        tileTimes.add(new ScheduledTime("2015-09-14T18:00Z"));
+        tileTimes.add(new ScheduledTime("2015-09-14T19:00Z"));
+
+        final ArrayList<Workflow> ids = new ArrayList<>();
+        ids.add(new Workflow("abcdef"));
+
+        Map<Workflow, WorkflowStatus> statuses = new HashMap<>();
+        List<SlotState> slotStates = new ArrayList<>();
+        slotStates.add(new SlotState(new SlotID(new WorkflowID("abcdef"), new ScheduledTime("2015-09-14T17:00Z")), SlotState.Status.RUNNING));
+        WorkflowStatus st = new WorkflowStatus(new WorkflowInfo(null, null), slotStates, false);
+        statuses.put(new Workflow("abcdef"), st);
+        WorkflowGroup xx = workflowGroupsServlet.processWorkflowGroup("dsad", ids, tileTimes, statuses, new URL("http://hue"));
+        String check = "{" +
+            "\"name\": \"dsad\"," +
+            "\"times\": [\"1900\", \"1800\", \"1700\", \"1600\"]," +
+            "\"days\": [null, null, null, null]," +
+            "\"rows\": [{" +
+                "\"workflowName\": \"abcdef\"," +
+                "\"rows\": [{" +
+                    "\"status\": \"EMPTY\"," +
+                    "\"url\": null," +
+                    "\"timestamps\": []," +
+                    "\"quantity\": 0" +
+                    "}, {" +
+                    "\"status\": \"EMPTY\"," +
+                    "\"url\": null," +
+                    "\"timestamps\": []," +
+                    "\"quantity\": 0" +
+                    "}, {" +
+                    "\"status\": \"RUNNING\"," +
+                    "\"url\": null," +
+                    "\"timestamps\": [\"2015-09-14T17:00Z\"]," +
+                    "\"quantity\": 1" +
+                    "}, {" +
+                    "\"status\": \"EMPTY\"," +
+                    "\"url\": null," +
+                    "\"timestamps\": []," +
+                    "\"quantity\": 0" +
+                    "}]" +
+                "}]" +
+            "}";
+
+        final String content = Util.JSON_PRETTY.writeValueAsString(xx);
+        Assert.assertEquals(Util.MAPPER.readTree(check), Util.MAPPER.readTree(content));
+    }
 
 }

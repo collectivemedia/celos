@@ -27,10 +27,9 @@ var console = console || {
 };
 
 var ajaxGetJson = function(url0, data, successCallback) {
+    // TODO write a test
     var _ajaxErrorCallback = function (xhr, status, err) {
-        // FIXME, err is not a string
-        console.log(url0, status, err);
-        throw "url0" + err;
+        throw "ajaxGetJson: " + url0 + " " + status + " " + err;
     };
     var request = new XMLHttpRequest();
     var query = [];
@@ -62,10 +61,9 @@ var ajaxGetJson = function(url0, data, successCallback) {
 };
 
 var ajaxPostJSON = function (url0, jsondata, successCallback) {
+    // TODO write a test
     var _ajaxErrorCallback = function (xhr, status, err) {
-        // FIXME, err is not a string
-        console.log(url0, status, err);
-        throw "url0" + err;
+        throw "ajaxPostJSON: " + url0 + " " + status + " " + err;
     };
     var request = new XMLHttpRequest();
     request.open("POST", url0);
@@ -132,9 +130,5 @@ var addOrRemoveClass = function(elem, className) {
         elem.className = elem.className.replace(" " + className, "");
     }
 };
-
-
-
-
 
 

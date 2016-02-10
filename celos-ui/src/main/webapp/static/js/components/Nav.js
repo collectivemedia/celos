@@ -95,9 +95,8 @@ var getNavigation = function (zoomStr, timeStr, now) {
     // makeZoomButtons
     var last = ZOOM_LEVEL_MINUTES.length - 1;
     var pos = ZOOM_LEVEL_MINUTES.indexOf(zoom);
-    // FIXME
     if (pos == -1) {
-        alert("wrong zoom")
+        throw new Error("wrong zoom")
     }
     result.zoomIn = (0 < pos && pos <= last) ? ZOOM_LEVEL_MINUTES[pos - 1] : ZOOM_LEVEL_MINUTES[0];
     result.zoomOut = (0 <= pos && pos < last) ? ZOOM_LEVEL_MINUTES[pos + 1] : ZOOM_LEVEL_MINUTES[last];
