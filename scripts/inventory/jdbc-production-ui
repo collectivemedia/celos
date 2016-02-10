@@ -1,5 +1,5 @@
 [host]
-oj002.ewr004.collective-media.net
+celos002.ewr004.collective-media.net
 
 [host:vars]
 service_name="jdbc-celos-ui"
