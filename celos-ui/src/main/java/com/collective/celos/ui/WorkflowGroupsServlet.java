@@ -84,7 +84,6 @@ public class WorkflowGroupsServlet extends HttpServlet {
                 .sorted()
                 .map(Workflow::new)
                 .collect(toList());
-
         final Optional<String> celosConfig = UICommon.getCelosConfig(servletContext);
         final List<WorkflowGroup> groups = getWorkflowGroups(celosConfig, workflows);
         final Set<Workflow> workflowSet = workflows.stream().collect(toSet());

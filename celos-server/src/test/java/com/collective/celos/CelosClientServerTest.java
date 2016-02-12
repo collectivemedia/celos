@@ -17,6 +17,7 @@ package com.collective.celos;
 
 import com.collective.celos.database.FileSystemStateDatabase;
 import com.collective.celos.server.CelosServer;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
@@ -550,6 +551,26 @@ public class CelosClientServerTest {
         celosClient.getSlotState(new WorkflowID("workflow-1"), existingSlotTime);
     }
 
+    @Test
+    public void testGetTriggerStatus() throws Exception {
+
+        File src = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/client/wf-list").toURI());
+        FileUtils.copyDirectory(src, workflowsDir);
+
+        File src2 = new File(Thread.currentThread().getContextClassLoader().getResource("com/collective/celos/server/slot-db-1").toURI());
+        FileUtils.copyDirectory(src2, slotDbDir);
+
+        final JsonNode triggerStatus = celosClient.getTriggerStatus("workflow-1", "2013-12-02T19:00:00.000Z");
+        System.out.println(Util.JSON_PRETTY.writeValueAsString(triggerStatus));
+
+        final JsonNode check = Util.MAPPER.readTree("{\n" +
+                "  \"type\" : \"HDFSCheckTrigger\",\n" +
+                "  \"ready\" : true,\n" +
+                "  \"description\" : \"HDFS path / is ready\",\n" +
+                "  \"subStatuses\" : [ ]\n" +
+                "}");
+        Assert.assertEquals(triggerStatus, check);
+    }
 
     @Test
     public void testCorrectWorkflowStatesFromDbWf2() throws Exception {
