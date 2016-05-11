@@ -55,7 +55,7 @@ public class Scheduler {
      */
     public void step(ScheduledTime current, StateDatabaseConnection connection) throws Exception {
         // by default, schedule all workflows
-        step(current, Collections.<WorkflowID>emptySet(), connection);
+        step(current, Collections.<WorkflowID>emptySet(), connection, 0, 1);
     }
 
     /**
@@ -63,11 +63,12 @@ public class Scheduler {
      * <p>
      * Otherwise, schedule only workflows in the set.
      */
-    public void step(ScheduledTime current, Set<WorkflowID> workflowIDs, StateDatabaseConnection connection) throws Exception {
+    public void step(ScheduledTime current, Set<WorkflowID> workflowIDs, StateDatabaseConnection connection, int celosIndex, int numberOfCeloses) throws Exception {
         LOGGER.info("Starting scheduler step: " + current + " -- " + getSlidingWindowStartTime(current));
         for (Workflow wf : configuration.getWorkflows()) {
             WorkflowID id = wf.getID();
             boolean shouldProcess = workflowIDs.isEmpty() || workflowIDs.contains(id);
+            shouldProcess &= Math.abs(id.toString().hashCode()) % numberOfCeloses == celosIndex;
             if (!shouldProcess) {
                 LOGGER.info("Ignoring workflow: " + id);
             } else if (connection.isPaused(id)) {
