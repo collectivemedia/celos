@@ -49,11 +49,13 @@ public class Main {
 
     }
 
-    static void setupAutoschedule(int port, int autoSchedule) {
+    static Timer setupAutoschedule(int port, int autoSchedule) {
+        Timer timer = null;
         if (autoSchedule > 0) {
-            Timer timer = new Timer(true);
+            timer = new Timer(true);
             timer.schedule(createTimerTask(port), 0, autoSchedule * Constants.SECOND_MS);
         }
+        return timer;
     }
 
     private static TimerTask createTimerTask(final int port) {
