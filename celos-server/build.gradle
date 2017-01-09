@@ -1,3 +1,7 @@
+plugins {
+    id 'com.palantir.docker' version '0.9.2'
+}
+
 apply plugin: 'maven'
 
 mainClassName = 'com.collective.celos.server.Main'
@@ -55,6 +59,14 @@ jar {
     manifest {
         attributes("Main-Class": mainClassName)
     }
+}
+
+docker {
+    name = 'celos-server'
+    tags 'latest', project.version
+    dockerfile 'Dockerfile'
+    dependsOn tasks.jar
+    buildArgs([jarfile: tasks.jar.archiveName])
 }
 
 def repoUser = System.getenv("CELOS_NEXUS_USER");

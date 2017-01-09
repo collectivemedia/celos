@@ -1,0 +1,14 @@
+version: '2'
+services:
+  ui:
+    image: celos-ui
+    links:
+      - server:celos
+    depends_on:
+      - server
+    ports:
+      - "8080:80"
+  server:
+    image: celos-server
+    ports:
+      - "8888:80"
