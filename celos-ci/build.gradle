@@ -14,7 +14,7 @@ dependencies {
 
     compile("org.apache.commons:commons-vfs2:2.0")
     compile("com.google.code.gson:gson:2.2.4")
-    compile("org.apache.hive:hive-jdbc:0.13.1-cdh5.3.1")
+    compile("org.apache.hive:hive-jdbc:1.1.0-cdh5.9.0")
 //  this leads fatJar to auth fail, i am not sure why did i put it here, so disabling it   
 //  compile("org.apache.hadoop:hadoop-mapreduce-client-core:2.5.0-cdh5.3.1")
     compile("net.sf.opencsv:opencsv:2.3")
@@ -36,6 +36,7 @@ jar {
     archiveName "celos-ci.jar"
     baseName "celos-ci"
     from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }}
+    exclude('META-INF/license/**')
     manifest {
         attributes("Main-Class": mainClassName)
     }
