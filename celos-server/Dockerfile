@@ -12,11 +12,14 @@ COPY $jarfile /opt/celos/celos-server.jar
 
 VOLUME /etc/celos
 
-ENV PORT=80
+ENV PORT=80 \
+    STATE_DB_PATH=/etc/celos/state-db \
+    WORKFLOWS_PATH=/etc/celos/workflows \
+    DEFAULTS_PATH=/etc/celos/defaults
 
 EXPOSE 80
 
 ENTRYPOINT ["sh", "-c"]
 
-CMD ["java -jar /opt/celos/celos-server.jar --autoSchedule 60 --db /etc/celos/state-db --workflows \
-     /etc/celos/workflows --defaults /etc/celos/defaults --port $PORT --stdout"]
+CMD ["java -jar /opt/celos/celos-server.jar --autoSchedule 60 --db \"$STATE_DB_PATH\" --workflows \"$WORKFLOWS_PATH\" \
+      --defaults \"$DEFAULTS_PATH\" --port $PORT --stdout"]
