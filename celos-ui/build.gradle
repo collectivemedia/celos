@@ -1,3 +1,7 @@
+plugins {
+    id 'com.palantir.docker' version '0.9.2'
+}
+
 mainClassName = 'com.collective.celos.ui.Main'
 version = '0.1'
 
@@ -42,4 +46,13 @@ dependencies {
 jar {
     from configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
     archiveName "celos-ui.jar"
+}
+
+docker {
+    name = 'celos-ui'
+    tags 'latest', project.version
+    dockerfile 'Dockerfile'
+    dependsOn tasks.jar
+    files 'ui-config.json'
+    buildArgs([jarfile: tasks.jar.archiveName])
 }

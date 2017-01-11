@@ -431,6 +431,44 @@ This will build the following JARs:
 * celos-ci/build/libs/celos-ci-fat.jar (see <<Celos CI Reference>>)
 * celos-ui/build/libs/celos-ui.jar (see <<Celos UI Reference>>)
 
+=== Docker
+
+There are Docker container build definitions included for both celos-server and celos-ui, and a docker-compose.yml
+file which can be used to start and link both services together.
+
+The docker container images can be built via gradle:
+
+[source,shell]
+....
+./gradlew :celos-server:docker
+./gradlew :celos-ui:docker
+....
+
+And you can bring up the two linked services via docker-compose like so:
+
+[source,shell]
+....
+docker-compose up
+....
+
+After which the UI should be available at http://your-docker-host:8080/ui and the celos REST API should be available
+on http://your-docker-host:8888/.
+
+Look at the individual Dockerfiles for more information, but here are the basics:
+
+==== celos-server
+
+Exposes an "/etc/celos" volume, under which it expects to find state-db, workflows, and defaults directories
+(the default ones in the base image are simply empty directories).  You can mount your own volume(s) here to
+provide and persist your own state and configuration.
+
+Exposes and listens on port 80, and runs internal scheduler at 60 second intervals
+
+==== celos-ui
+
+Also exposes an /etc/celos volume, where it expects to be able to find a "ui.json" which will be passed as the
+argument to --config and used as the UI configuration.  Listens on and exposes port 80.
+
 === Getting Started
 
 Head over to link:samples/quickstart[*samples/quickstart*].
