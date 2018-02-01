@@ -1,0 +1,20 @@
+{
+  "groups":
+  [
+    {
+      "name": "Group 1",
+      "workflows":
+      [
+        "workflow-1",
+        "workflow-2"
+      ]
+    },
+    {
+      "name": "Group 2",
+      "workflows":
+      [
+        "workflow-3"
+      ]
+    }
+  ]
+}

@@ -41,6 +41,7 @@ public class ServerCommandLineParser {
     private static final String CLI_STATE_DB_JDBC_URL = "jdbcUrl";
     private static final String CLI_STATE_DB_JDBC_NAME = "jdbcName";
     private static final String CLI_STATE_DB_JDBC_PASSWORD = "jdbcPassword";
+    private static final String CLI_LOG_STDOUT = "stdout";
     public static final String DB_TYPE_FILESYSTEM = "FILESYSTEM";
     public static final String DB_TYPE_JDBC = "JDBC";
 
@@ -56,8 +57,9 @@ public class ServerCommandLineParser {
         String logDir = getDefault(commandLine, CLI_LOG_DIR, Constants.DEFAULT_LOG_DIR);
         Integer autoSchedule = Integer.valueOf(getDefault(commandLine, CLI_AUTOSCHEDULE, "-1"));
         StateDatabase db = getStateDatabaseConfig(commandLine);
+        boolean logStdout = Boolean.valueOf(commandLine.hasOption(CLI_LOG_STDOUT));
 
-        return new ServerCommandLine(workflowsDir, defaultsDir, db, logDir, port, autoSchedule);
+        return new ServerCommandLine(workflowsDir, defaultsDir, db, logDir, port, autoSchedule, logStdout);
     }
 
     private String getRequiredArgument(CommandLine commandLine, String argument) {
@@ -107,7 +109,8 @@ public class ServerCommandLineParser {
                 .addOption(CLI_STATE_DB_JDBC_NAME, CLI_STATE_DB_JDBC_NAME, true, "Celos JDBC db username")
                 .addOption(CLI_STATE_DB_JDBC_PASSWORD, CLI_STATE_DB_JDBC_PASSWORD, true, "Celos JDBC db password")
                 .addOption(CLI_LOG_DIR, CLI_LOG_DIR, true, "Celos logs dir")
-                .addOption(CLI_AUTOSCHEDULE, CLI_AUTOSCHEDULE, true, "Time period in seconds to automatically run Scheduler. If not specified, Scheduler will not be automatically run");
+                .addOption(CLI_AUTOSCHEDULE, CLI_AUTOSCHEDULE, true, "Time period in seconds to automatically run Scheduler. If not specified, Scheduler will not be automatically run")
+                .addOption(CLI_LOG_STDOUT, CLI_LOG_STDOUT, false, "If specified, will send all logs to stdout (helpful if running inside a container).  Takes precedence over " + CLI_LOG_DIR);
         return options;
     }
 

@@ -36,7 +36,12 @@ public class Main {
 
         ServerCommandLineParser serverCommandLineParser = new ServerCommandLineParser();
         final ServerCommandLine commandLine = serverCommandLineParser.parse(args);
-        Util.setupLogging(commandLine.getLogDir());
+        if(commandLine.getLogStdout()) {
+            System.out.println("Logging all messages to stdout");
+            Util.setupLoggingToStdout();
+        } else if(System.getProperty("log4j.configuration") == null) {
+            Util.setupLogging(commandLine.getLogDir());
+        }
 
         CelosServer celosServer = new CelosServer();
         celosServer.startServer(commandLine.getPort(),

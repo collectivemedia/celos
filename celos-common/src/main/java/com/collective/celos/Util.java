@@ -21,13 +21,11 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.sql.Timestamp;
 import java.util.Map;
+import java.util.Properties;
 
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PatternLayout;
+import org.apache.log4j.*;
 import org.apache.log4j.rolling.RollingFileAppender;
 import org.apache.log4j.rolling.TimeBasedRollingPolicy;
 import org.joda.time.DateTime;
@@ -218,6 +216,12 @@ public class Util {
         return path;
     }
 
+    private static Layout getLoggingLayout() {
+        PatternLayout patternLayout = new PatternLayout();
+        patternLayout.setConversionPattern("[%d{YYYY-MM-dd HH:mm:ss.SSS}] %-5p: %m%n");
+        return patternLayout;
+    }
+
     public static void setupLogging(File logDir) {
         System.getProperties().setProperty("log4j.defaultInitOverride", "true");
 
@@ -229,10 +233,19 @@ public class Util {
         rollingPolicy.setFileNamePattern(new File(logDir, "celos-%d{yyyy-MM-dd}.log").getAbsolutePath());
         appender.setRollingPolicy(rollingPolicy);
 
-        PatternLayout patternLayout = new PatternLayout();
-        patternLayout.setConversionPattern("[%d{YYYY-MM-dd HH:mm:ss.SSS}] %-5p: %m%n");
-        appender.setLayout(patternLayout);
+        appender.setLayout(getLoggingLayout());
 
+        appender.activateOptions();
+        Logger.getRootLogger().addAppender(appender);
+        Logger.getRootLogger().setLevel(Level.INFO);
+    }
+
+    public static void setupLoggingToStdout() {
+        Properties props = System.getProperties();
+        props.setProperty("log4j.defaultInitOverride", "true");
+        ConsoleAppender appender = new ConsoleAppender();
+        appender.setTarget("System.out");
+        appender.setLayout(getLoggingLayout());
         appender.activateOptions();
         Logger.getRootLogger().addAppender(appender);
         Logger.getRootLogger().setLevel(Level.INFO);

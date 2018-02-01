@@ -31,14 +31,16 @@ public class ServerCommandLine {
     private final File logDir;
     private final int port;
     private final int autoSchedule;
+    private final boolean logStdout;
 
-    public ServerCommandLine(String workflowsDir, String defaultsDir, StateDatabase db, String logDir, int port, int autoSchedule) {
+    public ServerCommandLine(String workflowsDir, String defaultsDir, StateDatabase db, String logDir, int port, int autoSchedule, boolean logStdout) {
         this.autoSchedule = autoSchedule;
         this.workflowsDir = new File(Util.requireNonNull(workflowsDir));
         this.defaultsDir = new File(Util.requireNonNull(defaultsDir));
         this.database = Util.requireNonNull(db);
         this.port = port;
         this.logDir = new File(Util.requireNonNull(logDir));
+        this.logStdout = logStdout;
     }
 
     public int getAutoSchedule() {
@@ -59,6 +61,10 @@ public class ServerCommandLine {
 
     public File getLogDir() {
         return logDir;
+    }
+
+    public boolean getLogStdout() {
+        return logStdout;
     }
 
     public StateDatabase getDatabase() {
