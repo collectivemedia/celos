@@ -39,7 +39,7 @@ public class Main {
         if(commandLine.getLogStdout()) {
             System.out.println("Logging all messages to stdout");
             Util.setupLoggingToStdout();
-        } else {
+        } else if(System.getProperty("log4j.configuration") == null) {
             Util.setupLogging(commandLine.getLogDir());
         }
 
